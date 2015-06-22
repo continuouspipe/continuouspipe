@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use AppBundle\Security\User\SecurityUserRepository;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -36,7 +35,7 @@ class UserController
         $user = $this->userRepository->findOneByEmail($email);
 
         return new Response($this->serializer->serialize($user->getUser(), 'json'), 200, [
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ]);
     }
 }

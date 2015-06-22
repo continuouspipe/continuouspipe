@@ -6,7 +6,6 @@ use AppBundle\Security\User\SecurityUserRepository;
 use AppBundle\Security\User\UserNotFound;
 use Doctrine\ORM\EntityManager;
 use Kubernetes\Manager\User\SecurityUser;
-use Kubernetes\Manager\User\User;
 
 class DoctrineSecurityUserRepository implements SecurityUserRepository
 {
@@ -21,12 +20,12 @@ class DoctrineSecurityUserRepository implements SecurityUserRepository
     }
 
     /**
-     * {@inheritdoc
+     * {@inheritdoc.
      */
     public function findOneByEmail($email)
     {
         $user = $this->entityManager->getRepository(SecurityUser::class)->findOneBy([
-            'username' => $email
+            'username' => $email,
         ]);
 
         if (null === $user) {
@@ -37,7 +36,7 @@ class DoctrineSecurityUserRepository implements SecurityUserRepository
     }
 
     /**
-     * {@inheritdoc
+     * {@inheritdoc.
      */
     public function save(SecurityUser $user)
     {

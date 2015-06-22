@@ -3,7 +3,6 @@
 namespace AppBundle\Security;
 
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
-use Symfony\Component\HttpFoundation\Session\SessionBagInterface;
 use Symfony\Component\HttpFoundation\Session\Storage\SessionStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
