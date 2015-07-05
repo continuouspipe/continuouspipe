@@ -56,7 +56,9 @@ class AuthenticationProvider
         $jwtToken = $this->jwtManager->create($user);
 
         if (null === ($callback = $request->cookies->get(self::COOKIE_CALLBACK_KEY))) {
-            return new Response('No callback found', Response::HTTP_BAD_REQUEST);
+            return new Response('No callback found.', Response::HTTP_BAD_REQUEST, [
+                'X-JWT-Token' => $jwtToken
+            ]);
         }
 
         $url = $callback.'?token='.$jwtToken;
