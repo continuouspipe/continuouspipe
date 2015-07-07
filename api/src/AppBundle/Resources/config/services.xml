@@ -47,5 +47,10 @@
             <argument>%repository_river_base_url%</argument>
             <argument>%github_secret%</argument>
         </service>
+
+        <service id="builder.request.build_request_param_converter" class="AppBundle\Request\ParamConverter\BuildRequestParamConverter">
+            <argument type="service" id="jms_serializer" />
+            <tag name="request.param_converter" priority="0" converter="build_request" />
+        </service>
     </services>
 </container>

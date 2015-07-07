@@ -4,5 +4,5 @@ Feature: In order to be able to manage docker applications
 
   Scenario: I have a simple one-container application
     Given I have a repository containing a Dockerfile
-    When I push my code to this repository
-    Then the application image should be automatically built
+    When I push my code to the default branch
+    Then the application image should be automatically built with the tag "latest"
