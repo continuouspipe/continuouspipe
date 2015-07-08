@@ -77,7 +77,8 @@ class Build implements LogRelatedObject, \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'uuid' => (string) $this->uuid
+            'uuid' => (string) $this->uuid,
+            'status' => $this->status
         ];
     }
 }

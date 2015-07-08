@@ -17,5 +17,11 @@
             <argument type="service" id="builder.logging.redis.list_naming_strategy" />
             <argument type="service" id="builder.logging.log_serializer" />
         </service>
+
+        <service id="builder.logging.log_aggregator" class="ContinuousPipe\LogStream\Redis\RedisLogAggregator">
+            <argument type="service" id="builder.logging.redis_client" />
+            <argument type="service" id="builder.logging.redis.list_naming_strategy" />
+            <argument type="service" id="builder.logging.log_serializer" />
+        </service>
     </services>
 </container>

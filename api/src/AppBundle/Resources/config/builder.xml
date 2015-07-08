@@ -32,10 +32,6 @@
         <service id="builder.build_repository" class="Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
-        <service id="app.controller.build" class="AppBundle\Controller\BuildController">
-            <argument type="service" id="tactician.commandbus" />
-            <argument type="service" id="builder.build_repository" />
-        </service>
 
         <service id="builder.builder_handler" class="Builder\Handler\BuildHandler">
             <argument type="service" id="builder.docker_builder"/>

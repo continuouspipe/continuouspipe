@@ -45,13 +45,17 @@ class Client
                 $log = Log::error($output['error']);
             } else if (is_array($output) && array_key_exists('stream', $output)) {
                 $log = Log::output($output['stream']);
+            } else if (is_array($output) && array_key_exists('status', $output)) {
+                $log = Log::output($output['status']);
             } else if (is_string($output)) {
                 $log = Log::output($output);
             } else {
                 $log = Log::error(print_r($output, true));
             }
 
-            $logger->log($log);
+            if (!empty($log)) {
+                $logger->log($log);
+            }
         };
     }
 }
