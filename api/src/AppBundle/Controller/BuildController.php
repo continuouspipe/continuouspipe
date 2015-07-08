@@ -2,10 +2,15 @@
 
 namespace AppBundle\Controller;
 
+use Builder\Build;
+use Builder\BuildRepository;
+use Builder\Command\BuildCommand;
 use Builder\DockerBuilder;
 use Builder\Request\BuildRequest;
+use League\Tactician\CommandBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -14,16 +19,18 @@ use Symfony\Component\HttpFoundation\Response;
 class BuildController
 {
     /**
-     * @var DockerBuilder
+     * @var BuildRepository
      */
-    private $builder;
-
+    private $buildRepository;
     /**
-     * @param DockerBuilder $builder
+     * @var CommandBus
      */
-    public function __construct(DockerBuilder $builder)
+    private $commandBus;
+
+    public function __construct(CommandBus $commandBus, BuildRepository $buildRepository)
     {
-        $this->builder = $builder;
+        $this->buildRepository = $buildRepository;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -32,8 +39,11 @@ class BuildController
      */
     public function buildAction(BuildRequest $request)
     {
-        $this->builder->build($request->getRepository(), $request->getImage());
+        $build = Build::fromRequest($request);
+        $this->buildRepository->save($build);
 
-        return new Response('OK');
+        $this->commandBus->handle(BuildCommand::forBuild($build));
+
+        return new JsonResponse($build);
     }
 }

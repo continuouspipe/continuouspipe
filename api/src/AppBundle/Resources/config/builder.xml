@@ -25,9 +25,22 @@
         <service id="builder.docker_builder" class="Builder\DockerBuilder">
             <argument type="service" id="builder.github.archive_builder" />
             <argument type="service" id="builder.docker.client" />
+            <argument type="service" id="builder.logging.redis_logger_factory" />
+            <argument type="service" id="builder.build_repository" />
+            <argument>%default_docker_registry_credentials%</argument>
+        </service>
+        <service id="builder.build_repository" class="Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
         <service id="app.controller.build" class="AppBundle\Controller\BuildController">
-            <argument type="service" id="builder.docker_builder" />
+            <argument type="service" id="tactician.commandbus" />
+            <argument type="service" id="builder.build_repository" />
+        </service>
+
+        <service id="builder.builder_handler" class="Builder\Handler\BuildHandler">
+            <argument type="service" id="builder.docker_builder"/>
+
+            <tag name="tactician.handler" command="Builder\Command\BuildCommand"/>
         </service>
     </services>
 </container>

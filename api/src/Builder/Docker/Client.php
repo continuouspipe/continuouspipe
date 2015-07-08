@@ -2,6 +2,9 @@
 
 namespace Builder\Docker;
 
+use Builder\RegistryCredentials;
+use ContinuousPipe\LogStream\Log;
+use ContinuousPipe\LogStream\Logger;
 use Docker\Docker;
 use Builder\Archive;
 use Builder\Image;
@@ -20,37 +23,35 @@ class Client
         $this->docker = $docker;
     }
 
-    public function build(Archive $archive, Image $image)
+    public function build(Archive $archive, Image $image, Logger $logger)
     {
         $imageName = $image->getName().':'.$image->getTag();
-        $this->docker->build($archive, $imageName, $this->getOutputCallback());
+        $this->docker->build($archive, $imageName, $this->getOutputCallback($logger));
     }
 
-    public function push(Image $image)
+    public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
     {
-        $registryAuth = 'ewoJImh0dHBzOi8vaW5kZXguZG9ja2VyLmlvL3YxLyI6IHsKCQkiYXV0aCI6ICJjM0p2ZW1VNk5rUkNTRVk1ZEhRPSIsCgkJImVtYWlsIjogInNhbXVlbC5yb3plQGdtYWlsLmNvbSIKCX0KfQ==';
-
-        $this->docker->getImageManager()->push($image->getName(), $image->getTag(), $registryAuth, $this->getOutputCallback());
+        $this->docker->getImageManager()->push(
+            $image->getName(), $image->getTag(),
+            $credentials->getAuthenticationString(),
+            $this->getOutputCallback($logger)
+        );
     }
 
-    private function getOutputCallback()
+    private function getOutputCallback(Logger $logger)
     {
-        return function($output, $type) {
-            var_dump($output, $type);
-
+        return function($output) use ($logger) {
             if (is_array($output) && array_key_exists('error', $output)) {
-                $message = $output['error'];
+                $log = Log::error($output['error']);
             } else if (is_array($output) && array_key_exists('stream', $output)) {
-                $message = $output['stream'];
+                $log = Log::output($output['stream']);
             } else if (is_string($output)) {
-                $message = $output;
+                $log = Log::output($output);
             } else {
-                //var_dump($output);
+                $log = Log::error(print_r($output, true));
             }
 
-            if (isset($message)) {
-                //echo ($type == 2 ? 'OUT' : 'ERR') . ': ' . $message;
-            }
+            $logger->log($log);
         };
     }
 }

@@ -3,6 +3,7 @@
 namespace Builder;
 
 use Builder\Docker\Client;
+use ContinuousPipe\LogStream\LoggerFactory;
 
 class DockerBuilder
 {
@@ -14,17 +15,73 @@ class DockerBuilder
      * @var Client
      */
     private $dockerClient;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
+    /**
+     * @var BuildRepository
+     */
+    private $buildRepository;
+    /**
+     * @var null|string
+     */
+    private $defaultCredentials;
 
-    public function __construct(ArchiveBuilder $archiveBuilder, Client $dockerClient)
+    /**
+     * @param ArchiveBuilder $archiveBuilder
+     * @param Client $dockerClient
+     * @param LoggerFactory $loggerFactory
+     * @param BuildRepository $buildRepository
+     * @param string $defaultCredentials
+     */
+    public function __construct(ArchiveBuilder $archiveBuilder, Client $dockerClient, LoggerFactory $loggerFactory, BuildRepository $buildRepository, $defaultCredentials = null)
     {
         $this->archiveBuilder = $archiveBuilder;
         $this->dockerClient = $dockerClient;
+        $this->loggerFactory = $loggerFactory;
+        $this->buildRepository = $buildRepository;
+        $this->defaultCredentials = $defaultCredentials;
     }
 
-    public function build(Repository $repository, Image $targetImage)
+    public function build(Build $build)
     {
-        $archive = $this->archiveBuilder->getArchive($repository);
-        $this->dockerClient->build($archive, $targetImage);
-        $this->dockerClient->push($targetImage);
+        $build->updateStatus(Build::STATUS_RUNNING);
+        $this->buildRepository->save($build);
+
+        try {
+            $this->runBuild($build);
+
+            $build->updateStatus(Build::STATUS_SUCCESS);
+        } catch (\Exception $e) {
+            $build->updateStatus(Build::STATUS_ERROR);
+        } finally {
+            $this->buildRepository->save($build);
+        }
+    }
+
+    private function runBuild(Build $build)
+    {
+        $request = $build->getRequest();
+        $repository = $request->getRepository();
+        $targetImage = $request->getImage();
+
+        $logger = $this->loggerFactory->createLogger($build);
+
+        $archive = $this->archiveBuilder->getArchive($repository, $logger);
+        $this->dockerClient->build($archive, $targetImage, $logger);
+
+        $credentials = $this->getCredentials();
+        $this->dockerClient->push($targetImage, $credentials, $logger);
+    }
+
+    /**
+     * FIXME Remove this hardcoded credentials
+     *
+     * @return RegistryCredentials
+     */
+    private function getCredentials()
+    {
+        return RegistryCredentials::fromAuthenticationString($this->defaultCredentials);
     }
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Logging -->
+        <service id="builder.logging.redis.list_naming_strategy" class="ContinuousPipe\LogStream\Redis\ListNamingStrategy" />
+        <service id="builder.logging.redis_client" class="Predis\Client">
+            <argument>%redis_address%</argument>
+        </service>
+
+        <service id="builder.logging.redis_logger_factory" class="ContinuousPipe\LogStream\Redis\RedisLoggerFactory">
+            <argument type="service" id="builder.logging.redis_client" />
+            <argument type="service" id="builder.logging.redis.list_naming_strategy" />
+        </service>
+    </services>
+</container>
