@@ -55,6 +55,8 @@ class DockerBuilder
             $build->updateStatus(Build::STATUS_SUCCESS);
         } catch (\Exception $e) {
             $build->updateStatus(Build::STATUS_ERROR);
+
+            throw $e;
         } finally {
             $this->buildRepository->save($build);
         }
@@ -76,8 +78,6 @@ class DockerBuilder
     }
 
     /**
-     * FIXME Remove this hardcoded credentials
-     *
      * @return RegistryCredentials
      */
     private function getCredentials()
