@@ -19,7 +19,9 @@
         "incenteev/composer-parameter-handler": "~2.0"
     },
     "require-dev": {
-        "sensio/generator-bundle": "~2.3"
+        "sensio/generator-bundle": "~2.3",
+        "phpspec/phpspec": "~2.2",
+        "behat/behat": "~3.0"
     },
     "scripts": {
         "pre-install-cmd": [
@@ -58,5 +60,11 @@
         "incenteev-parameters": {
             "file": "app/config/parameters.yml"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "artifact",
+            "url": "../../artifact/"
+        }
+    ]
 }
