@@ -5,11 +5,40 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <!-- ContinuousPipe to Kubernetes transformer -->
+        <service id="kubernetes.naming_strategy.identifier" class="ContinuousPipe\Adapter\Kubernetes\Naming\IdentifierNamingStrategy" />
+        <service id="kubernetes.transformer.volume" class="ContinuousPipe\Adapter\Kubernetes\Transformer\VolumeTransformer" />
+        <service id="kubernetes.transformer.pod" class="ContinuousPipe\Adapter\Kubernetes\Transformer\PodTransformer">
+            <argument type="service" id="kubernetes.naming_strategy.identifier" />
+            <argument type="service" id="kubernetes.transformer.volume" />
+        </service>
+        <service id="kubernetes.transformer.service" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ServiceTransformer">
+            <argument type="service" id="kubernetes.naming_strategy.identifier" />
+        </service>
+        <service id="kubernetes.transformer.replication_controller_factory" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ReplicationControllerFactory" />
+        <service id="kubernetes.transformer.component" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer">
+            <argument type="service" id="kubernetes.transformer.pod" />
+            <argument type="service" id="kubernetes.transformer.service" />
+            <argument type="service" id="kubernetes.transformer.replication_controller_factory" />
+        </service>
+        <service id="kubernetes.transformer.environment" class="ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer">
+            <argument type="service" id="kubernetes.transformer.component" />
+        </service>
+
+        <!-- Kubernetes client -->
+        <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory">
+            <argument type="service" id="jms_serializer" />
+        </service>
+        <service id="pipe.adapter.kubernetes.environment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\KubernetesEnvironmentClientFactory">
+            <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
+            <argument type="service" id="kubernetes.transformer.environment" />
+        </service>
         <service id="pipe.adapter.kubernetes.repository" class="ContinuousPipe\Adapter\Kubernetes\Repository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
         <service id="pipe.adapter.kubernetes" class="ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter">
             <argument type="service" id="pipe.adapter.kubernetes.repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.environment_client_factory" />
         </service>
     </services>
 </container>
