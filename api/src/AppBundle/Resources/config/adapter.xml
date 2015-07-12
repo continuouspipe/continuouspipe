@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="pipe.adapter_registry" class="ContinuousPipe\Adapter\AdapterRegistry">
+            <argument type="collection">
+                <argument type="service" id="pipe.adapter.kubernetes" />
+            </argument>
+        </service>
+
+        <service id="pipe.provider_repository" class="ContinuousPipe\Pipe\ProviderRepository">
+            <argument type="service" id="pipe.adapter_registry" />
+        </service>
+
+        <service id="pipe.chain_environment_client_factory" class="ContinuousPipe\Pipe\ChainEnvironmentClientFactory">
+            <argument type="service" id="pipe.adapter_registry" />
+        </service>
+    </services>
+</container>

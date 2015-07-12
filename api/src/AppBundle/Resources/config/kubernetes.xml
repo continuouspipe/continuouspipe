@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="pipe.adapter.kubernetes.repository" class="ContinuousPipe\Adapter\Kubernetes\Repository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+        <service id="pipe.adapter.kubernetes" class="ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter">
+            <argument type="service" id="pipe.adapter.kubernetes.repository" />
+        </service>
+    </services>
+</container>
