@@ -4,8 +4,8 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
-    <embeddable name="Kubernetes\Manager\User\User">
-        <embedded name="gitHubCredentials" class="Kubernetes\Manager\User\GitHubCredentials" column-prefix="github" />
+    <embeddable name="ContinuousPipe\User\User">
+        <embedded name="gitHubCredentials" class="ContinuousPipe\User\GitHubCredentials" column-prefix="github" />
 
         <field name="email" type="string" nullable="false" />
     </embeddable>

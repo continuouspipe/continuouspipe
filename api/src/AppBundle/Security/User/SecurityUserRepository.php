@@ -2,7 +2,7 @@
 
 namespace AppBundle\Security\User;
 
-use Kubernetes\Manager\User\SecurityUser;
+use ContinuousPipe\User\SecurityUser;
 
 interface SecurityUserRepository
 {

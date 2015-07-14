@@ -4,9 +4,9 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
-    <entity name="Kubernetes\Manager\User\SecurityUser">
+    <entity name="ContinuousPipe\User\SecurityUser">
         <id name="username" type="string" />
-        <embedded name="user" class="Kubernetes\Manager\User\User" />
+        <embedded name="user" class="ContinuousPipe\User\User" />
         <field name="roles" type="array" />
         <field name="salt" type="string" nullable="true" />
         <field name="password" type="string" nullable="true" />

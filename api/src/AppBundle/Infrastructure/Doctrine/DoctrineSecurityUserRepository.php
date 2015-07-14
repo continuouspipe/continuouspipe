@@ -5,7 +5,7 @@ namespace AppBundle\Infrastructure\Doctrine;
 use AppBundle\Security\User\SecurityUserRepository;
 use AppBundle\Security\User\UserNotFound;
 use Doctrine\ORM\EntityManager;
-use Kubernetes\Manager\User\SecurityUser;
+use ContinuousPipe\User\SecurityUser;
 
 class DoctrineSecurityUserRepository implements SecurityUserRepository
 {
