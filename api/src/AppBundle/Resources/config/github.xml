@@ -43,7 +43,7 @@
         <service id="repository_river.github.webhook_manager" class="GitHub\WebHook\Setup\WebHookManager">
             <argument type="service" id="repository_river.github.client" />
             <argument type="service" id="jms_serializer" />
-            <argument>%pipe_public_url%</argument>
+            <argument>%webhook_target_url%</argument>
             <argument>%github_secret%</argument>
         </service>
     </services>

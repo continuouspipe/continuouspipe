@@ -78,6 +78,13 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: memory }
 
+jms_serializer:
+    metadata:
+        directories:
+            GitHubWebHook:
+                namespace_prefix: "GitHub\\WebHook"
+                path: "%kernel.root_dir%/../vendor/sroze/github-webhook/src/Resources/serializer"
+
 lexik_jwt_authentication:
     private_key_path: %jwt_private_key_path%
     public_key_path:  %jwt_public_key_path%
@@ -86,3 +93,15 @@ lexik_jwt_authentication:
 
 continuous_pipe_security:
     authenticator_url: %authenticator_url%
+
+fos_rest:
+    view:
+        view_response_listener: force
+
+    format_listener:
+        rules:
+            - { path: '^/_profiler', priorities: ['html'] }
+            - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
+
+sensio_framework_extra:
+    view:    { annotations: false }

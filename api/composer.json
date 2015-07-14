@@ -20,7 +20,8 @@
         "jms/serializer-bundle": "~1.0",
         "sroze/github-webhook": "*@dev",
         "continuous-pipe/security-bundle": "*@dev",
-        "csa/guzzle-bundle": "@stable"
+        "csa/guzzle-bundle": "@stable",
+        "friendsofsymfony/rest-bundle": "~1.7"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

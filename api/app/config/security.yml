@@ -12,6 +12,8 @@ security:
             pattern:   ^/
             stateless: true
             lexik_jwt: ~
+            anonymous: ~
 
     access_control:
+        - { path: ^/github/payload$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

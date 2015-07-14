@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Repository\UserRepositoryRepository;
 use GitHub\WebHook\Setup\WebHookManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -36,9 +37,8 @@ class SetupRepositoryController
     public function setupAction($id)
     {
         $repository = $this->userRepositoryRepository->findById($id);
+        $webHook = $this->webHookManager->setup($repository);
 
-        $this->webHookManager->setup($repository);
-
-        return new Response('OK');
+        return $webHook;
     }
 }
