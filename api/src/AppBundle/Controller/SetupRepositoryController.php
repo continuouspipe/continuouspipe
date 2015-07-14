@@ -7,6 +7,7 @@ use GitHub\WebHook\Setup\WebHookManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use FOS\RestBundle\Controller\Annotations\View;
 
 /**
  * @Route(service="app.controller.setup_repository")
@@ -33,6 +34,7 @@ class SetupRepositoryController
 
     /**
      * @Route("/user-repositories/{id}/activate", methods={"POST"})
+     * @View
      */
     public function setupAction($id)
     {

@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use FOS\RestBundle\Controller\Annotations\View;
 
 /**
  * @Route(service="app.controller.user_repositories")
@@ -32,13 +33,12 @@ class UserRepositoriesController
 
     /**
      * @Route("/user-repositories")
+     * @View
      */
     public function listAction()
     {
         $repositories = $this->userRepositoryRepository->findByCurrentUser();
 
-        return new Response($this->serializer->serialize($repositories, 'json'), 200, [
-            'Content-Type' => 'application/json'
-        ]);
+        return $repositories;
     }
 }
