@@ -4,6 +4,7 @@ namespace AppBundle\GitHub;
 
 use AppBundle\Repository\UserRepositoryRepository;
 use Github\HttpClient\Message\ResponseMediator;
+use Github\ResultPager;
 use GitHub\WebHook\Model\Repository;
 use JMS\Serializer\SerializerInterface;
 use ContinuousPipe\User\User;
@@ -32,8 +33,12 @@ class GitHubUserRepositoryRepository implements UserRepositoryRepository
      */
     public function findByCurrentUser()
     {
-        $foundRepositories = $this->gitHubClientFactory->createClientForCurrentUser()->currentUser()->repositories();
-        $rawRepositories = json_encode($foundRepositories);
+        $client = $this->gitHubClientFactory->createClientForCurrentUser();
+        $currentUserApi = $client->currentUser();
+
+        $paginator = new ResultPager($client);
+        $found = $paginator->fetchAll($currentUserApi, 'repositories');
+        $rawRepositories = json_encode($found, true);
 
         $repositories = $this->serializer->deserialize(
             $rawRepositories,
