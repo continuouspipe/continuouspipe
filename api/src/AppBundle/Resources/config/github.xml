@@ -22,8 +22,15 @@
             <argument type="service" id="repository_river.github.default_class_event_mapping" />
         </service>
 
+        <service id="repository_river.github.guzzle_http_client" class="GitHub\WebHook\Guzzle\DefaultGuzzleClient">
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="repository_river.github.http_client" class="GitHub\WebHook\Guzzle\Guzzle4HttpClient">
+            <argument type="service" id="repository_river.github.guzzle_http_client" />
+        </service>
         <service id="repository_river.github.client_factory" class="AppBundle\GitHub\GitHubClientFactory">
             <argument type="service" id="security.token_storage" />
+            <argument type="service" id="repository_river.github.http_client" />
         </service>
         <service id="repository_river.user_repository_repository" class="AppBundle\GitHub\GitHubUserRepositoryRepository">
             <argument type="service" id="repository_river.github.client_factory" />

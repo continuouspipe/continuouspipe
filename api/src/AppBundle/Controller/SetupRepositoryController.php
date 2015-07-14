@@ -31,7 +31,7 @@ class SetupRepositoryController
     }
 
     /**
-     * @Route("/user-repositories/{id}/map-to/{application}", methods={"POST"})
+     * @Route("/user-repositories/{id}/activate", methods={"POST"})
      */
     public function setupAction($id)
     {
