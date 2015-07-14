@@ -3,7 +3,7 @@
 namespace AppBundle\Repository;
 
 use GitHub\WebHook\Model\Repository;
-use Kubernetes\Manager\User\User;
+use ContinuousPipe\User\User;
 
 interface UserRepositoryRepository
 {

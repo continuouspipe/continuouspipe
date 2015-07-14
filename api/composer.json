@@ -18,7 +18,9 @@
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "jms/serializer-bundle": "~1.0",
-        "sroze/github-webhook": "*@dev"
+        "sroze/github-webhook": "*@dev",
+        "continuous-pipe/security-bundle": "*@dev",
+        "csa/guzzle-bundle": "@stable"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

@@ -1,13 +1,17 @@
 security:
-
     providers:
-        in_memory:
-            memory: ~
+        authenticator:
+            id: security.user_provider
 
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt|error)|css|images|js)/
             security: false
 
-        main:
-            anonymous: ~
+        api:
+            pattern:   ^/
+            stateless: true
+            lexik_jwt: ~
+
+    access_control:
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

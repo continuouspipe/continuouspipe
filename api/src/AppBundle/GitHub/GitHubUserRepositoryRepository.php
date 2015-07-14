@@ -6,7 +6,7 @@ use AppBundle\Repository\UserRepositoryRepository;
 use Github\HttpClient\Message\ResponseMediator;
 use GitHub\WebHook\Model\Repository;
 use JMS\Serializer\SerializerInterface;
-use Kubernetes\Manager\User\User;
+use ContinuousPipe\User\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GitHubUserRepositoryRepository implements UserRepositoryRepository

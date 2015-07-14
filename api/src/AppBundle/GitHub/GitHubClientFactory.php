@@ -3,7 +3,7 @@
 namespace AppBundle\GitHub;
 
 use Github\Client;
-use Kubernetes\Manager\User\User;
+use ContinuousPipe\User\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GitHubClientFactory

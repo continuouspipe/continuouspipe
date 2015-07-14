@@ -46,3 +46,7 @@ assetic:
 
 #swiftmailer:
 #    delivery_address: me@example.com
+
+csa_guzzle:
+    profiler: %kernel.debug%
+    logger: true
