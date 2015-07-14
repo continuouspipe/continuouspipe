@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.controller.user_repositories" class="AppBundle\Controller\UserRepositoriesController">
+            <argument type="service" id="repository_river.user_repository_repository" />
+            <argument type="service" id="jms_serializer" />
+        </service>
+        <service id="app.controller.setup_repository" class="AppBundle\Controller\SetupRepositoryController">
+            <argument type="service" id="repository_river.github.webhook_manager" />
+            <argument type="service" id="repository_river.user_repository_repository" />
+        </service>
+
+        <service id="builder.request.build_request_param_converter" class="AppBundle\Request\ParamConverter\BuildRequestParamConverter">
+            <argument type="service" id="jms_serializer" />
+            <tag name="request.param_converter" priority="0" converter="build_request" />
+        </service>
+    </services>
+</container>
