@@ -41,7 +41,9 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
             $securityUser = $this->createUserFromOAuthUserResponse($response);
         }
 
+        $gitHubResponse = $response->getResponse();
         $securityUser->getUser()->setGitHubCredentials(new GitHubCredentials(
+            $gitHubResponse['login'],
             $response->getAccessToken(),
             $response->getRefreshToken()
         ));

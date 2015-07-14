@@ -32,9 +32,10 @@ class UserController
      */
     public function getByEmailAction($email)
     {
-        $user = $this->userRepository->findOneByEmail($email);
+        $securityUser = $this->userRepository->findOneByEmail($email);
+        $user = $securityUser->getUser();
 
-        return new Response($this->serializer->serialize($user->getUser(), 'json'), 200, [
+        return new Response($this->serializer->serialize($user, 'json'), 200, [
             'Content-Type' => 'application/json',
         ]);
     }
