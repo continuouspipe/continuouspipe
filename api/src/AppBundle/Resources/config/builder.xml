@@ -15,28 +15,28 @@
             <argument type="service" id="docker.client"/>
         </service>
 
-        <service id="builder.docker.client" class="Builder\Docker\Client">
+        <service id="builder.docker.client" class="ContinuousPipe\Builder\Docker\Client">
             <argument type="service" id="docker" />
         </service>
-        <service id="builder.github.repository_address_descriptor" class="Builder\GitHub\RepositoryAddressDescriptor" />
-        <service id="builder.github.archive_builder" class="Builder\GitHubArchiveBuilder">
+        <service id="builder.github.repository_address_descriptor" class="ContinuousPipe\Builder\GitHub\RepositoryAddressDescriptor" />
+        <service id="builder.github.archive_builder" class="ContinuousPipe\Builder\GitHubArchiveBuilder">
             <argument type="service" id="builder.github.repository_address_descriptor" />
         </service>
-        <service id="builder.docker_builder" class="Builder\DockerBuilder">
+        <service id="builder.docker_builder" class="ContinuousPipe\Builder\DockerBuilder">
             <argument type="service" id="builder.github.archive_builder" />
             <argument type="service" id="builder.docker.client" />
             <argument type="service" id="builder.logging.redis_logger_factory" />
             <argument type="service" id="builder.build_repository" />
             <argument>%default_docker_registry_credentials%</argument>
         </service>
-        <service id="builder.build_repository" class="Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
+        <service id="builder.build_repository" class="ContinuousPipe\Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
 
-        <service id="builder.builder_handler" class="Builder\Handler\BuildHandler">
+        <service id="builder.builder_handler" class="ContinuousPipe\Builder\Handler\BuildHandler">
             <argument type="service" id="builder.docker_builder"/>
 
-            <tag name="tactician.handler" command="Builder\Command\BuildCommand"/>
+            <tag name="tactician.handler" command="ContinuousPipe\Builder\Command\BuildCommand"/>
         </service>
     </services>
 </container>

@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use Builder\Build;
+use ContinuousPipe\Builder\Build;
 use ContinuousPipe\LogStream\LogAggregator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;

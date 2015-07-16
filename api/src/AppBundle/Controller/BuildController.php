@@ -2,11 +2,10 @@
 
 namespace AppBundle\Controller;
 
-use Builder\Build;
-use Builder\BuildRepository;
-use Builder\Command\BuildCommand;
-use Builder\DockerBuilder;
-use Builder\Request\BuildRequest;
+use ContinuousPipe\Builder\Build;
+use ContinuousPipe\Builder\BuildRepository;
+use ContinuousPipe\Builder\Command\BuildCommand;
+use ContinuousPipe\Builder\Request\BuildRequest;
 use League\Tactician\CommandBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -22,11 +21,16 @@ class BuildController
      * @var BuildRepository
      */
     private $buildRepository;
+
     /**
      * @var CommandBus
      */
     private $commandBus;
 
+    /**
+     * @param CommandBus $commandBus
+     * @param BuildRepository $buildRepository
+     */
     public function __construct(CommandBus $commandBus, BuildRepository $buildRepository)
     {
         $this->buildRepository = $buildRepository;

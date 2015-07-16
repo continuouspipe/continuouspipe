@@ -13,5 +13,10 @@
         <service id="app.controller.build_logs" class="AppBundle\Controller\BuildLogsController">
             <argument type="service" id="builder.logging.log_aggregator" />
         </service>
+
+        <service id="builder.request.build_request_param_converter" class="AppBundle\Request\ParamConverter\BuildRequestParamConverter">
+            <argument type="service" id="jms_serializer" />
+            <tag name="request.param_converter" priority="0" converter="build_request" />
+        </service>
     </services>
 </container>

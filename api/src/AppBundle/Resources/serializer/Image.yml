@@ -1,6 +1,0 @@
-Builder\Image:
-    properties:
-        name:
-            type: string
-        tag:
-            type: string

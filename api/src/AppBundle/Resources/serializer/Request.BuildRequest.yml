@@ -1,6 +1,0 @@
-Builder\Request\BuildRequest:
-    properties:
-        repository:
-            type: Builder\Repository
-        image:
-            type: Builder\Image
