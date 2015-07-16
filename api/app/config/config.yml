@@ -105,3 +105,6 @@ fos_rest:
 
 sensio_framework_extra:
     view:    { annotations: false }
+
+event_bus:
+    logging: ~

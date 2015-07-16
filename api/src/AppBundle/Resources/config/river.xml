@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Command handlers -->
+        <service id="river.handler.start_tide" class="ContinuousPipe\River\Handler\StartTideHandler">
+            <argument type="service" id="simple_bus.event_bus" />
+            <tag name="tactician.handler" command="ContinuousPipe\River\Command\StartTideCommand" />
+        </service>
+
+        <!-- Event subscribers -->
+        <service id="river.listener.code_pushed" class="ContinuousPipe\River\EventListener\External\CodePushedListener">
+            <argument type="service" id="tactician.commandbus" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\External\CodePushedEvent"/>
+        </service>
+        <service id="river.listener.tide_started" class="ContinuousPipe\River\EventListener\TideStartedHandler">
+            <argument type="service" id="tactician.commandbus" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted"/>
+        </service>
+    </services>
+</container>

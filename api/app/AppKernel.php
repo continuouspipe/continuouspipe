@@ -20,6 +20,9 @@ class AppKernel extends Kernel
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
             new ContinuousPipe\SecurityBundle\ContinuousPipeSecurityBundle(),
             new FOS\RestBundle\FOSRestBundle(),
+            new League\Tactician\Bundle\TacticianBundle(),
+            new SimpleBus\SymfonyBridge\SimpleBusCommandBusBundle(),
+            new SimpleBus\SymfonyBridge\SimpleBusEventBusBundle(),
             new AppBundle\AppBundle(),
         );
 
