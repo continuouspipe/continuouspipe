@@ -13,10 +13,5 @@
             <argument type="service" id="repository_river.github.webhook_manager" />
             <argument type="service" id="repository_river.user_repository_repository" />
         </service>
-
-        <service id="builder.request.build_request_param_converter" class="AppBundle\Request\ParamConverter\BuildRequestParamConverter">
-            <argument type="service" id="jms_serializer" />
-            <tag name="request.param_converter" priority="0" converter="build_request" />
-        </service>
     </services>
 </container>
