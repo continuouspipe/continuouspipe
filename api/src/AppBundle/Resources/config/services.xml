@@ -24,9 +24,5 @@
         <service id="app.controller.logged_in" class="AppBundle\Controller\LoggedInController">
             <argument type="service" id="app.security.authentication_provider" />
         </service>
-        <service id="app.controller.user" class="AppBundle\Controller\UserController">
-            <argument type="service" id="app.repository.security_user" />
-            <argument type="service" id="jms_serializer" />
-        </service>
     </services>
 </container>
