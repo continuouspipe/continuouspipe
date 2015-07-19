@@ -28,7 +28,7 @@ class UserDockerRegistryCredentialsController
 
     /**
      * @Route("/user/{email}/credentials/docker-registry/{server}", methods={"GET"})
-     * @ParamConverter("user", converter="user")
+     * @ParamConverter("user", converter="user", options={"byEmail"="email"})
      * @View
      */
     public function getValidAction(User $user, $server)

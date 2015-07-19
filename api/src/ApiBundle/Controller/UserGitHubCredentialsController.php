@@ -14,7 +14,7 @@ class UserGitHubCredentialsController
 {
     /**
      * @Route("/user/{email}/credentials/github/valid", methods={"GET"})
-     * @ParamConverter("user", converter="user")
+     * @ParamConverter("user", converter="user", options={"byEmail"="email"})
      * @View
      */
     public function getValidAction(User $user)

@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Authenticator\Infrastructure\Request\ParamConverter;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
+use ContinuousPipe\User\SecurityUser;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +40,7 @@ class UserParamConverter implements ParamConverterInterface
             $email = $request->get($options['byEmail']);
             $securityUser = $this->securityUserRepository->findOneByEmail($email);
         } elseif (null !== ($token = $this->tokenStorage->getToken())) {
-            if (null === ($securityUser = $token->getUser())) {
+            if (!(($securityUser = $token->getUser()) instanceof SecurityUser)) {
                 throw new \RuntimeException('No logged-in user');
             }
         } else {

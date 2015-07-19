@@ -14,7 +14,7 @@ class UserController
 {
     /**
      * @Route("/user/{email}", methods={"GET"})
-     * @ParamConverter("user", converter="user")
+     * @ParamConverter("user", converter="user", options={"byEmail"="email"})
      * @View
      */
     public function getByEmailAction(User $user)
