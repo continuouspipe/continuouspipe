@@ -2,10 +2,8 @@
 
 namespace AppBundle\Form\Type;
 
-use ContinuousPipe\User\DockerRegistryCredentials;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DockerRegistryCredentialsFormType extends AbstractType

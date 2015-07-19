@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\Authenticator\DockerRegistryCredentialsRepository;
 use ContinuousPipe\User\User;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -36,7 +35,7 @@ class AccountController
     {
         return [
             'dockerRegistryCredentials' => $this->dockerRegistryCredentialsRepository->findByUser($user),
-            'user' => $user
+            'user' => $user,
         ];
     }
 }

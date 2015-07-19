@@ -4,13 +4,11 @@ namespace AppBundle\Controller;
 
 use AppBundle\Form\Type\DockerRegistryCredentialsFormType;
 use ContinuousPipe\Authenticator\DockerRegistryCredentialsRepository;
-use ContinuousPipe\User\DockerRegistryCredentials;
 use ContinuousPipe\User\User;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -35,8 +33,8 @@ class DockerRegistryCredentialsController
 
     /**
      * @param DockerRegistryCredentialsRepository $dockerRegistryCredentialsRepository
-     * @param FormFactoryInterface $formFactory
-     * @param UrlGeneratorInterface $urlGenerator
+     * @param FormFactoryInterface                $formFactory
+     * @param UrlGeneratorInterface               $urlGenerator
      */
     public function __construct(DockerRegistryCredentialsRepository $dockerRegistryCredentialsRepository, FormFactoryInterface $formFactory, UrlGeneratorInterface $urlGenerator)
     {

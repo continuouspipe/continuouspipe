@@ -43,7 +43,7 @@ class DoctrineDockerRegistryCredentialsRepository implements DockerRegistryCrede
             'userUsername' => $user->getEmail(),
         ]);
 
-        return array_map(function(UserDockerRegistryCredentialsDto $dto) {
+        return array_map(function (UserDockerRegistryCredentialsDto $dto) {
             return $dto->credentials;
         }, $credentialsDtos);
     }
@@ -67,16 +67,18 @@ class DoctrineDockerRegistryCredentialsRepository implements DockerRegistryCrede
     }
 
     /**
-     * @param User $user
+     * @param User   $user
      * @param string $serverAddress
+     *
      * @return UserDockerRegistryCredentialsDto
+     *
      * @throws CredentialsNotFound
      */
     private function getDtoByUserAndServerAddress(User $user, $serverAddress)
     {
         $credentials = $this->entityManager->getRepository(self::DTO_CLASS)->findOneBy([
             'userUsername' => $user->getEmail(),
-            'credentials.serverAddress' => $serverAddress
+            'credentials.serverAddress' => $serverAddress,
         ]);
 
         if (null === $credentials) {

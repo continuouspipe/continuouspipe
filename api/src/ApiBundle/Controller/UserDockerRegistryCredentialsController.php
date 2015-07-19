@@ -3,12 +3,9 @@
 namespace ApiBundle\Controller;
 
 use ContinuousPipe\Authenticator\DockerRegistryCredentialsRepository;
-use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
-use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**

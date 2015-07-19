@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine\Entity;
 
 use ContinuousPipe\User\DockerRegistryCredentials;
-use ContinuousPipe\User\User;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -16,7 +15,7 @@ class UserDockerRegistryCredentialsDto
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @var integer
+     * @var int
      */
     public $id;
 

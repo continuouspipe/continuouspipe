@@ -21,7 +21,7 @@ class UserParamConverter implements ParamConverterInterface
 
     /**
      * @param SecurityUserRepository $securityUserRepository
-     * @param TokenStorageInterface $tokenStorage
+     * @param TokenStorageInterface  $tokenStorage
      */
     public function __construct(SecurityUserRepository $securityUserRepository, TokenStorageInterface $tokenStorage)
     {
@@ -38,7 +38,7 @@ class UserParamConverter implements ParamConverterInterface
         if (array_key_exists('byEmail', $options)) {
             $email = $request->get($options['byEmail']);
             $securityUser = $this->securityUserRepository->findOneByEmail($email);
-        } else if (null !== ($token = $this->tokenStorage->getToken())) {
+        } elseif (null !== ($token = $this->tokenStorage->getToken())) {
             if (null === ($securityUser = $token->getUser())) {
                 throw new \RuntimeException('No logged-in user');
             }
