@@ -20,4 +20,10 @@ interface DockerRegistryCredentialsRepository
      * @return DockerRegistryCredentials[]
      */
     public function findByUser(User $user);
+
+    /**
+     * @param DockerRegistryCredentials $credentials
+     * @param User $user
+     */
+    public function save(DockerRegistryCredentials $credentials, User $user);
 }

@@ -4,8 +4,12 @@
 <h2>Docker Registry accounts</h2>
 <ul>
     {% for credentials in dockerRegistryCredentials %}
-    <li><strong>{{ credentials.server }}</strong> {{ credentials.username }}</li>
+    <li>
+        <a href="{{ path('credentials_docker_registry', {'serverAddress': credentials.serverAddress}) }}">
+            <strong>{{ credentials.serverAddress }}</strong> {{ credentials.username }}
+        </a>
+    </li>
     {% endfor %}
 </ul>
-<a href="">Create new credentials</a>
+<a href="{{ path('credentials_docker_registry_add') }}">Create new credentials</a>
 {% endblock %}
