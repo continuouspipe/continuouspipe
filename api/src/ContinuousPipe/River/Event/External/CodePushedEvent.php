@@ -20,7 +20,7 @@ class CodePushedEvent
 
     /**
      * @param CodeRepository $repository
-     * @param CodeReference $codeReference
+     * @param CodeReference  $codeReference
      */
     public function __construct(CodeRepository $repository, CodeReference $codeReference)
     {

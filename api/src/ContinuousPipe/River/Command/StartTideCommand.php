@@ -17,7 +17,7 @@ class StartTideCommand
     private $codeReference;
 
     /**
-     * @param Flow $flow
+     * @param Flow          $flow
      * @param CodeReference $codeReference
      */
     public function __construct(Flow $flow, CodeReference $codeReference)

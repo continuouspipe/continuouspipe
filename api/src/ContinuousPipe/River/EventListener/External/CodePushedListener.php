@@ -5,7 +5,6 @@ namespace ContinuousPipe\River\EventListener\External;
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\Event\External\CodePushedEvent;
 use ContinuousPipe\River\Repository\FlowRepository;
-use ContinuousPipe\River\Tide;
 use League\Tactician\CommandBus;
 
 class CodePushedListener
@@ -20,7 +19,7 @@ class CodePushedListener
     private $flowRepository;
 
     /**
-     * @param CommandBus $commandBus
+     * @param CommandBus     $commandBus
      * @param FlowRepository $flowRepository
      */
     public function __construct(CommandBus $commandBus, FlowRepository $flowRepository)

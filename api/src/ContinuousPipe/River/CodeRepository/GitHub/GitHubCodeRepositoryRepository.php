@@ -7,7 +7,6 @@ use Github\HttpClient\Message\ResponseMediator;
 use Github\ResultPager;
 use GitHub\WebHook\Model\Repository;
 use JMS\Serializer\SerializerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
 {
@@ -49,7 +48,7 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
             'json'
         );
 
-        return array_map(function(Repository $repository) {
+        return array_map(function (Repository $repository) {
             return new GitHubCodeRepository($repository);
         }, $repositories);
     }

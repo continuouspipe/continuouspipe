@@ -18,7 +18,7 @@ class SetupWebHookCommand
 
     /**
      * @param CodeRepository $repository
-     * @param User $user
+     * @param User           $user
      */
     public function __construct(CodeRepository $repository, User $user)
     {

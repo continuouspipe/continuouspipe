@@ -5,6 +5,10 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="river.repository.tide" class="ContinuousPipe\River\Repository\EventBusTideRepository">
+            <argument type="service" id="river.event_store.in_memory" />
+        </service>
+
         <!-- Command handlers -->
         <service id="river.handler.start_tide" class="ContinuousPipe\River\Handler\StartTideHandler">
             <argument type="service" id="simple_bus.event_bus" />
@@ -12,6 +16,7 @@
         </service>
         <service id="river.handler.build_image" class="ContinuousPipe\River\Handler\BuildImageHandler">
             <argument type="service" id="builder.client" />
+            <argument type="service" id="river.repository.tide" />
             <argument type="service" id="simple_bus.event_bus" />
             <tag name="tactician.handler" command="ContinuousPipe\River\Command\BuildImageCommand" />
         </service>

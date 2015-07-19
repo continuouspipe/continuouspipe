@@ -24,7 +24,7 @@ class DoctrineFlowRepository implements FlowRepository
     private $userRepository;
 
     /**
-     * @param EntityManager $entityManager
+     * @param EntityManager  $entityManager
      * @param UserRepository $userRepository
      */
     public function __construct(EntityManager $entityManager, UserRepository $userRepository)
@@ -61,7 +61,7 @@ class DoctrineFlowRepository implements FlowRepository
     {
         $repository = $this->getEntityRepository();
         $flowDto = $repository->findOneBy([
-            'codeRepositoryIdentifier' => $identifier
+            'codeRepositoryIdentifier' => $identifier,
         ]);
 
         if (null === $flowDto) {

@@ -2,12 +2,8 @@
 
 namespace ContinuousPipe\River\Event;
 
-
-use ContinuousPipe\Builder\Repository;
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\User\User;
 use Rhumsaa\Uuid\Uuid;
 
 class TideStarted implements TideEvent
@@ -26,8 +22,8 @@ class TideStarted implements TideEvent
     private $codeReference;
 
     /**
-     * @param Uuid $tideUuid
-     * @param Flow $flow
+     * @param Uuid          $tideUuid
+     * @param Flow          $flow
      * @param CodeReference $codeReference
      */
     public function __construct(Uuid $tideUuid, Flow $flow, CodeReference $codeReference)

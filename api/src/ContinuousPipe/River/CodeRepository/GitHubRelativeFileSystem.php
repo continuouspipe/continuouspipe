@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
-use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use Github\Client;
 
@@ -23,9 +22,9 @@ class GitHubRelativeFileSystem implements RelativeFileSystem
     private $reference;
 
     /**
-     * @param Client $client
+     * @param Client                $client
      * @param RepositoryDescription $repositoryDescription
-     * @param string $reference
+     * @param string                $reference
      */
     public function __construct(Client $client, RepositoryDescription $repositoryDescription, $reference = null)
     {

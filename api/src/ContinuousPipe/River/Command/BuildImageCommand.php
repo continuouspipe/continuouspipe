@@ -17,7 +17,7 @@ class BuildImageCommand
     private $tideUuid;
 
     /**
-     * @param Uuid $tideUuid
+     * @param Uuid         $tideUuid
      * @param BuildRequest $buildRequest
      */
     public function __construct(Uuid $tideUuid, BuildRequest $buildRequest)

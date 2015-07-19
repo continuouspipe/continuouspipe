@@ -12,6 +12,7 @@
         <service id="builder.client" class="ContinuousPipe\Builder\Client\BuilderClient">
             <argument type="service" id="builder.http_client" />
             <argument type="service" id="jms_serializer" />
+            <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
             <argument>%builder_base_url%</argument>
         </service>
     </services>

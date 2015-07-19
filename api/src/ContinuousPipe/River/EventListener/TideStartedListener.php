@@ -64,8 +64,10 @@ class TideStartedListener
 
     /**
      * @param CodeRepository $repository
-     * @param CodeReference $codeReference
+     * @param CodeReference  $codeReference
+     *
      * @return \ContinuousPipe\Builder\Request\BuildRequest[]
+     *
      * @throws CodeRepository\InvalidRepositoryAddress
      */
     private function createBuildRequests(CodeRepository $repository, CodeReference $codeReference)

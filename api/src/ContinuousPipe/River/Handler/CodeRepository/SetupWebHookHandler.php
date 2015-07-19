@@ -20,7 +20,7 @@ class SetupWebHookHandler
 
     /**
      * @param RepositoryWebHookManager $repositoryWebHookManager
-     * @param MessageBus $eventBus
+     * @param MessageBus               $eventBus
      */
     public function __construct(RepositoryWebHookManager $repositoryWebHookManager, MessageBus $eventBus)
     {

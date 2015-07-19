@@ -23,8 +23,8 @@ class Flow
     private $repository;
 
     /**
-     * @param Uuid $uuid
-     * @param User $user
+     * @param Uuid           $uuid
+     * @param User           $user
      * @param CodeRepository $repository
      */
     public function __construct(Uuid $uuid, User $user, CodeRepository $repository)
@@ -35,8 +35,9 @@ class Flow
     }
 
     /**
-     * @param User $user
+     * @param User           $user
      * @param CodeRepository $repository
+     *
      * @return Flow
      */
     public static function fromUserAndCodeRepository(User $user, CodeRepository $repository)

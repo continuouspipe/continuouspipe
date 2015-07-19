@@ -10,8 +10,6 @@ use ContinuousPipe\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use SimpleBus\Message\Bus\MessageBus;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
@@ -30,7 +28,7 @@ class CreateFlowController
 
     /**
      * @param FlowRepository $flowRepository
-     * @param MessageBus $eventBus
+     * @param MessageBus     $eventBus
      */
     public function __construct(FlowRepository $flowRepository, MessageBus $eventBus)
     {

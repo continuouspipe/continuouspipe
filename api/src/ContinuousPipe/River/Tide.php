@@ -17,12 +17,12 @@ class Tide
     /**
      * @var TideEvent[]
      */
-    private $events;
+    private $events = [];
 
     /**
      * @var TideEvent[]
      */
-    private $newEvents;
+    private $newEvents = [];
 
     /**
      * @var CodeRepository
@@ -40,27 +40,36 @@ class Tide
     private $user;
 
     /**
-     * @param Uuid $uuid
-     */
-    private function __construct(Uuid $uuid)
-    {
-        $this->uuid = $uuid;
-        $this->events = [];
-        $this->newEvents = [];
-    }
-
-    /**
      * Create a new tide.
      *
-     * @param Flow $flow
+     * @param Flow          $flow
      * @param CodeReference $codeReference
+     *
      * @return Tide
      */
     public static function createFromFlow(Flow $flow, CodeReference $codeReference)
     {
-        $uuid = Uuid::uuid1();
-        $tide = new self($uuid);
-        $tide->apply(new TideStarted($uuid, $flow, $codeReference));
+        $tide = new self();
+        $tide->apply(new TideStarted(Uuid::uuid1(), $flow, $codeReference));
+
+        return $tide;
+    }
+
+    /**
+     * Create a tide based on this events.
+     *
+     * @param TideEvent[] $events
+     *
+     * @return Tide
+     */
+    public static function fromEvents(array $events)
+    {
+        $tide = new self();
+        foreach ($events as $event) {
+            $tide->apply($event);
+        }
+
+        $tide->popNewEvents();
 
         return $tide;
     }
@@ -73,6 +82,7 @@ class Tide
     public function apply(TideEvent $event)
     {
         if ($event instanceof TideStarted) {
+            $this->uuid = $event->getTideUuid();
             $this->codeRepository = $event->getFlow()->getRepository();
             $this->user = $event->getFlow()->getUser();
             $this->codeReference = $event->getCodeReference();
@@ -89,6 +99,7 @@ class Tide
     {
         $events = $this->newEvents;
         $this->newEvents = [];
+
         return $events;
     }
 

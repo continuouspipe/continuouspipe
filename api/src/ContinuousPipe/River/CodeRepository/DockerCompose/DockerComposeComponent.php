@@ -19,6 +19,7 @@ class DockerComposeComponent
 
     /**
      * @param array $parsed
+     *
      * @return DockerComposeComponent
      */
     public static function fromParsed(array $parsed)
