@@ -24,5 +24,8 @@
         <service id="app.controller.logged_in" class="AppBundle\Controller\LoggedInController">
             <argument type="service" id="app.security.authentication_provider" />
         </service>
+        <service id="app.controller.account" class="AppBundle\Controller\AccountController">
+            <argument type="service" id="security.token_storage" />
+        </service>
     </services>
 </container>
