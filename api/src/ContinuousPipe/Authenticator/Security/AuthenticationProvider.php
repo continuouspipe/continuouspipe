@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Security;
+namespace ContinuousPipe\Authenticator\Security;
 
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Symfony\Component\HttpFoundation\Cookie;

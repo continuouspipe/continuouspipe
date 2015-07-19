@@ -2,7 +2,7 @@
 
 namespace ApiBundle\Controller;
 
-use AppBundle\Security\User\SecurityUserRepository;
+use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;

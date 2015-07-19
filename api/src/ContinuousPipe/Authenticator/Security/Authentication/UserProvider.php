@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle\Security\Authentication;
+namespace ContinuousPipe\Authenticator\Security\Authentication;
 
-use AppBundle\Security\User\SecurityUserRepository;
-use AppBundle\Security\User\UserNotFound;
+use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use ContinuousPipe\User\GitHubCredentials;

@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle\Infrastructure\Doctrine;
+namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine;
 
-use AppBundle\Security\User\SecurityUserRepository;
-use AppBundle\Security\User\UserNotFound;
+use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use Doctrine\ORM\EntityManager;
 use ContinuousPipe\User\SecurityUser;
 

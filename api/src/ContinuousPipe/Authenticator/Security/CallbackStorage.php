@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Security;
+namespace ContinuousPipe\Authenticator\Security;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Security;
+namespace ContinuousPipe\Authenticator\Security;
 
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpFoundation\Session\Storage\SessionStorageInterface;

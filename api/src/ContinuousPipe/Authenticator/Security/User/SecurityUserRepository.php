@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Security\User;
+namespace ContinuousPipe\Authenticator\Security\User;
 
 use ContinuousPipe\User\SecurityUser;
 
