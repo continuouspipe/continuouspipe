@@ -2,9 +2,10 @@
 
 namespace ApiBundle\Controller;
 
-use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
+use ContinuousPipe\User\SecurityUser;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations\View;
 
@@ -14,26 +15,12 @@ use FOS\RestBundle\Controller\Annotations\View;
 class UserController
 {
     /**
-     * @var SecurityUserRepository
-     */
-    private $userRepository;
-
-    /**
-     * @param SecurityUserRepository $userRepository
-     */
-    public function __construct(SecurityUserRepository $userRepository)
-    {
-        $this->userRepository = $userRepository;
-    }
-
-    /**
      * @Route("/user/{email}", methods={"GET"})
+     * @ParamConverter("securityUser", converter="security_user")
      * @View
      */
-    public function getByEmailAction($email)
+    public function getByEmailAction(SecurityUser $securityUser)
     {
-        $securityUser = $this->userRepository->findOneByEmail($email);
-
         return $securityUser->getUser();
     }
 }
