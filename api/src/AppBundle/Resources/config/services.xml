@@ -28,6 +28,7 @@
         </service>
         <service id="app.controller.account" class="AppBundle\Controller\AccountController">
             <argument type="service" id="security.token_storage" />
+            <argument type="service" id="app.repository.docker_registry_credentials" />
         </service>
     </services>
 </container>

@@ -13,5 +13,11 @@ interface DockerRegistryCredentialsRepository
      * @return DockerRegistryCredentials
      * @throws CredentialsNotFound
      */
-    public function findByUserAndServer(User $user, $serverAddress);
+    public function findOneByUserAndServer(User $user, $serverAddress);
+
+    /**
+     * @param User $user
+     * @return DockerRegistryCredentials[]
+     */
+    public function findByUser(User $user);
 }

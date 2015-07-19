@@ -1,4 +1,11 @@
 {% extends "::base.html.twig" %}
 {% block body %}
-<h1>Welcome {{ user.username }} !</h1>
+<h1>Welcome {{ user.email }} !</h1>
+<h2>Docker Registry accounts</h2>
+<ul>
+    {% for credentials in dockerRegistryCredentials %}
+    <li><strong>{{ credentials.server }}</strong> {{ credentials.username }}</li>
+    {% endfor %}
+</ul>
+<a href="">Create new credentials</a>
 {% endblock %}

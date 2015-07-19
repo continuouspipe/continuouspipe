@@ -35,7 +35,7 @@ class UserDockerRegistryCredentialsController
      */
     public function getValidAction(SecurityUser $securityUser, $server)
     {
-        $credentials = $this->dockerRegistryCredentialsRepository->findByUserAndServer($securityUser->getUser(), $server);
+        $credentials = $this->dockerRegistryCredentialsRepository->findOneByUserAndServer($securityUser->getUser(), $server);
 
         return $credentials;
     }
