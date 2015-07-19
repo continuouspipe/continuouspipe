@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Repository\UserRepositoryRepository;
+use ContinuousPipe\River\Repository\CodeRepositoryRepository;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,19 +16,16 @@ use FOS\RestBundle\Controller\Annotations\View;
 class UserRepositoriesController
 {
     /**
-     * @var UserRepositoryRepository
+     * @var CodeRepositoryRepository
      */
-    private $userRepositoryRepository;
+    private $codeRepositoryRepository;
 
     /**
-     * @var SerializerInterface
+     * @param CodeRepositoryRepository $codeRepositoryRepository
      */
-    private $serializer;
-
-    public function __construct(UserRepositoryRepository $userRepositoryRepository, SerializerInterface $serializer)
+    public function __construct(CodeRepositoryRepository $codeRepositoryRepository)
     {
-        $this->userRepositoryRepository = $userRepositoryRepository;
-        $this->serializer = $serializer;
+        $this->codeRepositoryRepository = $codeRepositoryRepository;
     }
 
     /**
@@ -37,8 +34,6 @@ class UserRepositoriesController
      */
     public function listAction()
     {
-        $repositories = $this->userRepositoryRepository->findByCurrentUser();
-
-        return $repositories;
+        return $this->codeRepositoryRepository->findByCurrentUser();
     }
 }

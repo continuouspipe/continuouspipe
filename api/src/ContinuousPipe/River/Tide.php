@@ -2,9 +2,9 @@
 
 namespace ContinuousPipe\River;
 
-use ContinuousPipe\Builder\Repository;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideStarted;
+use ContinuousPipe\User\User;
 use Rhumsaa\Uuid\Uuid;
 
 class Tide
@@ -25,9 +25,19 @@ class Tide
     private $newEvents;
 
     /**
-     * @var Repository
+     * @var CodeRepository
      */
-    private $repository;
+    private $codeRepository;
+
+    /**
+     * @var CodeReference
+     */
+    private $codeReference;
+
+    /**
+     * @var User
+     */
+    private $user;
 
     /**
      * @param Uuid $uuid
@@ -42,13 +52,15 @@ class Tide
     /**
      * Create a new tide.
      *
+     * @param Flow $flow
+     * @param CodeReference $codeReference
      * @return Tide
      */
-    public static function createFromRepository(Repository $repository)
+    public static function createFromFlow(Flow $flow, CodeReference $codeReference)
     {
         $uuid = Uuid::uuid1();
         $tide = new self($uuid);
-        $tide->apply(new TideStarted($uuid, $repository));
+        $tide->apply(new TideStarted($uuid, $flow, $codeReference));
 
         return $tide;
     }
@@ -61,7 +73,9 @@ class Tide
     public function apply(TideEvent $event)
     {
         if ($event instanceof TideStarted) {
-            $this->repository = $event->getRepository();
+            $this->codeRepository = $event->getFlow()->getRepository();
+            $this->user = $event->getFlow()->getUser();
+            $this->codeReference = $event->getCodeReference();
         }
 
         $this->newEvents[] = $event;
@@ -87,10 +101,26 @@ class Tide
     }
 
     /**
-     * @return Repository
+     * @return CodeRepository
      */
     public function getCodeRepository()
     {
-        return $this->repository;
+        return $this->codeRepository;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return CodeReference
+     */
+    public function getCodeReference()
+    {
+        return $this->codeReference;
     }
 }

@@ -6,15 +6,20 @@
 
     <services>
         <service id="app.controller.user_repositories" class="AppBundle\Controller\UserRepositoriesController">
-            <argument type="service" id="repository_river.user_repository_repository" />
-            <argument type="service" id="jms_serializer" />
+            <argument type="service" id="repository_river.code_repository_repository" />
         </service>
-        <service id="app.controller.setup_repository" class="AppBundle\Controller\SetupRepositoryController">
-            <argument type="service" id="repository_river.github.webhook_manager" />
-            <argument type="service" id="repository_river.user_repository_repository" />
+        <service id="app.controller.create_flow" class="AppBundle\Controller\CreateFlowController">
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="simple_bus.event_bus" />
         </service>
         <service id="app.controller.github_webhook" class="AppBundle\Controller\GitHubWebHookController">
             <argument type="service" id="simple_bus.event_bus" />
+        </service>
+
+        <service id="app.request.param_converter.code_repository" class="AppBundle\Request\ParamConverter\CodeRepositoryParamConverter">
+            <argument type="service" id="repository_river.code_repository_repository" />
+
+            <tag name="request.param_converter" converter="code-repository" />
         </service>
     </services>
 </container>

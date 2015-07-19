@@ -6,6 +6,8 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Repository;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
+use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\DockerCompose\DockerComposeComponent;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHubRelativeFileSystem;
@@ -47,7 +49,8 @@ class TideStartedListener
      */
     public function notify(TideStarted $event)
     {
-        $buildRequests = $this->createBuildRequests($event->getRepository());
+        $codeRepository = $event->getFlow()->getRepository();
+        $buildRequests = $this->createBuildRequests($codeRepository, $event->getCodeReference());
         if (empty($buildRequests)) {
             throw new \RuntimeException('No image to build');
         }
@@ -60,19 +63,20 @@ class TideStartedListener
     }
 
     /**
-     * @param Repository $repository
-     * @return BuildRequest[]
-     * @throws \ContinuousPipe\River\CodeRepository\InvalidRepositoryAddress
+     * @param CodeRepository $repository
+     * @param CodeReference $codeReference
+     * @return \ContinuousPipe\Builder\Request\BuildRequest[]
+     * @throws CodeRepository\InvalidRepositoryAddress
      */
-    private function createBuildRequests(Repository $repository)
+    private function createBuildRequests(CodeRepository $repository, CodeReference $codeReference)
     {
         $dockerComposeComponents = $this->dockerComposeProjectParser->parse(
             new GitHubRelativeFileSystem(
                 $this->gitHubClientFactory->createAnonymous(),
                 $this->repositoryAddressDescriptor->getDescription($repository->getAddress()),
-                $repository->getBranch()
+                $codeReference->getReference()
             ),
-            $repository->getBranch()
+            $codeReference->getReference()
         );
 
         $buildRequests = [];
@@ -83,9 +87,10 @@ class TideStartedListener
             }
 
             $imageName = $dockerComposeComponent->getImageName();
-            $image = new Image($imageName, $repository->getBranch());
+            $image = new Image($imageName, $codeReference->getReference());
 
-            $buildRequests[] = new BuildRequest($repository, $image);
+            $buildRequestRepository = new Repository($repository->getAddress(), $codeReference->getReference());
+            $buildRequests[] = new BuildRequest($buildRequestRepository, $image);
         }
 
         return $buildRequests;

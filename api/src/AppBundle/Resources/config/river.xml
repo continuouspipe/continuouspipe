@@ -19,6 +19,7 @@
         <!-- Event subscribers -->
         <service id="river.listener.code_pushed" class="ContinuousPipe\River\EventListener\External\CodePushedListener">
             <argument type="service" id="tactician.commandbus" />
+            <argument type="service" id="river.repository.flow" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\External\CodePushedEvent"/>
         </service>
         <service id="river.listener.tide_started" class="ContinuousPipe\River\EventListener\TideStartedListener">

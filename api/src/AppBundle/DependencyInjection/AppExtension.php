@@ -19,6 +19,7 @@ class AppExtension extends Extension
         $loader->load('github.xml');
         $loader->load('docker-compose.xml');
         $loader->load('builder.xml');
+        $loader->load('flow.xml');
         $loader->load('river.xml');
     }
 }

@@ -32,7 +32,7 @@
             <argument type="service" id="security.token_storage" />
             <argument type="service" id="repository_river.github.http_client" />
         </service>
-        <service id="repository_river.user_repository_repository" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubUserRepositoryRepository">
+        <service id="repository_river.code_repository_repository" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepositoryRepository">
             <argument type="service" id="repository_river.github.client_factory" />
             <argument type="service" id="jms_serializer" />
         </service>

@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.repository.flow" class="ContinuousPipe\River\Infrastructure\Doctrine\DoctrineFlowRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="security.user_repository" />
+        </service>
+        <service id="river.code_repository.webhook_manager" class="ContinuousPipe\River\CodeRepository\WebHook\RepositoryWebHookManager">
+            <argument type="service" id="repository_river.github.webhook_manager" />
+        </service>
+
+        <!-- Command handlers -->
+        <service id="river.handler.code_repository.setup_webhook" class="ContinuousPipe\River\Handler\CodeRepository\SetupWebHookHandler">
+            <argument type="service" id="river.code_repository.webhook_manager" />
+            <argument type="service" id="simple_bus.event_bus" />
+
+            <tag name="tactician.handler" command="ContinuousPipe\River\Command\CodeRepository\SetupWebHookCommand" />
+        </service>
+
+        <!-- Event subscribers -->
+        <service id="river.listener.flow_created" class="ContinuousPipe\River\EventListener\FlowCreatedListener">
+            <argument type="service" id="tactician.commandbus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\FlowCreated"/>
+        </service>
+    </services>
+</container>

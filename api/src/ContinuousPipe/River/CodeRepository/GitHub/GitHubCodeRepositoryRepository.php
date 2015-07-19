@@ -2,15 +2,14 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
-use AppBundle\Repository\UserRepositoryRepository;
+use ContinuousPipe\River\Repository\CodeRepositoryRepository;
 use Github\HttpClient\Message\ResponseMediator;
 use Github\ResultPager;
 use GitHub\WebHook\Model\Repository;
 use JMS\Serializer\SerializerInterface;
-use ContinuousPipe\User\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class GitHubUserRepositoryRepository implements UserRepositoryRepository
+class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
 {
     /**
      * @var GitHubClientFactory
@@ -22,6 +21,10 @@ class GitHubUserRepositoryRepository implements UserRepositoryRepository
      */
     private $serializer;
 
+    /**
+     * @param GitHubClientFactory $gitHubClientFactory
+     * @param SerializerInterface $serializer
+     */
     public function __construct(GitHubClientFactory $gitHubClientFactory, SerializerInterface $serializer)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
@@ -46,13 +49,15 @@ class GitHubUserRepositoryRepository implements UserRepositoryRepository
             'json'
         );
 
-        return $repositories;
+        return array_map(function(Repository $repository) {
+            return new GitHubCodeRepository($repository);
+        }, $repositories);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findById($id)
+    public function findByIdentifier($id)
     {
         $response = $this->gitHubClientFactory->createClientForCurrentUser()->getHttpClient()->get(sprintf('/repositories/%d', $id));
         $foundRepository = ResponseMediator::getContent($response);
@@ -60,6 +65,6 @@ class GitHubUserRepositoryRepository implements UserRepositoryRepository
 
         $repository = $this->serializer->deserialize($rawRepository, Repository::class, 'json');
 
-        return $repository;
+        return new GitHubCodeRepository($repository);
     }
 }

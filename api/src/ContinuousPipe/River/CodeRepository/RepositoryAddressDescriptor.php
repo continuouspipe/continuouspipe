@@ -19,6 +19,11 @@ class RepositoryAddressDescriptor
             return new RepositoryDescription($matches[1], $matches[2]);
         }
 
+        $apiPattern = sprintf('#https://api\.github\.com/repos/%s/%s#', self::USER_REGEX, self::REPOSITORY_REGEX);
+        if (preg_match($apiPattern, $address, $matches)) {
+            return new RepositoryDescription($matches[1], $matches[2]);
+        }
+
         throw new InvalidRepositoryAddress();
     }
 }

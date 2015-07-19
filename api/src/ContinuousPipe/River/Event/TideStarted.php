@@ -4,6 +4,10 @@ namespace ContinuousPipe\River\Event;
 
 
 use ContinuousPipe\Builder\Repository;
+use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\Flow;
+use ContinuousPipe\User\User;
 use Rhumsaa\Uuid\Uuid;
 
 class TideStarted implements TideEvent
@@ -12,20 +16,25 @@ class TideStarted implements TideEvent
      * @var Uuid
      */
     private $tideUuid;
-
     /**
-     * @var Repository
+     * @var Flow
      */
-    private $repository;
+    private $flow;
+    /**
+     * @var CodeReference
+     */
+    private $codeReference;
 
     /**
      * @param Uuid $tideUuid
-     * @param Repository $repository
+     * @param Flow $flow
+     * @param CodeReference $codeReference
      */
-    public function __construct(Uuid $tideUuid, Repository $repository)
+    public function __construct(Uuid $tideUuid, Flow $flow, CodeReference $codeReference)
     {
         $this->tideUuid = $tideUuid;
-        $this->repository = $repository;
+        $this->flow = $flow;
+        $this->codeReference = $codeReference;
     }
 
     /**
@@ -37,10 +46,18 @@ class TideStarted implements TideEvent
     }
 
     /**
-     * @return Repository
+     * @return Flow
      */
-    public function getRepository()
+    public function getFlow()
     {
-        return $this->repository;
+        return $this->flow;
+    }
+
+    /**
+     * @return CodeReference
+     */
+    public function getCodeReference()
+    {
+        return $this->codeReference;
     }
 }
