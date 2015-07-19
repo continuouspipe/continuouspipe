@@ -7,6 +7,9 @@
     <services>
         <service id="api.controller.user" class="ApiBundle\Controller\UserController" />
         <service id="api.controller.user_github_credentials" class="ApiBundle\Controller\UserGitHubCredentialsController" />
+        <service id="api.controller.user_docker_registry_credentials" class="ApiBundle\Controller\UserDockerRegistryCredentialsController">
+            <argument type="service" id="app.repository.docker_registry_credentials" />
+        </service>
 
         <service id="api.request.param_converter.security_user" class="ApiBundle\Request\ParamConverter\SecurityUserParamConverter">
             <argument type="service" id="app.repository.security_user" />

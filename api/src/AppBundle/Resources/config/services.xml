@@ -8,7 +8,9 @@
         <service id="app.repository.security_user" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineSecurityUserRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
-
+        <service id="app.repository.docker_registry_credentials" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineDockerRegistryCredentialsRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
         <service id="app.security.user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\UserProvider">
             <argument type="service" id="app.repository.security_user" />
         </service>
