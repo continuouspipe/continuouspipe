@@ -4,6 +4,7 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Authenticator\DockerRegistryCredentialsRepository;
 use ContinuousPipe\User\SecurityUser;
+use ContinuousPipe\User\User;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -30,12 +31,12 @@ class UserDockerRegistryCredentialsController
 
     /**
      * @Route("/user/{email}/credentials/docker-registry/{server}", methods={"GET"})
-     * @ParamConverter("securityUser", converter="security_user")
+     * @ParamConverter("user", converter="user")
      * @View
      */
-    public function getValidAction(SecurityUser $securityUser, $server)
+    public function getValidAction(User $user, $server)
     {
-        $credentials = $this->dockerRegistryCredentialsRepository->findOneByUserAndServer($securityUser->getUser(), $server);
+        $credentials = $this->dockerRegistryCredentialsRepository->findOneByUserAndServer($user, $server);
 
         return $credentials;
     }

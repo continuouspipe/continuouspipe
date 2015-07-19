@@ -2,7 +2,7 @@
 
 namespace ApiBundle\Controller;
 
-use ContinuousPipe\User\SecurityUser;
+use ContinuousPipe\User\User;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -16,11 +16,11 @@ class UserController
 {
     /**
      * @Route("/user/{email}", methods={"GET"})
-     * @ParamConverter("securityUser", converter="security_user")
+     * @ParamConverter("user", converter="user")
      * @View
      */
-    public function getByEmailAction(SecurityUser $securityUser)
+    public function getByEmailAction(User $user)
     {
-        return $securityUser->getUser();
+        return $user;
     }
 }

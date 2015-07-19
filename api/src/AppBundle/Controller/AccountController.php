@@ -3,9 +3,11 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Authenticator\DockerRegistryCredentialsRepository;
+use ContinuousPipe\User\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route(service="app.controller.account")
@@ -13,33 +15,25 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 class AccountController
 {
     /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-    /**
      * @var DockerRegistryCredentialsRepository
      */
     private $dockerRegistryCredentialsRepository;
 
     /**
-     * @param TokenStorageInterface $tokenStorage
      * @param DockerRegistryCredentialsRepository $dockerRegistryCredentialsRepository
      */
-    public function __construct(TokenStorageInterface $tokenStorage, DockerRegistryCredentialsRepository $dockerRegistryCredentialsRepository)
+    public function __construct(DockerRegistryCredentialsRepository $dockerRegistryCredentialsRepository)
     {
-        $this->tokenStorage = $tokenStorage;
         $this->dockerRegistryCredentialsRepository = $dockerRegistryCredentialsRepository;
     }
 
     /**
      * @Route("/account")
+     * @ParamConverter("user", converter="user")
      * @Template
      */
-    public function overviewAction()
+    public function overviewAction(User $user)
     {
-        $securityUser = $this->tokenStorage->getToken()->getUser();
-        $user = $securityUser->getUser();
-
         return [
             'dockerRegistryCredentials' => $this->dockerRegistryCredentialsRepository->findByUser($user),
             'user' => $user

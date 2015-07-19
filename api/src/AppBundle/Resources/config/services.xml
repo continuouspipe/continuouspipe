@@ -20,6 +20,13 @@
             <argument type="service" id="security.token_storage" />
         </service>
 
+        <service id="request.param_converter.security_user" class="ContinuousPipe\Authenticator\Infrastructure\Request\ParamConverter\UserParamConverter">
+            <argument type="service" id="app.repository.security_user" />
+            <argument type="service" id="security.token_storage" />
+
+            <tag name="request.param_converter" converter="user" />
+        </service>
+
         <service id="app.controller.authenticate" class="AppBundle\Controller\AuthenticateController">
             <argument type="service" id="app.security.authentication_provider" />
         </service>
@@ -27,7 +34,6 @@
             <argument type="service" id="app.security.authentication_provider" />
         </service>
         <service id="app.controller.account" class="AppBundle\Controller\AccountController">
-            <argument type="service" id="security.token_storage" />
             <argument type="service" id="app.repository.docker_registry_credentials" />
         </service>
     </services>

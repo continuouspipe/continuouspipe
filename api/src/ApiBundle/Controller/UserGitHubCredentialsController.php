@@ -3,6 +3,7 @@
 namespace ApiBundle\Controller;
 
 use ContinuousPipe\User\SecurityUser;
+use ContinuousPipe\User\User;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -16,11 +17,11 @@ class UserGitHubCredentialsController
 {
     /**
      * @Route("/user/{email}/credentials/github/valid", methods={"GET"})
-     * @ParamConverter("securityUser", converter="security_user")
+     * @ParamConverter("user", converter="user")
      * @View
      */
-    public function getValidAction(SecurityUser $securityUser)
+    public function getValidAction(User $user)
     {
-        return $securityUser->getUser()->getGitHubCredentials();
+        return $user->getGitHubCredentials();
     }
 }
