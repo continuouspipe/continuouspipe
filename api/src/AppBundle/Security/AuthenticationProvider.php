@@ -57,7 +57,7 @@ class AuthenticationProvider
 
         if (null === ($callback = $request->cookies->get(self::COOKIE_CALLBACK_KEY))) {
             return new Response('No callback found.', Response::HTTP_BAD_REQUEST, [
-                'X-JWT-Token' => $jwtToken
+                'X-JWT-Token' => $jwtToken,
             ]);
         }
 
