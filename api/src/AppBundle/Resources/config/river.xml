@@ -10,14 +10,23 @@
             <argument type="service" id="simple_bus.event_bus" />
             <tag name="tactician.handler" command="ContinuousPipe\River\Command\StartTideCommand" />
         </service>
+        <service id="river.handler.build_image" class="ContinuousPipe\River\Handler\BuildImageHandler">
+            <argument type="service" id="builder.client" />
+            <argument type="service" id="simple_bus.event_bus" />
+            <tag name="tactician.handler" command="ContinuousPipe\River\Command\BuildImageCommand" />
+        </service>
 
         <!-- Event subscribers -->
         <service id="river.listener.code_pushed" class="ContinuousPipe\River\EventListener\External\CodePushedListener">
             <argument type="service" id="tactician.commandbus" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\External\CodePushedEvent"/>
         </service>
-        <service id="river.listener.tide_started" class="ContinuousPipe\River\EventListener\TideStartedHandler">
+        <service id="river.listener.tide_started" class="ContinuousPipe\River\EventListener\TideStartedListener">
             <argument type="service" id="tactician.commandbus" />
+            <argument type="service" id="river.docker_compose.parser.project" />
+            <argument type="service" id="repository_river.github.client_factory" />
+            <argument type="service" id="river.github.repository_address_descriptor" />
+
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted"/>
         </service>
     </services>

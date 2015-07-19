@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.docker_compose.parser.yaml" class="ContinuousPipe\DockerCompose\Parser\YamlParser" />
+        <service id="river.docker_compose.parser.file" class="ContinuousPipe\DockerCompose\Parser\FileParser">
+            <argument type="service" id="river.docker_compose.parser.yaml" />
+        </service>
+
+        <service id="river.docker_compose.parser.project" class="ContinuousPipe\DockerCompose\Parser\ProjectParser">
+            <argument type="service" id="river.docker_compose.parser.file" />
+        </service>
+    </services>
+</container>

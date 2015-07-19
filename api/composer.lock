@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e4713d73d12840d0060fe8ee64144b85",
+    "hash": "1bf41758fc408af69bfbf9feb9916893",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -68,6 +68,56 @@
             "autoload": {
                 "psr-4": {
                     "ContinuousPipe\\Builder\\": "src/"
+                }
+            }
+        },
+        {
+            "name": "continuous-pipe/docker-compose",
+            "version": "1.0.0",
+            "dist": {
+                "type": "zip",
+                "url": "../../artifact/continuous-pipe_docker-compose_1.0.0.zip",
+                "reference": null,
+                "shasum": "7f55fedde103ee4ef8576c3e9ead48f0d8a236a5"
+            },
+            "require": {
+                "continuous-pipe/model": "*@dev",
+                "symfony/yaml": "~2.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ContinuousPipe\\DockerCompose\\": "src/"
+                }
+            },
+            "scripts": {
+                "pre-install-cmd": [
+                    "../../bin/conductor update -c ../.."
+                ],
+                "pre-update-cmd": [
+                    "../../bin/conductor update -c ../.."
+                ],
+                "pre-autoload-dump": [
+                    "../../bin/conductor symlink -c ../.."
+                ],
+                "post-update-cmd": [
+                    "../../bin/conductor fix-composer-lock -c ../.."
+                ]
+            }
+        },
+        {
+            "name": "continuous-pipe/model",
+            "version": "1.0.0",
+            "dist": {
+                "type": "zip",
+                "url": "../../artifact/continuous-pipe_model_1.0.0.zip",
+                "reference": null,
+                "shasum": "26fd475ee119c4abcbbc2b604d45caf80d5041d9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ContinuousPipe\\Model\\": "src/"
                 }
             }
         },
@@ -3837,7 +3887,8 @@
         "sroze/github-webhook": 20,
         "continuous-pipe/security-bundle": 20,
         "csa/guzzle-bundle": 0,
-        "continuous-pipe/builder-model": 20
+        "continuous-pipe/builder-model": 20,
+        "continuous-pipe/docker-compose": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

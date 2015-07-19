@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\GitHub;
+namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use Github\Client;
 use ContinuousPipe\User\User;
@@ -50,5 +50,13 @@ class GitHubClientFactory
         $securityUser = $this->tokenStorage->getToken()->getUser();
 
         return $this->createClientForUser($securityUser->getUser());
+    }
+
+    /**
+     * @return Client
+     */
+    public function createAnonymous()
+    {
+        return new Client($this->githubHttpClient);
     }
 }

@@ -2,6 +2,9 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\Builder\Repository;
+use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Event\TideStarted;
 use Rhumsaa\Uuid\Uuid;
 
 class Tide
@@ -12,9 +15,19 @@ class Tide
     private $uuid;
 
     /**
-     * @var array
+     * @var TideEvent[]
      */
     private $events;
+
+    /**
+     * @var TideEvent[]
+     */
+    private $newEvents;
+
+    /**
+     * @var Repository
+     */
+    private $repository;
 
     /**
      * @param Uuid $uuid
@@ -22,6 +35,8 @@ class Tide
     private function __construct(Uuid $uuid)
     {
         $this->uuid = $uuid;
+        $this->events = [];
+        $this->newEvents = [];
     }
 
     /**
@@ -29,14 +44,38 @@ class Tide
      *
      * @return Tide
      */
-    public static function create()
+    public static function createFromRepository(Repository $repository)
     {
-        return new self(Uuid::uuid1());
+        $uuid = Uuid::uuid1();
+        $tide = new self($uuid);
+        $tide->apply(new TideStarted($uuid, $repository));
+
+        return $tide;
     }
 
-    public function apply($event)
+    /**
+     * Apply a given event.
+     *
+     * @param TideEvent $event
+     */
+    public function apply(TideEvent $event)
     {
+        if ($event instanceof TideStarted) {
+            $this->repository = $event->getRepository();
+        }
+
+        $this->newEvents[] = $event;
         $this->events[] = $event;
+    }
+
+    /**
+     * @return TideEvent[]
+     */
+    public function popNewEvents()
+    {
+        $events = $this->newEvents;
+        $this->newEvents = [];
+        return $events;
     }
 
     /**
@@ -45,5 +84,13 @@ class Tide
     public function getUuid()
     {
         return $this->uuid;
+    }
+
+    /**
+     * @return Repository
+     */
+    public function getCodeRepository()
+    {
+        return $this->repository;
     }
 }

@@ -37,7 +37,7 @@ class GitHubWebHookController
     {
         $event = $request->getEvent();
         if ($event instanceof PushEvent) {
-            $this->eventBus->handle(new CodePushedEvent());
+            $this->eventBus->handle(CodePushedEvent::fromGitHubPush($event));
         } else {
             return new Response(sprintf('Event of type "%s" is not supported', $event->getType()));
         }

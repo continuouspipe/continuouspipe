@@ -16,18 +16,24 @@ class StartTideHandler
      */
     private $eventBus;
 
+    /**
+     * @param MessageBus $eventBus
+     */
     public function __construct(MessageBus $eventBus)
     {
         $this->eventBus = $eventBus;
     }
 
+    /**
+     * @param StartTideCommand $command
+     */
     public function handle(StartTideCommand $command)
     {
-        $tide = Tide::create();
+        $repository = $command->getRepository();
+        $tide = Tide::createFromRepository($repository);
 
-        $startEvent = new TideStarted($tide);
-        $tide->apply($startEvent);
-
-        $this->eventBus->handle($startEvent);
+        foreach ($tide->popNewEvents() as $event) {
+            $this->eventBus->handle($event);
+        }
     }
 }

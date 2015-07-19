@@ -28,11 +28,11 @@
         <service id="repository_river.github.http_client" class="GitHub\WebHook\Guzzle\Guzzle4HttpClient">
             <argument type="service" id="repository_river.github.guzzle_http_client" />
         </service>
-        <service id="repository_river.github.client_factory" class="AppBundle\GitHub\GitHubClientFactory">
+        <service id="repository_river.github.client_factory" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubClientFactory">
             <argument type="service" id="security.token_storage" />
             <argument type="service" id="repository_river.github.http_client" />
         </service>
-        <service id="repository_river.user_repository_repository" class="AppBundle\GitHub\GitHubUserRepositoryRepository">
+        <service id="repository_river.user_repository_repository" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubUserRepositoryRepository">
             <argument type="service" id="repository_river.github.client_factory" />
             <argument type="service" id="jms_serializer" />
         </service>
@@ -46,5 +46,7 @@
             <argument>%webhook_target_url%</argument>
             <argument>%github_secret%</argument>
         </service>
+
+        <service id="river.github.repository_address_descriptor" class="ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor" />
     </services>
 </container>

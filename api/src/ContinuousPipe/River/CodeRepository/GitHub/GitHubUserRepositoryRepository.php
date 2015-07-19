@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\GitHub;
+namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use AppBundle\Repository\UserRepositoryRepository;
 use Github\HttpClient\Message\ResponseMediator;

@@ -17,6 +17,8 @@ class AppExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('controllers.xml');
         $loader->load('github.xml');
+        $loader->load('docker-compose.xml');
+        $loader->load('builder.xml');
         $loader->load('river.xml');
     }
 }

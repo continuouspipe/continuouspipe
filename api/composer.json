@@ -25,7 +25,8 @@
         "league/tactician-bundle": "0.3.*",
         "ramsey/uuid": "~2.8",
         "continuous-pipe/builder-model": "*@dev",
-        "simple-bus/symfony-bridge": "~4.0"
+        "simple-bus/symfony-bridge": "~4.0",
+        "continuous-pipe/docker-compose": "*@dev"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

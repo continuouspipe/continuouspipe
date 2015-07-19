@@ -27,6 +27,8 @@ class CodePushedListener
      */
     public function notify(CodePushedEvent $event)
     {
-        $this->commandBus->handle(new StartTideCommand());
+        $startCommand = new StartTideCommand($event->getRepository());
+
+        $this->commandBus->handle($startCommand);
     }
 }
