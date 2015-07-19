@@ -7,6 +7,6 @@
     <embeddable name="ContinuousPipe\User\User">
         <field name="email" type="string" nullable="false" unique="true" />
 
-        <embedded name="gitHubCredentials" class="ContinuousPipe\User\GitHubCredentials" column-prefix="github" />
+        <embedded name="gitHubCredentials" class="ContinuousPipe\User\GitHubCredentials" column-prefix="github_" />
     </embeddable>
 </doctrine-mapping>
