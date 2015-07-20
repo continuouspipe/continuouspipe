@@ -20,6 +20,15 @@
             <argument type="service" id="simple_bus.event_bus" />
             <tag name="command_handler" handles="ContinuousPipe\River\Command\BuildImageCommand" />
         </service>
+        <service id="river.handler.build_images" class="ContinuousPipe\River\Handler\BuildImagesHandler">
+            <argument type="service" id="simple_bus.command_bus" />
+            <argument type="service" id="simple_bus.event_bus" />
+            <argument type="service" id="river.docker_compose.parser.project" />
+            <argument type="service" id="repository_river.github.client_factory" />
+            <argument type="service" id="river.github.repository_address_descriptor" />
+            <argument type="service" id="river.repository.tide" />
+            <tag name="command_handler" handles="ContinuousPipe\River\Command\BuildImagesCommand" />
+        </service>
 
         <!-- Event subscribers -->
         <service id="river.listener.code_pushed" class="ContinuousPipe\River\EventListener\External\CodePushedListener">
@@ -29,9 +38,6 @@
         </service>
         <service id="river.listener.tide_started" class="ContinuousPipe\River\EventListener\TideStartedListener">
             <argument type="service" id="simple_bus.command_bus" />
-            <argument type="service" id="river.docker_compose.parser.project" />
-            <argument type="service" id="repository_river.github.client_factory" />
-            <argument type="service" id="river.github.repository_address_descriptor" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted"/>
         </service>

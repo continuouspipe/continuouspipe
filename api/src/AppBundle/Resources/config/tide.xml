@@ -8,10 +8,12 @@
         <service id="river.tide.saga" class="ContinuousPipe\River\TideSaga">
             <argument type="service" id="event_bus" />
             <argument type="service" id="river.repository.tide" />
+        </service>
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\Build\BuildFailed"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\Build\BuildSuccessful"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\Build\ImageBuildStarted"/>
+        <service id="river.event_bus.middleware.tide_saga_apply" class="ContinuousPipe\River\EventBus\TideSagaApplyMiddleware">
+            <argument type="service" id="river.tide.saga" />
+
+            <tag name="event_bus_middleware" />
         </service>
     </services>
 </container>

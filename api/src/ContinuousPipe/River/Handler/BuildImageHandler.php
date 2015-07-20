@@ -45,6 +45,7 @@ class BuildImageHandler
     {
         $tideUuid = $command->getTideUuid();
         $tide = $this->tideRepository->find($tideUuid);
+
         $build = $this->builderClient->build($command->getBuildRequest(), $tide->getUser());
         $this->eventBus->handle(new ImageBuildStarted($tideUuid, $build));
 
