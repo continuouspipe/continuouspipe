@@ -2,6 +2,6 @@
 
 namespace ContinuousPipe\River\Event\Build;
 
-class ImageBuildStarted extends BuildEvent
+class BuildFailed extends BuildEvent
 {
 }

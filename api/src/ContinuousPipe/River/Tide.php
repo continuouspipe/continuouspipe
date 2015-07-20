@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\River\Event\Build\BuildSuccessful;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\User\User;
@@ -82,10 +83,9 @@ class Tide
     public function apply(TideEvent $event)
     {
         if ($event instanceof TideStarted) {
-            $this->uuid = $event->getTideUuid();
-            $this->codeRepository = $event->getFlow()->getRepository();
-            $this->user = $event->getFlow()->getUser();
-            $this->codeReference = $event->getCodeReference();
+            $this->applyTideStarted($event);
+        } elseif ($event instanceof BuildSuccessful) {
+            $this->applyBuildSuccessful($event);
         }
 
         $this->newEvents[] = $event;
@@ -101,6 +101,28 @@ class Tide
         $this->newEvents = [];
 
         return $events;
+    }
+
+    /**
+     * @param TideStarted $event
+     */
+    private function applyTideStarted(TideStarted $event)
+    {
+        $this->uuid = $event->getTideUuid();
+        $this->codeRepository = $event->getFlow()->getRepository();
+        $this->user = $event->getFlow()->getUser();
+        $this->codeReference = $event->getCodeReference();
+    }
+
+    /**
+     * @param BuildSuccessful $event
+     */
+    private function applyBuildSuccessful(BuildSuccessful $event)
+    {
+        $buildUuid = $event->getBuild()->getUuid();
+
+        // We may need an `ImagesBuildsStarted`
+        throw new \RuntimeException('Should implement the behaviour of this apply method that should return a `ImagesBuilt`');
     }
 
     /**

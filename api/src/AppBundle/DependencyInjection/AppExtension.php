@@ -21,6 +21,7 @@ class AppExtension extends Extension
         $loader->load('builder.xml');
         $loader->load('flow.xml');
         $loader->load('river.xml');
+        $loader->load('tide.xml');
         $loader->load('events.xml');
     }
 }

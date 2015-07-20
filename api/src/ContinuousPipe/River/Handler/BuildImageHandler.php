@@ -4,6 +4,8 @@ namespace ContinuousPipe\River\Handler;
 
 use ContinuousPipe\Builder\Client\BuilderClient;
 use ContinuousPipe\River\Command\BuildImageCommand;
+use ContinuousPipe\River\Event\Build\BuildFailed;
+use ContinuousPipe\River\Event\Build\BuildSuccessful;
 use ContinuousPipe\River\Event\Build\ImageBuildStarted;
 use ContinuousPipe\River\Repository\TideRepository;
 use SimpleBus\Message\Bus\MessageBus;
@@ -41,9 +43,18 @@ class BuildImageHandler
      */
     public function handle(BuildImageCommand $command)
     {
-        $tide = $this->tideRepository->find($command->getTideUuid());
+        $tideUuid = $command->getTideUuid();
+        $tide = $this->tideRepository->find($tideUuid);
         $build = $this->builderClient->build($command->getBuildRequest(), $tide->getUser());
 
-        $this->eventBus->handle(new ImageBuildStarted($command->getTideUuid(), $build));
+        $this->eventBus->handle(new ImageBuildStarted($tideUuid, $build));
+
+        // Sent events as if they were sent form external if the build as already
+        // a success or failure status
+        if ($build->isSuccessful()) {
+            $this->eventBus->handle(new BuildSuccessful($tideUuid, $build));
+        } elseif ($build->isErrored()) {
+            $this->eventBus->handle(new BuildFailed($tideUuid, $build));
+        }
     }
 }
