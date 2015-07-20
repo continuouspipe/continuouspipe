@@ -22,7 +22,6 @@
         "continuous-pipe/security-bundle": "*@dev",
         "csa/guzzle-bundle": "@stable",
         "friendsofsymfony/rest-bundle": "~1.7",
-        "league/tactician-bundle": "0.3.*",
         "ramsey/uuid": "~2.8",
         "continuous-pipe/builder-model": "*@dev",
         "simple-bus/symfony-bridge": "~4.0",

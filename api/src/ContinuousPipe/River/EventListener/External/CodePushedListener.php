@@ -6,11 +6,12 @@ use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\Event\External\CodePushedEvent;
 use ContinuousPipe\River\Repository\FlowRepository;
 use League\Tactician\CommandBus;
+use SimpleBus\Message\Bus\MessageBus;
 
 class CodePushedListener
 {
     /**
-     * @var CommandBus
+     * @var MessageBus
      */
     private $commandBus;
     /**
@@ -19,10 +20,10 @@ class CodePushedListener
     private $flowRepository;
 
     /**
-     * @param CommandBus     $commandBus
+     * @param MessageBus     $commandBus
      * @param FlowRepository $flowRepository
      */
-    public function __construct(CommandBus $commandBus, FlowRepository $flowRepository)
+    public function __construct(MessageBus $commandBus, FlowRepository $flowRepository)
     {
         $this->commandBus = $commandBus;
         $this->flowRepository = $flowRepository;

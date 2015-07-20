@@ -108,3 +108,6 @@ sensio_framework_extra:
 
 event_bus:
     logging: ~
+
+command_bus:
+    logging: ~

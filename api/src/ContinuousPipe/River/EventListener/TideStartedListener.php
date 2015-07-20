@@ -15,11 +15,12 @@ use ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor;
 use ContinuousPipe\River\Command\BuildImageCommand;
 use ContinuousPipe\River\Event\TideStarted;
 use League\Tactician\CommandBus;
+use SimpleBus\Message\Bus\MessageBus;
 
 class TideStartedListener
 {
     /**
-     * @var CommandBus
+     * @var MessageBus
      */
     private $commandBus;
 
@@ -36,7 +37,7 @@ class TideStartedListener
      */
     private $repositoryAddressDescriptor;
 
-    public function __construct(CommandBus $commandBus, ProjectParser $dockerComposeProjectParser, GitHubClientFactory $gitHubClientFactory, RepositoryAddressDescriptor $repositoryAddressDescriptor)
+    public function __construct(MessageBus $commandBus, ProjectParser $dockerComposeProjectParser, GitHubClientFactory $gitHubClientFactory, RepositoryAddressDescriptor $repositoryAddressDescriptor)
     {
         $this->commandBus = $commandBus;
         $this->dockerComposeProjectParser = $dockerComposeProjectParser;

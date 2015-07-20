@@ -18,12 +18,12 @@
             <argument type="service" id="river.code_repository.webhook_manager" />
             <argument type="service" id="simple_bus.event_bus" />
 
-            <tag name="tactician.handler" command="ContinuousPipe\River\Command\CodeRepository\SetupWebHookCommand" />
+            <tag name="command_handler" handles="ContinuousPipe\River\Command\CodeRepository\SetupWebHookCommand" />
         </service>
 
         <!-- Event subscribers -->
         <service id="river.listener.flow_created" class="ContinuousPipe\River\EventListener\FlowCreatedListener">
-            <argument type="service" id="tactician.commandbus" />
+            <argument type="service" id="simple_bus.command_bus" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\FlowCreated"/>
         </service>

@@ -5,18 +5,19 @@ namespace ContinuousPipe\River\EventListener;
 use ContinuousPipe\River\Command\CodeRepository\SetupWebHookCommand;
 use ContinuousPipe\River\Event\FlowCreated;
 use League\Tactician\CommandBus;
+use SimpleBus\Message\Bus\MessageBus;
 
 class FlowCreatedListener
 {
     /**
-     * @var CommandBus
+     * @var MessageBus
      */
     private $commandBus;
 
     /**
-     * @param CommandBus $commandBus
+     * @param MessageBus $commandBus
      */
-    public function __construct(CommandBus $commandBus)
+    public function __construct(MessageBus $commandBus)
     {
         $this->commandBus = $commandBus;
     }
