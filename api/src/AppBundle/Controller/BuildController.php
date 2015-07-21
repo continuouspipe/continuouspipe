@@ -10,7 +10,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route(service="app.controller.build")
@@ -28,7 +27,7 @@ class BuildController
     private $commandBus;
 
     /**
-     * @param MessageBus $commandBus
+     * @param MessageBus      $commandBus
      * @param BuildRepository $buildRepository
      */
     public function __construct(MessageBus $commandBus, BuildRepository $buildRepository)

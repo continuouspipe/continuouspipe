@@ -29,11 +29,11 @@ class DockerBuilder
     private $defaultCredentials;
 
     /**
-     * @param ArchiveBuilder $archiveBuilder
-     * @param Client $dockerClient
-     * @param LoggerFactory $loggerFactory
+     * @param ArchiveBuilder  $archiveBuilder
+     * @param Client          $dockerClient
+     * @param LoggerFactory   $loggerFactory
      * @param BuildRepository $buildRepository
-     * @param string $defaultCredentials
+     * @param string          $defaultCredentials
      */
     public function __construct(ArchiveBuilder $archiveBuilder, Client $dockerClient, LoggerFactory $loggerFactory, BuildRepository $buildRepository, $defaultCredentials = null)
     {

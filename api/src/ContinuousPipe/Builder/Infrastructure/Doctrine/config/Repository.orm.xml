@@ -8,5 +8,5 @@
         <field name="address" type="string" />
         <field name="branch" type="string" />
     </embeddable>
-    
+
 </doctrine-mapping>

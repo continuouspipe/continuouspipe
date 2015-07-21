@@ -8,5 +8,5 @@
         <field name="name" type="string" />
         <field name="tag" type="string" />
     </embeddable>
-    
+
 </doctrine-mapping>

@@ -8,8 +8,6 @@ use ContinuousPipe\LogStream\Logger;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Image;
 use Docker\Docker;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ServerException;
 
 class Client
 {
@@ -40,14 +38,14 @@ class Client
 
     private function getOutputCallback(Logger $logger)
     {
-        return function($output) use ($logger) {
+        return function ($output) use ($logger) {
             if (is_array($output) && array_key_exists('error', $output)) {
                 $log = Log::error($output['error']);
-            } else if (is_array($output) && array_key_exists('stream', $output)) {
+            } elseif (is_array($output) && array_key_exists('stream', $output)) {
                 $log = Log::output($output['stream']);
-            } else if (is_array($output) && array_key_exists('status', $output)) {
+            } elseif (is_array($output) && array_key_exists('status', $output)) {
                 $log = Log::output($output['status']);
-            } else if (is_string($output)) {
+            } elseif (is_string($output)) {
                 $log = Log::output($output);
             } else {
                 $log = Log::error(print_r($output, true));
