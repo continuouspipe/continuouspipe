@@ -6,7 +6,7 @@
 
     <services>
         <service id="app.controller.build" class="AppBundle\Controller\BuildController">
-            <argument type="service" id="tactician.commandbus" />
+            <argument type="service" id="simple_bus.command_bus" />
             <argument type="service" id="builder.build_repository" />
         </service>
 

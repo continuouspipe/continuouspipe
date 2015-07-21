@@ -6,9 +6,9 @@ use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\BuildRepository;
 use ContinuousPipe\Builder\Command\BuildCommand;
 use ContinuousPipe\Builder\Request\BuildRequest;
-use League\Tactician\CommandBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -23,15 +23,15 @@ class BuildController
     private $buildRepository;
 
     /**
-     * @var CommandBus
+     * @var MessageBus
      */
     private $commandBus;
 
     /**
-     * @param CommandBus $commandBus
+     * @param MessageBus $commandBus
      * @param BuildRepository $buildRepository
      */
-    public function __construct(CommandBus $commandBus, BuildRepository $buildRepository)
+    public function __construct(MessageBus $commandBus, BuildRepository $buildRepository)
     {
         $this->buildRepository = $buildRepository;
         $this->commandBus = $commandBus;
