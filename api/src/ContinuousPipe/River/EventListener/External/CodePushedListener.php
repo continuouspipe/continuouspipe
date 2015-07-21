@@ -14,6 +14,7 @@ class CodePushedListener
      * @var MessageBus
      */
     private $commandBus;
+
     /**
      * @var FlowRepository
      */
