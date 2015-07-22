@@ -36,7 +36,7 @@
         <service id="builder.builder_handler" class="ContinuousPipe\Builder\Handler\BuildHandler">
             <argument type="service" id="builder.docker_builder"/>
 
-            <tag name="command_handler" handles="ContinuousPipe\Builder\Command\BuildCommand"/>
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Command\BuildCommand"/>
         </service>
     </services>
 </container>
