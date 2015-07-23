@@ -5,6 +5,7 @@ namespace ContinuousPipe\Builder;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\LogStream\LogRelatedObject;
 use Rhumsaa\Uuid\Uuid;
+use JMS\Serializer\Annotation as JMS;
 
 class Build implements LogRelatedObject, \JsonSerializable
 {
@@ -14,16 +15,22 @@ class Build implements LogRelatedObject, \JsonSerializable
     const STATUS_ERROR = 'error';
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $uuid;
 
     /**
+     * @JMS\Type("ContinuousPipe\Builder\Request\BuildRequest")
+     *
      * @var BuildRequest
      */
     private $request;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $status;

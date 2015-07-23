@@ -47,7 +47,7 @@ class DockerBuilder
     public function build(Build $build)
     {
         $build->updateStatus(Build::STATUS_RUNNING);
-        $this->buildRepository->save($build);
+        $build = $this->buildRepository->save($build);
 
         try {
             $this->runBuild($build);
@@ -58,8 +58,10 @@ class DockerBuilder
 
             throw $e;
         } finally {
-            $this->buildRepository->save($build);
+            $build = $this->buildRepository->save($build);
         }
+
+        return $build;
     }
 
     private function runBuild(Build $build)

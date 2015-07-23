@@ -23,7 +23,11 @@ class DoctrineBuildRepository implements BuildRepository
      */
     public function save(Build $build)
     {
+        $build = $this->entityManager->merge($build);
+
         $this->entityManager->persist($build);
         $this->entityManager->flush($build);
+
+        return $build;
     }
 }
