@@ -1,13 +1,13 @@
 <?php
 
-namespace ApiBundle\DependencyInjection;
+namespace BuilderBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
-class ApiExtension extends Extension
+class BuilderExtension extends Extension
 {
     /**
      * {@inheritdoc}
@@ -15,6 +15,7 @@ class ApiExtension extends Extension
     public function load(array $config, ContainerBuilder $container)
     {
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('controllers.xml');
+        $loader->load('builder.xml');
+        $loader->load('logging.xml');
     }
 }
