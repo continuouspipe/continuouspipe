@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\Builder;
 
+use Rhumsaa\Uuid\Uuid;
+
 interface BuildRepository
 {
     /**
@@ -11,4 +13,11 @@ interface BuildRepository
      * @return Build
      */
     public function save(Build $build);
+
+    /**
+     * @param Uuid $uuid
+     * @throws BuildNotFound
+     * @return Build
+     */
+    public function find(Uuid $uuid);
 }

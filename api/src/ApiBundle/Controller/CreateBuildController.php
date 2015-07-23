@@ -12,9 +12,9 @@ use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * @Route(service="api.controller.build")
+ * @Route(service="api.controller.create_build")
  */
-class BuildController
+class CreateBuildController
 {
     /**
      * @var BuildRepository
@@ -40,7 +40,7 @@ class BuildController
      * @Route("/build", methods={"POST"})
      * @ParamConverter("request", converter="build_request")
      */
-    public function buildAction(BuildRequest $request)
+    public function postAction(BuildRequest $request)
     {
         $build = Build::fromRequest($request);
         $this->buildRepository->save($build);
