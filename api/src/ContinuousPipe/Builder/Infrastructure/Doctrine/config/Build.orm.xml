@@ -6,6 +6,7 @@
 
     <entity name="ContinuousPipe\Builder\Build">
         <id name="uuid" />
+        <field name="status" type="string" />
 
         <embedded name="request" class="ContinuousPipe\Builder\Request\BuildRequest" />
     </entity>

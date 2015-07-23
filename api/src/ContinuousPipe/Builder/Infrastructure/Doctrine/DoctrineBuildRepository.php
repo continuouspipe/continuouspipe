@@ -27,8 +27,10 @@ class DoctrineBuildRepository implements BuildRepository
     {
         $build = $this->entityManager->merge($build);
 
+        $this->entityManager->getConnection()->beginTransaction();
         $this->entityManager->persist($build);
-        $this->entityManager->flush($build);
+        $this->entityManager->flush();
+        $this->entityManager->getConnection()->commit();
 
         return $build;
     }
