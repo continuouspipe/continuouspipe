@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\BuildRepository;
@@ -12,7 +12,7 @@ use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * @Route(service="app.controller.build")
+ * @Route(service="api.controller.build")
  */
 class BuildController
 {

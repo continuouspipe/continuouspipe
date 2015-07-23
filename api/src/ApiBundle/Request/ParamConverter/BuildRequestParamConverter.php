@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Request\ParamConverter;
+namespace ApiBundle\Request\ParamConverter;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
 use JMS\Serializer\Serializer;

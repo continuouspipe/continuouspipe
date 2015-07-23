@@ -5,16 +5,16 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.controller.build" class="AppBundle\Controller\BuildController">
+        <service id="api.controller.build" class="ApiBundle\Controller\BuildController">
             <argument type="service" id="command_bus" />
             <argument type="service" id="builder.build_repository" />
         </service>
 
-        <service id="app.controller.build_logs" class="AppBundle\Controller\BuildLogsController">
+        <service id="api.controller.build_logs" class="ApiBundle\Controller\BuildLogsController">
             <argument type="service" id="builder.logging.log_aggregator" />
         </service>
 
-        <service id="builder.request.build_request_param_converter" class="AppBundle\Request\ParamConverter\BuildRequestParamConverter">
+        <service id="builder.request.build_request_param_converter" class="ApiBundle\Request\ParamConverter\BuildRequestParamConverter">
             <argument type="service" id="jms_serializer" />
             <tag name="request.param_converter" priority="0" converter="build_request" />
         </service>

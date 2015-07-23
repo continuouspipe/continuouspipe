@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\LogStream\LogAggregator;
@@ -8,7 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * @Route(service="app.controller.build_logs")
+ * @Route(service="api.controller.build_logs")
  */
 class BuildLogsController
 {
