@@ -47,7 +47,9 @@ class DockerBuilder
 
     /**
      * @param Build $build
+     *
      * @return Build
+     *
      * @throws \Exception
      */
     public function build(Build $build)

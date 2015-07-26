@@ -20,7 +20,7 @@ class BuildHandler
 
     /**
      * @param DockerBuilder $builder
-     * @param Notifier $notifier
+     * @param Notifier      $notifier
      */
     public function __construct(DockerBuilder $builder, Notifier $notifier)
     {

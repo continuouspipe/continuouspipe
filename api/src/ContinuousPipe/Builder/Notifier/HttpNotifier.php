@@ -20,7 +20,7 @@ class HttpNotifier
     private $serializer;
 
     /**
-     * @param Client $httpClient
+     * @param Client     $httpClient
      * @param Serializer $serializer
      */
     public function __construct(Client $httpClient, Serializer $serializer)
@@ -31,8 +31,10 @@ class HttpNotifier
 
     /**
      * @param HttpNotification $http
-     * @param Build $build
+     * @param Build            $build
+     *
      * @return \GuzzleHttp\Message\ResponseInterface
+     *
      * @throws NotificationException
      */
     public function notify(HttpNotification $http, Build $build)
@@ -41,8 +43,8 @@ class HttpNotifier
             return $this->httpClient->post($http->getAddress(), [
                 'body' => $this->serializer->serialize($build, 'json'),
                 'headers' => [
-                    'Content-Type' => 'application/json'
-                ]
+                    'Content-Type' => 'application/json',
+                ],
             ]);
         } catch (RequestException $e) {
             throw new NotificationException($e->getMessage(), $e->getCode(), $e);

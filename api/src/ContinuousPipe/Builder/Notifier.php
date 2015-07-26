@@ -20,7 +20,7 @@ class Notifier
 
     /**
      * @param LoggerFactory $loggerFactory
-     * @param HttpNotifier $httpNotifier
+     * @param HttpNotifier  $httpNotifier
      */
     public function __construct(LoggerFactory $loggerFactory, HttpNotifier $httpNotifier)
     {
@@ -30,7 +30,7 @@ class Notifier
 
     /**
      * @param Notification $notification
-     * @param Build $build
+     * @param Build        $build
      */
     public function notify(Notification $notification, Build $build)
     {
