@@ -95,6 +95,9 @@ continuous_pipe_security:
     authenticator_url: %authenticator_url%
 
 fos_rest:
+    body_converter:
+        enabled: true
+
     view:
         view_response_listener: force
 
@@ -105,6 +108,7 @@ fos_rest:
 
 sensio_framework_extra:
     view:    { annotations: false }
+    request: { converters: true }
 
 event_bus:
     logging: ~
