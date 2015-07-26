@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Docker\Client;
+use ContinuousPipe\LogStream\Log;
 use ContinuousPipe\LogStream\LoggerFactory;
 
 class DockerBuilder
@@ -54,6 +55,9 @@ class DockerBuilder
 
             $build->updateStatus(Build::STATUS_SUCCESS);
         } catch (\Exception $e) {
+            $logger = $this->loggerFactory->createLogger($build);
+            $logger->log(Log::exception($e));
+
             $build->updateStatus(Build::STATUS_ERROR);
 
             throw $e;
@@ -64,6 +68,9 @@ class DockerBuilder
         return $build;
     }
 
+    /**
+     * @param Build $build
+     */
     private function runBuild(Build $build)
     {
         $request = $build->getRequest();
