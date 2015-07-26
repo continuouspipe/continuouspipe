@@ -2,10 +2,12 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\River\Event\Build\BuildFailed;
 use ContinuousPipe\River\Event\Build\BuildSuccessful;
 use ContinuousPipe\River\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Event\ImagesBuilt;
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\User\User;
 use Rhumsaa\Uuid\Uuid;
@@ -91,6 +93,8 @@ class Tide
             $this->applyTideStarted($event);
         } elseif ($event instanceof BuildSuccessful) {
             $this->applyBuildSuccessful($event);
+        } elseif ($event instanceof BuildFailed) {
+            $this->applyBuildFailed($event);
         }
 
         $this->events[] = $event;
@@ -126,6 +130,14 @@ class Tide
         if ($this->allImageBuildsSuccessful()) {
             $this->newEvents[] = new ImagesBuilt($this->uuid);
         }
+    }
+
+    /**
+     * @param BuildFailed $event
+     */
+    private function applyBuildFailed(BuildFailed $event)
+    {
+        $this->newEvents[] = new TideFailed($this->uuid);
     }
 
     /**
