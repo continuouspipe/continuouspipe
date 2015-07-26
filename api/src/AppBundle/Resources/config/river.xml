@@ -6,7 +6,7 @@
 
     <services>
         <service id="river.repository.tide" class="ContinuousPipe\River\Repository\EventBusTideRepository">
-            <argument type="service" id="river.event_store.in_memory" />
+            <argument type="service" id="river.event_store.doctrine" />
         </service>
 
         <!-- Command handlers -->
