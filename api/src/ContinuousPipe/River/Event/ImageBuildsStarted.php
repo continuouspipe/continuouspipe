@@ -17,7 +17,7 @@ class ImageBuildsStarted implements TideEvent
     private $buildRequests;
 
     /**
-     * @param Uuid $tideUuid
+     * @param Uuid           $tideUuid
      * @param BuildRequest[] $buildRequests
      */
     public function __construct(Uuid $tideUuid, array $buildRequests)

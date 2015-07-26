@@ -162,11 +162,12 @@ class Tide
 
     /**
      * @param string $className
+     *
      * @return TideEvent[]
      */
     private function getEventsOfType($className)
     {
-        $events = array_filter($this->events, function(TideEvent $event) use ($className) {
+        $events = array_filter($this->events, function (TideEvent $event) use ($className) {
             return get_class($event) == $className;
         });
 
@@ -177,6 +178,7 @@ class Tide
      * Check if all the started builds are successful.
      *
      * @return bool
+     *
      * @throws BuildNotFound
      */
     private function allImageBuildsSuccessful()

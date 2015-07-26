@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\EventListener;
 
-use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Command\BuildImagesCommand;
 use ContinuousPipe\River\Event\TideStarted;
 use SimpleBus\Message\Bus\MessageBus;

@@ -7,8 +7,6 @@ use ContinuousPipe\Builder\HttpNotification;
 use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\Command\BuildImageCommand;
-use ContinuousPipe\River\Event\Build\BuildFailed;
-use ContinuousPipe\River\Event\Build\BuildSuccessful;
 use ContinuousPipe\River\Event\Build\ImageBuildStarted;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Tide;
@@ -36,9 +34,9 @@ class BuildImageHandler
     private $urlGenerator;
 
     /**
-     * @param BuilderClient $builderClient
-     * @param TideRepository $tideRepository
-     * @param MessageBus $eventBus
+     * @param BuilderClient         $builderClient
+     * @param TideRepository        $tideRepository
+     * @param MessageBus            $eventBus
      * @param UrlGeneratorInterface $urlGenerator
      */
     public function __construct(BuilderClient $builderClient, TideRepository $tideRepository, MessageBus $eventBus, UrlGeneratorInterface $urlGenerator)
@@ -65,19 +63,21 @@ class BuildImageHandler
     /**
      * Add the notification configuration to the created build request.
      *
-     * @param Tide $tide
+     * @param Tide         $tide
      * @param BuildRequest $buildRequest
+     *
      * @return BuildRequest
      */
     private function getBuildRequestWithNotificationConfiguration(Tide $tide, BuildRequest $buildRequest)
     {
         $address = $this->urlGenerator->generate('builder_notification_post', [
-            'tideUuid' => (string) $tide->getUuid()
+            'tideUuid' => (string) $tide->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $httpNotification = HttpNotification::fromAddress($address);
 
         $buildRequest = new BuildRequest($buildRequest->getRepository(), $buildRequest->getImage(), Notification::withHttp($httpNotification));
+
         return $buildRequest;
     }
 }

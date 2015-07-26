@@ -18,7 +18,7 @@ class TideSaga
     private $tideRepository;
 
     /**
-     * @param MessageBus $eventBus
+     * @param MessageBus     $eventBus
      * @param TideRepository $tideRepository
      */
     public function __construct(MessageBus $eventBus, TideRepository $tideRepository)
