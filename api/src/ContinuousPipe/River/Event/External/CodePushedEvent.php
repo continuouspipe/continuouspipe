@@ -6,9 +6,14 @@ use ContinuousPipe\Builder\Repository;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use GitHub\WebHook\Event\PushEvent;
+use Rhumsaa\Uuid\Uuid;
 
 class CodePushedEvent
 {
+    /**
+     * @var Uuid
+     */
+    private $uuid;
     /**
      * @var CodeRepository
      */
@@ -19,13 +24,15 @@ class CodePushedEvent
     private $codeReference;
 
     /**
+     * @param Uuid $uuid
      * @param CodeRepository $repository
-     * @param CodeReference  $codeReference
+     * @param CodeReference $codeReference
      */
-    public function __construct(CodeRepository $repository, CodeReference $codeReference)
+    private function __construct(Uuid $uuid, CodeRepository $repository, CodeReference $codeReference)
     {
         $this->repository = $repository;
         $this->codeReference = $codeReference;
+        $this->uuid = $uuid;
     }
 
     /**
@@ -41,6 +48,7 @@ class CodePushedEvent
         }
 
         $self = new self(
+            Uuid::uuid1(),
             new CodeRepository\GitHub\GitHubCodeRepository(
                 $pushEvent->getRepository()
             ),
@@ -64,5 +72,13 @@ class CodePushedEvent
     public function getCodeReference()
     {
         return $this->codeReference;
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
     }
 }
