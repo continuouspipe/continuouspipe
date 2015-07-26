@@ -7,6 +7,7 @@
     <services>
         <service id="builder.builder_handler" class="ContinuousPipe\Builder\Handler\BuildHandler">
             <argument type="service" id="builder.docker_builder"/>
+            <argument type="service" id="builder.notifier" />
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Command\BuildCommand"/>
         </service>

@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="builder.http_notifier.http_client" class="GuzzleHttp\Client" />
+        <service id="builder.http_notifier" class="ContinuousPipe\Builder\Notifier\HttpNotifier">
+            <argument type="service" id="builder.http_notifier.http_client"/>
+            <argument type="service" id="jms_serializer"/>
+        </service>
+
+        <service id="builder.notifier" class="ContinuousPipe\Builder\Notifier">
+            <argument type="service" id="builder.logging.redis_logger_factory"/>
+            <argument type="service" id="builder.http_notifier"/>
+        </service>
+    </services>
+</container>

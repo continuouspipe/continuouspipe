@@ -45,6 +45,11 @@ class DockerBuilder
         $this->defaultCredentials = $defaultCredentials;
     }
 
+    /**
+     * @param Build $build
+     * @return Build
+     * @throws \Exception
+     */
     public function build(Build $build)
     {
         $build->updateStatus(Build::STATUS_RUNNING);
@@ -59,8 +64,6 @@ class DockerBuilder
             $logger->log(Log::exception($e));
 
             $build->updateStatus(Build::STATUS_ERROR);
-
-            throw $e;
         } finally {
             $build = $this->buildRepository->save($build);
         }
