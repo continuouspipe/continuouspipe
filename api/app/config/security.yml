@@ -15,5 +15,10 @@ security:
             anonymous: ~
 
     access_control:
+        # TODO: Secure with GitHub IPs
         - { path: ^/github/payload$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        # TODO: Secure with Builder IPs
+        - { path: ^/builder/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

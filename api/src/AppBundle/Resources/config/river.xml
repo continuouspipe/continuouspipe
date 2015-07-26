@@ -18,6 +18,8 @@
             <argument type="service" id="builder.client" />
             <argument type="service" id="river.repository.tide" />
             <argument type="service" id="simple_bus.event_bus" />
+            <argument type="service" id="router" />
+
             <tag name="command_handler" handles="ContinuousPipe\River\Command\BuildImageCommand" />
         </service>
         <service id="river.handler.build_images" class="ContinuousPipe\River\Handler\BuildImagesHandler">

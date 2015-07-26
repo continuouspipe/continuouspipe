@@ -15,6 +15,9 @@
         <service id="app.controller.github_webhook" class="AppBundle\Controller\GitHubWebHookController">
             <argument type="service" id="simple_bus.event_bus" />
         </service>
+        <service id="app.controller.builder_notification" class="AppBundle\Controller\BuilderNotificationController">
+            <argument type="service" id="simple_bus.event_bus" />
+        </service>
 
         <service id="app.request.param_converter.code_repository" class="AppBundle\Request\ParamConverter\CodeRepositoryParamConverter">
             <argument type="service" id="repository_river.code_repository_repository" />
