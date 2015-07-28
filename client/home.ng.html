@@ -2,5 +2,8 @@
     <header>
         <h1>Logs</h1>
     </header>
-    <p>{{ logs.length }} logs found.</p>
+
+    <ul>
+        <li ng-repeat="log in logs">{{ log }}</li>
+    </ul>
 </div>
