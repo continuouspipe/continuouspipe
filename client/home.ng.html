@@ -1,9 +1,8 @@
 <div class="container">
     <header>
-        <h1>Logs</h1>
+        <h1>Display logs</h1>
     </header>
 
-    <ul>
-        <li ng-repeat="log in logs">{{ log }}</li>
-    </ul>
+    <input type="text" ng-model="logId" />
+    <a ui-sref="logs({logId: logId})" ng-disabled="!logId">View logs</a>
 </div>
