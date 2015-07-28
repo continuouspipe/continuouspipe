@@ -1,0 +1,8 @@
+<ul>
+    <li ng-repeat="log in logs">
+        <div ng-click="toggleChildrenDisplay(log)">{{ log }}</div>
+        <div class="children">
+            <logs ng-if="log.displayChildren" log-id="log._id._str"></logs>
+        </div>
+    </li>
+</ul>

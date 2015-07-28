@@ -3,7 +3,8 @@ Logs = new Mongo.Collection('logs');
 if (Meteor.isClient) {
     angular.module('logstream', [
         'angular-meteor',
-        'ui.router'
+        'ui.router',
+        'RecursionHelper'
     ]).config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
         $urlRouterProvider.otherwise("/");
 
@@ -20,6 +21,29 @@ if (Meteor.isClient) {
         ;
     }]);
 
+    angular.module('logstream').directive('logs', ['RecursionHelper', function(RecursionHelper) {
+        return {
+            restrict: 'E',
+            scope: {
+                logId: '='
+            },
+            templateUrl: 'client/logs/logs.ng.html',
+            controller: function ($scope, $meteor) {
+                $scope.toggleChildrenDisplay = function(log) {
+                    log.displayChildren = !log.displayChildren;
+                };
+
+                $scope.logs = $meteor.collection(function() {
+                    return Logs.find({
+                        parent: $scope.logId
+                    });
+                });
+            },
+            compile: function(element) {
+                return RecursionHelper.compile(element);
+            }
+        }
+    }]);
     angular.module('logstream').controller('LogCtrl', ['$scope', '$meteor', '$stateParams', function ($scope, $meteor, $stateParams) {
         $scope.logId = $stateParams.logId;
 //        $scope.logs = $meteor.collection(Logs);
