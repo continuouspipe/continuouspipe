@@ -1,0 +1,5 @@
+{
+  "includePaths": [
+    ".meteor/local/bower"
+  ]
+}

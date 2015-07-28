@@ -2,13 +2,8 @@
   <title>logstream</title>
 </head>
 
-<body>
-  <h1>Welcome to Meteor!</h1>
+<body ng-app="logstream"
+      ng-controller="LogsCtrl"
+      ng-include="'client/home.ng.html'">
 
-  {{> hello}}
 </body>
-
-<template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
-</template>
