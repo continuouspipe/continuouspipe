@@ -1,5 +1,18 @@
 .log-container {
     .children {
         padding-left: 10px;
+
+        .log {
+            &.raw {
+                pre {
+                    background: #002b36;
+                    color: #839496;
+
+                    logs, div {
+                        display: inline;
+                    }
+                }
+            }
+        }
     }
 }
