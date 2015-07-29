@@ -1,0 +1,4 @@
+<div class="content" ng-click="toggleChildrenDisplay(log)">{{ log.contents }}</div>
+<div class="children" ng-show="childrenCounter.count > 0">
+    <logs ng-if="displayChildrenOf[log._id]" log-id="log._id" counter="childrenCounter"></logs>
+</div>

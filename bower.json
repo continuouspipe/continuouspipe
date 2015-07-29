@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "dependencies": {
     "bootstrap": "~3.0",
-    "angular-recursion": "~1.0.5"
+    "angular-recursion": "~1.0.5",
+    "angular-bootstrap": "~0.13.1"
   },
   "private": true
 }
