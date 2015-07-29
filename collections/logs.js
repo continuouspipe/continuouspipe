@@ -15,6 +15,10 @@ Logs.attachSchema(new SimpleSchema({
         type: String,
         optional: true
     },
+    columns: {
+        type: [String],
+        optional: true
+    },
 
     // Force value to be current date (on server) upon insert
     // and prevent updates thereafter.

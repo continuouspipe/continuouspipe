@@ -1,0 +1,12 @@
+<table insert-log-children-in-scope>
+    <thead>
+        <tr>
+            <th ng-repeat="column in log.columns">{{ column }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="row in children">
+            <td ng-repeat="column in row.columns">{{ column }}</td>
+        </tr>
+    </tbody>
+</table>
