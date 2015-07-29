@@ -6,8 +6,9 @@ angular.module('logstream').directive('logs', ['RecursionHelper', function(Recur
         },
         templateUrl: 'client/views/logs/logs.ng.html',
         controller: function ($scope, $meteor) {
+            $scope.displayChildrenOf = [];
             $scope.toggleChildrenDisplay = function(log) {
-                log.displayChildren = !log.displayChildren;
+                $scope.displayChildrenOf[log._id] = !$scope.displayChildrenOf[log._id];
             };
 
             $scope.logs = $meteor.collection(function() {
