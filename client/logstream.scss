@@ -1,17 +1,51 @@
+// Colors
+$success-color: #64ad03;
+$pending-color: #2979ca;
+$failure-color: #d61341;
+
+// Layout
+$text-rounds-radius: 20px;
+
 .log-container {
     .children {
-        padding-left: 10px;
+        padding-top: 10px;
+        padding-left: 25px;
+    }
 
-        .log {
-            &.raw {
-                pre {
-                    background: #002b36;
-                    color: #839496;
+    .log {
+        &.type-raw {
+            pre {
+                background: #002b36;
+                color: #839496;
+            }
+        }
 
-                    logs, div {
-                        display: inline;
-                    }
+        &.type-text {
+            div.content {
+                div.counter {
+                    float: right;
                 }
+
+                i.round {
+                    display: inline-block;
+                    width: $text-rounds-radius;
+                    height: $text-rounds-radius;
+                    border-radius: ($text-rounds-radius / 2);
+                    background-color: $pending-color;
+                    vertical-align: middle;
+                }
+            }
+
+            &.status-success {
+                div.round {
+                    background-color: $success-color;
+                }
+            }
+
+            .children {
+                padding-left: 20px;
+                margin-left: $text-rounds-radius / 2;
+                border-left: 1px solid $pending-color;
             }
         }
     }

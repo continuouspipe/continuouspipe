@@ -1,1 +1,1 @@
-<div class="children"><div class="log" ng-repeat="log in logs" ng-class="log.type" ng-include="'client/views/logs/log-'+log.type+'.ng.html'"></div></div>
+<div class="log" ng-repeat="log in logs" ng-class="['type-'+log.type, 'status-'+log.status]" ng-include="'client/views/logs/log-'+log.type+'.ng.html'"></div>
