@@ -5,7 +5,7 @@ Meteor.startup(function () {
         contents: 'Tide #UUID',
         children: [
             {type: 'text', contents: 'Building application images', children: [
-                {type: 'text', contents: 'Parsing application components configuration', children: [
+                {type: 'text', contents: 'Parsing application components configuration', status: 'success', children: [
                     {type: 'tab-container', children: [
                         {type: 'tab', contents: 'File content', children: [
                             {type: 'raw', children: [
@@ -18,6 +18,17 @@ Meteor.startup(function () {
                                 {type: 'row', columns: ['app', 'sroze/php-example']}
                             ]}
                         ]}
+                    ]}
+                ]},
+                {type: 'text', contents: 'Building image "sroze/php-example"', children: [
+                    {type: 'raw', children: [
+                        {type: 'text', contents: 'All the Docker stream there...'}
+                    ]}
+                ]},
+                {type: 'text', contents: 'Building image "sroze/php-example"', status: 'failure', children: [
+                    {type: 'raw', children: [
+                        {type: 'text', contents: 'All the Docker stream there...'},
+                        {type: 'text', contents: 'And an error at the end !'}
                     ]}
                 ]}
             ]}

@@ -36,16 +36,30 @@ $text-rounds-radius: 20px;
                 }
             }
 
-            &.status-success {
-                div.round {
-                    background-color: $success-color;
-                }
-            }
-
             .children {
                 padding-left: 20px;
                 margin-left: $text-rounds-radius / 2;
                 border-left: 1px solid $pending-color;
+            }
+
+            &.status-success {
+                div.content i.round {
+                    background-color: $success-color;
+                }
+
+                .children {
+                    border-left-color: $success-color;
+                }
+            }
+
+            &.status-failure {
+                div.content i.round {
+                    background-color: $failure-color;
+                }
+
+                .children {
+                    border-left-color: $failure-color;
+                }
             }
         }
     }
