@@ -1,0 +1,9 @@
+app:
+    build: .
+    environment:
+        ROOT_URL: http://logstream_app.docker
+        MONGO_URL: mongodb://mongodb:27017/logstream
+    links:
+        - mongodb
+mongodb:
+    image: mongo
