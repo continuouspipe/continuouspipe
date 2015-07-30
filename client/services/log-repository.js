@@ -1,5 +1,5 @@
 angular.module('logstream')
-    .service('LogRepository', function($meteor) {
+    .service('LogRepository', ['$meteor', function($meteor) {
         this.findByParentId = function(id) {
             return $meteor.collection(function() {
                 return Logs.find({
@@ -7,4 +7,4 @@ angular.module('logstream')
                 });
             })
         };
-    });
+    }]);

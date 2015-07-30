@@ -1,10 +1,10 @@
 angular.module('logstream')
-    .directive('insertLogChildrenInScope', function(LogRepository) {
+    .directive('insertLogChildrenInScope', ['LogRepository', function(LogRepository) {
         return {
             scope: false,
             restrict: 'A',
-            controller: function($scope) {
+            controller: ['$scope', function($scope) {
                 $scope.children = LogRepository.findByParentId($scope.log._id);
-            }
+            }]
         };
-    });
+    }]);

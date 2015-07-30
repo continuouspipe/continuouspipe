@@ -1,12 +1,12 @@
 angular.module('logstream')
-    .directive('logTimeCounter', function($interval) {
+    .directive('logTimeCounter', ['$interval', function($interval) {
         return {
             scope: {
                 logTimeCounter: '='
             },
             restrict: 'A',
             template: '{{ timeInDate | date:\'HH:mm:ss\'}}',
-            controller: function($scope) {
+            controller: ['$scope', function($scope) {
                 var timeInterval = null;
 
                 $scope.$watchGroup(['logTimeCounter.updatedAt', 'logTimeCounter.createdAt'], function() {
@@ -35,7 +35,7 @@ angular.module('logstream')
 
                     $scope.timeInSeconds = Math.round((until - from) / 1000);
                     $scope.timeInDate = new Date(0, 0, 0, 0, 0, 0, 0).setSeconds($scope.timeInSeconds);
-                };
-            }
+                }
+            }]
         };
-    });
+    }]);

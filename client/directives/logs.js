@@ -7,7 +7,7 @@ angular.module('logstream')
                 counter: '='
             },
             templateUrl: 'client/views/logs/logs.ng.html',
-            controller: function ($scope) {
+            controller: ['$scope', function ($scope) {
                 $scope.childrenCounter = {count: 0};
                 $scope.displayChildrenOf = [];
                 $scope.toggleChildrenDisplay = function(log) {
@@ -27,7 +27,7 @@ angular.module('logstream')
                         }
                     });
                 });
-            },
+            }],
             compile: function(element) {
                 return RecursionHelper.compile(element);
             }
