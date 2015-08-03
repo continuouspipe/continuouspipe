@@ -18,13 +18,13 @@
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "jms/serializer-bundle": "~1.0",
-        "sroze/github-webhook": "*@dev",
-        "continuous-pipe/security-bundle": "*@dev",
         "csa/guzzle-bundle": "@stable",
         "friendsofsymfony/rest-bundle": "~1.7",
         "ramsey/uuid": "~2.8",
-        "continuous-pipe/builder-model": "*@dev",
         "simple-bus/symfony-bridge": "~4.0",
+        "sroze/github-webhook": "*@dev",
+        "continuous-pipe/security-bundle": "*@dev",
+        "continuous-pipe/builder-model": "*@dev",
         "continuous-pipe/docker-compose": "*@dev"
     },
     "require-dev": {
