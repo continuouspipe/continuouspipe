@@ -62,7 +62,7 @@
                 "type": "zip",
                 "url": "../../artifact/continuous-pipe_builder-model_0.0.2.zip",
                 "reference": null,
-                "shasum": "97b95fee897ad499fac0dd8c58c0a1ebcf25d6b3"
+                "shasum": "5275531020c85c78fc16d8785089190406b86ad9"
             },
             "type": "library",
             "autoload": {
@@ -78,7 +78,7 @@
                 "type": "zip",
                 "url": "../../artifact/continuous-pipe_docker-compose_0.0.2.zip",
                 "reference": null,
-                "shasum": "6722fdc3659a04be9cd251c1ca23f5fad181496c"
+                "shasum": "4544c5685ac29ece46fb020bded9c7da2d1089a5"
             },
             "require": {
                 "continuous-pipe/model": "*@dev",
@@ -112,7 +112,7 @@
                 "type": "zip",
                 "url": "../../artifact/continuous-pipe_model_1.0.1.zip",
                 "reference": null,
-                "shasum": "27700cf3a35aed5c42db3c92b8de004234ef0b4b"
+                "shasum": "c843b25e7d12b9761bf037daadc5b712eb83e159"
             },
             "type": "library",
             "autoload": {
@@ -128,7 +128,7 @@
                 "type": "zip",
                 "url": "../../artifact/continuous-pipe_security-bundle_0.0.2.zip",
                 "reference": null,
-                "shasum": "4f42a65630f6336d6d9eaf8626ba153e47dff488"
+                "shasum": "fe3997e6eaf596d87263a2914b7c922221684820"
             },
             "require": {
                 "continuous-pipe/user": "*@dev",
@@ -148,7 +148,7 @@
                 "type": "zip",
                 "url": "../../artifact/continuous-pipe_user_0.0.2.zip",
                 "reference": null,
-                "shasum": "e066f3c039a6da6a9cf357ada8d9da648849f1db"
+                "shasum": "4dafe7e1320a0f6fe9c486ebec82cfe091055b07"
             },
             "require": {
                 "guzzlehttp/guzzle": "~4.1",
