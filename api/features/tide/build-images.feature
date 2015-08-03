@@ -17,9 +17,9 @@ Feature:
     When the build is failing
     Then the tide should be failed
 
-  @wip
   Scenario: The build of images wait all the images to be built
-    Given 2 images builds were started
+    Given a tide is started
+    And 2 images builds were started
     When one image build is successful
     Then the image builds should be waiting
 

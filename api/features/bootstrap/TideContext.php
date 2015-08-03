@@ -16,7 +16,9 @@ use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
 use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\River\Event\Build\BuildFailed;
+use ContinuousPipe\River\Event\Build\BuildSuccessful;
 use ContinuousPipe\River\Event\TideFailed;
+use ContinuousPipe\River\Event\ImagesBuilt;
 
 class TideContext implements Context
 {
@@ -189,7 +191,9 @@ class TideContext implements Context
      */
     public function imagesBuildsWereStarted($number)
     {
-        throw new \Exception('Not implemented');
+        while ($number-- > 0) {
+            $this->anImageBuildWasStarted();
+        }
     }
 
     /**
@@ -197,7 +201,10 @@ class TideContext implements Context
      */
     public function oneImageBuildIsSuccessful()
     {
-        throw new \Exception('Not implemented');
+        $this->eventBus->handle(new BuildSuccessful(
+            $this->tideUuid,
+            $this->lastBuild
+        ));
     }
 
     /**
@@ -205,7 +212,28 @@ class TideContext implements Context
      */
     public function theImageBuildsShouldBeWaiting()
     {
-        throw new \Exception('Not implemented');
+        $events = $this->eventStore->findByTideUuid($this->tideUuid);
+        $numberOfImagesBuiltEvents = count(array_filter($events, function(TideEvent $event) {
+            return $event instanceof ImagesBuilt;
+        }));
+
+        if (0 !== $numberOfImagesBuiltEvents) {
+            throw new \Exception(sprintf(
+                'Found %d images built events, expected 0',
+                $numberOfImagesBuiltEvents
+            ));
+        }
+
+        try {
+            $this->theTideShouldBeFailed();
+            $failed = true;
+        } catch (\Exception $e) {
+            $failed = false;
+        }
+
+        if ($failed) {
+            throw new \RuntimeException('The tide is failed and wasn\'t expected to be');
+        }
     }
 
     /**
@@ -213,7 +241,7 @@ class TideContext implements Context
      */
     public function oneImageBuildIsFailed()
     {
-        throw new \Exception('Not implemented');
+        $this->theBuildIsFailing();
     }
 
     /**
