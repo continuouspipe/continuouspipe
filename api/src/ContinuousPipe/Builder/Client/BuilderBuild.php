@@ -26,6 +26,16 @@ class BuilderBuild
     private $status;
 
     /**
+     * @param string $uuid
+     * @param string $status
+     */
+    public function __construct($uuid, $status)
+    {
+        $this->uuid = $uuid;
+        $this->status = $status;
+    }
+
+    /**
      * @return string
      */
     public function getUuid()

@@ -7,5 +7,6 @@
     <services>
         <service id="river.file_system_resolver.fake" class="ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver" />
         <service id="river.file_system_resolver" alias="river.file_system_resolver.fake" />
+        <service id="builder.client" class="ContinuousPipe\River\Tests\Builder\EmptyBuilderClient" />
     </services>
 </container>

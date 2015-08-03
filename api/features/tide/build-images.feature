@@ -6,7 +6,6 @@ Feature:
     When a tide is started
     Then it should build the application images
 
-  @wip
   Scenario: When a tide it started, it should build all the images found in repository
     Given there is 2 application images in the repository
     When a tide is started

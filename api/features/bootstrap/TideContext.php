@@ -8,10 +8,12 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\ImageBuildsStarted;
+use ContinuousPipe\River\Event\Build\ImageBuildStarted;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use GitHub\WebHook\Model\Repository as GitHubRepository;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
+use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
 
 class TideContext implements Context
 {
@@ -29,15 +31,22 @@ class TideContext implements Context
      * @var EventStore
      */
     private $eventStore;
+    
+    /**
+     * @var FakeFileSystemResolver
+     */
+    private $fakeFileSystemResolver;
 
     /**
      * @param MessageBus $commandBus
      * @param EventStore $eventStore
+     * @param FakeFileSystemResolver $fakeFileSystemResolver
      */
-    public function __construct(MessageBus $commandBus, EventStore $eventStore)
+    public function __construct(MessageBus $commandBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver)
     {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
+        $this->fakeFileSystemResolver = $fakeFileSystemResolver;
     }
 
     /**
@@ -82,15 +91,38 @@ class TideContext implements Context
      */
     public function thereIsApplicationImagesInTheRepository($number)
     {
-        throw new \Exception('Not implemented');
+        $dockerComposeFile = '';
+        for ($i = 0; $i < $number; $i++) {
+            $dockerComposeFile .=
+                'image'.$i.':'.PHP_EOL.
+                '    build: ./'.$i.PHP_EOL.
+                '    labels:'.PHP_EOL.
+                '        com.continuouspipe.image-name: image'.$i.PHP_EOL;
+        }
+
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'docker-compose.yml' => $dockerComposeFile
+        ]);
     }
 
     /**
      * @Then it should build the :number application images
      */
-    public function itShouldBuildTheApplicationImages2($number)
+    public function itShouldBuildTheGivenNumberOfApplicationImages($number)
     {
-        throw new \Exception('Not implemented');
+        $events = $this->eventStore->findByTideUuid($this->tideUuid);
+        $numberOfImageBuildStartedEvents = count(array_filter($events, function(TideEvent $event) {
+            return $event instanceof ImageBuildStarted;
+        }));
+
+        $number = (int) $number;
+        if ($number !== $numberOfImageBuildStartedEvents) {
+            throw new \Exception(sprintf(
+                'Found %d image builds started event, expected %d',
+                $numberOfImageBuildStartedEvents,
+                $number
+            ));
+        }
     }
 
     /**
