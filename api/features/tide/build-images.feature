@@ -23,15 +23,16 @@ Feature:
     When one image build is successful
     Then the image builds should be waiting
 
-  @wip
   Scenario: The build of images is failed if one of the image build failed
-    Given 2 images builds were started
+    Given a tide is started
+    And 2 images builds were started
     When one image build is successful
     And one image build is failed
     Then the tide should be failed
 
-  @wip
   Scenario: The build of images only succeed if all images are successfully built
-    Given 2 images builds were started
+    Given there is 2 application images in the repository
+    And a tide is started
+    And 2 images builds were started
     When 2 image builds are successful
-    Then the image builds should be successful
+    Then the image should be successfully built

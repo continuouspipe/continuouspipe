@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Event;
 
 use Rhumsaa\Uuid\Uuid;
 
-class ImagesBuilt
+class ImagesBuilt implements TideEvent
 {
     /**
      * @var Uuid

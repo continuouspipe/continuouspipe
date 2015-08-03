@@ -249,14 +249,26 @@ class TideContext implements Context
      */
     public function imageBuildsAreSuccessful($number)
     {
-        throw new \Exception('Not implemented');
+        while ($number-- > 0) {
+            $this->oneImageBuildIsSuccessful();
+        }
     }
 
     /**
-     * @Then the image builds should be successful
+     * @Then the image should be successfully built
      */
-    public function theImageBuildsShouldBeSuccessful()
+    public function theImagesShouldBeSuccessfullyBuilt()
     {
-        throw new \Exception('Not implemented');
+        $events = $this->eventStore->findByTideUuid($this->tideUuid);
+        $numberOfImagesBuiltEvents = count(array_filter($events, function(TideEvent $event) {
+            return $event instanceof ImagesBuilt;
+        }));
+
+        if (1 !== $numberOfImagesBuiltEvents) {
+            throw new \Exception(sprintf(
+                'Found %d images built event, expected 1',
+                $numberOfImagesBuiltEvents
+            ));
+        }
     }
 }
