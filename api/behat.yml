@@ -1,0 +1,15 @@
+default:
+    suites:
+        application:
+            contexts:
+                - TideContext:
+                    - @command_bus
+                    - @river.event_store
+    extensions:
+        Behat\Symfony2Extension:
+            kernel:
+                env: test
+
+    gherkin:
+        filters:
+            tags: "~@wip"

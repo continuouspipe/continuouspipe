@@ -15,5 +15,10 @@
             <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
             <argument>%builder_base_url%</argument>
         </service>
+
+        <service id="builder.build_request_creator" class="ContinuousPipe\Builder\BuildRequestCreator">
+            <argument type="service" id="river.docker_compose.parser.project" />
+            <argument type="service" id="river.file_system_resolver" />
+        </service>
     </services>
 </container>

@@ -6,7 +6,6 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\EventDto;
 use Doctrine\ORM\EntityManager;
-use JMS\Serializer\Serializer;
 use Rhumsaa\Uuid\Uuid;
 
 class DoctrineEventStore implements EventStore
@@ -46,7 +45,7 @@ class DoctrineEventStore implements EventStore
     public function findByTideUuid(Uuid $uuid)
     {
         $dtoCollection = $this->getEntityRepository()->findBy([
-            'tideUuid' => (string) $uuid
+            'tideUuid' => (string) $uuid,
         ]);
 
         $events = [];

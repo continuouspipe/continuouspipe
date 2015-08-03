@@ -9,9 +9,10 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="jms_serializer" />
         </service>
+        <service id="river.event_store" alias="river.event_store.doctrine" />
 
         <service id="river.event_bus.middleware.tide_event_store" class="ContinuousPipe\River\EventBus\TideEventStoreMiddleware">
-            <argument type="service" id="river.event_store.doctrine" />
+            <argument type="service" id="river.event_store" />
 
             <tag name="event_bus_middleware" />
         </service>

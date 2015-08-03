@@ -6,6 +6,7 @@ use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\Event\External\CodePushedEvent;
 use ContinuousPipe\River\Repository\FlowRepository;
 use League\Tactician\CommandBus;
+use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class CodePushedListener
@@ -38,7 +39,7 @@ class CodePushedListener
         $repository = $event->getRepository();
         $flow = $this->flowRepository->findOneByRepositoryIdentifier($repository->getIdentifier());
 
-        $startCommand = new StartTideCommand($flow, $event->getCodeReference());
+        $startCommand = new StartTideCommand(Uuid::uuid1(), $flow, $event->getCodeReference());
         $this->commandBus->handle($startCommand);
     }
 }

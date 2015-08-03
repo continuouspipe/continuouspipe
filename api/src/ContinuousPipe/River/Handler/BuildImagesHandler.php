@@ -2,19 +2,11 @@
 
 namespace ContinuousPipe\River\Handler;
 
+use ContinuousPipe\Builder\BuildRequestCreator;
+use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\River\Command\BuildImagesCommand;
 use ContinuousPipe\River\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Repository\TideRepository;
-use ContinuousPipe\Builder\Image;
-use ContinuousPipe\Builder\Repository;
-use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\DockerCompose\Parser\ProjectParser;
-use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\CodeRepository;
-use ContinuousPipe\River\CodeRepository\DockerCompose\DockerComposeComponent;
-use ContinuousPipe\River\CodeRepository\GitHub\GitHubClientFactory;
-use ContinuousPipe\River\CodeRepository\GitHubRelativeFileSystem;
-use ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor;
 use ContinuousPipe\River\Command\BuildImageCommand;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -24,19 +16,6 @@ class BuildImagesHandler
      * @var MessageBus
      */
     private $commandBus;
-
-    /**
-     * @var ProjectParser
-     */
-    private $dockerComposeProjectParser;
-    /**
-     * @var GitHubClientFactory
-     */
-    private $gitHubClientFactory;
-    /**
-     * @var RepositoryAddressDescriptor
-     */
-    private $repositoryAddressDescriptor;
     /**
      * @var TideRepository
      */
@@ -45,15 +24,23 @@ class BuildImagesHandler
      * @var MessageBus
      */
     private $eventBus;
+    /**
+     * @var BuildRequestCreator
+     */
+    private $buildRequestCreator;
 
-    public function __construct(MessageBus $commandBus, MessageBus $eventBus, ProjectParser $dockerComposeProjectParser, GitHubClientFactory $gitHubClientFactory, RepositoryAddressDescriptor $repositoryAddressDescriptor, TideRepository $tideRepository)
+    /**
+     * @param MessageBus          $commandBus
+     * @param MessageBus          $eventBus
+     * @param TideRepository      $tideRepository
+     * @param BuildRequestCreator $buildRequestCreator
+     */
+    public function __construct(MessageBus $commandBus, MessageBus $eventBus, TideRepository $tideRepository, BuildRequestCreator $buildRequestCreator)
     {
         $this->commandBus = $commandBus;
-        $this->dockerComposeProjectParser = $dockerComposeProjectParser;
-        $this->gitHubClientFactory = $gitHubClientFactory;
-        $this->repositoryAddressDescriptor = $repositoryAddressDescriptor;
         $this->tideRepository = $tideRepository;
         $this->eventBus = $eventBus;
+        $this->buildRequestCreator = $buildRequestCreator;
     }
 
     /**
@@ -65,9 +52,13 @@ class BuildImagesHandler
         $tide = $this->tideRepository->find($tideUuid);
 
         $codeRepository = $tide->getCodeRepository();
-        $buildRequests = $this->createBuildRequests($codeRepository, $tide->getCodeReference());
-        if (empty($buildRequests)) {
-            throw new \RuntimeException('No image to build');
+        try {
+            $buildRequests = $this->buildRequestCreator->createBuildRequests($codeRepository, $tide->getCodeReference());
+            if (empty($buildRequests)) {
+                throw new \RuntimeException('No image to build');
+            }
+        } catch (FileNotFound $e) {
+            $buildRequests = [];
         }
 
         $this->eventBus->handle(new ImageBuildsStarted($tideUuid, $buildRequests));
@@ -76,41 +67,5 @@ class BuildImagesHandler
             $command = new BuildImageCommand($tideUuid, $buildRequest);
             $this->commandBus->handle($command);
         }
-    }
-
-    /**
-     * @param CodeRepository $repository
-     * @param CodeReference  $codeReference
-     *
-     * @return \ContinuousPipe\Builder\Request\BuildRequest[]
-     *
-     * @throws CodeRepository\InvalidRepositoryAddress
-     */
-    private function createBuildRequests(CodeRepository $repository, CodeReference $codeReference)
-    {
-        $dockerComposeComponents = $this->dockerComposeProjectParser->parse(
-            new GitHubRelativeFileSystem(
-                $this->gitHubClientFactory->createAnonymous(),
-                $this->repositoryAddressDescriptor->getDescription($repository->getAddress()),
-                $codeReference->getReference()
-            ),
-            $codeReference->getReference()
-        );
-
-        $buildRequests = [];
-        foreach ($dockerComposeComponents as $rawDockerComposeComponent) {
-            $dockerComposeComponent = DockerComposeComponent::fromParsed($rawDockerComposeComponent);
-            if (!$dockerComposeComponent->hasToBeBuilt()) {
-                continue;
-            }
-
-            $imageName = $dockerComposeComponent->getImageName();
-            $image = new Image($imageName, $codeReference->getReference());
-
-            $buildRequestRepository = new Repository($repository->getAddress(), $codeReference->getReference());
-            $buildRequests[] = new BuildRequest($buildRequestRepository, $image);
-        }
-
-        return $buildRequests;
     }
 }

@@ -47,14 +47,15 @@ class Tide
     /**
      * Create a new tide.
      *
+     * @param Uuid          $uuid
      * @param Flow          $flow
      * @param CodeReference $codeReference
      *
      * @return Tide
      */
-    public static function createFromFlow(Flow $flow, CodeReference $codeReference)
+    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference)
     {
-        $startEvent = new TideStarted(Uuid::uuid1(), $flow, $codeReference);
+        $startEvent = new TideStarted($uuid, $flow, $codeReference);
 
         $tide = new self();
         $tide->apply($startEvent);

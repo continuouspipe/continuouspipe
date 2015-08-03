@@ -9,7 +9,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
@@ -47,7 +46,7 @@ class GitHubWebHookController
         }
 
         return new JsonResponse([
-            'error' => sprintf('Event of type "%s" is not supported', $event->getType())
+            'error' => sprintf('Event of type "%s" is not supported', $event->getType()),
         ], 400);
     }
 }

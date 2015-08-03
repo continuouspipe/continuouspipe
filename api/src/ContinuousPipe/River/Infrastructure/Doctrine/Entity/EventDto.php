@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Infrastructure\Doctrine\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Rhumsaa\Uuid\Uuid;
 
 /**
  * @ORM\Entity

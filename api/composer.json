@@ -30,7 +30,8 @@
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
         "phpspec/phpspec": "~2.2",
-        "behat/behat": "~3.0"
+        "behat/behat": "~3.0",
+        "behat/symfony2-extension": "~2.0"
     },
     "scripts": {
         "pre-install-cmd": [

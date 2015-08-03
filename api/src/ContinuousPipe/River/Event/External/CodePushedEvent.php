@@ -24,9 +24,9 @@ class CodePushedEvent
     private $codeReference;
 
     /**
-     * @param Uuid $uuid
+     * @param Uuid           $uuid
      * @param CodeRepository $repository
-     * @param CodeReference $codeReference
+     * @param CodeReference  $codeReference
      */
     private function __construct(Uuid $uuid, CodeRepository $repository, CodeReference $codeReference)
     {

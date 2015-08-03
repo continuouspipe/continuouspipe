@@ -25,6 +25,10 @@ class AppKernel extends Kernel
             new AppBundle\AppBundle(),
         );
 
+        if ($this->getEnvironment() === 'test') {
+            $bundles[] = new AppTestBundle\AppTestBundle();
+        }
+
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
