@@ -11,9 +11,9 @@ Feature:
     When a tide is started
     Then it should build the 2 application images
 
-  @wip
   Scenario: If a build fails, the tide should fail at the same time
-    Given an image build was started
+    Given a tide is started
+    And an image build was started
     When the build is failing
     Then the tide should be failed
 

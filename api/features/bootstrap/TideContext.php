@@ -14,6 +14,9 @@ use GitHub\WebHook\Model\Repository as GitHubRepository;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
+use ContinuousPipe\Builder\Client\BuilderBuild;
+use ContinuousPipe\River\Event\Build\BuildFailed;
+use ContinuousPipe\River\Event\TideFailed;
 
 class TideContext implements Context
 {
@@ -21,6 +24,11 @@ class TideContext implements Context
      * @var Uuid|null
      */
     private $tideUuid;
+
+    /**
+     * @var BuilderBuild|null
+     */
+    private $lastBuild;
 
     /**
      * @var MessageBus
@@ -36,17 +44,23 @@ class TideContext implements Context
      * @var FakeFileSystemResolver
      */
     private $fakeFileSystemResolver;
+    /**
+     * @var MessageBus
+     */
+    private $eventBus;
 
     /**
      * @param MessageBus $commandBus
+     * @param MessageBus $eventBus
      * @param EventStore $eventStore
      * @param FakeFileSystemResolver $fakeFileSystemResolver
      */
-    public function __construct(MessageBus $commandBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver)
+    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver)
     {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
         $this->fakeFileSystemResolver = $fakeFileSystemResolver;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -130,7 +144,15 @@ class TideContext implements Context
      */
     public function anImageBuildWasStarted()
     {
-        throw new \Exception('Not implemented');
+        $this->lastBuild = new BuilderBuild(
+            (string) Uuid::uuid1(),
+            BuilderBuild::STATUS_PENDING
+        );
+
+        $this->eventStore->add(new ImageBuildStarted(
+            $this->tideUuid,
+            $this->lastBuild
+        ));
     }
 
     /**
@@ -138,7 +160,10 @@ class TideContext implements Context
      */
     public function theBuildIsFailing()
     {
-        throw new \Exception('Not implemented');
+        $this->eventBus->handle(new BuildFailed(
+            $this->tideUuid,
+            $this->lastBuild
+        ));
     }
 
     /**
@@ -146,7 +171,17 @@ class TideContext implements Context
      */
     public function theTideShouldBeFailed()
     {
-        throw new \Exception('Not implemented');
+        $events = $this->eventStore->findByTideUuid($this->tideUuid);
+        $numberOfImageBuildStartedEvents = count(array_filter($events, function(TideEvent $event) {
+            return $event instanceof TideFailed;
+        }));
+
+        if (1 !== $numberOfImageBuildStartedEvents) {
+            throw new \Exception(sprintf(
+                'Found %d tail failed event, expected 1',
+                $numberOfImageBuildStartedEvents
+            ));
+        }
     }
 
     /**
