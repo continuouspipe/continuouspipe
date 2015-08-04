@@ -4,8 +4,8 @@ namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\GitHub\GitHubArchive;
 use ContinuousPipe\Builder\GitHub\RepositoryAddressDescriptor;
-use ContinuousPipe\LogStream\Log;
-use ContinuousPipe\LogStream\Logger;
+use LogStream\Logger;
+use LogStream\Node\Text;
 
 class GitHubArchiveBuilder implements ArchiveBuilder
 {
@@ -22,7 +22,7 @@ class GitHubArchiveBuilder implements ArchiveBuilder
     public function getArchive(Repository $repository, Logger $logger)
     {
         $archiveUrl = $this->getArchiveUrl($repository);
-        $logger->log(Log::output(sprintf('Got archive URL from GitHub: %s', $archiveUrl)));
+        $logger->append(new Text(sprintf('Got archive URL from GitHub: %s', $archiveUrl)));
 
         return new GitHubArchive($archiveUrl);
     }

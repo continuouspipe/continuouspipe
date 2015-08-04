@@ -25,7 +25,7 @@
         <service id="builder.docker_builder" class="ContinuousPipe\Builder\DockerBuilder">
             <argument type="service" id="builder.github.archive_builder" />
             <argument type="service" id="builder.docker.client" />
-            <argument type="service" id="builder.logging.redis_logger_factory" />
+            <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="builder.build_repository" />
             <argument>%default_docker_registry_credentials%</argument>
         </service>

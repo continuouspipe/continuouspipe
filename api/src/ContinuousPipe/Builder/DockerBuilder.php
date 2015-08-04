@@ -3,8 +3,11 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Docker\Client;
-use ContinuousPipe\LogStream\Log;
-use ContinuousPipe\LogStream\LoggerFactory;
+use LogStream\Logger;
+use LogStream\LoggerFactory;
+use LogStream\Node\Container;
+use LogStream\Node\Text;
+use LogStream\WrappedLog;
 
 class DockerBuilder
 {
@@ -54,16 +57,18 @@ class DockerBuilder
      */
     public function build(Build $build)
     {
+        $logger = $this->getLogger($build);
+        $logger->start();
+
         $build->updateStatus(Build::STATUS_RUNNING);
         $build = $this->buildRepository->save($build);
 
         try {
-            $this->runBuild($build);
+            $this->runBuild($build, $logger);
 
             $build->updateStatus(Build::STATUS_SUCCESS);
         } catch (\Exception $e) {
-            $logger = $this->loggerFactory->createLogger($build);
-            $logger->log(Log::exception($e));
+            $logger->append(new Text($e->getMessage()));
 
             $build->updateStatus(Build::STATUS_ERROR);
         } finally {
@@ -75,20 +80,39 @@ class DockerBuilder
 
     /**
      * @param Build $build
+     * @param Logger $logger
      */
-    private function runBuild(Build $build)
+    private function runBuild(Build $build, Logger $logger)
     {
         $request = $build->getRequest();
         $repository = $request->getRepository();
         $targetImage = $request->getImage();
-
-        $logger = $this->loggerFactory->createLogger($build);
 
         $archive = $this->archiveBuilder->getArchive($repository, $logger);
         $this->dockerClient->build($archive, $targetImage, $logger);
 
         $credentials = $this->getCredentials();
         $this->dockerClient->push($targetImage, $credentials, $logger);
+    }
+
+    /**
+     * Get logger for that given build.
+     *
+     * @param Build $build
+     *
+     * @return Logger
+     */
+    private function getLogger(Build $build)
+    {
+        $logging = $build->getRequest()->getLogging();
+
+        if ($logStream = $logging->getLogstream()) {
+            return $this->loggerFactory->from(
+                new WrappedLog($logStream->getParentLogIdentifier(), new Container())
+            );
+        }
+
+        return null;
     }
 
     /**

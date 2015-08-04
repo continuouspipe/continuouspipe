@@ -14,10 +14,6 @@
             <argument type="service" id="builder.build_repository" />
         </service>
 
-        <service id="api.controller.build_logs" class="ApiBundle\Controller\BuildLogsController">
-            <argument type="service" id="builder.logging.log_aggregator" />
-        </service>
-
         <service id="builder.request.build_request_param_converter" class="ApiBundle\Request\ParamConverter\BuildRequestParamConverter">
             <argument type="service" id="jms_serializer" />
             <tag name="request.param_converter" priority="0" converter="build_request" />

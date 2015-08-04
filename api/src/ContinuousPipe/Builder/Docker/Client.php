@@ -3,11 +3,11 @@
 namespace ContinuousPipe\Builder\Docker;
 
 use ContinuousPipe\Builder\RegistryCredentials;
-use ContinuousPipe\LogStream\Log;
-use ContinuousPipe\LogStream\Logger;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Image;
 use Docker\Docker;
+use LogStream\Logger;
+use LogStream\Node\Text;
 
 class Client
 {
@@ -62,20 +62,21 @@ class Client
     private function getOutputCallback(Logger $logger)
     {
         return function ($output) use ($logger) {
+            $rawOutput = '';
             if (is_array($output) && array_key_exists('error', $output)) {
                 throw new DockerException($output['error']);
             } elseif (is_array($output) && array_key_exists('stream', $output)) {
-                $log = Log::output($output['stream']);
+                $rawOutput = $output['stream'];
             } elseif (is_array($output) && array_key_exists('status', $output)) {
-                $log = Log::output($output['status']);
+                $rawOutput = $output['status'];
             } elseif (is_string($output)) {
-                $log = Log::output($output);
+                $rawOutput = $output;
             } else {
                 throw new DockerException(print_r($output, true));
             }
 
-            if (!empty($log)) {
-                $logger->log($log);
+            if (!empty($rawOutput)) {
+                $logger->append(new Text($rawOutput));
             }
         };
     }

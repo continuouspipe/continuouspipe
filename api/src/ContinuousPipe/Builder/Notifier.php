@@ -4,8 +4,11 @@ namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Notifier\HttpNotifier;
 use ContinuousPipe\Builder\Notifier\NotificationException;
-use ContinuousPipe\LogStream\Log;
-use ContinuousPipe\LogStream\LoggerFactory;
+use LogStream\Logger;
+use LogStream\LoggerFactory;
+use LogStream\Node\Container;
+use LogStream\Node\Text;
+use LogStream\WrappedLog;
 
 class Notifier
 {
@@ -13,6 +16,7 @@ class Notifier
      * @var HttpNotifier
      */
     private $httpNotifier;
+
     /**
      * @var LoggerFactory
      */
@@ -35,14 +39,34 @@ class Notifier
     public function notify(Notification $notification, Build $build)
     {
         if ($http = $notification->getHttp()) {
-            $logger = $this->loggerFactory->createLogger($build);
+            $logger = $this->getLogger($build);
 
             try {
                 $this->httpNotifier->notify($http, $build);
-                $logger->log(Log::output(sprintf('Sent HTTP notification to "%s"', $http->getAddress())));
+                $logger->append(new Text(sprintf('Sent HTTP notification to "%s"', $http->getAddress())));
             } catch (NotificationException $e) {
-                $logger->log(Log::exception($e));
+                $logger->append(new Text($e));
             }
         }
+    }
+
+    /**
+     * Get logger for that given build.
+     *
+     * @param Build $build
+     *
+     * @return Logger
+     */
+    private function getLogger(Build $build)
+    {
+        $logging = $build->getRequest()->getLogging();
+
+        if ($logStream = $logging->getLogstream()) {
+            return $this->loggerFactory->from(
+                new WrappedLog($logStream->getParentLogIdentifier(), new Container())
+            );
+        }
+
+        return null;
     }
 }

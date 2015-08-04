@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Builder;
 
-use ContinuousPipe\LogStream\Logger;
+use LogStream\Logger;
 
 interface ArchiveBuilder
 {
