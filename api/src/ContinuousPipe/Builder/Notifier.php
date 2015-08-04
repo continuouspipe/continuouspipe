@@ -67,6 +67,6 @@ class Notifier
             );
         }
 
-        return null;
+        return;
     }
 }

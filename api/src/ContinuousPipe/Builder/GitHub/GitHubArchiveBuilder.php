@@ -1,9 +1,9 @@
 <?php
 
-namespace ContinuousPipe\Builder;
+namespace ContinuousPipe\Builder\GitHub;
 
-use ContinuousPipe\Builder\GitHub\GitHubArchive;
-use ContinuousPipe\Builder\GitHub\RepositoryAddressDescriptor;
+use ContinuousPipe\Builder\ArchiveBuilder;
+use ContinuousPipe\Builder\Repository;
 use LogStream\Logger;
 use LogStream\Node\Text;
 
@@ -14,11 +14,17 @@ class GitHubArchiveBuilder implements ArchiveBuilder
      */
     private $addressDescriptor;
 
+    /**
+     * @param RepositoryAddressDescriptor $addressDescriptor
+     */
     public function __construct(RepositoryAddressDescriptor $addressDescriptor)
     {
         $this->addressDescriptor = $addressDescriptor;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getArchive(Repository $repository, Logger $logger)
     {
         $archiveUrl = $this->getArchiveUrl($repository);
@@ -27,6 +33,13 @@ class GitHubArchiveBuilder implements ArchiveBuilder
         return new GitHubArchive($archiveUrl);
     }
 
+    /**
+     * @param Repository $repository
+     *
+     * @return string
+     *
+     * @throws InvalidRepositoryAddress
+     */
     private function getArchiveUrl(Repository $repository)
     {
         $description = $this->addressDescriptor->getDescription($repository->getAddress());

@@ -19,14 +19,12 @@
             <argument type="service" id="docker" />
         </service>
         <service id="builder.github.repository_address_descriptor" class="ContinuousPipe\Builder\GitHub\RepositoryAddressDescriptor" />
-        <service id="builder.github.archive_builder" class="ContinuousPipe\Builder\GitHubArchiveBuilder">
+        <service id="builder.archive_builder" class="ContinuousPipe\Builder\GitHub\GitHubArchiveBuilder">
             <argument type="service" id="builder.github.repository_address_descriptor" />
         </service>
-        <service id="builder.docker_builder" class="ContinuousPipe\Builder\DockerBuilder">
-            <argument type="service" id="builder.github.archive_builder" />
+        <service id="builder.builder" class="ContinuousPipe\Builder\Docker\DockerBuilder">
+            <argument type="service" id="builder.archive_builder" />
             <argument type="service" id="builder.docker.client" />
-            <argument type="service" id="log_stream.logger_factory" />
-            <argument type="service" id="builder.build_repository" />
             <argument>%default_docker_registry_credentials%</argument>
         </service>
         <service id="builder.build_repository" class="ContinuousPipe\Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
