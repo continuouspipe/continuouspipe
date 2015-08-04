@@ -2,13 +2,10 @@
 
 namespace ContinuousPipe\Builder;
 
+use ContinuousPipe\Builder\Logging\BuildLoggerFactory;
 use ContinuousPipe\Builder\Notifier\HttpNotifier;
 use ContinuousPipe\Builder\Notifier\NotificationException;
-use LogStream\Logger;
-use LogStream\LoggerFactory;
-use LogStream\Node\Container;
 use LogStream\Node\Text;
-use LogStream\WrappedLog;
 
 class Notifier
 {
@@ -18,15 +15,15 @@ class Notifier
     private $httpNotifier;
 
     /**
-     * @var LoggerFactory
+     * @var BuildLoggerFactory
      */
     private $loggerFactory;
 
     /**
-     * @param LoggerFactory $loggerFactory
+     * @param BuildLoggerFactory $loggerFactory
      * @param HttpNotifier  $httpNotifier
      */
-    public function __construct(LoggerFactory $loggerFactory, HttpNotifier $httpNotifier)
+    public function __construct(BuildLoggerFactory $loggerFactory, HttpNotifier $httpNotifier)
     {
         $this->httpNotifier = $httpNotifier;
         $this->loggerFactory = $loggerFactory;
@@ -39,7 +36,7 @@ class Notifier
     public function notify(Notification $notification, Build $build)
     {
         if ($http = $notification->getHttp()) {
-            $logger = $this->getLogger($build);
+            $logger = $this->loggerFactory->forBuild($build);
 
             try {
                 $this->httpNotifier->notify($http, $build);
@@ -48,25 +45,5 @@ class Notifier
                 $logger->append(new Text($e));
             }
         }
-    }
-
-    /**
-     * Get logger for that given build.
-     *
-     * @param Build $build
-     *
-     * @return Logger
-     */
-    private function getLogger(Build $build)
-    {
-        $logging = $build->getRequest()->getLogging();
-
-        if ($logStream = $logging->getLogstream()) {
-            return $this->loggerFactory->from(
-                new WrappedLog($logStream->getParentLogIdentifier(), new Container())
-            );
-        }
-
-        return;
     }
 }

@@ -9,7 +9,7 @@
             <argument type="service" id="builder.builder"/>
             <argument type="service" id="builder.notifier" />
             <argument type="service" id="builder.build_repository" />
-            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="builder.build_logger_factory" />
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Command\BuildCommand"/>
         </service>

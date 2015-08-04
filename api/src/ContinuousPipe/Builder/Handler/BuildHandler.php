@@ -6,13 +6,9 @@ use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
 use ContinuousPipe\Builder\BuildRepository;
 use ContinuousPipe\Builder\Command\BuildCommand;
+use ContinuousPipe\Builder\Logging\BuildLoggerFactory;
 use ContinuousPipe\Builder\Notifier;
-use LogStream\EmptyLogger;
-use LogStream\Logger;
-use LogStream\LoggerFactory;
-use LogStream\Node\Container;
 use LogStream\Node\Text;
-use LogStream\WrappedLog;
 
 class BuildHandler
 {
@@ -32,7 +28,7 @@ class BuildHandler
     private $buildRepository;
 
     /**
-     * @var LoggerFactory
+     * @var BuildLoggerFactory
      */
     private $loggerFactory;
 
@@ -40,9 +36,9 @@ class BuildHandler
      * @param Builder         $builder
      * @param Notifier        $notifier
      * @param BuildRepository $buildRepository
-     * @param LoggerFactory   $loggerFactory
+     * @param BuildLoggerFactory   $loggerFactory
      */
-    public function __construct(Builder $builder, Notifier $notifier, BuildRepository $buildRepository, LoggerFactory $loggerFactory)
+    public function __construct(Builder $builder, Notifier $notifier, BuildRepository $buildRepository, BuildLoggerFactory $loggerFactory)
     {
         $this->builder = $builder;
         $this->notifier = $notifier;
@@ -57,7 +53,7 @@ class BuildHandler
     {
         $build = $command->getBuild();
 
-        $logger = $this->getLogger($build);
+        $logger = $this->loggerFactory->forBuild($build);
         $logger->start();
 
         $build->updateStatus(Build::STATUS_RUNNING);
@@ -79,25 +75,5 @@ class BuildHandler
         if (null !== $notification) {
             $this->notifier->notify($notification, $build);
         }
-    }
-
-    /**
-     * Get logger for that given build.
-     *
-     * @param Build $build
-     *
-     * @return Logger
-     */
-    private function getLogger(Build $build)
-    {
-        if ($logging = $build->getRequest()->getLogging()) {
-            if ($logStream = $logging->getLogstream()) {
-                return $this->loggerFactory->from(
-                    new WrappedLog($logStream->getParentLogIdentifier(), new Container())
-                );
-            }
-        }
-
-        return new EmptyLogger();
     }
 }
