@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Command;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
+use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
 
 class BuildImageCommand
@@ -15,15 +16,21 @@ class BuildImageCommand
      * @var Uuid
      */
     private $tideUuid;
+    /**
+     * @var Log
+     */
+    private $log;
 
     /**
-     * @param Uuid         $tideUuid
+     * @param Uuid $tideUuid
      * @param BuildRequest $buildRequest
+     * @param Log $log
      */
-    public function __construct(Uuid $tideUuid, BuildRequest $buildRequest)
+    public function __construct(Uuid $tideUuid, BuildRequest $buildRequest, Log $log)
     {
         $this->buildRequest = $buildRequest;
         $this->tideUuid = $tideUuid;
+        $this->log = $log;
     }
 
     /**
@@ -40,5 +47,13 @@ class BuildImageCommand
     public function getBuildRequest()
     {
         return $this->buildRequest;
+    }
+
+    /**
+     * @return Log
+     */
+    public function getLog()
+    {
+        return $this->log;
     }
 }

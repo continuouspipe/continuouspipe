@@ -8,6 +8,8 @@ use ContinuousPipe\River\Command\BuildImagesCommand;
 use ContinuousPipe\River\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Command\BuildImageCommand;
+use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
 
 class BuildImagesHandler
@@ -28,19 +30,25 @@ class BuildImagesHandler
      * @var BuildRequestCreator
      */
     private $buildRequestCreator;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
 
     /**
-     * @param MessageBus          $commandBus
-     * @param MessageBus          $eventBus
-     * @param TideRepository      $tideRepository
+     * @param MessageBus $commandBus
+     * @param MessageBus $eventBus
+     * @param TideRepository $tideRepository
      * @param BuildRequestCreator $buildRequestCreator
+     * @param LoggerFactory $loggerFactory
      */
-    public function __construct(MessageBus $commandBus, MessageBus $eventBus, TideRepository $tideRepository, BuildRequestCreator $buildRequestCreator)
+    public function __construct(MessageBus $commandBus, MessageBus $eventBus, TideRepository $tideRepository, BuildRequestCreator $buildRequestCreator, LoggerFactory $loggerFactory)
     {
         $this->commandBus = $commandBus;
         $this->tideRepository = $tideRepository;
         $this->eventBus = $eventBus;
         $this->buildRequestCreator = $buildRequestCreator;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -48,6 +56,9 @@ class BuildImagesHandler
      */
     public function handle(BuildImagesCommand $command)
     {
+        $logger = $this->loggerFactory->from($command->getLog());
+        $logger->start();
+
         $tideUuid = $command->getTideUuid();
         $tide = $this->tideRepository->find($tideUuid);
 
@@ -64,7 +75,9 @@ class BuildImagesHandler
         $this->eventBus->handle(new ImageBuildsStarted($tideUuid, $buildRequests));
 
         foreach ($buildRequests as $buildRequest) {
-            $command = new BuildImageCommand($tideUuid, $buildRequest);
+            $log = $logger->append(new Text(sprintf('Building image "%s"', $buildRequest->getImage()->getName())));
+
+            $command = new BuildImageCommand($tideUuid, $buildRequest, $log);
             $this->commandBus->handle($command);
         }
     }

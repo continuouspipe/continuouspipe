@@ -58,7 +58,12 @@ class HttpBuilderClient implements BuilderClient
             ],
         ]);
 
-        $build = $this->serializer->deserialize($response->getBody()->getContents(), BuilderBuild::class, 'json');
+        $body = $response->getBody();
+        if ($body->isSeekable()) {
+            $body->seek(0);
+        }
+
+        $build = $this->serializer->deserialize($body->getContents(), BuilderBuild::class, 'json');
 
         return $build;
     }

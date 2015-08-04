@@ -19,6 +19,7 @@
             <argument type="service" id="river.repository.tide" />
             <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="router" />
+            <argument type="service" id="logstream.logger_factory" />
 
             <tag name="command_handler" handles="ContinuousPipe\River\Command\BuildImageCommand" />
         </service>
@@ -27,6 +28,8 @@
             <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="river.repository.tide" />
             <argument type="service" id="builder.build_request_creator" />
+            <argument type="service" id="logstream.logger_factory" />
+
             <tag name="command_handler" handles="ContinuousPipe\River\Command\BuildImagesCommand" />
         </service>
 
@@ -34,10 +37,14 @@
         <service id="river.listener.code_pushed" class="ContinuousPipe\River\EventListener\External\CodePushedListener">
             <argument type="service" id="simple_bus.command_bus" />
             <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="logstream.logger_factory" />
+
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\External\CodePushedEvent"/>
         </service>
         <service id="river.listener.tide_started" class="ContinuousPipe\River\EventListener\TideStartedListener">
             <argument type="service" id="simple_bus.command_bus" />
+            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="logstream.logger_factory" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted"/>
         </service>

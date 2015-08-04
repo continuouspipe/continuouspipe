@@ -27,7 +27,7 @@ class StartTideHandler
     public function handle(StartTideCommand $command)
     {
         $flow = $command->getFlow();
-        $tide = Tide::create($command->getUuid(), $flow, $command->getCodeReference());
+        $tide = Tide::create($command->getUuid(), $flow, $command->getCodeReference(), $command->getParentLog());
 
         foreach ($tide->popNewEvents() as $event) {
             $this->eventBus->handle($event);

@@ -23,6 +23,7 @@
         "ramsey/uuid": "~2.8",
         "simple-bus/symfony-bridge": "~4.0",
         "sroze/github-webhook": "*@dev",
+        "sroze/log-stream": "*@dev",
         "continuous-pipe/security-bundle": "*@dev",
         "continuous-pipe/builder-model": "*@dev",
         "continuous-pipe/docker-compose": "*@dev"

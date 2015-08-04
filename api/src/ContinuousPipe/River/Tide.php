@@ -10,6 +10,7 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\User\User;
+use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
 
 class Tide
@@ -45,17 +46,23 @@ class Tide
     private $user;
 
     /**
+     * @var Log
+     */
+    private $parentLog;
+
+    /**
      * Create a new tide.
      *
-     * @param Uuid          $uuid
-     * @param Flow          $flow
+     * @param Uuid $uuid
+     * @param Flow $flow
      * @param CodeReference $codeReference
+     * @param Log $parentLog
      *
      * @return Tide
      */
-    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference)
+    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $parentLog)
     {
-        $startEvent = new TideStarted($uuid, $flow, $codeReference);
+        $startEvent = new TideStarted($uuid, $flow, $codeReference, $parentLog);
 
         $tide = new self();
         $tide->apply($startEvent);
@@ -121,6 +128,7 @@ class Tide
         $this->user = $event->getFlow()->getUser();
         $this->codeRepository = $event->getFlow()->getRepository();
         $this->codeReference = $event->getCodeReference();
+        $this->parentLog = $event->getParentLog();
     }
 
     /**
@@ -171,6 +179,14 @@ class Tide
     public function getCodeReference()
     {
         return $this->codeReference;
+    }
+
+    /**
+     * @return Log
+     */
+    public function getParentLog()
+    {
+        return $this->parentLog;
     }
 
     /**

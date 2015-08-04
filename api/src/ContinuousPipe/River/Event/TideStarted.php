@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Event;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
+use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
 
 class TideStarted implements TideEvent
@@ -20,17 +21,23 @@ class TideStarted implements TideEvent
      * @var CodeReference
      */
     private $codeReference;
+    /**
+     * @var Log
+     */
+    private $parentLog;
 
     /**
-     * @param Uuid          $tideUuid
-     * @param Flow          $flow
+     * @param Uuid $tideUuid
+     * @param Flow $flow
      * @param CodeReference $codeReference
+     * @param Log $parentLog
      */
-    public function __construct(Uuid $tideUuid, Flow $flow, CodeReference $codeReference)
+    public function __construct(Uuid $tideUuid, Flow $flow, CodeReference $codeReference, Log $parentLog)
     {
         $this->tideUuid = $tideUuid;
         $this->flow = $flow;
         $this->codeReference = $codeReference;
+        $this->parentLog = $parentLog;
     }
 
     /**
@@ -55,5 +62,13 @@ class TideStarted implements TideEvent
     public function getCodeReference()
     {
         return $this->codeReference;
+    }
+
+    /**
+     * @return Log
+     */
+    public function getParentLog()
+    {
+        return $this->parentLog;
     }
 }

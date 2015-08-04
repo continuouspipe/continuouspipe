@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9dbf67bdb6e4fc8f2125f4a2fa1e1332",
+    "hash": "b5a3f9215e9d0d0994dab4e02feaf8e6",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -2174,6 +2174,56 @@
             "time": "2015-01-28 21:50:33"
         },
         {
+            "name": "predis/predis",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nrk/predis.git",
+                "reference": "84060b9034d756b4d79641667d7f9efe1aeb8e04"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nrk/predis/zipball/84060b9034d756b4d79641667d7f9efe1aeb8e04",
+                "reference": "84060b9034d756b4d79641667d7f9efe1aeb8e04",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "ext-curl": "Allows access to Webdis when paired with phpiredis",
+                "ext-phpiredis": "Allows faster serialization and deserialization of the Redis protocol"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Predis\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniele Alessandri",
+                    "email": "suppakilla@gmail.com",
+                    "homepage": "http://clorophilla.net"
+                }
+            ],
+            "description": "Flexible and feature-complete PHP client library for Redis",
+            "homepage": "http://github.com/nrk/predis",
+            "keywords": [
+                "nosql",
+                "predis",
+                "redis"
+            ],
+            "time": "2015-07-30 18:34:15"
+        },
+        {
             "name": "psr/log",
             "version": "1.0.0",
             "source": {
@@ -2571,6 +2621,30 @@
             "autoload": {
                 "psr-4": {
                     "GitHub\\WebHook\\": "src/"
+                }
+            }
+        },
+        {
+            "name": "sroze/log-stream",
+            "version": "0.0.1",
+            "dist": {
+                "type": "zip",
+                "url": "../../artifact/sroze_log-stream_0.0.1.zip",
+                "reference": null,
+                "shasum": "32ecfbb615ee47f3beec917cce7b1c6a01a5102f"
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~4.0",
+                "predis/predis": "~1.0",
+                "symfony/serializer": "~2.7"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "2.3.x@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LogStream\\": "src/"
                 }
             }
         },
@@ -3829,7 +3903,8 @@
         "sroze/github-webhook": 20,
         "continuous-pipe/security-bundle": 20,
         "continuous-pipe/builder-model": 20,
-        "continuous-pipe/docker-compose": 20
+        "continuous-pipe/docker-compose": 20,
+        "sroze/log-stream": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
