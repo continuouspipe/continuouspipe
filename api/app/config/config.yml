@@ -118,3 +118,6 @@ event_bus:
 
 command_bus:
     logging: ~
+
+log_stream:
+    url: %logstream_url%
