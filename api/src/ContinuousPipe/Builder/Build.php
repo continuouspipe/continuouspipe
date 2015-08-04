@@ -3,11 +3,10 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\LogStream\LogRelatedObject;
 use Rhumsaa\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
-class Build implements LogRelatedObject, \JsonSerializable
+class Build implements \JsonSerializable
 {
     const STATUS_PENDING = 'pending';
     const STATUS_RUNNING = 'running';
