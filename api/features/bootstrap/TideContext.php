@@ -80,7 +80,8 @@ class TideContext implements Context
                     new GitHubRepository('foo', 'http://github.com/foo/bar')
                 )
             ),
-            new CodeReference('master')
+            new CodeReference('master'),
+            new \LogStream\WrappedLog(uniqid(), new \LogStream\Node\Container())
         ));
     }
 
