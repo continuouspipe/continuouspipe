@@ -7,6 +7,8 @@ default:
                     - @event_bus
                     - @river.event_store
                     - @river.file_system_resolver.fake
+                - LoggingContext:
+                    - @log_stream.event_store.in_memory
     extensions:
         Behat\Symfony2Extension:
             kernel:

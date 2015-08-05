@@ -75,7 +75,7 @@ class BuildImagesHandler
         $this->eventBus->handle(new ImageBuildsStarted($tideUuid, $buildRequests));
 
         foreach ($buildRequests as $buildRequest) {
-            $log = $logger->append(new Text(sprintf('Building image "%s"', $buildRequest->getImage()->getName())));
+            $log = $logger->append(new Text(sprintf('Building image \'%s\'', $buildRequest->getImage()->getName())));
 
             $command = new BuildImageCommand($tideUuid, $buildRequest, $log);
             $this->commandBus->handle($command);
