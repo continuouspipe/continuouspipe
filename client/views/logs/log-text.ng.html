@@ -1,7 +1,10 @@
 <div class="content" ng-click="toggleChildrenDisplay(log)">
     <div ng-if="log.status == 'running'" class="counter" log-time-counter="log"></div>
-    <i class="round"></i> {{ log.contents }}
+    <i class="round">
+        <span ng-if="!displayChildrenOf[log._id]" class="glyphicon glyphicon-chevron-right"></span>
+        <span ng-if="displayChildrenOf[log._id]" class="glyphicon glyphicon-chevron-down"></span>
+    </i> {{ log.contents }}
 </div>
-<div class="children" ng-show="childrenCounter.count > 0">
-    <logs ng-if="displayChildrenOf[log._id]" log-id="log._id" counter="childrenCounter"></logs>
+<div class="children">
+    <logs ng-if="displayChildrenOf[log._id]" log-id="log._id"></logs>
 </div>

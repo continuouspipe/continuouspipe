@@ -34,6 +34,18 @@ $text-rounds-radius: 20px;
                     border-radius: ($text-rounds-radius / 2);
                     background-color: $default-color;
                     vertical-align: middle;
+                    text-align: center;
+
+                    > .glyphicon {
+                        color: #fff;
+                        font-size: 0.7em;
+                        vertical-align: middle;
+                        margin-top: -3px;
+
+                        &.glyphicon-chevron-right {
+                            margin-top: -4px;
+                        }
+                    }
                 }
             }
 
