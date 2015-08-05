@@ -71,6 +71,7 @@ class LoggedDockerClient implements Client
 
             $pushLogger->success();
         } catch (DockerException $e) {
+            $pushLogger->append(new Text($e->getMessage()));
             $pushLogger->failure();
         }
     }

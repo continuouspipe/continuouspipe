@@ -6,6 +6,7 @@ use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Image;
 use Docker\Docker;
+use Docker\Exception\UnexpectedStatusCodeException;
 use LogStream\Logger;
 use LogStream\Node\Text;
 
@@ -38,11 +39,15 @@ class HttpClient implements Client
      */
     public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
     {
-        $this->docker->getImageManager()->push(
-            $image->getName(), $image->getTag(),
-            $credentials->getAuthenticationString(),
-            $this->getOutputCallback($logger)
-        );
+        try {
+            $this->docker->getImageManager()->push(
+                $image->getName(), $image->getTag(),
+                $credentials->getAuthenticationString(),
+                $this->getOutputCallback($logger)
+            );
+        } catch (UnexpectedStatusCodeException $e) {
+            throw new DockerException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -68,7 +73,7 @@ class HttpClient implements Client
             }
 
             if (!empty($rawOutput)) {
-                $logger->append(new Text($rawOutput.PHP_EOL));
+                $logger->append(new Text($rawOutput));
             }
         };
     }
