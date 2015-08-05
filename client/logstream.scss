@@ -1,7 +1,8 @@
 // Colors
 $success-color: #64ad03;
-$pending-color: #2979ca;
+$default-color: #999;
 $failure-color: #d61341;
+$running-color: #2979ca;
 
 // Layout
 $text-rounds-radius: 20px;
@@ -31,7 +32,7 @@ $text-rounds-radius: 20px;
                     width: $text-rounds-radius;
                     height: $text-rounds-radius;
                     border-radius: ($text-rounds-radius / 2);
-                    background-color: $pending-color;
+                    background-color: $default-color;
                     vertical-align: middle;
                 }
             }
@@ -39,7 +40,17 @@ $text-rounds-radius: 20px;
             .children {
                 padding-left: 20px;
                 margin-left: $text-rounds-radius / 2;
-                border-left: 1px solid $pending-color;
+                border-left: 1px solid $default-color;
+            }
+
+            &.status-running {
+                div.content i.round {
+                    background-color: $running-color;
+                }
+
+                .children {
+                    border-left-color: $running-color;
+                }
             }
 
             &.status-success {

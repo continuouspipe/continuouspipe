@@ -1,5 +1,5 @@
 <div class="content" ng-click="toggleChildrenDisplay(log)">
-    <div class="counter" log-time-counter="log"></div>
+    <div ng-if="log.status == 'running'" class="counter" log-time-counter="log"></div>
     <i class="round"></i> {{ log.contents }}
 </div>
 <div class="children" ng-show="childrenCounter.count > 0">
