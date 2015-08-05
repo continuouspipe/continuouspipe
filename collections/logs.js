@@ -5,7 +5,8 @@ Logs.attachSchema(new SimpleSchema({
     },
     contents: {
         type: String,
-        optional: true
+        optional: true,
+        trim: false
     },
     status: {
         type: String,

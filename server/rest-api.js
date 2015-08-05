@@ -7,6 +7,30 @@ var Api = new Restivus({
 // /api/logs/:id for Items collection
 Api.addCollection(Logs, {
     endpoints: {
+        post: {
+            action: function() {
+                var id = Logs.insert(this.bodyParams, {autoConvert: false}),
+                    entity = Logs.findOne(id);
+
+                if (entity) {
+                    return {
+                        statusCode: 201,
+                        body: {
+                            status: 'success',
+                            data: entity
+                        }
+                    };
+                }
+
+                return {
+                    statusCode: 400,
+                    body: {
+                        status: 'fail',
+                        message: 'No item added'
+                    }
+                };
+            }
+        },
         put: {
             action: function() {
                 var objectIdentifier = this.urlParams.id,
@@ -24,7 +48,9 @@ Api.addCollection(Logs, {
                 // We want to apply and differential PUT, so remove the fields missing on the body
                 delete patch.$unset;
 
-                var isUpdated = Logs.update(objectIdentifier, patch);
+                var isUpdated = Logs.update(objectIdentifier, patch, {
+                    autoConvert: false
+                });
                 if (isUpdated) {
                     return {
                         status: 'success',
