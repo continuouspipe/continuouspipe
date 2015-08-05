@@ -7,6 +7,9 @@ use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
 use ContinuousPipe\Builder\RegistryCredentials;
 use LogStream\Logger;
+use LogStream\LoggerFactory;
+use LogStream\Node\Raw;
+use LogStream\Node\Text;
 
 class DockerBuilder implements Builder
 {
@@ -27,8 +30,8 @@ class DockerBuilder implements Builder
 
     /**
      * @param ArchiveBuilder $archiveBuilder
-     * @param Client         $dockerClient
-     * @param string         $defaultCredentials
+     * @param Client $dockerClient
+     * @param string $defaultCredentials
      */
     public function __construct(ArchiveBuilder $archiveBuilder, Client $dockerClient, $defaultCredentials = null)
     {

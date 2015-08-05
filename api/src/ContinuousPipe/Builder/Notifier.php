@@ -42,7 +42,7 @@ class Notifier
                 $this->httpNotifier->notify($http, $build);
                 $logger->append(new Text(sprintf('Sent HTTP notification to "%s"', $http->getAddress())));
             } catch (NotificationException $e) {
-                $logger->append(new Text($e));
+                $logger->append(new Text($e->getMessage()));
             }
         }
     }

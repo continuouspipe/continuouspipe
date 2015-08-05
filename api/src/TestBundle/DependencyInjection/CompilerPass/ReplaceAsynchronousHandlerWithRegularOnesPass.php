@@ -1,6 +1,6 @@
 <?php
 
-namespace WorkerBundle\DependencyInjection\CompilerPass;
+namespace TestBundle\DependencyInjection\CompilerPass;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

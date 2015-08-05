@@ -15,7 +15,7 @@
             <argument type="service" id="docker.client"/>
         </service>
 
-        <service id="builder.docker.client" class="ContinuousPipe\Builder\Docker\Client">
+        <service id="builder.docker.client" class="ContinuousPipe\Builder\Docker\HttpClient">
             <argument type="service" id="docker" />
         </service>
         <service id="builder.github.repository_address_descriptor" class="ContinuousPipe\Builder\GitHub\RepositoryAddressDescriptor" />
