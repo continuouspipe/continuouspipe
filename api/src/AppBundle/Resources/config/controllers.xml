@@ -24,5 +24,9 @@
 
             <tag name="request.param_converter" converter="code-repository" />
         </service>
+
+        <service id="serializer.uuid_handler" class="ContinuousPipe\River\Serializer\UuidHandler">
+            <tag name="jms_serializer.subscribing_handler" />
+        </service>
     </services>
 </container>
