@@ -6,6 +6,7 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
+use ContinuousPipe\User\User;
 use ContinuousPipe\User\UserRepository;
 use Doctrine\ORM\EntityManager;
 use Rhumsaa\Uuid\Uuid;
@@ -68,8 +69,34 @@ class DoctrineFlowRepository implements FlowRepository
             throw new FlowNotFound();
         }
 
-        $user = $this->userRepository->findOneByEmail($flowDto->userUsername);
-        $flow = new Flow(Uuid::fromString($flowDto->uuid), $user, $flowDto->codeRepository);
+        return $this->flowFromDto($flowDto);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByUser(User $user)
+    {
+        $flowDtos = $this->getEntityRepository()->findBy([
+            'userUsername' => $user->getEmail()
+        ]);
+
+        return array_map(function(FlowDto $dto) {
+            return $this->flowFromDto($dto);
+        }, $flowDtos);
+    }
+
+    /**
+     * Get flow from dto.
+     *
+     * @param FlowDto $dto
+     *
+     * @return Flow
+     */
+    private function flowFromDto(FlowDto $dto)
+    {
+        $user = $this->userRepository->findOneByEmail($dto->userUsername);
+        $flow = new Flow(Uuid::fromString($dto->uuid), $user, $dto->codeRepository);
 
         return $flow;
     }

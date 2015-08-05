@@ -13,9 +13,9 @@ use SimpleBus\Message\Bus\MessageBus;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
- * @Route(service="app.controller.create_flow")
+ * @Route(service="app.controller.flow")
  */
-class CreateFlowController
+class FlowController
 {
     /**
      * @var MessageBus
@@ -53,5 +53,17 @@ class CreateFlowController
         $this->eventBus->handle(new FlowCreated($flow));
 
         return $flow;
+    }
+
+    /**
+     * Create a new flow from a repository.
+     *
+     * @Route("/flows", methods={"GET"})
+     * @ParamConverter("user", converter="user")
+     * @View
+     */
+    public function listAction(User $user)
+    {
+        return $this->flowRepository->findByUser($user);
     }
 }

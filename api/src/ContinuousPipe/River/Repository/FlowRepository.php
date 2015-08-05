@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Repository;
 
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\User\User;
 
 interface FlowRepository
 {
@@ -21,4 +22,13 @@ interface FlowRepository
      * @return Flow
      */
     public function findOneByRepositoryIdentifier($identifier);
+
+    /**
+     * Find flows by user.
+     *
+     * @param User $user
+     *
+     * @return Flow[]
+     */
+    public function findByUser(User $user);
 }

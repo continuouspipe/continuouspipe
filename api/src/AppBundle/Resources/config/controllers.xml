@@ -8,7 +8,7 @@
         <service id="app.controller.user_repositories" class="AppBundle\Controller\UserRepositoriesController">
             <argument type="service" id="repository_river.code_repository_repository" />
         </service>
-        <service id="app.controller.create_flow" class="AppBundle\Controller\CreateFlowController">
+        <service id="app.controller.flow" class="AppBundle\Controller\FlowController">
             <argument type="service" id="river.repository.flow" />
             <argument type="service" id="simple_bus.event_bus" />
         </service>
