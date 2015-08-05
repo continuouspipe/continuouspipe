@@ -2,20 +2,15 @@
 
 namespace ContinuousPipe\River\Event;
 
-use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
 
-class ImageBuildsStarted implements TideEvent
+class ImageBuildsFailed implements TideEvent
 {
     /**
      * @var Uuid
      */
     private $tideUuid;
-    /**
-     * @var BuildRequest[]
-     */
-    private $buildRequests;
     /**
      * @var Log
      */
@@ -23,13 +18,11 @@ class ImageBuildsStarted implements TideEvent
 
     /**
      * @param Uuid $tideUuid
-     * @param BuildRequest[] $buildRequests
      * @param Log $log
      */
-    public function __construct(Uuid $tideUuid, array $buildRequests, Log $log)
+    public function __construct(Uuid $tideUuid, Log $log)
     {
         $this->tideUuid = $tideUuid;
-        $this->buildRequests = $buildRequests;
         $this->log = $log;
     }
 
@@ -39,14 +32,6 @@ class ImageBuildsStarted implements TideEvent
     public function getTideUuid()
     {
         return $this->tideUuid;
-    }
-
-    /**
-     * @return BuildRequest[]
-     */
-    public function getBuildRequests()
-    {
-        return $this->buildRequests;
     }
 
     /**

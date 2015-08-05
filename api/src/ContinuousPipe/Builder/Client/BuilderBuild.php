@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Builder\Client;
 
+use ContinuousPipe\Builder\Request\BuildRequest;
 use JMS\Serializer\Annotation as JMS;
 
 class BuilderBuild
@@ -24,6 +25,13 @@ class BuilderBuild
      * @var string
      */
     private $status;
+
+    /**
+     * @JMS\Type("ContinuousPipe\Builder\Request\BuildRequest")
+     *
+     * @var BuildRequest
+     */
+    private $request;
 
     /**
      * @param string $uuid
@@ -65,5 +73,13 @@ class BuilderBuild
     public function isErrored()
     {
         return $this->getStatus() == self::STATUS_ERROR;
+    }
+
+    /**
+     * @return BuildRequest
+     */
+    public function getRequest()
+    {
+        return $this->request;
     }
 }

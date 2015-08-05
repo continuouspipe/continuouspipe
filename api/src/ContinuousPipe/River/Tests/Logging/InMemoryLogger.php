@@ -60,4 +60,28 @@ class InMemoryLogger implements Logger
     {
         return $this->emptyLogger->getLog();
     }
+
+    /**
+     * Update the log status to success.
+     */
+    public function success()
+    {
+        $log = $this->emptyLogger->getLog();
+
+        if ($log instanceof MutableWrappedLog) {
+            $log->setStatus(Log::SUCCESS);
+        }
+    }
+
+    /**
+     * Update the log status to failure.
+     */
+    public function failure()
+    {
+        $log = $this->emptyLogger->getLog();
+
+        if ($log instanceof MutableWrappedLog) {
+            $log->setStatus(Log::FAILURE);
+        }
+    }
 }

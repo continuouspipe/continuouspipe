@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Event subscribers -->
+        <service id="river.logging.listener.build" class="ContinuousPipe\River\EventListener\Logging\BuildListener">
+            <argument type="service" id="log_stream.logger_factory" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\Build\BuildSuccessful"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\Build\BuildFailed"/>
+        </service>
+
+        <service id="river.logging.listener.builds" class="ContinuousPipe\River\EventListener\Logging\BuildsListener">
+            <argument type="service" id="log_stream.logger_factory" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\ImageBuildsFailed"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\ImagesBuilt"/>
+        </service>
+    </services>
+</container>

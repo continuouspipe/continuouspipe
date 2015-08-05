@@ -4,6 +4,7 @@ namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\Event\Build\BuildFailed;
 use ContinuousPipe\River\Event\Build\BuildSuccessful;
+use ContinuousPipe\River\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Event\ImagesBuilt;
 use ContinuousPipe\River\Event\TideEvent;
@@ -103,6 +104,8 @@ class Tide
             $this->applyBuildSuccessful($event);
         } elseif ($event instanceof BuildFailed) {
             $this->applyBuildFailed($event);
+        } else if ($event instanceof ImageBuildsFailed) {
+            $this->applyImageBuildsFailed($event);
         }
 
         $this->events[] = $event;
@@ -137,7 +140,9 @@ class Tide
     private function applyBuildSuccessful(BuildSuccessful $event)
     {
         if ($this->allImageBuildsSuccessful()) {
-            $this->newEvents[] = new ImagesBuilt($this->uuid);
+            $eventImageBuildsStarted = $this->getImageBuildsStartedEvent();
+
+            $this->newEvents[] = new ImagesBuilt($this->uuid, $eventImageBuildsStarted->getLog());
         }
     }
 
@@ -145,6 +150,16 @@ class Tide
      * @param BuildFailed $event
      */
     private function applyBuildFailed(BuildFailed $event)
+    {
+        $eventImageBuildsStarted = $this->getImageBuildsStartedEvent();
+
+        $this->newEvents[] = new ImageBuildsFailed($this->uuid, $eventImageBuildsStarted->getLog());
+    }
+
+    /**
+     * @param ImageBuildsFailed $event
+     */
+    private function applyImageBuildsFailed(ImageBuildsFailed $event)
     {
         $this->newEvents[] = new TideFailed($this->uuid);
     }
@@ -223,5 +238,13 @@ class Tide
         $numberOfSuccessfulBuilds = count($this->getEventsOfType(BuildSuccessful::class));
 
         return $numberOfSuccessfulBuilds == $numberOfStartedBuilds;
+    }
+
+    /**
+     * @return ImageBuildsStarted
+     */
+    private function getImageBuildsStartedEvent()
+    {
+        return $this->getEventsOfType(ImageBuildsStarted::class)[0];
     }
 }
