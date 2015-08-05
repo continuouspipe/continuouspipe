@@ -50,7 +50,7 @@ class CodePushedListener
         $logger = $this->loggerFactory->create();
         $logger->append(new Text('Starting Tide'));
 
-        $startCommand = new StartTideCommand(Uuid::uuid1(), $flow, $event->getCodeReference(), $logger->getLog());
+        $startCommand = new StartTideCommand($event->getUuid(), $flow, $event->getCodeReference(), $logger->getLog());
         $this->commandBus->handle($startCommand);
     }
 }
