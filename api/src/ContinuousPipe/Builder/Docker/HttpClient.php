@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Image;
 use Docker\Docker;
 use Docker\Exception\UnexpectedStatusCodeException;
+use GuzzleHttp\Exception\RequestException;
 use LogStream\Logger;
 use LogStream\Node\Text;
 
@@ -46,6 +47,8 @@ class HttpClient implements Client
                 $this->getOutputCallback($logger)
             );
         } catch (UnexpectedStatusCodeException $e) {
+            throw new DockerException($e->getMessage(), $e->getCode(), $e);
+        } catch (RequestException $e) {
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
         }
     }

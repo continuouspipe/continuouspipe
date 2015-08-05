@@ -51,6 +51,8 @@ class LoggedDockerClient implements Client
             $buildLogger->success();
         } catch (DockerException $e) {
             $buildLogger->failure();
+
+            throw $e;
         }
     }
 
@@ -73,6 +75,8 @@ class LoggedDockerClient implements Client
         } catch (DockerException $e) {
             $pushLogger->append(new Text($e->getMessage()));
             $pushLogger->failure();
+
+            throw $e;
         }
     }
 }

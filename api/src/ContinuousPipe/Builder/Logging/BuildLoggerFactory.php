@@ -5,7 +5,6 @@ namespace ContinuousPipe\Builder\Logging;
 use ContinuousPipe\Builder\Build;
 use LogStream\EmptyLogger;
 use LogStream\LoggerFactory;
-use LogStream\Node\Container;
 use LogStream\WrappedLog;
 
 class BuildLoggerFactory
@@ -32,7 +31,7 @@ class BuildLoggerFactory
         if ($logging = $build->getRequest()->getLogging()) {
             if ($logStream = $logging->getLogstream()) {
                 return $this->loggerFactory->from(
-                    new WrappedLog($logStream->getParentLogIdentifier(), new Container())
+                    new WrappedLog($logStream->getParentLogIdentifier())
                 );
             }
         }

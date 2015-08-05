@@ -6,6 +6,7 @@ use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
 use ContinuousPipe\Builder\BuildRepository;
 use ContinuousPipe\Builder\Command\BuildCommand;
+use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Logging\BuildLoggerFactory;
 use ContinuousPipe\Builder\Notifier;
 use LogStream\Node\Text;
@@ -63,8 +64,10 @@ class BuildHandler
             $this->builder->build($build, $logger);
 
             $build->updateStatus(Build::STATUS_SUCCESS);
+        } catch (DockerException $e) {
+            $build->updateStatus(Build::STATUS_ERROR);
         } catch (\Exception $e) {
-            $logger->append(new Text($e->getMessage()));
+            $logger->append(new Text('PANIC ('.get_class($e).') '.$e->getMessage()));
 
             $build->updateStatus(Build::STATUS_ERROR);
         } finally {
