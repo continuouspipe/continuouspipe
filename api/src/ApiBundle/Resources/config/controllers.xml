@@ -12,6 +12,7 @@
         <service id="api.controller.create_build" class="ApiBundle\Controller\CreateBuildController">
             <argument type="service" id="command_bus" />
             <argument type="service" id="builder.build_repository" />
+            <argument type="service" id="security.user_context" />
         </service>
 
         <service id="builder.request.build_request_param_converter" class="ApiBundle\Request\ParamConverter\BuildRequestParamConverter">

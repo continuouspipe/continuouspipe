@@ -25,7 +25,7 @@
         <service id="builder.builder" class="ContinuousPipe\Builder\Docker\DockerBuilder">
             <argument type="service" id="builder.archive_builder" />
             <argument type="service" id="builder.docker.client" />
-            <argument>%default_docker_registry_credentials%</argument>
+            <argument type="service" id="builder.docker.authenticator_credentials_repository" />
         </service>
         <service id="builder.build_repository" class="ContinuousPipe\Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />

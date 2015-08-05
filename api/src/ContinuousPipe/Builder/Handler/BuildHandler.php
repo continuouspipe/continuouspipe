@@ -34,10 +34,10 @@ class BuildHandler
     private $loggerFactory;
 
     /**
-     * @param Builder         $builder
-     * @param Notifier        $notifier
-     * @param BuildRepository $buildRepository
-     * @param BuildLoggerFactory   $loggerFactory
+     * @param Builder            $builder
+     * @param Notifier           $notifier
+     * @param BuildRepository    $buildRepository
+     * @param BuildLoggerFactory $loggerFactory
      */
     public function __construct(Builder $builder, Notifier $notifier, BuildRepository $buildRepository, BuildLoggerFactory $loggerFactory)
     {

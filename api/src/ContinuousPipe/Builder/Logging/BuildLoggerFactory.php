@@ -24,6 +24,7 @@ class BuildLoggerFactory
 
     /**
      * @param Build $build
+     *
      * @return \LogStream\Logger
      */
     public function forBuild(Build $build)

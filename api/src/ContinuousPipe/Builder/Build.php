@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
+use ContinuousPipe\User\User;
 use Rhumsaa\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
@@ -28,6 +29,13 @@ class Build implements \JsonSerializable
     private $request;
 
     /**
+     * @JMS\Type("ContinuousPipe\User\User")
+     *
+     * @var User
+     */
+    private $user;
+
+    /**
      * @JMS\Type("string")
      *
      * @var string
@@ -40,14 +48,16 @@ class Build implements \JsonSerializable
 
     /**
      * @param BuildRequest $request
+     * @param User         $user
      *
      * @return Build
      */
-    public static function fromRequest(BuildRequest $request)
+    public static function fromRequest(BuildRequest $request, User $user)
     {
         $build = new self();
         $build->uuid = Uuid::uuid1();
         $build->request = $request;
+        $build->user = $user;
         $build->status = self::STATUS_PENDING;
 
         return $build;
@@ -67,6 +77,14 @@ class Build implements \JsonSerializable
     public function getRequest()
     {
         return $this->request;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 
     /**

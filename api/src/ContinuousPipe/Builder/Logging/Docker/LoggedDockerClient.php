@@ -25,7 +25,7 @@ class LoggedDockerClient implements Client
     private $loggerFactory;
 
     /**
-     * @param Client $client
+     * @param Client        $client
      * @param LoggerFactory $loggerFactory
      */
     public function __construct(Client $client, LoggerFactory $loggerFactory)

@@ -21,7 +21,7 @@ class Notifier
 
     /**
      * @param BuildLoggerFactory $loggerFactory
-     * @param HttpNotifier  $httpNotifier
+     * @param HttpNotifier       $httpNotifier
      */
     public function __construct(BuildLoggerFactory $loggerFactory, HttpNotifier $httpNotifier)
     {
