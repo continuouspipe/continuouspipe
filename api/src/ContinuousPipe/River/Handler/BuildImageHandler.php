@@ -36,10 +36,6 @@ class BuildImageHandler
      * @var UrlGeneratorInterface
      */
     private $urlGenerator;
-    /**
-     * @var LoggerFactory
-     */
-    private $loggerFactory;
 
     /**
      * @param BuilderClient $builderClient
@@ -48,13 +44,12 @@ class BuildImageHandler
      * @param UrlGeneratorInterface $urlGenerator
      * @param LoggerFactory $loggerFactory
      */
-    public function __construct(BuilderClient $builderClient, TideRepository $tideRepository, MessageBus $eventBus, UrlGeneratorInterface $urlGenerator, LoggerFactory $loggerFactory)
+    public function __construct(BuilderClient $builderClient, TideRepository $tideRepository, MessageBus $eventBus, UrlGeneratorInterface $urlGenerator)
     {
         $this->builderClient = $builderClient;
         $this->eventBus = $eventBus;
         $this->tideRepository = $tideRepository;
         $this->urlGenerator = $urlGenerator;
-        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -62,13 +57,10 @@ class BuildImageHandler
      */
     public function handle(BuildImageCommand $command)
     {
-        $logger = $this->loggerFactory->from($command->getLog());
-        $logger->start();
-
         $tideUuid = $command->getTideUuid();
         $tide = $this->tideRepository->find($tideUuid);
 
-        $buildRequest = $this->getBuildRequestWithNotificationConfiguration($tide, $command->getBuildRequest(), $logger->getLog());
+        $buildRequest = $this->getBuildRequestWithNotificationConfiguration($tide, $command->getBuildRequest(), $command->getLog());
         $build = $this->builderClient->build($buildRequest, $tide->getUser());
 
         $this->eventBus->handle(new ImageBuildStarted($tideUuid, $build));
