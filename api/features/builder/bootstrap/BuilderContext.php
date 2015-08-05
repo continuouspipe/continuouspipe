@@ -5,6 +5,8 @@ use Behat\Gherkin\Node\PyStringNode;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use ContinuousPipe\Builder\Tests\Docker\FakeDockerBuilder;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 
 class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
@@ -16,15 +18,32 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var FakeDockerBuilder
      */
     private $fakeDockerBuilder;
+    /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
 
     /**
      * @param Kernel $kernel
      * @param FakeDockerBuilder $fakeDockerBuilder
+     * @param TokenStorageInterface $tokenStorage
      */
-    public function __construct(Kernel $kernel, FakeDockerBuilder $fakeDockerBuilder)
+    public function __construct(Kernel $kernel, FakeDockerBuilder $fakeDockerBuilder, TokenStorageInterface $tokenStorage)
     {
         $this->kernel = $kernel;
         $this->fakeDockerBuilder = $fakeDockerBuilder;
+        $this->tokenStorage = $tokenStorage;
+    }
+
+    /**
+     * @Given I am authenticated
+     */
+    public function iAmAuthenticated()
+    {
+        $token = new JWTUserToken(['ROLE_USER']);
+        $token->setUser(new \ContinuousPipe\User\SecurityUser(new \ContinuousPipe\User\User('samuel')));
+
+        $this->tokenStorage->setToken($token);
     }
 
     /**

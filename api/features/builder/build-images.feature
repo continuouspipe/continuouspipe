@@ -4,6 +4,7 @@ Feature:
   I should be able to call the builder API to build Docker images
 
   Scenario:
+    Given I am authenticated
     When I send the following build request:
     """
     {
