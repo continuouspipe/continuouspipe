@@ -29,10 +29,13 @@ class BuildListener
      */
     public function notify(BuildEvent $event)
     {
-        $request = $event->getBuild()->getRequest();
-        $logIdentifier = $request->getLogging()->getLogStream()->getParentLogIdentifier();
+        if (null === ($request = $event->getBuild()->getRequest())) {
+            return;
+        }
 
+        $logIdentifier = $request->getLogging()->getLogStream()->getParentLogIdentifier();
         $logger = $this->loggerFactory->from(new WrappedLog($logIdentifier));
+
         if ($event instanceof BuildSuccessful) {
             $logger->success();
         } else if ($event instanceof BuildFailed) {
