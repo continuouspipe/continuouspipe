@@ -44,31 +44,31 @@ $text-rounds-radius: 20px;
             }
 
             &.status-running {
-                div.content i.round {
+                > div.content i.round {
                     background-color: $running-color;
                 }
 
-                .children {
+                > .children {
                     border-left-color: $running-color;
                 }
             }
 
             &.status-success {
-                div.content i.round {
+                > div.content i.round {
                     background-color: $success-color;
                 }
 
-                .children {
+                > .children {
                     border-left-color: $success-color;
                 }
             }
 
             &.status-failure {
-                div.content i.round {
+                > div.content i.round {
                     background-color: $failure-color;
                 }
 
-                .children {
+                > .children {
                     border-left-color: $failure-color;
                 }
             }
