@@ -36,11 +36,11 @@ class BuildImagesHandler
     private $loggerFactory;
 
     /**
-     * @param MessageBus $commandBus
-     * @param MessageBus $eventBus
-     * @param TideRepository $tideRepository
+     * @param MessageBus          $commandBus
+     * @param MessageBus          $eventBus
+     * @param TideRepository      $tideRepository
      * @param BuildRequestCreator $buildRequestCreator
-     * @param LoggerFactory $loggerFactory
+     * @param LoggerFactory       $loggerFactory
      */
     public function __construct(MessageBus $commandBus, MessageBus $eventBus, TideRepository $tideRepository, BuildRequestCreator $buildRequestCreator, LoggerFactory $loggerFactory)
     {

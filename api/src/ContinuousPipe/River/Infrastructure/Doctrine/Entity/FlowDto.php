@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Infrastructure\Doctrine\Entity;
 
 use ContinuousPipe\River\CodeRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Rhumsaa\Uuid\Uuid;
 
 /**
  * @ORM\Entity
@@ -16,7 +15,7 @@ class FlowDto
      * @ORM\Column(type="string")
      * @ORM\GeneratedValue(strategy="NONE")
      *
-     * @var Uuid
+     * @var string
      */
     public $uuid;
 

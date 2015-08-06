@@ -7,9 +7,9 @@ use ContinuousPipe\River\Event\Build\BuildSuccessful;
 use ContinuousPipe\River\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Event\ImagesBuilt;
+use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
-use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\User\User;
 use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
@@ -54,16 +54,16 @@ class Tide
     /**
      * Create a new tide.
      *
-     * @param Uuid $uuid
-     * @param Flow $flow
+     * @param Uuid          $uuid
+     * @param Flow          $flow
      * @param CodeReference $codeReference
-     * @param Log $parentLog
+     * @param Log           $parentLog
      *
      * @return Tide
      */
     public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $parentLog)
     {
-        $startEvent = new TideStarted($uuid, $flow, $codeReference, $parentLog);
+        $startEvent = new TideCreated($uuid, $flow, $codeReference, $parentLog);
 
         $tide = new self();
         $tide->apply($startEvent);
@@ -98,13 +98,13 @@ class Tide
      */
     public function apply(TideEvent $event)
     {
-        if ($event instanceof TideStarted) {
-            $this->applyTideStarted($event);
+        if ($event instanceof TideCreated) {
+            $this->applyTideCreated($event);
         } elseif ($event instanceof BuildSuccessful) {
             $this->applyBuildSuccessful($event);
         } elseif ($event instanceof BuildFailed) {
             $this->applyBuildFailed($event);
-        } else if ($event instanceof ImageBuildsFailed) {
+        } elseif ($event instanceof ImageBuildsFailed) {
             $this->applyImageBuildsFailed($event);
         }
 
@@ -123,9 +123,9 @@ class Tide
     }
 
     /**
-     * @param TideStarted $event
+     * @param TideCreated $event
      */
-    private function applyTideStarted(TideStarted $event)
+    private function applyTideCreated(TideCreated $event)
     {
         $this->uuid = $event->getTideUuid();
         $this->user = $event->getFlow()->getUser();

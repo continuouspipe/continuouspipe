@@ -2,9 +2,6 @@
 
 namespace ContinuousPipe\River\Command;
 
-use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
-use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
 
 class StartTideCommand
@@ -12,63 +9,21 @@ class StartTideCommand
     /**
      * @var Uuid
      */
-    private $uuid;
-    /**
-     * @var Flow
-     */
-    private $flow;
-    /**
-     * @var CodeReference
-     */
-    private $codeReference;
-    /**
-     * @var Log
-     */
-    private $parentLog;
+    private $tideUuid;
 
     /**
-     * @param Uuid $uuid
-     * @param Flow $flow
-     * @param CodeReference $codeReference
-     * @param Log $parentLog
+     * @param Uuid $tideUuid
      */
-    public function __construct(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $parentLog)
+    public function __construct(Uuid $tideUuid)
     {
-        $this->flow = $flow;
-        $this->codeReference = $codeReference;
-        $this->uuid = $uuid;
-        $this->parentLog = $parentLog;
-    }
-
-    /**
-     * @return Flow
-     */
-    public function getFlow()
-    {
-        return $this->flow;
-    }
-
-    /**
-     * @return CodeReference
-     */
-    public function getCodeReference()
-    {
-        return $this->codeReference;
+        $this->tideUuid = $tideUuid;
     }
 
     /**
      * @return Uuid
      */
-    public function getUuid()
+    public function getTideUuid()
     {
-        return $this->uuid;
-    }
-
-    /**
-     * @return Log
-     */
-    public function getParentLog()
-    {
-        return $this->parentLog;
+        return $this->tideUuid;
     }
 }

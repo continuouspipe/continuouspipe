@@ -22,14 +22,15 @@ class AppKernel extends Kernel
             new Nelmio\CorsBundle\NelmioCorsBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new LogStream\LogStreamBundle(),
-            new SimpleBus\SymfonyBridge\SimpleBusCommandBusBundle(),
-            new SimpleBus\SymfonyBridge\SimpleBusEventBusBundle(),
             new AppBundle\AppBundle(),
         );
 
         if ($this->getEnvironment() === 'test') {
             $bundles[] = new AppTestBundle\AppTestBundle();
         }
+
+        $bundles[] = new SimpleBus\SymfonyBridge\SimpleBusCommandBusBundle();
+        $bundles[] = new SimpleBus\SymfonyBridge\SimpleBusEventBusBundle();
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();

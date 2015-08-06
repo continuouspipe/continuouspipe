@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Event;
 
 use Rhumsaa\Uuid\Uuid;
 
-class TideStarted implements TideEvent
+class TideSuccessful implements TideEvent
 {
     /**
      * @var Uuid
@@ -20,7 +20,7 @@ class TideStarted implements TideEvent
     }
 
     /**
-     * {@inheritdoc}
+     * @return Uuid
      */
     public function getTideUuid()
     {

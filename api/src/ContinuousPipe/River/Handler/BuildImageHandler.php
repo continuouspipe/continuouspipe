@@ -38,11 +38,11 @@ class BuildImageHandler
     private $urlGenerator;
 
     /**
-     * @param BuilderClient $builderClient
-     * @param TideRepository $tideRepository
-     * @param MessageBus $eventBus
+     * @param BuilderClient         $builderClient
+     * @param TideRepository        $tideRepository
+     * @param MessageBus            $eventBus
      * @param UrlGeneratorInterface $urlGenerator
-     * @param LoggerFactory $loggerFactory
+     * @param LoggerFactory         $loggerFactory
      */
     public function __construct(BuilderClient $builderClient, TideRepository $tideRepository, MessageBus $eventBus, UrlGeneratorInterface $urlGenerator)
     {
@@ -69,9 +69,9 @@ class BuildImageHandler
     /**
      * Add the notification configuration to the created build request.
      *
-     * @param Tide $tide
+     * @param Tide         $tide
      * @param BuildRequest $buildRequest
-     * @param Log $parentLog
+     * @param Log          $parentLog
      *
      * @return BuildRequest
      */

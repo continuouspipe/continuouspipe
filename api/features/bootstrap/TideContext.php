@@ -19,6 +19,8 @@ use ContinuousPipe\River\Event\Build\BuildFailed;
 use ContinuousPipe\River\Event\Build\BuildSuccessful;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\ImagesBuilt;
+use ContinuousPipe\River\TideFactory;
+use ContinuousPipe\River\View\TideRepository;
 
 class TideContext implements Context
 {
@@ -50,30 +52,40 @@ class TideContext implements Context
      * @var MessageBus
      */
     private $eventBus;
+    /**
+     * @var \ContinuousPipe\River\TideFactory
+     */
+    private $tideFactory;
+    /**
+     * @var \ContinuousPipe\River\View\TideRepository
+     */
+    private $viewTideRepository;
 
     /**
      * @param MessageBus $commandBus
      * @param MessageBus $eventBus
      * @param EventStore $eventStore
      * @param FakeFileSystemResolver $fakeFileSystemResolver
+     * @param TideFactory $tideFactory
+     * @param TideRepository $viewTideRepository
      */
-    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver)
+    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository)
     {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
         $this->fakeFileSystemResolver = $fakeFileSystemResolver;
         $this->eventBus = $eventBus;
+        $this->tideFactory = $tideFactory;
+        $this->viewTideRepository = $viewTideRepository;
     }
 
     /**
-     * @When a tide is started
+     * @When a tide is created
      */
-    public function aTideIsStarted()
+    public function aTideIsCreated()
     {
         $this->tideUuid = Uuid::uuid1();
-
-        $this->commandBus->handle(new StartTideCommand(
-            $this->tideUuid,
+        $this->tideFactory->create($this->tideUuid,
             Flow::fromUserAndCodeRepository(
                 new User('my@ema.l'),
                 new GitHubCodeRepository(
@@ -82,7 +94,27 @@ class TideContext implements Context
             ),
             new CodeReference('master'),
             new \LogStream\WrappedLog(uniqid(), new \LogStream\Node\Container())
-        ));
+        );
+    }
+
+    /**
+     * @When a tide is started
+     */
+    public function aTideIsStarted()
+    {
+        if (null === $this->tideUuid) {
+            $this->aTideIsCreated();
+        }
+
+        $this->commandBus->handle(new StartTideCommand($this->tideUuid));
+    }
+
+    /**
+     * @When the tide failed
+     */
+    public function theTideFailed()
+    {
+        $this->eventBus->handle(new TideFailed($this->tideUuid));
     }
 
     /**
@@ -91,14 +123,14 @@ class TideContext implements Context
     public function itShouldBuildTheApplicationImages()
     {
         $events = $this->eventStore->findByTideUuid($this->tideUuid);
-        $numberOfImageBuildsStartedEvents = count(array_filter($events, function(TideEvent $event) {
+        $imageBuildsStartedEvents = array_filter($events, function(TideEvent $event) {
             return $event instanceof ImageBuildsStarted;
-        }));
+        });
 
-        if (1 !== $numberOfImageBuildsStartedEvents) {
+        if (1 !== count($imageBuildsStartedEvents)) {
             throw new \Exception(sprintf(
                 'Found %d image builds started event, expected 1',
-                $numberOfImageBuildsStartedEvents
+                count($imageBuildsStartedEvents)
             ));
         }
     }
@@ -270,6 +302,50 @@ class TideContext implements Context
                 'Found %d images built event, expected 1',
                 $numberOfImagesBuiltEvents
             ));
+        }
+    }
+
+    /**
+     * @Then a tide view representation should have be created
+     */
+    public function aTideViewRepresentationShouldHaveBeCreated()
+    {
+        $this->viewTideRepository->find($this->tideUuid);
+    }
+
+    /**
+     * @Then the tide is represented as pending
+     */
+    public function theTideIsRepresentedAsPending()
+    {
+        $this->assertTideStatusIs(ContinuousPipe\River\View\Tide::STATUS_PENDING);
+    }
+
+    /**
+     * @Then the tide is represented as running
+     */
+    public function theTideIsRepresentedAsRunning()
+    {
+        $this->assertTideStatusIs(ContinuousPipe\River\View\Tide::STATUS_RUNNING);
+    }
+
+    /**
+     * @Then the tide is represented as failed
+     */
+    public function theTideIsRepresentedAsFailed()
+    {
+        $this->assertTideStatusIs(ContinuousPipe\River\View\Tide::STATUS_FAILURE);
+    }
+
+    /**
+     * @param string $status
+     * @throws \RuntimeException
+     */
+    private function assertTideStatusIs($status)
+    {
+        $tide = $this->viewTideRepository->find($this->tideUuid);
+        if ($tide->getStatus() != $status) {
+            throw new \RuntimeException(sprintf('Found status "%s" instead', $tide->getStatus()));
         }
     }
 }

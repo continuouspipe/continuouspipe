@@ -2,10 +2,11 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\River\CodeRepository;
-use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\View\TideRepository;
 use Rhumsaa\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
@@ -27,12 +28,24 @@ class TideController
     }
 
     /**
-     * Get a tide by its UUID.
+     * Get tide by flow.
      *
-     * @Route("/tide/{uuid}", methods={"GET"})
+     * @Route("/flows/{uuid}/tides", methods={"GET"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @View
      */
-    public function fromRepositoryAction($uuid)
+    public function findByFlowAction(Flow $flow)
+    {
+        return $this->tideRepository->findByFlow($flow);
+    }
+
+    /**
+     * Get a tide by its UUID.
+     *
+     * @Route("/tides/{uuid}", methods={"GET"})
+     * @View
+     */
+    public function getAction($uuid)
     {
         return $this->tideRepository->find(Uuid::fromString($uuid));
     }

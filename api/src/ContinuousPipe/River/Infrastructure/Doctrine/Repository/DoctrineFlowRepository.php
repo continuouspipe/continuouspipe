@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River\Infrastructure\Doctrine;
+namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository;
 
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
@@ -78,10 +78,10 @@ class DoctrineFlowRepository implements FlowRepository
     public function findByUser(User $user)
     {
         $flowDtos = $this->getEntityRepository()->findBy([
-            'userUsername' => $user->getEmail()
+            'userUsername' => $user->getEmail(),
         ]);
 
-        return array_map(function(FlowDto $dto) {
+        return array_map(function (FlowDto $dto) {
             return $this->flowFromDto($dto);
         }, $flowDtos);
     }
@@ -114,7 +114,7 @@ class DoctrineFlowRepository implements FlowRepository
      *
      * @return Flow
      */
-    private function flowFromDto(FlowDto $dto)
+    public function flowFromDto(FlowDto $dto)
     {
         $user = $this->userRepository->findOneByEmail($dto->userUsername);
         $flow = new Flow(Uuid::fromString($dto->uuid), $user, $dto->codeRepository);
@@ -127,7 +127,7 @@ class DoctrineFlowRepository implements FlowRepository
      *
      * @return null|FlowDto
      */
-    private function getDtoByUuid(Uuid $uuid)
+    public function getDtoByUuid(Uuid $uuid)
     {
         return $this->getEntityRepository()->find((string) $uuid);
     }

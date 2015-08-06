@@ -43,6 +43,7 @@ class InMemoryLogStore
 
     /**
      * @param Log $parent
+     *
      * @return Log[]
      */
     public function findAllByParent(Log $parent)

@@ -3,7 +3,11 @@
 namespace ContinuousPipe\River\Handler;
 
 use ContinuousPipe\River\Command\StartTideCommand;
+use ContinuousPipe\River\Event\TideStarted;
+use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Tide;
+use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
 
 class StartTideHandler
@@ -12,13 +16,25 @@ class StartTideHandler
      * @var MessageBus
      */
     private $eventBus;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
+    /**
+     * @var TideRepository
+     */
+    private $tideRepository;
 
     /**
-     * @param MessageBus $eventBus
+     * @param MessageBus     $eventBus
+     * @param TideRepository $tideRepository
+     * @param LoggerFactory  $loggerFactory
      */
-    public function __construct(MessageBus $eventBus)
+    public function __construct(MessageBus $eventBus, TideRepository $tideRepository, LoggerFactory $loggerFactory)
     {
         $this->eventBus = $eventBus;
+        $this->loggerFactory = $loggerFactory;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -26,11 +42,11 @@ class StartTideHandler
      */
     public function handle(StartTideCommand $command)
     {
-        $flow = $command->getFlow();
-        $tide = Tide::create($command->getUuid(), $flow, $command->getCodeReference(), $command->getParentLog());
+        $tide = $this->tideRepository->find($command->getTideUuid());
 
-        foreach ($tide->popNewEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
+        $logger = $this->loggerFactory->from($tide->getParentLog());
+        $logger->append(new Text('Starting Tide'));
+
+        $this->eventBus->handle(new TideStarted($tide->getUuid()));
     }
 }

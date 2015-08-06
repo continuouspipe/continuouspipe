@@ -25,7 +25,7 @@ class BuildsListener
     {
         if ($event instanceof ImageBuildsFailed) {
             $this->loggerFactory->from($event->getLog())->failure();
-        } else if ($event instanceof ImagesBuilt) {
+        } elseif ($event instanceof ImagesBuilt) {
             $this->loggerFactory->from($event->getLog())->success();
         }
     }

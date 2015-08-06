@@ -2,22 +2,13 @@
 
 namespace ContinuousPipe\River\EventListener\External;
 
-use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\Event\External\CodePushedEvent;
 use ContinuousPipe\River\Repository\FlowRepository;
-use League\Tactician\CommandBus;
+use ContinuousPipe\River\TideFactory;
 use LogStream\LoggerFactory;
-use LogStream\Node\Text;
-use Rhumsaa\Uuid\Uuid;
-use SimpleBus\Message\Bus\MessageBus;
 
 class CodePushedListener
 {
-    /**
-     * @var MessageBus
-     */
-    private $commandBus;
-
     /**
      * @var FlowRepository
      */
@@ -26,17 +17,21 @@ class CodePushedListener
      * @var LoggerFactory
      */
     private $loggerFactory;
+    /**
+     * @var TideFactory
+     */
+    private $tideFactory;
 
     /**
-     * @param MessageBus $commandBus
      * @param FlowRepository $flowRepository
-     * @param LoggerFactory $loggerFactory
+     * @param LoggerFactory  $loggerFactory
+     * @param TideFactory    $tideFactory
      */
-    public function __construct(MessageBus $commandBus, FlowRepository $flowRepository, LoggerFactory $loggerFactory)
+    public function __construct(FlowRepository $flowRepository, LoggerFactory $loggerFactory, TideFactory $tideFactory)
     {
-        $this->commandBus = $commandBus;
         $this->flowRepository = $flowRepository;
         $this->loggerFactory = $loggerFactory;
+        $this->tideFactory = $tideFactory;
     }
 
     /**
@@ -48,9 +43,7 @@ class CodePushedListener
         $flow = $this->flowRepository->findOneByRepositoryIdentifier($repository->getIdentifier());
 
         $logger = $this->loggerFactory->create();
-        $logger->append(new Text('Starting Tide'));
 
-        $startCommand = new StartTideCommand($event->getUuid(), $flow, $event->getCodeReference(), $logger->getLog());
-        $this->commandBus->handle($startCommand);
+        $this->tideFactory->create($event->getUuid(), $flow, $event->getCodeReference(), $logger->getLog());
     }
 }

@@ -18,7 +18,7 @@ class ImageBuildsFailed implements TideEvent
 
     /**
      * @param Uuid $tideUuid
-     * @param Log $log
+     * @param Log  $log
      */
     public function __construct(Uuid $tideUuid, Log $log)
     {

@@ -20,7 +20,7 @@ class InMemoryLogger implements Logger
     private $logStore;
 
     /**
-     * @param EmptyLogger $emptyLogger
+     * @param EmptyLogger      $emptyLogger
      * @param InMemoryLogStore $logStore
      */
     public function __construct(EmptyLogger $emptyLogger, InMemoryLogStore $logStore)

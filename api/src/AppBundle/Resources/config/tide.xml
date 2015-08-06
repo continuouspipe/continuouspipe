@@ -15,5 +15,31 @@
 
             <tag name="event_bus_middleware" />
         </service>
+
+        <service id="river.repository.tide" class="ContinuousPipe\River\Repository\EventBusTideRepository">
+            <argument type="service" id="river.event_store" />
+        </service>
+        <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
+            <argument type="service" id="simple_bus.event_bus" />
+        </service>
+
+        <service id="river.view.tide_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\View\DoctrineTideRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="river.repository.flow" />
+        </service>
+
+        <service id="river.view.listener.tide_created" class="ContinuousPipe\River\View\EventListener\TideCreatedListener">
+            <argument type="service" id="river.view.tide_repository" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
+        </service>
+
+        <service id="river.view.listener.tide_status" class="ContinuousPipe\River\View\EventListener\TideStatusListener">
+            <argument type="service" id="river.view.tide_repository" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
+        </service>
     </services>
 </container>

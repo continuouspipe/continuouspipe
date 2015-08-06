@@ -12,6 +12,8 @@ interface TideRepository
      *
      * @param Uuid $uuid
      *
+     * @throws TideNotFound
+     *
      * @return Tide
      */
     public function find(Uuid $uuid);

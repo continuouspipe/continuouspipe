@@ -7,7 +7,6 @@ use ContinuousPipe\River\Event\Build\BuildFailed;
 use ContinuousPipe\River\Event\Build\BuildSuccessful;
 use LogStream\LoggerFactory;
 use LogStream\WrappedLog;
-use Symfony\Component\DependencyInjection\Container;
 
 class BuildListener
 {
@@ -38,7 +37,7 @@ class BuildListener
 
         if ($event instanceof BuildSuccessful) {
             $logger->success();
-        } else if ($event instanceof BuildFailed) {
+        } elseif ($event instanceof BuildFailed) {
             $logger->failure();
         }
     }

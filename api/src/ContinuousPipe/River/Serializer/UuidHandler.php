@@ -9,7 +9,6 @@ use Rhumsaa\Uuid\Uuid;
 
 class UuidHandler implements SubscribingHandlerInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -20,8 +19,8 @@ class UuidHandler implements SubscribingHandlerInterface
                 'direction' => GraphNavigator::DIRECTION_SERIALIZATION,
                 'type' => Uuid::class,
                 'format' => 'json',
-                'method' => 'serializeUuid'
-            ]
+                'method' => 'serializeUuid',
+            ],
         ];
     }
 
@@ -29,7 +28,8 @@ class UuidHandler implements SubscribingHandlerInterface
      * Serialize the UUIDs to string.
      *
      * @param JsonSerializationVisitor $visitor
-     * @param Uuid $uuid
+     * @param Uuid                     $uuid
+     *
      * @return string
      */
     public function serializeUuid(JsonSerializationVisitor $visitor, Uuid $uuid)

@@ -64,11 +64,16 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
         mappings:
-            ContinuousPipeAuthenticatorDto:
+            ContinuousPipeRiverDto:
                 type: annotation
                 is_bundle: false
                 dir: '%kernel.root_dir%/../src/ContinuousPipe/River/Infrastructure/Doctrine/Entity'
                 prefix: ContinuousPipe\River\Infrastructure\Doctrine\Entity
+            ContinuousPipeRiver:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/River/Infrastructure/Doctrine/Resources/config'
+                prefix: ContinuousPipe\River
 
 # Swiftmailer Configuration
 swiftmailer:

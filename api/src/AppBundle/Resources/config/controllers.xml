@@ -19,7 +19,7 @@
             <argument type="service" id="simple_bus.event_bus" />
         </service>
         <service id="app.controller.tide" class="AppBundle\Controller\TideController">
-            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="river.view.tide_repository" />
         </service>
 
         <service id="app.request.param_converter.code_repository" class="AppBundle\Request\ParamConverter\CodeRepositoryParamConverter">

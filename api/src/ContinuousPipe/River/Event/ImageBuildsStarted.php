@@ -22,9 +22,9 @@ class ImageBuildsStarted implements TideEvent
     private $log;
 
     /**
-     * @param Uuid $tideUuid
+     * @param Uuid           $tideUuid
      * @param BuildRequest[] $buildRequests
-     * @param Log $log
+     * @param Log            $log
      */
     public function __construct(Uuid $tideUuid, array $buildRequests, Log $log)
     {
