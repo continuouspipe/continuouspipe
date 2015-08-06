@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
             new ContinuousPipe\SecurityBundle\ContinuousPipeSecurityBundle(),
+            new Nelmio\CorsBundle\NelmioCorsBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new LogStream\LogStreamBundle(),
             new SimpleBus\SymfonyBridge\SimpleBusCommandBusBundle(),

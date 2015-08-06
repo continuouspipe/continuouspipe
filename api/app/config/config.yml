@@ -113,6 +113,16 @@ sensio_framework_extra:
     view:    { annotations: false }
     request: { converters: true }
 
+nelmio_cors:
+    defaults:
+        allow_credentials: true
+        allow_origin: '*'
+        allow_headers: ['accept', 'content-type', 'authorization', 'x-http-method-override']
+        allow_methods: ['POST', 'PUT', 'PATCH', 'GET', 'DELETE']
+        max_age: 3600
+    paths:
+        '^/': ~
+
 event_bus:
     logging: ~
 
