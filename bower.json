@@ -5,7 +5,8 @@
     "bootstrap": "~3.0",
     "angular-recursion": "~1.0.5",
     "angular-bootstrap": "~0.13.1",
-    "ansi_up": "~1.2.1"
+    "ansi_up": "~1.2.1",
+    "iframe-resizer": "~3.0.0"
   },
   "private": true
 }
