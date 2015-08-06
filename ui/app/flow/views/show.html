@@ -1,0 +1,28 @@
+<div class="container">
+    <div class="card">
+        <div class="card-header ch-alt">
+            <h2>Flow</h2>
+        </div>
+
+        <table class="table table-inner table-vmiddle">
+            <thead>
+            <tr>
+                <th>Repository</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><small>{{ flow.repository.repository.owner.login }}/</small> {{ flow.repository.repository.name }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="block-header">
+        <h2>Tides</h2>
+    </div>
+
+    <div class="row">
+        <div class="text-center p20" ng-show="tides.length === 0">No tides ran yet. Try to push to your repository.</div>
+    </div>
+</div>

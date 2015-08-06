@@ -13,5 +13,23 @@ angular.module('continuousPipeRiver')
                 },
                 aside: false
             })
+            .state('flow', {
+                parent: 'flows',
+                url: '/:uuid',
+                resolve: {
+                    flow: function($stateParams, FlowRepository) {
+                        return FlowRepository.find($stateParams.uuid);
+                    }
+                },
+                views: {
+                    '@layout': {
+                        templateUrl: 'flow/views/show.html',
+                        controller: 'FlowController'
+                    }
+                },
+                ncyBreadcrumb: {
+                    label: '#{{ flow.uuid }}'
+                }
+            })
         ;
     });
