@@ -87,6 +87,27 @@ class DoctrineFlowRepository implements FlowRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function remove(Flow $flow)
+    {
+        $dto = $this->getDtoByUuid($flow->getUuid());
+
+        $this->entityManager->remove($dto);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function find(Uuid $uuid)
+    {
+        $dto = $this->getDtoByUuid($uuid);
+
+        return $this->flowFromDto($dto);
+    }
+
+    /**
      * Get flow from dto.
      *
      * @param FlowDto $dto

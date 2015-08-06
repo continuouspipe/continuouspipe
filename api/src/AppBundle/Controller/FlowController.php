@@ -66,4 +66,16 @@ class FlowController
     {
         return $this->flowRepository->findByUser($user);
     }
+
+    /**
+     * Delete a flow.
+     *
+     * @Route("/flows/{uuid}", methods={"DELETE"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @View
+     */
+    public function deleteAction(Flow $flow)
+    {
+        return $this->flowRepository->remove($flow);
+    }
 }

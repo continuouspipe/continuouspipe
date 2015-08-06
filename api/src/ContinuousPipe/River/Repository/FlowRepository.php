@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Repository;
 
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\User\User;
+use Rhumsaa\Uuid\Uuid;
 
 interface FlowRepository
 {
@@ -19,6 +20,8 @@ interface FlowRepository
     /**
      * @param string $identifier
      *
+     * @throws FlowNotFound
+     *
      * @return Flow
      */
     public function findOneByRepositoryIdentifier($identifier);
@@ -31,4 +34,22 @@ interface FlowRepository
      * @return Flow[]
      */
     public function findByUser(User $user);
+
+    /**
+     * Delete the flow.
+     *
+     * @param Flow $flow
+     */
+    public function remove(Flow $flow);
+
+    /**
+     * Find a flow by its UUID.
+     *
+     * @param Uuid $uuid
+     *
+     * @throws FlowNotFound
+     *
+     * @return Flow
+     */
+    public function find(Uuid $uuid);
 }

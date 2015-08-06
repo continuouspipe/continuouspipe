@@ -28,6 +28,12 @@
             <tag name="request.param_converter" converter="code-repository" />
         </service>
 
+        <service id="app.request.param_converter.flow" class="AppBundle\Request\ParamConverter\FlowParamConverter">
+            <argument type="service" id="river.repository.flow" />
+
+            <tag name="request.param_converter" converter="flow" />
+        </service>
+
         <service id="serializer.uuid_handler" class="ContinuousPipe\River\Serializer\UuidHandler">
             <tag name="jms_serializer.subscribing_handler" />
         </service>
