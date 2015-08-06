@@ -68,6 +68,18 @@ class FlowController
     }
 
     /**
+     * Get a flow.
+     *
+     * @Route("/flows/{uuid}", methods={"GET"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @View
+     */
+    public function getAction(Flow $flow)
+    {
+        return $flow;
+    }
+
+    /**
      * Delete a flow.
      *
      * @Route("/flows/{uuid}", methods={"DELETE"})
