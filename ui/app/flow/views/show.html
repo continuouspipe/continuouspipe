@@ -23,6 +23,28 @@
     </div>
 
     <div class="row">
-        <div class="text-center p20" ng-show="tides.length === 0">No tides ran yet. Try to push to your repository.</div>
+        <remote-resource resource-name="tides">
+            <div class="text-center p20" ng-show="tides.length === 0">No tides ran yet. Try to push to your repository.</div>
+            <table class="table table-inner table-vmiddle" ng-show="tides.length">
+                <thead>
+                <tr>
+                    <th>UUID</th>
+                    <th>Code reference</th>
+                    <th>Creation date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="tide in tides">
+                    <td>{{ tide.uuid }}</td>
+                    <td>{{ tide.code_reference.reference }}</td>
+                    <td>{{ tide.creation_date | date }}</td>
+                    <td ng-class="{'c-green': tide.status == 'success', 'c-red': tide.status == 'failure', 'c-blue': tide.status === 'running'}">{{ tide.status }}</td>
+                    <td><a ui-sref="tide.logs({tideUuid: tide.uuid})">Show logs</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </remote-resource>
     </div>
 </div>
