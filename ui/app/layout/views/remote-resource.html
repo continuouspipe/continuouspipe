@@ -1,0 +1,10 @@
+<div class="remote-resource error" ng-show="resource.status === 'error'">
+    <p><i class="md md-warning"></i></p>
+    <p>{{ resource.error }}</p>
+</div>
+<div class="remote-resource loading" ng-show="resource.status === 'loading'">
+    <div class="loader loader-inner ball-clip-rotate">
+        <div></div>
+    </div>
+</div>
+<div ng-transclude ng-show="resource.status === 'loaded'"></div>

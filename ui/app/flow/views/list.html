@@ -1,0 +1,41 @@
+<div class="container">
+    <div class="block-header">
+        <h2>Flows</h2>
+
+        <ul class="actions">
+            <li>
+                <a ui-sref="flow-create">
+                    <i class="md md-add"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <remote-resource resource-name="flows">
+            <div class="text-center p20" ng-show="applications.length === 0">No flows found. Creates one !</div>
+            <table class="table table-inner table-vmiddle" ng-show="flows.length">
+                <thead>
+                <tr>
+                    <th>UUID</th>
+                    <th>Repository</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="flow in flows">
+                    <td><a ui-sref="flow({uuid: flow.uuid})">{{ flow.uuid }}</a></td>
+                    <td><small>{{ flow.repository.repository.owner.login }}/</small> {{ flow.repository.repository.name }}</td>
+                    <td>
+                        <ul class="actions">
+                            <li>
+                                <a ui-sref="flow-delete({uuid: flow.uuid})"><i class="md md-delete"></i></a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </remote-resource>
+    </div>
+</div>

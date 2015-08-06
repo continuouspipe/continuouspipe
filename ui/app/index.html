@@ -1,0 +1,65 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.) styles/vendor.css -->
+    <link rel="stylesheet" href="styles/vendor/app.min.1.css">
+    <link rel="stylesheet" href="styles/vendor/app.min.2.css">
+    <link rel="stylesheet" href="bower_components/material-design-iconic-font/css/material-design-iconic-font.css">
+    <link rel="stylesheet" href="bower_components/loaders.css/loaders.css">
+    <!-- endbuild -->
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+</head>
+<body ng-app="continuousPipeRiver">
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div ui-view></div>
+
+<!-- build:js(.) scripts/vendor.js -->
+<!-- bower:js -->
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+<script src="bower_components/angular-animate/angular-animate.js"></script>
+<script src="bower_components/angular-messages/angular-messages.js"></script>
+<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script src="bower_components/angular-touch/angular-touch.js"></script>
+<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="bower_components/angular-resource/angular-resource.js"></script>
+<script src="bower_components/bootstrap-select/dist/js/bootstrap-select.js"></script>
+<script src="bower_components/angular-breadcrumb/release/angular-breadcrumb.js"></script>
+<script src="bower_components/angular-jwt/dist/angular-jwt.js"></script>
+<!-- endbower -->
+<!-- endbuild -->
+
+<!-- build:js({.tmp,app}) scripts/scripts.js -->
+<script src="scripts/app.js"></script>
+<script src="scripts/config.js"></script>
+
+<script src="security/services/authentication-provider.js"></script>
+<script src="security/services/request-listener.js"></script>
+<script src="security/services/token-storage.js"></script>
+
+<script src="layout/controllers/breadcrumb.js"></script>
+<script src="layout/controllers/header.js"></script>
+<script src="layout/directives/remote-resource.js"></script>
+<script src="layout/directives/form/float-input.js"></script>
+<script src="layout/directives/form/select-input.js"></script>
+<script src="layout/services/remote-resource.js"></script>
+<script src="layout/routing.js"></script>
+
+<script src="flow/controllers/list.js"></script>
+<script src="flow/models/repository/flow-repository.js"></script>
+<script src="flow/routing.js"></script>
+<!-- endbuild -->
+</body>
+</html>

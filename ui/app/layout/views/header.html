@@ -1,0 +1,45 @@
+<ul class="header-inner">
+    <li id="menu-trigger" data-trigger="#sidebar">
+        <div class="line-wrap">
+            <div class="line top"></div>
+            <div class="line center"></div>
+            <div class="line bottom"></div>
+        </div>
+    </li>
+
+    <li class="logo hidden-xs">
+        <a ui-sref="dashboard">ContinuousPipe</a>
+    </li>
+
+
+    <li class="header-links">
+        <ul class="top-menu">
+            <li ui-sref-active="active">
+                <a ui-sref="flows" class="header-link">Flows</a>
+            </li>
+        </ul>
+    </li>
+
+    <li class="pull-right">
+        <ul class="top-menu">
+            <li id="top-search">
+                {{ user.email }}
+            </li>
+
+            <li class="dropdown">
+                <a data-toggle="dropdown" class="tm-settings" href=""></a>
+                <ul class="dropdown-menu dm-icon pull-right">
+                    <li>
+                        <a ng-href="{{ authenticatorAccountUrl }}" target="_blank"><i class="md md-person"></i> My account</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<!-- Top Search Content -->
+<div id="top-search-wrap">
+    <input type="text">
+    <i id="top-search-close">&times;</i>
+</div>
