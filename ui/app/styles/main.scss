@@ -116,3 +116,16 @@ iframe.log-frame {
     width: 100%;
     border: none;
 }
+
+.bootgrid-header {
+    padding-left: 0px;
+    padding-top: 20px;
+
+    .search {
+        margin-bottom: 10px;
+
+        .search-field {
+            padding-left: 10px;
+        }
+    }
+}

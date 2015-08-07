@@ -13,6 +13,18 @@ angular.module('continuousPipeRiver')
                 },
                 aside: false
             })
+            .state('flows.create', {
+                url: '/create',
+                views: {
+                    '@layout': {
+                        templateUrl: 'flow/views/create.html',
+                        controller: 'FlowCreateController'
+                    }
+                },
+                ncyBreadcrumb: {
+                    label: 'Create'
+                }
+            })
             .state('flow', {
                 parent: 'flows',
                 url: '/:uuid',

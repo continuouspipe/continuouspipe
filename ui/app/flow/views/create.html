@@ -1,0 +1,53 @@
+<div class="container">
+    <div class="block-header">
+        <h2>1. Select the GitHub repository</h2>
+
+        <remote-resource resource-name="repositories">
+            <div class="text-center p20" ng-show="repositories.length === 0">No repository found.</div>
+            <div class="bootgrid-header">
+                <div class="actionBar">
+                    <div class="search form-group">
+                        <div class="input-group">
+                            <span class="md icon input-group-addon glyphicon-search"></span>
+                            <input type="text" class="search-field form-control" placeholder="Search" ng-model="search.$">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-inner table-vmiddle" ng-show="repositories.length">
+                <thead>
+                <tr>
+                    <th>Owner</th>
+                    <th>Name</th>
+                    <th>Visibility</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="repository in repositories | filter:search">
+                    <td>{{ repository.repository.owner.login }}</td>
+                    <td>{{ repository.repository.name }}</td>
+                    <td>
+                        <span ng-if="repository.repository.private"><i class="md-lock"></i> Private</span>
+                        <span ng-if="!repository.repository.private"><i class="md-public"></i> Public</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" ng-click="select(repository)" ng-if="selectedRepository != repository">Select</button>
+                        <button class="btn btn-success" ng-if="selectedRepository == repository">Selected</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </remote-resource>
+
+        <h2 ng-if="selectedRepository">2. Configure the build strategy</h2>
+        <div ng-if="selectedRepository">
+            <p>Because right now we just have one unique build strategy (which is basically building images with the tag
+            of the branch the code was pushed) you don't have to chose anything.</p>
+            <p>A GitHub WebHook will be configured when you'll finish the flow creation, than will enable the flow.</p>
+            <p>
+                <button class="btn btn-primary" ng-click="finish()">Finish</button>
+            </p>
+        </div>
+    </div>
+</div>
