@@ -10,6 +10,8 @@
             <argument>%docker_entrypoint%</argument>
             <argument>null</argument>
             <argument>false</argument>
+
+            <tag name="csa_guzzle.client" />
         </service>
         <service id="docker" class="Docker\Docker">
             <argument type="service" id="docker.client"/>
