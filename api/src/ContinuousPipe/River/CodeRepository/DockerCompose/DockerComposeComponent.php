@@ -49,7 +49,7 @@ class DockerComposeComponent
             return $labels['com.continuouspipe.image-name'];
         }
 
-        throw new \RuntimeException('Unable to resolve image name');
+        throw new ResolveException('No `image` property nor `com.continuouspipe.image-name` label');
     }
 
     /**
