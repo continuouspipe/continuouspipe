@@ -23,6 +23,24 @@ header {
       padding: 0 10px;
     }
   }
+
+
+    .header-inner {
+        .top-menu {
+            .dropdown-user-account {
+                background-position: right;
+                padding-right: 40px;
+                padding-left: 10px;
+                margin-right: 10px;
+
+                span {
+                    color: #fff;
+                    vertical-align: middle;
+                    line-height: 35px;
+                }
+            }
+        }
+    }
 }
 
 .sidebar-inner {

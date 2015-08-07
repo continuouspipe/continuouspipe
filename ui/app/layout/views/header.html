@@ -22,12 +22,10 @@
 
     <li class="pull-right">
         <ul class="top-menu">
-            <li id="top-search">
-                {{ user.email }}
-            </li>
-
             <li class="dropdown">
-                <a data-toggle="dropdown" class="tm-settings" href=""></a>
+                <a data-toggle="dropdown" class="tm-settings dropdown-user-account" href="">
+                    <span>{{ user.username }}</span>
+                </a>
                 <ul class="dropdown-menu dm-icon pull-right">
                     <li>
                         <a ng-href="{{ authenticatorAccountUrl }}" target="_blank"><i class="md md-person"></i> My account</a>
