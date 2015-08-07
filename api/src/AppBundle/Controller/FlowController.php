@@ -39,7 +39,7 @@ class FlowController
     /**
      * Create a new flow from a repository.
      *
-     * @Route("/flow/from-repository/{identifier}", methods={"POST"})
+     * @Route("/flows/from-repository/{identifier}", methods={"POST"})
      * @ParamConverter("user", converter="user")
      * @ParamConverter("repository", converter="code-repository", options={"identifier"="identifier"})
      * @View
