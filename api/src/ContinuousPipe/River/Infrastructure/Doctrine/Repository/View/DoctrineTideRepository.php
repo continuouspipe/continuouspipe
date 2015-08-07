@@ -42,6 +42,8 @@ class DoctrineTideRepository implements TideRepository
     {
         $dtos = $this->getEntityRepository()->findBy([
             'flow' => (string) $flow->getUuid(),
+        ], [
+            'tide.creationDate' => 'DESC'
         ]);
 
         return array_map(function (TideDto $dto) {
