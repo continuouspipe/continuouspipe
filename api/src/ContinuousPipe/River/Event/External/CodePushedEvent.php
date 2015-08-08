@@ -36,16 +36,21 @@ class CodePushedEvent
      */
     public static function fromGitHubPush(PushEvent $pushEvent)
     {
-        $reference = $pushEvent->getReference();
-        if (0 === strpos($reference, 'refs/heads/')) {
-            $reference = substr($reference, strlen('refs/heads/'));
+        $branch = $pushEvent->getReference();
+        if (0 === strpos($branch, 'refs/heads/')) {
+            $branch = substr($branch, strlen('refs/heads/'));
         }
 
+        $sha1 = $pushEvent->getHeadCommit()->getId();
         $self = new self(
             Uuid::uuid1(),
-            new CodeReference(new CodeRepository\GitHub\GitHubCodeRepository(
-                $pushEvent->getRepository()
-            ), $reference)
+            new CodeReference(
+                new CodeRepository\GitHub\GitHubCodeRepository(
+                    $pushEvent->getRepository()
+                ),
+                $sha1,
+                $branch
+            )
         );
 
         return $self;

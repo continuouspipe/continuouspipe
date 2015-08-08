@@ -41,7 +41,7 @@ class BuildRequestCreator
     {
         $dockerComposeComponents = $this->dockerComposeProjectParser->parse(
             $this->fileSystemResolver->getFileSystem($codeReference, $user),
-            $codeReference->getReference()
+            $codeReference->getBranch()
         );
 
         $buildRequests = [];
@@ -57,9 +57,9 @@ class BuildRequestCreator
                 throw new BuilderException(sprintf('Unable to resolve image name of component "%s": %s', $componentName, $e->getMessage()));
             }
 
-            $image = new Image($imageName, $codeReference->getReference());
+            $image = new Image($imageName, $codeReference->getBranch());
 
-            $buildRequestRepository = new Repository($codeReference->getRepository()->getAddress(), $codeReference->getReference());
+            $buildRequestRepository = new Repository($codeReference->getRepository()->getAddress(), $codeReference->getCommitSha());
             $buildRequests[] = new BuildRequest($buildRequestRepository, $image);
         }
 

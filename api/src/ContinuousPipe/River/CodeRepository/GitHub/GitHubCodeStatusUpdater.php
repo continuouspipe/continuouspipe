@@ -68,7 +68,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
         $client->repository()->statuses()->create(
             $gitHubRepository->getOwner()->getLogin(),
             $gitHubRepository->getName(),
-            $tide->getCodeReference()->getReference(),
+            $tide->getCodeReference()->getCommitSha(),
             [
                 'state' => $state,
                 'context' => 'continuous-pipe-river',

@@ -12,24 +12,23 @@ class CodeReference
     /**
      * @var string
      */
-    private $reference;
+    private $sha1;
+
+    /**
+     * @var null|string
+     */
+    private $branch;
 
     /**
      * @param CodeRepository $codeRepository
-     * @param string         $reference
+     * @param string         $sha1
+     * @param string         $branch
      */
-    public function __construct(CodeRepository $codeRepository, $reference)
+    public function __construct(CodeRepository $codeRepository, $sha1, $branch = null)
     {
-        $this->reference = $reference;
         $this->codeRepository = $codeRepository;
-    }
-
-    /**
-     * @return string
-     */
-    public function getReference()
-    {
-        return $this->reference;
+        $this->sha1 = $sha1;
+        $this->branch = $branch;
     }
 
     /**
@@ -38,5 +37,21 @@ class CodeReference
     public function getRepository()
     {
         return $this->codeRepository;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommitSha()
+    {
+        return $this->sha1;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getBranch()
+    {
+        return $this->branch;
     }
 }
