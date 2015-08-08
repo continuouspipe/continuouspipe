@@ -31,11 +31,11 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
     /**
      * {@inheritdoc}
      */
-    public function getFileSystem(CodeRepository $repository, CodeReference $codeReference, User $user)
+    public function getFileSystem(CodeReference $codeReference, User $user)
     {
         return new CodeRepository\GitHubRelativeFileSystem(
             $this->gitHubClientFactory->createClientForUser($user),
-            $this->repositoryAddressDescriptor->getDescription($repository->getAddress()),
+            $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
             $codeReference->getReference()
         );
     }

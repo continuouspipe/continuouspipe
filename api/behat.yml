@@ -11,6 +11,8 @@ default:
                     - @river.view.tide_repository
                 - LoggingContext:
                     - @log_stream.event_store.in_memory
+                - GitHubContext:
+                    - @river.code_status_updater
     extensions:
         Behat\Symfony2Extension:
             kernel:

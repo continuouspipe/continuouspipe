@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Tests\CodeRepository;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\User\User;
 
@@ -25,7 +24,7 @@ class FakeFileSystemResolver implements FileSystemResolver
     /**
      * {@inheritdoc}
      */
-    public function getFileSystem(CodeRepository $repository, CodeReference $codeReference, User $user)
+    public function getFileSystem(CodeReference $codeReference, User $user)
     {
         return new PredictiveFileSystem($this->files);
     }

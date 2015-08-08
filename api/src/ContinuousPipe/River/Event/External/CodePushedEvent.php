@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Event\External;
 
-use ContinuousPipe\Builder\Repository;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use GitHub\WebHook\Event\PushEvent;
@@ -14,23 +13,18 @@ class CodePushedEvent
      * @var Uuid
      */
     private $uuid;
-    /**
-     * @var CodeRepository
-     */
-    private $repository;
+
     /**
      * @var CodeReference
      */
     private $codeReference;
 
     /**
-     * @param Uuid           $uuid
-     * @param CodeRepository $repository
-     * @param CodeReference  $codeReference
+     * @param Uuid          $uuid
+     * @param CodeReference $codeReference
      */
-    private function __construct(Uuid $uuid, CodeRepository $repository, CodeReference $codeReference)
+    private function __construct(Uuid $uuid, CodeReference $codeReference)
     {
-        $this->repository = $repository;
         $this->codeReference = $codeReference;
         $this->uuid = $uuid;
     }
@@ -49,21 +43,12 @@ class CodePushedEvent
 
         $self = new self(
             Uuid::uuid1(),
-            new CodeRepository\GitHub\GitHubCodeRepository(
+            new CodeReference(new CodeRepository\GitHub\GitHubCodeRepository(
                 $pushEvent->getRepository()
-            ),
-            new CodeReference($reference)
+            ), $reference)
         );
 
         return $self;
-    }
-
-    /**
-     * @return CodeRepository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
     }
 
     /**

@@ -39,7 +39,7 @@ class CodePushedListener
      */
     public function notify(CodePushedEvent $event)
     {
-        $repository = $event->getRepository();
+        $repository = $event->getCodeReference()->getRepository();
         $flow = $this->flowRepository->findOneByRepositoryIdentifier($repository->getIdentifier());
 
         $logger = $this->loggerFactory->create();

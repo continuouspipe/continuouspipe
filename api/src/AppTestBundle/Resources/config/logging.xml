@@ -9,5 +9,6 @@
         <service id="log_stream.logger_factory" class="ContinuousPipe\River\Tests\Logging\InMemoryLoggerFactory">
             <argument type="service" id="log_stream.event_store.in_memory" />
         </service>
+        <service id="river.code_status_updater" class="ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater" />
     </services>
 </container>

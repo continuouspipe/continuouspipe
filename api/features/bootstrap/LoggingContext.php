@@ -1,10 +1,9 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\SnippetAcceptingContext;
 use ContinuousPipe\River\Tests\Logging\InMemoryLogStore;
 
-class LoggingContext implements Context, SnippetAcceptingContext
+class LoggingContext implements Context
 {
     /**
      * @var InMemoryLogStore

@@ -62,9 +62,8 @@ class BuildImagesHandler
         $tideUuid = $command->getTideUuid();
         $tide = $this->tideRepository->find($tideUuid);
 
-        $codeRepository = $tide->getCodeRepository();
         try {
-            $buildRequests = $this->buildRequestCreator->createBuildRequests($codeRepository, $tide->getCodeReference(), $tide->getUser());
+            $buildRequests = $this->buildRequestCreator->createBuildRequests($tide->getCodeReference(), $tide->getUser());
             if (empty($buildRequests)) {
                 throw new \RuntimeException('No image to build');
             }

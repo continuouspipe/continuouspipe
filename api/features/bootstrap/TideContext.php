@@ -7,6 +7,7 @@ use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Event\Build\ImageBuildStarted;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
@@ -85,14 +86,16 @@ class TideContext implements Context
     public function aTideIsCreated()
     {
         $this->tideUuid = Uuid::uuid1();
+
+        $repository = new GitHubCodeRepository(
+            new GitHubRepository('foo', 'http://github.com/foo/bar')
+        );
         $this->tideFactory->create($this->tideUuid,
             Flow::fromUserAndCodeRepository(
                 new User('my@ema.l'),
-                new GitHubCodeRepository(
-                    new GitHubRepository('foo', 'http://github.com/foo/bar')
-                )
+                $repository
             ),
-            new CodeReference('master'),
+            new CodeReference($repository, 'master'),
             new \LogStream\WrappedLog(uniqid(), new \LogStream\Node\Container())
         );
     }
@@ -338,6 +341,14 @@ class TideContext implements Context
     }
 
     /**
+     * @When the tide is successful
+     */
+    public function theTideIsSuccessful()
+    {
+        $this->eventBus->handle(new TideSuccessful($this->tideUuid));
+    }
+
+    /**
      * @param string $status
      * @throws \RuntimeException
      */
@@ -347,5 +358,13 @@ class TideContext implements Context
         if ($tide->getStatus() != $status) {
             throw new \RuntimeException(sprintf('Found status "%s" instead', $tide->getStatus()));
         }
+    }
+
+    /**
+     * @return null|Uuid
+     */
+    public function getCurrentTideUuid()
+    {
+        return $this->tideUuid;
     }
 }

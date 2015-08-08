@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
@@ -31,19 +30,17 @@ class BuildRequestCreator
     }
 
     /**
-     * @param CodeRepository $repository
-     * @param CodeReference  $codeReference
-     * @param User           $user
+     * @param CodeReference $codeReference
+     * @param User          $user
      *
-     * @return \ContinuousPipe\Builder\Request\BuildRequest[]
+     * @return Request\BuildRequest[]
      *
-     * @throws FileNotFound
-     * @throws CodeRepository\InvalidRepositoryAddress
+     * @throws BuilderException
      */
-    public function createBuildRequests(CodeRepository $repository, CodeReference $codeReference, User $user)
+    public function createBuildRequests(CodeReference $codeReference, User $user)
     {
         $dockerComposeComponents = $this->dockerComposeProjectParser->parse(
-            $this->fileSystemResolver->getFileSystem($repository, $codeReference, $user),
+            $this->fileSystemResolver->getFileSystem($codeReference, $user),
             $codeReference->getReference()
         );
 
@@ -62,7 +59,7 @@ class BuildRequestCreator
 
             $image = new Image($imageName, $codeReference->getReference());
 
-            $buildRequestRepository = new Repository($repository->getAddress(), $codeReference->getReference());
+            $buildRequestRepository = new Repository($codeReference->getRepository()->getAddress(), $codeReference->getReference());
             $buildRequests[] = new BuildRequest($buildRequestRepository, $image);
         }
 

@@ -19,5 +19,18 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\ImageBuildsFailed"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\ImagesBuilt"/>
         </service>
+
+        <service id="river.code_status_updater" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeStatusUpdater">
+            <argument type="service" id="repository_river.github.client_factory" />
+        </service>
+
+        <service id="river.code_repository.status.tide_listener" class="ContinuousPipe\River\CodeRepository\Status\EventListener\TideStatusListener">
+            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="river.code_status_updater" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
+        </service>
     </services>
 </container>
