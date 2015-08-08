@@ -22,14 +22,6 @@ class FakeArchive implements Archive
     /**
      * {@inheritdoc}
      */
-    public function getContents()
-    {
-        return $this->contents;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function isStreamed()
     {
         return false;
@@ -40,6 +32,6 @@ class FakeArchive implements Archive
      */
     public function read()
     {
-        return $this->getContents();
+        return $this->contents;
     }
 }

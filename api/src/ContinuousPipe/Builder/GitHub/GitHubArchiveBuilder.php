@@ -4,51 +4,41 @@ namespace ContinuousPipe\Builder\GitHub;
 
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Repository;
+use ContinuousPipe\User\User;
 use LogStream\Logger;
 use LogStream\Node\Text;
 
 class GitHubArchiveBuilder implements ArchiveBuilder
 {
     /**
-     * @var RepositoryAddressDescriptor
+     * @var GitHubHttpClientFactory
      */
-    private $addressDescriptor;
+    private $gitHubHttpClientFactory;
+    /**
+     * @var RemoteArchiveLocator
+     */
+    private $remoteArchiveLocator;
 
     /**
-     * @param RepositoryAddressDescriptor $addressDescriptor
+     * @param RemoteArchiveLocator    $remoteArchiveLocator
+     * @param GitHubHttpClientFactory $gitHubHttpClientFactory
      */
-    public function __construct(RepositoryAddressDescriptor $addressDescriptor)
+    public function __construct(RemoteArchiveLocator $remoteArchiveLocator, GitHubHttpClientFactory $gitHubHttpClientFactory)
     {
-        $this->addressDescriptor = $addressDescriptor;
+        $this->gitHubHttpClientFactory = $gitHubHttpClientFactory;
+        $this->remoteArchiveLocator = $remoteArchiveLocator;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getArchive(Repository $repository, Logger $logger)
+    public function getArchive(Repository $repository, User $user, Logger $logger)
     {
-        $archiveUrl = $this->getArchiveUrl($repository);
-        $logger->append(new Text(sprintf('Got archive URL from GitHub: %s', $archiveUrl)));
+        $httpClient = $this->gitHubHttpClientFactory->createForUser($user);
+        $archiveUrl = $this->remoteArchiveLocator->getArchiveUrl($repository);
 
-        return new GitHubArchive($archiveUrl);
-    }
+        $logger->append(new Text(sprintf('Will download code from archive: %s', $archiveUrl)));
 
-    /**
-     * @param Repository $repository
-     *
-     * @return string
-     *
-     * @throws InvalidRepositoryAddress
-     */
-    private function getArchiveUrl(Repository $repository)
-    {
-        $description = $this->addressDescriptor->getDescription($repository->getAddress());
-
-        return sprintf(
-            'https://github.com/%s/%s/archive/%s.zip',
-            $description->getUsername(),
-            $description->getRepository(),
-            $repository->getBranch()
-        );
+        return new GitHubArchive($httpClient, $archiveUrl);
     }
 }
