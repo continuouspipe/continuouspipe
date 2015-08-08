@@ -32,24 +32,19 @@ class Tide
     private $newEvents = [];
 
     /**
-     * @var CodeRepository
-     */
-    private $codeRepository;
-
-    /**
      * @var CodeReference
      */
     private $codeReference;
 
     /**
-     * @var User
-     */
-    private $user;
-
-    /**
      * @var Log
      */
     private $parentLog;
+
+    /**
+     * @var Flow
+     */
+    private $flow;
 
     /**
      * Create a new tide.
@@ -128,8 +123,7 @@ class Tide
     private function applyTideCreated(TideCreated $event)
     {
         $this->uuid = $event->getTideUuid();
-        $this->user = $event->getFlow()->getUser();
-        $this->codeRepository = $event->getFlow()->getRepository();
+        $this->flow = $event->getFlow();
         $this->codeReference = $event->getCodeReference();
         $this->parentLog = $event->getParentLog();
     }
@@ -173,11 +167,19 @@ class Tide
     }
 
     /**
+     * @return Flow
+     */
+    public function getFlow()
+    {
+        return $this->flow;
+    }
+
+    /**
      * @return CodeRepository
      */
     public function getCodeRepository()
     {
-        return $this->codeRepository;
+        return $this->getCodeReference()->getRepository();
     }
 
     /**
@@ -185,7 +187,7 @@ class Tide
      */
     public function getUser()
     {
-        return $this->user;
+        return $this->getFlow()->getUser();
     }
 
     /**

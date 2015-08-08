@@ -17,11 +17,18 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     private $gitHubClientFactory;
 
     /**
-     * @param GitHubClientFactory $gitHubClientFactory
+     * @var string
      */
-    public function __construct(GitHubClientFactory $gitHubClientFactory)
+    private $uiBaseUrl;
+
+    /**
+     * @param GitHubClientFactory $gitHubClientFactory
+     * @param string $uiBaseUrl
+     */
+    public function __construct(GitHubClientFactory $gitHubClientFactory, $uiBaseUrl)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
+        $this->uiBaseUrl = $uiBaseUrl;
     }
 
     /**
@@ -72,7 +79,22 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
             [
                 'state' => $state,
                 'context' => 'continuous-pipe-river',
+                'target_url' => $this->generateTideUrl($tide)
             ]
+        );
+    }
+
+    /**
+     * @param Tide $tide
+     * @return string
+     */
+    private function generateTideUrl(Tide $tide)
+    {
+        return sprintf(
+            '%s/flows/%s/tide/%s/logs',
+            $this->uiBaseUrl,
+            (string) $tide->getFlow()->getUuid(),
+            (string) $tide->getUuid()
         );
     }
 }
