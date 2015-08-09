@@ -20,7 +20,7 @@
             <argument type="service" id="river.event_store" />
         </service>
         <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
-            <argument type="service" id="simple_bus.event_bus" />
+            <argument type="service" id="log_stream.logger_factory" />
         </service>
 
         <service id="river.view.tide_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\View\DoctrineTideRepository">

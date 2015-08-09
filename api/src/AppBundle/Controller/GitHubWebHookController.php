@@ -2,13 +2,11 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\River\Event\External\CodePushedEvent;
-use GitHub\WebHook\Event\PushEvent;
+use ContinuousPipe\River\CodeRepository\GitHub\WebHookHandler;
+use ContinuousPipe\River\Flow;
 use GitHub\WebHook\GitHubRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use SimpleBus\Message\Bus\MessageBus;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
@@ -17,36 +15,26 @@ use FOS\RestBundle\Controller\Annotations\View;
 class GitHubWebHookController
 {
     /**
-     * @var MessageBus
+     * @var WebHookHandler
      */
-    private $eventBus;
+    private $webHookHandler;
 
     /**
-     * @param MessageBus $eventBus
+     * @param WebHookHandler $webHookHandler
      */
-    public function __construct(MessageBus $eventBus)
+    public function __construct(WebHookHandler $webHookHandler)
     {
-        $this->eventBus = $eventBus;
+        $this->webHookHandler = $webHookHandler;
     }
 
     /**
-     * @Route("/github/payload")
-     *
+     * @Route("/web-hook/github/{uuid}", methods={"POST"}, name="web_hook_github")
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @ParamConverter("request", converter="githubRequest")
      * @View
      */
-    public function payloadAction(GitHubRequest $request)
+    public function payloadAction(Flow $flow, GitHubRequest $request)
     {
-        $event = $request->getEvent();
-        if ($event instanceof PushEvent) {
-            $codePushedEvent = CodePushedEvent::fromGitHubPush($event);
-            $this->eventBus->handle($codePushedEvent);
-
-            return $codePushedEvent;
-        }
-
-        return new JsonResponse([
-            'error' => sprintf('Event of type "%s" is not supported', $event->getType()),
-        ], 400);
+        return $this->webHookHandler->handle($flow, $request);
     }
 }

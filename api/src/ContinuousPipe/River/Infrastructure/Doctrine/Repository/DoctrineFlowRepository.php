@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository;
 
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
-use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\User\User;
 use ContinuousPipe\User\UserRepository;
@@ -53,23 +52,6 @@ class DoctrineFlowRepository implements FlowRepository
         $this->entityManager->flush();
 
         return $flow;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findOneByRepositoryIdentifier($identifier)
-    {
-        $repository = $this->getEntityRepository();
-        $flowDto = $repository->findOneBy([
-            'codeRepositoryIdentifier' => $identifier,
-        ]);
-
-        if (null === $flowDto) {
-            throw new FlowNotFound();
-        }
-
-        return $this->flowFromDto($flowDto);
     }
 
     /**

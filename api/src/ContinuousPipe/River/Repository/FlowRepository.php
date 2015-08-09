@@ -18,15 +18,6 @@ interface FlowRepository
     public function save(Flow $flow);
 
     /**
-     * @param string $identifier
-     *
-     * @throws FlowNotFound
-     *
-     * @return Flow
-     */
-    public function findOneByRepositoryIdentifier($identifier);
-
-    /**
      * Find flows by user.
      *
      * @param User $user

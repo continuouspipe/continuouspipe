@@ -12,7 +12,10 @@ default:
                 - LoggingContext:
                     - @log_stream.event_store.in_memory
                 - GitHubContext:
+                    - @kernel
                     - @river.code_status_updater
+                    - @river.repository.flow
+
     extensions:
         Behat\Symfony2Extension:
             kernel:

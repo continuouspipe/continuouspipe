@@ -1,18 +1,19 @@
 <?php
 
-namespace ContinuousPipe\River\Handler\CodeRepository;
+namespace ContinuousPipe\River\EventListener\Flow;
 
 use ContinuousPipe\River\CodeRepository\WebHook\RepositoryWebHookManager;
-use ContinuousPipe\River\Command\CodeRepository\SetupWebHookCommand;
 use ContinuousPipe\River\Event\CodeRepository\WebHookConfigured;
+use ContinuousPipe\River\Event\FlowCreated;
 use SimpleBus\Message\Bus\MessageBus;
 
-class SetupWebHookHandler
+class ConfigureWebHookAtCreationListener
 {
     /**
      * @var RepositoryWebHookManager
      */
     private $repositoryWebHookManager;
+
     /**
      * @var MessageBus
      */
@@ -29,15 +30,13 @@ class SetupWebHookHandler
     }
 
     /**
-     * @param SetupWebHookCommand $command
+     * @param FlowCreated $event
      */
-    public function handle(SetupWebHookCommand $command)
+    public function notify(FlowCreated $event)
     {
-        $codeRepository = $command->getRepository();
+        $flow = $event->getFlow();
 
-        // FIXME It might be interesting to use the user here :)
-        $this->repositoryWebHookManager->configureWebHookForRepository($codeRepository);
-
-        $this->eventBus->handle(new WebHookConfigured($codeRepository));
+        $this->repositoryWebHookManager->configureWebHookForFlow($flow);
+        $this->eventBus->handle(new WebHookConfigured($flow->getRepository()));
     }
 }

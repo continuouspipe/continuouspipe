@@ -8,6 +8,7 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideSuccessful;
+use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Event\Build\ImageBuildStarted;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
@@ -85,19 +86,22 @@ class TideContext implements Context
      */
     public function aTideIsCreated()
     {
-        $this->tideUuid = Uuid::uuid1();
-
         $repository = new GitHubCodeRepository(
             new GitHubRepository('foo', 'http://github.com/foo/bar')
         );
-        $this->tideFactory->create($this->tideUuid,
+
+        $tide = $this->tideFactory->create(
             Flow::fromUserAndCodeRepository(
                 new User('my@ema.l'),
                 $repository
             ),
-            new CodeReference($repository, 'master'),
-            new \LogStream\WrappedLog(uniqid(), new \LogStream\Node\Container())
+            new CodeReference($repository, 'master')
         );
+
+        $this->tideUuid = $tide->getUuid();
+        foreach ($tide->popNewEvents() as $event) {
+            $this->eventBus->handle($event);
+        }
     }
 
     /**
@@ -349,6 +353,21 @@ class TideContext implements Context
     }
 
     /**
+     * @Then the tide should be created
+     */
+    public function theTideShouldBeCreated()
+    {
+        $events = $this->eventStore->findByTideUuid($this->tideUuid);
+        $numberOfTideStartedEvents = count(array_filter($events, function(TideEvent $event) {
+            return $event instanceof TideCreated;
+        }));
+
+        if (0 === $numberOfTideStartedEvents) {
+            throw new \RuntimeException('Tide started event not found');
+        }
+    }
+
+    /**
      * @param string $status
      * @throws \RuntimeException
      */
@@ -366,5 +385,13 @@ class TideContext implements Context
     public function getCurrentTideUuid()
     {
         return $this->tideUuid;
+    }
+
+    /**
+     * @param Uuid $uuid
+     */
+    public function setCurrentTideUuid($uuid)
+    {
+        $this->tideUuid = $uuid;
     }
 }

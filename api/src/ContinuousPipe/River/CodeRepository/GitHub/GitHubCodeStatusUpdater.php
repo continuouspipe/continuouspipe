@@ -23,7 +23,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
 
     /**
      * @param GitHubClientFactory $gitHubClientFactory
-     * @param string $uiBaseUrl
+     * @param string              $uiBaseUrl
      */
     public function __construct(GitHubClientFactory $gitHubClientFactory, $uiBaseUrl)
     {
@@ -79,13 +79,14 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
             [
                 'state' => $state,
                 'context' => 'continuous-pipe-river',
-                'target_url' => $this->generateTideUrl($tide)
+                'target_url' => $this->generateTideUrl($tide),
             ]
         );
     }
 
     /**
      * @param Tide $tide
+     *
      * @return string
      */
     private function generateTideUrl(Tide $tide)

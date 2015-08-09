@@ -1,7 +1,7 @@
 Feature:
-  In order to display tide informations
+  In order to display tide information
   As a developer
-  I need to be able to have a view reprensentation of the tide
+  I need to be able to have a view representation of the tide
 
   Scenario:
     When a tide is created

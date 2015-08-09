@@ -18,6 +18,7 @@ class AppTestExtension extends Extension
         $loader->load('events.xml');
         $loader->load('logging.xml');
         $loader->load('builder.xml');
+        $loader->load('flow.xml');
         $loader->load('tide.xml');
     }
 }

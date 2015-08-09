@@ -43,10 +43,15 @@
         <service id="repository_river.github.webhook_manager" class="GitHub\WebHook\Setup\WebHookManager">
             <argument type="service" id="repository_river.github.client" />
             <argument type="service" id="jms_serializer" />
-            <argument>%webhook_target_url%</argument>
-            <argument>%github_secret%</argument>
         </service>
 
         <service id="river.github.repository_address_descriptor" class="ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor" />
+
+        <service id="river.github.code_reference_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver" />
+        <service id="river.github.web_hook_handler" class="ContinuousPipe\River\CodeRepository\GitHub\WebHookHandler">
+            <argument type="service" id="river.tide_factory" />
+            <argument type="service" id="river.github.code_reference_resolver" />
+            <argument type="service" id="event_bus" />
+        </service>
     </services>
 </container>

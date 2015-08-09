@@ -2,40 +2,34 @@
 
 namespace ContinuousPipe\River;
 
-use LogStream\Log;
+use LogStream\LoggerFactory;
 use Rhumsaa\Uuid\Uuid;
-use SimpleBus\Message\Bus\MessageBus;
 
 class TideFactory
 {
     /**
-     * @var MessageBus
+     * @var LoggerFactory
      */
-    private $eventBus;
+    private $loggerFactory;
 
     /**
-     * @param MessageBus $eventBus
+     * @param LoggerFactory $loggerFactory
      */
-    public function __construct(MessageBus $eventBus)
+    public function __construct(LoggerFactory $loggerFactory)
     {
-        $this->eventBus = $eventBus;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
-     * @param Uuid          $uuid
      * @param Flow          $flow
      * @param CodeReference $codeReference
-     * @param Log           $log
      *
      * @return Tide
      */
-    public function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $log)
+    public function create(Flow $flow, CodeReference $codeReference)
     {
-        $tide = Tide::create($uuid, $flow, $codeReference, $log);
-
-        foreach ($tide->popNewEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
+        $log = $this->loggerFactory->create()->getLog();
+        $tide = Tide::create(Uuid::uuid1(), $flow, $codeReference, $log);
 
         return $tide;
     }
