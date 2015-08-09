@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\Adapter\EnvironmentClient;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\DockerCompose\Loader\YamlLoader;
 use ContinuousPipe\Pipe\ProviderRepository;
@@ -20,15 +19,22 @@ class CreateEnvironmentController extends Controller
      * @var ProviderRepository
      */
     private $providerRepository;
+
     /**
      * @var YamlLoader
      */
     private $dockerComposeYamlLoader;
+
     /**
      * @var EnvironmentClientFactory
      */
     private $environmentClientFactory;
 
+    /**
+     * @param ProviderRepository       $providerRepository
+     * @param YamlLoader               $dockerComposeYamlLoader
+     * @param EnvironmentClientFactory $environmentClientFactory
+     */
     public function __construct(ProviderRepository $providerRepository, YamlLoader $dockerComposeYamlLoader, EnvironmentClientFactory $environmentClientFactory)
     {
         $this->providerRepository = $providerRepository;

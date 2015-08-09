@@ -26,7 +26,7 @@ class CreateProviderController extends Controller
 
     /**
      * @param AdapterRegistry $adapterRegistry
-     * @param Serializer $serializer
+     * @param Serializer      $serializer
      */
     public function __construct(AdapterRegistry $adapterRegistry, Serializer $serializer)
     {

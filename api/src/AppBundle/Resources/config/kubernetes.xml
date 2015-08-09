@@ -39,6 +39,8 @@
         <service id="pipe.adapter.kubernetes" class="ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter">
             <argument type="service" id="pipe.adapter.kubernetes.repository" />
             <argument type="service" id="pipe.adapter.kubernetes.environment_client_factory" />
+
+            <tag name="pipe.adapter" />
         </service>
     </services>
 </container>

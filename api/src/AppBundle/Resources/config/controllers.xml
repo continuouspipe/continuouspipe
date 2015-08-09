@@ -11,7 +11,7 @@
         </service>
 
         <service id="pipe.controllers.get_provider" class="AppBundle\Controller\GetProviderController">
-            <argument type="service" id="pipe.adapter_registry" />
+            <argument type="service" id="pipe.provider_repository" />
         </service>
 
         <service id="pipe.controllers.create_environment" class="AppBundle\Controller\CreateEnvironmentController">

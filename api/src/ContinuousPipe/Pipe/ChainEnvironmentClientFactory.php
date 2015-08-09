@@ -23,6 +23,7 @@ class ChainEnvironmentClientFactory implements EnvironmentClientFactory
 
     /**
      * @param Provider $provider
+     *
      * @return EnvironmentClientFactory
      */
     public function getByProvider(Provider $provider)

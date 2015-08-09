@@ -2,12 +2,9 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\Adapter\AdapterRegistry;
-use ContinuousPipe\Pipe\ProviderRepository;
-use JMS\Serializer\Serializer;
+use ContinuousPipe\Adapter\ProviderRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
@@ -20,6 +17,9 @@ class GetProviderController extends Controller
      */
     private $providerRepository;
 
+    /**
+     * @param ProviderRepository $providerRepository
+     */
     public function __construct(ProviderRepository $providerRepository)
     {
         $this->providerRepository = $providerRepository;
