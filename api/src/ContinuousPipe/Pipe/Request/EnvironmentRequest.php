@@ -4,7 +4,7 @@ namespace ContinuousPipe\Pipe\Request;
 
 use JMS\Serializer\Annotation as JMS;
 
-class CreateEnvironmentRequest
+class EnvironmentRequest
 {
     /**
      * Environment name.

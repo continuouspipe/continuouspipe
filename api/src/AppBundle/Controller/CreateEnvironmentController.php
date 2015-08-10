@@ -5,7 +5,7 @@ namespace AppBundle\Controller;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\DockerCompose\Loader\YamlLoader;
-use ContinuousPipe\Pipe\Request\CreateEnvironmentRequest;
+use ContinuousPipe\Pipe\Request\EnvironmentRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -50,7 +50,7 @@ class CreateEnvironmentController extends Controller
      * @ParamConverter("environmentRequest", converter="fos_rest.request_body")
      * @View
      */
-    public function createOrUpdateAction(CreateEnvironmentRequest $environmentRequest)
+    public function createOrUpdateAction(EnvironmentRequest $environmentRequest)
     {
         $environment = $this->dockerComposeYamlLoader->load($environmentRequest->getName(), $environmentRequest->getDockerComposeContents());
 
