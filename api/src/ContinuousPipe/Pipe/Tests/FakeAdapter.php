@@ -11,13 +11,19 @@ class FakeAdapter implements Adapter
      * @var ProviderRepository
      */
     private $providerRepository;
+    /**
+     * @var FakeClientFactory
+     */
+    private $fakeClientFactory;
 
     /**
      * @param ProviderRepository $providerRepository
+     * @param FakeClientFactory $fakeClientFactory
      */
-    public function __construct(ProviderRepository $providerRepository)
+    public function __construct(ProviderRepository $providerRepository, FakeClientFactory $fakeClientFactory)
     {
         $this->providerRepository = $providerRepository;
+        $this->fakeClientFactory = $fakeClientFactory;
     }
 
     /**
@@ -49,6 +55,6 @@ class FakeAdapter implements Adapter
      */
     public function getEnvironmentClientFactory()
     {
-        throw new \RuntimeException('Not implemented in this fake adapter right now');
+        return $this->fakeClientFactory;
     }
 }

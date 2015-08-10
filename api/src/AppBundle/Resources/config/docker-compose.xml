@@ -10,8 +10,10 @@
             <argument type="service" id="pipe.docker_compose.component_transformer" />
         </service>
 
+        <service id="pipe.docker_compose.yaml_parser" class="ContinuousPipe\DockerCompose\Parser\YamlParser" />
         <service id="pipe.docker_compose.yaml_loader" class="ContinuousPipe\DockerCompose\Loader\YamlLoader">
             <argument type="service" id="pipe.docker_compose.environment_transformer" />
+            <argument type="service" id="pipe.docker_compose.yaml_parser" />
         </service>
     </services>
 </container>

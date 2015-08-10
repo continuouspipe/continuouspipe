@@ -3,11 +3,12 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
+use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\DockerCompose\Loader\YamlLoader;
-use ContinuousPipe\Pipe\ProviderRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use ContinuousPipe\Pipe\Request\CreateEnvironmentRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
@@ -43,17 +44,19 @@ class CreateEnvironmentController extends Controller
     }
 
     /**
-     * @Route("/environments/from-compose", methods={"POST"})
+     * Updates or create an environment with the given name, provider and configuration.
+     *
+     * @Route("/environments", methods={"PUT"})
+     * @ParamConverter("environmentRequest", converter="fos_rest.request_body")
      * @View
      */
-    public function createFromComposeAction(Request $request)
+    public function createOrUpdateAction(CreateEnvironmentRequest $environmentRequest)
     {
-        $provider = $this->providerRepository->findOneByName($request->request->get('provider'));
-        $dockerComposeContents = base64_decode($request->request->get('composeContents'));
+        $environment = $this->dockerComposeYamlLoader->load($environmentRequest->getName(), $environmentRequest->getDockerComposeContents());
 
-        $environment = $this->dockerComposeYamlLoader->load($dockerComposeContents);
+        $provider = $this->providerRepository->find($environmentRequest->getProviderName());
         $environmentClient = $this->environmentClientFactory->getByProvider($provider);
 
-        return $environmentClient->create($environment);
+        return $environmentClient->createOrUpdate($environment);
     }
 }

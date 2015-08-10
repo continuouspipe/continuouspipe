@@ -1,0 +1,10 @@
+app:
+    image: sroze/php-example
+    links:
+        - mysql
+    environment:
+        - MYSQL_PASSWORD=root
+mysql:
+    image: mysql
+    environment:
+        MYSQL_PASSWORD: root
