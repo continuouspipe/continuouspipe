@@ -23,6 +23,14 @@ class FakeEnvironmentClient implements EnvironmentClient
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function findAll()
+    {
+        return $this->createdOrUpdated;
+    }
+
+    /**
      * @return array
      */
     public function getCreatedOrUpdated()

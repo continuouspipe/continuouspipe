@@ -18,7 +18,7 @@ class FakeAdapter implements Adapter
 
     /**
      * @param ProviderRepository $providerRepository
-     * @param FakeClientFactory $fakeClientFactory
+     * @param FakeClientFactory  $fakeClientFactory
      */
     public function __construct(ProviderRepository $providerRepository, FakeClientFactory $fakeClientFactory)
     {

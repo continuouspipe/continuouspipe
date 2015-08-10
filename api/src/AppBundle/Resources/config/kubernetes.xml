@@ -26,8 +26,18 @@
         </service>
 
         <!-- Kubernetes client -->
+        <service id="pipe.adapter.kubernetes.guzzle_client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument key="defaults" type="collection">
+                    <argument key="verify">false</argument>
+                </argument>
+            </argument>
+
+            <tag name="csa_guzzle.client" />
+        </service>
         <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory">
             <argument type="service" id="jms_serializer" />
+            <argument type="service" id="pipe.adapter.kubernetes.guzzle_client" />
         </service>
         <service id="pipe.adapter.kubernetes.environment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\KubernetesEnvironmentClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
