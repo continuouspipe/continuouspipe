@@ -24,7 +24,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="repository in repositories | filter:search">
+                <tr ng-repeat="repository in repositories | filter:search" ng-hide="selectedRepository && repository != selectedRepository">
                     <td>{{ repository.repository.owner.login }}</td>
                     <td>{{ repository.repository.name }}</td>
                     <td>
@@ -32,8 +32,8 @@
                         <span ng-if="!repository.repository.private"><i class="md-public"></i> Public</span>
                     </td>
                     <td>
-                        <button class="btn btn-primary" ng-click="select(repository)" ng-if="selectedRepository != repository">Select</button>
-                        <button class="btn btn-success" ng-if="selectedRepository == repository">Selected</button>
+                        <button class="btn btn-primary" ng-click="select(repository)" ng-show="selectedRepository != repository">Select</button>
+                        <button class="btn btn-success" ng-show="selectedRepository == repository" ng-click="select(undefined)">Selected</button>
                     </td>
                 </tr>
                 </tbody>
