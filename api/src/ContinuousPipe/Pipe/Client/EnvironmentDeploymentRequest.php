@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Pipe\Client;
 
 use JMS\Serializer\Annotation as JMS;
+use LogStream\Log;
 
 class EnvironmentDeploymentRequest
 {
@@ -28,15 +29,24 @@ class EnvironmentDeploymentRequest
     private $dockerComposeContents;
 
     /**
+     * @JMS\SerializedName("logId")
+     *
+     * @var string
+     */
+    private $logId;
+
+    /**
      * @param string $environmentName
      * @param string $providerName
      * @param string $dockerComposeContents
+     * @param string $logId
      */
-    public function __construct($environmentName, $providerName, $dockerComposeContents)
+    public function __construct($environmentName, $providerName, $dockerComposeContents, $logId)
     {
         $this->environmentName = $environmentName;
         $this->providerName = $providerName;
         $this->dockerComposeContents = $dockerComposeContents;
+        $this->logId = $logId;
     }
 
     /**
@@ -61,5 +71,13 @@ class EnvironmentDeploymentRequest
     public function getDockerComposeContents()
     {
         return $this->dockerComposeContents;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogId()
+    {
+        return $this->logId;
     }
 }

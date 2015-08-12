@@ -45,6 +45,6 @@ class StartDeploymentHandler
         $deploymentRequest = $this->deploymentRequestFactory->create($command->getDeployContext());
         $this->pipeClient->start($deploymentRequest);
 
-        $this->eventBus->handle(new DeploymentStarted($command->getTideUuid()));
+        $this->eventBus->handle(new DeploymentStarted($command->getTideUuid(), $deploymentRequest));
     }
 }

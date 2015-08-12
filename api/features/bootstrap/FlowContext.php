@@ -122,7 +122,7 @@ EOF;
     }
 
     /**
-     * @Given I have a flow with a build task
+     * @Given I have a flow with a deploy task
      */
     public function iHaveAFlowWithADeployTask()
     {

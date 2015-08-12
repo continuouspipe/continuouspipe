@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Tests\Logging;
 
 use LogStream\EmptyLogger;
 use LogStream\Log;
+use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Container;
 
@@ -27,7 +28,11 @@ class InMemoryLoggerFactory implements LoggerFactory
      */
     public function create()
     {
-        return new InMemoryLogger(new EmptyLogger(new MutableWrappedLog(uniqid(), new Container())), $this->logStore);
+        $log = new MutableWrappedLog(uniqid(), new Container());
+
+        $this->logStore->store($log);
+
+        return new InMemoryLogger(new EmptyLogger($log), $this->logStore);
     }
 
     /**
@@ -36,5 +41,15 @@ class InMemoryLoggerFactory implements LoggerFactory
     public function from(Log $parent)
     {
         return new InMemoryLogger(new EmptyLogger($parent), $this->logStore);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fromId($parentId)
+    {
+        return $this->from(
+            $this->logStore->findById($parentId)
+        );
     }
 }

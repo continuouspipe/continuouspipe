@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Deploy\Command;
 
 use ContinuousPipe\River\Task\Deploy\DeployContext;
+use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
 
 class StartDeploymentCommand
@@ -18,7 +19,7 @@ class StartDeploymentCommand
     private $deployContext;
 
     /**
-     * @param Uuid          $tideUuid
+     * @param Uuid $tideUuid
      * @param DeployContext $deployContext
      */
     public function __construct(Uuid $tideUuid, DeployContext $deployContext)

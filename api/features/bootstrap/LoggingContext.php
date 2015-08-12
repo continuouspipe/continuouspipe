@@ -23,11 +23,7 @@ class LoggingContext implements Context
      */
     public function aLogShouldBeCreated($contents)
     {
-        $matchingLogs = $this->findLogsByContents($contents, $this->logStore->findAll());
-
-        if (count($matchingLogs) === 0) {
-            throw new \RuntimeException('No matching log found');
-        }
+        $this->findLogByContents($contents, $this->logStore->findAll());
     }
 
     /**
@@ -37,13 +33,8 @@ class LoggingContext implements Context
     {
         $this->aLogShouldBeCreated($parentContents);
 
-        $matchingParentLogs = $this->findLogsByContents($parentContents, $this->logStore->findAll());
-        $parentLog = current($matchingParentLogs);
-
-        $matchingChildren = $this->findLogsByContents($contents, $this->logStore->findAllByParent($parentLog));
-        if (count($matchingChildren) == 0) {
-            throw new \RuntimeException('No matching log in parent\'s children');
-        }
+        $parentLog = $this->findLogByContents($parentContents, $this->logStore->findAll());
+        $this->findLogByContents($contents, $this->logStore->findAllByParent($parentLog));
     }
 
     /**
@@ -51,15 +42,26 @@ class LoggingContext implements Context
      */
     public function theLogShouldBeSuccessful($contents)
     {
-        $logs = $this->findLogsByContents($contents, $this->logStore->findAll());
+        $log = $this->findLogByContents($contents, $this->logStore->findAll());
+        if ($log->getStatus() != 'success') {
+            throw new \RuntimeException(sprintf(
+                'Got status "%s" but expected "success"',
+                $log->getStatus()
+            ));
+        }
+    }
 
-        foreach ($logs as $log) {
-            if ($log->getStatus() != 'success') {
-                throw new \RuntimeException(sprintf(
-                    'Got status "%s" but expected "success"',
-                    $log->getStatus()
-                ));
-            }
+    /**
+     * @Then the :contents log should be failed
+     */
+    public function theLogShouldBeFailed($contents)
+    {
+        $log = $this->findLogByContents($contents, $this->logStore->findAll());
+        if ($log->getStatus() != 'failure') {
+            throw new \RuntimeException(sprintf(
+                'Got status "%s" but expected "faillure"',
+                $log->getStatus()
+            ));
         }
     }
 
@@ -77,5 +79,20 @@ class LoggingContext implements Context
 
             return $log instanceof \LogStream\Node\Text && $log->getText() == $contents;
         });
+    }
+
+    /**
+     * @param string $contents
+     * @param \LogStream\Log[] $logCollection
+     * @return \LogStream\Log
+     */
+    private function findLogByContents($contents, $logCollection)
+    {
+        $matchingLogs = $this->findLogsByContents($contents, $logCollection);
+        if (count($matchingLogs) === 0) {
+            throw new \RuntimeException('No matching log found');
+        }
+
+        return current($matchingLogs);
     }
 }

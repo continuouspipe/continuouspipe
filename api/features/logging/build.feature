@@ -17,3 +17,9 @@ Feature:
     When a tide is started
     And all the image builds are successful
     Then the "Building application images" log should be successful
+
+  Scenario:
+    Given there is 1 application images in the repository
+    When a tide is started
+    And the builds are failing
+    Then the "Building application images" log should be failed

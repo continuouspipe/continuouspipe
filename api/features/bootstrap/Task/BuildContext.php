@@ -11,6 +11,7 @@ use ContinuousPipe\River\Task\Build\BuildTask;
 use ContinuousPipe\River\Task\Build\Event\BuildFailed;
 use ContinuousPipe\River\Task\Build\Event\BuildStarted;
 use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
+use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use ContinuousPipe\River\Task\Task;
@@ -175,6 +176,19 @@ class BuildContext implements Context
     }
 
     /**
+     * @When the builds are failing
+     */
+    public function theBuildsAreFailing()
+    {
+        $imageBuildsStartedEvent = $this->getImageBuildsStartedEvent();
+
+        $this->eventBus->handle(new ImageBuildsFailed(
+            $this->tideContext->getCurrentTideUuid(),
+            $imageBuildsStartedEvent->getLog()
+        ));
+    }
+
+    /**
      * @Given :number images builds were started
      */
     public function imagesBuildsWereStarted($number)
@@ -266,14 +280,8 @@ class BuildContext implements Context
     public function allTheImageBuildsAreSuccessful()
     {
         $tideUuid = $this->tideContext->getCurrentTideUuid();
-        $events = $this->eventStore->findByTideUuid($tideUuid);
 
-        /** @var ImageBuildsStarted[] $imageBuildsStartedEvents */
-        $imageBuildsStartedEvents = array_filter($events, function(TideEvent $event) {
-            return $event instanceof ImageBuildsStarted;
-        });
-
-        $imageBuildsStartedEvent = current($imageBuildsStartedEvents);
+        $imageBuildsStartedEvent = $this->getImageBuildsStartedEvent();
         $this->eventBus->handle(new ImageBuildsSuccessful($tideUuid, $imageBuildsStartedEvent->getLog()));
     }
 
@@ -290,5 +298,22 @@ class BuildContext implements Context
         }
 
         return current($buildTasks);
+    }
+
+    /**
+     * @return ImageBuildsStarted
+     */
+    private function getImageBuildsStartedEvent()
+    {
+        $events = $this->eventStore->findByTideUuid(
+            $this->tideContext->getCurrentTideUuid()
+        );
+
+        /** @var ImageBuildsStarted[] $imageBuildsStartedEvents */
+        $imageBuildsStartedEvents = array_filter($events, function(TideEvent $event) {
+            return $event instanceof ImageBuildsStarted;
+        });
+
+        return current($imageBuildsStartedEvents);
     }
 }

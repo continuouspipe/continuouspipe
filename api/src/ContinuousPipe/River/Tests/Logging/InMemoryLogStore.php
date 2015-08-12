@@ -50,4 +50,13 @@ class InMemoryLogStore
     {
         return $this->logsByParent[$parent->getId()];
     }
+
+    /**
+     * @param string $id
+     * @return Log
+     */
+    public function findById($id)
+    {
+        return $this->logs[$id];
+    }
 }

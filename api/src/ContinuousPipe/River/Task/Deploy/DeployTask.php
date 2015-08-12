@@ -8,6 +8,8 @@ use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\TideContext;
+use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
 
 class DeployTask extends EventDrivenTask
@@ -18,11 +20,18 @@ class DeployTask extends EventDrivenTask
     private $commandBus;
 
     /**
-     * @param MessageBus $commandBus
+     * @var LoggerFactory
      */
-    public function __construct(MessageBus $commandBus)
+    private $loggerFactory;
+
+    /**
+     * @param MessageBus $commandBus
+     * @param LoggerFactory $loggerFactory
+     */
+    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory)
     {
         $this->commandBus = $commandBus;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -30,7 +39,13 @@ class DeployTask extends EventDrivenTask
      */
     public function start(TideContext $context)
     {
-        $this->commandBus->handle(new StartDeploymentCommand($context->getTideUuid(), new DeployContext($context)));
+        $logger = $this->loggerFactory->from($context->getLog());
+        $log = $logger->append(new Text('Deploying environment'));
+
+        $this->commandBus->handle(new StartDeploymentCommand(
+            $context->getTideUuid(),
+            DeployContext::createDeployContext($context, $log)
+        ));
     }
 
     /**

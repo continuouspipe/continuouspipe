@@ -28,7 +28,7 @@ class MutableWrappedLog extends WrappedLog
      * @param LogNode $node
      * @param string  $status
      */
-    public function __construct($id, LogNode $node, $status = null)
+    public function __construct($id, LogNode $node = null, $status = null)
     {
         $this->id = $id;
         $this->node = $node;

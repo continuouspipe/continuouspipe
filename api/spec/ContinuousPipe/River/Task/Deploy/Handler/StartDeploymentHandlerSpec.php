@@ -25,7 +25,7 @@ class StartDeploymentHandlerSpec extends ObjectBehavior
 
         $deploymentRequestFactory->create($deployContext)->shouldBeCalled()->willReturn($environmentDeploymentRequest);
         $pipeClient->start($environmentDeploymentRequest)->shouldBeCalled();
-        $eventBus->handle(new DeploymentStarted($tideUuid))->shouldBeCalled();
+        $eventBus->handle(new DeploymentStarted($tideUuid, $environmentDeploymentRequest))->shouldBeCalled();
 
         $this->handle(new StartDeploymentCommand($tideUuid, $deployContext->getWrappedObject()));
     }

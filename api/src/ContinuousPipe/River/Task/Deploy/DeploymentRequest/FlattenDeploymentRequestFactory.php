@@ -32,7 +32,8 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
         return new EnvironmentDeploymentRequest(
             $context->getCodeReference()->getBranch(),
             $context->getProviderName(),
-            $dockerComposeContents
+            $dockerComposeContents,
+            $context->getLog()->getId()
         );
     }
 }

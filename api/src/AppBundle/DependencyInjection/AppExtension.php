@@ -29,5 +29,6 @@ class AppExtension extends Extension
         $loader->load('build/handlers.xml');
         $loader->load('build/logging.xml');
         $loader->load('deploy/task.xml');
+        $loader->load('deploy/logging.xml');
     }
 }

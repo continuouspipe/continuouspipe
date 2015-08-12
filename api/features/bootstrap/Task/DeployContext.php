@@ -5,6 +5,7 @@ namespace Task;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\ContextualizedTask;
+use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
@@ -94,7 +95,8 @@ class DeployContext implements Context
     public function theDeploymentFailed()
     {
         $this->eventBus->handle(new DeploymentFailed(
-            $this->tideContext->getCurrentTideUuid()
+            $this->tideContext->getCurrentTideUuid(),
+            $this->getDeploymentStartedEvent()->getDeploymentRequest()
         ));
     }
 
@@ -114,7 +116,8 @@ class DeployContext implements Context
     public function theDeploymentSucceed()
     {
         $this->eventBus->handle(new DeploymentSuccessful(
-            $this->tideContext->getCurrentTideUuid()
+            $this->tideContext->getCurrentTideUuid(),
+            $this->getDeploymentStartedEvent()->getDeploymentRequest()
         ));
     }
 
@@ -140,5 +143,22 @@ class DeployContext implements Context
         }
 
         return current($deployTasks);
+    }
+
+    /**
+     * @return DeploymentStarted
+     */
+    private function getDeploymentStartedEvent()
+    {
+        $events = $this->eventStore->findByTideUuid(
+            $this->tideContext->getCurrentTideUuid()
+        );
+
+        /** @var DeploymentStarted[] $deploymentStartedEvents */
+        $deploymentStartedEvents = array_filter($events, function(TideEvent $event) {
+            return $event instanceof DeploymentStarted;
+        });
+
+        return current($deploymentStartedEvents);
     }
 }
