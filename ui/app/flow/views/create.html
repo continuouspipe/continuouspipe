@@ -39,15 +39,62 @@
                 </tbody>
             </table>
         </remote-resource>
+    </div>
 
-        <h2 ng-if="selectedRepository">2. Configure the build strategy</h2>
-        <div ng-if="selectedRepository">
-            <p>Because right now we just have one unique build strategy (which is basically building images with the tag
-            of the branch the code was pushed) you don't have to chose anything.</p>
-            <p>A GitHub WebHook will be configured when you'll finish the flow creation, than will enable the flow.</p>
-            <p>
-                <button class="btn btn-primary" ng-click="finish()">Finish</button>
-            </p>
+    <div class="block-header" ng-if="selectedRepository">
+        <h2>2. Select the task for your flow</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Available tasks<small>Move these tasks to right to enable them in your flow.</small></h2>
+                    </div>
+                    <div class="table-response">
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr ng-repeat="(i, task) in availableTasks">
+                                <td><strong>{{ task.name }}</strong></td>
+                                <td>{{ task.description }}</td>
+                                <td>
+                                    <button class="btn btn-primary" ng-click="addTask(i)">Add</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Selected tasks</h2>
+                    </div>
+                    <div class="table-response" ng-show="selectedTasks.length">
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr ng-repeat="(i, task) in selectedTasks">
+                                <td><strong>{{ task.name }}</strong></td>
+                                <td>
+                                    <p>{{ task.description }}</p>
+                                    <form ng-show="task.context">
+                                        <div class="form-group fg-line" ng-repeat="(key, value) in task.context">
+                                            <label>{{ key }}</label>
+                                            <input type="text" class="form-control input-sm" ng-model="task.context[key]" />
+                                        </div>
+                                    </form>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger" ng-click="removeTask(i)">Remove</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <button class="btn btn-primary" ng-click="finish()">Finish</button>
     </div>
 </div>
