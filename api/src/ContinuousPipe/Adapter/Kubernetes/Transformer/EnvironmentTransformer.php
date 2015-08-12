@@ -1,0 +1,37 @@
+<?php
+
+namespace ContinuousPipe\Adapter\Kubernetes\Transformer;
+
+use ContinuousPipe\Model\Environment;
+use Kubernetes\Client\Model\KubernetesObject;
+
+class EnvironmentTransformer
+{
+    /**
+     * @var ComponentTransformer
+     */
+    private $componentTransformer;
+
+    public function __construct(ComponentTransformer $componentTransformer)
+    {
+        $this->componentTransformer = $componentTransformer;
+    }
+
+    /**
+     * @param Environment $environment
+     *
+     * @return KubernetesObject[]
+     */
+    public function getElementListFromEnvironment(Environment $environment)
+    {
+        $objects = [];
+
+        foreach ($environment->getComponents() as $component) {
+            $componentObjects = $this->componentTransformer->getElementListFromComponent($component);
+
+            $objects = array_merge($objects, $componentObjects);
+        }
+
+        return $objects;
+    }
+}
