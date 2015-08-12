@@ -24,6 +24,9 @@ use ContinuousPipe\River\Task\Build\Event\BuildFailed;
 use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use ContinuousPipe\River\Task\Build\BuildTask;
+use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
+use ContinuousPipe\River\Task\Deploy\DeployTask;
 
 class TideContext implements Context
 {
@@ -38,7 +41,7 @@ class TideContext implements Context
     private $tideUuid;
 
     /**
-     * @var Tide|null
+     * @var \ContinuousPipe\River\Tide
      */
     private $tide;
 
@@ -105,19 +108,8 @@ class TideContext implements Context
      */
     public function aTideIsCreated()
     {
-        $repository = new GitHubCodeRepository(
-            new GitHubRepository('foo', 'http://github.com/foo/bar')
-        );
-
-        $this->tide = $this->tideFactory->createFromCodeReference(
-            $this->flowContext->getOrCreateDefaultFlow($repository),
-            new CodeReference($repository, 'master')
-        );
-
-        $this->tideUuid = $this->tide->getContext()->getTideUuid();
-        foreach ($this->tide->popNewEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
+        $this->flowContext->iHaveAFlowWithTheBuildAndDeployTasks();
+        $this->createTide();
     }
 
     /**
@@ -141,24 +133,6 @@ class TideContext implements Context
     }
 
     /**
-     * @Then it should build the application images
-     */
-    public function itShouldBuildTheApplicationImages()
-    {
-        $events = $this->eventStore->findByTideUuid($this->tideUuid);
-        $imageBuildsStartedEvents = array_filter($events, function(TideEvent $event) {
-            return $event instanceof ImageBuildsStarted;
-        });
-
-        if (1 !== count($imageBuildsStartedEvents)) {
-            throw new \Exception(sprintf(
-                'Found %d image builds started event, expected 1',
-                count($imageBuildsStartedEvents)
-            ));
-        }
-    }
-
-    /**
      * @Given there is :number application images in the repository
      */
     public function thereIsApplicationImagesInTheRepository($number)
@@ -178,53 +152,6 @@ class TideContext implements Context
     }
 
     /**
-     * @Then it should build the :number application images
-     */
-    public function itShouldBuildTheGivenNumberOfApplicationImages($number)
-    {
-        $events = $this->eventStore->findByTideUuid($this->tideUuid);
-        $numberOfImageBuildStartedEvents = count(array_filter($events, function(TideEvent $event) {
-            return $event instanceof BuildStarted;
-        }));
-
-        $number = (int) $number;
-        if ($number !== $numberOfImageBuildStartedEvents) {
-            throw new \Exception(sprintf(
-                'Found %d image builds started event, expected %d',
-                $numberOfImageBuildStartedEvents,
-                $number
-            ));
-        }
-    }
-
-    /**
-     * @Given an image build was started
-     */
-    public function anImageBuildWasStarted()
-    {
-        $this->lastBuild = new BuilderBuild(
-            (string) Uuid::uuid1(),
-            BuilderBuild::STATUS_PENDING
-        );
-
-        $this->eventStore->add(new BuildStarted(
-            $this->tideUuid,
-            $this->lastBuild
-        ));
-    }
-
-    /**
-     * @When the build is failing
-     */
-    public function theBuildIsFailing()
-    {
-        $this->eventBus->handle(new BuildFailed(
-            $this->tideUuid,
-            $this->lastBuild
-        ));
-    }
-
-    /**
      * @Then the tide should be failed
      */
     public function theTideShouldBeFailed()
@@ -238,92 +165,6 @@ class TideContext implements Context
             throw new \Exception(sprintf(
                 'Found %d tail failed event, expected 1',
                 $numberOfImageBuildStartedEvents
-            ));
-        }
-    }
-
-    /**
-     * @Given :number images builds were started
-     */
-    public function imagesBuildsWereStarted($number)
-    {
-        while ($number-- > 0) {
-            $this->anImageBuildWasStarted();
-        }
-    }
-
-    /**
-     * @When one image build is successful
-     */
-    public function oneImageBuildIsSuccessful()
-    {
-        $this->eventBus->handle(new BuildSuccessful(
-            $this->tideUuid,
-            $this->lastBuild
-        ));
-    }
-
-    /**
-     * @Then the image builds should be waiting
-     */
-    public function theImageBuildsShouldBeWaiting()
-    {
-        $events = $this->eventStore->findByTideUuid($this->tideUuid);
-        $numberOfImagesBuiltEvents = count(array_filter($events, function(TideEvent $event) {
-            return $event instanceof ImageBuildsSuccessful;
-        }));
-
-        if (0 !== $numberOfImagesBuiltEvents) {
-            throw new \Exception(sprintf(
-                'Found %d images built events, expected 0',
-                $numberOfImagesBuiltEvents
-            ));
-        }
-
-        try {
-            $this->theTideShouldBeFailed();
-            $failed = true;
-        } catch (\Exception $e) {
-            $failed = false;
-        }
-
-        if ($failed) {
-            throw new \RuntimeException('The tide is failed and wasn\'t expected to be');
-        }
-    }
-
-    /**
-     * @When one image build is failed
-     */
-    public function oneImageBuildIsFailed()
-    {
-        $this->theBuildIsFailing();
-    }
-
-    /**
-     * @When :number image builds are successful
-     */
-    public function imageBuildsAreSuccessful($number)
-    {
-        while ($number-- > 0) {
-            $this->oneImageBuildIsSuccessful();
-        }
-    }
-
-    /**
-     * @Then the image should be successfully built
-     */
-    public function theImagesShouldBeSuccessfullyBuilt()
-    {
-        $events = $this->eventStore->findByTideUuid($this->tideUuid);
-        $numberOfImagesBuiltEvents = count(array_filter($events, function(TideEvent $event) {
-            return $event instanceof ImageBuildsSuccessful;
-        }));
-
-        if (1 !== $numberOfImagesBuiltEvents) {
-            throw new \Exception(sprintf(
-                'Found %d images built event, expected 1',
-                $numberOfImagesBuiltEvents
             ));
         }
     }
@@ -396,6 +237,17 @@ class TideContext implements Context
     }
 
     /**
+     * @When a tide is started based on that workflow
+     */
+    public function aTideIsStartedBasedOnThatWorkflow()
+    {
+        $this->createTide();
+        $this->eventBus->handle(new \ContinuousPipe\River\Event\TideStarted(
+            $this->tideUuid
+        ));
+    }
+
+    /**
      * @return null|Uuid
      */
     public function getCurrentTideUuid()
@@ -417,5 +269,23 @@ class TideContext implements Context
     public function getCurrentTide()
     {
         return $this->tide;
+    }
+
+    private function createTide()
+    {
+        $flow = $this->flowContext->getCurrentFlow();
+
+        $this->tide = $this->tideFactory->createFromCodeReference(
+            $flow,
+            new CodeReference(
+                $flow->getContext()->getCodeRepository(),
+                'master'
+            )
+        );
+        $this->tideUuid = $this->tide->getContext()->getTideUuid();
+
+        foreach ($this->tide->popNewEvents() as $event) {
+            $this->eventBus->handle($event);
+        }
     }
 }

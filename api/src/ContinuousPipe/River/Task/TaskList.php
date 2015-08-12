@@ -40,19 +40,27 @@ class TaskList
     }
 
     /**
-     * Has a task running ?
+     * Has a running task ?
      *
      * @return bool
      */
     public function hasRunning()
     {
-        foreach ($this->tasks as $task) {
-            if ($task->isRunning()) {
-                return true;
-            }
-        }
+        return 0 < count(array_filter($this->tasks, function (Task $task) {
+            return $task->isRunning();
+        }));
+    }
 
-        return false;
+    /**
+     * Has a failed task ?
+     *
+     * @return bool
+     */
+    public function hasFailed()
+    {
+        return 0 < count(array_filter($this->tasks, function (Task $task) {
+            return $task->isFailed();
+        }));
     }
 
     /**
@@ -72,7 +80,7 @@ class TaskList
     /**
      * @return bool
      */
-    public function isSuccessful()
+    public function allSuccessful()
     {
         return array_reduce($this->tasks, function ($successful, Task $task) {
             return $successful && $task->isSuccessful();

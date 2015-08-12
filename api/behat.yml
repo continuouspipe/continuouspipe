@@ -9,6 +9,9 @@ default:
                     - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
+                - Tide\TasksContext:
+                    - @event_bus
+                    - @river.repository.tide
                 - LoggingContext:
                     - @log_stream.event_store.in_memory
                 - GitHubContext:
@@ -19,8 +22,12 @@ default:
                     - @security.token_storage
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
+                - Task\BuildContext:
+                    - @river.event_store
+                    - @event_bus
                 - Task\DeployContext:
                     - @river.event_store
+                    - @event_bus
 
     extensions:
         Behat\Symfony2Extension:

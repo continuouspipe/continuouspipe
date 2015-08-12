@@ -13,9 +13,9 @@ Feature:
   Scenario:
     Given a deploy task is started
     When the deployment failed
-    Then the task should be failed
+    Then the deploy task should be failed
 
   Scenario:
     Given a deploy task is started
     When the deployment succeed
-    Then the task should be successful
+    Then the deploy task should be successful

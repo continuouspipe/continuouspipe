@@ -13,6 +13,14 @@ use Rhumsaa\Uuid\Uuid;
 class Tide
 {
     /**
+     * This flag is set to true when we need to reconstruct a tide. It is locked
+     * to prevent starting tasks.
+     *
+     * @var bool
+     */
+    private $locked = false;
+
+    /**
      * @var TideEvent[]
      */
     private $events = [];
@@ -75,11 +83,13 @@ class Tide
     public static function fromEvents(TaskList $tasks, $events)
     {
         $tide = new self($tasks);
+        $tide->locked = true;
         foreach ($events as $event) {
             $tide->apply($event);
         }
 
         $tide->popNewEvents();
+        $tide->locked = false;
 
         return $tide;
     }
@@ -95,7 +105,9 @@ class Tide
             $this->applyTideCreated($event);
         }
 
-        if ($this->isRunning()) {
+        $this->tasks->apply($event);
+
+        if ($this->isRunning() && !$this->locked) {
             $this->handleTasks($event);
         }
 
@@ -149,19 +161,17 @@ class Tide
      */
     private function handleTasks(TideEvent $event)
     {
-        $this->tasks->apply($event);
         if ($this->tasks->hasRunning()) {
             return;
-        }
-
-        if (null !== ($nextTask = $this->tasks->next())) {
-            $nextTask->start($this->context);
-        } elseif ($this->tasks->isSuccessful()) {
-            $this->newEvents[] = new TideSuccessful($event->getTideUuid());
-        } else {
+        } elseif ($this->tasks->hasFailed()) {
             $this->newEvents[] = new TideFailed($event->getTideUuid());
+        } elseif (null !== ($nextTask = $this->tasks->next())) {
+            $nextTask->start($this->context);
+        } elseif ($this->tasks->allSuccessful()) {
+            $this->newEvents[] = new TideSuccessful($event->getTideUuid());
         }
     }
+
     /**
      * @return bool
      */

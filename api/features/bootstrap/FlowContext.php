@@ -22,6 +22,11 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     private $flowUuid;
 
     /**
+     * @var Flow
+     */
+    private $currentFlow;
+
+    /**
      * @var FlowRepository
      */
     private $flowRepository;
@@ -72,33 +77,6 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
-     * @param CodeRepository $codeRepository
-     * @return Flow
-     */
-    public function getOrCreateDefaultFlow(CodeRepository $codeRepository)
-    {
-        $this->flowUuid = Uuid::uuid1();
-        $this->codeRepositoryRepository->add($codeRepository);
-
-        $context = RiverFlowContext::createFlow(
-            $this->flowUuid,
-            new User('samuel.roze@gmail.com'),
-            $codeRepository
-        );
-
-        $flow = new Flow($context, [
-            new Flow\Task('build'),
-            new Flow\Task('deploy', [
-                'providerName' => 'fake/provider'
-            ])
-        ]);
-
-        $this->flowRepository->save($flow);
-
-        return $flow;
-    }
-
-    /**
      * @When I send a flow creation request
      */
     public function iSendAFlowCreationRequest()
@@ -134,14 +112,107 @@ EOF;
     }
 
     /**
-     * @Given I have a flow
+     * @Given I have a flow with the build task
      */
-    public function iHaveAFlow()
+    public function iHaveAFlowWithTheBuildTask()
     {
-        $this->getOrCreateDefaultFlow(
-            new CodeRepository\GitHub\GitHubCodeRepository(
-                new \GitHub\WebHook\Model\Repository('bar', 'http://github.com/foo/bar')
-            )
+        $this->createFlowWithTasks([
+            new Flow\Task('build')
+        ]);
+    }
+
+    /**
+     * @Given I have a flow with a build task
+     */
+    public function iHaveAFlowWithADeployTask()
+    {
+        $this->createFlowWithTasks([
+            new Flow\Task('deploy', [
+                'providerName' => 'fake/provider'
+            ])
+        ]);
+    }
+
+    /**
+     * @Given I have a flow
+     * @Given I have a flow with the build and deploy tasks
+     */
+    public function iHaveAFlowWithTheBuildAndDeployTasks()
+    {
+        $this->createFlow();
+    }
+
+    /**
+     * @return Flow
+     */
+    public function createFlow()
+    {
+        $context = $this->createFlowContext();
+
+        return $this->createFlowWithContextAndTasks($context, [
+            new Flow\Task('build'),
+            new Flow\Task('deploy', [
+                'providerName' => 'fake/provider'
+            ])
+        ]);
+    }
+
+    /**
+     * @param Flow\Task[] $tasks
+     */
+    public function createFlowWithTasks(array $tasks)
+    {
+        $context = $this->createFlowContext();
+
+        $this->createFlowWithContextAndTasks($context, $tasks);
+    }
+
+    /**
+     * @param CodeRepository $codeRepository
+     * @return RiverFlowContext
+     */
+    private function createFlowContextWithCodeRepository(CodeRepository $codeRepository)
+    {
+        $this->flowUuid = Uuid::uuid1();
+        $this->codeRepositoryRepository->add($codeRepository);
+
+        return RiverFlowContext::createFlow(
+            $this->flowUuid,
+            new User('samuel.roze@gmail.com'),
+            $codeRepository
         );
+    }
+
+    /**
+     * @param RiverFlowContext $context
+     * @param Flow\Task[] $tasks
+     * @return Flow
+     */
+    public function createFlowWithContextAndTasks(RiverFlowContext $context, array $tasks)
+    {
+        $flow = new Flow($context, $tasks);
+        $this->flowRepository->save($flow);
+
+        $this->currentFlow = $flow;
+
+        return $flow;
+    }
+
+    /**
+     * @return Flow
+     */
+    public function getCurrentFlow()
+    {
+        return $this->currentFlow;
+    }
+
+    /**
+     * @return RiverFlowContext
+     */
+    private function createFlowContext()
+    {
+        return $this->createFlowContextWithCodeRepository(new CodeRepository\GitHub\GitHubCodeRepository(
+            new Repository('foo', 'bar')
+        ));
     }
 }

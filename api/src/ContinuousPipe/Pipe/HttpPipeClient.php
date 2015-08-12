@@ -25,8 +25,8 @@ class HttpPipeClient implements Client
 
     /**
      * @param GuzzleClient $client
-     * @param Serializer $serializer
-     * @param string $baseUrl
+     * @param Serializer   $serializer
+     * @param string       $baseUrl
      */
     public function __construct(GuzzleClient $client, Serializer $serializer, $baseUrl)
     {
@@ -43,8 +43,8 @@ class HttpPipeClient implements Client
         $this->client->put($this->baseUrl.'/environments', [
             'body' => $this->serializer->serialize($deploymentRequest, 'json'),
             'headers' => [
-                'Content-Type' => 'application/json'
-            ]
+                'Content-Type' => 'application/json',
+            ],
         ]);
     }
 }

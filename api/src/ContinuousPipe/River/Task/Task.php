@@ -47,4 +47,9 @@ interface Task
      * @return bool
      */
     public function isPending();
+
+    /**
+     * Clear the state of the task, as it's being reused.
+     */
+    public function clear();
 }

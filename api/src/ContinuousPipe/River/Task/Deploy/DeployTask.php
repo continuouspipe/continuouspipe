@@ -38,7 +38,7 @@ class DeployTask extends EventDrivenTask
      */
     public function isSuccessful()
     {
-        return 1 === $this->numberOfEventsOfType(DeploymentSuccessful::class);
+        return 1 <= $this->numberOfEventsOfType(DeploymentSuccessful::class);
     }
 
     /**

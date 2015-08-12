@@ -12,6 +12,7 @@ use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\Task;
 use Rhumsaa\Uuid\Uuid;
+use SimpleBus\Message\Bus\MessageBus;
 
 class DeployContext implements Context
 {
@@ -21,9 +22,14 @@ class DeployContext implements Context
     private $tideContext;
 
     /**
-     * @var Task
+     * @var \FlowContext
      */
-    private $deployTask;
+    private $flowContext;
+
+    /**
+     * @var \Tide\TasksContext
+     */
+    private $tideTasksContext;
 
     /**
      * @var EventStore
@@ -31,11 +37,18 @@ class DeployContext implements Context
     private $eventStore;
 
     /**
-     * @param EventStore $eventStore
+     * @var MessageBus
      */
-    public function __construct(EventStore $eventStore)
+    private $eventBus;
+
+    /**
+     * @param EventStore $eventStore
+     * @param MessageBus $eventBus
+     */
+    public function __construct(EventStore $eventStore, MessageBus $eventBus)
     {
         $this->eventStore = $eventStore;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -44,6 +57,8 @@ class DeployContext implements Context
     public function gatherContexts(BeforeScenarioScope $scope)
     {
         $this->tideContext = $scope->getEnvironment()->getContext('TideContext');
+        $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
+        $this->tideTasksContext = $scope->getEnvironment()->getContext('Tide\TasksContext');
     }
 
     /**
@@ -51,24 +66,8 @@ class DeployContext implements Context
      */
     public function aDeployTaskIsStarted()
     {
-        $this->tideContext->aTideIsCreated();
-        $tide = $this->tideContext->getCurrentTide();
-
-        /** @var Task[] $deployTasks */
-        $deployTasks = array_filter($tide->getTasks()->getTasks(), function(Task $task) {
-            if ($task instanceof ContextualizedTask) {
-                $task = $task->getTask();
-            }
-
-            return $task instanceof DeployTask;
-        });
-
-        if (count($deployTasks) == 0) {
-            throw new \RuntimeException('No deploy task found');
-        }
-
-        $this->deployTask = current($deployTasks);
-        $this->deployTask->start($tide->getContext());
+        $this->flowContext->iHaveAFlowWithADeployTask();
+        $this->tideContext->aTideIsStartedBasedOnThatWorkflow();
     }
 
     /**
@@ -94,15 +93,17 @@ class DeployContext implements Context
      */
     public function theDeploymentFailed()
     {
-        $this->deployTask->apply(new DeploymentFailed(Uuid::uuid1()));
+        $this->eventBus->handle(new DeploymentFailed(
+            $this->tideContext->getCurrentTideUuid()
+        ));
     }
 
     /**
-     * @Then the task should be failed
+     * @Then the deploy task should be failed
      */
     public function theTaskShouldBeFailed()
     {
-        if (!$this->deployTask->isFailed()) {
+        if (!$this->getDeployTask()->isFailed()) {
             throw new \RuntimeException('Expected the task to be failed');
         }
     }
@@ -112,16 +113,32 @@ class DeployContext implements Context
      */
     public function theDeploymentSucceed()
     {
-        $this->deployTask->apply(new DeploymentSuccessful(Uuid::uuid1()));
+        $this->eventBus->handle(new DeploymentSuccessful(
+            $this->tideContext->getCurrentTideUuid()
+        ));
     }
 
     /**
-     * @Then the task should be successful
+     * @Then the deploy task should be successful
      */
     public function theTaskShouldBeSuccessful()
     {
-        if (!$this->deployTask->isSuccessful()) {
-            throw new \RuntimeException('Expected the task to be failed');
+        if (!$this->getDeployTask()->isSuccessful()) {
+            throw new \RuntimeException('Expected the task to be successful');
         }
+    }
+
+    /**
+     * @return DeployTask
+     */
+    private function getDeployTask()
+    {
+        /** @var Task[] $deployTasks */
+        $deployTasks = $this->tideTasksContext->getTasksOfType(DeployTask::class);
+        if (count($deployTasks) == 0) {
+            throw new \RuntimeException('No build task found');
+        }
+
+        return current($deployTasks);
     }
 }

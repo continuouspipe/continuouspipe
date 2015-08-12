@@ -4,8 +4,9 @@ namespace ContinuousPipe\River\Tests\Logging;
 
 use LogStream\Log;
 use LogStream\LogNode;
+use LogStream\WrappedLog;
 
-class MutableWrappedLog implements Log
+class MutableWrappedLog extends WrappedLog
 {
     /**
      * @var string

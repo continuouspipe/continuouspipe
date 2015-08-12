@@ -25,9 +25,9 @@ class CodeRepositoryReader implements DockerComposeReader
     private $transformers;
 
     /**
-     * @param ProjectParser $dockerComposeProjectParser
+     * @param ProjectParser                     $dockerComposeProjectParser
      * @param CodeRepository\FileSystemResolver $fileSystemResolver
-     * @param DockerComposeTransformer[] $transformers
+     * @param DockerComposeTransformer[]        $transformers
      */
     public function __construct(ProjectParser $dockerComposeProjectParser, CodeRepository\FileSystemResolver $fileSystemResolver, array $transformers = [])
     {
@@ -41,6 +41,7 @@ class CodeRepositoryReader implements DockerComposeReader
      * with the built image names.
      *
      * @param DeployContext $context
+     *
      * @return string
      */
     public function getContents(DeployContext $context)

@@ -18,7 +18,7 @@ class StartDeploymentCommand
     private $deployContext;
 
     /**
-     * @param Uuid $tideUuid
+     * @param Uuid          $tideUuid
      * @param DeployContext $deployContext
      */
     public function __construct(Uuid $tideUuid, DeployContext $deployContext)

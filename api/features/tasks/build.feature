@@ -2,37 +2,38 @@ Feature:
   In order to deploy application in part of a tide
   The images found in application code should be built
 
-  Scenario: When a tide it started, it should try to build application images
-    When a tide is started
+  Scenario:
+    When a build task is started
     Then it should build the application images
 
-  Scenario: When a tide it started, it should build all the images found in repository
+  Scenario:
     Given there is 2 application images in the repository
-    When a tide is started
+    When a build task is started
     Then it should build the 2 application images
 
-  Scenario: If a build fails, the tide should fail at the same time
-    Given a tide is started
+  Scenario: If a build fails, the task should fail at the same time
+    When a build task is started
     And an image build was started
     When the build is failing
-    Then the tide should be failed
+    Then the build task should be failed
 
   Scenario: The build of images wait all the images to be built
-    Given a tide is started
+    When a build task is started
     And 2 images builds were started
     When one image build is successful
-    Then the image builds should be waiting
+    Then the build task should be running
 
   Scenario: The build of images is failed if one of the image build failed
-    Given a tide is started
+    When a build task is started
     And 2 images builds were started
     When one image build is successful
     And one image build is failed
-    Then the tide should be failed
+    Then the build task should be failed
 
   Scenario: The build of images only succeed if all images are successfully built
     Given there is 2 application images in the repository
-    And a tide is started
+    And a build task is started
     And 2 images builds were started
     When 2 image builds are successful
     Then the image should be successfully built
+    And the build task should be successful

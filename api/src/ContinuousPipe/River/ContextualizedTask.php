@@ -86,6 +86,14 @@ class ContextualizedTask implements Task
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        return $this->task->clear();
+    }
+
+    /**
      * @return Task
      */
     public function getTask()

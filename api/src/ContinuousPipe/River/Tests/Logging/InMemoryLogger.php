@@ -35,10 +35,10 @@ class InMemoryLogger implements Logger
     public function append(LogNode $log)
     {
         $log = $this->emptyLogger->append($log);
-
+        $log = new MutableWrappedLog($log->getId(), $log->getNode(), $log->getStatus());
         $this->logStore->store($log, $this->emptyLogger->getLog());
 
-        return new MutableWrappedLog($log->getId(), $log->getNode(), $log->getStatus());
+        return $log;
     }
 
     /**
@@ -46,11 +46,7 @@ class InMemoryLogger implements Logger
      */
     public function start()
     {
-        $log = $this->emptyLogger->getLog();
-
-        if ($log instanceof MutableWrappedLog) {
-            $log->setStatus(Log::RUNNING);
-        }
+        $this->updatesStatus(Log::RUNNING);
     }
 
     /**
@@ -66,11 +62,7 @@ class InMemoryLogger implements Logger
      */
     public function success()
     {
-        $log = $this->emptyLogger->getLog();
-
-        if ($log instanceof MutableWrappedLog) {
-            $log->setStatus(Log::SUCCESS);
-        }
+        $this->updatesStatus(Log::SUCCESS);
     }
 
     /**
@@ -78,10 +70,20 @@ class InMemoryLogger implements Logger
      */
     public function failure()
     {
+        $this->updatesStatus(Log::FAILURE);
+    }
+
+    /**
+     * @param string $status
+     */
+    private function updatesStatus($status)
+    {
         $log = $this->emptyLogger->getLog();
 
         if ($log instanceof MutableWrappedLog) {
-            $log->setStatus(Log::FAILURE);
+            $log->setStatus($status);
+        } else {
+            throw new \RuntimeException('Non-mutable log found');
         }
     }
 }

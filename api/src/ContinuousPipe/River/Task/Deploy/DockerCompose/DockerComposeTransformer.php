@@ -10,7 +10,8 @@ interface DockerComposeTransformer
      * Transform the parsed Docker-Compose contents.
      *
      * @param DeployContext $context
-     * @param array $parsed
+     * @param array         $parsed
+     *
      * @return array
      */
     public function transform(DeployContext $context, array $parsed);

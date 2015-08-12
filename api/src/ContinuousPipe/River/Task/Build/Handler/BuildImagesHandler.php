@@ -73,7 +73,6 @@ class BuildImagesHandler
         }
 
         $this->eventBus->handle(new ImageBuildsStarted($tideUuid, $buildRequests, $command->getLog()));
-
         foreach ($buildRequests as $buildRequest) {
             $log = $logger->append(new Text(sprintf('Building image \'%s\'', $buildRequest->getImage()->getName())));
 

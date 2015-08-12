@@ -6,7 +6,6 @@ use LogStream\EmptyLogger;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Container;
-use LogStream\WrappedLog;
 
 class InMemoryLoggerFactory implements LoggerFactory
 {
@@ -28,7 +27,7 @@ class InMemoryLoggerFactory implements LoggerFactory
      */
     public function create()
     {
-        return new InMemoryLogger(new EmptyLogger(new WrappedLog(uniqid(), new Container())), $this->logStore);
+        return new InMemoryLogger(new EmptyLogger(new MutableWrappedLog(uniqid(), new Container())), $this->logStore);
     }
 
     /**

@@ -46,6 +46,22 @@ class LoggingContext implements Context
         }
     }
 
+    /**
+     * @Then the :contents log should be successful
+     */
+    public function theLogShouldBeSuccessful($contents)
+    {
+        $logs = $this->findLogsByContents($contents, $this->logStore->findAll());
+
+        foreach ($logs as $log) {
+            if ($log->getStatus() != 'success') {
+                throw new \RuntimeException(sprintf(
+                    'Got status "%s" but expected "success"',
+                    $log->getStatus()
+                ));
+            }
+        }
+    }
 
     /**
      * @param string $contents

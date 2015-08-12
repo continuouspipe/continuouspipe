@@ -6,7 +6,14 @@ use ContinuousPipe\River\Event\TideEvent;
 
 abstract class EventDrivenTask implements Task
 {
+    /**
+     * @var array
+     */
     private $events = [];
+
+    /**
+     * @var array
+     */
     protected $newEvents = [];
 
     /**
@@ -58,5 +65,14 @@ abstract class EventDrivenTask implements Task
     public function isRunning()
     {
         return !$this->isFailed() && !$this->isSuccessful() && !$this->isPending();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        $this->events = [];
+        $this->newEvents = [];
     }
 }

@@ -100,6 +100,8 @@ class TideFactory
         $tasks = [];
         foreach ($flow->getTasks() as $flowTask) {
             $task = $this->taskRegistry->find($flowTask->getName());
+            $task->clear();
+
             $taskContext = ArrayContext::fromRaw($flowTask->getContext() ?: []);
             $tasks[] = new ContextualizedTask($task, $taskContext);
         }

@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Task\Deploy\Handler;
 
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
@@ -28,8 +27,8 @@ class StartDeploymentHandler
 
     /**
      * @param DeploymentRequestFactory $deploymentRequestFactory
-     * @param Client $pipeClient
-     * @param MessageBus $eventBus
+     * @param Client                   $pipeClient
+     * @param MessageBus               $eventBus
      */
     public function __construct(DeploymentRequestFactory $deploymentRequestFactory, Client $pipeClient, MessageBus $eventBus)
     {

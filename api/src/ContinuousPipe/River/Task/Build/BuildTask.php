@@ -123,7 +123,7 @@ class BuildTask extends EventDrivenTask
      */
     public function isSuccessful()
     {
-        return 1 === $this->numberOfEventsOfType(ImageBuildsSuccessful::class);
+        return 0 < $this->numberOfEventsOfType(ImageBuildsSuccessful::class);
     }
 
     /**
@@ -131,7 +131,7 @@ class BuildTask extends EventDrivenTask
      */
     public function isFailed()
     {
-        return 0 < $this->numberOfEventsOfType(BuildFailed::class);
+        return 0 < $this->numberOfEventsOfType(ImageBuildsFailed::class);
     }
 
     /**
