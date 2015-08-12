@@ -19,6 +19,8 @@ default:
                     - @security.token_storage
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
+                - Task\DeployContext:
+                    - @river.event_store
 
     extensions:
         Behat\Symfony2Extension:

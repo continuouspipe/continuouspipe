@@ -2,25 +2,35 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
+use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\TideContext;
+use SimpleBus\Message\Bus\MessageBus;
 
 class DeployTask extends EventDrivenTask
 {
+    /**
+     * @var MessageBus
+     */
+    private $commandBus;
+
+    /**
+     * @param MessageBus $commandBus
+     */
+    public function __construct(MessageBus $commandBus)
+    {
+        $this->commandBus = $commandBus;
+    }
+
     /**
      * @param TideContext $context
      */
     public function start(TideContext $context)
     {
-        var_dump('start deploy', $context);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isRunning()
-    {
-        return false;
+        $this->commandBus->handle(new StartDeploymentCommand($context->getTideUuid(), new DeployContext($context)));
     }
 
     /**
@@ -28,7 +38,7 @@ class DeployTask extends EventDrivenTask
      */
     public function isSuccessful()
     {
-        return false;
+        return 1 === $this->numberOfEventsOfType(DeploymentSuccessful::class);
     }
 
     /**
@@ -36,7 +46,7 @@ class DeployTask extends EventDrivenTask
      */
     public function isFailed()
     {
-        return true;
+        return 0 < $this->numberOfEventsOfType(DeploymentFailed::class);
     }
 
     /**
@@ -44,6 +54,6 @@ class DeployTask extends EventDrivenTask
      */
     public function isPending()
     {
-        return false;
+        return 0 === $this->numberOfEventsOfType(DeploymentStarted::class);
     }
 }

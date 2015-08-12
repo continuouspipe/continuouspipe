@@ -51,4 +51,12 @@ abstract class EventDrivenTask implements Task
     {
         return count($this->getEventsOfType($eventType));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isRunning()
+    {
+        return !$this->isFailed() && !$this->isSuccessful() && !$this->isPending();
+    }
 }

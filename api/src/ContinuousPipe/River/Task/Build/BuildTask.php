@@ -121,14 +121,6 @@ class BuildTask extends EventDrivenTask
     /**
      * {@inheritdoc}
      */
-    public function isRunning()
-    {
-        return !$this->isFailed() && !$this->isSuccessful() && !$this->isPending();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function isSuccessful()
     {
         return 1 === $this->numberOfEventsOfType(ImageBuildsSuccessful::class);

@@ -10,5 +10,33 @@
 
             <tag name="river.task" task="deploy" />
         </service>
+
+        <service id="river.pipe_client.guzzle_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="river.pipe_client" class="ContinuousPipe\Pipe\HttpPipeClient">
+            <argument type="service" id="river.pipe_client.guzzle_client" />
+            <argument type="service" id="jms_serializer" />
+            <argument>%pipe_base_url%</argument>
+        </service>
+
+        <service id="river.task.deploy.docker_compose.replace_build_by_images_transformer" class="ContinuousPipe\River\Task\Deploy\DockerCompose\Transformer\ReplaceBuildByFinalImagesTransformer" />
+        <service id="river.task.deploy.docker_compose.code_repository_reader" class="ContinuousPipe\River\Task\Deploy\DockerCompose\CodeRepositoryReader">
+            <argument type="service" id="river.docker_compose.parser.project" />
+            <argument type="service" id="river.file_system_resolver" />
+            <argument type="collection">
+                <argument type="service" id="river.task.deploy.docker_compose.replace_build_by_images_transformer" />
+            </argument>
+        </service>
+        <service id="river.task.deploy.deployment_request_factory" class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\FlattenDeploymentRequestFactory">
+            <argument type="service" id="river.task.deploy.docker_compose.code_repository_reader" />
+        </service>
+        <service id="river.handler.start_deploy" class="ContinuousPipe\River\Task\Deploy\Handler\StartDeploymentHandler">
+            <argument type="service" id="river.task.deploy.deployment_request_factory" />
+            <argument type="service" id="river.pipe_client" />
+            <argument type="service" id="simple_bus.event_bus" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand" />
+        </service>
     </services>
 </container>

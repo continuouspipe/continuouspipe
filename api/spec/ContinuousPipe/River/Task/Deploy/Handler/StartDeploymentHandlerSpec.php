@@ -1,0 +1,33 @@
+<?php
+
+namespace spec\ContinuousPipe\River\Task\Deploy\Handler;
+
+use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
+use ContinuousPipe\River\Task\Deploy\DeployContext;
+use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
+use ContinuousPipe\Pipe\Client;
+use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
+use Rhumsaa\Uuid\Uuid;
+use ContinuousPipe\Pipe\Client\EnvironmentDeploymentRequest;
+use SimpleBus\Message\Bus\MessageBus;
+
+class StartDeploymentHandlerSpec extends ObjectBehavior
+{
+    function let(DeploymentRequestFactory $deploymentRequestFactory, Client $pipeClient, MessageBus $eventBus)
+    {
+        $this->beConstructedWith($deploymentRequestFactory, $pipeClient, $eventBus);
+    }
+
+    function it_handles_start_deployment_command(DeploymentRequestFactory $deploymentRequestFactory, MessageBus $eventBus, Client $pipeClient, EnvironmentDeploymentRequest $environmentDeploymentRequest, DeployContext $deployContext)
+    {
+        $tideUuid = Uuid::uuid1();
+
+        $deploymentRequestFactory->create($deployContext)->shouldBeCalled()->willReturn($environmentDeploymentRequest);
+        $pipeClient->start($environmentDeploymentRequest)->shouldBeCalled();
+        $eventBus->handle(new DeploymentStarted($tideUuid))->shouldBeCalled();
+
+        $this->handle(new StartDeploymentCommand($tideUuid, $deployContext->getWrappedObject()));
+    }
+}

@@ -129,6 +129,14 @@ class Tide
     }
 
     /**
+     * @return TaskList
+     */
+    public function getTasks()
+    {
+        return $this->tasks;
+    }
+
+    /**
      * @param TideCreated $event
      */
     private function applyTideCreated(TideCreated $event)

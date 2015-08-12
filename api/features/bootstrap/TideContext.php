@@ -38,6 +38,11 @@ class TideContext implements Context
     private $tideUuid;
 
     /**
+     * @var Tide|null
+     */
+    private $tide;
+
+    /**
      * @var BuilderBuild|null
      */
     private $lastBuild;
@@ -104,13 +109,13 @@ class TideContext implements Context
             new GitHubRepository('foo', 'http://github.com/foo/bar')
         );
 
-        $tide = $this->tideFactory->createFromCodeReference(
+        $this->tide = $this->tideFactory->createFromCodeReference(
             $this->flowContext->getOrCreateDefaultFlow($repository),
             new CodeReference($repository, 'master')
         );
 
-        $this->tideUuid = $tide->getContext()->getTideUuid();
-        foreach ($tide->popNewEvents() as $event) {
+        $this->tideUuid = $this->tide->getContext()->getTideUuid();
+        foreach ($this->tide->popNewEvents() as $event) {
             $this->eventBus->handle($event);
         }
     }
@@ -404,5 +409,13 @@ class TideContext implements Context
     public function setCurrentTideUuid($uuid)
     {
         $this->tideUuid = $uuid;
+    }
+
+    /**
+     * @return \ContinuousPipe\River\Tide
+     */
+    public function getCurrentTide()
+    {
+        return $this->tide;
     }
 }

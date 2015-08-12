@@ -84,4 +84,12 @@ class ContextualizedTask implements Task
     {
         return $this->task->isPending();
     }
+
+    /**
+     * @return Task
+     */
+    public function getTask()
+    {
+        return $this->task;
+    }
 }

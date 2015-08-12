@@ -88,6 +88,9 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
 
         $flow = new Flow($context, [
             new Flow\Task('build'),
+            new Flow\Task('deploy', [
+                'providerName' => 'fake/provider'
+            ])
         ]);
 
         $this->flowRepository->save($flow);
