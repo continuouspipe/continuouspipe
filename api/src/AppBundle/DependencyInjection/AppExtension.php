@@ -23,6 +23,10 @@ class AppExtension extends Extension
         $loader->load('river.xml');
         $loader->load('tide.xml');
         $loader->load('events.xml');
+        $loader->load('tasks.xml');
         $loader->load('logging.xml');
+        $loader->load('build/task.xml');
+        $loader->load('build/handlers.xml');
+        $loader->load('deploy/task.xml');
     }
 }

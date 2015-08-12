@@ -8,11 +8,10 @@ use GitHub\WebHook\Event\PushEvent;
 use GitHub\WebHook\Model\Commit;
 use GitHub\WebHook\Model\Repository;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class CodeReferenceResolverSpec extends ObjectBehavior
 {
-    function it_returns_the_code_reference_of_a_push_event(PushEvent $pushEvent, Commit $commit, Repository $repository)
+    public function it_returns_the_code_reference_of_a_push_event(PushEvent $pushEvent, Commit $commit, Repository $repository)
     {
         $pushEvent->getReference()->willReturn('refs/heads/master');
         $pushEvent->getHeadCommit()->willReturn($commit);

@@ -20,11 +20,13 @@ class InMemoryFlowRepository implements FlowRepository
     {
         $this->flowsByUuid[(string) $flow->getUuid()] = $flow;
 
-        $username = $flow->getUser()->getEmail();
+        $username = $flow->getContext()->getUser()->getEmail();
         if (!array_key_exists($username, $this->flowsByUser)) {
             $this->flowsByUser[$username] = [];
         }
         $this->flowsByUser[$username][] = $flow;
+
+        return $flow;
     }
 
     /**

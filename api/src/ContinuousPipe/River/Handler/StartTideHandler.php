@@ -44,9 +44,9 @@ class StartTideHandler
     {
         $tide = $this->tideRepository->find($command->getTideUuid());
 
-        $logger = $this->loggerFactory->from($tide->getParentLog());
+        $logger = $this->loggerFactory->from($tide->getContext()->getLog());
         $logger->append(new Text('Starting Tide'));
 
-        $this->eventBus->handle(new TideStarted($tide->getUuid()));
+        $this->eventBus->handle(new TideStarted($command->getTideUuid()));
     }
 }

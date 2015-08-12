@@ -5,21 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <!-- Event subscribers -->
-        <service id="river.logging.listener.build" class="ContinuousPipe\River\EventListener\Logging\BuildListener">
-            <argument type="service" id="log_stream.logger_factory" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\Build\BuildSuccessful"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\Build\BuildFailed"/>
-        </service>
-
-        <service id="river.logging.listener.builds" class="ContinuousPipe\River\EventListener\Logging\BuildsListener">
-            <argument type="service" id="log_stream.logger_factory" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\ImageBuildsFailed"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\ImagesBuilt"/>
-        </service>
-
         <service id="river.code_status_updater" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeStatusUpdater">
             <argument type="service" id="repository_river.github.client_factory" />
             <argument>%river_ui_url%</argument>

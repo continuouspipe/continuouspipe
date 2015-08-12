@@ -38,15 +38,17 @@ class DoctrineFlowRepository implements FlowRepository
      */
     public function save(Flow $flow)
     {
-        $dto = $this->getDtoByUuid($flow->getUuid());
+        $flowContext = $flow->getContext();
+
+        $dto = $this->getDtoByUuid($flowContext->getFlowUuid());
         if (null === $dto) {
             $dto = new FlowDto();
             $dto->uuid = $flow->getUuid();
+            $dto->userUsername = $flowContext->getUser()->getEmail();
         }
 
-        $dto->codeRepositoryIdentifier = $flow->getRepository()->getIdentifier();
-        $dto->codeRepository = $flow->getRepository();
-        $dto->userUsername = $flow->getUser()->getEmail();
+        $dto->context = $flowContext;
+        $dto->tasks = $flow->getTasks();
 
         $this->entityManager->persist($dto);
         $this->entityManager->flush();
@@ -98,8 +100,7 @@ class DoctrineFlowRepository implements FlowRepository
      */
     public function flowFromDto(FlowDto $dto)
     {
-        $user = $this->userRepository->findOneByEmail($dto->userUsername);
-        $flow = new Flow(Uuid::fromString($dto->uuid), $user, $dto->codeRepository);
+        $flow = new Flow($dto->context, $dto->tasks);
 
         return $flow;
     }

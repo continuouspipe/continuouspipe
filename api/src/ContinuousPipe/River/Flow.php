@@ -2,70 +2,49 @@
 
 namespace ContinuousPipe\River;
 
-use ContinuousPipe\User\User;
-use Rhumsaa\Uuid\Uuid;
-
 class Flow
 {
     /**
-     * @var Uuid
+     * @var Flow\Task[]
      */
-    private $uuid;
+    private $tasks;
 
     /**
-     * @var User
+     * @var FlowContext
      */
-    private $user;
+    private $context;
 
     /**
-     * @var CodeRepository
+     * @param FlowContext $context
+     * @param Flow\Task[] $tasks
      */
-    private $repository;
-
-    /**
-     * @param Uuid           $uuid
-     * @param User           $user
-     * @param CodeRepository $repository
-     */
-    public function __construct(Uuid $uuid, User $user, CodeRepository $repository)
+    public function __construct(FlowContext $context, array $tasks)
     {
-        $this->uuid = $uuid;
-        $this->user = $user;
-        $this->repository = $repository;
+        $this->tasks = $tasks;
+        $this->context = $context;
     }
 
     /**
-     * @param User           $user
-     * @param CodeRepository $repository
-     *
-     * @return Flow
+     * @return Flow\Task[]
      */
-    public static function fromUserAndCodeRepository(User $user, CodeRepository $repository)
+    public function getTasks()
     {
-        return new self(Uuid::uuid1(), $user, $repository);
+        return $this->tasks;
     }
 
     /**
-     * @return Uuid
+     * @return FlowContext
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * @return \Rhumsaa\Uuid\Uuid
      */
     public function getUuid()
     {
-        return $this->uuid;
-    }
-
-    /**
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * @return CodeRepository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
+        return $this->getContext()->getFlowUuid();
     }
 }

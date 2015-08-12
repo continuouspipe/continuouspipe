@@ -10,6 +10,16 @@ use Symfony\Component\HttpFoundation\Response;
 class GitHubContext implements Context
 {
     /**
+     * @var TideContext
+     */
+    private $tideContext;
+
+    /**
+     * @var FlowContext
+     */
+    private $flowContext;
+
+    /**
      * @var Kernel
      */
     private $kernel;
@@ -20,35 +30,27 @@ class GitHubContext implements Context
     private $fakeCodeStatusUpdater;
 
     /**
-     * @var TideContext
-     */
-    private $tideContext;
-
-    /**
      * @var Response
      */
     private $response;
-    /**
-     * @var \ContinuousPipe\River\Repository\FlowRepository
-     */
-    private $flowRepository;
 
     /**
      * @param Kernel $kernel
      * @param FakeCodeStatusUpdater $fakeCodeStatusUpdater
      */
-    public function __construct(Kernel $kernel, FakeCodeStatusUpdater $fakeCodeStatusUpdater, \ContinuousPipe\River\Repository\FlowRepository $flowRepository)
+    public function __construct(Kernel $kernel, FakeCodeStatusUpdater $fakeCodeStatusUpdater)
     {
         $this->fakeCodeStatusUpdater = $fakeCodeStatusUpdater;
         $this->kernel = $kernel;
-        $this->flowRepository = $flowRepository;
     }
+
     /**
      * @BeforeScenario
      */
     public function gatherContexts(BeforeScenarioScope $scope)
     {
         $this->tideContext = $scope->getEnvironment()->getContext('TideContext');
+        $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
     }
 
     /**
@@ -75,15 +77,7 @@ class GitHubContext implements Context
     public function aPushWebhookIsReceived()
     {
         $contents = file_get_contents(__DIR__.'/../fixtures/push-master.json');
-        $flow = \ContinuousPipe\River\Flow::fromUserAndCodeRepository(
-            new \ContinuousPipe\User\User('email'),
-            new \ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository(
-                new \GitHub\WebHook\Model\Repository('name', 'url')
-            )
-        );
-
-        $this->flowRepository->save($flow);
-        $flowUuid = (string) $flow->getUuid();
+        $flowUuid = $this->flowContext->getCurrentUuid();
         $this->response = $this->kernel->handle(Request::create('/web-hook/github/'.$flowUuid, 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_X_GITHUB_EVENT' => 'push',

@@ -2,9 +2,10 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Event\FlowCreated;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\View\Flow as FlowView;
+use ContinuousPipe\River\FlowFactory;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -25,34 +26,38 @@ class FlowController
      * @var FlowRepository
      */
     private $flowRepository;
+    /**
+     * @var FlowFactory
+     */
+    private $flowFactory;
 
     /**
      * @param FlowRepository $flowRepository
+     * @param FlowFactory    $flowFactory
      * @param MessageBus     $eventBus
      */
-    public function __construct(FlowRepository $flowRepository, MessageBus $eventBus)
+    public function __construct(FlowRepository $flowRepository, FlowFactory $flowFactory, MessageBus $eventBus)
     {
         $this->flowRepository = $flowRepository;
         $this->eventBus = $eventBus;
+        $this->flowFactory = $flowFactory;
     }
 
     /**
      * Create a new flow from a repository.
      *
-     * @Route("/flows/from-repository/{identifier}", methods={"POST"})
-     * @ParamConverter("user", converter="user")
-     * @ParamConverter("repository", converter="code-repository", options={"identifier"="identifier"})
+     * @Route("/flows", methods={"POST"})
+     * @ParamConverter("creationRequest", converter="fos_rest.request_body")
      * @View
      */
-    public function fromRepositoryAction(User $user, CodeRepository $repository)
+    public function fromRepositoryAction(Flow\Request\FlowCreationRequest $creationRequest)
     {
-        $flow = $this->flowRepository->save(
-            Flow::fromUserAndCodeRepository($user, $repository)
-        );
+        $flow = $this->flowFactory->fromCreationRequest($creationRequest);
+        $flow = $this->flowRepository->save($flow);
 
         $this->eventBus->handle(new FlowCreated($flow));
 
-        return $flow;
+        return FlowView::fromFlow($flow);
     }
 
     /**
@@ -64,7 +69,9 @@ class FlowController
      */
     public function listAction(User $user)
     {
-        return $this->flowRepository->findByUser($user);
+        return array_map(function (Flow $flow) {
+            return FlowView::fromFlow($flow);
+        }, $this->flowRepository->findByUser($user));
     }
 
     /**
@@ -76,7 +83,7 @@ class FlowController
      */
     public function getAction(Flow $flow)
     {
-        return $flow;
+        return FlowView::fromFlow($flow);
     }
 
     /**
@@ -88,6 +95,6 @@ class FlowController
      */
     public function deleteAction(Flow $flow)
     {
-        return $this->flowRepository->remove($flow);
+        $this->flowRepository->remove($flow);
     }
 }

@@ -62,7 +62,7 @@ class WebHookHandler
     private function handlePushEvent(Flow $flow, PushEvent $event)
     {
         $codeReference = $this->codeReferenceResolver->fromPushEvent($event);
-        $tide = $this->tideFactory->create($flow, $codeReference);
+        $tide = $this->tideFactory->createFromCodeReference($flow, $codeReference);
 
         foreach ($tide->popNewEvents() as $event) {
             $this->eventBus->handle($event);

@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\TideContext;
 
 class GitHubCodeStatusUpdater implements CodeStatusUpdater
 {
@@ -61,8 +62,9 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
      */
     private function updateCodeStatus(Tide $tide, $state)
     {
-        $client = $this->gitHubClientFactory->createClientForUser($tide->getUser());
-        $repository = $tide->getCodeRepository();
+        $tideContext = $tide->getContext();
+        $client = $this->gitHubClientFactory->createClientForUser($tideContext->getUser());
+        $repository = $tideContext->getCodeRepository();
 
         if (!$repository instanceof GitHubCodeRepository) {
             throw new \RuntimeException(sprintf(
@@ -75,27 +77,27 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
         $client->repository()->statuses()->create(
             $gitHubRepository->getOwner()->getLogin(),
             $gitHubRepository->getName(),
-            $tide->getCodeReference()->getCommitSha(),
+            $tideContext->getCodeReference()->getCommitSha(),
             [
                 'state' => $state,
                 'context' => 'continuous-pipe-river',
-                'target_url' => $this->generateTideUrl($tide),
+                'target_url' => $this->generateTideUrl($tideContext),
             ]
         );
     }
 
     /**
-     * @param Tide $tide
+     * @param TideContext $tideContext
      *
      * @return string
      */
-    private function generateTideUrl(Tide $tide)
+    private function generateTideUrl(TideContext $tideContext)
     {
         return sprintf(
             '%s/flows/%s/tide/%s/logs',
             $this->uiBaseUrl,
-            (string) $tide->getFlow()->getUuid(),
-            (string) $tide->getUuid()
+            (string) $tideContext->getFlowUuid(),
+            (string) $tideContext->getTideUuid()
         );
     }
 }

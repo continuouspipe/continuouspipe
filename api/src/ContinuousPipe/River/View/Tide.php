@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
 use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
 

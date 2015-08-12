@@ -14,6 +14,8 @@ interface CodeRepositoryRepository
     /**
      * @param string $identifier
      *
+     * @throws CodeRepository\CodeRepositoryNotFound
+     *
      * @return CodeRepository
      */
     public function findByIdentifier($identifier);

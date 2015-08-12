@@ -2,42 +2,21 @@
 
 namespace ContinuousPipe\River\Event;
 
-use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
-use LogStream\Log;
-use Rhumsaa\Uuid\Uuid;
+use ContinuousPipe\River\TideContext;
 
 class TideCreated implements TideEvent
 {
     /**
-     * @var Uuid
+     * @var TideContext
      */
-    private $tideUuid;
-    /**
-     * @var Flow
-     */
-    private $flow;
-    /**
-     * @var CodeReference
-     */
-    private $codeReference;
-    /**
-     * @var Log
-     */
-    private $parentLog;
+    private $tideContext;
 
     /**
-     * @param Uuid          $tideUuid
-     * @param Flow          $flow
-     * @param CodeReference $codeReference
-     * @param Log           $parentLog
+     * @param TideContext $tideContext
      */
-    public function __construct(Uuid $tideUuid, Flow $flow, CodeReference $codeReference, Log $parentLog)
+    public function __construct(TideContext $tideContext)
     {
-        $this->tideUuid = $tideUuid;
-        $this->flow = $flow;
-        $this->codeReference = $codeReference;
-        $this->parentLog = $parentLog;
+        $this->tideContext = $tideContext;
     }
 
     /**
@@ -45,30 +24,14 @@ class TideCreated implements TideEvent
      */
     public function getTideUuid()
     {
-        return $this->tideUuid;
+        return $this->tideContext->getTideUuid();
     }
 
     /**
-     * @return Flow
+     * @return TideContext
      */
-    public function getFlow()
+    public function getTideContext()
     {
-        return $this->flow;
-    }
-
-    /**
-     * @return CodeReference
-     */
-    public function getCodeReference()
-    {
-        return $this->codeReference;
-    }
-
-    /**
-     * @return Log
-     */
-    public function getParentLog()
-    {
-        return $this->parentLog;
+        return $this->tideContext;
     }
 }

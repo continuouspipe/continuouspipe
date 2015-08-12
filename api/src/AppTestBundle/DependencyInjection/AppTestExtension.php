@@ -20,5 +20,6 @@ class AppTestExtension extends Extension
         $loader->load('builder.xml');
         $loader->load('flow.xml');
         $loader->load('tide.xml');
+        $loader->load('github.xml');
     }
 }

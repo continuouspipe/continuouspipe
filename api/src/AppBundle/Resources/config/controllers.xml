@@ -10,11 +10,14 @@
         </service>
         <service id="app.controller.flow" class="AppBundle\Controller\FlowController">
             <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.flow_factory" />
             <argument type="service" id="simple_bus.event_bus" />
         </service>
         <service id="app.controller.github_webhook" class="AppBundle\Controller\GitHubWebHookController">
             <argument type="service" id="river.github.web_hook_handler" />
+            <argument type="service" id="river.view.tide_repository" />
         </service>
+
         <service id="app.controller.builder_notification" class="AppBundle\Controller\BuilderNotificationController">
             <argument type="service" id="simple_bus.event_bus" />
         </service>

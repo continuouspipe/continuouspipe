@@ -3,8 +3,8 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Builder\Client\BuilderBuild;
-use ContinuousPipe\River\Event\Build\BuildFailed;
-use ContinuousPipe\River\Event\Build\BuildSuccessful;
+use ContinuousPipe\River\Task\Build\Event\BuildFailed;
+use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

@@ -2,10 +2,12 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
+use ContinuousPipe\River\CodeRepository\CodeRepositoryNotFound;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
 use Github\HttpClient\Message\ResponseMediator;
 use Github\ResultPager;
 use GitHub\WebHook\Model\Repository;
+use GuzzleHttp\Exception\ClientException;
 use JMS\Serializer\SerializerInterface;
 
 class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
@@ -58,7 +60,20 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
      */
     public function findByIdentifier($id)
     {
-        $response = $this->gitHubClientFactory->createClientForCurrentUser()->getHttpClient()->get(sprintf('/repositories/%d', $id));
+        $httpClient = $this->gitHubClientFactory->createClientForCurrentUser()->getHttpClient();
+
+        try {
+            $response = $httpClient->get(sprintf('/repositories/%d', $id));
+        } catch (ClientException $e) {
+            if ($e->getResponse()->getStatusCode() == 404) {
+                throw new CodeRepositoryNotFound(sprintf(
+                    'Repository with identifier "%d" is not found',
+                    $id
+                ));
+            }
+
+            throw $e;
+        }
         $foundRepository = ResponseMediator::getContent($response);
         $rawRepository = json_encode($foundRepository);
 

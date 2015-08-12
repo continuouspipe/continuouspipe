@@ -18,9 +18,12 @@
 
         <service id="river.repository.tide" class="ContinuousPipe\River\Repository\EventBusTideRepository">
             <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_factory" />
         </service>
         <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="river.task_registry" />
+            <argument type="service" id="river.repository.flow" />
         </service>
 
         <service id="river.view.tide_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\View\DoctrineTideRepository">
@@ -30,6 +33,7 @@
 
         <service id="river.view.listener.tide_created" class="ContinuousPipe\River\View\EventListener\TideCreatedListener">
             <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.repository.flow" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
         </service>

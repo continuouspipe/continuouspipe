@@ -2,29 +2,30 @@
 
 namespace ContinuousPipe\River;
 
-use ContinuousPipe\River\Event\Build\BuildFailed;
-use ContinuousPipe\River\Event\Build\BuildSuccessful;
-use ContinuousPipe\River\Event\ImageBuildsFailed;
-use ContinuousPipe\River\Event\ImageBuildsStarted;
-use ContinuousPipe\River\Event\ImagesBuilt;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
-use ContinuousPipe\User\User;
-use LogStream\Log;
+use ContinuousPipe\River\Event\TideStarted;
+use ContinuousPipe\River\Event\TideSuccessful;
+use ContinuousPipe\River\Task\TaskList;
 use Rhumsaa\Uuid\Uuid;
 
 class Tide
 {
     /**
-     * @var Uuid
-     */
-    private $uuid;
-
-    /**
      * @var TideEvent[]
      */
     private $events = [];
+
+    /**
+     * @var TaskList
+     */
+    private $tasks;
+
+    /**
+     * @var TideContext
+     */
+    private $context;
 
     /**
      * @var TideEvent[]
@@ -32,51 +33,48 @@ class Tide
     private $newEvents = [];
 
     /**
-     * @var CodeReference
+     * @param TaskList $taskList
      */
-    private $codeReference;
+    public function __construct(TaskList $taskList)
+    {
+        $this->tasks = $taskList;
+    }
 
     /**
-     * @var Log
+     * @return Uuid
      */
-    private $parentLog;
-
-    /**
-     * @var Flow
-     */
-    private $flow;
+    public function getUuid()
+    {
+        return $this->getContext()->getTideUuid();
+    }
 
     /**
      * Create a new tide.
      *
-     * @param Uuid          $uuid
-     * @param Flow          $flow
-     * @param CodeReference $codeReference
-     * @param Log           $parentLog
+     * @param TaskList    $tasks
+     * @param TideContext $context
      *
      * @return Tide
      */
-    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $parentLog)
+    public static function create(TaskList $tasks, TideContext $context)
     {
-        $startEvent = new TideCreated($uuid, $flow, $codeReference, $parentLog);
-
-        $tide = new self();
-        $tide->apply($startEvent);
-        $tide->newEvents = [$startEvent];
+        $tide = new self($tasks);
+        $event = new TideCreated($context, $tasks);
+        $tide->apply($event);
+        $tide->newEvents = [$event];
 
         return $tide;
     }
 
     /**
-     * Create a tide based on this events.
-     *
-     * @param TideEvent[] $events
+     * @param TaskList $tasks
+     * @param $events
      *
      * @return Tide
      */
-    public static function fromEvents(array $events)
+    public static function fromEvents(TaskList $tasks, $events)
     {
-        $tide = new self();
+        $tide = new self($tasks);
         foreach ($events as $event) {
             $tide->apply($event);
         }
@@ -95,12 +93,10 @@ class Tide
     {
         if ($event instanceof TideCreated) {
             $this->applyTideCreated($event);
-        } elseif ($event instanceof BuildSuccessful) {
-            $this->applyBuildSuccessful($event);
-        } elseif ($event instanceof BuildFailed) {
-            $this->applyBuildFailed($event);
-        } elseif ($event instanceof ImageBuildsFailed) {
-            $this->applyImageBuildsFailed($event);
+        }
+
+        if ($this->isRunning()) {
+            $this->handleTasks($event);
         }
 
         $this->events[] = $event;
@@ -114,7 +110,22 @@ class Tide
         $events = $this->newEvents;
         $this->newEvents = [];
 
+        // Get tasks' events
+        foreach ($this->tasks->getTasks() as $tasks) {
+            foreach ($tasks->popNewEvents() as $event) {
+                $events[] = $event;
+            }
+        }
+
         return $events;
+    }
+
+    /**
+     * @return TideContext
+     */
+    public function getContext()
+    {
+        return $this->context;
     }
 
     /**
@@ -122,131 +133,70 @@ class Tide
      */
     private function applyTideCreated(TideCreated $event)
     {
-        $this->uuid = $event->getTideUuid();
-        $this->flow = $event->getFlow();
-        $this->codeReference = $event->getCodeReference();
-        $this->parentLog = $event->getParentLog();
+        $this->context = $event->getTideContext();
     }
 
     /**
-     * @param BuildSuccessful $event
+     * @param TideEvent $event
      */
-    private function applyBuildSuccessful(BuildSuccessful $event)
+    private function handleTasks(TideEvent $event)
     {
-        if ($this->allImageBuildsSuccessful()) {
-            $eventImageBuildsStarted = $this->getImageBuildsStartedEvent();
+        $this->tasks->apply($event);
+        if ($this->tasks->hasRunning()) {
+            return;
+        }
 
-            $this->newEvents[] = new ImagesBuilt($this->uuid, $eventImageBuildsStarted->getLog());
+        if (null !== ($nextTask = $this->tasks->next())) {
+            $nextTask->start($this->context);
+        } elseif ($this->tasks->isSuccessful()) {
+            $this->newEvents[] = new TideSuccessful($event->getTideUuid());
+        } else {
+            $this->newEvents[] = new TideFailed($event->getTideUuid());
         }
     }
-
     /**
-     * @param BuildFailed $event
+     * @return bool
      */
-    private function applyBuildFailed(BuildFailed $event)
+    public function isRunning()
     {
-        $eventImageBuildsStarted = $this->getImageBuildsStartedEvent();
-
-        $this->newEvents[] = new ImageBuildsFailed($this->uuid, $eventImageBuildsStarted->getLog());
+        return $this->isStarted() && !$this->isFailed() && !$this->isSuccessful();
     }
 
     /**
-     * @param ImageBuildsFailed $event
+     * @return bool
      */
-    private function applyImageBuildsFailed(ImageBuildsFailed $event)
+    private function isStarted()
     {
-        $this->newEvents[] = new TideFailed($this->uuid);
+        return 0 < $this->numberOfEventsOfType(TideStarted::class);
     }
 
     /**
-     * @return Uuid
+     * @return bool
      */
-    public function getUuid()
+    private function isFailed()
     {
-        return $this->uuid;
+        return 0 < $this->numberOfEventsOfType(TideFailed::class);
     }
 
     /**
-     * @return Flow
+     * @return bool
      */
-    public function getFlow()
+    private function isSuccessful()
     {
-        return $this->flow;
+        return 0 < $this->numberOfEventsOfType(TideSuccessful::class);
     }
 
     /**
-     * @return CodeRepository
-     */
-    public function getCodeRepository()
-    {
-        return $this->getCodeReference()->getRepository();
-    }
-
-    /**
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->getFlow()->getUser();
-    }
-
-    /**
-     * @return CodeReference
-     */
-    public function getCodeReference()
-    {
-        return $this->codeReference;
-    }
-
-    /**
-     * @return Log
-     */
-    public function getParentLog()
-    {
-        return $this->parentLog;
-    }
-
-    /**
-     * @param string $className
+     * @param string $eventType
      *
-     * @return TideEvent[]
+     * @return int
      */
-    private function getEventsOfType($className)
+    private function numberOfEventsOfType($eventType)
     {
-        $events = array_filter($this->events, function (TideEvent $event) use ($className) {
-            return get_class($event) == $className;
+        $tideFinishedEvents = array_filter($this->events, function (TideEvent $event) use ($eventType) {
+            return get_class($event) == $eventType || is_subclass_of($event, $eventType);
         });
 
-        return array_values($events);
-    }
-
-    /**
-     * Check if all the started builds are successful.
-     *
-     * @return bool
-     *
-     * @throws BuildNotFound
-     */
-    private function allImageBuildsSuccessful()
-    {
-        $buildsStartedEvents = $this->getEventsOfType(ImageBuildsStarted::class);
-        if (count($buildsStartedEvents) == 0) {
-            throw new BuildNotFound('No started build found');
-        }
-
-        /** @var ImageBuildsStarted $buildsStartedEvent */
-        $buildsStartedEvent = $buildsStartedEvents[0];
-        $numberOfStartedBuilds = count($buildsStartedEvent->getBuildRequests());
-        $numberOfSuccessfulBuilds = count($this->getEventsOfType(BuildSuccessful::class));
-
-        return $numberOfSuccessfulBuilds == $numberOfStartedBuilds;
-    }
-
-    /**
-     * @return ImageBuildsStarted
-     */
-    private function getImageBuildsStartedEvent()
-    {
-        return $this->getEventsOfType(ImageBuildsStarted::class)[0];
+        return count($tideFinishedEvents);
     }
 }

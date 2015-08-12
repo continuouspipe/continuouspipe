@@ -9,23 +9,29 @@ use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideCreated;
-use ContinuousPipe\River\Event\ImageBuildsStarted;
-use ContinuousPipe\River\Event\Build\ImageBuildStarted;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use GitHub\WebHook\Model\Repository as GitHubRepository;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
 use ContinuousPipe\Builder\Client\BuilderBuild;
-use ContinuousPipe\River\Event\Build\BuildFailed;
-use ContinuousPipe\River\Event\Build\BuildSuccessful;
 use ContinuousPipe\River\Event\TideFailed;
-use ContinuousPipe\River\Event\ImagesBuilt;
 use ContinuousPipe\River\TideFactory;
 use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
+use ContinuousPipe\River\Task\Build\Event\BuildStarted;
+use ContinuousPipe\River\Task\Build\Event\BuildFailed;
+use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
+use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 
 class TideContext implements Context
 {
+    /**
+     * @var FlowContext
+     */
+    private $flowContext;
+
     /**
      * @var Uuid|null
      */
@@ -82,6 +88,14 @@ class TideContext implements Context
     }
 
     /**
+     * @BeforeScenario
+     */
+    public function gatherContexts(BeforeScenarioScope $scope)
+    {
+        $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
+    }
+
+    /**
      * @When a tide is created
      */
     public function aTideIsCreated()
@@ -90,15 +104,12 @@ class TideContext implements Context
             new GitHubRepository('foo', 'http://github.com/foo/bar')
         );
 
-        $tide = $this->tideFactory->create(
-            Flow::fromUserAndCodeRepository(
-                new User('my@ema.l'),
-                $repository
-            ),
+        $tide = $this->tideFactory->createFromCodeReference(
+            $this->flowContext->getOrCreateDefaultFlow($repository),
             new CodeReference($repository, 'master')
         );
 
-        $this->tideUuid = $tide->getUuid();
+        $this->tideUuid = $tide->getContext()->getTideUuid();
         foreach ($tide->popNewEvents() as $event) {
             $this->eventBus->handle($event);
         }
@@ -168,7 +179,7 @@ class TideContext implements Context
     {
         $events = $this->eventStore->findByTideUuid($this->tideUuid);
         $numberOfImageBuildStartedEvents = count(array_filter($events, function(TideEvent $event) {
-            return $event instanceof ImageBuildStarted;
+            return $event instanceof BuildStarted;
         }));
 
         $number = (int) $number;
@@ -191,7 +202,7 @@ class TideContext implements Context
             BuilderBuild::STATUS_PENDING
         );
 
-        $this->eventStore->add(new ImageBuildStarted(
+        $this->eventStore->add(new BuildStarted(
             $this->tideUuid,
             $this->lastBuild
         ));
@@ -254,7 +265,7 @@ class TideContext implements Context
     {
         $events = $this->eventStore->findByTideUuid($this->tideUuid);
         $numberOfImagesBuiltEvents = count(array_filter($events, function(TideEvent $event) {
-            return $event instanceof ImagesBuilt;
+            return $event instanceof ImageBuildsSuccessful;
         }));
 
         if (0 !== $numberOfImagesBuiltEvents) {
@@ -301,7 +312,7 @@ class TideContext implements Context
     {
         $events = $this->eventStore->findByTideUuid($this->tideUuid);
         $numberOfImagesBuiltEvents = count(array_filter($events, function(TideEvent $event) {
-            return $event instanceof ImagesBuilt;
+            return $event instanceof ImageBuildsSuccessful;
         }));
 
         if (1 !== $numberOfImagesBuiltEvents) {

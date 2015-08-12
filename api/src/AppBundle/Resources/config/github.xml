@@ -40,7 +40,7 @@
         <service id="repository_river.github.client" class="GitHub\Client">
             <factory service="repository_river.github.client_factory" method="createClientForCurrentUser" />
         </service>
-        <service id="repository_river.github.webhook_manager" class="GitHub\WebHook\Setup\WebHookManager">
+        <service id="repository_river.github.webhook_manager" class="GitHub\WebHook\Setup\HttpWebHookManager">
             <argument type="service" id="repository_river.github.client" />
             <argument type="service" id="jms_serializer" />
         </service>

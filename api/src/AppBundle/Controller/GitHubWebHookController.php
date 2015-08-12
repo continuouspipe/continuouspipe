@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\CodeRepository\GitHub\WebHookHandler;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\View\TideRepository;
 use GitHub\WebHook\GitHubRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -18,13 +19,19 @@ class GitHubWebHookController
      * @var WebHookHandler
      */
     private $webHookHandler;
+    /**
+     * @var TideRepository
+     */
+    private $tideRepository;
 
     /**
      * @param WebHookHandler $webHookHandler
+     * @param TideRepository $tideRepository
      */
-    public function __construct(WebHookHandler $webHookHandler)
+    public function __construct(WebHookHandler $webHookHandler, TideRepository $tideRepository)
     {
         $this->webHookHandler = $webHookHandler;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -35,6 +42,8 @@ class GitHubWebHookController
      */
     public function payloadAction(Flow $flow, GitHubRequest $request)
     {
-        return $this->webHookHandler->handle($flow, $request);
+        $tide = $this->webHookHandler->handle($flow, $request);
+
+        return $this->tideRepository->find($tide->getContext()->getTideUuid());
     }
 }

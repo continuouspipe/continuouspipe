@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="repository_river.code_repository_repository" class="ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository" />
+        <service id="repository_river.github.webhook_manager" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakeWebHookManager" />
+    </services>
+</container>

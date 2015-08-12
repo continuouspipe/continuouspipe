@@ -9,17 +9,16 @@ use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Rhumsaa\Uuid\Uuid;
 
 class TideStatusListenerSpec extends ObjectBehavior
 {
-    function let(TideRepository $tideRepository, CodeStatusUpdater $codeStatusUpdater)
+    public function let(TideRepository $tideRepository, CodeStatusUpdater $codeStatusUpdater)
     {
         $this->beConstructedWith($tideRepository, $codeStatusUpdater);
     }
 
-    function it_updates_the_code_repository_status_when_tide_is_created(TideRepository $tideRepository, Tide $tide, CodeStatusUpdater $codeStatusUpdater, TideCreated $tideCreatedEvent)
+    public function it_updates_the_code_repository_status_when_tide_is_created(TideRepository $tideRepository, Tide $tide, CodeStatusUpdater $codeStatusUpdater, TideCreated $tideCreatedEvent)
     {
         $tideUuid = Uuid::uuid1();
 
@@ -29,7 +28,7 @@ class TideStatusListenerSpec extends ObjectBehavior
         $this->notify($tideCreatedEvent->getWrappedObject());
     }
 
-    function it_updates_the_code_repository_status_when_tide_is_successful(TideRepository $tideRepository, Tide $tide, CodeStatusUpdater $codeStatusUpdater)
+    public function it_updates_the_code_repository_status_when_tide_is_successful(TideRepository $tideRepository, Tide $tide, CodeStatusUpdater $codeStatusUpdater)
     {
         $tideUuid = Uuid::uuid1();
 
@@ -38,7 +37,7 @@ class TideStatusListenerSpec extends ObjectBehavior
         $this->notify(new TideSuccessful($tideUuid));
     }
 
-    function it_updates_the_code_repository_status_when_tide_is_failed(TideRepository $tideRepository, Tide $tide, CodeStatusUpdater $codeStatusUpdater)
+    public function it_updates_the_code_repository_status_when_tide_is_failed(TideRepository $tideRepository, Tide $tide, CodeStatusUpdater $codeStatusUpdater)
     {
         $tideUuid = Uuid::uuid1();
 

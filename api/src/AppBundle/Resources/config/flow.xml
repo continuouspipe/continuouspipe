@@ -14,11 +14,14 @@
             <argument type="service" id="router" />
             <argument>%github_secret%</argument>
         </service>
+        <service id="river.flow_factory" class="ContinuousPipe\River\FlowFactory">
+            <argument type="service" id="security.user_context" />
+            <argument type="service" id="repository_river.code_repository_repository" />
+        </service>
 
         <!-- Event subscribers -->
         <service id="river.listener.flow_created" class="ContinuousPipe\River\EventListener\Flow\ConfigureWebHookAtCreationListener">
             <argument type="service" id="river.code_repository.webhook_manager" />
-            <argument type="service" id="simple_bus.event_bus" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\FlowCreated"/>
         </service>

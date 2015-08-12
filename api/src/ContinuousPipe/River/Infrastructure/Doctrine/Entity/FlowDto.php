@@ -2,7 +2,8 @@
 
 namespace ContinuousPipe\River\Infrastructure\Doctrine\Entity;
 
-use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\Flow\Task;
+use ContinuousPipe\River\FlowContext;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -20,18 +21,18 @@ class FlowDto
     public $uuid;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="object")
      *
-     * @var string
+     * @var FlowContext
      */
-    public $codeRepositoryIdentifier;
+    public $context;
 
     /**
      * @ORM\Column(type="object")
      *
-     * @var CodeRepository
+     * @var Task[]
      */
-    public $codeRepository;
+    public $tasks;
 
     /**
      * @ORM\Column(type="string")
