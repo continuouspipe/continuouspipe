@@ -7,6 +7,7 @@ use ContinuousPipe\River\Task\Deploy\DeployContext;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\Pipe\Client;
+use ContinuousPipe\User\User;
 use PhpSpec\ObjectBehavior;
 use Rhumsaa\Uuid\Uuid;
 use ContinuousPipe\Pipe\Client\EnvironmentDeploymentRequest;
@@ -24,7 +25,7 @@ class StartDeploymentHandlerSpec extends ObjectBehavior
         $tideUuid = Uuid::uuid1();
 
         $deploymentRequestFactory->create($deployContext)->shouldBeCalled()->willReturn($environmentDeploymentRequest);
-        $pipeClient->start($environmentDeploymentRequest)->shouldBeCalled();
+        $pipeClient->start($environmentDeploymentRequest, new User('e@mail'))->shouldBeCalled();
         $eventBus->handle(new DeploymentStarted($tideUuid, $environmentDeploymentRequest))->shouldBeCalled();
 
         $this->handle(new StartDeploymentCommand($tideUuid, $deployContext->getWrappedObject()));

@@ -18,6 +18,7 @@
         <service id="river.pipe_client" class="ContinuousPipe\Pipe\HttpPipeClient">
             <argument type="service" id="river.pipe_client.guzzle_client" />
             <argument type="service" id="jms_serializer" />
+            <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
             <argument>%pipe_base_url%</argument>
         </service>
 
