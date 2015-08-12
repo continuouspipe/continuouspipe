@@ -21,8 +21,8 @@ class ComponentTransformer
     private $replicationControllerFactory;
 
     /**
-     * @param PodTransformer $podTransformer
-     * @param ServiceTransformer $serviceTransformer
+     * @param PodTransformer               $podTransformer
+     * @param ServiceTransformer           $serviceTransformer
      * @param ReplicationControllerFactory $replicationControllerFactory
      */
     public function __construct(PodTransformer $podTransformer, ServiceTransformer $serviceTransformer, ReplicationControllerFactory $replicationControllerFactory)

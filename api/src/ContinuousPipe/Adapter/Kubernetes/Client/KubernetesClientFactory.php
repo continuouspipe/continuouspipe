@@ -24,7 +24,7 @@ class KubernetesClientFactory
     private $guzzleClient;
 
     /**
-     * @param Serializer $serializer
+     * @param Serializer         $serializer
      * @param \GuzzleHttp\Client $guzzleClient
      */
     public function __construct(Serializer $serializer, \GuzzleHttp\Client $guzzleClient)

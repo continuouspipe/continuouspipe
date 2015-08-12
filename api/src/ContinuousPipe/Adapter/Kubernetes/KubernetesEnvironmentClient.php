@@ -7,7 +7,6 @@ use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Model\Environment;
 use Kubernetes\Client\Client;
 use Kubernetes\Client\Exception\NamespaceNotFound;
-use Kubernetes\Client\Exception\ObjectNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\ObjectMetadata;
@@ -31,7 +30,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     private $environmentTransformer;
 
     /**
-     * @param Client $client
+     * @param Client                 $client
      * @param EnvironmentTransformer $environmentTransformer
      */
     public function __construct(Client $client, EnvironmentTransformer $environmentTransformer)
@@ -83,17 +82,18 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     /**
      * Create the namespace object.
      *
-     * @param NamespaceClient $namespaceClient
+     * @param NamespaceClient  $namespaceClient
      * @param KubernetesObject $object
+     *
      * @return ObjectRepository
      */
     private function getObjectRepository(NamespaceClient $namespaceClient, KubernetesObject $object)
     {
         if ($object instanceof Pod) {
             $repository = $namespaceClient->getPodRepository();
-        } else if ($object instanceof Service) {
+        } elseif ($object instanceof Service) {
             $repository = $namespaceClient->getServiceRepository();
-        } else if ($object instanceof ReplicationController) {
+        } elseif ($object instanceof ReplicationController) {
             $repository = $namespaceClient->getReplicationControllerRepository();
         } else {
             throw new \RuntimeException(sprintf(

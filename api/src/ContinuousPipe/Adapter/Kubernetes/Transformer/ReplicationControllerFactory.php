@@ -12,7 +12,8 @@ class ReplicationControllerFactory
 {
     /**
      * @param Component $component
-     * @param Pod $pod
+     * @param Pod       $pod
+     *
      * @return ReplicationController
      */
     public function createFromComponentPod(Component $component, Pod $pod)
