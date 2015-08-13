@@ -38,7 +38,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         try {
             $securityUser = $this->securityUserRepository->findOneByEmail($email);
         } catch (UserNotFound $e) {
-            $securityUser = $this->createUserFromOAuthUserResponse($response);
+            $securityUser = $this->createUserFromEmail($email);
         }
 
         $gitHubResponse = $response->getResponse();
@@ -54,16 +54,13 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     }
 
     /**
-     * @param UserResponseInterface $response
+     * @param string $email
      *
      * @return SecurityUser
      */
-    private function createUserFromOAuthUserResponse(UserResponseInterface $response)
+    private function createUserFromEmail($email)
     {
-        $user = new User($response->getEmail());
-        $securityUser = new SecurityUser($user);
-
-        return $securityUser;
+        return new SecurityUser(new User($email));
     }
 
     /**
