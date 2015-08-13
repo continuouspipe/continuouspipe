@@ -6,6 +6,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use TestBundle\DependencyInjection\CompilerPass\ReplaceAsynchronousHandlerWithRegularOnesPass;
 
 class WorkerExtension extends Extension
 {
@@ -14,6 +15,10 @@ class WorkerExtension extends Extension
      */
     public function load(array $config, ContainerBuilder $container)
     {
+        if ($container->getParameter('worker_debug')) {
+            $container->addCompilerPass(new ReplaceAsynchronousHandlerWithRegularOnesPass());
+        }
+
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('handler.xml');
         $loader->load('docker-compose.xml');
