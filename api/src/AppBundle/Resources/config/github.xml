@@ -47,11 +47,29 @@
 
         <service id="river.github.repository_address_descriptor" class="ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor" />
 
+        <service id="river.github.pull_request_deployment_notifier" class="ContinuousPipe\River\CodeRepository\GitHub\CommentPullRequestDeploymentNotifier">
+            <argument type="service" id="repository_river.github.client_factory" />
+        </service>
         <service id="river.github.code_reference_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver" />
         <service id="river.github.web_hook_handler" class="ContinuousPipe\River\CodeRepository\GitHub\WebHookHandler">
             <argument type="service" id="river.tide_factory" />
             <argument type="service" id="river.github.code_reference_resolver" />
             <argument type="service" id="event_bus" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.github.pull_request_deployment_notifier" />
+        </service>
+
+        <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\GitHubPullRequestResolver">
+            <argument type="service" id="repository_river.github.client_factory" />
+            <argument type="service" id="jms_serializer" />
+        </service>
+        <service id="river.github.notification.deployment_successful_listener" class="ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\DeploymentSuccessfulListener">
+            <argument type="service" id="river.github.pull_request_resolver" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.github.pull_request_deployment_notifier" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful"/>
         </service>
     </services>
 </container>

@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Tests\View;
 
+use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
@@ -10,6 +11,7 @@ use Rhumsaa\Uuid\Uuid;
 
 class InMemoryTideRepository implements TideRepository
 {
+    private $tideByCodeReference = [];
     private $tideByFlow = [];
     private $tides = [];
 
@@ -31,14 +33,22 @@ class InMemoryTideRepository implements TideRepository
      */
     public function save(Tide $tide)
     {
-        $this->tides[(string) $tide->getUuid()] = $tide;
+        $tideUuid = (string) $tide->getUuid();
+        $this->tides[$tideUuid] = $tide;
 
+        // Save by flow UUID
         $flowUuid = (string) $tide->getFlow()->getUuid();
         if (!array_key_exists($flowUuid, $this->tideByFlow)) {
             $this->tideByFlow[$flowUuid] = [];
         }
+        $this->tideByFlow[$flowUuid][$tideUuid] = $tide;
 
-        $this->tideByFlow[$flowUuid][] = $tide;
+        // Save by code reference
+        $codeReference = $tide->getCodeReference()->getCommitSha();
+        if (!array_key_exists($codeReference, $this->tideByCodeReference)) {
+            $this->tideByCodeReference[$codeReference] = [];
+        }
+        $this->tideByCodeReference[$codeReference][$tideUuid] = $tide;
     }
 
     /**
@@ -51,5 +61,18 @@ class InMemoryTideRepository implements TideRepository
         }
 
         return $this->tides[(string) $uuid];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByCodeReference(CodeReference $codeReference)
+    {
+        $codeReferenceIdentifier = $codeReference->getCommitSha();
+        if (!array_key_exists($codeReferenceIdentifier, $this->tideByCodeReference)) {
+            return [];
+        }
+
+        return $this->tideByCodeReference[$codeReferenceIdentifier];
     }
 }

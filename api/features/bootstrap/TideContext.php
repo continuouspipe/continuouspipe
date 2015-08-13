@@ -30,6 +30,7 @@ use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Event\TideStarted;
 use Symfony\Component\Yaml\Yaml;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 
 class TideContext implements Context
 {
@@ -309,6 +310,29 @@ class TideContext implements Context
     }
 
     /**
+     * @Given a deployment for a commit :sha is successful
+     */
+    public function aDeploymentForACommitIsSuccessful($sha)
+    {
+        $this->thereIsApplicationImagesInTheRepository(1);
+        $this->flowContext->iHaveAFlowWithADeployTask();
+        $this->createTide('foo', $sha);
+        $this->startTide();
+
+        $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
+        if (count($deploymentStartedEvents) == 0) {
+            throw new \LogicException('Found 0 deployment started events');
+        }
+
+        /** @var DeploymentStarted $deploymentStarted */
+        $deploymentStarted = current($deploymentStartedEvents);
+        $this->eventBus->handle(new DeploymentSuccessful(
+            $this->getCurrentTideUuid(),
+            $deploymentStarted->getDeployment()
+        ));
+    }
+
+    /**
      * @return null|Uuid
      */
     public function getCurrentTideUuid()
@@ -337,15 +361,16 @@ class TideContext implements Context
         }));
     }
 
-    private function createTide($branch = 'master')
+    private function createTide($branch = 'master', $sha = null)
     {
         $flow = $this->flowContext->getCurrentFlow();
+        $sha = $sha ?: sha1($branch);
 
         $tide = $this->tideFactory->createFromCodeReference(
             $flow,
             new CodeReference(
                 $flow->getContext()->getCodeRepository(),
-                sha1($branch),
+                $sha,
                 $branch
             )
         );

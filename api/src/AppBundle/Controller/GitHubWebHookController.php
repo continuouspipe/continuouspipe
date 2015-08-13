@@ -19,19 +19,13 @@ class GitHubWebHookController
      * @var WebHookHandler
      */
     private $webHookHandler;
-    /**
-     * @var TideRepository
-     */
-    private $tideRepository;
 
     /**
      * @param WebHookHandler $webHookHandler
-     * @param TideRepository $tideRepository
      */
-    public function __construct(WebHookHandler $webHookHandler, TideRepository $tideRepository)
+    public function __construct(WebHookHandler $webHookHandler)
     {
         $this->webHookHandler = $webHookHandler;
-        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -42,8 +36,6 @@ class GitHubWebHookController
      */
     public function payloadAction(Flow $flow, GitHubRequest $request)
     {
-        $tide = $this->webHookHandler->handle($flow, $request);
-
-        return $this->tideRepository->find($tide->getContext()->getTideUuid());
+        return $this->webHookHandler->handle($flow, $request);
     }
 }

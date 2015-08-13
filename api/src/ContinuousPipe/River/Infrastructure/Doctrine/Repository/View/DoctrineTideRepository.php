@@ -2,12 +2,14 @@
 
 namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository\View;
 
+use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\View\TideDto;
 use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\User\User;
 use Doctrine\ORM\EntityManager;
 use LogStream\WrappedLog;
 use Rhumsaa\Uuid\Uuid;
@@ -72,6 +74,20 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
+    public function findByCodeReference(CodeReference $codeReference)
+    {
+        $dtos = $this->getEntityRepository()->findBy([
+            'tide.codeReference.sha1' => $codeReference->getCommitSha(),
+        ]);
+
+        return array_map(function (TideDto $dto) {
+            return $this->dtoToTide($dto);
+        }, $dtos);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function find(Uuid $uuid)
     {
         return $this->dtoToTide($this->findDto($uuid));
@@ -94,6 +110,7 @@ class DoctrineTideRepository implements TideRepository
             \ContinuousPipe\River\View\Flow::fromFlow($flow),
             $wrappedTide->getCodeReference(),
             new WrappedLog($wrappedTide->getLogId()),
+            new User($tideDto->getUserEmail()),
             $wrappedTide->getCreationDate()
         );
 

@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Pipe\Client;
 
+use ContinuousPipe\User\User;
 use JMS\Serializer\Annotation as JMS;
 use Rhumsaa\Uuid\Uuid;
 
@@ -32,6 +33,20 @@ class Deployment
      * @var DeploymentRequest
      */
     private $request;
+
+    /**
+     * @JMS\Type("ContinuousPipe\User\User")
+     *
+     * @var User
+     */
+    private $user;
+
+    /**
+     * @JMS\Type("array<ContinuousPipe\Pipe\Client\PublicEndpoint>")
+     *
+     * @var PublicEndpoint[]
+     */
+    private $publicEndpoints;
 
     /**
      * @param Uuid              $uuid
@@ -83,5 +98,21 @@ class Deployment
     public function isFailed()
     {
         return self::STATUS_FAILURE == $this->getStatus();
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return PublicEndpoint[]
+     */
+    public function getPublicEndpoints()
+    {
+        return $this->publicEndpoints;
     }
 }

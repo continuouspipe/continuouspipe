@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\View;
 
+use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\TideNotFound;
 use Rhumsaa\Uuid\Uuid;
@@ -16,6 +17,13 @@ interface TideRepository
      * @return Tide[]
      */
     public function findByFlow(Flow $flow);
+
+    /**
+     * @param CodeReference $codeReference
+     *
+     * @return Tide[]
+     */
+    public function findByCodeReference(CodeReference $codeReference);
 
     /**
      * Save the tide representation.

@@ -1,7 +1,7 @@
 Feature:
   In order to achieve continuous deployment
   As a developer
-  The river should start tides after GitHub webhooks
+  The river should start tides after pushing a commit to GitHub
 
   Scenario:
     Given I have a flow

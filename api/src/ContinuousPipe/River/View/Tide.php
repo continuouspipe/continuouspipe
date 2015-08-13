@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\User\User;
 use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
 
@@ -27,6 +28,11 @@ class Tide
      * @var CodeReference
      */
     private $codeReference;
+
+    /**
+     * @var User
+     */
+    private $user;
 
     /**
      * @var string
@@ -60,15 +66,15 @@ class Tide
     /**
      * Create a new tide representation.
      *
-     * @param Uuid          $uuid
-     * @param Flow          $flow
+     * @param Uuid $uuid
+     * @param Flow $flow
      * @param CodeReference $codeReference
-     * @param Log           $log
-     * @param \DateTime     $creationDate
-     *
+     * @param Log $log
+     * @param User $user
+     * @param \DateTime $creationDate
      * @return Tide
      */
-    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $log, \DateTime $creationDate = null)
+    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $log, User $user, \DateTime $creationDate = null)
     {
         $tide = new self();
         $tide->uuid = $uuid;
@@ -76,6 +82,7 @@ class Tide
         $tide->codeReference = $codeReference;
         $tide->logId = $log->getId();
         $tide->creationDate = $creationDate ?: new \DateTime();
+        $tide->user = $user;
 
         return $tide;
     }
@@ -166,5 +173,13 @@ class Tide
     public function setFinishDate($finishDate)
     {
         $this->finishDate = $finishDate;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }
