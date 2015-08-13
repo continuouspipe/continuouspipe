@@ -13,6 +13,7 @@
             <argument type="service" id="repository_river.github.webhook_manager" />
             <argument type="service" id="router" />
             <argument>%github_secret%</argument>
+            <argument>%river_public_url%</argument>
         </service>
         <service id="river.flow_factory" class="ContinuousPipe\River\FlowFactory">
             <argument type="service" id="security.user_context" />

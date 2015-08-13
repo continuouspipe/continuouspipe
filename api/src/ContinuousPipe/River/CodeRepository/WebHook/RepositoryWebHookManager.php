@@ -27,15 +27,22 @@ class RepositoryWebHookManager
     private $githubSecret;
 
     /**
-     * @param WebHookManager        $webHookManager
-     * @param UrlGeneratorInterface $urlGenerator
-     * @param string                $githubSecret
+     * @var string
      */
-    public function __construct(WebHookManager $webHookManager, UrlGeneratorInterface $urlGenerator, $githubSecret)
+    private $riverPublicUrl;
+
+    /**
+     * @param WebHookManager $webHookManager
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param string $githubSecret
+     * @param string $riverPublicUrl
+     */
+    public function __construct(WebHookManager $webHookManager, UrlGeneratorInterface $urlGenerator, $githubSecret, $riverPublicUrl)
     {
         $this->webHookManager = $webHookManager;
         $this->urlGenerator = $urlGenerator;
         $this->githubSecret = $githubSecret;
+        $this->riverPublicUrl = $riverPublicUrl;
     }
 
     /**
@@ -51,7 +58,7 @@ class RepositoryWebHookManager
             ));
         }
 
-        $targetUrl = $this->urlGenerator->generate('web_hook_github', ['uuid' => (string) $flow->getUuid()]);
+        $targetUrl = $this->riverPublicUrl.$this->urlGenerator->generate('web_hook_github', ['uuid' => (string) $flow->getUuid()]);
         $configuration = new WebHookConfiguration($targetUrl, 'json', $this->githubSecret);
         $webHook = new WebHook('web', $configuration, [
             'pull_request',

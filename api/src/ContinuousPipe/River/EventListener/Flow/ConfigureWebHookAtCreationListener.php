@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\EventListener\Flow;
 use ContinuousPipe\River\CodeRepository\WebHook\RepositoryWebHookManager;
 use ContinuousPipe\River\Event\FlowCreated;
 
-class ConfigureWebhookAtCreationListener
+class ConfigureWebHookAtCreationListener
 {
     /**
      * @var RepositoryWebHookManager
