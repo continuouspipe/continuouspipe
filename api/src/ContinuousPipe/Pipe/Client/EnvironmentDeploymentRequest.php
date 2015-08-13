@@ -8,7 +8,7 @@ use LogStream\Log;
 class EnvironmentDeploymentRequest
 {
     /**
-     * @JMS\SerializedName("name")
+     * @JMS\SerializedName("environmentName")
      *
      * @var string
      */
