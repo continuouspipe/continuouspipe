@@ -1,7 +1,8 @@
 <?php
 
-namespace ContinuousPipe\UserDetails;
+namespace ContinuousPipe\User;
 
+use ContinuousPipe\Authenticator\Security\Authentication\UserDetails;
 use GuzzleHttp\Client;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 

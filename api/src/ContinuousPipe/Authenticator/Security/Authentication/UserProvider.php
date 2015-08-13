@@ -9,7 +9,6 @@ use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use ContinuousPipe\User\GitHubCredentials;
 use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
-use ContinuousPipe\UserDetails\UserDetails;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 

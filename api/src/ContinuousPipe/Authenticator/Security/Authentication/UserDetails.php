@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\UserDetails;
+namespace ContinuousPipe\Authenticator\Security\Authentication;
 
 interface UserDetails
 {
