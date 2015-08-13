@@ -27,8 +27,8 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 
     /**
      * @param KubernetesClientFactory $clientFactory
-     * @param EnvironmentTransformer $environmentTransformer
-     * @param LoggerFactory $loggerFactory
+     * @param EnvironmentTransformer  $environmentTransformer
+     * @param LoggerFactory           $loggerFactory
      */
     public function __construct(KubernetesClientFactory $clientFactory, EnvironmentTransformer $environmentTransformer, LoggerFactory $loggerFactory)
     {

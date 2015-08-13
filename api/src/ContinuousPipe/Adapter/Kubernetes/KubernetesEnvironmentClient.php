@@ -40,9 +40,9 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     private $loggerFactory;
 
     /**
-     * @param Client $client
+     * @param Client                 $client
      * @param EnvironmentTransformer $environmentTransformer
-     * @param LoggerFactory $loggerFactory
+     * @param LoggerFactory          $loggerFactory
      */
     public function __construct(Client $client, EnvironmentTransformer $environmentTransformer, LoggerFactory $loggerFactory)
     {
@@ -152,6 +152,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
 
     /**
      * @param KubernetesObject $object
+     *
      * @return string
      */
     private function getObjectTypeAndName(KubernetesObject $object)
@@ -163,9 +164,9 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     }
 
     /**
-     * @param NamespaceClient $namespaceClient
+     * @param NamespaceClient    $namespaceClient
      * @param KubernetesObject[] $namespaceObjects
-     * @param DeploymentContext $deploymentContext
+     * @param DeploymentContext  $deploymentContext
      */
     private function populateEnvironmentPublicEndpoints(NamespaceClient $namespaceClient, array $namespaceObjects, DeploymentContext $deploymentContext)
     {
@@ -196,6 +197,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
 
     /**
      * @param KubernetesObject $object
+     *
      * @return bool
      */
     private function isAPublicObject(KubernetesObject $object)
@@ -205,9 +207,11 @@ class KubernetesEnvironmentClient implements EnvironmentClient
 
     /**
      * @param NamespaceClient $namespaceClient
-     * @param Service $service
-     * @param Logger $logger
+     * @param Service         $service
+     * @param Logger          $logger
+     *
      * @return PublicEndpoint
+     *
      * @throws \Exception
      */
     private function waitServicePublicEndpoint(NamespaceClient $namespaceClient, Service $service, Logger $logger)
@@ -230,8 +234,10 @@ class KubernetesEnvironmentClient implements EnvironmentClient
 
     /**
      * @param NamespaceClient $namespaceClient
-     * @param string $serviceName
+     * @param string          $serviceName
+     *
      * @return PublicEndpoint
+     *
      * @throws \Exception
      */
     private function getServicePublicEndpoint(NamespaceClient $namespaceClient, $serviceName)
