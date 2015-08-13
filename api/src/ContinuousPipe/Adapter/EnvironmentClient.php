@@ -9,7 +9,7 @@ interface EnvironmentClient
 {
     /**
      * @param Environment $environment
-     * @param Logger $logger
+     * @param Logger      $logger
      *
      * @return Environment
      */

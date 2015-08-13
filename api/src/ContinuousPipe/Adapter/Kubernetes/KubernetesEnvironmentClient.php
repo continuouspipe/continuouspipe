@@ -46,7 +46,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
      */
     public function createOrUpdate(Environment $environment, Logger $logger)
     {
-        $namespace = $this->getOrCreateNamespace($environment);
+        $namespace = $this->getOrCreateNamespace($environment, $logger);
         $namespaceObjects = $this->environmentTransformer->getElementListFromEnvironment($environment);
         $namespaceClient = $this->client->getNamespaceClient($namespace);
 
@@ -113,19 +113,22 @@ class KubernetesEnvironmentClient implements EnvironmentClient
      * Get or create namespace for the given environment.
      *
      * @param Environment $environment
+     * @param Logger      $logger
      *
      * @return KubernetesNamespace
      */
-    private function getOrCreateNamespace(Environment $environment)
+    private function getOrCreateNamespace(Environment $environment, Logger $logger)
     {
         $namespaceRepository = $this->client->getNamespaceRepository();
         $namespaceName = $environment->getIdentifier();
 
         try {
             $namespace = $namespaceRepository->findOneByName($namespaceName);
+            $logger->append(new Text('Reusing existing namespace "%s"', $namespaceName));
         } catch (NamespaceNotFound $e) {
             $namespace = new KubernetesNamespace(new ObjectMetadata($environment->getIdentifier()));
             $namespace = $this->client->getNamespaceRepository()->create($namespace);
+            $logger->append(new Text('Created new namespace "%s"', $namespaceName));
         }
 
         return $namespace;

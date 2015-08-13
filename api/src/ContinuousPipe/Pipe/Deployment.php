@@ -43,7 +43,7 @@ class Deployment
 
     /**
      * @param DeploymentRequest $request
-     * @param User $user
+     * @param User              $user
      *
      * @return Deployment
      */

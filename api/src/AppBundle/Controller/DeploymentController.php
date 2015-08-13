@@ -2,14 +2,10 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\Adapter\EnvironmentClientFactory;
-use ContinuousPipe\Adapter\ProviderRepository;
-use ContinuousPipe\DockerCompose\Loader\YamlLoader;
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
 use ContinuousPipe\Pipe\Deployment;
 use ContinuousPipe\Pipe\DeploymentRepository;
 use ContinuousPipe\Pipe\DeploymentRequest;
-use ContinuousPipe\Pipe\Request\EnvironmentRequest;
 use ContinuousPipe\User\Security\UserContext;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
@@ -40,8 +36,8 @@ class DeploymentController extends Controller
 
     /**
      * @param DeploymentRepository $deploymentRepository
-     * @param UserContext $userContext
-     * @param MessageBus $commandBus
+     * @param UserContext          $userContext
+     * @param MessageBus           $commandBus
      */
     public function __construct(DeploymentRepository $deploymentRepository, UserContext $userContext, MessageBus $commandBus)
     {

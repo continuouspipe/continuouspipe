@@ -10,7 +10,9 @@ interface DeploymentRepository
      * Find a deployment by its uuid.
      *
      * @param Uuid $uuid
+     *
      * @throws DeploymentNotFound
+     *
      * @return Deployment
      */
     public function find(Uuid $uuid);
@@ -19,6 +21,7 @@ interface DeploymentRepository
      * Save the given deployment object.
      *
      * @param Deployment $deployment
+     *
      * @return Deployment
      */
     public function save(Deployment $deployment);

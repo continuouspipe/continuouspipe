@@ -41,11 +41,11 @@ class StartDeploymentHandler
     private $loggerFactory;
 
     /**
-     * @param ProviderRepository $providerRepository
-     * @param YamlLoader $dockerComposeYamlLoader
+     * @param ProviderRepository       $providerRepository
+     * @param YamlLoader               $dockerComposeYamlLoader
      * @param EnvironmentClientFactory $environmentClientFactory
-     * @param MessageBus $eventBus
-     * @param DeploymentLoggerFactory $loggerFactory
+     * @param MessageBus               $eventBus
+     * @param DeploymentLoggerFactory  $loggerFactory
      */
     public function __construct(ProviderRepository $providerRepository, YamlLoader $dockerComposeYamlLoader, EnvironmentClientFactory $environmentClientFactory, MessageBus $eventBus, DeploymentLoggerFactory $loggerFactory)
     {
@@ -68,7 +68,6 @@ class StartDeploymentHandler
         $logger->start();
 
         try {
-
             $request = $deployment->getRequest();
             $logger->append(new Text(sprintf(
                 'Deploying to the environment "%s" to provider "%s"',

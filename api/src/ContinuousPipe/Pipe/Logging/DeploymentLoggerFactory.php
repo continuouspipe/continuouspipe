@@ -23,6 +23,7 @@ class DeploymentLoggerFactory
 
     /**
      * @param Deployment $deployment
+     *
      * @return \LogStream\Logger
      */
     public function create(Deployment $deployment)

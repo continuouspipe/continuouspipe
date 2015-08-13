@@ -21,7 +21,7 @@ class DeploymentStatusListener
     private $loggerFactory;
 
     /**
-     * @param HttpNotifier $httpNotifier
+     * @param HttpNotifier            $httpNotifier
      * @param DeploymentLoggerFactory $loggerFactory
      */
     public function __construct(HttpNotifier $httpNotifier, DeploymentLoggerFactory $loggerFactory)

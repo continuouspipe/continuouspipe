@@ -18,7 +18,7 @@ class HttpNotifier
     private $serializer;
 
     /**
-     * @param Client $httpClient
+     * @param Client     $httpClient
      * @param Serializer $serializer
      */
     public function __construct(Client $httpClient, Serializer $serializer)
@@ -28,7 +28,7 @@ class HttpNotifier
     }
 
     /**
-     * @param string $address
+     * @param string     $address
      * @param Deployment $deployment
      */
     public function notify($address, Deployment $deployment)
@@ -36,8 +36,8 @@ class HttpNotifier
         $this->httpClient->post($address, [
             'body' => $this->serializer->serialize($deployment, 'json'),
             'headers' => [
-                'Content-Type' => 'application/json'
-            ]
+                'Content-Type' => 'application/json',
+            ],
         ]);
     }
 }
