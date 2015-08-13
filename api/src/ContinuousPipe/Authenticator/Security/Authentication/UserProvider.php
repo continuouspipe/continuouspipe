@@ -9,7 +9,7 @@ use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use ContinuousPipe\User\GitHubCredentials;
 use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+use ContinuousPipe\UserDetails\UserDetails;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -20,9 +20,15 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     private $securityUserRepository;
 
-    public function __construct(SecurityUserRepository $securityUserRepository)
+    /**
+     * @var UserDetails
+     */
+    private $userDetails;
+
+    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails)
     {
         $this->securityUserRepository = $securityUserRepository;
+        $this->userDetails = $userDetails;
     }
 
     /**
@@ -32,7 +38,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     {
         $email = $response->getEmail();
         if (empty($email)) {
-            throw new UnsupportedUserException('User must have an email');
+            $email = $this->userDetails->getEmailAddress($response->getAccessToken());
         }
 
         try {
