@@ -31,10 +31,10 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
         $contents = $this->getCommentContents($deployment);
 
         $client = $this->gitHubClientFactory->createClientForUser($deployment->getUser());
-        $client->pullRequest()->comments()->create(
+        $client->issues()->comments()->create(
             $repository->getOwner()->getLogin(),
             $repository->getName(),
-            $pullRequest->getId(),
+            $pullRequest->getNumber(),
             [
                 'body' => $contents
             ]

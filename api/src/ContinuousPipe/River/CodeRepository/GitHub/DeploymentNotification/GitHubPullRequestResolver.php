@@ -50,7 +50,7 @@ class GitHubPullRequestResolver implements PullRequestResolver
         $jsonEncoded = json_encode($rawPullRequests);
         $pullRequests = $this->serializer->deserialize($jsonEncoded, 'array<'.PullRequest::class.'>', 'json');
 
-        return array_keys(array_filter($pullRequests, function(PullRequest $pullRequest) use ($codeReference) {
+        return array_values(array_filter($pullRequests, function(PullRequest $pullRequest) use ($codeReference) {
             return $codeReference->getCommitSha() == $pullRequest->getHead()->getSha1();
         }));
     }
@@ -64,7 +64,8 @@ class GitHubPullRequestResolver implements PullRequestResolver
         $repository = $codeReference->getRepository();
         if (!$repository instanceof GitHubCodeRepository) {
             throw new \RuntimeException(sprintf(
-                'Repository of type "%s" not supported'
+                'Repository of type "%s" not supported',
+                get_class($repository)
             ));
         }
 
