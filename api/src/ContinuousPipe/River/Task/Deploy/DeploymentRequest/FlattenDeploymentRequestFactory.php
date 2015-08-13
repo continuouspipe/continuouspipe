@@ -41,11 +41,23 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return new DeploymentRequest(
-            $context->getCodeReference()->getBranch(),
+            $this->getEnvironmentName($context),
             $context->getProviderName(),
             $dockerComposeContents,
             $callbackUrl,
             $context->getLog()->getId()
         );
+    }
+
+    /**
+     * Get target environment name for the given deployment.
+     *
+     * @param DeployContext $context
+     *
+     * @return string
+     */
+    private function getEnvironmentName(DeployContext $context)
+    {
+        return sprintf('%s-%s', (string) $context->getFlowUuid(), $context->getCodeReference()->getBranch());
     }
 }

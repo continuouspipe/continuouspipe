@@ -286,6 +286,29 @@ class TideContext implements Context
     }
 
     /**
+     * @Then the deployed environment name should be prefixed by the flow identifier
+     */
+    public function theDeployedEnvironmentNameShouldBePrefixedByTheFlowIdentifier()
+    {
+        $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
+        $environmentNames = array_map(function(DeploymentStarted $event) {
+            return $event->getDeployment()->getRequest()->getEnvironmentName();
+        }, $deploymentStartedEvents);
+
+        $flowUuid = (string) $this->flowContext->getCurrentFlow()->getUuid();
+        $matchingEnvironmentNames = array_filter($environmentNames, function($environmentName) use ($flowUuid) {
+            return substr($environmentName, 0, strlen($flowUuid)) == $flowUuid;
+        });
+
+        if (count($matchingEnvironmentNames) == 0) {
+            throw new \RuntimeException(sprintf(
+                'No matching environment names found. Found %s',
+                implode(', ', $environmentNames)
+            ));
+        }
+    }
+
+    /**
      * @return null|Uuid
      */
     public function getCurrentTideUuid()
