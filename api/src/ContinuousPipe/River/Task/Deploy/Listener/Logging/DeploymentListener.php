@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Task\Deploy\Listener\Logging;
 
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentEvent;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use LogStream\LoggerFactory;
 

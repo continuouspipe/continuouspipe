@@ -38,7 +38,7 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
         $dockerComposeContents = $this->dockerComposeReader->getContents($context);
         $callbackUrl = $this->urlGenerator->generate('pipe_notification_post', [
             'tideUuid' => $context->getTideUuid(),
-        ]);
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return new DeploymentRequest(
             $context->getCodeReference()->getBranch(),

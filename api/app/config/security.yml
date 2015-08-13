@@ -20,5 +20,6 @@ security:
 
         # TODO: Secure with Builder IPs
         - { path: ^/builder/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/pipe/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
