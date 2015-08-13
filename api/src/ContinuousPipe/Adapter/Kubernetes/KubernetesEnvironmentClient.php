@@ -16,6 +16,8 @@ use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\NamespaceClient;
 use Kubernetes\Client\Repository\ObjectRepository;
 use Kubernetes\Client\Repository\WrappedObjectRepository;
+use LogStream\Logger;
+use LogStream\Node\Text;
 
 class KubernetesEnvironmentClient implements EnvironmentClient
 {
@@ -42,7 +44,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     /**
      * {@inheritdoc}
      */
-    public function createOrUpdate(Environment $environment)
+    public function createOrUpdate(Environment $environment, Logger $logger)
     {
         $namespace = $this->getOrCreateNamespace($environment);
         $namespaceObjects = $this->environmentTransformer->getElementListFromEnvironment($environment);
@@ -53,8 +55,10 @@ class KubernetesEnvironmentClient implements EnvironmentClient
             $objectName = $object->getMetadata()->getName();
 
             if ($objectRepository->exists($objectName)) {
+                $logger->append(new Text('Updating '.$this->getObjectTypeAndName($object)));
                 $objectRepository->update($object);
             } else {
+                $logger->append(new Text('Creating '.$this->getObjectTypeAndName($object)));
                 $objectRepository->create($object);
             }
         }
@@ -125,5 +129,13 @@ class KubernetesEnvironmentClient implements EnvironmentClient
         }
 
         return $namespace;
+    }
+
+    private function getObjectTypeAndName(KubernetesObject $object)
+    {
+        $objectClass = get_class($object);
+        $type = substr($objectClass, strrpos($objectClass, '/'));
+
+        return sprintf('%s "%s"', $type, $object->getMetadata()->getName());
     }
 }

@@ -4,6 +4,7 @@ namespace ContinuousPipe\Pipe\Tests;
 
 use ContinuousPipe\Adapter\EnvironmentClient;
 use ContinuousPipe\Model\Environment;
+use LogStream\Logger;
 
 class FakeEnvironmentClient implements EnvironmentClient
 {
@@ -15,7 +16,7 @@ class FakeEnvironmentClient implements EnvironmentClient
     /**
      * {@inheritdoc}
      */
-    public function createOrUpdate(Environment $environment)
+    public function createOrUpdate(Environment $environment, Logger $logger)
     {
         $this->createdOrUpdated[] = $environment;
 

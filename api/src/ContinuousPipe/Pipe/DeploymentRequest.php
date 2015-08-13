@@ -47,6 +47,14 @@ class DeploymentRequest
     private $notificationCallbackUrl;
 
     /**
+     * @JMS\Type("string")
+     * @JMS\SerializedName("logId")
+     *
+     * @var string
+     */
+    private $logId;
+
+    /**
      * @return string
      */
     public function getEnvironmentName()
@@ -76,5 +84,13 @@ class DeploymentRequest
     public function getNotificationCallbackUrl()
     {
         return $this->notificationCallbackUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogId()
+    {
+        return $this->logId;
     }
 }

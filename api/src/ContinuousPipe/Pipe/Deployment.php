@@ -89,4 +89,12 @@ class Deployment
     {
         return $this->user;
     }
+
+    /**
+     * @param string $status
+     */
+    public function updateStatus($status)
+    {
+        $this->status = $status;
+    }
 }

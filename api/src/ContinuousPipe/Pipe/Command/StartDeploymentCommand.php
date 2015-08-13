@@ -3,10 +3,13 @@
 namespace ContinuousPipe\Pipe\Command;
 
 use ContinuousPipe\Pipe\Deployment;
+use JMS\Serializer\Annotation as JMS;
 
 class StartDeploymentCommand
 {
     /**
+     * @JMS\Type("ContinuousPipe\Pipe\Deployment")
+     *
      * @var Deployment
      */
     private $deployment;
