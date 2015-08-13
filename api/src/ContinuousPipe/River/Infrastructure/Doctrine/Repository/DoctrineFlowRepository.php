@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository;
 
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
+use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\User\User;
 use ContinuousPipe\User\UserRepository;
@@ -40,8 +41,9 @@ class DoctrineFlowRepository implements FlowRepository
     {
         $flowContext = $flow->getContext();
 
-        $dto = $this->getDtoByUuid($flowContext->getFlowUuid());
-        if (null === $dto) {
+        try {
+            $dto = $this->getDtoByUuid($flowContext->getFlowUuid());
+        } catch (FlowNotFound $e) {
             $dto = new FlowDto();
             $dto->uuid = $flow->getUuid();
             $dto->userUsername = $flowContext->getUser()->getEmail();
@@ -107,12 +109,17 @@ class DoctrineFlowRepository implements FlowRepository
 
     /**
      * @param Uuid $uuid
-     *
-     * @return null|FlowDto
+     * @return FlowDto
+     * @throws FlowNotFound
      */
     public function getDtoByUuid(Uuid $uuid)
     {
-        return $this->getEntityRepository()->find((string) $uuid);
+        $dto = $this->getEntityRepository()->find((string) $uuid);
+        if (null === $dto) {
+            throw new FlowNotFound();
+        }
+
+        return $dto;
     }
 
     /**

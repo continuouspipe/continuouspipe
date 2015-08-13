@@ -36,7 +36,7 @@ class TideDto
 
     /**
      * @ORM\ManyToOne(targetEntity="ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto")
-     * @ORM\JoinColumn(name="flow_uuid", referencedColumnName="uuid")
+     * @ORM\JoinColumn(name="flow_uuid", referencedColumnName="uuid", onDelete="CASCADE")
      *
      * @var FlowDto
      */
