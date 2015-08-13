@@ -20,10 +20,9 @@
         </service>
 
         <service id="pipe.controllers.deployment" class="AppBundle\Controller\DeploymentController">
-            <argument type="service" id="pipe.provider_repository" />
-            <argument type="service" id="pipe.docker_compose.yaml_loader" />
-            <argument type="service" id="pipe.chain_environment_client_factory" />
             <argument type="service" id="pipe.deployment_repository" />
+            <argument type="service" id="security.user_context" />
+            <argument type="service" id="command_bus" />
         </service>
     </services>
 </container>

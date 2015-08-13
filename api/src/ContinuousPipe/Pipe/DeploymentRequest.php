@@ -10,6 +10,7 @@ class DeploymentRequest
      * Environment name.
      *
      * @JMS\Type("string")
+     * @JMS\SerializedName("environmentName")
      *
      * @var string
      */

@@ -5,11 +5,14 @@ namespace AppBundle\Controller;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\DockerCompose\Loader\YamlLoader;
+use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
 use ContinuousPipe\Pipe\Deployment;
 use ContinuousPipe\Pipe\DeploymentRepository;
 use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Request\EnvironmentRequest;
+use ContinuousPipe\User\Security\UserContext;
 use Rhumsaa\Uuid\Uuid;
+use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -21,36 +24,30 @@ use FOS\RestBundle\Controller\Annotations\View;
 class DeploymentController extends Controller
 {
     /**
-     * @var ProviderRepository
-     */
-    private $providerRepository;
-
-    /**
-     * @var YamlLoader
-     */
-    private $dockerComposeYamlLoader;
-
-    /**
-     * @var EnvironmentClientFactory
-     */
-    private $environmentClientFactory;
-    /**
      * @var DeploymentRepository
      */
     private $deploymentRepository;
 
     /**
-     * @param ProviderRepository $providerRepository
-     * @param YamlLoader $dockerComposeYamlLoader
-     * @param EnvironmentClientFactory $environmentClientFactory
-     * @param DeploymentRepository $deploymentRepository
+     * @var UserContext
      */
-    public function __construct(ProviderRepository $providerRepository, YamlLoader $dockerComposeYamlLoader, EnvironmentClientFactory $environmentClientFactory, DeploymentRepository $deploymentRepository)
+    private $userContext;
+
+    /**
+     * @var MessageBus
+     */
+    private $commandBus;
+
+    /**
+     * @param DeploymentRepository $deploymentRepository
+     * @param UserContext $userContext
+     * @param MessageBus $commandBus
+     */
+    public function __construct(DeploymentRepository $deploymentRepository, UserContext $userContext, MessageBus $commandBus)
     {
-        $this->providerRepository = $providerRepository;
-        $this->dockerComposeYamlLoader = $dockerComposeYamlLoader;
-        $this->environmentClientFactory = $environmentClientFactory;
         $this->deploymentRepository = $deploymentRepository;
+        $this->userContext = $userContext;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -62,14 +59,10 @@ class DeploymentController extends Controller
      */
     public function createAction(DeploymentRequest $deploymentRequest)
     {
-        $deployment = Deployment::fromRequest($deploymentRequest);
+        $deployment = Deployment::fromRequest($deploymentRequest, $this->userContext->getCurrent());
         $this->deploymentRepository->save($deployment);
 
-        $environment = $this->dockerComposeYamlLoader->load($deploymentRequest->getEnvironmentName(), $deploymentRequest->getDockerComposeContents());
-
-        $provider = $this->providerRepository->find($deploymentRequest->getProviderName());
-        $environmentClient = $this->environmentClientFactory->getByProvider($provider);
-        $environmentClient->createOrUpdate($environment);
+        $this->commandBus->handle(new StartDeploymentCommand($deployment));
 
         return $deployment;
     }

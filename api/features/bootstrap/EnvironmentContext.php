@@ -56,7 +56,7 @@ class EnvironmentContext implements Context
 
         $simpleAppComposeContents = file_get_contents(__DIR__.'/../fixtures/simple-app.yml');
         $contents = json_encode([
-            'name' => 'foo',
+            'environmentName' => 'foo',
             'providerName' => 'fake/foo',
             'dockerComposeContents' => $simpleAppComposeContents,
         ]);
