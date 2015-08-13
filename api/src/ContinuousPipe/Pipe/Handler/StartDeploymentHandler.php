@@ -6,6 +6,9 @@ use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\DockerCompose\Loader\YamlLoader;
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
+use ContinuousPipe\Pipe\Event\DeploymentFailed;
+use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
+use SimpleBus\Message\Bus\MessageBus;
 
 class StartDeploymentHandler
 {
@@ -25,15 +28,22 @@ class StartDeploymentHandler
     private $environmentClientFactory;
 
     /**
+     * @var MessageBus
+     */
+    private $eventBus;
+
+    /**
      * @param ProviderRepository $providerRepository
      * @param YamlLoader $dockerComposeYamlLoader
      * @param EnvironmentClientFactory $environmentClientFactory
+     * @param MessageBus $eventBus
      */
-    public function __construct(ProviderRepository $providerRepository, YamlLoader $dockerComposeYamlLoader, EnvironmentClientFactory $environmentClientFactory)
+    public function __construct(ProviderRepository $providerRepository, YamlLoader $dockerComposeYamlLoader, EnvironmentClientFactory $environmentClientFactory, MessageBus $eventBus)
     {
         $this->providerRepository = $providerRepository;
         $this->dockerComposeYamlLoader = $dockerComposeYamlLoader;
         $this->environmentClientFactory = $environmentClientFactory;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -41,14 +51,20 @@ class StartDeploymentHandler
      */
     public function handle(StartDeploymentCommand $command)
     {
-        $request = $command->getDeployment()->getRequest();
-        $environment = $this->dockerComposeYamlLoader->load(
-            $request->getEnvironmentName(),
-            $request->getDockerComposeContents()
-        );
+        try {
+            $request = $command->getDeployment()->getRequest();
+            $environment = $this->dockerComposeYamlLoader->load(
+                $request->getEnvironmentName(),
+                $request->getDockerComposeContents()
+            );
 
-        $provider = $this->providerRepository->find($request->getProviderName());
-        $environmentClient = $this->environmentClientFactory->getByProvider($provider);
-        $environmentClient->createOrUpdate($environment);
+            $provider = $this->providerRepository->find($request->getProviderName());
+            $environmentClient = $this->environmentClientFactory->getByProvider($provider);
+            $environmentClient->createOrUpdate($environment);
+
+            $this->eventBus->handle(new DeploymentSuccessful($command->getDeployment()));
+        } catch (\Exception $e) {
+            $this->eventBus->handle(new DeploymentFailed($command->getDeployment()));
+        }
     }
 }

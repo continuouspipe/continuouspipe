@@ -37,6 +37,16 @@ class DeploymentRequest
     private $dockerComposeContents;
 
     /**
+     * URL of a callback to have notification about the status of the deployment.
+     *
+     * @JMS\Type("string")
+     * @JMS\SerializedName("notificationCallbackUrl")
+     *
+     * @var string
+     */
+    private $notificationCallbackUrl;
+
+    /**
      * @return string
      */
     public function getEnvironmentName()
@@ -58,5 +68,13 @@ class DeploymentRequest
     public function getDockerComposeContents()
     {
         return $this->dockerComposeContents;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotificationCallbackUrl()
+    {
+        return $this->notificationCallbackUrl;
     }
 }
