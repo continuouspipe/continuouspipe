@@ -5,6 +5,7 @@ namespace ContinuousPipe\Adapter\Kubernetes;
 use ContinuousPipe\Adapter\EnvironmentClient;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Model\Environment;
+use ContinuousPipe\Pipe\DeploymentContext;
 use Kubernetes\Client\Client;
 use Kubernetes\Client\Exception\NamespaceNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
@@ -16,7 +17,6 @@ use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\NamespaceClient;
 use Kubernetes\Client\Repository\ObjectRepository;
 use Kubernetes\Client\Repository\WrappedObjectRepository;
-use LogStream\Logger;
 use LogStream\Node\Text;
 
 class KubernetesEnvironmentClient implements EnvironmentClient
@@ -44,9 +44,11 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     /**
      * {@inheritdoc}
      */
-    public function createOrUpdate(Environment $environment, Logger $logger)
+    public function createOrUpdate(Environment $environment, DeploymentContext $deploymentContext)
     {
-        $namespace = $this->getOrCreateNamespace($environment, $logger);
+        $logger = $deploymentContext->getLogger();
+
+        $namespace = $this->getOrCreateNamespace($environment, $deploymentContext);
         $namespaceObjects = $this->environmentTransformer->getElementListFromEnvironment($environment);
         $namespaceClient = $this->client->getNamespaceClient($namespace);
 
@@ -112,13 +114,15 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     /**
      * Get or create namespace for the given environment.
      *
-     * @param Environment $environment
-     * @param Logger      $logger
+     * @param Environment       $environment
+     * @param DeploymentContext $deploymentContext
      *
      * @return KubernetesNamespace
      */
-    private function getOrCreateNamespace(Environment $environment, Logger $logger)
+    private function getOrCreateNamespace(Environment $environment, DeploymentContext $deploymentContext)
     {
+        $logger = $deploymentContext->getLogger();
+
         $namespaceRepository = $this->client->getNamespaceRepository();
         $namespaceName = $environment->getIdentifier();
 

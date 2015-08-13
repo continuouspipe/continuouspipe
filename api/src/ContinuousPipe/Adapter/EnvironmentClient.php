@@ -3,17 +3,17 @@
 namespace ContinuousPipe\Adapter;
 
 use ContinuousPipe\Model\Environment;
-use LogStream\Logger;
+use ContinuousPipe\Pipe\DeploymentContext;
 
 interface EnvironmentClient
 {
     /**
-     * @param Environment $environment
-     * @param Logger      $logger
+     * @param Environment       $environment
+     * @param DeploymentContext $deploymentContext
      *
      * @return Environment
      */
-    public function createOrUpdate(Environment $environment, Logger $logger);
+    public function createOrUpdate(Environment $environment, DeploymentContext $deploymentContext);
 
     /**
      * List environments.

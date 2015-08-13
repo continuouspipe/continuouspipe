@@ -7,6 +7,7 @@ use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\DockerCompose\Loader\YamlLoader;
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
 use ContinuousPipe\Pipe\Deployment;
+use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
 use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
@@ -87,7 +88,9 @@ class StartDeploymentHandler
 
             $provider = $this->providerRepository->find($request->getProviderName());
             $environmentClient = $this->environmentClientFactory->getByProvider($provider);
-            $environmentClient->createOrUpdate($environment, $logger);
+
+            $deploymentContext = new DeploymentContext($deployment, $logger);
+            $environmentClient->createOrUpdate($environment, $deploymentContext);
 
             $deployment->updateStatus(Deployment::STATUS_SUCCESS);
             $this->eventBus->handle(new DeploymentSuccessful($deployment));
