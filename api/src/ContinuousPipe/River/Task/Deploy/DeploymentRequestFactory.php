@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
-use ContinuousPipe\Pipe\Client\EnvironmentDeploymentRequest;
+use ContinuousPipe\Pipe\Client\DeploymentRequest;
 
 interface DeploymentRequestFactory
 {
@@ -11,7 +11,7 @@ interface DeploymentRequestFactory
      *
      * @param DeployContext $context
      *
-     * @return EnvironmentDeploymentRequest
+     * @return DeploymentRequest
      */
     public function create(DeployContext $context);
 }

@@ -41,6 +41,6 @@ class DeploymentListener
      */
     private function getLogger(DeploymentEvent $event)
     {
-        return $this->loggerFactory->fromId($event->getDeploymentRequest()->getLogId());
+        return $this->loggerFactory->fromId($event->getDeployment()->getRequest()->getLogId());
     }
 }

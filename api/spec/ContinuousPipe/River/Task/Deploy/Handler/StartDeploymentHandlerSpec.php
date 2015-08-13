@@ -10,7 +10,7 @@ use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\User\User;
 use PhpSpec\ObjectBehavior;
 use Rhumsaa\Uuid\Uuid;
-use ContinuousPipe\Pipe\Client\EnvironmentDeploymentRequest;
+use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use SimpleBus\Message\Bus\MessageBus;
 
 class StartDeploymentHandlerSpec extends ObjectBehavior
@@ -20,13 +20,15 @@ class StartDeploymentHandlerSpec extends ObjectBehavior
         $this->beConstructedWith($deploymentRequestFactory, $pipeClient, $eventBus);
     }
 
-    public function it_handles_start_deployment_command(DeploymentRequestFactory $deploymentRequestFactory, MessageBus $eventBus, Client $pipeClient, EnvironmentDeploymentRequest $environmentDeploymentRequest, DeployContext $deployContext)
+    public function it_handles_start_deployment_command(DeploymentRequestFactory $deploymentRequestFactory, MessageBus $eventBus, Client $pipeClient, DeploymentRequest $deploymentRequest, Client\Deployment $deployment, DeployContext $deployContext)
     {
         $tideUuid = Uuid::uuid1();
 
-        $deploymentRequestFactory->create($deployContext)->shouldBeCalled()->willReturn($environmentDeploymentRequest);
-        $pipeClient->start($environmentDeploymentRequest, new User('e@mail'))->shouldBeCalled();
-        $eventBus->handle(new DeploymentStarted($tideUuid, $environmentDeploymentRequest))->shouldBeCalled();
+        $user = new User('e@mail');
+        $deployContext->getUser()->willReturn($user);
+        $deploymentRequestFactory->create($deployContext)->shouldBeCalled()->willReturn($deploymentRequest);
+        $pipeClient->start($deploymentRequest, $user)->shouldBeCalled()->willReturn($deployment);
+        $eventBus->handle(new DeploymentStarted($tideUuid, $deployment->getWrappedObject()))->shouldBeCalled();
 
         $this->handle(new StartDeploymentCommand($tideUuid, $deployContext->getWrappedObject()));
     }

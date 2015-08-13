@@ -2,7 +2,8 @@
 
 namespace ContinuousPipe\Pipe;
 
-use ContinuousPipe\Pipe\Client\EnvironmentDeploymentRequest;
+use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
 use GuzzleHttp\Client as GuzzleClient;
@@ -48,15 +49,24 @@ class HttpPipeClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function start(EnvironmentDeploymentRequest $deploymentRequest, User $user)
+    public function start(DeploymentRequest $deploymentRequest, User $user)
     {
         $token = $this->jwtManager->create(new SecurityUser($user));
-        $this->client->put($this->baseUrl.'/environments', [
+        $response = $this->client->put($this->baseUrl.'/environments', [
             'body' => $this->serializer->serialize($deploymentRequest, 'json'),
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer '.$token,
             ],
         ]);
+
+        $body = $response->getBody();
+        if ($body->isSeekable()) {
+            $body->seek(0);
+        }
+
+        $deployment = $this->serializer->deserialize($body->getContents(), Deployment::class, 'json');
+
+        return $deployment;
     }
 }

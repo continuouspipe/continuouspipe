@@ -5,9 +5,10 @@ namespace ContinuousPipe\Pipe\Client;
 use JMS\Serializer\Annotation as JMS;
 use LogStream\Log;
 
-class EnvironmentDeploymentRequest
+class DeploymentRequest
 {
     /**
+     * @JMS\Type("string")
      * @JMS\SerializedName("environmentName")
      *
      * @var string
@@ -15,6 +16,7 @@ class EnvironmentDeploymentRequest
     private $environmentName;
 
     /**
+     * @JMS\Type("string")
      * @JMS\SerializedName("providerName")
      *
      * @var string
@@ -22,6 +24,7 @@ class EnvironmentDeploymentRequest
     private $providerName;
 
     /**
+     * @JMS\Type("string")
      * @JMS\SerializedName("dockerComposeContents")
      *
      * @var string
@@ -29,6 +32,15 @@ class EnvironmentDeploymentRequest
     private $dockerComposeContents;
 
     /**
+     * @JMS\Type("string")
+     * @JMS\SerializedName("notificationCallbackUrl")
+     *
+     * @var string
+     */
+    private $notificationCallbackUrl;
+
+    /**
+     * @JMS\Type("string")
      * @JMS\SerializedName("logId")
      *
      * @var string
@@ -39,13 +51,15 @@ class EnvironmentDeploymentRequest
      * @param string $environmentName
      * @param string $providerName
      * @param string $dockerComposeContents
+     * @param string $notificationCallbackUrl
      * @param string $logId
      */
-    public function __construct($environmentName, $providerName, $dockerComposeContents, $logId)
+    public function __construct($environmentName, $providerName, $dockerComposeContents, $notificationCallbackUrl, $logId)
     {
         $this->environmentName = $environmentName;
         $this->providerName = $providerName;
         $this->dockerComposeContents = $dockerComposeContents;
+        $this->notificationCallbackUrl = $notificationCallbackUrl;
         $this->logId = $logId;
     }
 
@@ -79,5 +93,13 @@ class EnvironmentDeploymentRequest
     public function getLogId()
     {
         return $this->logId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotificationCallbackUrl()
+    {
+        return $this->notificationCallbackUrl;
     }
 }

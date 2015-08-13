@@ -2,14 +2,16 @@
 
 namespace ContinuousPipe\Pipe;
 
-use ContinuousPipe\Pipe\Client\EnvironmentDeploymentRequest;
+use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\User\User;
 
 interface Client
 {
     /**
-     * @param EnvironmentDeploymentRequest $deploymentRequest
+     * @param DeploymentRequest $deploymentRequest
      * @param User $user
+     * @return Deployment
      */
-    public function start(EnvironmentDeploymentRequest $deploymentRequest, User $user);
+    public function start(DeploymentRequest $deploymentRequest, User $user);
 }

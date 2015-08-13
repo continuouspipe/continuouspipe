@@ -21,6 +21,9 @@
         <service id="app.controller.builder_notification" class="AppBundle\Controller\BuilderNotificationController">
             <argument type="service" id="simple_bus.event_bus" />
         </service>
+        <service id="app.controller.pipe_notification" class="AppBundle\Controller\PipeNotificationController">
+            <argument type="service" id="simple_bus.event_bus" />
+        </service>
         <service id="app.controller.tide" class="AppBundle\Controller\TideController">
             <argument type="service" id="river.view.tide_repository" />
         </service>

@@ -3,6 +3,7 @@
 namespace spec\ContinuousPipe\River\Task\Build;
 
 use ContinuousPipe\River\Task\Build\Event\BuildFailed;
+use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use LogStream\Log;
 use LogStream\LoggerFactory;
@@ -22,10 +23,10 @@ class BuildTaskSpec extends ObjectBehavior
         ));
     }
 
-    public function it_should_fail_if_a_build_fail(BuildFailed $buildFailedEvent)
+    public function it_should_fail_if_a_build_fail(ImageBuildsFailed $imageBuildsFailedEvent)
     {
-        $buildFailedEvent->getTideUuid()->willReturn(Uuid::uuid1());
-        $this->apply($buildFailedEvent);
+        $imageBuildsFailedEvent->getTideUuid()->willReturn(Uuid::uuid1());
+        $this->apply($imageBuildsFailedEvent);
 
         $this->shouldBeFailed();
     }

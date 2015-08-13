@@ -96,7 +96,7 @@ class DeployContext implements Context
     {
         $this->eventBus->handle(new DeploymentFailed(
             $this->tideContext->getCurrentTideUuid(),
-            $this->getDeploymentStartedEvent()->getDeploymentRequest()
+            $this->getDeploymentStartedEvent()->getDeployment()
         ));
     }
 
@@ -117,7 +117,7 @@ class DeployContext implements Context
     {
         $this->eventBus->handle(new DeploymentSuccessful(
             $this->tideContext->getCurrentTideUuid(),
-            $this->getDeploymentStartedEvent()->getDeploymentRequest()
+            $this->getDeploymentStartedEvent()->getDeployment()
         ));
     }
 

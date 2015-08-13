@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Event;
 
-use ContinuousPipe\Pipe\Client\EnvironmentDeploymentRequest;
+use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
 use Rhumsaa\Uuid\Uuid;
 
@@ -14,18 +14,18 @@ class DeploymentEvent implements TideEvent
     private $tideUuid;
 
     /**
-     * @var EnvironmentDeploymentRequest
+     * @var Deployment
      */
-    private $deploymentRequest;
+    private $deployment;
 
     /**
      * @param Uuid $tideUuid
-     * @param EnvironmentDeploymentRequest $deploymentRequest
+     * @param Deployment $deployment
      */
-    public function __construct(Uuid $tideUuid, EnvironmentDeploymentRequest $deploymentRequest)
+    public function __construct(Uuid $tideUuid, Deployment $deployment)
     {
         $this->tideUuid = $tideUuid;
-        $this->deploymentRequest = $deploymentRequest;
+        $this->deployment = $deployment;
     }
 
     /**
@@ -37,10 +37,10 @@ class DeploymentEvent implements TideEvent
     }
 
     /**
-     * @return EnvironmentDeploymentRequest
+     * @return Deployment
      */
-    public function getDeploymentRequest()
+    public function getDeployment()
     {
-        return $this->deploymentRequest;
+        return $this->deployment;
     }
 }
