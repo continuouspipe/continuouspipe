@@ -10,6 +10,7 @@ class DeploymentContext
      * @var Deployment
      */
     private $deployment;
+
     /**
      * @var Logger
      */

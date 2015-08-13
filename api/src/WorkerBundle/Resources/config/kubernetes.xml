@@ -42,6 +42,7 @@
         <service id="pipe.adapter.kubernetes.environment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\KubernetesEnvironmentClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
             <argument type="service" id="kubernetes.transformer.environment" />
+            <argument type="service" id="log_stream.logger_factory" />
         </service>
         <service id="pipe.adapter.kubernetes.repository" class="ContinuousPipe\Adapter\Kubernetes\Repository">
             <argument type="service" id="doctrine.orm.entity_manager" />

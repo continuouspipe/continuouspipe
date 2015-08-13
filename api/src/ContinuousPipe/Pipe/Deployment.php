@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Pipe;
 
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\User\User;
 use Rhumsaa\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
@@ -40,6 +41,13 @@ class Deployment
      * @var User
      */
     private $user;
+
+    /**
+     * @JMS\Type("array<ContinuousPipe\Pipe\Environment\PublicEndpoint>")
+     *
+     * @var PublicEndpoint[]
+     */
+    private $publicEndpoints;
 
     /**
      * @param DeploymentRequest $request
@@ -96,5 +104,21 @@ class Deployment
     public function updateStatus($status)
     {
         $this->status = $status;
+    }
+
+    /**
+     * @return Environment\PublicEndpoint[]
+     */
+    public function getPublicEndpoints()
+    {
+        return $this->publicEndpoints;
+    }
+
+    /**
+     * @param Environment\PublicEndpoint[] $publicEndpoints
+     */
+    public function setPublicEndpoints($publicEndpoints)
+    {
+        $this->publicEndpoints = $publicEndpoints;
     }
 }
