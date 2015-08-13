@@ -4,7 +4,6 @@ namespace ContinuousPipe\User;
 
 use ContinuousPipe\Authenticator\Security\Authentication\UserDetails;
 use GuzzleHttp\Client;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 
 class GitHubUserDetails implements UserDetails
 {
@@ -31,12 +30,12 @@ class GitHubUserDetails implements UserDetails
         $response = $this->getEmailAddresses($token);
 
         foreach (json_decode($response->getBody()) as $address) {
-            if ($address->primary === true) {
+            if ($address->primary) {
                 return $address->email;
             }
         }
 
-        throw new UnsupportedUserException('User must have an email');
+        throw new EmailNotFoundException();
     }
 
     /**

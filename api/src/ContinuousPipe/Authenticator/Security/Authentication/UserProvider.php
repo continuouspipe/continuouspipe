@@ -6,9 +6,11 @@ use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
+use ContinuousPipe\User\EmailNotFoundException;
 use ContinuousPipe\User\GitHubCredentials;
 use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -35,10 +37,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
-        $email = $response->getEmail();
-        if (empty($email)) {
-            $email = $this->userDetails->getEmailAddress($response->getAccessToken());
-        }
+        $email = $this->getEmail($response);
 
         try {
             $securityUser = $this->securityUserRepository->findOneByEmail($email);
@@ -56,6 +55,24 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $this->securityUserRepository->save($securityUser);
 
         return $securityUser;
+    }
+
+    /**
+     * @param UserResponseInterface $response
+     *
+     * @return string
+     */
+    private function getEmail(UserResponseInterface $response)
+    {
+        if ($email = $response->getEmail()) {
+            return $email;
+        }
+
+        try {
+            return $this->userDetails->getEmailAddress($response->getAccessToken());
+        } catch (EmailNotFoundException $e) {
+            throw new UnsupportedUserException('User must have an email');
+        }
     }
 
     /**
