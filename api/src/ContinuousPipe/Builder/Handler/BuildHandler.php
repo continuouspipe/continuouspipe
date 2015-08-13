@@ -10,6 +10,7 @@ use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Logging\BuildLoggerFactory;
 use ContinuousPipe\Builder\Notifier;
 use GuzzleHttp\Exception\RequestException;
+use LogStream\Logger;
 use LogStream\Node\Text;
 
 class BuildHandler
@@ -68,19 +69,7 @@ class BuildHandler
         } catch (DockerException $e) {
             $build->updateStatus(Build::STATUS_ERROR);
         } catch (\Exception $e) {
-            $message = $e->getMessage();
-            if ($e instanceof RequestException) {
-                if ($e->getResponse() && ($body = $e->getResponse()->getBody())) {
-                    if ($body->isSeekable()) {
-                        $body->seek(0);
-                    }
-
-                    $message .= '['.$body->getContents().']';
-                }
-            }
-
-            $logger->append(new Text('PANIC ('.get_class($e).') '.$message));
-
+            $this->appendException($logger, $e);
             $build->updateStatus(Build::STATUS_ERROR);
         } finally {
             $build = $this->buildRepository->save($build);
@@ -89,6 +78,30 @@ class BuildHandler
         $notification = $build->getRequest()->getNotification();
         if (null !== $notification) {
             $this->notifier->notify($notification, $build);
+        }
+    }
+
+    private function appendException(Logger $logger, \Exception $e)
+    {
+        $message = $e->getMessage();
+        if ($e instanceof RequestException) {
+            if ($response = $e->getResponse()) {
+                $message .= '{'.$response->getStatusCode().'} ';
+
+                if ($body = $response->getBody()) {
+                    if ($body->isSeekable()) {
+                        $body->seek(0);
+                    }
+
+                    $message .= ' [' . $body->getContents() . ']';
+                }
+            }
+        }
+
+        $logger->append(new Text('PANIC ('.get_class($e).' - '.$e->getCode().') '.$message));
+
+        if (null !== $e->getPrevious()) {
+            $this->appendException($logger, $e->getPrevious());
         }
     }
 }
