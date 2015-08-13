@@ -3,6 +3,9 @@ Feature:
   As a developer
   I need to be able to see detailed logs of the river
 
+  Background:
+    Given there is 1 application images in the repository
+
   Scenario:
     Given I have a flow with a deploy task
     When a tide is started based on that workflow

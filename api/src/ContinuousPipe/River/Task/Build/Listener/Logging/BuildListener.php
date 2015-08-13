@@ -6,7 +6,6 @@ use ContinuousPipe\River\Task\Build\Event\BuildEvent;
 use ContinuousPipe\River\Task\Build\Event\BuildFailed;
 use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
 use LogStream\LoggerFactory;
-use LogStream\WrappedLog;
 
 class BuildListener
 {
@@ -33,7 +32,7 @@ class BuildListener
         }
 
         $logIdentifier = $request->getLogging()->getLogStream()->getParentLogIdentifier();
-        $logger = $this->loggerFactory->from(new WrappedLog($logIdentifier));
+        $logger = $this->loggerFactory->fromId($logIdentifier);
 
         if ($event instanceof BuildSuccessful) {
             $logger->success();

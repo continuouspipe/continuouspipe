@@ -27,6 +27,9 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\Task\Build\BuildTask;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
+use ContinuousPipe\River\Event\TideStarted;
+use Symfony\Component\Yaml\Yaml;
 
 class TideContext implements Context
 {
@@ -39,16 +42,6 @@ class TideContext implements Context
      * @var Uuid|null
      */
     private $tideUuid;
-
-    /**
-     * @var \ContinuousPipe\River\Tide
-     */
-    private $tide;
-
-    /**
-     * @var BuilderBuild|null
-     */
-    private $lastBuild;
 
     /**
      * @var MessageBus
@@ -121,7 +114,7 @@ class TideContext implements Context
             $this->aTideIsCreated();
         }
 
-        $this->commandBus->handle(new StartTideCommand($this->tideUuid));
+        $this->startTide();
     }
 
     /**
@@ -156,10 +149,7 @@ class TideContext implements Context
      */
     public function theTideShouldBeFailed()
     {
-        $events = $this->eventStore->findByTideUuid($this->tideUuid);
-        $numberOfImageBuildStartedEvents = count(array_filter($events, function(TideEvent $event) {
-            return $event instanceof TideFailed;
-        }));
+        $numberOfImageBuildStartedEvents = count($this->getEventsOfType(TideFailed::class));
 
         if (1 !== $numberOfImageBuildStartedEvents) {
             throw new \Exception(sprintf(
@@ -214,10 +204,7 @@ class TideContext implements Context
      */
     public function theTideShouldBeCreated()
     {
-        $events = $this->eventStore->findByTideUuid($this->tideUuid);
-        $numberOfTideStartedEvents = count(array_filter($events, function(TideEvent $event) {
-            return $event instanceof TideCreated;
-        }));
+        $numberOfTideStartedEvents = count($this->getEventsOfType(TideCreated::class));
 
         if (0 === $numberOfTideStartedEvents) {
             throw new \RuntimeException('Tide started event not found');
@@ -242,9 +229,60 @@ class TideContext implements Context
     public function aTideIsStartedBasedOnThatWorkflow()
     {
         $this->createTide();
-        $this->eventBus->handle(new \ContinuousPipe\River\Event\TideStarted(
+        $this->eventBus->handle(new TideStarted(
             $this->tideUuid
         ));
+    }
+
+    /**
+     * @Given a tide is started for the branch :branch
+     */
+    public function aTideIsStartedForTheBranch($branch)
+    {
+        $this->createTide($branch);
+        $this->startTide();
+    }
+
+    /**
+     * @Then the image tag :tag should be built
+     */
+    public function theImageTagShouldBeBuilt($tag)
+    {
+        $buildStartedEvents = $this->getEventsOfType(BuildStarted::class);
+        $matchingEvents = array_filter($buildStartedEvents, function(BuildStarted $event) use ($tag) {
+            $buildRequest = $event->getBuild()->getRequest();
+
+            return $buildRequest->getImage()->getTag() == $tag;
+        });
+
+        if (count($matchingEvents) == 0) {
+            throw new \RuntimeException('No matching build started events found');
+        }
+    }
+
+    /**
+     * @Then the deployed image tag should be :tag
+     */
+    public function theDeployedImageTagShouldBe($tag)
+    {
+        $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
+
+        $componentImage = 'image0:'.$tag;
+        $builtImages = array_map(function(DeploymentStarted $event) {
+            $dockerComposeContents = $event->getDeployment()->getRequest()->getDockerComposeContents();
+            $parsed = Yaml::parse($dockerComposeContents);
+            $component = current($parsed);
+
+            return $component['image'];
+        }, $deploymentStartedEvents);
+
+        if (!in_array($componentImage, $builtImages)) {
+            throw new \RuntimeException(sprintf(
+                'Image "%s" not found. Found %s',
+                $componentImage,
+                implode(', ', $builtImages)
+            ));
+        }
     }
 
     /**
@@ -264,28 +302,40 @@ class TideContext implements Context
     }
 
     /**
-     * @return \ContinuousPipe\River\Tide
+     * @param string $eventType
+     * @return TideEvent[] array
      */
-    public function getCurrentTide()
+    private function getEventsOfType($eventType)
     {
-        return $this->tide;
+        $events = $this->eventStore->findByTideUuid($this->tideUuid);
+
+        return array_values(array_filter($events, function(TideEvent $event) use ($eventType) {
+            return get_class($event) == $eventType || is_subclass_of($event, $eventType);
+        }));
     }
 
-    private function createTide()
+    private function createTide($branch = 'master')
     {
         $flow = $this->flowContext->getCurrentFlow();
 
-        $this->tide = $this->tideFactory->createFromCodeReference(
+        $tide = $this->tideFactory->createFromCodeReference(
             $flow,
             new CodeReference(
                 $flow->getContext()->getCodeRepository(),
-                'master'
+                sha1($branch),
+                $branch
             )
         );
-        $this->tideUuid = $this->tide->getContext()->getTideUuid();
 
-        foreach ($this->tide->popNewEvents() as $event) {
+        $this->tideUuid = $tide->getContext()->getTideUuid();
+
+        foreach ($tide->popNewEvents() as $event) {
             $this->eventBus->handle($event);
         }
+    }
+
+    private function startTide()
+    {
+        $this->commandBus->handle(new StartTideCommand($this->tideUuid));
     }
 }

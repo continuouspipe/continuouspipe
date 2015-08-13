@@ -15,6 +15,6 @@ class EmptyBuilderClient implements BuilderClient
      */
     public function build(BuildRequest $buildRequest, User $user)
     {
-        return new BuilderBuild((string) Uuid::uuid1(), BuilderBuild::STATUS_PENDING);
+        return new BuilderBuild((string) Uuid::uuid1(), BuilderBuild::STATUS_PENDING, $buildRequest);
     }
 }

@@ -34,13 +34,15 @@ class BuilderBuild
     private $request;
 
     /**
-     * @param string $uuid
-     * @param string $status
+     * @param string       $uuid
+     * @param string       $status
+     * @param BuildRequest $request
      */
-    public function __construct($uuid, $status)
+    public function __construct($uuid, $status, BuildRequest $request = null)
     {
         $this->uuid = $uuid;
         $this->status = $status;
+        $this->request = $request;
     }
 
     /**
