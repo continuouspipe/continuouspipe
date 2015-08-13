@@ -48,9 +48,9 @@ class EnvironmentContext implements Context
     }
 
     /**
-     * @When I send a valid environment creation request
+     * @When I send a valid deployment request
      */
-    public function iSendAValidEnvironmentCreationRequest()
+    public function iSendAValidDeploymentRequest()
     {
         $this->providerContext->iHaveAFakeProviderNamed('foo');
 
@@ -61,7 +61,7 @@ class EnvironmentContext implements Context
             'dockerComposeContents' => $simpleAppComposeContents,
         ]);
 
-        $this->response = $this->kernel->handle(Request::create('/environments', 'PUT', [], [], [], [
+        $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json'
         ], $contents));
 

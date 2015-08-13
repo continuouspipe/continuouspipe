@@ -1,10 +1,10 @@
 <?php
 
-namespace ContinuousPipe\Pipe\Request;
+namespace ContinuousPipe\Pipe;
 
 use JMS\Serializer\Annotation as JMS;
 
-class EnvironmentRequest
+class DeploymentRequest
 {
     /**
      * Environment name.
@@ -13,7 +13,7 @@ class EnvironmentRequest
      *
      * @var string
      */
-    private $name;
+    private $environmentName;
 
     /**
      * Name of the provider.
@@ -38,9 +38,9 @@ class EnvironmentRequest
     /**
      * @return string
      */
-    public function getName()
+    public function getEnvironmentName()
     {
-        return $this->name;
+        return $this->environmentName;
     }
 
     /**

@@ -3,6 +3,9 @@ Feature:
   As a devops
   I need to manage Kubernetes providers
 
+  Background:
+    Given I am authenticated
+
   Scenario: I can create a kubernetes provider
     When I send a provider creation request for type "kubernetes" with body:
     """

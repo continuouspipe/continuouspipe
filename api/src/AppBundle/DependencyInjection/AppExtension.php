@@ -18,6 +18,7 @@ class AppExtension extends Extension
         $loader->load('controllers.xml');
         $loader->load('docker-compose.xml');
         $loader->load('adapter.xml');
+        $loader->load('deployment.xml');
         $loader->load('kubernetes.xml');
     }
 }

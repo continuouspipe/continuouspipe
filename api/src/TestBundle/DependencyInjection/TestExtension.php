@@ -15,6 +15,7 @@ class TestExtension extends Extension
     public function load(array $config, ContainerBuilder $container)
     {
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('deployment.xml');
         $loader->load('fake-adapter.xml');
         $loader->load('kubernetes.xml');
     }
