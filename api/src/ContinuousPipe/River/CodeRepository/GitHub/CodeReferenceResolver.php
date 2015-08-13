@@ -5,7 +5,6 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 use ContinuousPipe\River\CodeReference;
 use GitHub\WebHook\Event\PullRequestEvent;
 use GitHub\WebHook\Event\PushEvent;
-use GitHub\WebHook\Model\CommitReference;
 use GitHub\WebHook\Model\Repository;
 
 class CodeReferenceResolver
@@ -28,6 +27,7 @@ class CodeReferenceResolver
 
     /**
      * @param PullRequestEvent $event
+     *
      * @return CodeReference
      */
     public function fromPullRequestEvent(PullRequestEvent $event)
@@ -43,8 +43,9 @@ class CodeReferenceResolver
 
     /**
      * @param Repository $repository
-     * @param string $branch
-     * @param string $sha1
+     * @param string     $branch
+     * @param string     $sha1
+     *
      * @return CodeReference
      */
     private function create(Repository $repository, $branch, $sha1)

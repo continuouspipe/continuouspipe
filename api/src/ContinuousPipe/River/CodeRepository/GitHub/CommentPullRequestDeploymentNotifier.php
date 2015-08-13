@@ -36,13 +36,14 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
             $repository->getName(),
             $pullRequest->getNumber(),
             [
-                'body' => $contents
+                'body' => $contents,
             ]
         );
     }
 
     /**
      * @param Deployment $deployment
+     *
      * @return string
      */
     private function getCommentContents(Deployment $deployment)

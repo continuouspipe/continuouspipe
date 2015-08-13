@@ -32,10 +32,10 @@ class RepositoryWebHookManager
     private $riverPublicUrl;
 
     /**
-     * @param WebHookManager $webHookManager
+     * @param WebHookManager        $webHookManager
      * @param UrlGeneratorInterface $urlGenerator
-     * @param string $githubSecret
-     * @param string $riverPublicUrl
+     * @param string                $githubSecret
+     * @param string                $riverPublicUrl
      */
     public function __construct(WebHookManager $webHookManager, UrlGeneratorInterface $urlGenerator, $githubSecret, $riverPublicUrl)
     {

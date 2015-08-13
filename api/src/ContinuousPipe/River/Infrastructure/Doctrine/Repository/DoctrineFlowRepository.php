@@ -109,7 +109,9 @@ class DoctrineFlowRepository implements FlowRepository
 
     /**
      * @param Uuid $uuid
+     *
      * @return FlowDto
+     *
      * @throws FlowNotFound
      */
     public function getDtoByUuid(Uuid $uuid)

@@ -12,8 +12,8 @@ interface PullRequestDeploymentNotifier
      * Notifies that the deployment is successful for this pull-request.
      *
      * @param DeploymentSuccessful $deploymentSuccessful
-     * @param Repository $repository
-     * @param PullRequest $pullRequest
+     * @param Repository           $repository
+     * @param PullRequest          $pullRequest
      */
     public function notify(DeploymentSuccessful $deploymentSuccessful, Repository $repository, PullRequest $pullRequest);
 }

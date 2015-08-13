@@ -45,11 +45,11 @@ class WebHookHandler
     private $pullRequestDeploymentNotifier;
 
     /**
-     * @param TideFactory $tideFactory
-     * @param CodeReferenceResolver $codeReferenceResolver
-     * @param MessageBus $eventBus
-     * @param TideRepository $tideRepository
-     * @param EventStore $eventStore
+     * @param TideFactory                   $tideFactory
+     * @param CodeReferenceResolver         $codeReferenceResolver
+     * @param MessageBus                    $eventBus
+     * @param TideRepository                $tideRepository
+     * @param EventStore                    $eventStore
      * @param PullRequestDeploymentNotifier $pullRequestDeploymentNotifier
      */
     public function __construct(TideFactory $tideFactory, CodeReferenceResolver $codeReferenceResolver, MessageBus $eventBus, TideRepository $tideRepository, EventStore $eventStore, PullRequestDeploymentNotifier $pullRequestDeploymentNotifier)
@@ -73,7 +73,7 @@ class WebHookHandler
         $event = $gitHubRequest->getEvent();
         if ($event instanceof PushEvent) {
             return $this->handlePushEvent($flow, $event);
-        } else if ($event instanceof PullRequestEvent) {
+        } elseif ($event instanceof PullRequestEvent) {
             return $this->handlePullRequestEvent($flow, $event);
         }
 
@@ -99,13 +99,14 @@ class WebHookHandler
         }
 
         return [
-            $this->tideRepository->find($tide->getUuid())
+            $this->tideRepository->find($tide->getUuid()),
         ];
     }
 
     /**
-     * @param Flow $flow
+     * @param Flow             $flow
      * @param PullRequestEvent $event
+     *
      * @return \ContinuousPipe\River\View\Tide[]
      */
     private function handlePullRequestEvent(Flow $flow, PullRequestEvent $event)
@@ -115,7 +116,7 @@ class WebHookHandler
 
         foreach ($tides as $tide) {
             $tideEvents = $this->eventStore->findByTideUuid($tide->getUuid());
-            $deploymentSuccessfulEvents = array_filter($tideEvents, function(TideEvent $event) {
+            $deploymentSuccessfulEvents = array_filter($tideEvents, function (TideEvent $event) {
                 return $event instanceof DeploymentSuccessful;
             });
 

@@ -23,7 +23,7 @@ class GitHubPullRequestResolver implements PullRequestResolver
 
     /**
      * @param GitHubClientFactory $gitHubClientFactory
-     * @param Serializer $serializer
+     * @param Serializer          $serializer
      */
     public function __construct(GitHubClientFactory $gitHubClientFactory, Serializer $serializer)
     {
@@ -43,20 +43,21 @@ class GitHubPullRequestResolver implements PullRequestResolver
             $gitHubRepository->getOwner()->getLogin(),
             $gitHubRepository->getName(),
             [
-                'state' => 'open'
+                'state' => 'open',
             ]
         );
 
         $jsonEncoded = json_encode($rawPullRequests);
         $pullRequests = $this->serializer->deserialize($jsonEncoded, 'array<'.PullRequest::class.'>', 'json');
 
-        return array_values(array_filter($pullRequests, function(PullRequest $pullRequest) use ($codeReference) {
+        return array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
             return $codeReference->getCommitSha() == $pullRequest->getHead()->getSha1();
         }));
     }
 
     /**
      * @param CodeReference $codeReference
+     *
      * @return \GitHub\WebHook\Model\Repository
      */
     private function getGitHubRepository(CodeReference $codeReference)

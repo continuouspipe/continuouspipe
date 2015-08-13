@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\CodeRepository\GitHub\WebHookHandler;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\View\TideRepository;
 use GitHub\WebHook\GitHubRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

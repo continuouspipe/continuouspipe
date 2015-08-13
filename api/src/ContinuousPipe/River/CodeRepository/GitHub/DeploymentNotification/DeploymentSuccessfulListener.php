@@ -30,10 +30,10 @@ class DeploymentSuccessfulListener
     private $userRepository;
 
     /**
-     * @param PullRequestResolver $pullRequestResolver
-     * @param TideRepository $tideRepository
+     * @param PullRequestResolver           $pullRequestResolver
+     * @param TideRepository                $tideRepository
      * @param PullRequestDeploymentNotifier $pullRequestDeploymentNotifier
-     * @param UserRepository $userRepository
+     * @param UserRepository                $userRepository
      */
     public function __construct(PullRequestResolver $pullRequestResolver, TideRepository $tideRepository, PullRequestDeploymentNotifier $pullRequestDeploymentNotifier, UserRepository $userRepository)
     {
