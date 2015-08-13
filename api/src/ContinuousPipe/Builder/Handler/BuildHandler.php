@@ -9,6 +9,7 @@ use ContinuousPipe\Builder\Command\BuildCommand;
 use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Logging\BuildLoggerFactory;
 use ContinuousPipe\Builder\Notifier;
+use GuzzleHttp\Exception\RequestException;
 use LogStream\Node\Text;
 
 class BuildHandler
@@ -67,7 +68,18 @@ class BuildHandler
         } catch (DockerException $e) {
             $build->updateStatus(Build::STATUS_ERROR);
         } catch (\Exception $e) {
-            $logger->append(new Text('PANIC ('.get_class($e).') '.$e->getMessage()));
+            $message = $e->getMessage();
+            if ($e instanceof RequestException) {
+                if ($e->getResponse() && ($body = $e->getResponse()->getBody())) {
+                    if ($body->isSeekable()) {
+                        $body->seek(0);
+                    }
+
+                    $message .= '['.$body->getContents().']';
+                }
+            }
+
+            $logger->append(new Text('PANIC ('.get_class($e).') '.$message));
 
             $build->updateStatus(Build::STATUS_ERROR);
         } finally {
