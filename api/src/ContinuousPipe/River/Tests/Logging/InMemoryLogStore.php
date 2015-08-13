@@ -53,6 +53,7 @@ class InMemoryLogStore
 
     /**
      * @param string $id
+     *
      * @return Log
      */
     public function findById($id)

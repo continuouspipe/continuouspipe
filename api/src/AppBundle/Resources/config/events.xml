@@ -14,7 +14,7 @@
         <service id="river.event_bus.middleware.tide_event_store" class="ContinuousPipe\River\EventBus\TideEventStoreMiddleware">
             <argument type="service" id="river.event_store" />
 
-            <tag name="event_bus_middleware" />
+            <tag name="event_bus_middleware" priority="10" />
         </service>
     </services>
 </container>

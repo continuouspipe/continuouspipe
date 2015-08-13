@@ -19,7 +19,7 @@ class DeploymentEvent implements TideEvent
     private $deployment;
 
     /**
-     * @param Uuid $tideUuid
+     * @param Uuid       $tideUuid
      * @param Deployment $deployment
      */
     public function __construct(Uuid $tideUuid, Deployment $deployment)

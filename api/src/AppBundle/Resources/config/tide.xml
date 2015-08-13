@@ -13,7 +13,7 @@
         <service id="river.event_bus.middleware.tide_saga_apply" class="ContinuousPipe\River\EventBus\TideSagaApplyMiddleware">
             <argument type="service" id="river.tide.saga" />
 
-            <tag name="event_bus_middleware" />
+            <tag name="event_bus_middleware" priority="0" />
         </service>
 
         <service id="river.repository.tide" class="ContinuousPipe\River\Repository\EventBusTideRepository">

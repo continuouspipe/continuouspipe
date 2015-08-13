@@ -21,9 +21,9 @@ class Tide
     private $locked = false;
 
     /**
-     * @var TideEvent[]
+     * @var EventCollection
      */
-    private $events = [];
+    private $events;
 
     /**
      * @var TaskList
@@ -46,6 +46,7 @@ class Tide
     public function __construct(TaskList $taskList)
     {
         $this->tasks = $taskList;
+        $this->events = new EventCollection();
     }
 
     /**
@@ -101,17 +102,19 @@ class Tide
      */
     public function apply(TideEvent $event)
     {
+        $this->removeEventIfAlreadyInCollection($event);
+
         if ($event instanceof TideCreated) {
             $this->applyTideCreated($event);
+        } elseif (!$event instanceof TideFailed) {
+            $this->tasks->apply($event);
+
+            if (($event instanceof TideStarted || $this->isRunning()) && !$this->locked) {
+                $this->handleTasks($event);
+            }
         }
 
-        $this->tasks->apply($event);
-
-        if ($this->isRunning() && !$this->locked) {
-            $this->handleTasks($event);
-        }
-
-        $this->events[] = $event;
+        $this->events->add($event);
     }
 
     /**
@@ -185,7 +188,7 @@ class Tide
      */
     private function isStarted()
     {
-        return 0 < $this->numberOfEventsOfType(TideStarted::class);
+        return 0 < $this->events->numberOfEventsOfType(TideStarted::class);
     }
 
     /**
@@ -193,7 +196,7 @@ class Tide
      */
     private function isFailed()
     {
-        return 0 < $this->numberOfEventsOfType(TideFailed::class);
+        return 0 < $this->events->numberOfEventsOfType(TideFailed::class);
     }
 
     /**
@@ -201,20 +204,15 @@ class Tide
      */
     private function isSuccessful()
     {
-        return 0 < $this->numberOfEventsOfType(TideSuccessful::class);
+        return 0 < $this->events->numberOfEventsOfType(TideSuccessful::class);
     }
 
     /**
-     * @param string $eventType
-     *
-     * @return int
+     * @param $event
      */
-    private function numberOfEventsOfType($eventType)
+    private function removeEventIfAlreadyInCollection($event)
     {
-        $tideFinishedEvents = array_filter($this->events, function (TideEvent $event) use ($eventType) {
-            return get_class($event) == $eventType || is_subclass_of($event, $eventType);
-        });
-
-        return count($tideFinishedEvents);
+        $this->tasks->removeEventIfAlreadyInCollection($event);
+        $this->events->removeIfExists($event);
     }
 }

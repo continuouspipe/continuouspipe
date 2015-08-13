@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\TideContext;
 
 interface Task
@@ -52,4 +53,9 @@ interface Task
      * Clear the state of the task, as it's being reused.
      */
     public function clear();
+
+    /**
+     * @return EventCollection
+     */
+    public function getEvents();
 }

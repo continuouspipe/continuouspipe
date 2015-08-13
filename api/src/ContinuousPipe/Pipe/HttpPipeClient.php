@@ -33,10 +33,10 @@ class HttpPipeClient implements Client
     private $baseUrl;
 
     /**
-     * @param GuzzleClient $client
-     * @param Serializer $serializer
+     * @param GuzzleClient        $client
+     * @param Serializer          $serializer
      * @param JWTManagerInterface $jwtManager
-     * @param string $baseUrl
+     * @param string              $baseUrl
      */
     public function __construct(GuzzleClient $client, Serializer $serializer, JWTManagerInterface $jwtManager, $baseUrl)
     {
@@ -52,7 +52,7 @@ class HttpPipeClient implements Client
     public function start(DeploymentRequest $deploymentRequest, User $user)
     {
         $token = $this->jwtManager->create(new SecurityUser($user));
-        $response = $this->client->put($this->baseUrl.'/environments', [
+        $response = $this->client->post($this->baseUrl.'/deployments', [
             'body' => $this->serializer->serialize($deploymentRequest, 'json'),
             'headers' => [
                 'Content-Type' => 'application/json',

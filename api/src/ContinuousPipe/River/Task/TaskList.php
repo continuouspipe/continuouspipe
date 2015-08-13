@@ -86,4 +86,14 @@ class TaskList
             return $successful && $task->isSuccessful();
         }, true);
     }
+
+    /**
+     * @param $event
+     */
+    public function removeEventIfAlreadyInCollection($event)
+    {
+        foreach ($this->tasks as $task) {
+            $task->getEvents()->removeIfExists($event);
+        }
+    }
 }

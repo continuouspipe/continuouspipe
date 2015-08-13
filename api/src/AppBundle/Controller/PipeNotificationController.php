@@ -2,10 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\River\Task\Build\Event\BuildFailed;
-use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use Rhumsaa\Uuid\Uuid;

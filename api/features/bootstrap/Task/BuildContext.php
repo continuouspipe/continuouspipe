@@ -46,11 +46,6 @@ class BuildContext implements Context
     private $eventBus;
 
     /**
-     * @var BuilderBuild
-     */
-    private $lastBuild;
-
-    /**
      * @param EventStore $eventStore
      * @param MessageBus $eventBus
      */
@@ -153,14 +148,14 @@ class BuildContext implements Context
      */
     public function anImageBuildWasStarted()
     {
-        $this->lastBuild = new BuilderBuild(
+        $build = new BuilderBuild(
             (string) Uuid::uuid1(),
             BuilderBuild::STATUS_PENDING
         );
 
-        $this->eventStore->add(new BuildStarted(
+        $this->eventBus->handle(new BuildStarted(
             $this->tideContext->getCurrentTideUuid(),
-            $this->lastBuild
+            $build
         ));
     }
 
@@ -171,7 +166,18 @@ class BuildContext implements Context
     {
         $this->eventBus->handle(new BuildFailed(
             $this->tideContext->getCurrentTideUuid(),
-            $this->lastBuild
+            $this->getLastBuild()
+        ));
+    }
+
+    /**
+     * @When the build succeed
+     */
+    public function theBuildSucceed()
+    {
+        $this->eventBus->handle(new BuildSuccessful(
+            $this->tideContext->getCurrentTideUuid(),
+            $this->getLastBuild()
         ));
     }
 
@@ -205,7 +211,7 @@ class BuildContext implements Context
     {
         $this->eventBus->handle(new BuildSuccessful(
             $this->tideContext->getCurrentTideUuid(),
-            $this->lastBuild
+            $this->getLastBuild()
         ));
     }
 
@@ -315,5 +321,27 @@ class BuildContext implements Context
         });
 
         return current($imageBuildsStartedEvents);
+    }
+
+    /**
+     * @return BuildStarted[]
+     */
+    private function getBuildStartedEvents()
+    {
+        $events = $this->eventStore->findByTideUuid(
+            $this->tideContext->getCurrentTideUuid()
+        );
+
+        return array_values(array_filter($events, function(TideEvent $event) {
+            return $event instanceof BuildStarted;
+        }));
+    }
+
+    /**
+     * @return BuilderBuild
+     */
+    private function getLastBuild()
+    {
+        return $this->getBuildStartedEvents()[0]->getBuild();
     }
 }

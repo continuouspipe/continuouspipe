@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Tests\Logging;
 
 use LogStream\EmptyLogger;
 use LogStream\Log;
-use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Container;
 

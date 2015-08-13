@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\Pipe\Client;
 
-use ContinuousPipe\User\User;
 use JMS\Serializer\Annotation as JMS;
 use Rhumsaa\Uuid\Uuid;
 
@@ -28,16 +27,16 @@ class Deployment
     private $status;
 
     /**
-     * @JMS\Type("ContinuousPipe\Pipe\DeploymentRequest")
+     * @JMS\Type("ContinuousPipe\Pipe\Client\DeploymentRequest")
      *
      * @var DeploymentRequest
      */
     private $request;
 
     /**
-     * @param Uuid $uuid
+     * @param Uuid              $uuid
      * @param DeploymentRequest $request
-     * @param string $status
+     * @param string            $status
      */
     public function __construct(Uuid $uuid, DeploymentRequest $request, $status)
     {

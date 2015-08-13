@@ -10,7 +10,8 @@ interface Client
 {
     /**
      * @param DeploymentRequest $deploymentRequest
-     * @param User $user
+     * @param User              $user
+     *
      * @return Deployment
      */
     public function start(DeploymentRequest $deploymentRequest, User $user);

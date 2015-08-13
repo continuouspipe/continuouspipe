@@ -25,11 +25,13 @@ class DeployTask extends EventDrivenTask
     private $loggerFactory;
 
     /**
-     * @param MessageBus $commandBus
+     * @param MessageBus    $commandBus
      * @param LoggerFactory $loggerFactory
      */
     public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory)
     {
+        parent::__construct();
+
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
     }

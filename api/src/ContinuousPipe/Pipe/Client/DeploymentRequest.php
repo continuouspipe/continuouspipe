@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Pipe\Client;
 
 use JMS\Serializer\Annotation as JMS;
-use LogStream\Log;
 
 class DeploymentRequest
 {

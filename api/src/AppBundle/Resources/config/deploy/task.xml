@@ -38,6 +38,7 @@
             <argument type="service" id="river.task.deploy.deployment_request_factory" />
             <argument type="service" id="river.pipe_client" />
             <argument type="service" id="simple_bus.event_bus" />
+            <argument type="service" id="log_stream.logger_factory" />
 
             <tag name="command_handler" handles="ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand" />
         </service>

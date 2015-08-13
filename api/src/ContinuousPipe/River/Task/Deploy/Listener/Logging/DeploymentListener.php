@@ -6,7 +6,6 @@ use ContinuousPipe\River\Task\Deploy\Event\DeploymentEvent;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use LogStream\LoggerFactory;
-use LogStream\WrappedLog;
 
 class DeploymentListener
 {
@@ -37,6 +36,7 @@ class DeploymentListener
 
     /**
      * @param DeploymentEvent $event
+     *
      * @return \LogStream\Logger
      */
     private function getLogger(DeploymentEvent $event)

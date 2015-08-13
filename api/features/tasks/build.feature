@@ -17,15 +17,21 @@ Feature:
     When the build is failing
     Then the build task should be failed
 
-  Scenario: The build of images wait all the images to be built
+  Scenario:
+    Given there is 1 application images in the repository
     When a build task is started
-    And 2 images builds were started
+    When the build succeed
+    Then the build task should be successful
+
+  Scenario: The build of images wait all the images to be built
+    Given there is 2 application images in the repository
+    When a build task is started
     When one image build is successful
     Then the build task should be running
 
   Scenario: The build of images is failed if one of the image build failed
+    Given there is 2 application images in the repository
     When a build task is started
-    And 2 images builds were started
     When one image build is successful
     And one image build is failed
     Then the build task should be failed
@@ -33,7 +39,6 @@ Feature:
   Scenario: The build of images only succeed if all images are successfully built
     Given there is 2 application images in the repository
     And a build task is started
-    And 2 images builds were started
     When 2 image builds are successful
     Then the image should be successfully built
     And the build task should be successful

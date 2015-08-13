@@ -13,7 +13,8 @@ class DeployContext extends TideContext
 
     /**
      * @param Context $parent
-     * @param Log $log
+     * @param Log     $log
+     *
      * @return DeployContext
      */
     public static function createDeployContext(Context $parent, Log $log)

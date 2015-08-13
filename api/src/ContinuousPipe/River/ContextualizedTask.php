@@ -100,4 +100,12 @@ class ContextualizedTask implements Task
     {
         return $this->task;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEvents()
+    {
+        return $this->task->getEvents();
+    }
 }

@@ -34,6 +34,8 @@ class BuildTask extends EventDrivenTask
      */
     public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory)
     {
+        parent::__construct();
+
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
     }
@@ -93,7 +95,7 @@ class BuildTask extends EventDrivenTask
         $numberOfStartedBuilds = count($buildsStartedEvent->getBuildRequests());
         $numberOfSuccessfulBuilds = count($this->getEventsOfType(BuildSuccessful::class));
 
-        return $numberOfSuccessfulBuilds == $numberOfStartedBuilds;
+        return $numberOfSuccessfulBuilds >= $numberOfStartedBuilds;
     }
 
     /**

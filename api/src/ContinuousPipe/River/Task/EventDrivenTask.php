@@ -3,13 +3,14 @@
 namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\EventCollection;
 
 abstract class EventDrivenTask implements Task
 {
     /**
-     * @var array
+     * @var EventCollection
      */
-    private $events = [];
+    private $events;
 
     /**
      * @var array
@@ -17,11 +18,19 @@ abstract class EventDrivenTask implements Task
     protected $newEvents = [];
 
     /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->events = new EventCollection();
+    }
+
+    /**
      * @param TideEvent $event
      */
     public function apply(TideEvent $event)
     {
-        $this->events[] = $event;
+        $this->events->add($event);
     }
 
     /**
@@ -31,7 +40,7 @@ abstract class EventDrivenTask implements Task
      */
     protected function getEventsOfType($className)
     {
-        $events = array_filter($this->events, function (TideEvent $event) use ($className) {
+        $events = array_filter($this->events->getEvents(), function (TideEvent $event) use ($className) {
             return get_class($event) == $className || is_subclass_of($event, $className);
         });
 
@@ -72,7 +81,15 @@ abstract class EventDrivenTask implements Task
      */
     public function clear()
     {
-        $this->events = [];
+        $this->events->clear();
         $this->newEvents = [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEvents()
+    {
+        return $this->events;
     }
 }
