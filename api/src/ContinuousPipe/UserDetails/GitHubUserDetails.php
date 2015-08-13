@@ -40,6 +40,7 @@ class GitHubUserDetails implements UserDetails
 
     /**
      * @param string $token
+     * @return GuzzleHttp\Message\Response
      */
     private function getEmailAddresses($token)
     {
