@@ -140,7 +140,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
 
         try {
             $namespace = $namespaceRepository->findOneByName($namespaceName);
-            $logger->append(new Text('Reusing existing namespace "%s"', $namespaceName));
+            $logger->append(new Text(sprintf('Reusing existing namespace "%s"', $namespaceName)));
         } catch (NamespaceNotFound $e) {
             $namespace = new KubernetesNamespace(new ObjectMetadata($environment->getIdentifier()));
             $namespace = $this->client->getNamespaceRepository()->create($namespace);
