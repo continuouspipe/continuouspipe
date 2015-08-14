@@ -8,6 +8,7 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\TideFactory;
 use ContinuousPipe\River\View\TideRepository;
+use GitHub\WebHook\Event\PingEvent;
 use GitHub\WebHook\Event\PullRequestEvent;
 use GitHub\WebHook\Event\PushEvent;
 use GitHub\WebHook\GitHubRequest;
@@ -66,12 +67,14 @@ class WebHookHandler
      * @param Flow          $flow
      * @param GitHubRequest $gitHubRequest
      *
-     * @return \ContinuousPipe\River\View\Tide[]
+     * @return \ContinuousPipe\River\View\Tide[]|Flow
      */
     public function handle(Flow $flow, GitHubRequest $gitHubRequest)
     {
         $event = $gitHubRequest->getEvent();
-        if ($event instanceof PushEvent) {
+        if ($event instanceof PingEvent) {
+            return $flow;
+        } else if ($event instanceof PushEvent) {
             return $this->handlePushEvent($flow, $event);
         } elseif ($event instanceof PullRequestEvent) {
             return $this->handlePullRequestEvent($flow, $event);
