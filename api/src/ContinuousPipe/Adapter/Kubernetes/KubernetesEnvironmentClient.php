@@ -68,7 +68,15 @@ class KubernetesEnvironmentClient implements EnvironmentClient
 
             if ($objectRepository->exists($objectName)) {
                 $logger->append(new Text('Updating '.$this->getObjectTypeAndName($object)));
+
                 $objectRepository->update($object);
+
+                // Has an extremely simple RC-update feature, we can delete matching RC's pods
+                // Wait the "real" rolling-update feature
+                // @link https://github.com/sroze/continuouspipe/issues/54
+                if ($object instanceof ReplicationController) {
+                    $this->deleteReplicationControllerPods($namespaceClient, $object);
+                }
             } else {
                 $logger->append(new Text('Creating '.$this->getObjectTypeAndName($object)));
                 $objectRepository->create($object);
@@ -266,5 +274,23 @@ class KubernetesEnvironmentClient implements EnvironmentClient
         }
 
         throw new \Exception('No status found');
+    }
+
+    /**
+     * Delete RC's pods.
+     *
+     * That will force the replication controller to recreate them and pull the new image.
+     *
+     * @param NamespaceClient $namespaceClient
+     * @param ReplicationController $object
+     */
+    private function deleteReplicationControllerPods(NamespaceClient $namespaceClient, ReplicationController $object)
+    {
+        $podRepository = $namespaceClient->getPodRepository();
+        $pods = $podRepository->findByReplicationController($object);
+
+        foreach ($pods as $pod) {
+            $podRepository->delete($pod);
+        }
     }
 }
