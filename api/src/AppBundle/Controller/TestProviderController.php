@@ -44,7 +44,7 @@ class TestProviderController extends Controller
         $environments = $environmentClient->findAll();
 
         return [
-            'message' => 'Successfully got environements',
+            'message' => 'Successfully got environments',
             'environments' => $environments,
         ];
     }

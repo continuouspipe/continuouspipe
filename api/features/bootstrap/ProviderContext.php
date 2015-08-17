@@ -44,7 +44,7 @@ class ProviderContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Given I have a fake provider named :name
+     * @Given I have a provider named :name
      */
     public function iHaveAFakeProviderNamed($name)
     {
@@ -52,7 +52,7 @@ class ProviderContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Then I should see this fake provider :name in the list of registered providers
+     * @Then I should see this provider :name in the list of registered providers
      */
     public function iShouldSeeThisFakeProviderInTheListOfRegisteredProviders($name)
     {
@@ -110,6 +110,30 @@ class ProviderContext implements Context, SnippetAcceptingContext
         if (0 === count($kubernetesProviders)) {
             throw new \RuntimeException(sprintf(
                 'Expected kubernetes providers but found 0'
+            ));
+        }
+    }
+
+    /**
+     * @When I test the provider :name
+     */
+    public function iTestThisProvider($name)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/providers/%s/test', urlencode('fake/'.$name)),
+            'POST'
+        ));
+    }
+
+    /**
+     * @Then I should see that the provider is valid
+     */
+    public function iShouldSeeThatTheProviderIsValid()
+    {
+        if ($this->response->getStatusCode() != 200) {
+            throw new \LogicException(sprintf(
+                'Expected response code to be 200, got %d',
+                $this->response->getStatusCode()
             ));
         }
     }
