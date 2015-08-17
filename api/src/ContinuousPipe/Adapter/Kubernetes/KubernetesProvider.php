@@ -22,9 +22,9 @@ class KubernetesProvider implements Provider
     private $user;
 
     /**
-     * @param string $identifier
+     * @param string  $identifier
      * @param Cluster $cluster
-     * @param User $user
+     * @param User    $user
      */
     public function __construct($identifier, Cluster $cluster, User $user)
     {

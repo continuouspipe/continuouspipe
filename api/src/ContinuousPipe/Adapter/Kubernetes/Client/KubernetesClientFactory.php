@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Client;
 
 use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
-use JMS\Serializer\Serializer;
 use Kubernetes\Client\Client;
 
 interface KubernetesClientFactory

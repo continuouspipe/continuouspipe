@@ -25,7 +25,7 @@ class IdentifierNamingStrategy implements NamingStrategy
     public function getLabelsByComponent(Component $component)
     {
         $labels = [
-            new Label('component-identifier', $component->getIdentifier())
+            new Label('component-identifier', $component->getIdentifier()),
         ];
 
         foreach ($component->getLabels() as $key => $value) {

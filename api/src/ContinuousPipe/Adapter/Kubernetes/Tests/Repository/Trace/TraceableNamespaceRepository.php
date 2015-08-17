@@ -63,7 +63,6 @@ class TraceableNamespaceRepository implements NamespaceRepository
 
     /**
      * Clear the traces.
-     *
      */
     public function clear()
     {

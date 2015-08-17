@@ -10,6 +10,8 @@
         <service id="pipe.adapter.kubernetes.in_memory.pod_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryPodRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.service_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryServiceRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.replication_controller_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryReplicationControllerRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.secret_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemorySecretRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.service_account_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryServiceAccountRepository" />
 
         <service id="pipe.adapter.kubernetes.traceable.namespace_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.namespace_repository" />
@@ -17,11 +19,19 @@
         <service id="pipe.adapter.kubernetes.traceable.replication_controller_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableReplicationControllerRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.replication_controller_repository" />
         </service>
+        <service id="pipe.adapter.kubernetes.traceable.secret_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableSecretRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.secret_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.traceable.service_account_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceAccountRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_account_repository" />
+        </service>
 
         <service id="pipe.adapter.kubernetes.namespace_client" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedRepositoriesNamespaceClient">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.pod_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.traceable.replication_controller_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.secret_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.service_account_repository" />
         </service>
 
         <service id="pipe.adapter.kubernetes.adapter" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedRepositoriesAdapter">

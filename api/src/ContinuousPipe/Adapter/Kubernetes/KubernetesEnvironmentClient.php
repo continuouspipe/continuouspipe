@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Adapter\Kubernetes;
 
 use ContinuousPipe\Adapter\EnvironmentClient;
+use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\DeploymentContext;
@@ -22,6 +23,7 @@ use Kubernetes\Client\Repository\WrappedObjectRepository;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
+use SimpleBus\Message\Bus\MessageBus;
 
 class KubernetesEnvironmentClient implements EnvironmentClient
 {
@@ -34,21 +36,29 @@ class KubernetesEnvironmentClient implements EnvironmentClient
      * @var EnvironmentTransformer
      */
     private $environmentTransformer;
+
     /**
      * @var LoggerFactory
      */
     private $loggerFactory;
 
     /**
+     * @var MessageBus
+     */
+    private $eventBus;
+
+    /**
      * @param Client                 $client
      * @param EnvironmentTransformer $environmentTransformer
      * @param LoggerFactory          $loggerFactory
+     * @param MessageBus             $eventBus
      */
-    public function __construct(Client $client, EnvironmentTransformer $environmentTransformer, LoggerFactory $loggerFactory)
+    public function __construct(Client $client, EnvironmentTransformer $environmentTransformer, LoggerFactory $loggerFactory, MessageBus $eventBus)
     {
         $this->client = $client;
         $this->environmentTransformer = $environmentTransformer;
         $this->loggerFactory = $loggerFactory;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -158,6 +168,8 @@ class KubernetesEnvironmentClient implements EnvironmentClient
             $namespace = new KubernetesNamespace(new ObjectMetadata($environment->getIdentifier()));
             $namespace = $this->client->getNamespaceRepository()->create($namespace);
             $logger->append(new Text(sprintf('Created new namespace "%s"', $namespaceName)));
+
+            $this->eventBus->handle(new NamespaceCreated($namespace, $deploymentContext));
         }
 
         return $namespace;
@@ -286,7 +298,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
      *
      * That will force the replication controller to recreate them and pull the new image.
      *
-     * @param NamespaceClient $namespaceClient
+     * @param NamespaceClient       $namespaceClient
      * @param ReplicationController $object
      */
     private function deleteReplicationControllerPods(NamespaceClient $namespaceClient, ReplicationController $object)
@@ -301,6 +313,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
 
     /**
      * @param KubernetesObject $object
+     *
      * @return bool
      */
     private function isLocked(KubernetesObject $object)

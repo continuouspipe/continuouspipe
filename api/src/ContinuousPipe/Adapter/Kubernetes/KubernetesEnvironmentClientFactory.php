@@ -7,6 +7,7 @@ use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Adapter\Provider;
 use LogStream\LoggerFactory;
+use SimpleBus\Message\Bus\MessageBus;
 
 class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 {
@@ -26,15 +27,22 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
     private $loggerFactory;
 
     /**
+     * @var MessageBus
+     */
+    private $eventBus;
+
+    /**
      * @param KubernetesClientFactory $clientFactory
      * @param EnvironmentTransformer  $environmentTransformer
      * @param LoggerFactory           $loggerFactory
+     * @param MessageBus              $eventBus
      */
-    public function __construct(KubernetesClientFactory $clientFactory, EnvironmentTransformer $environmentTransformer, LoggerFactory $loggerFactory)
+    public function __construct(KubernetesClientFactory $clientFactory, EnvironmentTransformer $environmentTransformer, LoggerFactory $loggerFactory, MessageBus $eventBus)
     {
         $this->clientFactory = $clientFactory;
         $this->environmentTransformer = $environmentTransformer;
         $this->loggerFactory = $loggerFactory;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -49,7 +57,8 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
         return new KubernetesEnvironmentClient(
             $this->clientFactory->getByProvider($provider),
             $this->environmentTransformer,
-            $this->loggerFactory
+            $this->loggerFactory,
+            $this->eventBus
         );
     }
 }

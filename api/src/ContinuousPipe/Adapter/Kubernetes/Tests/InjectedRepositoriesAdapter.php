@@ -26,9 +26,9 @@ class InjectedRepositoriesAdapter implements AdapterInterface
     private $namespaceClient;
 
     /**
-     * @param NodeRepository $nodeRepository
+     * @param NodeRepository      $nodeRepository
      * @param NamespaceRepository $namespaceRepository
-     * @param NamespaceClient $namespaceClient
+     * @param NamespaceClient     $namespaceClient
      */
     public function __construct(NodeRepository $nodeRepository, NamespaceRepository $namespaceRepository, NamespaceClient $namespaceClient)
     {
