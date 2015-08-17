@@ -2,6 +2,16 @@
     <div class="block-header">
         <h2>1. Select the GitHub repository</h2>
 
+        <remote-resource resource-name="repositorySources">
+            <div class="bootgrid-header">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" ng-class="source.organization.active ? 'active' : ''" ng-repeat="source in repositorySources">
+                        <a href="#">{{ source.organization.login }}</a>
+                    </li>
+                </ul>
+            </div>
+        </remote-resource>
+
         <remote-resource resource-name="repositories">
             <div class="text-center p20" ng-show="repositories.length === 0">No repository found.</div>
             <div class="bootgrid-header">

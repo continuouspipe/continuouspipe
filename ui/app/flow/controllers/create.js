@@ -1,7 +1,19 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowCreateController', function($scope, $remoteResource, $state, FlowRepository, RepositoryRepository) {
+    .controller('FlowCreateController', function($scope, $remoteResource, $state, FlowRepository, RepositoryRepository, OrganizationRepository) {
+        $remoteResource.load('repositorySources', OrganizationRepository.findAll()).then(function (organizations) {
+            organizations.unshift({
+                'organization': {
+                    'login': 'Personal repositories',
+                    'repos_url': '',
+                    'active': true
+                }
+            });
+
+            $scope.repositorySources = organizations;
+        });
+
         $remoteResource.load('repositories', RepositoryRepository.findAll()).then(function (repositories) {
             $scope.repositories = repositories;
         });
