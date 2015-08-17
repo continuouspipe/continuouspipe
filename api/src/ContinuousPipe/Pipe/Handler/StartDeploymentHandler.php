@@ -97,6 +97,8 @@ class StartDeploymentHandler
         } catch (\Exception $e) {
             $deployment->updateStatus(Deployment::STATUS_FAILURE);
             $this->eventBus->handle(new DeploymentFailed($deployment));
+
+            throw $e;
         }
     }
 }

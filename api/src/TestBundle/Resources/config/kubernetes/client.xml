@@ -14,11 +14,14 @@
         <service id="pipe.adapter.kubernetes.traceable.namespace_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.namespace_repository" />
         </service>
+        <service id="pipe.adapter.kubernetes.traceable.replication_controller_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableReplicationControllerRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.replication_controller_repository" />
+        </service>
 
         <service id="pipe.adapter.kubernetes.namespace_client" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedRepositoriesNamespaceClient">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.pod_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_repository" />
-            <argument type="service" id="pipe.adapter.kubernetes.in_memory.replication_controller_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.replication_controller_repository" />
         </service>
 
         <service id="pipe.adapter.kubernetes.adapter" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedRepositoriesAdapter">

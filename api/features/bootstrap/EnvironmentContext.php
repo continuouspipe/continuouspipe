@@ -71,10 +71,11 @@ class EnvironmentContext implements Context
     /**
      * @param string $providerName
      * @param string $environmentName
+     * @param string $template
      */
-    public function sendDeploymentRequest($providerName, $environmentName)
+    public function sendDeploymentRequest($providerName, $environmentName, $template = 'simple-app')
     {
-        $simpleAppComposeContents = file_get_contents(__DIR__.'/../fixtures/simple-app.yml');
+        $simpleAppComposeContents = file_get_contents(__DIR__.'/../fixtures/'.$template.'.yml');
         $contents = json_encode([
             'environmentName' => $environmentName,
             'providerName' => $providerName,
@@ -89,6 +90,15 @@ class EnvironmentContext implements Context
             echo $this->response->getContent();
 
             throw new \RuntimeException(sprintf('Expected response code 200, got %d', $this->response->getStatusCode()));
+        }
+
+        $deployment = json_decode($this->response->getContent(), true);
+        if (\ContinuousPipe\Pipe\Deployment::STATUS_SUCCESS != $deployment['status']) {
+            throw new \RuntimeException(sprintf(
+                'Expected deployment status to be "%s" but got "%s"',
+                \ContinuousPipe\Pipe\Deployment::STATUS_SUCCESS,
+                $deployment['status']
+            ));
         }
     }
 }

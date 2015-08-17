@@ -24,9 +24,15 @@ class IdentifierNamingStrategy implements NamingStrategy
      */
     public function getLabelsByComponent(Component $component)
     {
-        return new KeyValueObjectList([
-            new Label('component-identifier', $component->getIdentifier()),
-        ]);
+        $labels = [
+            new Label('component-identifier', $component->getIdentifier())
+        ];
+
+        foreach ($component->getLabels() as $key => $value) {
+            $labels[] = new Label($key, $value);
+        }
+
+        return new KeyValueObjectList($labels);
     }
 
     /**

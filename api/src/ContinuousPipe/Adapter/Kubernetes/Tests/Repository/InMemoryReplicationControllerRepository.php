@@ -3,20 +3,23 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
 use Kubernetes\Client\Exception\ReplicationControllerNotFound;
-use Kubernetes\Client\Exception\TooManyObjects;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Model\ReplicationControllerList;
 use Kubernetes\Client\Repository\ReplicationControllerRepository;
 
 class InMemoryReplicationControllerRepository implements ReplicationControllerRepository
 {
+    /**
+     * @var ReplicationController[]
+     */
+    private $replicationControllers = [];
 
     /**
      * {@inheritdoc}
      */
     public function findAll()
     {
-        throw new \RuntimeException('Not implemented yet');
+        return ReplicationControllerList::fromReplicationControllers($this->replicationControllers);
     }
 
     /**
@@ -24,7 +27,9 @@ class InMemoryReplicationControllerRepository implements ReplicationControllerRe
      */
     public function create(ReplicationController $replicationController)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $this->replicationControllers[$replicationController->getMetadata()->getName()] = $replicationController;
+
+        return $replicationController;
     }
 
     /**
@@ -32,7 +37,9 @@ class InMemoryReplicationControllerRepository implements ReplicationControllerRe
      */
     public function update(ReplicationController $replicationController)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $this->replicationControllers[$replicationController->getMetadata()->getName()] = $replicationController;
+
+        return $replicationController;
     }
 
     /**
@@ -40,7 +47,12 @@ class InMemoryReplicationControllerRepository implements ReplicationControllerRe
      */
     public function delete(ReplicationController $replicationController)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $name = $replicationController->getMetadata()->getName();
+        if (!array_key_exists($name, $this->replicationControllers)) {
+            throw new ReplicationControllerNotFound();
+        }
+
+        unset($this->replicationControllers[$name]);
     }
 
     /**
@@ -48,7 +60,11 @@ class InMemoryReplicationControllerRepository implements ReplicationControllerRe
      */
     public function findOneByName($name)
     {
-        throw new \RuntimeException('Not implemented yet');
+        if (!array_key_exists($name, $this->replicationControllers)) {
+            throw new ReplicationControllerNotFound();
+        }
+
+        return $this->replicationControllers[$name];
     }
 
     /**

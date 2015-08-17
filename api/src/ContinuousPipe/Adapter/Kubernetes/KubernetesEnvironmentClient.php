@@ -67,8 +67,13 @@ class KubernetesEnvironmentClient implements EnvironmentClient
             $objectName = $object->getMetadata()->getName();
 
             if ($objectRepository->exists($objectName)) {
-                $logger->append(new Text('Updating '.$this->getObjectTypeAndName($object)));
+                if ($this->isLocked($object)) {
+                    $logger->append(new Text('NOT updated '.$this->getObjectTypeAndName($object).' because it is locked'));
 
+                    continue;
+                }
+
+                $logger->append(new Text('Updating '.$this->getObjectTypeAndName($object)));
                 $objectRepository->update($object);
 
                 // Has an extremely simple RC-update feature, we can delete matching RC's pods
@@ -292,5 +297,17 @@ class KubernetesEnvironmentClient implements EnvironmentClient
         foreach ($pods as $pod) {
             $podRepository->delete($pod);
         }
+    }
+
+    /**
+     * @param KubernetesObject $object
+     * @return bool
+     */
+    private function isLocked(KubernetesObject $object)
+    {
+        $labelList = $object->getMetadata()->getLabelList();
+        $locked = $labelList->hasKey('com.continuouspipe.locked');
+
+        return $locked;
     }
 }

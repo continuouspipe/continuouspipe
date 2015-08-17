@@ -9,7 +9,6 @@ use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceR
 use Kubernetes\Client\Exception\NamespaceNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\ObjectMetadata;
-use Kubernetes\Client\Repository\NamespaceRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -47,6 +46,15 @@ class NamespaceContext implements Context, SnippetAcceptingContext
     public function iSendADeploymentRequestForANonExistingEnvironment()
     {
         $this->environmentContext->sendDeploymentRequest('kubernetes/'.ProviderContext::DEFAULT_PROVIDER_NAME, 'non-existing');
+    }
+
+    /**
+     * @When I send a deployment request from application template :template
+     */
+    public function iSendADeploymentRequestFromApplicationTemplate($template)
+    {
+        $this->iHaveANamespace('existing');
+        $this->environmentContext->sendDeploymentRequest('kubernetes/'.ProviderContext::DEFAULT_PROVIDER_NAME, 'existing', $template);
     }
 
     /**

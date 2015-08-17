@@ -28,7 +28,17 @@ class InMemoryPodRepository implements PodRepository
      */
     public function findByLabels(array $labels)
     {
-        throw new \RuntimeException('Not implemented yet');
+        return array_values(array_filter($this->pods, function(Pod $pod) use ($labels) {
+            $podLabels = $pod->getMetadata()->getLabelsAsAssociativeArray();
+
+            foreach ($labels as $key => $value) {
+                if (!array_key_exists($key, $podLabels) || $podLabels[$key] != $value) {
+                    return false;
+                }
+            }
+
+            return true;
+        }));
     }
 
     /**
@@ -36,7 +46,7 @@ class InMemoryPodRepository implements PodRepository
      */
     public function create(Pod $pod)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $this->pods[$pod->getMetadata()->getName()] = $pod;
     }
 
     /**
@@ -44,7 +54,7 @@ class InMemoryPodRepository implements PodRepository
      */
     public function update(Pod $pod)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $this->pods[$pod->getMetadata()->getName()] = $pod;
     }
 
     /**
@@ -52,7 +62,11 @@ class InMemoryPodRepository implements PodRepository
      */
     public function findOneByName($name)
     {
-        throw new \RuntimeException('Not implemented yet');
+        if (!array_key_exists($name, $this->pods)) {
+            throw new PodNotFound();
+        }
+
+        return $this->pods[$name];
     }
 
     /**
@@ -60,7 +74,12 @@ class InMemoryPodRepository implements PodRepository
      */
     public function delete(Pod $pod)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $name = $pod->getMetadata()->getName();
+        if (!array_key_exists($name, $this->pods)) {
+            throw new PodNotFound();
+        }
+
+        unset($this->pods[$name]);
     }
 
     /**
@@ -68,6 +87,6 @@ class InMemoryPodRepository implements PodRepository
      */
     public function findByReplicationController(ReplicationController $replicationController)
     {
-        throw new \RuntimeException('Not implemented yet');
+        return $this->findByLabels($replicationController->getSpecification()->getSelector());
     }
 }

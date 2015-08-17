@@ -9,13 +9,17 @@ use Kubernetes\Client\Repository\ServiceRepository;
 
 class InMemoryServiceRepository implements ServiceRepository
 {
+    /**
+     * @var Service[]
+     */
+    private $services = [];
 
     /**
      * {@inheritdoc}
      */
     public function findAll()
     {
-        throw new \RuntimeException('Not implemented yet');
+        return ServiceList::fromServices($this->services);
     }
 
     /**
@@ -23,7 +27,11 @@ class InMemoryServiceRepository implements ServiceRepository
      */
     public function findOneByName($name)
     {
-        throw new \RuntimeException('Not implemented yet');
+        if (!array_key_exists($name, $this->services)) {
+            throw new ServiceNotFound();
+        }
+
+        return $this->services[$name];
     }
 
     /**
@@ -31,7 +39,9 @@ class InMemoryServiceRepository implements ServiceRepository
      */
     public function create(Service $service)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $this->services[$service->getMetadata()->getName()] = $service;
+
+        return $service;
     }
 
     /**
@@ -39,7 +49,12 @@ class InMemoryServiceRepository implements ServiceRepository
      */
     public function delete(Service $service)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $name = $service->getMetadata()->getName();
+        if (!array_key_exists($name, $this->services)) {
+            throw new ServiceNotFound();
+        }
+
+        unset($this->services[$name]);
     }
 
     /**
@@ -47,6 +62,6 @@ class InMemoryServiceRepository implements ServiceRepository
      */
     public function update(Service $service)
     {
-        throw new \RuntimeException('Not implemented yet');
+        $this->services[$service->getMetadata()->getName()] = $service;
     }
 }
