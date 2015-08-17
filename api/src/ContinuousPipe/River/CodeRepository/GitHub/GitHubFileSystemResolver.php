@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
+use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\User\User;

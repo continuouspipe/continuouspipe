@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River\CodeRepository\GitHub;
+namespace ContinuousPipe\River\GitHub;
 
 use Github\Client;
 use ContinuousPipe\User\User;

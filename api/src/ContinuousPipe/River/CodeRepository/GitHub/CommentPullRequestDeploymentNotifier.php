@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use GitHub\WebHook\Model\PullRequest;
 use GitHub\WebHook\Model\Repository;

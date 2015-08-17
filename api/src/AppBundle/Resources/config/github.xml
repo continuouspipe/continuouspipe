@@ -22,33 +22,38 @@
             <argument type="service" id="repository_river.github.default_class_event_mapping" />
         </service>
 
-        <service id="repository_river.github.guzzle_http_client" class="GitHub\WebHook\Guzzle\DefaultGuzzleClient">
-            <tag name="csa_guzzle.client" />
-        </service>
-        <service id="repository_river.github.http_client" class="GitHub\WebHook\Guzzle\Guzzle4HttpClient">
-            <argument type="service" id="repository_river.github.guzzle_http_client" />
-        </service>
-        <service id="repository_river.github.client_factory" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubClientFactory">
-            <argument type="service" id="security.token_storage" />
-            <argument type="service" id="repository_river.github.http_client" />
-        </service>
         <service id="repository_river.code_repository_repository" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepositoryRepository">
-            <argument type="service" id="repository_river.github.client_factory" />
+            <argument type="service" id="river.github.client_factory" />
+            <argument type="service" id="jms_serializer" />
+        </service>
+        <service id="repository_river.organization_repository" class="ContinuousPipe\River\Organization\GitHub\GitHubOrganizationRepository">
+            <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="jms_serializer" />
         </service>
 
         <service id="repository_river.github.client" class="GitHub\Client">
-            <factory service="repository_river.github.client_factory" method="createClientForCurrentUser" />
+            <factory service="river.github.client_factory" method="createClientForCurrentUser" />
         </service>
         <service id="repository_river.github.webhook_manager" class="GitHub\WebHook\Setup\HttpWebHookManager">
             <argument type="service" id="repository_river.github.client" />
             <argument type="service" id="jms_serializer" />
         </service>
 
+        <service id="river.github.guzzle_http_client" class="GitHub\WebHook\Guzzle\DefaultGuzzleClient">
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="river.github.http_client" class="GitHub\WebHook\Guzzle\Guzzle4HttpClient">
+            <argument type="service" id="river.github.guzzle_http_client" />
+        </service>
+        <service id="river.github.client_factory" class="ContinuousPipe\River\GitHub\GitHubClientFactory">
+            <argument type="service" id="security.token_storage" />
+            <argument type="service" id="river.github.http_client" />
+        </service>
+
         <service id="river.github.repository_address_descriptor" class="ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor" />
 
         <service id="river.github.pull_request_deployment_notifier" class="ContinuousPipe\River\CodeRepository\GitHub\CommentPullRequestDeploymentNotifier">
-            <argument type="service" id="repository_river.github.client_factory" />
+            <argument type="service" id="river.github.client_factory" />
         </service>
         <service id="river.github.code_reference_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver" />
         <service id="river.github.web_hook_handler" class="ContinuousPipe\River\CodeRepository\GitHub\WebHookHandler">
@@ -61,7 +66,7 @@
         </service>
 
         <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\GitHubPullRequestResolver">
-            <argument type="service" id="repository_river.github.client_factory" />
+            <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="jms_serializer" />
         </service>
         <service id="river.github.notification.deployment_successful_listener" class="ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\DeploymentSuccessfulListener">

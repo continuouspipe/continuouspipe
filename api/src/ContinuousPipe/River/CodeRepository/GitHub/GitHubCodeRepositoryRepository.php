@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeRepository\CodeRepositoryNotFound;
+use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
 use Github\HttpClient\Message\ResponseMediator;
 use Github\ResultPager;

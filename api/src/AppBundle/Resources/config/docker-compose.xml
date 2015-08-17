@@ -15,7 +15,7 @@
         </service>
 
         <service id="river.github.file_system_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubFileSystemResolver">
-            <argument type="service" id="repository_river.github.client_factory" />
+            <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="river.github.repository_address_descriptor" />
         </service>
         <service id="river.file_system_resolver" alias="river.github.file_system_resolver" />

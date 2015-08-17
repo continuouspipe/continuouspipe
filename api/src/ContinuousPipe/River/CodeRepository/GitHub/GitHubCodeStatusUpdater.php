@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
+use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideContext;
 
