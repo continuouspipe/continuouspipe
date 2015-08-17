@@ -35,7 +35,7 @@
 
             <tag name="csa_guzzle.client" />
         </service>
-        <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory">
+        <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\HttpClientFactory">
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="pipe.adapter.kubernetes.guzzle_client" />
         </service>

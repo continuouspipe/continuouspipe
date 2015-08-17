@@ -15,6 +15,16 @@ class Cluster
     private $version;
 
     /**
+     * @param string $address
+     * @param string $version
+     */
+    public function __construct($address, $version)
+    {
+        $this->address = $address;
+        $this->version = $version;
+    }
+
+    /**
      * @return string
      */
     public function getAddress()

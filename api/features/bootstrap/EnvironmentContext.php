@@ -53,23 +53,7 @@ class EnvironmentContext implements Context
     public function iSendAValidDeploymentRequest()
     {
         $this->providerContext->iHaveAFakeProviderNamed('foo');
-
-        $simpleAppComposeContents = file_get_contents(__DIR__.'/../fixtures/simple-app.yml');
-        $contents = json_encode([
-            'environmentName' => 'foo',
-            'providerName' => 'fake/foo',
-            'dockerComposeContents' => $simpleAppComposeContents,
-        ]);
-
-        $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
-            'CONTENT_TYPE' => 'application/json'
-        ], $contents));
-
-        if (200 !== $this->response->getStatusCode()) {
-            echo $this->response->getContent();
-
-            throw new \RuntimeException(sprintf('Expected response code 200, got %d', $this->response->getStatusCode()));
-        }
+        $this->sendDeploymentRequest('fake/foo', 'foo');
     }
 
     /**
@@ -81,6 +65,30 @@ class EnvironmentContext implements Context
 
         if (0 === count($createdOrUpdatedEnvironments)) {
             throw new \RuntimeException('Expected to have at least one created or updated environment, found 0');
+        }
+    }
+
+    /**
+     * @param string $providerName
+     * @param string $environmentName
+     */
+    public function sendDeploymentRequest($providerName, $environmentName)
+    {
+        $simpleAppComposeContents = file_get_contents(__DIR__.'/../fixtures/simple-app.yml');
+        $contents = json_encode([
+            'environmentName' => $environmentName,
+            'providerName' => $providerName,
+            'dockerComposeContents' => $simpleAppComposeContents,
+        ]);
+
+        $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json'
+        ], $contents));
+
+        if (200 !== $this->response->getStatusCode()) {
+            echo $this->response->getContent();
+
+            throw new \RuntimeException(sprintf('Expected response code 200, got %d', $this->response->getStatusCode()));
         }
     }
 }

@@ -22,6 +22,18 @@ class KubernetesProvider implements Provider
     private $user;
 
     /**
+     * @param string $identifier
+     * @param Cluster $cluster
+     * @param User $user
+     */
+    public function __construct($identifier, Cluster $cluster, User $user)
+    {
+        $this->identifier = $identifier;
+        $this->cluster = $cluster;
+        $this->user = $user;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getIdentifier()

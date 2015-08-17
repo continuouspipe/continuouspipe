@@ -1,7 +1,6 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\Pipe\Tests\FakeProvider;
 
-class ProviderContext implements Context, SnippetAcceptingContext
+class ProviderContext implements Context
 {
     /**
      * @var Kernel
@@ -20,6 +19,7 @@ class ProviderContext implements Context, SnippetAcceptingContext
      * @var Response
      */
     private $response;
+
     /**
      * @var ProviderRepository
      */
@@ -96,22 +96,6 @@ class ProviderContext implements Context, SnippetAcceptingContext
             ],
             $string->getRaw()
         ));
-    }
-
-    /**
-     * @Then the Kubernetes cloud provider must be successfully saved
-     */
-    public function theKubernetesCloudProviderMustBeSuccessfullySaved()
-    {
-        $kubernetesProviders = array_filter($this->providerRepository->findAll(), function(\ContinuousPipe\Adapter\Provider $provider) {
-            return $provider instanceof \ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
-        });
-
-        if (0 === count($kubernetesProviders)) {
-            throw new \RuntimeException(sprintf(
-                'Expected kubernetes providers but found 0'
-            ));
-        }
     }
 
     /**
