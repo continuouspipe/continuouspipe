@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use ContinuousPipe\River\CodeRepository\OrganisationRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations\View;
 
@@ -11,14 +12,14 @@ use FOS\RestBundle\Controller\Annotations\View;
 class UserOrganisationsController
 {
     /**
-     * @var CodeRepositoryRepository
+     * @var OrganisationRepository
      */
     private $organisationRepository;
 
     /**
-     * @param CodeRepositoryRepository $organisationRepository
+     * @param OrganisationRepository $organisationRepository
      */
-    public function __construct($organisationRepository)
+    public function __construct(OrganisationRepository $organisationRepository)
     {
         $this->organisationRepository = $organisationRepository;
     }
