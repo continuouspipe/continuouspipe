@@ -4,50 +4,50 @@
 
         <remote-resource resource-name="repositorySources">
             <div class="bootgrid-header">
-                <ul class="nav nav-tabs">
-                    <li role="presentation" ng-class="source.organization.active ? 'active' : ''" ng-repeat="source in repositorySources">
-                        <a href="#">{{ source.organization.login }}</a>
-                    </li>
-                </ul>
-            </div>
-        </remote-resource>
+                <tabset>
+                    <tab ng-repeat="source in repositorySources" heading="{{ source.organization.login }}" select="switchRepositorySource(source.organization)">
+                        <remote-resource resource-name="repositories">
+                            <div class="text-center p20" ng-show="repositories.length === 0">No repository found.</div>
+                            <div class="bootgrid-header">
+                                <div class="actionBar">
+                                    <div class="search form-group">
+                                        <div class="input-group">
+                                            <span class="md icon input-group-addon glyphicon-search"></span>
+                                            <input type="text" class="search-field form-control" placeholder="Search" ng-model="search.$">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-        <remote-resource resource-name="repositories">
-            <div class="text-center p20" ng-show="repositories.length === 0">No repository found.</div>
-            <div class="bootgrid-header">
-                <div class="actionBar">
-                    <div class="search form-group">
-                        <div class="input-group">
-                            <span class="md icon input-group-addon glyphicon-search"></span>
-                            <input type="text" class="search-field form-control" placeholder="Search" ng-model="search.$">
-                        </div>
-                    </div>
-                </div>
+                            <table class="table table-inner table-vmiddle" ng-show="repositories.length">
+                                <thead>
+                                <tr>
+                                    <th>Owner</th>
+                                    <th>Name</th>
+                                    <th>Visibility</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr ng-repeat="repository in repositories | filter:search" ng-hide="selectedRepository && repository != selectedRepository">
+                                    <td>{{ repository.repository.owner.login }}</td>
+                                    <td>{{ repository.repository.name }}</td>
+                                    <td>
+                                        <span ng-if="repository.repository.private"><i class="md-lock"></i> Private</span>
+                                        <span ng-if="!repository.repository.private"><i class="md-public"></i> Public</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-primary" ng-click="select(repository)" ng-show="selectedRepository != repository">Select</button>
+                                        <button class="btn btn-success" ng-show="selectedRepository == repository" ng-click="select(undefined)">Selected</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </remote-resource>
+                    </tab>
+                </tabset>
             </div>
-            <table class="table table-inner table-vmiddle" ng-show="repositories.length">
-                <thead>
-                <tr>
-                    <th>Owner</th>
-                    <th>Name</th>
-                    <th>Visibility</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="repository in repositories | filter:search" ng-hide="selectedRepository && repository != selectedRepository">
-                    <td>{{ repository.repository.owner.login }}</td>
-                    <td>{{ repository.repository.name }}</td>
-                    <td>
-                        <span ng-if="repository.repository.private"><i class="md-lock"></i> Private</span>
-                        <span ng-if="!repository.repository.private"><i class="md-public"></i> Public</span>
-                    </td>
-                    <td>
-                        <button class="btn btn-primary" ng-click="select(repository)" ng-show="selectedRepository != repository">Select</button>
-                        <button class="btn btn-success" ng-show="selectedRepository == repository" ng-click="select(undefined)">Selected</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
         </remote-resource>
     </div>
 
@@ -75,6 +75,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">

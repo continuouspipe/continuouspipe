@@ -6,7 +6,7 @@ angular.module('continuousPipeRiver')
             organizations.unshift({
                 'organization': {
                     'login': 'Personal repositories',
-                    'repos_url': '',
+                    'personal': true,
                     'active': true
                 }
             });
@@ -14,9 +14,20 @@ angular.module('continuousPipeRiver')
             $scope.repositorySources = organizations;
         });
 
-        $remoteResource.load('repositories', RepositoryRepository.findAll()).then(function (repositories) {
-            $scope.repositories = repositories;
-        });
+        var loadRepositoryList = function(repositories) {
+            $remoteResource.load('repositories', repositories).then(function (repositories) {
+                console.log(repositories);
+                $scope.repositories = repositories;
+            });
+        };
+
+        $scope.switchRepositorySource = function(repositorySource) {
+            if (repositorySource.personal == true) {
+                loadRepositoryList(RepositoryRepository.findForCurrentUser());
+            } else {
+                loadRepositoryList(RepositoryRepository.findByOrganization(repositorySource.login));
+            }
+        };
 
         $scope.select = function(repository) {
             $scope.selectedRepository = repository;
