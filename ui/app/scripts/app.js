@@ -16,7 +16,6 @@ angular
         'ngTouch',
         'ngResource',
         'ui.router',
-        'ui.bootstrap',
         'ncy-angular-breadcrumb',
         'angular-jwt'
     ])
