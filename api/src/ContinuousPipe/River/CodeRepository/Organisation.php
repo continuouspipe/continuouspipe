@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River;
+namespace ContinuousPipe\River\CodeRepository;
 
 interface Organisation
 {

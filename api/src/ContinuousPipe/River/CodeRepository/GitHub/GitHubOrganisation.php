@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
-use ContinuousPipe\River\Organisation as OrganisationInterface;
+use ContinuousPipe\River\CodeRepository\Organisation as OrganisationInterface;
 use GitHub\WebHook\Model\Organisation;
 
 class GitHubOrganisation implements OrganisationInterface
