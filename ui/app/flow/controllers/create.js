@@ -22,6 +22,8 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.switchRepositorySource = function(repositorySource) {
+            $scope.select(undefined);
+
             if (repositorySource.personal == true) {
                 loadRepositoryList(RepositoryRepository.findForCurrentUser());
             } else {
