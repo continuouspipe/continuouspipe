@@ -2,10 +2,10 @@
 
 namespace ContinuousPipe\River;
 
-interface Organization
+interface Organisation
 {
     /**
-     * Get organization identifier
+     * Get organisation identifier
      *
      * @return string
      */

@@ -34,11 +34,11 @@ class UserRepositoriesController
     }
 
     /**
-     * @Route("/user-repositories/organization/{organization}")
+     * @Route("/user-repositories/organisation/{organisation}")
      * @View
      */
-    public function listByOrganizationAction($organization)
+    public function listByOrganisationAction($organisation)
     {
-        return $this->codeRepositoryRepository->findByOrganization($organization);
+        return $this->codeRepositoryRepository->findByOrganisation($organisation);
     }
 }

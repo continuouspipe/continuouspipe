@@ -26,7 +26,7 @@
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="jms_serializer" />
         </service>
-        <service id="repository_river.organization_repository" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubOrganizationRepository">
+        <service id="repository_river.organisation_repository" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubOrganisationRepository">
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="jms_serializer" />
         </service>

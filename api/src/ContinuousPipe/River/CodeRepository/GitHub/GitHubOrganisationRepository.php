@@ -5,11 +5,11 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use Github\HttpClient\Message\ResponseMediator;
 use Github\ResultPager;
-use GitHub\WebHook\Model\Organization;
+use GitHub\WebHook\Model\Organisation;
 use GuzzleHttp\Exception\ClientException;
 use JMS\Serializer\SerializerInterface;
 
-class GitHubOrganizationRepository
+class GitHubOrganisationRepository
 {
     /**
      * @var GitHubClientFactory
@@ -41,16 +41,16 @@ class GitHubOrganizationRepository
 
         $paginator = new ResultPager($client);
         $found = $paginator->fetchAll($currentUserApi, 'organizations');
-        $rawOrganizations = json_encode($found, true);
+        $rawOrganisations = json_encode($found, true);
 
-        $organizations = $this->serializer->deserialize(
-            $rawOrganizations,
-            'array<'.Organization::class.'>',
+        $organisations = $this->serializer->deserialize(
+            $rawOrganisations,
+            'array<'.Organisation::class.'>',
             'json'
         );
 
-        return array_map(function (Organization $organization) {
-            return new GitHubOrganization($organization);
-        }, $organizations);
+        return array_map(function (Organisation $organisation) {
+            return new GitHubOrganisation($organisation);
+        }, $organisations);
     }
 }

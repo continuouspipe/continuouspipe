@@ -50,13 +50,13 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
     /**
      * {@inheritdoc}
      */
-    public function findByOrganization($organization)
+    public function findByOrganisation($organisation)
     {
         $client = $this->gitHubClientFactory->createClientForCurrentUser();
-        $organizationApi = $client->organization();
+        $organisationApi = $client->organization();
 
         $paginator = new ResultPager($client);
-        $found = $paginator->fetchAll($organizationApi, 'repositories', [ $organization ]);
+        $found = $paginator->fetchAll($organisationApi, 'repositories', [ $organisation ]);
 
         return $this->parseRepositories($found);
     }

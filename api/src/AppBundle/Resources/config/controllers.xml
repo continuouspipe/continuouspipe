@@ -8,8 +8,8 @@
         <service id="app.controller.user_repositories" class="AppBundle\Controller\UserRepositoriesController">
             <argument type="service" id="repository_river.code_repository_repository" />
         </service>
-        <service id="app.controller.user_organizations" class="AppBundle\Controller\UserOrganizationsController">
-            <argument type="service" id="repository_river.organization_repository" />
+        <service id="app.controller.user_organisations" class="AppBundle\Controller\UserOrganisationsController">
+            <argument type="service" id="repository_river.organisation_repository" />
         </service>
         <service id="app.controller.flow" class="AppBundle\Controller\FlowController">
             <argument type="service" id="river.repository.flow" />
