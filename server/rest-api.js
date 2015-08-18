@@ -68,5 +68,9 @@ Api.addCollection(Logs, {
 });
 
 Meteor.startup(function () {
-
+    Meteor.publish('logChildren', function (id) {
+        return Logs.find({
+            parent: id
+        });
+    });
 });
