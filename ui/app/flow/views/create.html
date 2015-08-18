@@ -2,14 +2,14 @@
     <div class="block-header">
         <h2>1. Select the GitHub repository</h2>
 
-        <remote-resource resource-name="organizations">
+        <remote-resource resource-name="organisations">
             <div class="bootgrid-header">
                 <ul class="nav nav-pills">
                     <li role="presentation" ng-class="{active: isSourceSelected('')}">
                         <a href="#" ng-click="selectPersonal()">Personal repositories</a>
                     </li>
-                    <li role="presentation" ng-class="{active: isSourceSelected(organization.organization.login)}" ng-repeat="organization in organizations">
-                        <a href="#" ng-click="selectOrganization(organization.organization.login)">{{ organization.organization.login }}</a>
+                    <li role="presentation" ng-class="{active: isSourceSelected(organisation.organisation.login)}" ng-repeat="organisation in organisations">
+                        <a href="#" ng-click="selectOrganisation(organisation.organisation.login)">{{ organisation.organisation.login }}</a>
                     </li>
                 </ul>
             </div>

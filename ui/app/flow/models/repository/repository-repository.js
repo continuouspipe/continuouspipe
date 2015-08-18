@@ -8,8 +8,8 @@ angular.module('continuousPipeRiver')
             return this.resource.query().$promise;
         };
 
-        this.findByOrganization = function(organization) {
-            return $resource(RIVER_API_URL+'/user-repositories/organization/:organization')
-                .query({organization: organization}).$promise;
+        this.findByOrganisation = function(organisation) {
+            return $resource(RIVER_API_URL+'/user-repositories/organisation/:organisation')
+                .query({organisation: organisation}).$promise;
         }
     });
