@@ -6,12 +6,14 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
+use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableSecretRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceAccountRepository;
 use ContinuousPipe\Pipe\Deployment;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\DeploymentRequest;
+use ContinuousPipe\Pipe\Tests\FakeProvider;
 use ContinuousPipe\Pipe\Tests\MessageBus\TraceableMessageBus;
 use ContinuousPipe\User\User;
 use Kubernetes\Client\Exception\NamespaceNotFound;
@@ -30,6 +32,11 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      * @var \EnvironmentContext
      */
     private $environmentContext;
+
+    /**
+     * @var \Kubernetes\ProviderContext
+     */
+    private $providerContext;
 
     /**
      * @var TraceableNamespaceRepository
@@ -71,6 +78,7 @@ class NamespaceContext implements Context, SnippetAcceptingContext
     public function gatherContexts(BeforeScenarioScope $scope)
     {
         $this->environmentContext = $scope->getEnvironment()->getContext('EnvironmentContext');
+        $this->providerContext = $scope->getEnvironment()->getContext('Kubernetes\ProviderContext');
     }
 
     /**
@@ -108,11 +116,13 @@ class NamespaceContext implements Context, SnippetAcceptingContext
     public function iHaveANamespace($name)
     {
         try {
-            $this->namespaceRepository->findOneByName($name);
+            $namespace = $this->namespaceRepository->findOneByName($name);
         } catch (NamespaceNotFound $e) {
-            $this->namespaceRepository->create(new KubernetesNamespace(new ObjectMetadata($name)));
+            $namespace = $this->namespaceRepository->create(new KubernetesNamespace(new ObjectMetadata($name)));
             $this->namespaceRepository->clear();
         }
+
+        return $namespace;
     }
 
     /**
@@ -162,8 +172,9 @@ class NamespaceContext implements Context, SnippetAcceptingContext
             new DeploymentContext(
                 Deployment::fromRequest(
                     new DeploymentRequest(),
-                    new User('')
+                    new User('samuel')
                 ),
+                $this->providerContext->iHaveAValidKubernetesProvider(),
                 new EmptyLogger()
             )
         ));

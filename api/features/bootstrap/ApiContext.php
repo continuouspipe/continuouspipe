@@ -5,6 +5,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
+use ContinuousPipe\Pipe\Tests\InMemoryAuthenticatorClient;
 
 class ApiContext implements Context
 {
@@ -14,11 +15,18 @@ class ApiContext implements Context
     private $tokenStorage;
 
     /**
-     * @param TokenStorageInterface $tokenStorage
+     * @var InMemoryAuthenticatorClient
      */
-    public function __construct(TokenStorageInterface $tokenStorage)
+    private $authenticatorClient;
+
+    /**
+     * @param TokenStorageInterface $tokenStorage
+     * @param InMemoryAuthenticatorClient $authenticatorClient
+     */
+    public function __construct(TokenStorageInterface $tokenStorage, InMemoryAuthenticatorClient $authenticatorClient)
     {
         $this->tokenStorage = $tokenStorage;
+        $this->authenticatorClient = $authenticatorClient;
     }
 
     /**
@@ -26,8 +34,11 @@ class ApiContext implements Context
      */
     public function iAmAuthenticated()
     {
+        $user = new User('samuel');
+        $this->authenticatorClient->addUser($user);
+
         $token = new JWTUserToken(['ROLE_USER']);
-        $token->setUser(new SecurityUser(new User('samuel')));
+        $token->setUser(new SecurityUser($user));
 
         $this->tokenStorage->setToken($token);
     }

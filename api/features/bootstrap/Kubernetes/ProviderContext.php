@@ -31,7 +31,7 @@ class ProviderContext implements Context
      */
     public function iHaveAValidKubernetesProvider()
     {
-        $this->providerRepository->create(new KubernetesProvider(
+        return $this->providerRepository->create(new KubernetesProvider(
             self::DEFAULT_PROVIDER_NAME,
             new Cluster('1.2.3.4', 'v1'),
             new User('username', 'password')

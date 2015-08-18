@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
 use Kubernetes\Client\Exception\ServiceAccountNotFound;
+use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\ServiceAccount;
 use Kubernetes\Client\Repository\ServiceAccountRepository;
 
@@ -12,6 +13,16 @@ class InMemoryServiceAccountRepository implements ServiceAccountRepository
      * @var ServiceAccount[]
      */
     private $serviceAccounts = [];
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->serviceAccounts = [
+            'default' => new ServiceAccount(new ObjectMetadata('default'), [], []),
+        ];
+    }
 
     /**
      * {@inheritdoc}
@@ -36,6 +47,8 @@ class InMemoryServiceAccountRepository implements ServiceAccountRepository
         }
 
         $this->serviceAccounts[$name] = $serviceAccount;
+
+        return $serviceAccount;
     }
 
     /**
@@ -44,5 +57,7 @@ class InMemoryServiceAccountRepository implements ServiceAccountRepository
     public function create(ServiceAccount $serviceAccount)
     {
         $this->serviceAccounts[$serviceAccount->getMetadata()->getName()] = $serviceAccount;
+
+        return $serviceAccount;
     }
 }

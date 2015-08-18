@@ -89,7 +89,7 @@ class StartDeploymentHandler
             $provider = $this->providerRepository->find($request->getProviderName());
             $environmentClient = $this->environmentClientFactory->getByProvider($provider);
 
-            $deploymentContext = new DeploymentContext($deployment, $logger);
+            $deploymentContext = new DeploymentContext($deployment, $provider, $logger);
             $environmentClient->createOrUpdate($environment, $deploymentContext);
 
             $deployment->updateStatus(Deployment::STATUS_SUCCESS);

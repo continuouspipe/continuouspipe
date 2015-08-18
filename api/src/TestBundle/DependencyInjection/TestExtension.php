@@ -17,6 +17,7 @@ class TestExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('deployment.xml');
         $loader->load('fake-adapter.xml');
+        $loader->load('authenticator.xml');
         $loader->load('message-bus.xml');
         $loader->load('kubernetes/adapter.xml');
         $loader->load('kubernetes/client.xml');

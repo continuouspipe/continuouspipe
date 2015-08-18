@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Pipe;
 
+use ContinuousPipe\Adapter\Provider;
 use LogStream\Logger;
 
 class DeploymentContext
@@ -17,13 +18,20 @@ class DeploymentContext
     private $logger;
 
     /**
+     * @var Provider
+     */
+    private $provider;
+
+    /**
      * @param Deployment $deployment
+     * @param Provider   $provider
      * @param Logger     $logger
      */
-    public function __construct(Deployment $deployment, Logger $logger)
+    public function __construct(Deployment $deployment, Provider $provider, Logger $logger)
     {
         $this->deployment = $deployment;
         $this->logger = $logger;
+        $this->provider = $provider;
     }
 
     /**
@@ -40,5 +48,13 @@ class DeploymentContext
     public function getLogger()
     {
         return $this->logger;
+    }
+
+    /**
+     * @return Provider
+     */
+    public function getProvider()
+    {
+        return $this->provider;
     }
 }

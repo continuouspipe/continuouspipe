@@ -27,6 +27,8 @@ class InMemoryProviderRepository implements ProviderRepository
     public function create(Provider $provider)
     {
         $this->providers[$provider->getIdentifier()] = $provider;
+
+        return $provider;
     }
 
     /**
