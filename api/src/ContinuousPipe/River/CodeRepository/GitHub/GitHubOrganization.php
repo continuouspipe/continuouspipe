@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River\Organization\GitHub;
+namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\Organization as OrganizationInterface;
 use GitHub\WebHook\Model\Organization;

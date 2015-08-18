@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River\Organization\GitHub;
+namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use Github\HttpClient\Message\ResponseMediator;
