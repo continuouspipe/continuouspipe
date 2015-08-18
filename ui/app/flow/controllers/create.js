@@ -2,33 +2,30 @@
 
 angular.module('continuousPipeRiver')
     .controller('FlowCreateController', function($scope, $remoteResource, $state, FlowRepository, RepositoryRepository, OrganizationRepository) {
-        $remoteResource.load('repositorySources', OrganizationRepository.findAll()).then(function (organizations) {
-            organizations.unshift({
-                'organization': {
-                    'login': 'Personal repositories',
-                    'personal': true,
-                    'active': true
-                }
-            });
-
-            $scope.repositorySources = organizations;
+        $remoteResource.load('organizations', OrganizationRepository.findAll()).then(function (organizations) {
+            $scope.organizations = organizations;
         });
 
         var loadRepositoryList = function(repositories) {
+            $scope.select(undefined);
+
             $remoteResource.load('repositories', repositories).then(function (repositories) {
-                console.log(repositories);
                 $scope.repositories = repositories;
             });
         };
 
-        $scope.switchRepositorySource = function(repositorySource) {
-            $scope.select(undefined);
+        $scope.isSourceSelected = function(source) {
+            return source === $scope.selectedSource;
+        }
 
-            if (repositorySource.personal == true) {
-                loadRepositoryList(RepositoryRepository.findForCurrentUser());
-            } else {
-                loadRepositoryList(RepositoryRepository.findByOrganization(repositorySource.login));
-            }
+        $scope.selectPersonal = function() {
+            $scope.selectedSource = '';
+            loadRepositoryList(RepositoryRepository.findForCurrentUser());
+        };
+
+        $scope.selectOrganization = function(organization) {
+            $scope.selectedSource = organization;
+            loadRepositoryList(RepositoryRepository.findByOrganization(organization));
         };
 
         $scope.select = function(repository) {
