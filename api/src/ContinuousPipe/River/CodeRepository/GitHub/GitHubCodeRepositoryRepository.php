@@ -43,17 +43,22 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
 
         $paginator = new ResultPager($client);
         $found = $paginator->fetchAll($currentUserApi, 'repositories');
-        $rawRepositories = json_encode($found, true);
 
-        $repositories = $this->serializer->deserialize(
-            $rawRepositories,
-            'array<'.Repository::class.'>',
-            'json'
-        );
+        return $this->parseRepositories($found);
+    }
 
-        return array_map(function (Repository $repository) {
-            return new GitHubCodeRepository($repository);
-        }, $repositories);
+    /**
+     * {@inheritdoc}
+     */
+    public function findByOrganization($organization)
+    {
+        $client = $this->gitHubClientFactory->createClientForCurrentUser();
+        $organizationApi = $client->organization();
+
+        $paginator = new ResultPager($client);
+        $found = $paginator->fetchAll($organizationApi, 'repositories', [ $organization ]);
+
+        return $this->parseRepositories($found);
     }
 
     /**
@@ -81,5 +86,25 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
         $repository = $this->serializer->deserialize($rawRepository, Repository::class, 'json');
 
         return new GitHubCodeRepository($repository);
+    }
+
+    /**
+     * @param array $found
+     *
+     * @return CodeRepository[]
+     */
+    private function parseRepositories(array $found)
+    {
+        $rawRepositories = json_encode($found, true);
+
+        $repositories = $this->serializer->deserialize(
+            $rawRepositories,
+            'array<'.Repository::class.'>',
+            'json'
+        );
+
+        return array_map(function (Repository $repository) {
+            return new GitHubCodeRepository($repository);
+        }, $repositories);
     }
 }

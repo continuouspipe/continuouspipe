@@ -32,4 +32,13 @@ class UserRepositoriesController
     {
         return $this->codeRepositoryRepository->findByCurrentUser();
     }
+
+    /**
+     * @Route("/user-repositories/organization/{organization}")
+     * @View
+     */
+    public function listByOrganizationAction($organization)
+    {
+        return $this->codeRepositoryRepository->findByOrganization($organization);
+    }
 }

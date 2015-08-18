@@ -12,6 +12,13 @@ interface CodeRepositoryRepository
     public function findByCurrentUser();
 
     /**
+     * @param string $organization
+     *
+     * @return CodeRepository[]
+     */
+    public function findByOrganization($organization);
+
+    /**
      * @param string $identifier
      *
      * @throws CodeRepository\CodeRepositoryNotFound
