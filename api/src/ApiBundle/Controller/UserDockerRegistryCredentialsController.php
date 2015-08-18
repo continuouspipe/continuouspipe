@@ -27,6 +27,16 @@ class UserDockerRegistryCredentialsController
     }
 
     /**
+     * @Route("/user/{email}/credentials/docker-registries", methods={"GET"})
+     * @ParamConverter("user", converter="user", options={"byEmail"="email"})
+     * @View
+     */
+    public function listAction(User $user)
+    {
+        return $this->dockerRegistryCredentialsRepository->findByUser($user);
+    }
+
+    /**
      * @Route("/user/{email}/credentials/docker-registry/{server}", methods={"GET"})
      * @ParamConverter("user", converter="user", options={"byEmail"="email"})
      * @View
