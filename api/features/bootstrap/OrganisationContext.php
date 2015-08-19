@@ -1,7 +1,6 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubOrganisation;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryOrganisationRepository;
@@ -10,7 +9,7 @@ use GitHub\WebHook\Model\Organisation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Kernel;
 
-class OrganisationContext implements Context, SnippetAcceptingContext
+class OrganisationContext implements Context
 {
     /**
      * @var Kernel
