@@ -17,6 +17,7 @@ class AppTestExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('events.xml');
         $loader->load('logging.xml');
+        $loader->load('authenticator.xml');
         $loader->load('builder.xml');
         $loader->load('flow.xml');
         $loader->load('tide.xml');

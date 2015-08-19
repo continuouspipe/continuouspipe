@@ -24,6 +24,7 @@ default:
                     - @security.token_storage
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
+                    - @security.authenticator.client
                 - Task\BuildContext:
                     - @river.event_store
                     - @event_bus
