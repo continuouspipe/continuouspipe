@@ -20,6 +20,14 @@ class InMemoryCodeRepositoryRepository implements CodeRepositoryRepository
     /**
      * {@inheritdoc}
      */
+    public function findByOrganisation($organisation)
+    {
+        throw new \LogicException('Not implemented');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findByIdentifier($identifier)
     {
         if (!array_key_exists($identifier, $this->codeRepositories)) {
