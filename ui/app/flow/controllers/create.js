@@ -14,10 +14,6 @@ angular.module('continuousPipeRiver')
             });
         };
 
-        $scope.isSourceSelected = function(source) {
-            return source === $scope.selectedSource;
-        }
-
         $scope.selectPersonal = function() {
             $scope.selectedSource = '';
             loadRepositoryList(RepositoryRepository.findForCurrentUser());

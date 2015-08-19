@@ -5,10 +5,10 @@
         <remote-resource resource-name="organisations">
             <div class="bootgrid-header">
                 <ul class="nav nav-pills">
-                    <li role="presentation" ng-class="{active: isSourceSelected('')}">
+                    <li role="presentation" ng-class="{active: selectedSource === ''}">
                         <a href="#" ng-click="selectPersonal()">Personal repositories</a>
                     </li>
-                    <li role="presentation" ng-class="{active: isSourceSelected(organisation.organisation.login)}" ng-repeat="organisation in organisations">
+                    <li role="presentation" ng-class="{active: selectedSource === organisation.organisation.login}" ng-repeat="organisation in organisations">
                         <a href="#" ng-click="selectOrganisation(organisation.organisation.login)">{{ organisation.organisation.login }}</a>
                     </li>
                 </ul>
