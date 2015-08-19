@@ -4,7 +4,6 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubOrganisation;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryOrganisationRepository;
-use ContinuousPipe\User\Tests\Authenticator\InMemoryAuthenticatorClient;
 use GitHub\WebHook\Model\Organisation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Kernel;
