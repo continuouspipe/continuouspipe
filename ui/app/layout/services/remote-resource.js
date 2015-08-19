@@ -14,7 +14,7 @@ angular.module('continuousPipeRiver')
             return resources[name];
         };
 
-        this.load = function(name, promise, persist) {
+        this.load = function(name, promise) {
             var resource = this.get(name);
             resource.status = 'loading';
 
@@ -23,10 +23,6 @@ angular.module('continuousPipeRiver')
             }, function(error) {
                 resource.status = 'error';
                 resource.error = 'An error appeared while loading '+name;
-            })['finally'](function() {
-                if (persist !== true) {
-                    delete resources[name];
-                }
             });
 
             return promise;
