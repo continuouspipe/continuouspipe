@@ -13,6 +13,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserTo
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use GitHub\WebHook\Model\Repository;
+use ContinuousPipe\User\Tests\Authenticator\InMemoryAuthenticatorClient;
 
 class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
@@ -43,19 +44,25 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var InMemoryCodeRepositoryRepository
      */
     private $codeRepositoryRepository;
+    /**
+     * @var InMemoryAuthenticatorClient
+     */
+    private $authenticatorClient;
 
     /**
      * @param Kernel $kernel
      * @param TokenStorageInterface $tokenStorage
      * @param FlowRepository $flowRepository
      * @param InMemoryCodeRepositoryRepository $codeRepositoryRepository
+     * @param InMemoryAuthenticatorClient $authenticatorClient
      */
-    public function __construct(Kernel $kernel, TokenStorageInterface $tokenStorage, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository)
+    public function __construct(Kernel $kernel, TokenStorageInterface $tokenStorage, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient)
     {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
         $this->tokenStorage = $tokenStorage;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
+        $this->authenticatorClient = $authenticatorClient;
     }
 
     /**
@@ -174,11 +181,14 @@ EOF;
     private function createFlowContextWithCodeRepository(CodeRepository $codeRepository)
     {
         $this->flowUuid = Uuid::uuid1();
+        $user = new User('samuel.roze@gmail.com');
+
         $this->codeRepositoryRepository->add($codeRepository);
+        $this->authenticatorClient->addUser($user);
 
         return RiverFlowContext::createFlow(
             $this->flowUuid,
-            new User('samuel.roze@gmail.com'),
+            $user,
             $codeRepository
         );
     }
