@@ -95,6 +95,10 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
      */
     private function parseRepositories(array $found)
     {
+        usort($found, function($repo1, $repo2) {
+            return strcasecmp($repo1['full_name'], $repo2['full_name']);
+        });
+
         $rawRepositories = json_encode($found, true);
 
         $repositories = $this->serializer->deserialize(
