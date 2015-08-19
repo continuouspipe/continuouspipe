@@ -5,7 +5,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
-use ContinuousPipe\Pipe\Tests\InMemoryAuthenticatorClient;
+use ContinuousPipe\User\Tests\Authenticator\InMemoryAuthenticatorClient;
 
 class ApiContext implements Context
 {
