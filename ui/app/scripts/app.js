@@ -10,6 +10,7 @@
  */
 angular
     .module('continuousPipeRiver', [
+        'config',
         'ngAnimate',
         'ngMessages',
         'ngSanitize',

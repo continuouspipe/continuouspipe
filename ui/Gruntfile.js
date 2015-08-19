@@ -418,9 +418,27 @@ module.exports = function (grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: true
       }
+    },
+
+    ngconstant: {
+      options: {
+        space: '  ',
+        wrap: '"use strict";\n\n {%= __ngModule %}',
+        name: 'config'
+      },
+
+      environment: {
+        options: {
+          dest: '.tmp/scripts/config.js'
+        },
+        constants: {
+          RIVER_API_URL: process.env.RIVER_API_URL || 'http://continuouspipe_river.docker/app_dev.php',
+          AUTHENTICATOR_API_URL: process.env.AUTHENTICATOR_API_URL || 'http://continuouspipe_authenticator.docker/app_dev.php',
+          LOG_STREAM_URL: process.env.LOG_STREAM_URL || 'http://logstream.docker'
+        }
+      }
     }
   });
-
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
@@ -429,6 +447,7 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
+      'ngconstant:environment',
       'wiredep',
       'concurrent:server',
       'autoprefixer:server',

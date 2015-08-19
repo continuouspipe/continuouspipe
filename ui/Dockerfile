@@ -30,4 +30,4 @@ ENV NODE_ENV development
 # Port 35729 for livereload
 EXPOSE 80 35729
 
-CMD ["grunt", "serve", "--port", "80"]
+CMD ["/app/apps/river-ui/docker/run.sh"]

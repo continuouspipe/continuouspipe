@@ -1,7 +1,9 @@
 {
   "name": "continuous-pipe-river-ui",
   "version": "0.0.1",
-  "dependencies": {},
+  "dependencies": {
+    "grunt-ng-constant": "^1.1.0"
+  },
   "repository": {},
   "devDependencies": {
     "grunt": "^0.4.5",
