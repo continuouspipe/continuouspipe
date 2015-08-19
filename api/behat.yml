@@ -33,7 +33,6 @@ default:
                     - @event_bus
                 - OrganisationContext:
                     - @kernel
-                    - @security.authenticator.client
                     - @repository_river.organisation_repository
 
     extensions:

@@ -16,10 +16,6 @@ class OrganisationContext implements Context
      */
     private $kernel;
     /**
-     * @var InMemoryAuthenticatorClient
-     */
-    private $authenticatorClient;
-    /**
      * @var InMemoryOrganisationRepository
      */
     private $organisationRepository;
@@ -30,16 +26,13 @@ class OrganisationContext implements Context
 
     /**
      * @param Kernel $kernel
-     * @param InMemoryAuthenticatorClient $authenticatorClient
      * @param InMemoryOrganisationRepository $organisationRepository
      */
     public function __construct(
         Kernel $kernel,
-        InMemoryAuthenticatorClient $authenticatorClient,
         InMemoryOrganisationRepository $organisationRepository)
     {
         $this->kernel = $kernel;
-        $this->authenticatorClient = $authenticatorClient;
         $this->organisationRepository = $organisationRepository;
     }
 
