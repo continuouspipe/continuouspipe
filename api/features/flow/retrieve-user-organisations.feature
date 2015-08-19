@@ -3,7 +3,7 @@ Feature:
   As a developer
   I need to be able to retrieve a list of user's organisation
 
-  Scenario:
+  Scenario: List developer's organisations
     Given I am a member of the following organisations:
       | organisation |
       | inviqa       |
