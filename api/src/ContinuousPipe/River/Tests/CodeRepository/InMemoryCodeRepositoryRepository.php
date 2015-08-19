@@ -9,12 +9,14 @@ class InMemoryCodeRepositoryRepository implements CodeRepositoryRepository
 {
     private $codeRepositories = [];
 
+    private $organisationCodeRepositories = [];
+
     /**
      * {@inheritdoc}
      */
     public function findByCurrentUser()
     {
-        throw new \LogicException('Not implemented');
+        return $this->codeRepositories;
     }
 
     /**
@@ -22,7 +24,7 @@ class InMemoryCodeRepositoryRepository implements CodeRepositoryRepository
      */
     public function findByOrganisation($organisation)
     {
-        throw new \LogicException('Not implemented');
+        return $this->organisationCodeRepositories[$organisation];
     }
 
     /**
@@ -45,5 +47,20 @@ class InMemoryCodeRepositoryRepository implements CodeRepositoryRepository
     public function add(CodeRepository $codeRepository)
     {
         $this->codeRepositories[$codeRepository->getIdentifier()] = $codeRepository;
+    }
+
+    /**
+     * Add a new code repository for an organisation
+     *
+     * @param CodeRepository $codeRepository
+     * @param string $organisation
+     */
+    public function addForOrganisation(CodeRepository $codeRepository, $organisation)
+    {
+        if (!array_key_exists($organisation, $this->organisationCodeRepositories)) {
+            $this->organisationCodeRepositories[$organisation] = [];
+        }
+
+        $this->organisationCodeRepositories[$organisation][] = $codeRepository;
     }
 }

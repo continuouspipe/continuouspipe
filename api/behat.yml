@@ -34,6 +34,9 @@ default:
                 - OrganisationContext:
                     - @kernel
                     - @repository_river.organisation_repository
+                - RepositoryContext:
+                    - @kernel
+                    - @repository_river.code_repository_repository
 
     extensions:
         Behat\Symfony2Extension:
