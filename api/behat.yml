@@ -31,6 +31,10 @@ default:
                 - Task\DeployContext:
                     - @river.event_store
                     - @event_bus
+                - OrganisationContext:
+                    - @kernel
+                    - @security.authenticator.client
+                    - @repository_river.organisation_repository
 
     extensions:
         Behat\Symfony2Extension:
