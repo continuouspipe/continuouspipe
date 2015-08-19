@@ -53,7 +53,13 @@ class WebHookHandler
      * @param EventStore                    $eventStore
      * @param PullRequestDeploymentNotifier $pullRequestDeploymentNotifier
      */
-    public function __construct(TideFactory $tideFactory, CodeReferenceResolver $codeReferenceResolver, MessageBus $eventBus, TideRepository $tideRepository, EventStore $eventStore, PullRequestDeploymentNotifier $pullRequestDeploymentNotifier)
+    public function __construct(
+        TideFactory $tideFactory,
+        CodeReferenceResolver $codeReferenceResolver,
+        MessageBus $eventBus,
+        TideRepository $tideRepository,
+        EventStore $eventStore,
+        PullRequestDeploymentNotifier $pullRequestDeploymentNotifier)
     {
         $this->tideFactory = $tideFactory;
         $this->codeReferenceResolver = $codeReferenceResolver;
