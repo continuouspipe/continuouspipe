@@ -36,6 +36,6 @@ class DeploymentLoggerFactory
             );
         }
 
-        return new EmptyLogger();
+        return $this->loggerFactory->create();
     }
 }

@@ -23,6 +23,7 @@ use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Model\ServiceAccount;
 use LogStream\EmptyLogger;
+use LogStream\LoggerFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -57,19 +58,25 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      * @var TraceableServiceAccountRepository
      */
     private $serviceAccountRepository;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
 
     /**
      * @param TraceableNamespaceRepository $namespaceRepository
      * @param TraceableMessageBus $eventBus
      * @param TraceableSecretRepository $secretRepository
      * @param TraceableServiceAccountRepository $serviceAccountRepository
+     * @param LoggerFactory $loggerFactory
      */
-    public function __construct(TraceableNamespaceRepository $namespaceRepository, TraceableMessageBus $eventBus, TraceableSecretRepository $secretRepository, TraceableServiceAccountRepository $serviceAccountRepository)
+    public function __construct(TraceableNamespaceRepository $namespaceRepository, TraceableMessageBus $eventBus, TraceableSecretRepository $secretRepository, TraceableServiceAccountRepository $serviceAccountRepository, LoggerFactory $loggerFactory)
     {
         $this->namespaceRepository = $namespaceRepository;
         $this->eventBus = $eventBus;
         $this->secretRepository = $secretRepository;
         $this->serviceAccountRepository = $serviceAccountRepository;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -175,7 +182,7 @@ class NamespaceContext implements Context, SnippetAcceptingContext
                     new User('samuel')
                 ),
                 $this->providerContext->iHaveAValidKubernetesProvider(),
-                new EmptyLogger()
+                $this->loggerFactory->create()
             )
         ));
     }
