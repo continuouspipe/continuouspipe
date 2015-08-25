@@ -114,6 +114,10 @@ fos_rest:
             - { path: '^/_profiler', priorities: ['html'] }
             - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
 
+    exception:
+        messages:
+            'ContinuousPipe\River\CodeRepository\WebHook\CouldNotUpdateWebHookException': true
+
 sensio_framework_extra:
     view:    { annotations: false }
     request: { converters: true }
