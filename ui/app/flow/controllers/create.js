@@ -34,10 +34,7 @@ angular.module('continuousPipeRiver')
             FlowRepository.createFromRepositoryAndTasks($scope.selectedRepository, $scope.selectedTasks).then(function(flow) {
                 $state.go('flow', {uuid: flow.uuid});
             }, function(error) {
-                var message = ((error || {}).data || {}).message;
-                if (message == undefined) {
-                    message = "An unknown error occured while creating flow";
-                }
+                var message = ((error || {}).data || {}).message || "An unknown error occured while creating flow";
                 swal("Error !", message, "error");
             });
         };
