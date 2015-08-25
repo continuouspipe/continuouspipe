@@ -116,7 +116,7 @@ fos_rest:
 
     exception:
         messages:
-            'ContinuousPipe\River\CodeRepository\WebHook\CouldNotUpdateWebHookException': true
+            'ContinuousPipe\River\CodeRepository\WebHook\CouldNotCreateWebHookException': true
 
 sensio_framework_extra:
     view:    { annotations: false }

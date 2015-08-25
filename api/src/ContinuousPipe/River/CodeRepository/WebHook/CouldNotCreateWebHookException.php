@@ -2,6 +2,6 @@
 
 namespace ContinuousPipe\River\CodeRepository\WebHook;
 
-class CouldNotUpdateWebHookException extends \RuntimeException
+class CouldNotCreateWebHookException extends \RuntimeException
 {
 }
