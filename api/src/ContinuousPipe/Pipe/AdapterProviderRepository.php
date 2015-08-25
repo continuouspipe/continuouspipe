@@ -30,9 +30,7 @@ class AdapterProviderRepository implements ProviderRepository
 
         foreach ($this->adapterRegistry->getAdapters() as $adapter) {
             foreach ($adapter->getRepository()->findAll() as $provider) {
-                $providerName = $adapter->getType().'/'.$provider->getIdentifier();
-
-                $providers[$providerName] = $provider;
+                $providers[] = $provider;
             }
         }
 
