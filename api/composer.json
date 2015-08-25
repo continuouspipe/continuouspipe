@@ -60,6 +60,9 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ],
+        "update-parameters": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
         ]
     },
     "config": {
@@ -69,9 +72,13 @@
         "symfony-app-dir": "app",
         "symfony-web-dir": "web",
         "symfony-assets-install": "relative",
-        "incenteev-parameters": {
-            "file": "app/config/parameters.yml"
-        }
+        "incenteev-parameters": [{
+            "file": "app/config/parameters.yml",
+            "env-map": {
+                "river_public_url": "SERVICE_RIVER_PUBLIC_ENDPOINT",
+                "river_ui_url": "SERVICE_RIVERUI_PUBLIC_ENDPOINT"
+            }
+        }]
     },
     "repositories": [
         {
