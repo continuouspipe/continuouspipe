@@ -20,7 +20,7 @@ ADD .bowerrc /app/apps/river-ui/.bowerrc
 ADD bower.json /app/apps/river-ui/bower.json
 RUN bower install --config.interactive=false --allow-root
 
-# Make everything available for start
+# Add application code
 ADD . /app/apps/river-ui
 
 # Set the environment to the development one
@@ -30,4 +30,4 @@ ENV NODE_ENV development
 # Port 35729 for livereload
 EXPOSE 80 35729
 
-CMD ["grunt", "serve", "--port", "80"]
+CMD ["/app/apps/river-ui/docker/run.sh"]
