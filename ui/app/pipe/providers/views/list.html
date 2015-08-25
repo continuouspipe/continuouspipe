@@ -1,0 +1,43 @@
+<div class="container">
+    <div class="block-header">
+        <h2>Cloud Providers</h2>
+
+        <ul class="actions">
+            <li>
+                <a ui-sref="providers.create">
+                    <i class="md md-add"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <remote-resource resource-name="providers">
+            <div class="text-center p20" ng-show="providers.length === 0">No provider found. <a ui-sref="providers.create">Creates one !</a></div>
+            <table class="table table-inner table-vmiddle" ng-show="providers.length">
+                <thead>
+                <tr>
+                    <th>Identifier</th>
+                    <th>Cluster</th>
+                    <th>Credentials</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="provider in providers">
+                    <td>{{ provider.identifier }}</td>
+                    <td>{{ provider.cluster.address }} <small>{{ provider.cluster.version }}</small></td>
+                    <td>User <small>{{ provider.user.username }}</small></td>
+                    <td>
+                        <ul class="actions">
+                            <li>
+                                <a ng-click="deleteProvider(provider)"><i class="md md-delete"></i></a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </remote-resource>
+    </div>
+</div>
