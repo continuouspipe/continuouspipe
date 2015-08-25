@@ -30,7 +30,7 @@ angular.module('continuousPipeRiver')
 
         $scope.selectPersonal();
 
-        $scope.finish = function() {
+        $scope.create = function() {
             FlowRepository.createFromRepositoryAndTasks($scope.selectedRepository, $scope.selectedTasks).then(function(flow) {
                 $state.go('flow', {uuid: flow.uuid});
             }, function() {
