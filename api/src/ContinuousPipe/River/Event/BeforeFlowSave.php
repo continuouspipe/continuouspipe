@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Event;
 
 use ContinuousPipe\River\Flow;
 
-class FlowCreated
+class BeforeFlowSave
 {
     /**
      * @var Flow
