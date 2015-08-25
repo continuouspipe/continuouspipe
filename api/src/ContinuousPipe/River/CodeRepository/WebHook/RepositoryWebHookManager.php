@@ -7,6 +7,7 @@ use ContinuousPipe\River\Flow;
 use GitHub\WebHook\Model\WebHook;
 use GitHub\WebHook\Model\WebHookConfiguration;
 use GitHub\WebHook\Setup\WebHookManager;
+use GuzzleHttp\Exception\BadResponseException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class RepositoryWebHookManager
@@ -65,6 +66,10 @@ class RepositoryWebHookManager
             'push',
         ]);
 
-        $this->webHookManager->setup($codeRepository->getGitHubRepository(), $webHook);
+        try {
+            $this->webHookManager->setup($codeRepository->getGitHubRepository(), $webHook);
+        } catch (BadResponseException $e) {
+            throw new CouldNotUpdateWebHookException("Could not create GitHub web hook for the repository.");
+        }
     }
 }
