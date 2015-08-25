@@ -3,9 +3,9 @@
 namespace ContinuousPipe\River\EventListener\Flow;
 
 use ContinuousPipe\River\CodeRepository\WebHook\RepositoryWebHookManager;
-use ContinuousPipe\River\Event\FlowCreated;
+use ContinuousPipe\River\Event\BeforeFlowSave;
 
-class ConfigureWebHookAtCreationListener
+class ConfigureWebHookBeforeSaveListener
 {
     /**
      * @var RepositoryWebHookManager
@@ -21,9 +21,9 @@ class ConfigureWebHookAtCreationListener
     }
 
     /**
-     * @param FlowCreated $event
+     * @param BeforeFlowSave $event
      */
-    public function notify(FlowCreated $event)
+    public function notify(BeforeFlowSave $event)
     {
         $flow = $event->getFlow();
 

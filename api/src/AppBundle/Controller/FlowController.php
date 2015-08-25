@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\River\Event\FlowCreated;
+use ContinuousPipe\River\Event\BeforeFlowSave;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\Flow as FlowView;
 use ContinuousPipe\River\FlowFactory;
@@ -53,9 +53,8 @@ class FlowController
     public function fromRepositoryAction(Flow\Request\FlowCreationRequest $creationRequest)
     {
         $flow = $this->flowFactory->fromCreationRequest($creationRequest);
+        $this->eventBus->handle(new BeforeFlowSave($flow));
         $flow = $this->flowRepository->save($flow);
-
-        $this->eventBus->handle(new FlowCreated($flow));
 
         return FlowView::fromFlow($flow);
     }

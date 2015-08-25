@@ -21,10 +21,10 @@
         </service>
 
         <!-- Event subscribers -->
-        <service id="river.listener.flow_created" class="ContinuousPipe\River\EventListener\Flow\ConfigureWebHookAtCreationListener">
+        <service id="river.listener.flow_created" class="ContinuousPipe\River\EventListener\Flow\ConfigureWebHookBeforeSaveListener">
             <argument type="service" id="river.code_repository.webhook_manager" />
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\FlowCreated"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\BeforeFlowSave"/>
         </service>
     </services>
 </container>
