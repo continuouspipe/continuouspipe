@@ -33,13 +33,12 @@ angular.module('continuousPipeRiver')
         $scope.create = function() {
             FlowRepository.createFromRepositoryAndTasks($scope.selectedRepository, $scope.selectedTasks).then(function(flow) {
                 $state.go('flow', {uuid: flow.uuid});
-            }, function(response) {
-                if (response.data.error.message != undefined) {
-                    var error = response.data.error.message;
-                } else {
-                    var error = "An unknown error occured while creating flow";
+            }, function(error) {
+                var message = ((error || {}).data || {}).message;
+                if (message == undefined) {
+                    message = "An unknown error occured while creating flow";
                 }
-                swal("Error !", error, "error");
+                swal("Error !", message, "error");
             });
         };
 
