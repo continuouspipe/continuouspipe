@@ -1,12 +1,14 @@
 <?php
 
-namespace ContinuousPipe\Pipe\Tests;
+namespace ContinuousPipe\Pipe\Tests\Adapter\Fake;
 
 use ContinuousPipe\Adapter\Adapter;
 use ContinuousPipe\Adapter\ProviderRepository;
 
 class FakeAdapter implements Adapter
 {
+    const TYPE = 'fake';
+
     /**
      * @var ProviderRepository
      */
@@ -31,7 +33,7 @@ class FakeAdapter implements Adapter
      */
     public function getType()
     {
-        return 'fake';
+        return self::TYPE;
     }
 
     /**

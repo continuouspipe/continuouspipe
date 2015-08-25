@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Pipe\Notification;
 
-use ContinuousPipe\Pipe\Deployment;
+use ContinuousPipe\Pipe\View\Deployment;
 use GuzzleHttp\Client;
 use JMS\Serializer\Serializer;
 

@@ -6,7 +6,7 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use ContinuousPipe\Adapter\ProviderRepository;
-use ContinuousPipe\Pipe\Tests\FakeProvider;
+use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
 
 class ProviderContext implements Context
 {
@@ -26,7 +26,7 @@ class ProviderContext implements Context
     private $providerRepository;
 
     /**
-     * @param Kernel $kernel
+     * @param Kernel             $kernel
      * @param ProviderRepository $providerRepository
      */
     public function __construct(Kernel $kernel, ProviderRepository $providerRepository)
@@ -73,7 +73,7 @@ class ProviderContext implements Context
             throw new \RuntimeException('Expected a JSON body');
         }
 
-        $matchingProvider = array_filter($json, function(array $raw) use ($name) {
+        $matchingProvider = array_filter($json, function (array $raw) use ($name) {
             return $raw['identifier'] == $name;
         });
 
@@ -92,7 +92,7 @@ class ProviderContext implements Context
             'POST',
             [], [], [],
             [
-                'CONTENT_TYPE' => 'application/json'
+                'CONTENT_TYPE' => 'application/json',
             ],
             $string->getRaw()
         ));

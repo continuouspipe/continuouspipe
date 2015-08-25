@@ -5,6 +5,7 @@ namespace ContinuousPipe\Pipe\Notification\Listener;
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
 use ContinuousPipe\Pipe\Notification\HttpNotifier;
+use ContinuousPipe\Pipe\View\DeploymentRepository;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 
@@ -21,21 +22,28 @@ class DeploymentStatusListener
     private $loggerFactory;
 
     /**
+     * @var DeploymentRepository
+     */
+    private $deploymentRepository;
+
+    /**
      * @param HttpNotifier            $httpNotifier
      * @param DeploymentLoggerFactory $loggerFactory
+     * @param DeploymentRepository    $deploymentRepository
      */
-    public function __construct(HttpNotifier $httpNotifier, DeploymentLoggerFactory $loggerFactory)
+    public function __construct(HttpNotifier $httpNotifier, DeploymentLoggerFactory $loggerFactory, DeploymentRepository $deploymentRepository)
     {
         $this->httpNotifier = $httpNotifier;
         $this->loggerFactory = $loggerFactory;
+        $this->deploymentRepository = $deploymentRepository;
     }
 
     /**
-     * @param DeploymentEvent $deploymentEvent
+     * @param DeploymentEvent $event
      */
-    public function notify(DeploymentEvent $deploymentEvent)
+    public function notify(DeploymentEvent $event)
     {
-        $deployment = $deploymentEvent->getDeployment();
+        $deployment = $this->deploymentRepository->find($event->getDeploymentUuid());
         $callbackUrl = $deployment->getRequest()->getNotificationCallbackUrl();
 
         if (!empty($callbackUrl)) {

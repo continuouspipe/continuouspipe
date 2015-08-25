@@ -2,123 +2,57 @@
 
 namespace ContinuousPipe\Pipe;
 
-use ContinuousPipe\Pipe\Environment\PublicEndpoint;
-use ContinuousPipe\User\User;
-use Rhumsaa\Uuid\Uuid;
-use JMS\Serializer\Annotation as JMS;
+use ContinuousPipe\Pipe\Event\DeploymentEvent;
 
 class Deployment
 {
-    const STATUS_PENDING = 'pending';
-    const STATUS_RUNNING = 'running';
-    const STATUS_SUCCESS = 'success';
-    const STATUS_FAILURE = 'failure';
-
     /**
-     * @JMS\Type("string")
-     *
-     * @var string
+     * @var DeploymentEvent[]
      */
-    private $uuid;
+    private $events = [];
 
     /**
-     * @JMS\Type("string")
-     *
-     * @var string
+     * @var DeploymentEvent[]
      */
-    private $status;
+    private $newEvents = [];
 
     /**
-     * @JMS\Type("ContinuousPipe\Pipe\DeploymentRequest")
-     *
-     * @var DeploymentRequest
-     */
-    private $request;
-
-    /**
-     * @JMS\Type("ContinuousPipe\User\User")
-     *
-     * @var User
-     */
-    private $user;
-
-    /**
-     * @JMS\Type("array<ContinuousPipe\Pipe\Environment\PublicEndpoint>")
-     *
-     * @var PublicEndpoint[]
-     */
-    private $publicEndpoints;
-
-    /**
-     * @param DeploymentRequest $request
-     * @param User              $user
+     * @param
+     * @param $events
      *
      * @return Deployment
      */
-    public static function fromRequest(DeploymentRequest $request, User $user)
+    public static function fromEvents($events)
     {
-        $deployment = new self();
-        $deployment->uuid = (string) Uuid::uuid1();
-        $deployment->request = $request;
-        $deployment->status = self::STATUS_PENDING;
-        $deployment->user = $user;
+        $tide = new self();
+        foreach ($events as $event) {
+            $tide->apply($event);
+        }
 
-        return $deployment;
+        $tide->popNewEvents();
+
+        return $tide;
     }
 
     /**
-     * @return Uuid
+     * Apply a given event.
+     *
+     * @param DeploymentEvent $event
      */
-    public function getUuid()
+    public function apply(DeploymentEvent $event)
     {
-        return Uuid::fromString($this->uuid);
+        $this->events[] = $event;
     }
 
     /**
-     * @return string
+     * @return DeploymentEvent[]
      */
-    public function getStatus()
+    public function popNewEvents()
     {
-        return $this->status;
-    }
+        $events = $this->newEvents;
 
-    /**
-     * @return DeploymentRequest
-     */
-    public function getRequest()
-    {
-        return $this->request;
-    }
+        $this->newEvents = [];
 
-    /**
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param string $status
-     */
-    public function updateStatus($status)
-    {
-        $this->status = $status;
-    }
-
-    /**
-     * @return Environment\PublicEndpoint[]
-     */
-    public function getPublicEndpoints()
-    {
-        return $this->publicEndpoints;
-    }
-
-    /**
-     * @param Environment\PublicEndpoint[] $publicEndpoints
-     */
-    public function setPublicEndpoints($publicEndpoints)
-    {
-        $this->publicEndpoints = $publicEndpoints;
+        return $events;
     }
 }

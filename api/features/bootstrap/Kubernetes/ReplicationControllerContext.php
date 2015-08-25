@@ -72,33 +72,52 @@ class ReplicationControllerContext implements Context
         $replicationController = $this->getReplicationControllerByName($name, $this->replicationControllerRepository->getCreatedReplicationControllers());
         $containers = $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()->getContainers();
         $expectedVariables = $environs->getHash();
-        var_dump($expectedVariables);
-        exit;
 
         foreach ($containers as $container) {
-            $variables = $container->getEnvironmentVariables();
+            $foundVariables = [];
+            foreach ($container->getEnvironmentVariables() as $variable) {
+                $foundVariables[$variable->getName()] = $variable->getValue();
+            }
 
-            foreach ($variables as $variable) {
+            foreach ($expectedVariables as $expectedVariable) {
+                $variableName = $expectedVariable['name'];
+                if (!array_key_exists($variableName, $foundVariables)) {
+                    throw new \RuntimeException(sprintf(
+                        'Variable "%s" not found',
+                        $expectedVariable['name']
+                    ));
+                }
 
+                $foundValue = $foundVariables[$variableName];
+                if ($foundValue != $expectedVariable['value']) {
+                    throw new \RuntimeException(sprintf(
+                        'Found value "%s" in environment variable "%s" but expecting "%s"',
+                        $foundValue,
+                        $variableName,
+                        $expectedVariable['value']
+                    ));
+                }
             }
         }
     }
 
     /**
      * @param string $name
-     * @param array $collection
+     * @param array  $collection
+     *
      * @return ReplicationController[]
      */
     private function getReplicationControllersByName($name, array $collection)
     {
-        return array_filter($collection, function(ReplicationController $replicationController) use ($name) {
+        return array_filter($collection, function (ReplicationController $replicationController) use ($name) {
             return $replicationController->getMetadata()->getName() == $name;
         });
     }
 
     /**
      * @param string $name
-     * @param array $collection
+     * @param array  $collection
+     *
      * @return ReplicationController
      */
     private function getReplicationControllerByName($name, array $collection)

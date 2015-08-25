@@ -54,6 +54,13 @@
 
             <tag name="pipe.adapter" />
         </service>
+        <service id="pipe.adapter.kubernetes.deployment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory">
+            <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
+        </service>
+        <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\LoopServiceWaiter">
+            <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
+            <argument type="service" id="log_stream.logger_factory" />
+        </service>
 
         <!-- Listeners -->
         <service id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" class="ContinuousPipe\Adapter\Kubernetes\PrivateImages\DockerCfgFileGenerator" />
@@ -66,6 +73,34 @@
             <argument type="service" id="pipe.adapter.kubernetes.private_images.secret_factory" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated" />
+        </service>
+        <service id="pipe.adapter.kubernetes.listener.wait_public_services" class="ContinuousPipe\Adapter\Kubernetes\Listener\PublicServicesCreated\WaitPublicServicesEndpoints">
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="pipe.adapter.kubernetes.service_waiter" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated" />
+        </service>
+
+        <!-- Handlers -->
+        <service id="pipe.adapter.kubernetes.prepare_environment_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\PrepareEnvironmentHandler">
+            <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
+        </service>
+        <service id="pipe.adapter.kubernetes.create_public_endpoints" class="ContinuousPipe\Adapter\Kubernetes\Handler\CreatePublicEndpointsHandler">
+            <argument type="service" id="kubernetes.transformer.environment" />
+            <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand" />
+        </service>
+        <service id="pipe.adapter.kubernetes.create_components_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\CreateComponentsHandler">
+            <argument type="service" id="kubernetes.transformer.environment" />
+            <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
         </service>
     </services>
 </container>

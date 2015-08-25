@@ -3,8 +3,8 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
-use ContinuousPipe\Pipe\Deployment;
-use ContinuousPipe\Pipe\DeploymentRepository;
+use ContinuousPipe\Pipe\View\Deployment;
+use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\User\Security\UserContext;
 use Rhumsaa\Uuid\Uuid;

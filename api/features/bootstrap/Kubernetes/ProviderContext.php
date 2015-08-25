@@ -43,7 +43,7 @@ class ProviderContext implements Context
      */
     public function theKubernetesCloudProviderMustBeSuccessfullySaved()
     {
-        $kubernetesProviders = array_filter($this->providerRepository->findAll(), function(Provider $provider) {
+        $kubernetesProviders = array_filter($this->providerRepository->findAll(), function (Provider $provider) {
             return $provider instanceof KubernetesProvider;
         });
 

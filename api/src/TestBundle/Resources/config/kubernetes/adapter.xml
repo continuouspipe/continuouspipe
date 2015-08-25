@@ -6,5 +6,6 @@
 
     <services>
         <service id="pipe.adapter.kubernetes.repository" class="ContinuousPipe\Pipe\Tests\InMemoryProviderRepository" />
+        <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWaiter" />
     </services>
 </container>

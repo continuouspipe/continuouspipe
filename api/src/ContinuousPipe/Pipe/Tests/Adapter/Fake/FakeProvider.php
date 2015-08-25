@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Pipe\Tests;
+namespace ContinuousPipe\Pipe\Tests\Adapter\Fake;
 
 use ContinuousPipe\Adapter\Provider;
 

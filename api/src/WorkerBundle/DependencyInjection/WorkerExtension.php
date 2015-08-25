@@ -23,6 +23,7 @@ class WorkerExtension extends Extension
         $loader->load('handler.xml');
         $loader->load('docker-compose.xml');
         $loader->load('adapter.xml');
+        $loader->load('deployment.xml');
         $loader->load('kubernetes.xml');
         $loader->load('notification.xml');
     }

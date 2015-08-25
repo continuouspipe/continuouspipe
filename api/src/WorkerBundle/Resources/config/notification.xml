@@ -15,6 +15,7 @@
         <service id="pipe.notification.deployment_status_listener" class="ContinuousPipe\Pipe\Notification\Listener\DeploymentStatusListener">
             <argument type="service" id="pipe.notification.http_notifier" />
             <argument type="service" id="pipe.deployment_logger_factory" />
+            <argument type="service" id="pipe.view.deployment_repository" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentSuccessful" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentFailed" />
