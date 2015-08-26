@@ -90,19 +90,7 @@
                         <table class="table table-striped">
                             <tbody>
                             <tr ng-repeat="(i, task) in selectedTasks">
-                                <td><strong>{{ task.name }}</strong></td>
-                                <td>
-                                    <p>{{ task.description }}</p>
-                                    <form ng-show="task.context">
-                                        <div class="form-group fg-line" ng-repeat="(key, value) in task.context">
-                                            <label>{{ key }}</label>
-                                            <input type="text" class="form-control input-sm" ng-model="task.context[key]" />
-                                        </div>
-                                    </form>
-                                </td>
-                                <td>
-                                    <button class="btn btn-danger" ng-click="removeTask(i)">Remove</button>
-                                </td>
+                                <td ng-include="'flow/views/creation/task-'+task.name+'.html'"></td>
                             </tr>
                             </tbody>
                         </table>

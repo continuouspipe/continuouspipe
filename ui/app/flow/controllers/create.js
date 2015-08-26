@@ -41,9 +41,7 @@ angular.module('continuousPipeRiver')
 
         $scope.availableTasks = [
             {name: 'build', description: 'Build Docker images found in your `docker-compose.yml` file.'},
-            {name: 'deploy', description: 'Deploy the environment to a given Cloud Provider.', context: {
-                providerName: null
-            }}
+            {name: 'deploy', description: 'Deploy the environment to a given Cloud Provider.'}
         ];
         $scope.selectedTasks = [];
 
