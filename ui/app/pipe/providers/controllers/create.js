@@ -10,7 +10,7 @@ angular.module('continuousPipeRiver')
             ProviderRepository.create($scope.providerType, provider).then(function() {
                 $state.go('providers');
             }, function(error) {
-                var message = ((error || {}).data || {}).message || "An unknown error occured while creating flow";
+                var message = ((error || {}).data || {}).message || "An unknown error occured while creating provider";
                 swal("Error !", message, "error");
             });
         };
