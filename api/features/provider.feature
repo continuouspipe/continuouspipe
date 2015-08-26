@@ -17,7 +17,7 @@ Feature:
     When I request the environment list of provider "foo"
     Then I should successfully receive the environment list
 
-  Scenario:
+  Scenario: Delete a provider
     Given I have a provider named "foo"
     When I delete the provider named "foo"
     Then the provider "foo" should not exists
