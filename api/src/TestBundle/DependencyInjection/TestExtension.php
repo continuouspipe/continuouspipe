@@ -19,6 +19,7 @@ class TestExtension extends Extension
         $loader->load('fake-adapter.xml');
         $loader->load('authenticator.xml');
         $loader->load('message-bus.xml');
+        $loader->load('logging.xml');
         $loader->load('kubernetes/adapter.xml');
         $loader->load('kubernetes/client.xml');
     }

@@ -7,10 +7,8 @@ use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\DockerCompose\Loader\YamlLoader;
 use ContinuousPipe\Pipe\AdapterProviderRepository;
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
-use ContinuousPipe\Pipe\Deployment;
 use ContinuousPipe\Pipe\DeploymentContext;
-use ContinuousPipe\Pipe\Event\DeploymentFailed;
-use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
+use ContinuousPipe\Pipe\Event\DeploymentStarted;
 use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -64,43 +62,31 @@ class StartDeploymentHandler
     public function handle(StartDeploymentCommand $command)
     {
         $deployment = $command->getDeployment();
-        $deployment->updateStatus(Deployment::STATUS_RUNNING);
 
         $logger = $this->loggerFactory->create($deployment);
         $logger->start();
 
-        try {
-            $request = $deployment->getRequest();
-            $logger->append(new Text(sprintf(
-                'Deploying to the environment "%s" to provider "%s"',
-                $request->getEnvironmentName(),
-                $request->getProviderName()
-            )));
+        $request = $deployment->getRequest();
+        $logger->append(new Text(sprintf(
+            'Deploying to the environment "%s" to provider "%s"',
+            $request->getEnvironmentName(),
+            $request->getProviderName()
+        )));
 
-            $environment = $this->dockerComposeYamlLoader->load(
-                $request->getEnvironmentName(),
-                $request->getDockerComposeContents()
-            );
+        $environment = $this->dockerComposeYamlLoader->load(
+            $request->getEnvironmentName(),
+            $request->getDockerComposeContents()
+        );
 
-            $logger->append(new Text(sprintf(
-                'Found %d components in `docker-compose.yml` file.',
-                count($environment->getComponents())
-            )));
+        $logger->append(new Text(sprintf(
+            'Found %d components in `docker-compose.yml` file.',
+            count($environment->getComponents())
+        )));
 
-            list($type, $name) = explode('/', $request->getProviderName());
-            $provider = $this->providerRepository->findByTypeAndIdentifier($type, $name);
-            $environmentClient = $this->environmentClientFactory->getByProvider($provider);
 
-            $deploymentContext = new DeploymentContext($deployment, $provider, $logger);
-            $environmentClient->createOrUpdate($environment, $deploymentContext);
-
-            $deployment->updateStatus(Deployment::STATUS_SUCCESS);
-            $this->eventBus->handle(new DeploymentSuccessful($deployment));
-        } catch (\Exception $e) {
-            $deployment->updateStatus(Deployment::STATUS_FAILURE);
-            $this->eventBus->handle(new DeploymentFailed($deployment));
-
-            throw $e;
-        }
+        list($type, $name) = explode('/', $request->getProviderName());
+        $provider = $this->providerRepository->findByTypeAndIdentifier($type, $name);
+        $deploymentContext = new DeploymentContext($deployment, $provider, $logger, $environment);
+        $this->eventBus->handle(new DeploymentStarted($deploymentContext));
     }
 }

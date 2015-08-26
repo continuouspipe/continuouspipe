@@ -5,6 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="pipe.deployment_repository" class="ContinuousPipe\Pipe\Tests\InMemoryDeploymentRepository" />
+        <service id="pipe.view.deployment_repository" class="ContinuousPipe\Pipe\Tests\InMemoryDeploymentRepository" />
+        <service id="pipe.event_store" class="ContinuousPipe\Pipe\Tests\EventBus\InMemoryEventStore" />
     </services>
 </container>

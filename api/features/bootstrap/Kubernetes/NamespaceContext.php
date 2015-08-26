@@ -6,14 +6,13 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
-use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableSecretRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceAccountRepository;
-use ContinuousPipe\Pipe\Deployment;
+use ContinuousPipe\Model\Environment;
+use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\DeploymentRequest;
-use ContinuousPipe\Pipe\Tests\FakeProvider;
 use ContinuousPipe\Pipe\Tests\MessageBus\TraceableMessageBus;
 use ContinuousPipe\User\User;
 use Kubernetes\Client\Exception\NamespaceNotFound;
@@ -22,9 +21,8 @@ use Kubernetes\Client\Model\LocalObjectReference;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Model\ServiceAccount;
-use LogStream\EmptyLogger;
+use LogStream\LoggerFactory;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Kernel;
 
 class NamespaceContext implements Context, SnippetAcceptingContext
 {
@@ -57,19 +55,25 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      * @var TraceableServiceAccountRepository
      */
     private $serviceAccountRepository;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
 
     /**
-     * @param TraceableNamespaceRepository $namespaceRepository
-     * @param TraceableMessageBus $eventBus
-     * @param TraceableSecretRepository $secretRepository
+     * @param TraceableNamespaceRepository      $namespaceRepository
+     * @param TraceableMessageBus               $eventBus
+     * @param TraceableSecretRepository         $secretRepository
      * @param TraceableServiceAccountRepository $serviceAccountRepository
+     * @param LoggerFactory                     $loggerFactory
      */
-    public function __construct(TraceableNamespaceRepository $namespaceRepository, TraceableMessageBus $eventBus, TraceableSecretRepository $secretRepository, TraceableServiceAccountRepository $serviceAccountRepository)
+    public function __construct(TraceableNamespaceRepository $namespaceRepository, TraceableMessageBus $eventBus, TraceableSecretRepository $secretRepository, TraceableServiceAccountRepository $serviceAccountRepository, LoggerFactory $loggerFactory)
     {
         $this->namespaceRepository = $namespaceRepository;
         $this->eventBus = $eventBus;
         $this->secretRepository = $secretRepository;
         $this->serviceAccountRepository = $serviceAccountRepository;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -153,7 +157,7 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      */
     public function itShouldDispatchTheNamespaceCreatedEvent()
     {
-        $namespaceCreatedEvents = array_filter($this->eventBus->getMessages(), function($message) {
+        $namespaceCreatedEvents = array_filter($this->eventBus->getMessages(), function ($message) {
             return $message instanceof NamespaceCreated;
         });
 
@@ -175,7 +179,8 @@ class NamespaceContext implements Context, SnippetAcceptingContext
                     new User('samuel')
                 ),
                 $this->providerContext->iHaveAValidKubernetesProvider(),
-                new EmptyLogger()
+                $this->loggerFactory->create(),
+                new Environment('foo', 'bar')
             )
         ));
     }
@@ -185,7 +190,7 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      */
     public function theSecretShouldBeCreated($name)
     {
-        $matchingCreated = array_filter($this->secretRepository->getCreated(), function(Secret $secret) use ($name) {
+        $matchingCreated = array_filter($this->secretRepository->getCreated(), function (Secret $secret) use ($name) {
             return $secret->getMetadata()->getName() == $name;
         });
 
@@ -199,8 +204,8 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      */
     public function theServiceAccountShouldBeUpdatedWithAPullSecret($name)
     {
-        $matchingServiceAccounts = array_filter($this->serviceAccountRepository->getUpdated(), function(ServiceAccount $serviceAccount) use ($name) {
-            $matchingImagePulls = array_filter($serviceAccount->getImagePullSecrets(), function(LocalObjectReference $objectReference) use ($name) {
+        $matchingServiceAccounts = array_filter($this->serviceAccountRepository->getUpdated(), function (ServiceAccount $serviceAccount) use ($name) {
+            $matchingImagePulls = array_filter($serviceAccount->getImagePullSecrets(), function (LocalObjectReference $objectReference) use ($name) {
                 return $objectReference->getName() == $name;
             });
 

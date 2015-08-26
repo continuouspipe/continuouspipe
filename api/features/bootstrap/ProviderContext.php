@@ -6,8 +6,8 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use ContinuousPipe\Pipe\AdapterProviderRepository;
-use ContinuousPipe\Pipe\Tests\FakeProvider;
 use ContinuousPipe\Adapter\ProviderNotFound;
+use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
 
 class ProviderContext implements Context
 {
@@ -91,7 +91,7 @@ class ProviderContext implements Context
             'POST',
             [], [], [],
             [
-                'CONTENT_TYPE' => 'application/json'
+                'CONTENT_TYPE' => 'application/json',
             ],
             $string->getRaw()
         ));

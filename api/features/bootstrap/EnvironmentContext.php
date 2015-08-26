@@ -4,8 +4,10 @@ use Behat\Behat\Context\Context;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use ContinuousPipe\Pipe\Tests\FakeEnvironmentClient;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use ContinuousPipe\Pipe\View\Deployment;
+use ContinuousPipe\Pipe\EventBus\EventStore;
+use Rhumsaa\Uuid\Uuid;
 
 class EnvironmentContext implements Context
 {
@@ -25,18 +27,23 @@ class EnvironmentContext implements Context
     private $response;
 
     /**
-     * @var FakeEnvironmentClient
+     * @var EventStore
      */
-    private $fakeEnvironmentClient;
+    private $eventStore;
 
     /**
-     * @param Kernel $kernel
-     * @param FakeEnvironmentClient $fakeEnvironmentClient
+     * @var Uuid
      */
-    public function __construct(Kernel $kernel, FakeEnvironmentClient $fakeEnvironmentClient)
+    private $lastDeploymentUuid;
+
+    /**
+     * @param Kernel     $kernel
+     * @param EventStore $eventStore
+     */
+    public function __construct(Kernel $kernel, EventStore $eventStore)
     {
         $this->kernel = $kernel;
-        $this->fakeEnvironmentClient = $fakeEnvironmentClient;
+        $this->eventStore = $eventStore;
     }
 
     /**
@@ -61,10 +68,12 @@ class EnvironmentContext implements Context
      */
     public function theEnvironmentShouldBeCreatedOrUpdated()
     {
-        $createdOrUpdatedEnvironments = $this->fakeEnvironmentClient->getCreatedOrUpdated();
+        $events = $this->eventStore->findByDeploymentUuid(
+            $this->lastDeploymentUuid
+        );
 
-        if (0 === count($createdOrUpdatedEnvironments)) {
-            throw new \RuntimeException('Expected to have at least one created or updated environment, found 0');
+        if (0 === count($events)) {
+            throw new \RuntimeException('Expected to have at least one event for this deployment, found 0');
         }
     }
 
@@ -83,7 +92,7 @@ class EnvironmentContext implements Context
         ]);
 
         $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
-            'CONTENT_TYPE' => 'application/json'
+            'CONTENT_TYPE' => 'application/json',
         ], $contents));
 
         if (200 !== $this->response->getStatusCode()) {
@@ -93,12 +102,14 @@ class EnvironmentContext implements Context
         }
 
         $deployment = json_decode($this->response->getContent(), true);
-        if (\ContinuousPipe\Pipe\Deployment::STATUS_SUCCESS != $deployment['status']) {
+        if (Deployment::STATUS_SUCCESS != $deployment['status']) {
             throw new \RuntimeException(sprintf(
                 'Expected deployment status to be "%s" but got "%s"',
-                \ContinuousPipe\Pipe\Deployment::STATUS_SUCCESS,
+                Deployment::STATUS_SUCCESS,
                 $deployment['status']
             ));
         }
+
+        $this->lastDeploymentUuid = Uuid::fromString($deployment['uuid']);
     }
 }

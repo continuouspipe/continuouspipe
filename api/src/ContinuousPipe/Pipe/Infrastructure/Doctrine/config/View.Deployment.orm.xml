@@ -4,7 +4,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
-    <entity name="ContinuousPipe\Pipe\Deployment">
+    <entity name="ContinuousPipe\Pipe\View\Deployment">
         <id name="uuid" />
         <field name="status" type="string" />
 

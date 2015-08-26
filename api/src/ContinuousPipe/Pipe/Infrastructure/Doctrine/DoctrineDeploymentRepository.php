@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\Pipe\Infrastructure\Doctrine;
 
-use ContinuousPipe\Pipe\Deployment;
-use ContinuousPipe\Pipe\DeploymentRepository;
+use ContinuousPipe\Pipe\View\Deployment;
+use ContinuousPipe\Pipe\View\DeploymentRepository;
 use Doctrine\ORM\EntityManager;
 use Rhumsaa\Uuid\Uuid;
 

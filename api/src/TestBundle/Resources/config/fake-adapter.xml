@@ -6,15 +6,25 @@
 
     <services>
         <service id="pipe.adapter.fake.repository" class="ContinuousPipe\Pipe\Tests\InMemoryProviderRepository" />
-        <service id="pipe.adapter.fake.client" class="ContinuousPipe\Pipe\Tests\FakeEnvironmentClient" />
-        <service id="pipe.adapter.fake.client_factory" class="ContinuousPipe\Pipe\Tests\FakeClientFactory">
+        <service id="pipe.adapter.fake.client" class="ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient">
+            <argument type="service" id="event_bus" />
+        </service>
+        <service id="pipe.adapter.fake.client_factory" class="ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeClientFactory">
             <argument type="service" id="pipe.adapter.fake.client" />
         </service>
-        <service id="pipe.adapter.fake" class="ContinuousPipe\Pipe\Tests\FakeAdapter">
+        <service id="pipe.adapter.fake" class="ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeAdapter">
             <argument type="service" id="pipe.adapter.fake.repository" />
             <argument type="service" id="pipe.adapter.fake.client_factory" />
 
             <tag name="pipe.adapter" />
+        </service>
+
+        <service id="pipe.adapter.fake.handler_for_successful_deployment" class="ContinuousPipe\Pipe\Tests\Adapter\Fake\Handler\HandlerForSuccessfulDeployment">
+            <argument type="service" id="event_bus" />
+
+            <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
+            <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand" />
+            <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
         </service>
     </services>
 </container>

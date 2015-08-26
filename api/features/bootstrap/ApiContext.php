@@ -20,7 +20,7 @@ class ApiContext implements Context
     private $authenticatorClient;
 
     /**
-     * @param TokenStorageInterface $tokenStorage
+     * @param TokenStorageInterface       $tokenStorage
      * @param InMemoryAuthenticatorClient $authenticatorClient
      */
     public function __construct(TokenStorageInterface $tokenStorage, InMemoryAuthenticatorClient $authenticatorClient)

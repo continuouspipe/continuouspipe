@@ -2,8 +2,7 @@
 
 namespace ContinuousPipe\Pipe\Logging;
 
-use ContinuousPipe\Pipe\Deployment;
-use LogStream\EmptyLogger;
+use ContinuousPipe\Pipe\View\Deployment;
 use LogStream\LoggerFactory;
 
 class DeploymentLoggerFactory
@@ -36,6 +35,6 @@ class DeploymentLoggerFactory
             );
         }
 
-        return new EmptyLogger();
+        return $this->loggerFactory->create();
     }
 }
