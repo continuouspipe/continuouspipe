@@ -3,9 +3,12 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
+use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
+use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
+use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
@@ -16,7 +19,7 @@ use Kubernetes\Client\Repository\WrappedObjectRepository;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
 
-class CreateComponentsHandler
+class CreateComponentsHandler implements DeploymentHandler
 {
     /**
      * @var EnvironmentTransformer
@@ -154,5 +157,13 @@ class CreateComponentsHandler
         $type = substr($objectClass, strrpos($objectClass, '/'));
 
         return sprintf('%s "%s"', $type, $object->getMetadata()->getName());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(DeploymentContext $context)
+    {
+        return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
     }
 }

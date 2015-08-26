@@ -17,6 +17,7 @@
 
             <tag name="event_bus_middleware" />
         </service>
+        <service id="pipe.deployment.deployment_commands_handler" class="ContinuousPipe\Pipe\Handler\DeploymentCommandsHandler" />
 
         <!-- Event listeners -->
         <service id="pipe.deployment_saga" class="ContinuousPipe\Pipe\DeploymentSaga">

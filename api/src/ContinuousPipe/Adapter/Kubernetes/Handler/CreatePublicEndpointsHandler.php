@@ -9,13 +9,14 @@ use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
+use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServiceSpecification;
 use SimpleBus\Message\Bus\MessageBus;
 
-class CreatePublicEndpointsHandler
+class CreatePublicEndpointsHandler implements DeploymentHandler
 {
     /**
      * @var EnvironmentTransformer
@@ -50,10 +51,6 @@ class CreatePublicEndpointsHandler
     public function handle(CreatePublicEndpointsCommand $command)
     {
         $context = $command->getContext();
-        if (!$this->shouldHandle($context)) {
-            return;
-        }
-
         $services = $this->getPublicServices($context->getEnvironment());
         $client = $this->clientFactory->get($context);
         $serviceRepository = $client->getServiceRepository();
@@ -99,11 +96,9 @@ class CreatePublicEndpointsHandler
     }
 
     /**
-     * @param DeploymentContext $context
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    private function shouldHandle(DeploymentContext $context)
+    public function supports(DeploymentContext $context)
     {
         return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
     }

@@ -86,21 +86,21 @@
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
             <argument type="service" id="event_bus" />
 
-            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
+            <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
         </service>
         <service id="pipe.adapter.kubernetes.create_public_endpoints" class="ContinuousPipe\Adapter\Kubernetes\Handler\CreatePublicEndpointsHandler">
             <argument type="service" id="kubernetes.transformer.environment" />
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="event_bus" />
 
-            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand" />
+            <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand" />
         </service>
         <service id="pipe.adapter.kubernetes.create_components_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\CreateComponentsHandler">
             <argument type="service" id="kubernetes.transformer.environment" />
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="event_bus" />
 
-            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
+            <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
         </service>
     </services>
 </container>

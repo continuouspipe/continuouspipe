@@ -9,13 +9,14 @@ use ContinuousPipe\Adapter\Kubernetes\KubernetesDeploymentContext;
 use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
+use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use Kubernetes\Client\Exception\NamespaceNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\ObjectMetadata;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
 
-class PrepareEnvironmentHandler
+class PrepareEnvironmentHandler implements DeploymentHandler
 {
     /**
      * @var KubernetesClientFactory
@@ -76,6 +77,14 @@ class PrepareEnvironmentHandler
      * @return bool
      */
     private function shouldHandle(DeploymentContext $context)
+    {
+        return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(DeploymentContext $context)
     {
         return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
     }

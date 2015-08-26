@@ -2,17 +2,19 @@
 
 namespace ContinuousPipe\Pipe\Tests\Adapter\Fake\Handler;
 
-use ContinuousPipe\Adapter\Kubernetes\Handler\CreateComponentsHandler;
 use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
 use ContinuousPipe\Pipe\Command\DeploymentCommand;
 use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
+use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
 use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
 use ContinuousPipe\Pipe\Event\PublicEndpointsCreated;
+use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
+use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeAdapter;
 use SimpleBus\Message\Bus\MessageBus;
 
-class HandlerForSuccessfulDeployment
+class HandlerForSuccessfulDeployment implements DeploymentHandler
 {
     /**
      * @var MessageBus
@@ -34,10 +36,18 @@ class HandlerForSuccessfulDeployment
     {
         if ($command instanceof CreateComponentsCommand) {
             $this->messageBus->handle(new ComponentsCreated($command->getContext()));
-        } else if ($command instanceof PrepareEnvironmentCommand) {
+        } elseif ($command instanceof PrepareEnvironmentCommand) {
             $this->messageBus->handle(new EnvironmentPrepared($command->getContext()));
-        } else if ($command instanceof CreatePublicEndpointsCommand) {
+        } elseif ($command instanceof CreatePublicEndpointsCommand) {
             $this->messageBus->handle(new PublicEndpointsCreated($command->getContext(), []));
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(DeploymentContext $context)
+    {
+        return $context->getProvider()->getAdapterType() == FakeAdapter::TYPE;
     }
 }
