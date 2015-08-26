@@ -1,8 +1,8 @@
 FROM php:5.6-apache
 
 # PHP extension
-RUN apt-get update && apt-get install -y zlib1g-dev git
-RUN docker-php-ext-install pdo pdo_mysql zip mbstring
+RUN apt-get update && apt-get install -y zlib1g-dev libpq-dev git
+RUN docker-php-ext-install pdo pdo_pgsql zip mbstring
 
 # Apache configuration
 RUN a2enmod rewrite
