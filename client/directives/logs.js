@@ -12,7 +12,6 @@ angular.module('logstream')
                     $scope.displayChildrenOf[log._id] = !$scope.displayChildrenOf[log._id];
                 };
 
-                $scope.$meteorSubscribe('logChildren', $scope.logId);
                 $scope.logs = LogRepository.findByParentId($scope.logId);
             }],
             compile: function(element) {
