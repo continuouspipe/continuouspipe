@@ -17,6 +17,7 @@
             <table class="table table-inner table-vmiddle" ng-show="providers.length">
                 <thead>
                 <tr>
+                    <th>Type</th>
                     <th>Identifier</th>
                     <th>Cluster</th>
                     <th>Credentials</th>
@@ -25,6 +26,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="provider in providers">
+                    <td>{{ provider.type }}</td>
                     <td>{{ provider.identifier }}</td>
                     <td>{{ provider.cluster.address }} <small>{{ provider.cluster.version }}</small></td>
                     <td>User <small>{{ provider.user.username }}</small></td>
