@@ -18,5 +18,13 @@
 
             <tag name="pipe.adapter" />
         </service>
+
+        <service id="pipe.adapter.fake.handler_for_successful_deployment" class="ContinuousPipe\Pipe\Tests\Adapter\Fake\Handler\HandlerForSuccessfulDeployment">
+            <argument type="service" id="event_bus" />
+
+            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
+            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand" />
+            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
+        </service>
     </services>
 </container>
