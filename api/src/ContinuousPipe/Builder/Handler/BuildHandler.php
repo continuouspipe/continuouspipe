@@ -4,6 +4,7 @@ namespace ContinuousPipe\Builder\Handler;
 
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
+use ContinuousPipe\Builder\BuildException;
 use ContinuousPipe\Builder\BuildRepository;
 use ContinuousPipe\Builder\Command\BuildCommand;
 use ContinuousPipe\Builder\Docker\DockerException;
@@ -67,6 +68,11 @@ class BuildHandler
 
             $build->updateStatus(Build::STATUS_SUCCESS);
         } catch (DockerException $e) {
+            $message = $e->getMessage() ? ': ' . $e->getMessage() : '';
+            $logger->append(new Text('An Docker error occurred' . $message));
+            $build->updateStatus(Build::STATUS_ERROR);
+        } catch (BuildException $e) {
+            $logger->append(new Text($e->getMessage()));
             $build->updateStatus(Build::STATUS_ERROR);
         } catch (\Exception $e) {
             $this->appendException($logger, $e);

@@ -11,6 +11,8 @@ interface Builder
      *
      * @param Build  $build
      * @param Logger $logger
+     *
+     * @throws BuildException
      */
     public function build(Build $build, Logger $logger);
 }

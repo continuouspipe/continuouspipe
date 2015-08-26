@@ -5,6 +5,8 @@ namespace ContinuousPipe\Builder\Docker;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
+use ContinuousPipe\Builder\BuildException;
+use ContinuousPipe\User\Authenticator\CredentialsNotFound;
 use LogStream\Logger;
 
 class DockerBuilder implements Builder
@@ -47,7 +49,12 @@ class DockerBuilder implements Builder
         $archive = $this->archiveBuilder->getArchive($repository, $build->getUser(), $logger);
         $this->dockerClient->build($archive, $targetImage, $logger);
 
-        $credentials = $this->credentialsRepository->findByImage($targetImage, $build->getUser());
+        try {
+            $credentials = $this->credentialsRepository->findByImage($targetImage, $build->getUser());
+        } catch (CredentialsNotFound $e) {
+            throw new BuildException('Credentials not found.', $e->getCode(), $e);
+        }
+
         $this->dockerClient->push($targetImage, $credentials, $logger);
     }
 }

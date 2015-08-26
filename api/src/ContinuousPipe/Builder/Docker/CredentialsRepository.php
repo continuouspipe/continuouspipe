@@ -4,6 +4,7 @@ namespace ContinuousPipe\Builder\Docker;
 
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
+use ContinuousPipe\User\Authenticator\CredentialsNotFound;
 use ContinuousPipe\User\User;
 
 interface CredentialsRepository
@@ -13,6 +14,8 @@ interface CredentialsRepository
      *
      * @param Image $image
      * @param User  $user
+     *
+     * @throws CredentialsNotFound
      *
      * @return RegistryCredentials
      */
