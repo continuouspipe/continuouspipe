@@ -33,7 +33,7 @@ class DoctrineEventStore implements EventStore
         $dto = new EventDto();
         $dto->tideUuid = $event->getTideUuid();
         $dto->eventClass = get_class($event);
-        $dto->serializedEvent = serialize($event);
+        $dto->serializedEvent = base64_encode(serialize($event));
 
         $this->entityManager->persist($dto);
         $this->entityManager->flush();
@@ -50,7 +50,7 @@ class DoctrineEventStore implements EventStore
 
         $events = [];
         foreach ($dtoCollection as $dto) {
-            $events[] = unserialize($dto->serializedEvent);
+            $events[] = unserialize(base64_decode($dto->serializedEvent));
         }
 
         return $events;
