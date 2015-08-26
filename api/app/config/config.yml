@@ -59,6 +59,9 @@ doctrine:
         password: "%database_password%"
         charset:  UTF8
 
+        types:
+            b64Object: ContinuousPipe\River\Infrastructure\Doctrine\Type\Base64Object
+
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore

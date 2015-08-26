@@ -21,14 +21,14 @@ class FlowDto
     public $uuid;
 
     /**
-     * @ORM\Column(type="object")
+     * @ORM\Column(type="b64Object")
      *
      * @var FlowContext
      */
     public $context;
 
     /**
-     * @ORM\Column(type="object")
+     * @ORM\Column(type="b64Object")
      *
      * @var Task[]
      */

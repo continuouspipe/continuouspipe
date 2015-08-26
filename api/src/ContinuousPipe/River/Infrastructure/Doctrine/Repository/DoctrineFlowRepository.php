@@ -19,6 +19,7 @@ class DoctrineFlowRepository implements FlowRepository
      * @var EntityManager
      */
     private $entityManager;
+
     /**
      * @var UserRepository
      */
