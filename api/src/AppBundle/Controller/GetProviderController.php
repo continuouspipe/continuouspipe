@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Adapter\ProviderRepository;
+use ContinuousPipe\Pipe\AdapterProviderRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -13,14 +14,14 @@ use FOS\RestBundle\Controller\Annotations\View;
 class GetProviderController extends Controller
 {
     /**
-     * @var ProviderRepository
+     * @var AdapterProviderRepository
      */
     private $providerRepository;
 
     /**
-     * @param ProviderRepository $providerRepository
+     * @param AdapterProviderRepository $providerRepository
      */
-    public function __construct(ProviderRepository $providerRepository)
+    public function __construct(AdapterProviderRepository $providerRepository)
     {
         $this->providerRepository = $providerRepository;
     }

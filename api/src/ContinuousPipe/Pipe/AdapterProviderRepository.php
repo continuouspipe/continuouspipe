@@ -4,9 +4,8 @@ namespace ContinuousPipe\Pipe;
 
 use ContinuousPipe\Adapter\AdapterRegistry;
 use ContinuousPipe\Adapter\Provider;
-use ContinuousPipe\Adapter\ProviderRepository;
 
-class AdapterProviderRepository implements ProviderRepository
+class AdapterProviderRepository
 {
     /**
      * @var AdapterRegistry
@@ -40,11 +39,9 @@ class AdapterProviderRepository implements ProviderRepository
     /**
      * {@inheritdoc}
      */
-    public function find($identifier)
+    public function findByTypeAndIdentifier($type, $identifier)
     {
-        list($adapter, $identifier) = explode('/', $identifier);
-
-        return $this->adapterRegistry->getByType($adapter)->getRepository()->find($identifier);
+        return $this->adapterRegistry->getByType($type)->getRepository()->find($identifier);
     }
 
     /**

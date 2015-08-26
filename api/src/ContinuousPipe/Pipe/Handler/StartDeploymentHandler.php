@@ -5,6 +5,7 @@ namespace ContinuousPipe\Pipe\Handler;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\DockerCompose\Loader\YamlLoader;
+use ContinuousPipe\Pipe\AdapterProviderRepository;
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
 use ContinuousPipe\Pipe\Deployment;
 use ContinuousPipe\Pipe\DeploymentContext;
@@ -17,7 +18,7 @@ use SimpleBus\Message\Bus\MessageBus;
 class StartDeploymentHandler
 {
     /**
-     * @var ProviderRepository
+     * @var AdapterProviderRepository
      */
     private $providerRepository;
 
@@ -42,13 +43,13 @@ class StartDeploymentHandler
     private $loggerFactory;
 
     /**
-     * @param ProviderRepository       $providerRepository
-     * @param YamlLoader               $dockerComposeYamlLoader
-     * @param EnvironmentClientFactory $environmentClientFactory
-     * @param MessageBus               $eventBus
-     * @param DeploymentLoggerFactory  $loggerFactory
+     * @param AdapterProviderRepository $providerRepository
+     * @param YamlLoader                $dockerComposeYamlLoader
+     * @param EnvironmentClientFactory  $environmentClientFactory
+     * @param MessageBus                $eventBus
+     * @param DeploymentLoggerFactory   $loggerFactory
      */
-    public function __construct(ProviderRepository $providerRepository, YamlLoader $dockerComposeYamlLoader, EnvironmentClientFactory $environmentClientFactory, MessageBus $eventBus, DeploymentLoggerFactory $loggerFactory)
+    public function __construct(AdapterProviderRepository $providerRepository, YamlLoader $dockerComposeYamlLoader, EnvironmentClientFactory $environmentClientFactory, MessageBus $eventBus, DeploymentLoggerFactory $loggerFactory)
     {
         $this->providerRepository = $providerRepository;
         $this->dockerComposeYamlLoader = $dockerComposeYamlLoader;
@@ -86,7 +87,8 @@ class StartDeploymentHandler
                 count($environment->getComponents())
             )));
 
-            $provider = $this->providerRepository->find($request->getProviderName());
+            list($type, $name) = explode('/', $request->getProviderName());
+            $provider = $this->providerRepository->findByTypeAndIdentifier($type, $name);
             $environmentClient = $this->environmentClientFactory->getByProvider($provider);
 
             $deploymentContext = new DeploymentContext($deployment, $provider, $logger);

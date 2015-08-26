@@ -5,7 +5,7 @@ use Behat\Gherkin\Node\PyStringNode;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use ContinuousPipe\Adapter\ProviderRepository;
+use ContinuousPipe\Pipe\AdapterProviderRepository;
 use ContinuousPipe\Pipe\Tests\FakeProvider;
 
 class ProviderContext implements Context
@@ -21,15 +21,15 @@ class ProviderContext implements Context
     private $response;
 
     /**
-     * @var ProviderRepository
+     * @var AdapterProviderRepository
      */
     private $providerRepository;
 
     /**
      * @param Kernel $kernel
-     * @param ProviderRepository $providerRepository
+     * @param AdapterProviderRepository $providerRepository
      */
-    public function __construct(Kernel $kernel, ProviderRepository $providerRepository)
+    public function __construct(Kernel $kernel, AdapterProviderRepository $providerRepository)
     {
         $this->kernel = $kernel;
         $this->providerRepository = $providerRepository;
@@ -99,20 +99,19 @@ class ProviderContext implements Context
     }
 
     /**
-     * @When I test the provider :name
+     * @When I request the environment list of provider :name
      */
-    public function iTestThisProvider($name)
+    public function iRequestTheEnvironmentListOfProvider($name)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/providers/%s/test', urlencode('fake/'.$name)),
-            'POST'
+            sprintf('/providers/fake/%s/environments', $name)
         ));
     }
 
     /**
-     * @Then I should see that the provider is valid
+     * @Then I should successfully receive the environment list
      */
-    public function iShouldSeeThatTheProviderIsValid()
+    public function iShouldSuccessfullyReceiveTheEnvironmentList()
     {
         if ($this->response->getStatusCode() != 200) {
             throw new \LogicException(sprintf(

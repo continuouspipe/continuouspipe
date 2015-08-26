@@ -10,7 +10,7 @@ Feature:
     Given I have a provider named "foo"
     Then I should see this provider "foo" in the list of registered providers
 
-  Scenario: I can test if a provider is valid
+  Scenario:
     Given I have a provider named "foo"
-    When I test the provider "foo"
-    Then I should see that the provider is valid
+    When I request the environment list of provider "foo"
+    Then I should successfully receive the environment list
