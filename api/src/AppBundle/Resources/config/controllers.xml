@@ -14,6 +14,10 @@
             <argument type="service" id="pipe.provider_repository" />
         </service>
 
+        <service id="pipe.controllers.delete_provider" class="AppBundle\Controller\DeleteProviderController">
+            <argument type="service" id="pipe.provider_repository" />
+        </service>
+
         <service id="pipe.controllers.environment" class="AppBundle\Controller\EnvironmentController">
             <argument type="service" id="pipe.provider_repository" />
             <argument type="service" id="pipe.chain_environment_client_factory" />

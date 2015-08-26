@@ -49,6 +49,15 @@ class Repository implements ProviderRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function remove(Provider $provider)
+    {
+        $this->entityManager->remove($provider);
+        $this->entityManager->flush();
+    }
+
+    /**
      * @return \Doctrine\ORM\EntityRepository
      */
     private function getRepository()

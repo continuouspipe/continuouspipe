@@ -42,4 +42,17 @@ class InMemoryProviderRepository implements ProviderRepository
 
         return $this->providers[$identifier];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove(Provider $provider)
+    {
+        $identifier = $provider->getIdentifier();
+        if (!array_key_exists($identifier, $this->providers)) {
+            throw new ProviderNotFound();
+        }
+
+        unset($this->providers[$identifier]);
+    }
 }

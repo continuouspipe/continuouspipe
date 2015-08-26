@@ -24,4 +24,15 @@ interface ProviderRepository
      * @return Provider
      */
     public function find($identifier);
+
+    /**
+     * Remove the given provider.
+     *
+     * @param Provider $provider
+     *
+     * @throws ProviderNotFound
+     *
+     * @return Provider
+     */
+    public function remove(Provider $provider);
 }

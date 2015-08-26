@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use ContinuousPipe\Pipe\AdapterProviderRepository;
 use ContinuousPipe\Pipe\Tests\FakeProvider;
+use ContinuousPipe\Adapter\ProviderNotFound;
 
 class ProviderContext implements Context
 {
@@ -119,5 +120,28 @@ class ProviderContext implements Context
                 $this->response->getStatusCode()
             ));
         }
+    }
+
+    /**
+     * @When I delete the provider named :name
+     */
+    public function iDeleteTheProviderNamed($name)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/providers/fake/%s', $name),
+            'DELETE'
+        ));
+    }
+
+    /**
+     * @Then the provider :name should not exists
+     */
+    public function theProviderShouldNotExists($name)
+    {
+        try {
+            $this->providerRepository->findByTypeAndIdentifier('fake', $name);
+
+            throw new \RuntimeException(sprintf('Provider "%s" already found in repository', $name));
+        } catch (ProviderNotFound $e) {}
     }
 }

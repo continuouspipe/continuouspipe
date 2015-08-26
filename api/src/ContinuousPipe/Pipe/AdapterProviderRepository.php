@@ -4,6 +4,7 @@ namespace ContinuousPipe\Pipe;
 
 use ContinuousPipe\Adapter\AdapterRegistry;
 use ContinuousPipe\Adapter\Provider;
+use ContinuousPipe\Adapter\ProviderNotFound;
 
 class AdapterProviderRepository
 {
@@ -21,7 +22,9 @@ class AdapterProviderRepository
     }
 
     /**
-     * {@inheritdoc}
+     * Find all providers of all adapters.
+     *
+     * @return Provider[]
      */
     public function findAll()
     {
@@ -37,7 +40,13 @@ class AdapterProviderRepository
     }
 
     /**
-     * {@inheritdoc}
+     * Find a provider by its type and its identifier.
+     *
+     * @param string $type
+     * @param string $identifier
+     * @return Provider
+     * @throws \ContinuousPipe\Adapter\AdapterNotFound
+     * @throws ProviderNotFound
      */
     public function findByTypeAndIdentifier($type, $identifier)
     {
@@ -45,10 +54,31 @@ class AdapterProviderRepository
     }
 
     /**
-     * {@inheritdoc}
+     * Create a new provider.
+     *
+     * @param Provider $provider
+     * @return Provider
      */
     public function create(Provider $provider)
     {
-        return $this->adapterRegistry->getByType($provider->getAdapterType())->getRepository()->create($provider);
+        return $this->getRepository($provider->getAdapterType())->create($provider);
+    }
+
+    /**
+     * @param Provider $provider
+     */
+    public function remove(Provider $provider)
+    {
+        $this->getRepository($provider->getAdapterType())->remove($provider);
+    }
+
+    /**
+     * @param string $type
+     * @return \ContinuousPipe\Adapter\ProviderRepository
+     * @throws \ContinuousPipe\Adapter\AdapterNotFound
+     */
+    private function getRepository($type)
+    {
+        return $this->adapterRegistry->getByType($type)->getRepository();
     }
 }
