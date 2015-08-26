@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Adapter\Kubernetes;
 
 use ContinuousPipe\Adapter\Provider;
+use ContinuousPipe\Adapter\ProviderNotFound;
 use ContinuousPipe\Adapter\ProviderRepository;
 use Doctrine\ORM\EntityManager;
 
@@ -45,7 +46,12 @@ class Repository implements ProviderRepository
      */
     public function find($identifier)
     {
-        return $this->getRepository()->find($identifier);
+        $provider = $this->getRepository()->find($identifier);
+        if (null === $provider) {
+            throw new ProviderNotFound(sprintf('Provider with identifier "%s" is not found', $identifier));
+        }
+
+        return $provider;
     }
 
     /**
