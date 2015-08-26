@@ -1,0 +1,12 @@
+<div class="form-group fg-line">
+    <label for="versionSelect">Provider</label>
+    <div class="fg-line">
+        <remote-resource resource-name="providers">
+            <div class="select">
+                <select class="form-control" id="versionSelect" ng-model="context.providerName" required>
+                    <option ng-repeat="provider in providers" value="{{ provider.identifier }}">{{ provider.name }}</option>
+                </select>
+            </div>
+        </remote-resource>
+    </div>
+</div>

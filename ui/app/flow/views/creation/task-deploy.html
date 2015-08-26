@@ -2,8 +2,5 @@
 <p><strong>deploy</strong><br />Deploy the environment to a given Cloud Provider.</p>
 
 <form>
-    <div class="form-group fg-line">
-        <label>Provider name</label>
-        <input type="text" class="form-control input-sm" ng-model="task.context.providerName" />
-    </div>
+    <pipe-provider-selector context="task.context"></pipe-provider-selector>
 </form>
