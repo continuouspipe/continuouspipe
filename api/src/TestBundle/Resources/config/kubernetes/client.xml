@@ -45,5 +45,7 @@
         <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client" />
         </service>
+
+        <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWaiter" />
     </services>
 </container>

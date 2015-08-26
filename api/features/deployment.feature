@@ -6,6 +6,7 @@ Feature:
   Background:
     Given I am authenticated
 
+  @smoke
   Scenario:
     When I send a valid deployment request
     Then the environment should be created or updated
