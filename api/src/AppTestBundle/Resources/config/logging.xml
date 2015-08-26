@@ -5,8 +5,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="log_stream.event_store.in_memory" class="ContinuousPipe\River\Tests\Logging\InMemoryLogStore" />
-        <service id="log_stream.logger_factory" class="ContinuousPipe\River\Tests\Logging\InMemoryLoggerFactory">
+        <service id="log_stream.event_store.in_memory" class="LogStream\Tests\InMemory\InMemoryLogStore" />
+        <service id="log_stream.logger_factory" class="LogStream\Tests\InMemory\InMemoryLoggerFactory">
             <argument type="service" id="log_stream.event_store.in_memory" />
         </service>
         <service id="river.code_status_updater" class="ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater" />

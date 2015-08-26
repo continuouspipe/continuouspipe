@@ -1,7 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\River\Tests\Logging\InMemoryLogStore;
+use LogStream\Tests\InMemory\InMemoryLogStore;
 
 class LoggingContext implements Context
 {
