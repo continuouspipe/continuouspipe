@@ -44,7 +44,9 @@ class SecretFactory
 
         return new Secret(
             new ObjectMetadata(self::SECRET_NAME),
-            base64_encode($dockerCfgFileContents),
+            [
+                '.dockercfg' => base64_encode($dockerCfgFileContents),
+            ],
             'kubernetes.io/dockercfg'
         );
     }
