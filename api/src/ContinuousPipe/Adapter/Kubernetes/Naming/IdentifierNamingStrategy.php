@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Naming;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Environment;
 use Kubernetes\Client\Model\KeyValueObjectList;
@@ -29,7 +30,7 @@ class IdentifierNamingStrategy implements NamingStrategy
         ];
 
         foreach ($component->getLabels() as $key => $value) {
-            $labels[] = new Label($key, $value);
+            $labels[] = new Label($key, $this->prepareLabelValue($value));
         }
 
         return new KeyValueObjectList($labels);
@@ -43,5 +44,21 @@ class IdentifierNamingStrategy implements NamingStrategy
         $namespaceName = $environment->getIdentifier();
 
         return new KubernetesNamespace(new ObjectMetadata($namespaceName));
+    }
+
+    /**
+     * Transform label values when needed.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    private function prepareLabelValue($value)
+    {
+        if (!preg_match('#^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$#', $value)) {
+            $value = (new Slugify())->slugify($value);
+        }
+
+        return $value;
     }
 }
