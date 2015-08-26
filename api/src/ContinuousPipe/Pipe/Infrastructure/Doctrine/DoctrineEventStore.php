@@ -10,7 +10,7 @@ use Rhumsaa\Uuid\Uuid;
 
 class DoctrineEventStore implements EventStore
 {
-    const DTO_CLASS = 'ContinuousPipe\River\Infrastructure\Doctrine\Entity\EventDto';
+    const DTO_CLASS = 'ContinuousPipe\Pipe\Infrastructure\Doctrine\Entity\EventDto';
 
     /**
      * @var EntityManager
