@@ -57,27 +57,27 @@ class ProviderContext implements Context
      */
     public function iShouldSeeThisFakeProviderInTheListOfRegisteredProviders($name)
     {
-        if (200 !== $this->response->getStatusCode()) {
-            echo $this->response->getContent();
-            throw new \RuntimeException(sprintf(
-                'Expected status 200, got %d',
-                $this->response->getStatusCode()
-            ));
-        }
-
-        $contents = $this->response->getContent();
-        $json = json_decode($contents, true);
-
-        if (!is_array($json)) {
-            throw new \RuntimeException('Expected a JSON body');
-        }
-
+        $json = $this->getLastResponseJson();
         $matchingProvider = array_filter($json, function(array $raw) use ($name) {
             return $raw['identifier'] == $name;
         });
 
         if (count($matchingProvider) === 0) {
             throw new \RuntimeException('No matching provider found');
+        }
+    }
+
+    /**
+     * @Then I should see the type of the providers
+     */
+    public function iShouldSeeTheTypeOfTheProviders()
+    {
+        $json = $this->getLastResponseJson();
+
+        foreach ($json as $raw) {
+            if (!array_key_exists('type', $raw)) {
+                throw new \RuntimeException('Cannot see type of provider');
+            }
         }
     }
 
@@ -141,5 +141,28 @@ class ProviderContext implements Context
 
             throw new \RuntimeException(sprintf('Provider "%s" already found in repository', $name));
         } catch (ProviderNotFound $e) {}
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getLastResponseJson()
+    {
+        if (200 !== $this->response->getStatusCode()) {
+            echo $this->response->getContent();
+            throw new \RuntimeException(sprintf(
+                'Expected status 200, got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+
+        $contents = $this->response->getContent();
+        $json = json_decode($contents, true);
+
+        if (!is_array($json)) {
+            throw new \RuntimeException('Expected a JSON body');
+        }
+
+        return $json;
     }
 }

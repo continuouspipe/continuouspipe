@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Pipe\Tests;
 
 use ContinuousPipe\Adapter\Provider;
+use JMS\Serializer\Annotation as JMS;
 
 class FakeProvider implements Provider
 {
@@ -28,6 +29,9 @@ class FakeProvider implements Provider
     }
 
     /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("type")
+     *
      * {@inheritdoc}
      */
     public function getAdapterType()

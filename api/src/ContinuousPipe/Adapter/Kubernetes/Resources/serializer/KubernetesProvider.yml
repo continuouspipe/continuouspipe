@@ -1,4 +1,9 @@
 ContinuousPipe\Adapter\Kubernetes\KubernetesProvider:
+    virtual_properties:
+        getAdapterType:
+            serialized_name: type
+            type: string
+
     properties:
         identifier:
             type: string
@@ -6,3 +11,4 @@ ContinuousPipe\Adapter\Kubernetes\KubernetesProvider:
             type: ContinuousPipe\Adapter\Kubernetes\Cluster
         user:
             type: ContinuousPipe\Adapter\Kubernetes\User
+

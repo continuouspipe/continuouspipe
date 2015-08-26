@@ -10,6 +10,7 @@ Feature:
     Given I have a provider named "foo"
     When I request the list of providers
     Then I should see this provider "foo" in the list of registered providers
+    And I should see the type of the providers
 
   Scenario:
     Given I have a provider named "foo"
