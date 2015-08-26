@@ -37,6 +37,14 @@ class InMemoryServiceRepository implements ServiceRepository
     /**
      * {@inheritdoc}
      */
+    public function exists($name)
+    {
+        return array_key_exists($name, $this->services);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function create(Service $service)
     {
         $this->services[$service->getMetadata()->getName()] = $service;

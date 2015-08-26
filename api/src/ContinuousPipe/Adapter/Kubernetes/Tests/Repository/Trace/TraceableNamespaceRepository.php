@@ -44,6 +44,14 @@ class TraceableNamespaceRepository implements NamespaceRepository
     /**
      * {@inheritdoc}
      */
+    public function exists($name)
+    {
+        return $this->namespaceRepository->exists($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function create(KubernetesNamespace $namespace)
     {
         $created = $this->namespaceRepository->create($namespace);

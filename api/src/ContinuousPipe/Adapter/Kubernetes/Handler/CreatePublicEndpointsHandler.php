@@ -10,7 +10,6 @@ use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
-use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServiceSpecification;
@@ -52,17 +51,15 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     {
         $context = $command->getContext();
         $services = $this->getPublicServices($context->getEnvironment());
-        $client = $this->clientFactory->get($context);
-        $serviceRepository = $client->getServiceRepository();
+        $serviceRepository = $this->clientFactory->get($context)->getServiceRepository();
 
         $createdServices = [];
         foreach ($services as $service) {
             $serviceName = $service->getMetadata()->getName();
 
-            try {
-                $serviceRepository->findOneByName($serviceName);
+            if ($serviceRepository->exists($serviceName)) {
                 $createdServices[] = $serviceRepository->update($service);
-            } catch (ServiceNotFound $e) {
+            } else {
                 $createdServices[] = $serviceRepository->create($service);
             }
         }

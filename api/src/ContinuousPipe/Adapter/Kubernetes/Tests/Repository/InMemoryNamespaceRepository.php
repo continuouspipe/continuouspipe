@@ -34,6 +34,14 @@ class InMemoryNamespaceRepository implements NamespaceRepository
     /**
      * {@inheritdoc}
      */
+    public function exists($name)
+    {
+        return array_key_exists($name, $this->namespaces);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function create(KubernetesNamespace $namespace)
     {
         $this->namespaces[$namespace->getMetadata()->getName()] = $namespace;

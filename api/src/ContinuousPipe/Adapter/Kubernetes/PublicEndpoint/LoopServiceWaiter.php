@@ -55,7 +55,7 @@ class LoopServiceWaiter implements ServiceWaiter
 
             $logger->append(new Text(sprintf('Found public endpoint "%s": %s', $endpoint->getName(), $endpoint->getAddress())));
             $logger->success();
-        } catch (\Exception $e) {
+        } catch (EndpointNotFound $e) {
             $logger->append(new Text($e->getMessage()));
             $logger->failure();
 
@@ -72,7 +72,7 @@ class LoopServiceWaiter implements ServiceWaiter
      *
      * @return PublicEndpoint
      *
-     * @throws \Exception
+     * @throws EndpointNotFound
      */
     private function waitServicePublicEndpoint(NamespaceClient $namespaceClient, Service $service, Logger $logger)
     {
@@ -82,14 +82,14 @@ class LoopServiceWaiter implements ServiceWaiter
         do {
             try {
                 return $this->getServicePublicEndpoint($namespaceClient, $serviceName);
-            } catch (\Exception $e) {
+            } catch (EndpointNotFound $e) {
                 $logger->append(new Text($e->getMessage()));
             }
 
             sleep(5);
         } while (++$attempts < 10);
 
-        throw new \Exception('Attempted too many times.');
+        throw new EndpointNotFound('Attempted too many times.');
     }
 
     /**
@@ -98,33 +98,27 @@ class LoopServiceWaiter implements ServiceWaiter
      *
      * @return PublicEndpoint
      *
-     * @throws \Exception
+     * @throws EndpointNotFound
      */
     private function getServicePublicEndpoint(NamespaceClient $namespaceClient, $serviceName)
     {
         $foundService = $namespaceClient->getServiceRepository()->findOneByName($serviceName);
 
-        if ($status = $foundService->getStatus()) {
-            if ($loadBalancer = $status->getLoadBalancer()) {
-                $ingresses = $loadBalancer->getIngresses();
-
-                if (count($ingresses) > 0) {
-                    $ingress = current($ingresses);
-                    $ip = $ingress->getIp();
-
-                    if (!empty($ip)) {
-                        return new PublicEndpoint($serviceName, $ip);
-                    } else {
-                        throw new \Exception('Empty IP found');
-                    }
-                } else {
-                    throw new \Exception('No ingress found');
-                }
-            } else {
-                throw new \Exception('No load balancer found');
-            }
+        if (null === ($status = $foundService->getStatus())) {
+            throw new EndpointNotFound('No service status found');
+        } elseif (null === ($loadBalancer = $status->getLoadBalancer())) {
+            throw new EndpointNotFound('No load balancer found');
+        } elseif (0 === (count($ingresses = $loadBalancer->getIngresses()))) {
+            throw new EndpointNotFound('No ingress found');
         }
 
-        throw new \Exception('No status found');
+        $ingress = current($ingresses);
+        $ip = $ingress->getIp();
+
+        if (empty($ip)) {
+            throw new EndpointNotFound('Empty IP found');
+        }
+
+        return new PublicEndpoint($serviceName, $ip);
     }
 }

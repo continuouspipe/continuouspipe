@@ -10,7 +10,6 @@ use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
-use Kubernetes\Client\Exception\NamespaceNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\ObjectMetadata;
 use LogStream\Node\Text;
@@ -44,41 +43,26 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     public function handle(PrepareEnvironmentCommand $command)
     {
         $context = $command->getContext();
-        if (!$this->shouldHandle($context)) {
-            return;
-        }
-
         $logger = $context->getLogger();
         $environment = $context->getEnvironment();
 
-        $client = $this->clientFactory->getByProvider($context->getProvider());
-        $namespaceRepository = $client->getNamespaceRepository();
+        $namespaceRepository = $this->clientFactory->getByProvider($context->getProvider())->getNamespaceRepository();
         $namespaceName = $environment->getIdentifier();
 
-        try {
-            $namespace = $namespaceRepository->findOneByName($namespaceName);
-            $logger->append(new Text(sprintf('Reusing existing namespace "%s"', $namespaceName)));
-        } catch (NamespaceNotFound $e) {
+        if (!$namespaceRepository->exists($namespaceName)) {
             $namespace = new KubernetesNamespace(new ObjectMetadata($environment->getIdentifier()));
-            $namespace = $client->getNamespaceRepository()->create($namespace);
+            $namespace = $namespaceRepository->create($namespace);
             $logger->append(new Text(sprintf('Created new namespace "%s"', $namespaceName)));
 
             $this->eventBus->handle(new NamespaceCreated($namespace, $context));
+        } else {
+            $namespace = $namespaceRepository->findOneByName($namespaceName);
+            $logger->append(new Text(sprintf('Reusing existing namespace "%s"', $namespaceName)));
         }
 
         $context->add(KubernetesDeploymentContext::NAMESPACE_KEY, $namespace);
 
         $this->eventBus->handle(new EnvironmentPrepared($context));
-    }
-
-    /**
-     * @param DeploymentContext $context
-     *
-     * @return bool
-     */
-    private function shouldHandle(DeploymentContext $context)
-    {
-        return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
     }
 
     /**

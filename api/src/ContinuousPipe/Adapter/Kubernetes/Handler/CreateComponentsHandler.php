@@ -16,6 +16,7 @@ use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\NamespaceClient;
 use Kubernetes\Client\Repository\ObjectRepository;
 use Kubernetes\Client\Repository\WrappedObjectRepository;
+use LogStream\Logger;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -56,37 +57,48 @@ class CreateComponentsHandler implements DeploymentHandler
         $context = $command->getContext();
         $client = $this->clientFactory->get($context);
 
-        $logger = $context->getLogger();
         $environment = $context->getEnvironment();
         $namespaceObjects = $this->environmentTransformer->getElementListFromEnvironment($environment);
 
         foreach ($namespaceObjects as $object) {
-            $objectRepository = $this->getObjectRepository($client, $object);
-            $objectName = $object->getMetadata()->getName();
-
-            if ($objectRepository->exists($objectName)) {
-                if ($this->isLocked($object)) {
-                    $logger->append(new Text('NOT updated '.$this->getObjectTypeAndName($object).' because it is locked'));
-
-                    continue;
-                }
-
-                $logger->append(new Text('Updating '.$this->getObjectTypeAndName($object)));
-                $objectRepository->update($object);
-
-                // Has an extremely simple RC-update feature, we can delete matching RC's pods
-                // Wait the "real" rolling-update feature
-                // @link https://github.com/sroze/continuouspipe/issues/54
-                if ($object instanceof ReplicationController) {
-                    $this->deleteReplicationControllerPods($client, $object);
-                }
-            } else {
-                $logger->append(new Text('Creating '.$this->getObjectTypeAndName($object)));
-                $objectRepository->create($object);
-            }
+            $this->createComponent($client, $object, $context->getLogger());
         }
 
         $this->eventBus->handle(new ComponentsCreated($context));
+    }
+
+    /**
+     * Create a component.
+     *
+     * @param NamespaceClient  $client
+     * @param KubernetesObject $object
+     * @param Logger           $logger
+     */
+    private function createComponent(NamespaceClient $client, KubernetesObject $object, Logger $logger)
+    {
+        $objectRepository = $this->getObjectRepository($client, $object);
+        $objectName = $object->getMetadata()->getName();
+
+        if ($objectRepository->exists($objectName)) {
+            if ($this->isLocked($object)) {
+                $logger->append(new Text('NOT updated '.$this->getObjectTypeAndName($object).' because it is locked'));
+
+                return;
+            }
+
+            $logger->append(new Text('Updating '.$this->getObjectTypeAndName($object)));
+            $objectRepository->update($object);
+
+            // Has an extremely simple RC-update feature, we can delete matching RC's pods
+            // Wait the "real" rolling-update feature
+            // @link https://github.com/sroze/continuouspipe/issues/54
+            if ($object instanceof ReplicationController) {
+                $this->deleteReplicationControllerPods($client, $object);
+            }
+        } else {
+            $logger->append(new Text('Creating '.$this->getObjectTypeAndName($object)));
+            $objectRepository->create($object);
+        }
     }
 
     /**
