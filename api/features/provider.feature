@@ -8,6 +8,7 @@ Feature:
 
   Scenario: A can list the providers
     Given I have a provider named "foo"
+    When I request the list of providers
     Then I should see this provider "foo" in the list of registered providers
 
   Scenario:

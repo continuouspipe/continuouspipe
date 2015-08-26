@@ -37,14 +37,6 @@ class ProviderContext implements Context
     }
 
     /**
-     * @When I send a GET request to :path
-     */
-    public function iSendAGetRequestTo($path)
-    {
-        $this->response = $this->kernel->handle(Request::create($path, 'GET'));
-    }
-
-    /**
      * @Given I have a provider named :name
      */
     public function iHaveAFakeProviderNamed($name)
@@ -53,12 +45,18 @@ class ProviderContext implements Context
     }
 
     /**
+     * @When I request the list of providers
+     */
+    public function iRequestTheListOfProviders()
+    {
+        $this->response = $this->kernel->handle(Request::create('/providers', 'GET'));
+    }
+
+    /**
      * @Then I should see this provider :name in the list of registered providers
      */
     public function iShouldSeeThisFakeProviderInTheListOfRegisteredProviders($name)
     {
-        $this->iSendAGetRequestTo('/providers');
-
         if (200 !== $this->response->getStatusCode()) {
             echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
