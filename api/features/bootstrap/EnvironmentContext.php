@@ -7,6 +7,7 @@ use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
+use ContinuousPipe\Pipe\Tests\Notification\TraceableNotifier;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\User\User;
 use LogStream\Tests\MutableWrappedLog;
@@ -47,31 +48,34 @@ class EnvironmentContext implements Context
     private $lastDeploymentUuid;
 
     /**
-     * @var DeploymentContext
-     */
-    private $deploymentContext;
-
-    /**
      * @var MessageBus
      */
     private $eventBus;
+
     /**
      * @var DeploymentRepository
      */
     private $deploymentRepository;
 
     /**
+     * @var TraceableNotifier
+     */
+    private $notifier;
+
+    /**
      * @param Kernel $kernel
      * @param EventStore $eventStore
      * @param DeploymentRepository $deploymentRepository
      * @param MessageBus $eventBus
+     * @param TraceableNotifier $notifier
      */
-    public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus)
+    public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus, TraceableNotifier $notifier)
     {
         $this->kernel = $kernel;
         $this->eventStore = $eventStore;
         $this->deploymentRepository = $deploymentRepository;
         $this->eventBus = $eventBus;
+        $this->notifier = $notifier;
     }
 
     /**
@@ -195,5 +199,9 @@ class EnvironmentContext implements Context
      */
     public function aNotificationShouldBeSentBack()
     {
+        $notifications = $this->notifier->getNotifications();
+        if (0 == count($notifications)) {
+            throw new \RuntimeException('Expecting 1 or more notifications, found 0');
+        }
     }
 }

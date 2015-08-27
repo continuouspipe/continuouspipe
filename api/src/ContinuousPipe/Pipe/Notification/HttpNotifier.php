@@ -27,8 +27,8 @@ class HttpNotifier implements Notifier
     private $loggerFactory;
 
     /**
-     * @param Client $httpClient
-     * @param Serializer $serializer
+     * @param Client                  $httpClient
+     * @param Serializer              $serializer
      * @param DeploymentLoggerFactory $loggerFactory
      */
     public function __construct(Client $httpClient, Serializer $serializer, DeploymentLoggerFactory $loggerFactory)
@@ -44,8 +44,14 @@ class HttpNotifier implements Notifier
     public function notify($address, Deployment $deployment)
     {
         $logger = $this->loggerFactory->create($deployment);
+        if (empty($address)) {
+            $logger->append(new Text('Empty callback, not sending HTTP notification'));
+
+            return;
+        }
+
         $logger->append(new Text(sprintf(
-            'Sending notification back to "%s"',
+            'Sending HTTP notification back "%s"',
             $address
         )));
 

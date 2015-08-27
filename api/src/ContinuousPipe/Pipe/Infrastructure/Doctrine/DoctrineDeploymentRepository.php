@@ -56,13 +56,15 @@ class DoctrineDeploymentRepository implements DeploymentRepository
 
     /**
      * @param Uuid $uuid
+     *
      * @return DeploymentViewDto
+     *
      * @throws DeploymentNotFound
      */
     private function findDto(Uuid $uuid)
     {
         $dto = $this->getRepository()->findOneBy([
-            'deploymentUuid' => (string) $uuid
+            'deploymentUuid' => (string) $uuid,
         ]);
 
         if (null === $dto) {

@@ -47,18 +47,10 @@ class DeploymentStatusListener
         $callbackUrl = $deployment->getRequest()->getNotificationCallbackUrl();
         $logger = $this->loggerFactory->create($deployment);
 
-        if (empty($callbackUrl)) {
-            $logger->append(new Text('Empty callback, not sending notification'));
-
-            return;
-        }
-
         try {
             $this->notifier->notify($callbackUrl, $deployment);
-
-            $logger->append(new Text(sprintf('Sent HTTP notification to "%s"', $callbackUrl)));
         } catch (NotificationException $e) {
-            $logger->append(new Text(sprintf('Error while sending HTTP notification to "%s": %s', $callbackUrl, $e->getMessage())));
+            $logger->append(new Text(sprintf('Error while sending notification to "%s": %s', $callbackUrl, $e->getMessage())));
         }
     }
 }
