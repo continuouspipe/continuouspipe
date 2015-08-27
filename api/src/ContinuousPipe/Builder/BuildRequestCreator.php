@@ -61,7 +61,8 @@ class BuildRequestCreator
 
             $buildRequestRepository = new Repository($codeReference->getRepository()->getAddress(), $codeReference->getCommitSha());
             $buildRequests[] = new BuildRequest($buildRequestRepository, $image, new Context(
-                $dockerComposeComponent->getDockerfilePath()
+                $dockerComposeComponent->getDockerfilePath(),
+                $dockerComposeComponent->getBuildDirectory()
             ));
         }
 

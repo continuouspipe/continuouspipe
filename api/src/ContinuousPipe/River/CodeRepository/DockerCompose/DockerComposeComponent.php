@@ -79,4 +79,12 @@ class DockerComposeComponent
     {
         return array_key_exists('dockerfile', $this->parsed) ? $this->parsed['dockerfile'] : '';
     }
+
+    /**
+     * @return string
+     */
+    public function getBuildDirectory()
+    {
+        return array_key_exists('build', $this->parsed) ? $this->parsed['build'] : '.';
+    }
 }

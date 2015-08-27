@@ -310,6 +310,25 @@ class BuildContext implements Context
     }
 
     /**
+     * @Then the build should be started with the sub-directory :path
+     */
+    public function theBuildShouldBeStartedWithTheSubDirectory($path)
+    {
+        $buildStartedEvent = $this->getBuildStartedEvents()[0];
+        $request = $buildStartedEvent->getBuild()->getRequest();
+        $foundPath = $request->getContext()->getRepositorySubDirectory();
+
+        if ($path != $foundPath) {
+            throw new \RuntimeException(sprintf(
+                'The path found is "%s" while expecting "%s"',
+                $foundPath,
+                $path
+            ));
+        }
+    }
+
+
+    /**
      * @return BuildTask
      */
     private function getBuildTask()
