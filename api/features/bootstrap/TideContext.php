@@ -146,6 +146,20 @@ class TideContext implements Context
     }
 
     /**
+     * @Given there is an application image in the repository with Dockerfile path :path
+     */
+    public function thereIsAnApplicationImageInTheRepositoryWithDockerfilePath($path)
+    {
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'docker-compose.yml' => 'image:'.PHP_EOL.
+                '    build: .'.PHP_EOL.
+                '    dockerfile: '.$path.PHP_EOL.
+                '    labels:'.PHP_EOL.
+                '        com.continuouspipe.image-name: image'.PHP_EOL
+        ]);
+    }
+
+    /**
      * @Then the tide should be failed
      */
     public function theTideShouldBeFailed()

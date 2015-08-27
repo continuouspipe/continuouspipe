@@ -84,6 +84,7 @@ class BuildImageHandler
         $buildRequest = new BuildRequest(
             $buildRequest->getRepository(),
             $buildRequest->getImage(),
+            $buildRequest->getContext(),
             Notification::withHttp(HttpNotification::fromAddress($address)),
             Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLog->getId()))
         );

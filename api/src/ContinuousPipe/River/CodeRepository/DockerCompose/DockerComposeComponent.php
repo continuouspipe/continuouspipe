@@ -71,4 +71,12 @@ class DockerComposeComponent
             throw new ResolveException($e->getMessage(), $e->getCode(), $e);
         }
     }
+
+    /**
+     * @return string
+     */
+    public function getDockerfilePath()
+    {
+        return array_key_exists('dockerfile', $this->parsed) ? $this->parsed['dockerfile'] : '';
+    }
 }

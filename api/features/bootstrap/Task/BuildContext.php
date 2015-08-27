@@ -292,6 +292,24 @@ class BuildContext implements Context
     }
 
     /**
+     * @Then the build should be started with Dockerfile path :path in the context
+     */
+    public function theBuildShouldBeStartedWithDockerfilePathInTheContext($path)
+    {
+        $buildStartedEvent = $this->getBuildStartedEvents()[0];
+        $request = $buildStartedEvent->getBuild()->getRequest();
+        $foundPath = $request->getContext()->getDockerFilePath();
+
+        if ($path != $foundPath) {
+            throw new \RuntimeException(sprintf(
+                'The path found is "%s" while expecting "%s"',
+                $foundPath,
+                $path
+            ));
+        }
+    }
+
+    /**
      * @return BuildTask
      */
     private function getBuildTask()
