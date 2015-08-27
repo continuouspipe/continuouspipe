@@ -6,6 +6,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
+use ContinuousPipe\Adapter\Kubernetes\PrivateImages\SecretFactory;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableSecretRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceAccountRepository;
@@ -186,17 +187,52 @@ class NamespaceContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Then a docker registry secret should be created
+     */
+    public function aDockerRegistrySecretShouldBeCreated()
+    {
+        $matchingCreated = array_filter($this->secretRepository->getCreated(), function (Secret $secret) {
+            return $this->isPrivateSecretName($secret->getMetadata()->getName());
+        });
+
+        if (count($matchingCreated) == 0) {
+            throw new \RuntimeException('No docker registry secret found');
+        }
+    }
+
+    /**
+     * @Then the service account should be updated with a docker registry pull secret
+     */
+    public function theServiceAccountShouldBeUpdatedWithADockerRegistryPullSecret()
+    {
+        $matchingServiceAccounts = array_filter($this->serviceAccountRepository->getUpdated(), function (ServiceAccount $serviceAccount) {
+            $matchingImagePulls = array_filter($serviceAccount->getImagePullSecrets(), function (LocalObjectReference $objectReference) {
+                return $this->isPrivateSecretName($objectReference->getName());
+            });
+
+            return count($matchingImagePulls) > 0;
+        });
+
+        if (count($matchingServiceAccounts) == 0) {
+            throw new \RuntimeException('No updated service account with docker registry pull secret found');
+        }
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    private function isPrivateSecretName($name)
+    {
+        return substr($name, 0, strlen(SecretFactory::SECRET_PREFIX)) == SecretFactory::SECRET_PREFIX;
+    }
+
+    /**
      * @Then the secret :name should be created
      */
     public function theSecretShouldBeCreated($name)
     {
-        $matchingCreated = array_filter($this->secretRepository->getCreated(), function (Secret $secret) use ($name) {
-            return $secret->getMetadata()->getName() == $name;
-        });
 
-        if (count($matchingCreated) == 0) {
-            throw new \RuntimeException(sprintf('No secret named "%s" found', $name));
-        }
     }
 
     /**
@@ -204,16 +240,6 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      */
     public function theServiceAccountShouldBeUpdatedWithAPullSecret($name)
     {
-        $matchingServiceAccounts = array_filter($this->serviceAccountRepository->getUpdated(), function (ServiceAccount $serviceAccount) use ($name) {
-            $matchingImagePulls = array_filter($serviceAccount->getImagePullSecrets(), function (LocalObjectReference $objectReference) use ($name) {
-                return $objectReference->getName() == $name;
-            });
 
-            return count($matchingImagePulls) > 0;
-        });
-
-        if (count($matchingServiceAccounts) == 0) {
-            throw new \RuntimeException(sprintf('No updated service account named "%s" found', $name));
-        }
     }
 }

@@ -20,5 +20,5 @@ Feature:
 
   Scenario:
     When a namespace is created
-    Then the secret "continuousPipeDockerRegistries" should be created
-    And the service account should be updated with a pull secret "continuousPipeDockerRegistries"
+    Then a docker registry secret should be created
+    And the service account should be updated with a docker registry pull secret
