@@ -76,4 +76,12 @@ class TraceableNamespaceRepository implements NamespaceRepository
     {
         $this->createdRepositories = [];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(KubernetesNamespace $namespace)
+    {
+        return $this->namespaceRepository->delete($namespace);
+    }
 }

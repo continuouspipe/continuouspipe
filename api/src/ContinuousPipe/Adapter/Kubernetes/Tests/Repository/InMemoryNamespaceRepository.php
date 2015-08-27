@@ -48,4 +48,16 @@ class InMemoryNamespaceRepository implements NamespaceRepository
 
         return $namespace;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(KubernetesNamespace $namespace)
+    {
+        $namespaceName = $namespace->getMetadata()->getName();
+
+        if (!$this->exists($namespaceName)) {
+            unset($this->namespaces[$namespaceName]);
+        }
+    }
 }

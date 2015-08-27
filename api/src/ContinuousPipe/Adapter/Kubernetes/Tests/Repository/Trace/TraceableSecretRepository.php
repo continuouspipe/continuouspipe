@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace;
 
+use Kubernetes\Client\Exception\SecretNotFound;
 use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Repository\SecretRepository;
 
@@ -43,5 +44,21 @@ class TraceableSecretRepository implements SecretRepository
     public function getCreated()
     {
         return $this->created;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findOneByName($name)
+    {
+        return $this->repository->findOneByName($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function exists($name)
+    {
+        return $this->repository->exists($name);
     }
 }
