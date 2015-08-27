@@ -2,9 +2,12 @@
 
 namespace ContinuousPipe\Pipe\Notification;
 
+use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
 use ContinuousPipe\Pipe\View\Deployment;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\Serializer;
+use LogStream\Node\Text;
 
 class HttpNotifier implements Notifier
 {
@@ -12,19 +15,27 @@ class HttpNotifier implements Notifier
      * @var Client
      */
     private $httpClient;
+
     /**
      * @var Serializer
      */
     private $serializer;
 
     /**
-     * @param Client     $httpClient
-     * @param Serializer $serializer
+     * @var DeploymentLoggerFactory
      */
-    public function __construct(Client $httpClient, Serializer $serializer)
+    private $loggerFactory;
+
+    /**
+     * @param Client $httpClient
+     * @param Serializer $serializer
+     * @param DeploymentLoggerFactory $loggerFactory
+     */
+    public function __construct(Client $httpClient, Serializer $serializer, DeploymentLoggerFactory $loggerFactory)
     {
         $this->httpClient = $httpClient;
         $this->serializer = $serializer;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -32,11 +43,21 @@ class HttpNotifier implements Notifier
      */
     public function notify($address, Deployment $deployment)
     {
-        $this->httpClient->post($address, [
-            'body' => $this->serializer->serialize($deployment, 'json'),
-            'headers' => [
-                'Content-Type' => 'application/json',
-            ],
-        ]);
+        $logger = $this->loggerFactory->create($deployment);
+        $logger->append(new Text(sprintf(
+            'Sending notification back to "%s"',
+            $address
+        )));
+
+        try {
+            $this->httpClient->post($address, [
+                'body' => $this->serializer->serialize($deployment, 'json'),
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
+        } catch (RequestException $e) {
+            throw new NotificationException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

@@ -11,6 +11,8 @@ interface Notifier
      *
      * @param string     $address
      * @param Deployment $deployment
+     *
+     * @throws NotificationException
      */
     public function notify($address, Deployment $deployment);
 }

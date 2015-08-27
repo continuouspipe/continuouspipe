@@ -4,6 +4,7 @@ namespace ContinuousPipe\Pipe\Notification\Listener;
 
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
+use ContinuousPipe\Pipe\Notification\NotificationException;
 use ContinuousPipe\Pipe\Notification\Notifier;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use LogStream\Node\Text;
@@ -44,16 +45,19 @@ class DeploymentStatusListener
     {
         $deployment = $this->deploymentRepository->find($event->getDeploymentUuid());
         $callbackUrl = $deployment->getRequest()->getNotificationCallbackUrl();
+        $logger = $this->loggerFactory->create($deployment);
 
-        if (!empty($callbackUrl)) {
-            $logger = $this->loggerFactory->create($deployment);
+        if (empty($callbackUrl)) {
+            $logger->append(new Text('Empty callback, not sending notification'));
 
-            try {
-                $this->notifier->notify($callbackUrl, $deployment);
-                $logger->append(new Text(sprintf('Sent HTTP notification to "%s"', $callbackUrl)));
-            } catch (\Exception $e) {
-                $logger->append(new Text(sprintf('Error while sending HTTP notification to "%s": %s', $callbackUrl, $e->getMessage())));
-            }
+            return;
+        }
+
+        try {
+            $this->notifier->notify($callbackUrl, $deployment);
+            $logger->append(new Text(sprintf('Sent HTTP notification to "%s"', $callbackUrl)));
+        } catch (NotificationException $e) {
+            $logger->append(new Text(sprintf('Error while sending HTTP notification to "%s": %s', $callbackUrl, $e->getMessage())));
         }
     }
 }
