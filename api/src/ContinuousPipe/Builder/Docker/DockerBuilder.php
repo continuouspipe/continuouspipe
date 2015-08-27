@@ -43,10 +43,9 @@ class DockerBuilder implements Builder
     public function build(Build $build, Logger $logger)
     {
         $request = $build->getRequest();
-        $repository = $request->getRepository();
         $targetImage = $request->getImage();
 
-        $archive = $this->archiveBuilder->getArchive($repository, $build->getUser(), $logger);
+        $archive = $this->archiveBuilder->getArchive($request, $build->getUser(), $logger);
         $this->dockerClient->build($archive, $request, $logger);
 
         try {
