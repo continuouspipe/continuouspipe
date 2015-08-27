@@ -47,7 +47,7 @@ class DockerBuilder implements Builder
         $targetImage = $request->getImage();
 
         $archive = $this->archiveBuilder->getArchive($repository, $build->getUser(), $logger);
-        $this->dockerClient->build($archive, $targetImage, $logger);
+        $this->dockerClient->build($archive, $request, $logger);
 
         try {
             $credentials = $this->credentialsRepository->findByImage($targetImage, $build->getUser());

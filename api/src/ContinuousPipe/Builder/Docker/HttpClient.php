@@ -5,9 +5,11 @@ namespace ContinuousPipe\Builder\Docker;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Image;
+use ContinuousPipe\Builder\Request\BuildRequest;
 use Docker\Docker;
 use Docker\Exception\UnexpectedStatusCodeException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Stream\Stream;
 use LogStream\Logger;
 use LogStream\Node\Text;
 
@@ -29,10 +31,9 @@ class HttpClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function build(Archive $archive, Image $image, Logger $logger)
+    public function build(Archive $archive, BuildRequest $request, Logger $logger)
     {
-        $imageName = $image->getName().':'.$image->getTag();
-        $this->docker->build($archive, $imageName, $this->getOutputCallback($logger));
+        $this->doBuild($archive, $request, $this->getOutputCallback($logger));
     }
 
     /**
@@ -79,5 +80,40 @@ class HttpClient implements Client
                 $logger->append(new Text($rawOutput));
             }
         };
+    }
+
+    /**
+     * @param Archive      $archive
+     * @param BuildRequest $request
+     * @param callable     $callback
+     *
+     * @return \GuzzleHttp\Message\ResponseInterface
+     */
+    private function doBuild(Archive $archive, BuildRequest $request, callable $callback)
+    {
+        $image = $request->getImage();
+        $imageName = $image->getName().':'.$image->getTag();
+
+        $options = [
+            'q' => (integer) false,
+            't' => $imageName,
+            'nocache' => (integer) false,
+            'rm' => (integer) false,
+        ];
+
+        $dockerFilePath = $request->getContext() ? $request->getContext()->getDockerFilePath() : null;
+        if (!empty($dockerFilePath)) {
+            $options['dockerfile'] = $dockerFilePath;
+        }
+
+        $content = $archive->isStreamed() ? new Stream($archive->read()) : $archive->read();
+
+        return $this->docker->getHttpClient()->post(['/build{?data*}', ['data' => $options]], [
+            'headers' => ['Content-Type' => 'application/tar'],
+            'body' => $content,
+            'stream' => true,
+            'callback' => $callback,
+            'wait' => true,
+        ]);
     }
 }

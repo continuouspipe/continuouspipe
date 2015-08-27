@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Docker\Client;
 use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
+use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Raw;
@@ -37,7 +38,7 @@ class LoggedDockerClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function build(Archive $archive, Image $image, Logger $logger)
+    public function build(Archive $archive, BuildRequest $request, Logger $logger)
     {
         $log = $logger->append(new Text('Start Docker build'));
         $buildLogger = $this->loggerFactory->from($log);
@@ -47,7 +48,7 @@ class LoggedDockerClient implements Client
         $rawBuildLogger = $this->loggerFactory->from($raw);
 
         try {
-            $this->client->build($archive, $image, $rawBuildLogger);
+            $this->client->build($archive, $request, $rawBuildLogger);
             $buildLogger->success();
         } catch (DockerException $e) {
             $buildLogger->failure();

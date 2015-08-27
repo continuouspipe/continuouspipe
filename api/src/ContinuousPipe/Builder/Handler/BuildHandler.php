@@ -68,8 +68,8 @@ class BuildHandler
 
             $build->updateStatus(Build::STATUS_SUCCESS);
         } catch (DockerException $e) {
-            $message = $e->getMessage() ? ': ' . $e->getMessage() : '';
-            $logger->append(new Text('An Docker error occurred' . $message));
+            $message = $e->getMessage() ? ': '.$e->getMessage() : '';
+            $logger->append(new Text('An Docker error occurred'.$message));
             $build->updateStatus(Build::STATUS_ERROR);
         } catch (BuildException $e) {
             $logger->append(new Text($e->getMessage()));
@@ -99,7 +99,7 @@ class BuildHandler
                         $body->seek(0);
                     }
 
-                    $message .= ' [' . $body->getContents() . ']';
+                    $message .= ' ['.$body->getContents().']';
                 }
             }
         }
