@@ -6,7 +6,7 @@ use ContinuousPipe\Pipe\View\Deployment;
 use GuzzleHttp\Client;
 use JMS\Serializer\Serializer;
 
-class HttpNotifier
+class HttpNotifier implements Notifier
 {
     /**
      * @var Client
@@ -28,8 +28,7 @@ class HttpNotifier
     }
 
     /**
-     * @param string     $address
-     * @param Deployment $deployment
+     * {@inheritdoc}
      */
     public function notify($address, Deployment $deployment)
     {

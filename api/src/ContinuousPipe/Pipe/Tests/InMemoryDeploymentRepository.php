@@ -33,5 +33,7 @@ class InMemoryDeploymentRepository implements DeploymentRepository
     public function save(Deployment $deployment)
     {
         $this->deployments[(string) $deployment->getUuid()] = $deployment;
+
+        return $deployment;
     }
 }

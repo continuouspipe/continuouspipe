@@ -10,3 +10,4 @@ Feature:
   Scenario:
     When I send a valid deployment request
     Then the environment should be created or updated
+    And the deployment should be successful

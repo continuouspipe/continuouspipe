@@ -12,7 +12,7 @@
             <argument type="service" id="event_bus" />
             <argument type="service" id="pipe.deployment_logger_factory" />
 
-            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\StartDeploymentCommand"/>
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\Pipe\Command\StartDeploymentCommand"/>
         </service>
     </services>
 </container>

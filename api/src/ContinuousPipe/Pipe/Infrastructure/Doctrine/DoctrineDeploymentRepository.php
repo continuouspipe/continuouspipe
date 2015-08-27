@@ -37,6 +37,8 @@ class DoctrineDeploymentRepository implements DeploymentRepository
     {
         $this->entityManager->persist($deployment);
         $this->entityManager->flush();
+
+        return $deployment;
     }
 
     /**

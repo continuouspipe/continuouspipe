@@ -26,6 +26,7 @@ class TestExtension extends Extension
         // Add integration stubs
         $loader->load('integration/authenticator.xml');
         $loader->load('integration/logstream.xml');
+        $loader->load('integration/notification.xml');
         $loader->load('kubernetes/client.xml');
 
         // Add in-memory stubs if not in smoke tests case

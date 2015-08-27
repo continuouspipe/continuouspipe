@@ -1,6 +1,16 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Model\Environment;
+use ContinuousPipe\Pipe\DeploymentContext;
+use ContinuousPipe\Pipe\DeploymentRequest;
+use ContinuousPipe\Pipe\Event\DeploymentFailed;
+use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
+use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
+use ContinuousPipe\Pipe\View\DeploymentRepository;
+use ContinuousPipe\User\User;
+use LogStream\Tests\MutableWrappedLog;
+use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,13 +47,31 @@ class EnvironmentContext implements Context
     private $lastDeploymentUuid;
 
     /**
-     * @param Kernel     $kernel
-     * @param EventStore $eventStore
+     * @var DeploymentContext
      */
-    public function __construct(Kernel $kernel, EventStore $eventStore)
+    private $deploymentContext;
+
+    /**
+     * @var MessageBus
+     */
+    private $eventBus;
+    /**
+     * @var DeploymentRepository
+     */
+    private $deploymentRepository;
+
+    /**
+     * @param Kernel $kernel
+     * @param EventStore $eventStore
+     * @param DeploymentRepository $deploymentRepository
+     * @param MessageBus $eventBus
+     */
+    public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus)
     {
         $this->kernel = $kernel;
         $this->eventStore = $eventStore;
+        $this->deploymentRepository = $deploymentRepository;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -74,6 +102,24 @@ class EnvironmentContext implements Context
 
         if (0 === count($events)) {
             throw new \RuntimeException('Expected to have at least one event for this deployment, found 0');
+        }
+    }
+
+    /**
+     * @Then the deployment should be successful
+     */
+    public function theDeploymentShouldBeSuccessful()
+    {
+        $events = $this->eventStore->findByDeploymentUuid(
+            $this->lastDeploymentUuid
+        );
+
+        $deploymentSuccessfulEvents = array_filter($events, function($event) {
+            return $event instanceof DeploymentSuccessful;
+        });
+
+        if (count($deploymentSuccessfulEvents) == 0) {
+            throw new \RuntimeException('No event successful events found');
         }
     }
 
@@ -111,5 +157,43 @@ class EnvironmentContext implements Context
         }
 
         $this->lastDeploymentUuid = Uuid::fromString($deployment['uuid']);
+    }
+
+    /**
+     * @Given I have a running deployment
+     */
+    public function iHaveARunningDeployment()
+    {
+        $deployment = $this->deploymentRepository->save(
+            Deployment::fromRequest(
+                new DeploymentRequest(),
+                new User('sroze@inviqa.com')
+            )
+        );
+
+        $this->lastDeploymentUuid = $deployment->getUuid();
+    }
+
+    /**
+     * @When the deployment is successful
+     */
+    public function theDeploymentIsSuccessful()
+    {
+        $this->eventBus->handle(new DeploymentSuccessful($this->lastDeploymentUuid));
+    }
+
+    /**
+     * @When the deployment is failed
+     */
+    public function theDeploymentIsFailed()
+    {
+        $this->eventBus->handle(new DeploymentFailed($this->lastDeploymentUuid));
+    }
+
+    /**
+     * @Then a notification should be sent back
+     */
+    public function aNotificationShouldBeSentBack()
+    {
     }
 }

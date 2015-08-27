@@ -4,17 +4,16 @@ namespace ContinuousPipe\Pipe\Notification\Listener;
 
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
-use ContinuousPipe\Pipe\Notification\HttpNotifier;
+use ContinuousPipe\Pipe\Notification\Notifier;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
-use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 
 class DeploymentStatusListener
 {
     /**
-     * @var HttpNotifier
+     * @var Notifier
      */
-    private $httpNotifier;
+    private $notifier;
 
     /**
      * @var DeploymentLoggerFactory
@@ -27,13 +26,13 @@ class DeploymentStatusListener
     private $deploymentRepository;
 
     /**
-     * @param HttpNotifier            $httpNotifier
+     * @param Notifier                $notifier
      * @param DeploymentLoggerFactory $loggerFactory
      * @param DeploymentRepository    $deploymentRepository
      */
-    public function __construct(HttpNotifier $httpNotifier, DeploymentLoggerFactory $loggerFactory, DeploymentRepository $deploymentRepository)
+    public function __construct(Notifier $notifier, DeploymentLoggerFactory $loggerFactory, DeploymentRepository $deploymentRepository)
     {
-        $this->httpNotifier = $httpNotifier;
+        $this->notifier = $notifier;
         $this->loggerFactory = $loggerFactory;
         $this->deploymentRepository = $deploymentRepository;
     }
@@ -50,7 +49,7 @@ class DeploymentStatusListener
             $logger = $this->loggerFactory->create($deployment);
 
             try {
-                $this->httpNotifier->notify($callbackUrl, $deployment);
+                $this->notifier->notify($callbackUrl, $deployment);
                 $logger->append(new Text(sprintf('Sent HTTP notification to "%s"', $callbackUrl)));
             } catch (\Exception $e) {
                 $logger->append(new Text(sprintf('Error while sending HTTP notification to "%s": %s', $callbackUrl, $e->getMessage())));
