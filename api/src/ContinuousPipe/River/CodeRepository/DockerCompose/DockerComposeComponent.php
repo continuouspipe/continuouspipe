@@ -18,22 +18,29 @@ class DockerComposeComponent
     private $parsed;
 
     /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @param string $name
      * @param array $parsed
      */
-    private function __construct(array $parsed)
+    private function __construct($name, array $parsed)
     {
         $this->componentTransformer = new ComponentTransformer();
         $this->parsed = $parsed;
+        $this->name = $name;
     }
 
     /**
+     * @param string $name
      * @param array $parsed
-     *
      * @return DockerComposeComponent
      */
-    public static function fromParsed(array $parsed)
+    public static function fromParsed($name, array $parsed)
     {
-        return new self($parsed);
+        return new self($name, $parsed);
     }
 
     /**
@@ -66,7 +73,7 @@ class DockerComposeComponent
     private function getComponent()
     {
         try {
-            return $this->componentTransformer->load('component', $this->parsed);
+            return $this->componentTransformer->load($this->name, $this->parsed);
         } catch (TransformException $e) {
             throw new ResolveException($e->getMessage(), $e->getCode(), $e);
         }

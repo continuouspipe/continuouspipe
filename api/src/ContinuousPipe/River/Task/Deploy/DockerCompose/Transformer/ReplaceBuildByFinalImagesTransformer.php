@@ -14,7 +14,7 @@ class ReplaceBuildByFinalImagesTransformer implements DockerComposeTransformer
     public function transform(DeployContext $context, array $parsed)
     {
         foreach ($parsed as $componentName => &$rawComponent) {
-            $dockerComposeComponent = DockerComposeComponent::fromParsed($rawComponent);
+            $dockerComposeComponent = DockerComposeComponent::fromParsed($componentName, $rawComponent);
             if (!$dockerComposeComponent->hasToBeBuilt()) {
                 continue;
             }

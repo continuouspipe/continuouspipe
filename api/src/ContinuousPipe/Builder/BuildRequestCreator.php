@@ -46,7 +46,7 @@ class BuildRequestCreator
 
         $buildRequests = [];
         foreach ($dockerComposeComponents as $componentName => $rawDockerComposeComponent) {
-            $dockerComposeComponent = CodeRepository\DockerCompose\DockerComposeComponent::fromParsed($rawDockerComposeComponent);
+            $dockerComposeComponent = CodeRepository\DockerCompose\DockerComposeComponent::fromParsed($componentName, $rawDockerComposeComponent);
             if (!$dockerComposeComponent->hasToBeBuilt()) {
                 continue;
             }
