@@ -9,4 +9,4 @@ mysql:
     environment:
         MYSQL_PASSWORD: root
     labels:
-        com.continuouspipe.locked: true
+        com.continuouspipe.update: lock
