@@ -2,8 +2,16 @@
 
 namespace ContinuousPipe\River\CodeRepository\DockerCompose;
 
+use ContinuousPipe\DockerCompose\Transformer\ComponentTransformer;
+use ContinuousPipe\DockerCompose\Transformer\TransformException;
+
 class DockerComposeComponent
 {
+    /**
+     * @var ComponentTransformer
+     */
+    private $componentTransformer;
+
     /**
      * @var array
      */
@@ -14,6 +22,7 @@ class DockerComposeComponent
      */
     private function __construct(array $parsed)
     {
+        $this->componentTransformer = new ComponentTransformer();
         $this->parsed = $parsed;
     }
 
@@ -40,16 +49,7 @@ class DockerComposeComponent
      */
     public function getImageName()
     {
-        if (array_key_exists('image', $this->parsed)) {
-            return $this->parsed['image'];
-        }
-
-        $labels = $this->getLabels();
-        if (array_key_exists('com.continuouspipe.image-name', $labels)) {
-            return $labels['com.continuouspipe.image-name'];
-        }
-
-        throw new ResolveException('No `image` property nor `com.continuouspipe.image-name` label');
+        return $this->getComponent()->getSpecification()->getSource()->getImage();
     }
 
     /**
@@ -57,10 +57,18 @@ class DockerComposeComponent
      */
     public function getLabels()
     {
-        if (array_key_exists('labels', $this->parsed)) {
-            return $this->parsed['labels'];
-        }
+        return $this->getComponent()->getLabels();
+    }
 
-        return [];
+    /**
+     * @return \ContinuousPipe\Model\Component
+     */
+    private function getComponent()
+    {
+        try {
+            return $this->componentTransformer->load('component', $this->parsed);
+        } catch (TransformException $e) {
+            throw new ResolveException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }
