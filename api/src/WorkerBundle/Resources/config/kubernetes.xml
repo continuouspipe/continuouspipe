@@ -98,7 +98,7 @@
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand" />
         </service>
         <service id="pipe.adapter.kubernetes.create_components_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\CreateComponentsHandler">
-            <argument type="service" id="kubernetes.transformer.environment" />
+            <argument type="service" id="kubernetes.transformer.component" />
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="log_stream.logger_factory" />

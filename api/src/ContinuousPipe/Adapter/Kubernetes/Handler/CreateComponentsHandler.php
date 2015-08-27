@@ -4,7 +4,9 @@ namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
+use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
+use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
@@ -24,9 +26,9 @@ use SimpleBus\Message\Bus\MessageBus;
 class CreateComponentsHandler implements DeploymentHandler
 {
     /**
-     * @var EnvironmentTransformer
+     * @var ComponentTransformer
      */
-    private $environmentTransformer;
+    private $componentTransformer;
 
     /**
      * @var DeploymentClientFactory
@@ -37,20 +39,21 @@ class CreateComponentsHandler implements DeploymentHandler
      * @var MessageBus
      */
     private $eventBus;
+
     /**
      * @var LoggerFactory
      */
     private $loggerFactory;
 
     /**
-     * @param EnvironmentTransformer  $environmentTransformer
+     * @param ComponentTransformer    $componentTransformer
      * @param DeploymentClientFactory $clientFactory
      * @param MessageBus              $eventBus
      * @param LoggerFactory           $loggerFactory
      */
-    public function __construct(EnvironmentTransformer $environmentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory)
+    public function __construct(ComponentTransformer $componentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory)
     {
-        $this->environmentTransformer = $environmentTransformer;
+        $this->componentTransformer = $componentTransformer;
         $this->clientFactory = $clientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
@@ -65,11 +68,10 @@ class CreateComponentsHandler implements DeploymentHandler
         $client = $this->clientFactory->get($context);
 
         $environment = $context->getEnvironment();
-        $namespaceObjects = $this->environmentTransformer->getElementListFromEnvironment($environment);
         $logger = $this->loggerFactory->from($context->getLog());
 
-        foreach ($namespaceObjects as $object) {
-            $this->createComponent($client, $object, $logger);
+        foreach ($environment->getComponents() as $component) {
+            $this->createComponent($client, $logger, $component);
         }
 
         $this->eventBus->handle(new ComponentsCreated($context));
@@ -78,17 +80,34 @@ class CreateComponentsHandler implements DeploymentHandler
     /**
      * Create a component.
      *
-     * @param NamespaceClient  $client
-     * @param KubernetesObject $object
-     * @param Logger           $logger
+     * @param NamespaceClient $client
+     * @param Logger          $logger
+     * @param Component       $component
      */
-    private function createComponent(NamespaceClient $client, KubernetesObject $object, Logger $logger)
+    private function createComponent(NamespaceClient $client, Logger $logger, Component $component)
+    {
+        $objects = $this->componentTransformer->getElementListFromComponent($component);
+
+        foreach ($objects as $object) {
+            $this->createObject($client, $logger, $component, $object);
+        }
+    }
+
+    /**
+     * Create or update the object.
+     *
+     * @param NamespaceClient  $client
+     * @param Logger           $logger
+     * @param Component        $component
+     * @param KubernetesObject $object
+     */
+    private function createObject(NamespaceClient $client, Logger $logger, Component $component, KubernetesObject $object)
     {
         $objectRepository = $this->getObjectRepository($client, $object);
         $objectName = $object->getMetadata()->getName();
 
         if ($objectRepository->exists($objectName)) {
-            if ($this->isLocked($object)) {
+            if ($component->isLocked()) {
                 $logger->append(new Text('NOT updated '.$this->getObjectTypeAndName($object).' because it is locked'));
 
                 return;
@@ -151,19 +170,6 @@ class CreateComponentsHandler implements DeploymentHandler
         foreach ($pods as $pod) {
             $podRepository->delete($pod);
         }
-    }
-
-    /**
-     * @param KubernetesObject $object
-     *
-     * @return bool
-     */
-    private function isLocked(KubernetesObject $object)
-    {
-        $labelList = $object->getMetadata()->getLabelList();
-        $locked = $labelList->hasKey('com.continuouspipe.locked');
-
-        return $locked;
     }
 
     /**
