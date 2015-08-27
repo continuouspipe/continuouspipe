@@ -24,6 +24,9 @@ class DeploymentStatusListener
         $this->deploymentRepository = $deploymentRepository;
     }
 
+    /**
+     * @param DeploymentEvent $event
+     */
     public function notify(DeploymentEvent $event)
     {
         $deployment = $this->deploymentRepository->find($event->getDeploymentUuid());
@@ -35,5 +38,7 @@ class DeploymentStatusListener
         } elseif ($event instanceof DeploymentSuccessful) {
             $deployment->updateStatus(Deployment::STATUS_SUCCESS);
         }
+
+        $this->deploymentRepository->save($deployment);
     }
 }

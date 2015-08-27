@@ -60,7 +60,7 @@ class DeploymentController extends Controller
 
         $this->commandBus->handle(new StartDeploymentCommand($deployment));
 
-        return $deployment;
+        return $this->deploymentRepository->find($deployment->getUuid());
     }
 
     /**
