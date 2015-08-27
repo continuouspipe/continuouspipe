@@ -7,6 +7,7 @@ use ContinuousPipe\Adapter\Kubernetes\Cluster;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
 use ContinuousPipe\Adapter\Kubernetes\User;
 use ContinuousPipe\Adapter\Provider;
+use ContinuousPipe\Adapter\ProviderNotFound;
 use ContinuousPipe\Adapter\ProviderRepository;
 
 class ProviderContext implements Context
@@ -31,11 +32,15 @@ class ProviderContext implements Context
      */
     public function iHaveAValidKubernetesProvider()
     {
-        return $this->providerRepository->create(new KubernetesProvider(
-            self::DEFAULT_PROVIDER_NAME,
-            new Cluster('1.2.3.4', 'v1'),
-            new User('username', 'password')
-        ));
+        try {
+            return $this->providerRepository->find(self::DEFAULT_PROVIDER_NAME);
+        } catch (ProviderNotFound $e) {
+            return $this->providerRepository->create(new KubernetesProvider(
+                self::DEFAULT_PROVIDER_NAME,
+                new Cluster('1.2.3.4', 'v1'),
+                new User('username', 'password')
+            ));
+        }
     }
 
     /**

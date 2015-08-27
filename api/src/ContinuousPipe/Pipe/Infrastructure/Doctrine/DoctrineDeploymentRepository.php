@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\Pipe\Infrastructure\Doctrine;
 
+use ContinuousPipe\Pipe\DeploymentNotFound;
+use ContinuousPipe\Pipe\Infrastructure\Doctrine\Entity\DeploymentViewDto;
 use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use Doctrine\ORM\EntityManager;
@@ -9,6 +11,8 @@ use Rhumsaa\Uuid\Uuid;
 
 class DoctrineDeploymentRepository implements DeploymentRepository
 {
+    const DTO_CLASS = 'ContinuousPipe\Pipe\Infrastructure\Doctrine\Entity\DeploymentViewDto';
+
     /**
      * @var EntityManager
      */
@@ -27,7 +31,7 @@ class DoctrineDeploymentRepository implements DeploymentRepository
      */
     public function find(Uuid $uuid)
     {
-        return $this->getRepository()->find((string) $uuid);
+        return $this->fromDto($this->findDto($uuid));
     }
 
     /**
@@ -35,10 +39,37 @@ class DoctrineDeploymentRepository implements DeploymentRepository
      */
     public function save(Deployment $deployment)
     {
-        $this->entityManager->persist($deployment);
+        try {
+            $dto = $this->findDto($deployment->getUuid());
+        } catch (DeploymentNotFound $e) {
+            $dto = new DeploymentViewDto();
+            $dto->deploymentUuid = $deployment->getUuid();
+        }
+
+        $dto->serializedDeploymentView = base64_encode(serialize($deployment));
+
+        $this->entityManager->persist($dto);
         $this->entityManager->flush();
 
         return $deployment;
+    }
+
+    /**
+     * @param Uuid $uuid
+     * @return DeploymentViewDto
+     * @throws DeploymentNotFound
+     */
+    private function findDto(Uuid $uuid)
+    {
+        $dto = $this->getRepository()->findOneBy([
+            'deploymentUuid' => (string) $uuid
+        ]);
+
+        if (null === $dto) {
+            throw new DeploymentNotFound();
+        }
+
+        return $dto;
     }
 
     /**
@@ -46,6 +77,16 @@ class DoctrineDeploymentRepository implements DeploymentRepository
      */
     private function getRepository()
     {
-        return $this->entityManager->getRepository(Deployment::class);
+        return $this->entityManager->getRepository(self::DTO_CLASS);
+    }
+
+    /**
+     * @param DeploymentViewDto $dto
+     *
+     * @return Deployment
+     */
+    private function fromDto(DeploymentViewDto $dto)
+    {
+        return unserialize(base64_decode($dto->serializedDeploymentView));
     }
 }

@@ -55,6 +55,7 @@ class DeploymentStatusListener
 
         try {
             $this->notifier->notify($callbackUrl, $deployment);
+
             $logger->append(new Text(sprintf('Sent HTTP notification to "%s"', $callbackUrl)));
         } catch (NotificationException $e) {
             $logger->append(new Text(sprintf('Error while sending HTTP notification to "%s": %s', $callbackUrl, $e->getMessage())));
