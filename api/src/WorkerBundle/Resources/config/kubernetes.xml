@@ -71,6 +71,7 @@
         <service id="pipe.adapter.kubernetes.listener.add_private_registry_credentials" class="ContinuousPipe\Adapter\Kubernetes\Listener\NamespaceCreated\AddPrivateRegistryCredentials">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
             <argument type="service" id="pipe.adapter.kubernetes.private_images.secret_factory" />
+            <argument type="service" id="log_stream.logger_factory" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated" />
         </service>
@@ -85,6 +86,7 @@
         <service id="pipe.adapter.kubernetes.prepare_environment_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\PrepareEnvironmentHandler">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
             <argument type="service" id="event_bus" />
+            <argument type="service" id="log_stream.logger_factory" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
         </service>
@@ -99,6 +101,7 @@
             <argument type="service" id="kubernetes.transformer.environment" />
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="event_bus" />
+            <argument type="service" id="log_stream.logger_factory" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
         </service>

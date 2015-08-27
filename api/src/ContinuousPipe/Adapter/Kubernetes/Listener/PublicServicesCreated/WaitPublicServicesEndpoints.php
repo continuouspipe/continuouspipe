@@ -52,7 +52,8 @@ class WaitPublicServicesEndpoints
 
     /**
      * @param DeploymentContext $context
-     * @param Service[] $services
+     * @param Service[]         $services
+     *
      * @return PublicEndpoint[]
      */
     private function waitEndpoints(DeploymentContext $context, array $services)

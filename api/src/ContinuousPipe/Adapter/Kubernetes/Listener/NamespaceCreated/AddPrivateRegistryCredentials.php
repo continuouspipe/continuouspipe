@@ -8,6 +8,7 @@ use ContinuousPipe\Adapter\Kubernetes\PrivateImages\SecretFactory;
 use Kubernetes\Client\Model\LocalObjectReference;
 use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Model\ServiceAccount;
+use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 
 class AddPrivateRegistryCredentials
@@ -23,13 +24,20 @@ class AddPrivateRegistryCredentials
     private $secretFactory;
 
     /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
+
+    /**
      * @param KubernetesClientFactory $kubernetesClientFactory
      * @param SecretFactory           $secretFactory
+     * @param LoggerFactory           $loggerFactory
      */
-    public function __construct(KubernetesClientFactory $kubernetesClientFactory, SecretFactory $secretFactory)
+    public function __construct(KubernetesClientFactory $kubernetesClientFactory, SecretFactory $secretFactory, LoggerFactory $loggerFactory)
     {
         $this->kubernetesClientFactory = $kubernetesClientFactory;
         $this->secretFactory = $secretFactory;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -38,7 +46,7 @@ class AddPrivateRegistryCredentials
     public function notify(NamespaceCreated $event)
     {
         $deploymentContext = $event->getContext();
-        $logger = $deploymentContext->getLogger();
+        $logger = $this->loggerFactory->from($deploymentContext->getLog());
 
         try {
             $secret = $this->secretFactory->createDockerRegistrySecret($deploymentContext);

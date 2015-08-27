@@ -44,7 +44,9 @@ class AdapterProviderRepository
      *
      * @param string $type
      * @param string $identifier
+     *
      * @return Provider
+     *
      * @throws \ContinuousPipe\Adapter\AdapterNotFound
      * @throws ProviderNotFound
      */
@@ -57,6 +59,7 @@ class AdapterProviderRepository
      * Create a new provider.
      *
      * @param Provider $provider
+     *
      * @return Provider
      */
     public function create(Provider $provider)
@@ -74,7 +77,9 @@ class AdapterProviderRepository
 
     /**
      * @param string $type
+     *
      * @return \ContinuousPipe\Adapter\ProviderRepository
+     *
      * @throws \ContinuousPipe\Adapter\AdapterNotFound
      */
     private function getRepository($type)

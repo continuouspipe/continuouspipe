@@ -179,7 +179,7 @@ class NamespaceContext implements Context, SnippetAcceptingContext
                     new User('samuel')
                 ),
                 $this->providerContext->iHaveAValidKubernetesProvider(),
-                $this->loggerFactory->create(),
+                $this->loggerFactory->create()->getLog(),
                 new Environment('foo', 'bar')
             )
         ));

@@ -83,10 +83,9 @@ class StartDeploymentHandler
             count($environment->getComponents())
         )));
 
-
         list($type, $name) = explode('/', $request->getProviderName());
         $provider = $this->providerRepository->findByTypeAndIdentifier($type, $name);
-        $deploymentContext = new DeploymentContext($deployment, $provider, $logger, $environment);
+        $deploymentContext = new DeploymentContext($deployment, $provider, $logger->getLog(), $environment);
         $this->eventBus->handle(new DeploymentStarted($deploymentContext));
     }
 }

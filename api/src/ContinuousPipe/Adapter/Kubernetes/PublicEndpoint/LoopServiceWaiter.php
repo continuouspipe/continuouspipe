@@ -44,7 +44,7 @@ class LoopServiceWaiter implements ServiceWaiter
     public function waitService(DeploymentContext $context, Service $service)
     {
         $serviceName = $service->getMetadata()->getName();
-        $log = $context->getLogger()->append(new Text('Waiting public endpoint of service '.$serviceName));
+        $log = $this->loggerFactory->from($context->getLog())->append(new Text('Waiting public endpoint of service '.$serviceName));
         $logger = $this->loggerFactory->from($log);
         $client = $this->clientFactory->get($context);
 

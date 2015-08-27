@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace;
 
-use Kubernetes\Client\Exception\SecretNotFound;
 use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Repository\SecretRepository;
 

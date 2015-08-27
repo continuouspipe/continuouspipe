@@ -12,6 +12,7 @@ use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\ObjectMetadata;
+use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -26,15 +27,21 @@ class PrepareEnvironmentHandler implements DeploymentHandler
      * @var MessageBus
      */
     private $eventBus;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
 
     /**
      * @param KubernetesClientFactory $clientFactory
      * @param MessageBus              $eventBus
+     * @param LoggerFactory           $loggerFactory
      */
-    public function __construct(KubernetesClientFactory $clientFactory, MessageBus $eventBus)
+    public function __construct(KubernetesClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory)
     {
         $this->clientFactory = $clientFactory;
         $this->eventBus = $eventBus;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -43,7 +50,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     public function handle(PrepareEnvironmentCommand $command)
     {
         $context = $command->getContext();
-        $logger = $context->getLogger();
+        $logger = $this->loggerFactory->from($context->getLog());
         $environment = $context->getEnvironment();
 
         $namespaceRepository = $this->clientFactory->getByProvider($context->getProvider())->getNamespaceRepository();

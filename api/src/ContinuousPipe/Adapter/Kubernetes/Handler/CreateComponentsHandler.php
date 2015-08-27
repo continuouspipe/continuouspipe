@@ -17,6 +17,7 @@ use Kubernetes\Client\NamespaceClient;
 use Kubernetes\Client\Repository\ObjectRepository;
 use Kubernetes\Client\Repository\WrappedObjectRepository;
 use LogStream\Logger;
+use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -36,17 +37,23 @@ class CreateComponentsHandler implements DeploymentHandler
      * @var MessageBus
      */
     private $eventBus;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
 
     /**
      * @param EnvironmentTransformer  $environmentTransformer
      * @param DeploymentClientFactory $clientFactory
      * @param MessageBus              $eventBus
+     * @param LoggerFactory           $loggerFactory
      */
-    public function __construct(EnvironmentTransformer $environmentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus)
+    public function __construct(EnvironmentTransformer $environmentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory)
     {
         $this->environmentTransformer = $environmentTransformer;
         $this->clientFactory = $clientFactory;
         $this->eventBus = $eventBus;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -59,9 +66,10 @@ class CreateComponentsHandler implements DeploymentHandler
 
         $environment = $context->getEnvironment();
         $namespaceObjects = $this->environmentTransformer->getElementListFromEnvironment($environment);
+        $logger = $this->loggerFactory->from($context->getLog());
 
         foreach ($namespaceObjects as $object) {
-            $this->createComponent($client, $object, $context->getLogger());
+            $this->createComponent($client, $object, $logger);
         }
 
         $this->eventBus->handle(new ComponentsCreated($context));

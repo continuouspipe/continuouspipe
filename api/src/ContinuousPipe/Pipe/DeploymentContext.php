@@ -4,7 +4,7 @@ namespace ContinuousPipe\Pipe;
 
 use ContinuousPipe\Adapter\Provider;
 use ContinuousPipe\Model\Environment;
-use LogStream\Logger;
+use LogStream\Log;
 
 class DeploymentContext
 {
@@ -14,9 +14,9 @@ class DeploymentContext
     private $deployment;
 
     /**
-     * @var Logger
+     * @var Log
      */
-    private $logger;
+    private $log;
 
     /**
      * @var Provider
@@ -36,13 +36,13 @@ class DeploymentContext
     /**
      * @param View\Deployment $deployment
      * @param Provider        $provider
-     * @param Logger          $logger
+     * @param Log             $log
      * @param Environment     $environment
      */
-    public function __construct(View\Deployment $deployment, Provider $provider, Logger $logger, Environment $environment)
+    public function __construct(View\Deployment $deployment, Provider $provider, Log $log, Environment $environment)
     {
         $this->deployment = $deployment;
-        $this->logger = $logger;
+        $this->log = $log;
         $this->provider = $provider;
         $this->environment = $environment;
     }
@@ -56,11 +56,11 @@ class DeploymentContext
     }
 
     /**
-     * @return Logger
+     * @return Log
      */
-    public function getLogger()
+    public function getLog()
     {
-        return $this->logger;
+        return $this->log;
     }
 
     /**
@@ -79,16 +79,32 @@ class DeploymentContext
         return $this->environment;
     }
 
+    /**
+     * Add a new value in the context.
+     *
+     * @param string $key
+     * @param mixed  $value
+     */
     public function add($key, $value)
     {
         $this->bag[$key] = $value;
     }
 
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
     public function has($key)
     {
         return array_key_exists($key, $this->bag);
     }
 
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
     public function get($key)
     {
         return $this->bag[$key];

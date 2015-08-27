@@ -7,6 +7,7 @@ Feature:
     Given I have a valid Kubernetes provider
     And I am authenticated
 
+  @smoke
   Scenario:
     When I send a deployment request for a non-existing environment
     Then it should create a new namespace
