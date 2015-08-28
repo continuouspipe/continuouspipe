@@ -43,6 +43,8 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsCreated" />
         </service>
         <service id="pipe.deployment.listemer.public_endpoints.populate_deployment_endpoints" class="ContinuousPipe\Pipe\Listener\PublicEndpointsCreated\PopulateDeploymentEndpoints">
+            <argument type="service" id="pipe.view.deployment_repository" />
+
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsCreated" />
         </service>
 

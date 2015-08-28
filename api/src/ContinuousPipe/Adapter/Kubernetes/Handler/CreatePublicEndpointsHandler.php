@@ -44,10 +44,10 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     private $loggerFactory;
 
     /**
-     * @param EnvironmentTransformer $environmentTransformer
+     * @param EnvironmentTransformer  $environmentTransformer
      * @param DeploymentClientFactory $clientFactory
-     * @param MessageBus $eventBus
-     * @param LoggerFactory $loggerFactory
+     * @param MessageBus              $eventBus
+     * @param LoggerFactory           $loggerFactory
      */
     public function __construct(EnvironmentTransformer $environmentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory)
     {
@@ -88,8 +88,9 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
 
     /**
      * @param ServiceRepository $serviceRepository
-     * @param Service[] $services
-     * @param Logger $logger
+     * @param Service[]         $services
+     * @param Logger            $logger
+     *
      * @return \Kubernetes\Client\Model\Service[]
      */
     private function createServices(ServiceRepository $serviceRepository, array $services, Logger $logger)

@@ -57,6 +57,7 @@ class SecretFactory
 
     /**
      * @param User $user
+     *
      * @return string
      */
     private function getSecretName(User $user)
