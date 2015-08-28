@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Builder\Docker;
 
+use ContinuousPipe\Builder\Archive\ArchiveCreationException;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
@@ -45,7 +46,12 @@ class DockerBuilder implements Builder
         $request = $build->getRequest();
         $targetImage = $request->getImage();
 
-        $archive = $this->archiveBuilder->getArchive($request, $build->getUser(), $logger);
+        try {
+            $archive = $this->archiveBuilder->getArchive($request, $build->getUser(), $logger);
+        } catch (ArchiveCreationException $e) {
+            throw new BuildException(sprintf('Unable to create archive: %s', $e->getMessage()), $e->getCode(), $e);
+        }
+
         $this->dockerClient->build($archive, $request, $logger);
 
         try {

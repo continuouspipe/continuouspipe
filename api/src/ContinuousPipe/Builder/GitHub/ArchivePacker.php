@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Builder\GitHub;
 
+use ContinuousPipe\Builder\Archive\ArchiveCreationException;
 use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Context;
 use GuzzleHttp\Client;
@@ -28,6 +29,7 @@ class ArchivePacker
      * @param Context $context
      * @param string $url
      *
+     * @throws ArchiveCreationException
      * @return FileSystemArchive
      */
     public function createFromUrl(Context $context, $url)
@@ -51,37 +53,87 @@ class ArchivePacker
      * This methods returns the local temporary path of the created tar archive.
      *
      * @param Context $context
-     * @param string $archiveFile
+     * @param string $archiveFilePath
      * @return string
      */
-    private function repackageWithTarAndWithDirectoriesAtTheRoot(Context $context, $archiveFile)
+    private function repackageWithTarAndWithDirectoriesAtTheRoot(Context $context, $archiveFilePath)
+    {
+        $extractedArchivePath = $this->extractGitHubArchive($archiveFilePath);
+
+        // Get build directory
+        $rootProjectDirectory = $this->getRootProjectDirectory($extractedArchivePath);
+        $rootBuildDirectory = $this->getRootBuildDirectory($context, $rootProjectDirectory);
+
+        // Create the TAR archive
+        $temporaryTarFile = $this->getTemporaryFilePath('tar').'.tar';
+        $phar = new \PharData($temporaryTarFile);
+        $phar->buildFromDirectory($rootBuildDirectory);
+
+        return $temporaryTarFile;
+    }
+
+    /**
+     * @param string $archiveFilePath
+     * @return string
+     * @throws ArchiveCreationException
+     */
+    private function extractGitHubArchive($archiveFilePath)
     {
         $zip = new \ZipArchive();
-        if (true !== ($result = $zip->open($archiveFile))) {
-            throw new \RuntimeException('Unable to unzip archive from GitHub');
+        if (true !== ($result = $zip->open($archiveFilePath))) {
+            throw new ArchiveCreationException('Unable to unzip archive from GitHub');
         }
 
-        $temporaryDirectory = $this->getTemporaryFilePath('tmpdir');
+        $temporaryDirectory = $this->getTemporaryFilePath('extractedGHArchive');
         mkdir($temporaryDirectory);
 
         $zip->extractTo($temporaryDirectory);
+
+        return $temporaryDirectory;
+    }
+
+    /**
+     * @param Context $context
+     * @param string $rootProjectDirectory
+     * @return string
+     */
+    private function getRootBuildDirectory(Context $context, $rootProjectDirectory)
+    {
+        $buildDirectory = $rootProjectDirectory;
+
         $subDirectory = $context->getRepositorySubDirectory();
         if (!empty($subDirectory)) {
-            $temporaryDirectory .= DIRECTORY_SEPARATOR.$subDirectory;
+            $buildDirectory .= DIRECTORY_SEPARATOR.$subDirectory;
         }
 
+        return $buildDirectory;
+    }
+
+    /**
+     * @param string $extractedArchivePath
+     * @return string
+     * @throws ArchiveCreationException
+     */
+    private function getRootProjectDirectory($extractedArchivePath)
+    {
         $finder = new Finder();
         $finder->directories()->depth(0);
-        $finder->in($temporaryDirectory);
+        $finder->in($extractedArchivePath);
 
-        $temporaryTarFile = $this->getTemporaryFilePath('tar').'.tar';
-        $phar = new \PharData($temporaryTarFile);
-
+        $directories = [];
         foreach ($finder as $directory) {
-            $phar->buildFromDirectory($directory);
+            $directories[] = $directory;
         }
 
-        return $temporaryTarFile;
+        if (1 !== count($directories)) {
+            throw new ArchiveCreationException(sprintf(
+                'Expected 1 directory at the root of GitHub archive, found %d: %s',
+                count($directories),
+                implode(', ', $directories)
+            ));
+        }
+
+        return current($directories);
     }
 
     /**
