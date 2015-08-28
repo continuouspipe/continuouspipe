@@ -91,7 +91,7 @@ class BuildTask extends EventDrivenTask
         }
 
         /** @var ImageBuildsStarted $buildsStartedEvent */
-        $buildsStartedEvent = $buildsStartedEvents[0];
+        $buildsStartedEvent = current($buildsStartedEvents);
         $numberOfStartedBuilds = count($buildsStartedEvent->getBuildRequests());
         $numberOfSuccessfulBuilds = count($this->getEventsOfType(BuildSuccessful::class));
 
@@ -103,7 +103,12 @@ class BuildTask extends EventDrivenTask
      */
     private function getImageBuildsStartedEvent()
     {
-        return $this->getEventsOfType(ImageBuildsStarted::class)[0];
+        $events = $this->getEventsOfType(ImageBuildsStarted::class);
+        if (0 === count($events)) {
+            throw new \RuntimeException('No `ImageBuildsStarted` event found');
+        }
+
+        return current($events);
     }
 
     /**
