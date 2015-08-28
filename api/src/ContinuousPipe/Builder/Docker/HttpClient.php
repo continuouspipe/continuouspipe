@@ -66,6 +66,10 @@ class HttpClient implements Client
         return function ($output) use ($logger) {
             if (is_array($output)) {
                 if (array_key_exists('error', $output)) {
+                    if (!is_string($output)) {
+                        $output = 'Stringified error: '.print_r($output, true);
+                    }
+
                     throw new DockerException($output);
                 } else if (array_key_exists('stream', $output)) {
                     $output = $output['stream'];
