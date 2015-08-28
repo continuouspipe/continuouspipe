@@ -27,7 +27,8 @@
         "continuous-pipe/security-bundle": "*@dev",
         "continuous-pipe/builder-model": "*@dev",
         "continuous-pipe/docker-compose": "*@dev",
-        "nelmio/cors-bundle": "^1.4"
+        "nelmio/cors-bundle": "^1.4",
+        "doctrine/doctrine-migrations-bundle": "^1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

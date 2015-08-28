@@ -28,4 +28,8 @@ WORKDIR /app/apps/river
 # Workarround waiting a better solution than conductor
 RUN composer update -o
 
+# Fixes permissions, as apache will run as `www-data`
+RUN rm -rf app/cache/* && rm -rf app/logs/* && \
+	chown -R www-data:www-data app/cache && chown -R www-data:www-data app/logs
+
 CMD /app/apps/river/docker/run.sh
