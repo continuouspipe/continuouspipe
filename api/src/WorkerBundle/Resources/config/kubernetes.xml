@@ -94,6 +94,7 @@
             <argument type="service" id="kubernetes.transformer.environment" />
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="event_bus" />
+            <argument type="service" id="log_stream.logger_factory" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand" />
         </service>

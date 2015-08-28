@@ -9,7 +9,9 @@ use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
+use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
+use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
@@ -70,7 +72,19 @@ class CreateComponentsHandler implements DeploymentHandler
         $logger = $this->loggerFactory->from($context->getLog());
 
         foreach ($environment->getComponents() as $component) {
-            $this->createComponent($client, $logger, $component);
+            try {
+                $this->createComponent($client, $logger, $component);
+            } catch (ClientError $e) {
+                $logger->append(new Text(sprintf(
+                    'An error appeared while creating the component "%s": %s',
+                    $component->getName(),
+                    $e->getMessage()
+                )));
+
+                $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
+
+                throw $e;
+            }
         }
 
         $this->eventBus->handle(new ComponentsCreated($context));
