@@ -78,6 +78,7 @@
         <service id="pipe.adapter.kubernetes.listener.wait_public_services" class="ContinuousPipe\Adapter\Kubernetes\Listener\PublicServicesCreated\WaitPublicServicesEndpoints">
             <argument type="service" id="event_bus" />
             <argument type="service" id="pipe.adapter.kubernetes.service_waiter" />
+            <argument type="service" id="log_stream.logger_factory" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated" />
         </service>

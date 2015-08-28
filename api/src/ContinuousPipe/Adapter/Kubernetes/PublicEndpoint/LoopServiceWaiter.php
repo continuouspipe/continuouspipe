@@ -7,6 +7,7 @@ use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\NamespaceClient;
+use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -36,15 +37,16 @@ class LoopServiceWaiter implements ServiceWaiter
     /**
      * @param DeploymentContext $context
      * @param Service           $service
-     *
-     * @throws EndpointNotFound
+     * @param Log               $log
      *
      * @return PublicEndpoint
+     *
+     * @throws EndpointNotFound
      */
-    public function waitService(DeploymentContext $context, Service $service)
+    public function waitService(DeploymentContext $context, Service $service, Log $log)
     {
         $serviceName = $service->getMetadata()->getName();
-        $log = $this->loggerFactory->from($context->getLog())->append(new Text('Waiting public endpoint of service '.$serviceName));
+        $log = $this->loggerFactory->from($log)->append(new Text('Waiting public endpoint of service '.$serviceName));
         $logger = $this->loggerFactory->from($log);
         $client = $this->clientFactory->get($context);
 

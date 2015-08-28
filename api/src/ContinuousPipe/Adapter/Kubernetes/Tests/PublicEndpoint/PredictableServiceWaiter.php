@@ -7,6 +7,7 @@ use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\ServiceWaiter;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use Kubernetes\Client\Model\Service;
+use LogStream\Log;
 
 class PredictableServiceWaiter implements ServiceWaiter
 {
@@ -15,7 +16,7 @@ class PredictableServiceWaiter implements ServiceWaiter
     /**
      * {@inheritdoc}
      */
-    public function waitService(DeploymentContext $context, Service $service)
+    public function waitService(DeploymentContext $context, Service $service, Log $log)
     {
         $serviceName = $service->getMetadata()->getName();
         if (!array_key_exists($serviceName, $this->endpoints)) {
