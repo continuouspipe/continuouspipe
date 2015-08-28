@@ -81,7 +81,8 @@ class TideFactory
             throw new \RuntimeException('Can\'t recreate a tide from events without the created event');
         }
 
-        $flowUuid = $tideCreatedEvents[0]->getTideContext()->getFlowUuid();
+        $tideCreatedEvent = current($tideCreatedEvents);
+        $flowUuid = $tideCreatedEvent->getTideContext()->getFlowUuid();
         $flow = $this->flowRepository->find($flowUuid);
         $taskList = $this->createTideTaskList($flow);
 
