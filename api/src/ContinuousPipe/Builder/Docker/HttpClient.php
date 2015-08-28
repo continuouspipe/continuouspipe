@@ -64,20 +64,22 @@ class HttpClient implements Client
     private function getOutputCallback(Logger $logger)
     {
         return function ($output) use ($logger) {
-            if (is_array($output) && array_key_exists('error', $output)) {
-                throw new DockerException($output['error']);
-            } elseif (is_array($output) && array_key_exists('stream', $output)) {
-                $rawOutput = $output['stream'];
-            } elseif (is_array($output) && array_key_exists('status', $output)) {
-                $rawOutput = $output['status'];
-            } elseif (is_string($output)) {
-                $rawOutput = $output;
-            } else {
-                throw new DockerException(print_r($output, true));
+            if (is_array($output)) {
+                if (array_key_exists('error', $output)) {
+                    throw new DockerException($output);
+                } else if (array_key_exists('stream', $output)) {
+                    $output = $output['stream'];
+                } else if (array_key_exists('status', $output)) {
+                    $output = $output['status'];
+                }
             }
 
-            if (!empty($rawOutput)) {
-                $logger->append(new Text($rawOutput));
+            if (!is_string($output)) {
+                $output = 'Unknown ('.gettype($output).'): '.print_r($output, true);
+            }
+
+            if (!empty($output)) {
+                $logger->append(new Text($output));
             }
         };
     }
