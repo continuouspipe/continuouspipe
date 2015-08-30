@@ -1,21 +1,48 @@
 <div class="container">
-    <div class="card">
-        <div class="card-header ch-alt">
-            <h2>Flow</h2>
-        </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header ch-alt">
+                    <h2>Flow</h2>
+                </div>
 
-        <table class="table table-inner table-vmiddle">
-            <thead>
-            <tr>
-                <th>Repository</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><small>{{ flow.repository.repository.owner.login }}/</small> {{ flow.repository.repository.name }}</td>
-            </tr>
-            </tbody>
-        </table>
+                <table class="table table-inner table-vmiddle">
+                    <thead>
+                    <tr>
+                        <th>Repository</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><small>{{ flow.repository.repository.owner.login }}/</small> {{ flow.repository.repository.name }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header ch-alt">
+                    <h2>Tasks</h2>
+                </div>
+
+                <table class="table table-inner table-vmiddle">
+                    <tbody>
+                    <tr ng-repeat="task in flow.tasks">
+                        <td>
+                            <strong>{{ task.name }}</strong>
+                            <table class="table" ng-if="task.context">
+                                <tr ng-repeat="(key, value) in task.context">
+                                    <th>{{ key }}</th>
+                                    <td>{{ value }}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div class="block-header">
