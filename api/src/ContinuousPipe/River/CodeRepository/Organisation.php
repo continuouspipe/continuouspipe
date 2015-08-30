@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\CodeRepository;
 interface Organisation
 {
     /**
-     * Get organisation identifier
+     * Get organisation identifier.
      *
      * @return string
      */

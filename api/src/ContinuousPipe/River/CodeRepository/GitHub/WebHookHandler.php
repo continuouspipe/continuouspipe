@@ -80,7 +80,7 @@ class WebHookHandler
         $event = $gitHubRequest->getEvent();
         if ($event instanceof PingEvent) {
             return $flow;
-        } else if ($event instanceof PushEvent) {
+        } elseif ($event instanceof PushEvent) {
             return $this->handlePushEvent($flow, $event);
         } elseif ($event instanceof PullRequestEvent) {
             return $this->handlePullRequestEvent($flow, $event);

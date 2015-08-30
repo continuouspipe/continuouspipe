@@ -18,7 +18,7 @@ class InMemoryOrganisationRepository implements OrganisationRepository
     }
 
     /**
-     * Add a new organisation
+     * Add a new organisation.
      *
      * @param Organisation $organisation
      */

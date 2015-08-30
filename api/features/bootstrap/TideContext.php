@@ -284,7 +284,7 @@ class TideContext implements Context
 
         $componentImage = 'image0:'.$tag;
         $builtImages = array_map(function(DeploymentStarted $event) {
-            $dockerComposeContents = $event->getDeployment()->getRequest()->getDockerComposeContents();
+            $dockerComposeContents = $event->getDeployment()->getRequest()->getSpecification()->getDockerComposeContents();
             $parsed = Yaml::parse($dockerComposeContents);
             $component = current($parsed);
 
@@ -307,7 +307,7 @@ class TideContext implements Context
     {
         $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
         $environmentNames = array_map(function(DeploymentStarted $event) {
-            return $event->getDeployment()->getRequest()->getEnvironmentName();
+            return $event->getDeployment()->getRequest()->getTarget()->getEnvironmentName();
         }, $deploymentStartedEvents);
 
         $flowUuid = (string) $this->flowContext->getCurrentFlow()->getUuid();

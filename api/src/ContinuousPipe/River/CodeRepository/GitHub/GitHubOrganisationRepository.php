@@ -4,10 +4,8 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeRepository\OrganisationRepository;
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
-use Github\HttpClient\Message\ResponseMediator;
 use Github\ResultPager;
 use GitHub\WebHook\Model\Organisation;
-use GuzzleHttp\Exception\ClientException;
 use JMS\Serializer\SerializerInterface;
 
 class GitHubOrganisationRepository implements OrganisationRepository

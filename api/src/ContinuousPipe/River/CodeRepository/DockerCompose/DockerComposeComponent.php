@@ -24,7 +24,7 @@ class DockerComposeComponent
 
     /**
      * @param string $name
-     * @param array $parsed
+     * @param array  $parsed
      */
     private function __construct($name, array $parsed)
     {
@@ -35,7 +35,8 @@ class DockerComposeComponent
 
     /**
      * @param string $name
-     * @param array $parsed
+     * @param array  $parsed
+     *
      * @return DockerComposeComponent
      */
     public static function fromParsed($name, array $parsed)

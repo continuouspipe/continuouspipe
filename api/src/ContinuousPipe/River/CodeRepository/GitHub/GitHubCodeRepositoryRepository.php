@@ -56,7 +56,7 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
         $organisationApi = $client->organization();
 
         $paginator = new ResultPager($client);
-        $found = $paginator->fetchAll($organisationApi, 'repositories', [ $organisation ]);
+        $found = $paginator->fetchAll($organisationApi, 'repositories', [$organisation]);
 
         return $this->parseRepositories($found);
     }
@@ -95,7 +95,7 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
      */
     private function parseRepositories(array $found)
     {
-        usort($found, function($repo1, $repo2) {
+        usort($found, function ($repo1, $repo2) {
             return strcasecmp($repo1['full_name'], $repo2['full_name']);
         });
 

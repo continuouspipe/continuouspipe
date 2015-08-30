@@ -69,7 +69,7 @@ class RepositoryWebHookManager
         try {
             $this->webHookManager->setup($codeRepository->getGitHubRepository(), $webHook);
         } catch (BadResponseException $e) {
-            throw new CouldNotCreateWebHookException("Could not create GitHub web hook for the repository.");
+            throw new CouldNotCreateWebHookException('Could not create GitHub web hook for the repository.');
         }
     }
 }

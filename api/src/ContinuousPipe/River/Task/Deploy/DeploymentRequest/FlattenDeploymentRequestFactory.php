@@ -41,11 +41,15 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return new DeploymentRequest(
-            $this->getEnvironmentName($context),
-            $context->getProviderName(),
-            $dockerComposeContents,
-            $callbackUrl,
-            $context->getLog()->getId()
+            new DeploymentRequest\Target(
+                $this->getEnvironmentName($context),
+                $context->getProviderName()
+            ),
+            new DeploymentRequest\Specification($dockerComposeContents),
+            new DeploymentRequest\Notification(
+                $callbackUrl,
+                $context->getLog()->getId()
+            )
         );
     }
 

@@ -25,7 +25,7 @@ class Base64Object extends ObjectType
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if ($value === null) {
-            return null;
+            return;
         }
 
         $value = (is_resource($value)) ? stream_get_contents($value) : $value;

@@ -2,103 +2,67 @@
 
 namespace ContinuousPipe\Pipe\Client;
 
+use ContinuousPipe\Pipe\Client\DeploymentRequest\Notification;
+use ContinuousPipe\Pipe\Client\DeploymentRequest\Specification;
+use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use JMS\Serializer\Annotation as JMS;
 
 class DeploymentRequest
 {
     /**
-     * @JMS\Type("string")
-     * @JMS\SerializedName("environmentName")
+     * @JMS\Type("ContinuousPipe\Pipe\Client\DeploymentRequest\Target")
      *
-     * @var string
+     * @var Target
      */
-    private $environmentName;
+    private $target;
 
     /**
-     * @JMS\Type("string")
-     * @JMS\SerializedName("providerName")
+     * @JMS\Type("ContinuousPipe\Pipe\Client\DeploymentRequest\Specification")
      *
-     * @var string
+     * @var Specification
      */
-    private $providerName;
+    private $specification;
 
     /**
-     * @JMS\Type("string")
-     * @JMS\SerializedName("dockerComposeContents")
+     * @JMS\Type("ContinuousPipe\Pipe\Client\DeploymentRequest\Notification")
      *
-     * @var string
+     * @var Notification
      */
-    private $dockerComposeContents;
+    private $notification;
 
     /**
-     * @JMS\Type("string")
-     * @JMS\SerializedName("notificationCallbackUrl")
-     *
-     * @var string
+     * @param Target        $target
+     * @param Specification $specification
+     * @param Notification  $notification
      */
-    private $notificationCallbackUrl;
-
-    /**
-     * @JMS\Type("string")
-     * @JMS\SerializedName("logId")
-     *
-     * @var string
-     */
-    private $logId;
-
-    /**
-     * @param string $environmentName
-     * @param string $providerName
-     * @param string $dockerComposeContents
-     * @param string $notificationCallbackUrl
-     * @param string $logId
-     */
-    public function __construct($environmentName, $providerName, $dockerComposeContents, $notificationCallbackUrl, $logId)
+    public function __construct(Target $target, Specification $specification, Notification $notification)
     {
-        $this->environmentName = $environmentName;
-        $this->providerName = $providerName;
-        $this->dockerComposeContents = $dockerComposeContents;
-        $this->notificationCallbackUrl = $notificationCallbackUrl;
-        $this->logId = $logId;
+        $this->target = $target;
+        $this->specification = $specification;
+        $this->notification = $notification;
     }
 
     /**
-     * @return string
+     * @return Target
      */
-    public function getEnvironmentName()
+    public function getTarget()
     {
-        return $this->environmentName;
+        return $this->target;
     }
 
     /**
-     * @return string
+     * @return Specification
      */
-    public function getProviderName()
+    public function getSpecification()
     {
-        return $this->providerName;
+        return $this->specification;
     }
 
     /**
-     * @return string
+     * @return Notification
      */
-    public function getDockerComposeContents()
+    public function getNotification()
     {
-        return $this->dockerComposeContents;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLogId()
-    {
-        return $this->logId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNotificationCallbackUrl()
-    {
-        return $this->notificationCallbackUrl;
+        return $this->notification;
     }
 }

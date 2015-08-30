@@ -50,10 +50,10 @@ class InMemoryCodeRepositoryRepository implements CodeRepositoryRepository
     }
 
     /**
-     * Add a new code repository for an organisation
+     * Add a new code repository for an organisation.
      *
      * @param CodeRepository $codeRepository
-     * @param string $organisation
+     * @param string         $organisation
      */
     public function addForOrganisation(CodeRepository $codeRepository, $organisation)
     {
