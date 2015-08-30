@@ -1,0 +1,5 @@
+ContinuousPipe\Pipe\DeploymentRequest\Specification:
+    properties:
+        dockerComposeContents:
+            type: string
+            serialized_name: dockerComposeContents

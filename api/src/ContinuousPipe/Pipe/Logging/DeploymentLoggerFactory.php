@@ -29,10 +29,10 @@ class DeploymentLoggerFactory
     {
         $request = $deployment->getRequest();
 
-        if ($request->getLogId()) {
-            return $this->loggerFactory->fromId(
-                $request->getLogId()
-            );
+        if ($notification = $request->getNotification()) {
+            if ($parentLogId = $notification->getLogStreamParentId()) {
+                return $this->loggerFactory->fromId($parentLogId);
+            }
         }
 
         return $this->loggerFactory->create();

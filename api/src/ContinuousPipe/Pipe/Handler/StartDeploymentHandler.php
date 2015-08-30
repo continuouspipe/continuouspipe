@@ -67,15 +67,18 @@ class StartDeploymentHandler
         $logger->start();
 
         $request = $deployment->getRequest();
+        $target = $request->getTarget();
+        $specification = $request->getSpecification();
+
         $logger->append(new Text(sprintf(
             'Deploying to the environment "%s" to provider "%s"',
-            $request->getEnvironmentName(),
-            $request->getProviderName()
+            $target->getEnvironmentName(),
+            $target->getProviderName()
         )));
 
         $environment = $this->dockerComposeYamlLoader->load(
-            $request->getEnvironmentName(),
-            $request->getDockerComposeContents()
+            $target->getEnvironmentName(),
+            $specification->getDockerComposeContents()
         );
 
         $logger->append(new Text(sprintf(
@@ -83,7 +86,7 @@ class StartDeploymentHandler
             count($environment->getComponents())
         )));
 
-        list($type, $name) = explode('/', $request->getProviderName());
+        list($type, $name) = explode('/', $target->getProviderName());
         $provider = $this->providerRepository->findByTypeAndIdentifier($type, $name);
         $deploymentContext = new DeploymentContext($deployment, $provider, $logger->getLog(), $environment);
         $this->eventBus->handle(new DeploymentStarted($deploymentContext));

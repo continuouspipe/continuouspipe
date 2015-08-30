@@ -2,78 +2,60 @@
 
 namespace ContinuousPipe\Pipe;
 
+use ContinuousPipe\Pipe\DeploymentRequest\Notification;
+use ContinuousPipe\Pipe\DeploymentRequest\Specification;
+use ContinuousPipe\Pipe\DeploymentRequest\Target;
+
 class DeploymentRequest
 {
     /**
-     * Environment name.
-     *
-     * @var string
+     * @var Target
      */
-    private $environmentName;
+    private $target;
 
     /**
-     * Name of the provider.
-     *
-     * @var string
+     * @var Specification
      */
-    private $providerName;
+    private $specification;
 
     /**
-     * Contents of the Docker-Compose file.
-     *
-     * @var string
+     * @var Notification
      */
-    private $dockerComposeContents;
+    private $notification;
 
     /**
-     * URL of a callback to have notification about the status of the deployment.
-     *
-     * @var string
+     * @param Target $target
+     * @param Specification $specification
+     * @param Notification $notification
      */
-    private $notificationCallbackUrl;
-
-    /**
-     * @var string
-     */
-    private $logId;
-
-    /**
-     * @return string
-     */
-    public function getEnvironmentName()
+    public function __construct(Target $target, Specification $specification, Notification $notification = null)
     {
-        return $this->environmentName;
+        $this->target = $target;
+        $this->specification = $specification;
+        $this->notification = $notification;
     }
 
     /**
-     * @return string
+     * @return Target
      */
-    public function getProviderName()
+    public function getTarget()
     {
-        return $this->providerName;
+        return $this->target;
     }
 
     /**
-     * @return string
+     * @return Specification
      */
-    public function getDockerComposeContents()
+    public function getSpecification()
     {
-        return $this->dockerComposeContents;
+        return $this->specification;
     }
 
     /**
-     * @return string
+     * @return Notification
      */
-    public function getNotificationCallbackUrl()
+    public function getNotification()
     {
-        return $this->notificationCallbackUrl;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLogId()
-    {
-        return $this->logId;
+        return $this->notification;
     }
 }

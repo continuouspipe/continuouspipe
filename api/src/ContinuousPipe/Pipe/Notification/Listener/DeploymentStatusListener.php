@@ -44,13 +44,25 @@ class DeploymentStatusListener
     public function notify(DeploymentEvent $event)
     {
         $deployment = $this->deploymentRepository->find($event->getDeploymentUuid());
-        $callbackUrl = $deployment->getRequest()->getNotificationCallbackUrl();
         $logger = $this->loggerFactory->create($deployment);
 
+        if (null === ($notification = $deployment->getRequest()->getNotification())) {
+            $logger->append(new Text('No notification configuration'));
+
+            return;
+        }
+
+        $httpCallbackUrl = $notification->getHttpCallbackUrl();
+        if (empty($httpCallbackUrl)) {
+            $logger->append(new Text('Empty HTTP notification URL'));
+
+            return;
+        }
+
         try {
-            $this->notifier->notify($callbackUrl, $deployment);
+            $this->notifier->notify($httpCallbackUrl, $deployment);
         } catch (NotificationException $e) {
-            $logger->append(new Text(sprintf('Error while sending notification to "%s": %s', $callbackUrl, $e->getMessage())));
+            $logger->append(new Text(sprintf('Error while sending notification to "%s": %s', $httpCallbackUrl, $e->getMessage())));
         }
     }
 }

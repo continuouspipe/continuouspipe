@@ -1,0 +1,8 @@
+ContinuousPipe\Pipe\DeploymentRequest\Target:
+    properties:
+        environmentName:
+            type: string
+            serialized_name: environmentName
+        providerName:
+            type: string
+            serialized_name: providerName

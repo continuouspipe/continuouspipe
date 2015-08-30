@@ -1,17 +1,8 @@
 ContinuousPipe\Pipe\DeploymentRequest:
     properties:
-        environmentName:
-            type: string
-            serialized_name: environmentName
-        providerName:
-            type: string
-            serialized_name: providerName
-        dockerComposeContents:
-            type: string
-            serialized_name: dockerComposeContents
-        notificationCallbackUrl:
-            type: string
-            serialized_name: notificationCallbackUrl
-        logId:
-            type: string
-            serialized_name: logId
+        target:
+            type: ContinuousPipe\Pipe\DeploymentRequest\Target
+        specification:
+            type: ContinuousPipe\Pipe\DeploymentRequest\Specification
+        notification:
+            type: ContinuousPipe\Pipe\DeploymentRequest\Notification

@@ -136,9 +136,13 @@ class EnvironmentContext implements Context
     {
         $simpleAppComposeContents = file_get_contents(__DIR__.'/../fixtures/'.$template.'.yml');
         $contents = json_encode([
-            'environmentName' => $environmentName,
-            'providerName' => $providerName,
-            'dockerComposeContents' => $simpleAppComposeContents,
+            'target' => [
+                'environmentName' => $environmentName,
+                'providerName' => $providerName,
+            ],
+            'specification' => [
+                'dockerComposeContents' => $simpleAppComposeContents,
+            ]
         ]);
 
         $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
@@ -170,7 +174,13 @@ class EnvironmentContext implements Context
     {
         $deployment = $this->deploymentRepository->save(
             Deployment::fromRequest(
-                new DeploymentRequest(),
+                new DeploymentRequest(
+                    new DeploymentRequest\Target(),
+                    new DeploymentRequest\Specification(),
+                    new DeploymentRequest\Notification(
+                        'http://foo/bar'
+                    )
+                ),
                 new User('sroze@inviqa.com')
             )
         );

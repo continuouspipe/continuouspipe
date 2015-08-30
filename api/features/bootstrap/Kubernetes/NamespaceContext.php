@@ -176,7 +176,10 @@ class NamespaceContext implements Context, SnippetAcceptingContext
             new KubernetesNamespace(new ObjectMetadata('foo')),
             new DeploymentContext(
                 Deployment::fromRequest(
-                    new DeploymentRequest(),
+                    new DeploymentRequest(
+                        new DeploymentRequest\Target(),
+                        new DeploymentRequest\Specification()
+                    ),
                     new User('samuel')
                 ),
                 $this->providerContext->iHaveAValidKubernetesProvider(),
