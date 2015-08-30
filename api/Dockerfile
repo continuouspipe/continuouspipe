@@ -32,4 +32,6 @@ RUN composer update -o
 RUN rm -rf app/cache/* && rm -rf app/logs/* && \
 	chown -R www-data:www-data app/cache && chown -R www-data:www-data app/logs
 
-CMD /app/apps/river/docker/run.sh
+RUN chmod +x /app/apps/river/docker/run.sh
+
+CMD ["/app/apps/river/docker/run.sh"]
