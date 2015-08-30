@@ -30,4 +30,7 @@ ENV NODE_ENV development
 # Port 35729 for livereload
 EXPOSE 80 35729
 
+# Add running permissions
+RUN chmod +x /app/apps/river-ui/docker/run.sh
+
 CMD ["/app/apps/river-ui/docker/run.sh"]
