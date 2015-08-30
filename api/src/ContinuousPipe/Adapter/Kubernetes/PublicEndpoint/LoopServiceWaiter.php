@@ -15,6 +15,20 @@ use LogStream\Node\Text;
 class LoopServiceWaiter implements ServiceWaiter
 {
     /**
+     * Number of second between each loop.
+     *
+     * @var int
+     */
+    const LOOP_WAIT = 10;
+
+    /**
+     * Number of maximum tries to wait a public endpoint.
+     *
+     * @var int
+     */
+    const LOOP_MAX_RETRY = 30;
+
+    /**
      * @var DeploymentClientFactory
      */
     private $clientFactory;
@@ -88,8 +102,8 @@ class LoopServiceWaiter implements ServiceWaiter
                 $logger->append(new Text($e->getMessage()));
             }
 
-            sleep(5);
-        } while (++$attempts < 10);
+            sleep(self::LOOP_WAIT);
+        } while (++$attempts < self::LOOP_MAX_RETRY);
 
         throw new EndpointNotFound('Attempted too many times.');
     }
