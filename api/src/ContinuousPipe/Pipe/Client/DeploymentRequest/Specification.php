@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\Pipe\Client\DeploymentRequest;
 
+use JMS\Serializer\Annotation as JMS;
+
 class Specification
 {
     /**
