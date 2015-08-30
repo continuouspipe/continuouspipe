@@ -56,7 +56,7 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
 
         $contents = 'The environment as been successfully deployed, here is the list of public endpoints:'.PHP_EOL;
         foreach ($publicEndpoints as $endpoint) {
-            $contents .= $endpoint->getName().': '.$endpoint->getAddress().PHP_EOL;
+            $contents .= '- **'.$endpoint->getName().'**: http://'.$endpoint->getAddress().PHP_EOL;
         }
 
         return $contents;
