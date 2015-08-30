@@ -1,0 +1,12 @@
+ContinuousPipe\Pipe\View\Deployment:
+    properties:
+        uuid:
+            type: string
+        status:
+            type: string
+        request:
+            type: ContinuousPipe\Pipe\DeploymentRequest
+        user:
+            type: ContinuousPipe\User\User
+        publicEndpoints:
+            type: array<ContinuousPipe\Pipe\Environment\PublicEndpoint>

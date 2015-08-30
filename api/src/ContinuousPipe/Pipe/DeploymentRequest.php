@@ -2,15 +2,10 @@
 
 namespace ContinuousPipe\Pipe;
 
-use JMS\Serializer\Annotation as JMS;
-
 class DeploymentRequest
 {
     /**
      * Environment name.
-     *
-     * @JMS\Type("string")
-     * @JMS\SerializedName("environmentName")
      *
      * @var string
      */
@@ -19,18 +14,12 @@ class DeploymentRequest
     /**
      * Name of the provider.
      *
-     * @JMS\Type("string")
-     * @JMS\SerializedName("providerName")
-     *
      * @var string
      */
     private $providerName;
 
     /**
      * Contents of the Docker-Compose file.
-     *
-     * @JMS\Type("string")
-     * @JMS\SerializedName("dockerComposeContents")
      *
      * @var string
      */
@@ -39,17 +28,11 @@ class DeploymentRequest
     /**
      * URL of a callback to have notification about the status of the deployment.
      *
-     * @JMS\Type("string")
-     * @JMS\SerializedName("notificationCallbackUrl")
-     *
      * @var string
      */
     private $notificationCallbackUrl;
 
     /**
-     * @JMS\Type("string")
-     * @JMS\SerializedName("logId")
-     *
      * @var string
      */
     private $logId;

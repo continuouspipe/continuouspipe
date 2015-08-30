@@ -1,0 +1,4 @@
+ContinuousPipe\Pipe\Command\StartDeploymentCommand:
+    properties:
+        deployment:
+            type: ContinuousPipe\Pipe\View\Deployment

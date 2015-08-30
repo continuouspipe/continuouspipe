@@ -6,7 +6,6 @@ use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\User\User;
 use Rhumsaa\Uuid\Uuid;
-use JMS\Serializer\Annotation as JMS;
 
 class Deployment
 {
@@ -16,36 +15,26 @@ class Deployment
     const STATUS_FAILURE = 'failure';
 
     /**
-     * @JMS\Type("string")
-     *
      * @var string
      */
     private $uuid;
 
     /**
-     * @JMS\Type("string")
-     *
      * @var string
      */
     private $status;
 
     /**
-     * @JMS\Type("ContinuousPipe\Pipe\DeploymentRequest")
-     *
      * @var DeploymentRequest
      */
     private $request;
 
     /**
-     * @JMS\Type("ContinuousPipe\User\User")
-     *
      * @var User
      */
     private $user;
 
     /**
-     * @JMS\Type("array<ContinuousPipe\Pipe\Environment\PublicEndpoint>")
-     *
      * @var PublicEndpoint[]
      */
     private $publicEndpoints;
