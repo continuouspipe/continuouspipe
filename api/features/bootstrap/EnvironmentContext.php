@@ -214,4 +214,33 @@ class EnvironmentContext implements Context
             throw new \RuntimeException('Expecting 1 or more notifications, found 0');
         }
     }
+
+    /**
+     * @When I send a deployment request without a given target
+     */
+    public function iSendADeploymentRequestWithoutAGivenTarget()
+    {
+        $simpleAppComposeContents = file_get_contents(__DIR__.'/../fixtures/simple-app.yml');
+        $contents = json_encode([
+            'specification' => [
+                'dockerComposeContents' => $simpleAppComposeContents,
+            ]
+        ], true);
+        $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], $contents));
+    }
+
+    /**
+     * @Then the validation should fail
+     */
+    public function theValidationShouldFail()
+    {
+        if ($this->response->getStatusCode() !== 400) {
+            throw new \RuntimeException(sprintf(
+                'Expected the response to be 400, but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
 }

@@ -26,7 +26,6 @@ class Notification
         $this->logStreamParentId = $logStreamParentId;
     }
 
-
     /**
      * @return string
      */

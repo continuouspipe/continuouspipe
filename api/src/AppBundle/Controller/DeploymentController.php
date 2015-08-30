@@ -13,6 +13,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use FOS\RestBundle\View\View as FOSRestView;
 
 /**
  * @Route(service="pipe.controllers.deployment")
@@ -35,15 +37,22 @@ class DeploymentController extends Controller
     private $commandBus;
 
     /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
+    /**
+     * @param ValidatorInterface   $validator
      * @param DeploymentRepository $deploymentRepository
      * @param UserContext          $userContext
      * @param MessageBus           $commandBus
      */
-    public function __construct(DeploymentRepository $deploymentRepository, UserContext $userContext, MessageBus $commandBus)
+    public function __construct(ValidatorInterface $validator, DeploymentRepository $deploymentRepository, UserContext $userContext, MessageBus $commandBus)
     {
         $this->deploymentRepository = $deploymentRepository;
         $this->userContext = $userContext;
         $this->commandBus = $commandBus;
+        $this->validator = $validator;
     }
 
     /**
@@ -55,6 +64,11 @@ class DeploymentController extends Controller
      */
     public function createAction(DeploymentRequest $deploymentRequest)
     {
+        $violations = $this->validator->validate($deploymentRequest);
+        if (count($violations) > 0) {
+            return FOSRestView::create($violations, 400);
+        }
+
         $deployment = Deployment::fromRequest($deploymentRequest, $this->userContext->getCurrent());
         $this->deploymentRepository->save($deployment);
 

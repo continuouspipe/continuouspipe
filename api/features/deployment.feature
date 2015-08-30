@@ -11,3 +11,7 @@ Feature:
     When I send a valid deployment request
     Then the environment should be created or updated
     And the deployment should be successful
+
+  Scenario:
+    When I send a deployment request without a given target
+    Then the validation should fail

@@ -24,9 +24,9 @@ class DeploymentRequest
     private $notification;
 
     /**
-     * @param Target $target
+     * @param Target        $target
      * @param Specification $specification
-     * @param Notification $notification
+     * @param Notification  $notification
      */
     public function __construct(Target $target, Specification $specification, Notification $notification = null)
     {

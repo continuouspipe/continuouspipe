@@ -24,6 +24,7 @@
         </service>
 
         <service id="pipe.controllers.deployment" class="AppBundle\Controller\DeploymentController">
+            <argument type="service" id="validator" />
             <argument type="service" id="pipe.view.deployment_repository" />
             <argument type="service" id="security.user_context" />
             <argument type="service" id="command_bus" />
