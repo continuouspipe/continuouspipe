@@ -50,11 +50,11 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     private $authenticatorClient;
 
     /**
-     * @param Kernel $kernel
-     * @param TokenStorageInterface $tokenStorage
-     * @param FlowRepository $flowRepository
+     * @param Kernel                           $kernel
+     * @param TokenStorageInterface            $tokenStorage
+     * @param FlowRepository                   $flowRepository
      * @param InMemoryCodeRepositoryRepository $codeRepositoryRepository
-     * @param InMemoryAuthenticatorClient $authenticatorClient
+     * @param InMemoryAuthenticatorClient      $authenticatorClient
      */
     public function __construct(Kernel $kernel, TokenStorageInterface $tokenStorage, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient)
     {
@@ -103,7 +103,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
 EOF;
 
         $response = $this->kernel->handle(Request::create('/flows', 'POST', [], [], [], [
-            'CONTENT_TYPE' => 'application/json'
+            'CONTENT_TYPE' => 'application/json',
         ], $creationRequest));
 
         $flowView = json_decode($response->getContent(), true);
@@ -124,7 +124,7 @@ EOF;
     public function iHaveAFlowWithTheBuildTask()
     {
         $this->createFlowWithTasks([
-            new Flow\Task('build')
+            new Flow\Task('build'),
         ]);
     }
 
@@ -135,8 +135,8 @@ EOF;
     {
         $this->createFlowWithTasks([
             new Flow\Task('deploy', [
-                'providerName' => 'fake/provider'
-            ])
+                'providerName' => 'fake/provider',
+            ]),
         ]);
     }
 
@@ -159,8 +159,8 @@ EOF;
         return $this->createFlowWithContextAndTasks($context, [
             new Flow\Task('build'),
             new Flow\Task('deploy', [
-                'providerName' => 'fake/provider'
-            ])
+                'providerName' => 'fake/provider',
+            ]),
         ]);
     }
 
@@ -176,6 +176,7 @@ EOF;
 
     /**
      * @param CodeRepository $codeRepository
+     *
      * @return RiverFlowContext
      */
     private function createFlowContextWithCodeRepository(CodeRepository $codeRepository)
@@ -195,7 +196,8 @@ EOF;
 
     /**
      * @param RiverFlowContext $context
-     * @param Flow\Task[] $tasks
+     * @param Flow\Task[]      $tasks
+     *
      * @return Flow
      */
     public function createFlowWithContextAndTasks(RiverFlowContext $context, array $tasks)

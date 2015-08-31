@@ -66,13 +66,14 @@ class LoggingContext implements Context
     }
 
     /**
-     * @param string $contents
+     * @param string           $contents
      * @param \LogStream\Log[] $logCollection
+     *
      * @return \LogStream\Log[]
      */
     private function findLogsByContents($contents, $logCollection)
     {
-        return array_filter($logCollection, function(\LogStream\Log $log) use ($contents) {
+        return array_filter($logCollection, function (\LogStream\Log $log) use ($contents) {
             if ($log instanceof \LogStream\WrappedLog) {
                 $log = $log->getNode();
             }
@@ -82,8 +83,9 @@ class LoggingContext implements Context
     }
 
     /**
-     * @param string $contents
+     * @param string           $contents
      * @param \LogStream\Log[] $logCollection
+     *
      * @return \LogStream\Log
      */
     private function findLogByContents($contents, $logCollection)

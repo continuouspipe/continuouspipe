@@ -24,7 +24,7 @@ class RepositoryContext implements Context
     private $response;
 
     /**
-     * @param Kernel $kernel
+     * @param Kernel                           $kernel
      * @param InMemoryCodeRepositoryRepository $codeRepositoryRepository
      */
     public function __construct(
@@ -80,7 +80,7 @@ class RepositoryContext implements Context
      */
     public function iShouldReceiveTheFollowingListOfRepositories(TableNode $expected)
     {
-        $received = array_map(function($repository) {
+        $received = array_map(function ($repository) {
             return $repository['repository']['name'];
         }, json_decode($this->response->getContent(), true));
 
@@ -95,7 +95,7 @@ class RepositoryContext implements Context
         }
 
         if (count($received)) {
-            throw new \Exception("Received more repositories than expected.");
+            throw new \Exception('Received more repositories than expected.');
         }
     }
 }

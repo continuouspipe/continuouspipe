@@ -24,7 +24,7 @@ class OrganisationContext implements Context
     private $response;
 
     /**
-     * @param Kernel $kernel
+     * @param Kernel                         $kernel
      * @param InMemoryOrganisationRepository $organisationRepository
      */
     public function __construct(
@@ -60,12 +60,12 @@ class OrganisationContext implements Context
      */
     public function iShouldReceiveTheFollowingListOfOrganisations(TableNode $expected)
     {
-        $received = array_map(function($organisation) {
+        $received = array_map(function ($organisation) {
             return $organisation['organisation']['login'];
         }, json_decode($this->response->getContent(), true));
 
         foreach ($expected->getHash() as $organisation) {
-            if (! in_array($organisation['organisation'], $received)) {
+            if (!in_array($organisation['organisation'], $received)) {
                 throw new \Exception("Have not received organisation '$organisation'");
             }
         }

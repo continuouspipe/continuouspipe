@@ -2,31 +2,20 @@
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\User\User;
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideCreated;
-use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use GitHub\WebHook\Model\Repository as GitHubRepository;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
-use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\TideFactory;
 use ContinuousPipe\River\View\TideRepository;
-use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Task\Build\Event\BuildStarted;
-use ContinuousPipe\River\Task\Build\Event\BuildFailed;
-use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
-use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use ContinuousPipe\River\Task\Build\BuildTask;
-use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
-use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Event\TideStarted;
 use Symfony\Component\Yaml\Yaml;
@@ -53,7 +42,7 @@ class TideContext implements Context
      * @var EventStore
      */
     private $eventStore;
-    
+
     /**
      * @var FakeFileSystemResolver
      */
@@ -72,12 +61,12 @@ class TideContext implements Context
     private $viewTideRepository;
 
     /**
-     * @param MessageBus $commandBus
-     * @param MessageBus $eventBus
-     * @param EventStore $eventStore
+     * @param MessageBus             $commandBus
+     * @param MessageBus             $eventBus
+     * @param EventStore             $eventStore
      * @param FakeFileSystemResolver $fakeFileSystemResolver
-     * @param TideFactory $tideFactory
-     * @param TideRepository $viewTideRepository
+     * @param TideFactory            $tideFactory
+     * @param TideRepository         $viewTideRepository
      */
     public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository)
     {
@@ -141,7 +130,7 @@ class TideContext implements Context
         }
 
         $this->fakeFileSystemResolver->prepareFileSystem([
-            'docker-compose.yml' => $dockerComposeFile
+            'docker-compose.yml' => $dockerComposeFile,
         ]);
     }
 
@@ -155,7 +144,7 @@ class TideContext implements Context
                 '    build: .'.PHP_EOL.
                 '    dockerfile: '.$path.PHP_EOL.
                 '    labels:'.PHP_EOL.
-                '        com.continuouspipe.image-name: image'.PHP_EOL
+                '        com.continuouspipe.image-name: image'.PHP_EOL,
         ]);
     }
 
@@ -228,6 +217,7 @@ class TideContext implements Context
 
     /**
      * @param string $status
+     *
      * @throws \RuntimeException
      */
     private function assertTideStatusIs($status)
@@ -264,7 +254,7 @@ class TideContext implements Context
     public function theImageTagShouldBeBuilt($tag)
     {
         $buildStartedEvents = $this->getEventsOfType(BuildStarted::class);
-        $matchingEvents = array_filter($buildStartedEvents, function(BuildStarted $event) use ($tag) {
+        $matchingEvents = array_filter($buildStartedEvents, function (BuildStarted $event) use ($tag) {
             $buildRequest = $event->getBuild()->getRequest();
 
             return $buildRequest->getImage()->getTag() == $tag;
@@ -283,7 +273,7 @@ class TideContext implements Context
         $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
 
         $componentImage = 'image0:'.$tag;
-        $builtImages = array_map(function(DeploymentStarted $event) {
+        $builtImages = array_map(function (DeploymentStarted $event) {
             $dockerComposeContents = $event->getDeployment()->getRequest()->getSpecification()->getDockerComposeContents();
             $parsed = Yaml::parse($dockerComposeContents);
             $component = current($parsed);
@@ -306,12 +296,12 @@ class TideContext implements Context
     public function theDeployedEnvironmentNameShouldBePrefixedByTheFlowIdentifier()
     {
         $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
-        $environmentNames = array_map(function(DeploymentStarted $event) {
+        $environmentNames = array_map(function (DeploymentStarted $event) {
             return $event->getDeployment()->getRequest()->getTarget()->getEnvironmentName();
         }, $deploymentStartedEvents);
 
         $flowUuid = (string) $this->flowContext->getCurrentFlow()->getUuid();
-        $matchingEnvironmentNames = array_filter($environmentNames, function($environmentName) use ($flowUuid) {
+        $matchingEnvironmentNames = array_filter($environmentNames, function ($environmentName) use ($flowUuid) {
             return substr($environmentName, 0, strlen($flowUuid)) == $flowUuid;
         });
 
@@ -364,13 +354,14 @@ class TideContext implements Context
 
     /**
      * @param string $eventType
+     *
      * @return TideEvent[] array
      */
     private function getEventsOfType($eventType)
     {
         $events = $this->eventStore->findByTideUuid($this->tideUuid);
 
-        return array_values(array_filter($events, function(TideEvent $event) use ($eventType) {
+        return array_values(array_filter($events, function (TideEvent $event) use ($eventType) {
             return get_class($event) == $eventType || is_subclass_of($event, $eventType);
         }));
     }

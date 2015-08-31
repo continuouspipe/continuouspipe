@@ -111,7 +111,7 @@ class BuildContext implements Context
     public function itShouldBuildTheApplicationImages()
     {
         $events = $this->eventStore->findByTideUuid($this->tideContext->getCurrentTideUuid());
-        $imageBuildsStartedEvents = array_filter($events, function(TideEvent $event) {
+        $imageBuildsStartedEvents = array_filter($events, function (TideEvent $event) {
             return $event instanceof ImageBuildsStarted;
         });
 
@@ -129,7 +129,7 @@ class BuildContext implements Context
     public function itShouldBuildTheGivenNumberOfApplicationImages($number)
     {
         $events = $this->eventStore->findByTideUuid($this->tideContext->getCurrentTideUuid());
-        $numberOfImageBuildStartedEvents = count(array_filter($events, function(TideEvent $event) {
+        $numberOfImageBuildStartedEvents = count(array_filter($events, function (TideEvent $event) {
             return $event instanceof BuildStarted;
         }));
 
@@ -221,7 +221,7 @@ class BuildContext implements Context
     public function theImageBuildsShouldBeWaiting()
     {
         $events = $this->eventStore->findByTideUuid($this->tideContext->getCurrentTideUuid());
-        $numberOfImagesBuiltEvents = count(array_filter($events, function(TideEvent $event) {
+        $numberOfImagesBuiltEvents = count(array_filter($events, function (TideEvent $event) {
             return $event instanceof ImageBuildsSuccessful;
         }));
 
@@ -268,7 +268,7 @@ class BuildContext implements Context
     public function theImagesShouldBeSuccessfullyBuilt()
     {
         $events = $this->eventStore->findByTideUuid($this->tideContext->getCurrentTideUuid());
-        $numberOfImagesBuiltEvents = count(array_filter($events, function(TideEvent $event) {
+        $numberOfImagesBuiltEvents = count(array_filter($events, function (TideEvent $event) {
             return $event instanceof ImageBuildsSuccessful;
         }));
 
@@ -327,13 +327,12 @@ class BuildContext implements Context
         }
     }
 
-
     /**
      * @return BuildTask
      */
     private function getBuildTask()
     {
-        /** @var Task[] $deployTasks */
+        /* @var Task[] $deployTasks */
         $buildTasks = $this->tideTasksContext->getTasksOfType(BuildTask::class);
 
         if (count($buildTasks) == 0) {
@@ -353,7 +352,7 @@ class BuildContext implements Context
         );
 
         /** @var ImageBuildsStarted[] $imageBuildsStartedEvents */
-        $imageBuildsStartedEvents = array_filter($events, function(TideEvent $event) {
+        $imageBuildsStartedEvents = array_filter($events, function (TideEvent $event) {
             return $event instanceof ImageBuildsStarted;
         });
 
@@ -369,7 +368,7 @@ class BuildContext implements Context
             $this->tideContext->getCurrentTideUuid()
         );
 
-        return array_values(array_filter($events, function(TideEvent $event) {
+        return array_values(array_filter($events, function (TideEvent $event) {
             return $event instanceof BuildStarted;
         }));
     }

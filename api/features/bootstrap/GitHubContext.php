@@ -47,10 +47,10 @@ class GitHubContext implements Context
     private $response;
 
     /**
-     * @param Kernel $kernel
-     * @param FakeCodeStatusUpdater $fakeCodeStatusUpdater
+     * @param Kernel                            $kernel
+     * @param FakeCodeStatusUpdater             $fakeCodeStatusUpdater
      * @param FakePullRequestDeploymentNotifier $fakePullRequestDeploymentNotifier
-     * @param FakePullRequestResolver $fakePullRequestResolver
+     * @param FakePullRequestResolver           $fakePullRequestResolver
      */
     public function __construct(Kernel $kernel, FakeCodeStatusUpdater $fakeCodeStatusUpdater, FakePullRequestDeploymentNotifier $fakePullRequestDeploymentNotifier, FakePullRequestResolver $fakePullRequestResolver)
     {
@@ -125,7 +125,7 @@ class GitHubContext implements Context
     public function aPullRequestContainsTheTideRelatedCommit()
     {
         $this->fakePullRequestResolver->willResolve([
-            new \GitHub\WebHook\Model\PullRequest()
+            new \GitHub\WebHook\Model\PullRequest(),
         ]);
     }
 

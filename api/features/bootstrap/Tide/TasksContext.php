@@ -31,7 +31,7 @@ class TasksContext implements Context
     private $tideRepository;
 
     /**
-     * @param MessageBus $eventBus
+     * @param MessageBus     $eventBus
      * @param TideRepository $tideRepository
      */
     public function __construct(MessageBus $eventBus, TideRepository $tideRepository)
@@ -115,13 +115,14 @@ class TasksContext implements Context
 
     /**
      * @param string $taskType
+     *
      * @return \ContinuousPipe\River\Task\Task[]
      */
     public function getTasksOfType($taskType)
     {
         $tasks = $this->getCurrentTide()->getTasks()->getTasks();
 
-        return array_values(array_filter($tasks, function(Task $task) use ($taskType) {
+        return array_values(array_filter($tasks, function (Task $task) use ($taskType) {
             if ($task instanceof ContextualizedTask) {
                 $task = $task->getTask();
             }

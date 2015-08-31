@@ -4,7 +4,6 @@ namespace Task;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use ContinuousPipe\River\ContextualizedTask;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
@@ -12,7 +11,6 @@ use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\Task;
-use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class DeployContext implements Context
@@ -77,7 +75,7 @@ class DeployContext implements Context
     public function theDeploymentShouldBeStarted()
     {
         $events = $this->eventStore->findByTideUuid($this->tideContext->getCurrentTideUuid());
-        $deploymentStartedEvents = array_filter($events, function($event) {
+        $deploymentStartedEvents = array_filter($events, function ($event) {
             return $event instanceof DeploymentStarted;
         });
 
@@ -155,7 +153,7 @@ class DeployContext implements Context
         );
 
         /** @var DeploymentStarted[] $deploymentStartedEvents */
-        $deploymentStartedEvents = array_filter($events, function(TideEvent $event) {
+        $deploymentStartedEvents = array_filter($events, function (TideEvent $event) {
             return $event instanceof DeploymentStarted;
         });
 
