@@ -54,7 +54,7 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
             return 'Environment successfully deployed but found no public endpoint.';
         }
 
-        $contents = 'The environment as been successfully deployed, here is the list of public endpoints:'.PHP_EOL;
+        $contents = 'The environment has been successfully deployed, here is the list of public endpoints:'.PHP_EOL;
         foreach ($publicEndpoints as $endpoint) {
             $contents .= '- **'.$endpoint->getName().'**: http://'.$endpoint->getAddress().PHP_EOL;
         }
