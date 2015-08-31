@@ -2,15 +2,12 @@
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Model\Environment;
-use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
-use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
 use ContinuousPipe\Pipe\Tests\Notification\TraceableNotifier;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\User\User;
-use LogStream\Tests\MutableWrappedLog;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,11 +60,11 @@ class EnvironmentContext implements Context
     private $notifier;
 
     /**
-     * @param Kernel $kernel
-     * @param EventStore $eventStore
+     * @param Kernel               $kernel
+     * @param EventStore           $eventStore
      * @param DeploymentRepository $deploymentRepository
-     * @param MessageBus $eventBus
-     * @param TraceableNotifier $notifier
+     * @param MessageBus           $eventBus
+     * @param TraceableNotifier    $notifier
      */
     public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus, TraceableNotifier $notifier)
     {
@@ -118,7 +115,7 @@ class EnvironmentContext implements Context
             $this->lastDeploymentUuid
         );
 
-        $deploymentSuccessfulEvents = array_filter($events, function($event) {
+        $deploymentSuccessfulEvents = array_filter($events, function ($event) {
             return $event instanceof DeploymentSuccessful;
         });
 
@@ -142,7 +139,7 @@ class EnvironmentContext implements Context
             ],
             'specification' => [
                 'dockerComposeContents' => $simpleAppComposeContents,
-            ]
+            ],
         ]);
 
         $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
@@ -224,7 +221,7 @@ class EnvironmentContext implements Context
         $contents = json_encode([
             'specification' => [
                 'dockerComposeContents' => $simpleAppComposeContents,
-            ]
+            ],
         ], true);
         $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',

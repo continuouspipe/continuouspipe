@@ -223,6 +223,7 @@ class NamespaceContext implements Context, SnippetAcceptingContext
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     private function isPrivateSecretName($name)
@@ -235,7 +236,6 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      */
     public function theSecretShouldBeCreated($name)
     {
-
     }
 
     /**
@@ -243,6 +243,5 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      */
     public function theServiceAccountShouldBeUpdatedWithAPullSecret($name)
     {
-
     }
 }

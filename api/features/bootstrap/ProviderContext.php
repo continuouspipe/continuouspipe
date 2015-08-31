@@ -27,7 +27,7 @@ class ProviderContext implements Context
     private $providerRepository;
 
     /**
-     * @param Kernel $kernel
+     * @param Kernel                    $kernel
      * @param AdapterProviderRepository $providerRepository
      */
     public function __construct(Kernel $kernel, AdapterProviderRepository $providerRepository)
@@ -58,7 +58,7 @@ class ProviderContext implements Context
     public function iShouldSeeThisFakeProviderInTheListOfRegisteredProviders($name)
     {
         $json = $this->getLastResponseJson();
-        $matchingProvider = array_filter($json, function(array $raw) use ($name) {
+        $matchingProvider = array_filter($json, function (array $raw) use ($name) {
             return $raw['identifier'] == $name;
         });
 
@@ -140,7 +140,8 @@ class ProviderContext implements Context
             $this->providerRepository->findByTypeAndIdentifier('fake', $name);
 
             throw new \RuntimeException(sprintf('Provider "%s" already found in repository', $name));
-        } catch (ProviderNotFound $e) {}
+        } catch (ProviderNotFound $e) {
+        }
     }
 
     /**
