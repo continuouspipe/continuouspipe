@@ -78,8 +78,8 @@ class HttpClient implements Client
                 }
             }
 
-            if (!is_string($output)) {
-                $output = 'Unknown ('.gettype($output).'): '.print_r($output, true);
+            if (null !== $output && !is_string($output)) {
+                $output = 'Unknown ('.gettype($output).')';
             }
 
             if (!empty($output)) {
