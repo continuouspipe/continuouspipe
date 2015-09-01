@@ -2,10 +2,12 @@
 
 namespace ContinuousPipe\River\Task\Build;
 
+use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\River\BuildNotFound;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\Build\Command\BuildImagesCommand;
 use ContinuousPipe\River\Task\Build\Event\BuildFailed;
+use ContinuousPipe\River\Task\Build\Event\BuildStarted;
 use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
@@ -85,17 +87,19 @@ class BuildTask extends EventDrivenTask
      */
     private function allImageBuildsSuccessful()
     {
-        $buildsStartedEvents = $this->getEventsOfType(ImageBuildsStarted::class);
-        if (count($buildsStartedEvents) == 0) {
+        /** @var BuildStarted[] $buildStartedEvents */
+        $buildStartedEvents = $this->getEventsOfType(BuildStarted::class);
+        if (count($buildStartedEvents) == 0) {
             throw new BuildNotFound('No started build found');
         }
 
-        /** @var ImageBuildsStarted $buildsStartedEvent */
-        $buildsStartedEvent = current($buildsStartedEvents);
-        $numberOfStartedBuilds = count($buildsStartedEvent->getBuildRequests());
-        $numberOfSuccessfulBuilds = count($this->getEventsOfType(BuildSuccessful::class));
+        foreach ($buildStartedEvents as $buildStartedEvent) {
+            if (!$this->isBuildSuccessful($buildStartedEvent->getBuild())) {
+                return false;
+            }
+        }
 
-        return $numberOfSuccessfulBuilds >= $numberOfStartedBuilds;
+        return true;
     }
 
     /**
@@ -147,5 +151,22 @@ class BuildTask extends EventDrivenTask
     public function isPending()
     {
         return 0 === $this->numberOfEventsOfType(ImageBuildsStarted::class);
+    }
+
+    /**
+     * Return true if the given build is successful.
+     *
+     * @param BuilderBuild $build
+     *
+     * @return bool
+     */
+    private function isBuildSuccessful(BuilderBuild $build)
+    {
+        $buildSuccessfulEvents = $this->getEventsOfType(BuildSuccessful::class);
+        $matchingEvents = array_filter($buildSuccessfulEvents, function(BuildSuccessful $event) use ($build) {
+            return $event->getBuild()->getUuid() == $build->getUuid();
+        });
+
+        return count($matchingEvents) > 0;
     }
 }

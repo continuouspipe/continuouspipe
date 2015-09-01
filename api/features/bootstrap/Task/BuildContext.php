@@ -209,10 +209,7 @@ class BuildContext implements Context
      */
     public function oneImageBuildIsSuccessful()
     {
-        $this->eventBus->handle(new BuildSuccessful(
-            $this->tideContext->getCurrentTideUuid(),
-            $this->getLastBuild()
-        ));
+        $this->dispatchBuildSuccessful($this->getLastBuild());
     }
 
     /**
@@ -258,8 +255,22 @@ class BuildContext implements Context
     public function imageBuildsAreSuccessful($number)
     {
         while ($number-- > 0) {
-            $this->oneImageBuildIsSuccessful();
+            $events = $this->getBuildStartedEvents();
+            $firstEvent = $events[$number];
+
+            $this->dispatchBuildSuccessful($firstEvent->getBuild());
         }
+    }
+
+    /**
+     * @When the first image build is successful
+     */
+    public function theFirstImageBuildIsSuccessful()
+    {
+        $events = $this->getBuildStartedEvents();
+        $firstEvent = $events[0];
+
+        $this->dispatchBuildSuccessful($firstEvent->getBuild());
     }
 
     /**
@@ -379,5 +390,16 @@ class BuildContext implements Context
     private function getLastBuild()
     {
         return $this->getBuildStartedEvents()[0]->getBuild();
+    }
+
+    /**
+     * @param BuilderBuild $build
+     */
+    private function dispatchBuildSuccessful(BuilderBuild $build)
+    {
+        $this->eventBus->handle(new BuildSuccessful(
+            $this->tideContext->getCurrentTideUuid(),
+            $build
+        ));
     }
 }
