@@ -7,6 +7,7 @@ Feature:
     Given I am authenticated
     And I have a valid Kubernetes provider
 
+  @smoke
   Scenario:
     Given the service "api" will be created with the public endpoint "1.2.3.4"
     And the service "ui" will be created with the public endpoint "5.6.7.8"

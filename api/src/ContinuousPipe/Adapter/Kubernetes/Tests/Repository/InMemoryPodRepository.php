@@ -89,4 +89,12 @@ class InMemoryPodRepository implements PodRepository
     {
         return $this->findByLabels($replicationController->getSpecification()->getSelector());
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function exists($name)
+    {
+        return array_key_exists($name, $this->pods);
+    }
 }
