@@ -5,6 +5,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
+use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
@@ -14,7 +15,6 @@ use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Service;
-use Kubernetes\Client\Model\ServiceSpecification;
 use Kubernetes\Client\Repository\ServiceRepository;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
@@ -44,17 +44,24 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     private $loggerFactory;
 
     /**
+     * @var PublicServiceVoter
+     */
+    private $publicServiceVoter;
+
+    /**
      * @param EnvironmentTransformer  $environmentTransformer
      * @param DeploymentClientFactory $clientFactory
      * @param MessageBus              $eventBus
      * @param LoggerFactory           $loggerFactory
+     * @param PublicServiceVoter      $publicServiceVoter
      */
-    public function __construct(EnvironmentTransformer $environmentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory)
+    public function __construct(EnvironmentTransformer $environmentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, PublicServiceVoter $publicServiceVoter)
     {
         $this->environmentTransformer = $environmentTransformer;
         $this->clientFactory = $clientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
+        $this->publicServiceVoter = $publicServiceVoter;
     }
 
     /**
@@ -120,20 +127,10 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     {
         $namespaceObjects = $this->environmentTransformer->getElementListFromEnvironment($environment);
         $publicServices = array_filter($namespaceObjects, function (KubernetesObject $object) {
-            return $this->isAPublicService($object);
+            return $this->publicServiceVoter->isAPublicService($object);
         });
 
         return array_values($publicServices);
-    }
-
-    /**
-     * @param KubernetesObject $object
-     *
-     * @return bool
-     */
-    private function isAPublicService(KubernetesObject $object)
-    {
-        return $object instanceof Service && $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER;
     }
 
     /**
