@@ -106,13 +106,13 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
         foreach ($services as $service) {
             $serviceName = $service->getMetadata()->getName();
 
-            if ($serviceRepository->exists($serviceName)) {
-                $createdServices[] = $serviceRepository->update($service);
-                $logger->append(new Text(sprintf('Updated service "%s"', $serviceName)));
-            } else {
-                $createdServices[] = $serviceRepository->create($service);
-                $logger->append(new Text(sprintf('Created service "%s"', $serviceName)));
+            if ($serviceRepository->exists($serviceName) && $this->serviceNeedsToBeUpdated($serviceRepository, $service)) {
+                $serviceRepository->delete($service);
+                $logger->append(new Text(sprintf('Deleted service "%s"', $serviceName)));
             }
+
+            $createdServices[] = $serviceRepository->create($service);
+            $logger->append(new Text(sprintf('Created service "%s"', $serviceName)));
         }
 
         return $createdServices;
@@ -139,5 +139,20 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     public function supports(DeploymentContext $context)
     {
         return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
+    }
+
+    /**
+     * @param ServiceRepository $repository
+     * @param Service $service
+     *
+     * @return bool
+     */
+    private function serviceNeedsToBeUpdated(ServiceRepository $repository, Service $service)
+    {
+        $existingService = $repository->findOneByName($service->getMetadata()->getName());
+        $existingSelector = $existingService->getSpecification()->getSelector();
+        $newSelector = $service->getSpecification()->getSelector();
+
+        return $existingSelector != $newSelector;
     }
 }

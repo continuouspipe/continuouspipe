@@ -1,0 +1,14 @@
+app:
+    image: sroze/php-example
+    links:
+        - mysql
+    environment:
+        - MYSQL_PASSWORD=root
+    labels:
+        com.continuouspipe.visibility: public
+mysql:
+    image: mysql
+    environment:
+        MYSQL_PASSWORD: root
+    labels:
+        com.continuouspipe.update: lock

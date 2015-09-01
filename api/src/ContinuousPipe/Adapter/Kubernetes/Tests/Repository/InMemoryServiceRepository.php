@@ -71,5 +71,7 @@ class InMemoryServiceRepository implements ServiceRepository
     public function update(Service $service)
     {
         $this->services[$service->getMetadata()->getName()] = $service;
+
+        return $service;
     }
 }

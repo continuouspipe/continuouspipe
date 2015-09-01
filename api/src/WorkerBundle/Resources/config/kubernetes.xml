@@ -106,6 +106,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="kubernetes.public_endpoint.public_service_voter" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
         </service>

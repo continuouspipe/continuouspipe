@@ -4,6 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
+use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
@@ -47,17 +48,24 @@ class CreateComponentsHandler implements DeploymentHandler
     private $loggerFactory;
 
     /**
-     * @param ComponentTransformer    $componentTransformer
-     * @param DeploymentClientFactory $clientFactory
-     * @param MessageBus              $eventBus
-     * @param LoggerFactory           $loggerFactory
+     * @var PublicServiceVoter
      */
-    public function __construct(ComponentTransformer $componentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory)
+    private $publicServiceVoter;
+
+    /**
+     * @param ComponentTransformer $componentTransformer
+     * @param DeploymentClientFactory $clientFactory
+     * @param MessageBus $eventBus
+     * @param LoggerFactory $loggerFactory
+     * @param PublicServiceVoter $publicServiceVoter
+     */
+    public function __construct(ComponentTransformer $componentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, PublicServiceVoter $publicServiceVoter)
     {
         $this->componentTransformer = $componentTransformer;
         $this->clientFactory = $clientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
+        $this->publicServiceVoter = $publicServiceVoter;
     }
 
     /**
@@ -102,6 +110,12 @@ class CreateComponentsHandler implements DeploymentHandler
         $objects = $this->componentTransformer->getElementListFromComponent($component);
 
         foreach ($objects as $object) {
+            if ($this->publicServiceVoter->isAPublicService($object)) {
+                $logger->append(new Text('Ignoring the public service '.$this->getObjectTypeAndName($object)));
+
+                continue;
+            }
+
             $this->createObject($client, $logger, $component, $object);
         }
     }
@@ -121,7 +135,7 @@ class CreateComponentsHandler implements DeploymentHandler
 
         if ($objectRepository->exists($objectName)) {
             if ($component->isLocked()) {
-                $logger->append(new Text('NOT updated '.$this->getObjectTypeAndName($object).' because it is locked'));
+                $logger->append(new Text('NOT updated ' . $this->getObjectTypeAndName($object) . ' because it is locked'));
 
                 return;
             }

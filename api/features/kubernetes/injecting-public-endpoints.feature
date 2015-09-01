@@ -16,3 +16,18 @@ Feature:
     | name                        | value   |
     | SERVICE_API_PUBLIC_ENDPOINT | 1.2.3.4 |
     | SERVICE_UI_PUBLIC_ENDPOINT  | 5.6.7.8 |
+
+  Scenario: The public services should not be updated if the selector are the same
+    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app"
+    And the service "app" will be created with the public endpoint "1.2.3.4"
+    When I send a deployment request from application template "simple-app-public"
+    Then the service "app" should not be updated
+    And the service "app" should not be deleted
+
+  Scenario: The public services should be deleted and then created if selectors are different
+    Given I have a service "app" with the selector "component-identifier=app"
+    And the service "app" will be created with the public endpoint "1.2.3.4"
+    When I send a deployment request from application template "simple-app-public"
+    Then the service "app" should not be updated
+    And the service "app" should be deleted
+    And the service "app" should be created
