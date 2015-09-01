@@ -118,4 +118,15 @@ class TraceableServiceRepository implements ServiceRepository
     {
         return $this->deleted;
     }
+
+    /**
+     * Clear traces.
+     *
+     */
+    public function clear()
+    {
+        $this->created = [];
+        $this->updated = [];
+        $this->deleted = [];
+    }
 }

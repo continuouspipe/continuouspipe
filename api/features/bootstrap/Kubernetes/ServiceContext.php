@@ -53,6 +53,8 @@ class ServiceContext implements Context
             new ObjectMetadata($name),
             new ServiceSpecification($selector)
         ));
+
+        $this->serviceRepository->clear();
     }
 
     /**
@@ -95,6 +97,19 @@ class ServiceContext implements Context
     public function theServiceShouldBeCreated($name)
     {
         $this->findServiceByNameInList($this->serviceRepository->getCreated(), $name);
+    }
+
+    /**
+     * @Then the service :arg1 should not be created
+     */
+    public function theServiceShouldNotBeCreated($name)
+    {
+        try {
+            $this->findServiceByNameInList($this->serviceRepository->getCreated(), $name);
+
+            throw new \RuntimeException('Service found in list of created services');
+        } catch (ServiceNotFound $e) {
+        }
     }
 
     /**

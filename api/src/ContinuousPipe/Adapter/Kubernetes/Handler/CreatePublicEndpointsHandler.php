@@ -106,7 +106,11 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
         foreach ($services as $service) {
             $serviceName = $service->getMetadata()->getName();
 
-            if ($serviceRepository->exists($serviceName) && $this->serviceNeedsToBeUpdated($serviceRepository, $service)) {
+            if ($serviceRepository->exists($serviceName)) {
+                if (!$this->serviceNeedsToBeUpdated($serviceRepository, $service)) {
+                    continue;
+                }
+
                 $serviceRepository->delete($service);
                 $logger->append(new Text(sprintf('Deleted service "%s"', $serviceName)));
             }

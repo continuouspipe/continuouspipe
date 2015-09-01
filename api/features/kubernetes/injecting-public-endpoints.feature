@@ -23,6 +23,7 @@ Feature:
     When I send a deployment request from application template "simple-app-public"
     Then the service "app" should not be updated
     And the service "app" should not be deleted
+    And the service "app" should not be created
 
   Scenario: The public services should be deleted and then created if selectors are different
     Given I have a service "app" with the selector "component-identifier=app"
