@@ -102,12 +102,14 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
      */
     private function createServices(ServiceRepository $serviceRepository, array $services, Logger $logger)
     {
-        $createdServices = [];
+        $publicServices = [];
         foreach ($services as $service) {
             $serviceName = $service->getMetadata()->getName();
 
             if ($serviceRepository->exists($serviceName)) {
                 if (!$this->serviceNeedsToBeUpdated($serviceRepository, $service)) {
+                    $publicServices[] = $serviceRepository->findOneByName($serviceName);
+
                     continue;
                 }
 
@@ -115,11 +117,11 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
                 $logger->append(new Text(sprintf('Deleted service "%s"', $serviceName)));
             }
 
-            $createdServices[] = $serviceRepository->create($service);
+            $publicServices[] = $serviceRepository->create($service);
             $logger->append(new Text(sprintf('Created service "%s"', $serviceName)));
         }
 
-        return $createdServices;
+        return $publicServices;
     }
 
     /**
