@@ -432,10 +432,10 @@ module.exports = function (grunt) {
           dest: '.tmp/scripts/config.js'
         },
         constants: {
-          RIVER_API_URL: process.env.SERVICE_RIVER_PUBLIC_ENDPOINT || 'http://continuouspipe_river.docker/app_dev.php',
-          AUTHENTICATOR_API_URL: process.env.SERVICE_AUTHENTICATOR_PUBLIC_ENDPOINT || 'http://continuouspipe_authenticator.docker/app_dev.php',
-          LOG_STREAM_URL: process.env.SERVICE_LOGSTREAM_PUBLIC_ENDPOINT || 'http://logstream.docker',
-          PIPE_API_URL: process.env.SERVICE_PIPE_PUBLIC_ENDPOINT || 'http://continuouspipe_pipe.docker/app_dev.php'
+          RIVER_API_URL: 'http://'+(process.env.SERVICE_RIVER_PUBLIC_ENDPOINT || 'continuouspipe_river.docker/app_dev.php'),
+          AUTHENTICATOR_API_URL: 'http://'+(process.env.SERVICE_AUTHENTICATOR_PUBLIC_ENDPOINT || 'continuouspipe_authenticator.docker/app_dev.php'),
+          LOG_STREAM_URL: 'http://'+(process.env.SERVICE_LOGSTREAM_PUBLIC_ENDPOINT || 'logstream.docker'),
+          PIPE_API_URL: 'http://'+(process.env.SERVICE_PIPE_PUBLIC_ENDPOINT || 'continuouspipe_pipe.docker/app_dev.php')
         }
       }
     }
