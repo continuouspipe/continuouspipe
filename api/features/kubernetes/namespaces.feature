@@ -22,3 +22,8 @@ Feature:
     When a namespace is created
     Then a docker registry secret should be created
     And the service account should be updated with a docker registry pull secret
+
+  Scenario:
+    Given I have a namespace "foo"
+    When I delete the environment named "foo" of the Kubernetes provider
+    Then the namespace "foo" should be deleted

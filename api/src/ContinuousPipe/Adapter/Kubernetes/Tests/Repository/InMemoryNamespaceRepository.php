@@ -59,5 +59,7 @@ class InMemoryNamespaceRepository implements NamespaceRepository
         if (!$this->exists($namespaceName)) {
             unset($this->namespaces[$namespaceName]);
         }
+
+        return $namespace;
     }
 }

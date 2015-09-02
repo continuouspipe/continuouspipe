@@ -58,4 +58,14 @@ class ProviderContext implements Context
             ));
         }
     }
+
+    /**
+     * @When I delete the Kubernetes provider
+     */
+    public function iDeleteTheKubernetesProvider()
+    {
+        $this->providerRepository->remove(
+            $this->providerRepository->find(self::DEFAULT_PROVIDER_NAME)
+        );
+    }
 }

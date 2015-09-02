@@ -5,6 +5,7 @@ use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
+use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient;
 use ContinuousPipe\Pipe\Tests\Notification\TraceableNotifier;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\User\User;
@@ -60,19 +61,26 @@ class EnvironmentContext implements Context
     private $notifier;
 
     /**
-     * @param Kernel               $kernel
-     * @param EventStore           $eventStore
-     * @param DeploymentRepository $deploymentRepository
-     * @param MessageBus           $eventBus
-     * @param TraceableNotifier    $notifier
+     * @var FakeEnvironmentClient
      */
-    public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus, TraceableNotifier $notifier)
+    private $fakeEnvironmentClient;
+
+    /**
+     * @param Kernel $kernel
+     * @param EventStore $eventStore
+     * @param DeploymentRepository $deploymentRepository
+     * @param MessageBus $eventBus
+     * @param TraceableNotifier $notifier
+     * @param FakeEnvironmentClient $fakeEnvironmentClient
+     */
+    public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus, TraceableNotifier $notifier, FakeEnvironmentClient $fakeEnvironmentClient)
     {
         $this->kernel = $kernel;
         $this->eventStore = $eventStore;
         $this->deploymentRepository = $deploymentRepository;
         $this->eventBus = $eventBus;
         $this->notifier = $notifier;
+        $this->fakeEnvironmentClient = $fakeEnvironmentClient;
     }
 
     /**
@@ -237,6 +245,51 @@ class EnvironmentContext implements Context
             throw new \RuntimeException(sprintf(
                 'Expected the response to be 400, but got %d',
                 $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
+     * @Given I have an environment :name
+     */
+    public function iHaveAnEnvironment($name)
+    {
+        $this->fakeEnvironmentClient->add(new Environment($name, $name));
+    }
+
+    /**
+     * @Then the environment :name shouldn't exists
+     */
+    public function theEnvironmentShouldnTExists($name)
+    {
+        $matchingEnvironments = array_filter($this->fakeEnvironmentClient->findAll(), function(Environment $environment) use ($name) {
+            return $environment->getName() == $name;
+        });
+
+        if (count($matchingEnvironments) != 0) {
+            throw new \RuntimeException(sprintf(
+                'Found an environment named "%s"',
+                $name
+            ));
+        }
+    }
+
+    /**
+     * @When I delete the environment named :name of provider :providerName
+     */
+    public function iDeleteTheEnvironmentNamedOfProvider($name, $providerName, $type = 'fake')
+    {
+        $response = $this->kernel->handle(Request::create(sprintf(
+            '/providers/%s/%s/environments/%s',
+            $type,
+            $providerName,
+            $name
+        ), 'DELETE'));
+
+        if (!in_array($response->getStatusCode(), [200, 204])) {
+            throw new \RuntimeException(sprintf(
+                'Expected response 200 or 204, got %d',
+                $response->getStatusCode()
             ));
         }
     }

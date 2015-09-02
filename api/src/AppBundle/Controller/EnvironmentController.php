@@ -40,9 +40,31 @@ class EnvironmentController extends Controller
      */
     public function listAction($type, $identifier)
     {
+        return $this->getEnvironmentClient($type, $identifier)->findAll();
+    }
+
+    /**
+     * @Route("/providers/{type}/{identifier}/environments/{environmentIdentifier}", methods={"DELETE"})
+     * @View
+     */
+    public function deleteAction($type, $identifier, $environmentIdentifier)
+    {
+        $client = $this->getEnvironmentClient($type, $identifier);
+
+        $environment = $client->find($environmentIdentifier);
+        $client->delete($environment);
+    }
+
+    /**
+     * @param string $type
+     * @param string $identifier
+     * @return \ContinuousPipe\Adapter\EnvironmentClient
+     */
+    private function getEnvironmentClient($type, $identifier)
+    {
         $provider = $this->providerRepository->findByTypeAndIdentifier($type, $identifier);
         $environmentClient = $this->environmentClientFactory->getByProvider($provider);
 
-        return $environmentClient->findAll();
+        return $environmentClient;
     }
 }

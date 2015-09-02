@@ -108,7 +108,7 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      */
     public function itShouldCreateANewNamespace()
     {
-        $numberOfCreatedNamespaces = count($this->namespaceRepository->getCreatedRepositories());
+        $numberOfCreatedNamespaces = count($this->namespaceRepository->getCreated());
 
         if ($numberOfCreatedNamespaces == 0) {
             throw new \RuntimeException('No namespace were created');
@@ -143,7 +143,7 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      */
     public function itShouldReuseThisNamespace()
     {
-        $numberOfCreatedNamespaces = count($this->namespaceRepository->getCreatedRepositories());
+        $numberOfCreatedNamespaces = count($this->namespaceRepository->getCreated());
 
         if ($numberOfCreatedNamespaces !== 0) {
             throw new \RuntimeException(sprintf(
@@ -236,12 +236,40 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      */
     public function theSecretShouldBeCreated($name)
     {
+        $matchingSecrets = array_filter($this->secretRepository->getCreated(), function(Secret $secret) use ($name) {
+            return $secret->getMetadata()->getName() == $name;
+        });
+
+        if (count($matchingSecrets) == 0) {
+            throw new \RuntimeException(sprintf(
+                'No secret named "%s" found is list of created secrets',
+                $name
+            ));
+        }
     }
 
     /**
-     * @Then the service account should be updated with a pull secret :name
+     * @Then the namespace :name should be deleted
      */
-    public function theServiceAccountShouldBeUpdatedWithAPullSecret($name)
+    public function theNamespaceShouldBeDeleted($name)
     {
+        $matchingNamespaces = array_filter($this->namespaceRepository->getDeleted(), function(KubernetesNamespace $namespace) use ($name) {
+            return $namespace->getMetadata()->getName() == $name;
+        });
+
+        if (count($matchingNamespaces) == 0) {
+            throw new \RuntimeException(sprintf(
+                'No namespace named "%s" found is list of deleted namespaces',
+                $name
+            ));
+        }
+    }
+
+    /**
+     * @When I delete the environment named :name of the Kubernetes provider
+     */
+    public function iDeleteTheEnvironmentNamedOfTheKubernetesProvider($name)
+    {
+        $this->environmentContext->iDeleteTheEnvironmentNamedOfProvider($name, ProviderContext::DEFAULT_PROVIDER_NAME, 'kubernetes');
     }
 }

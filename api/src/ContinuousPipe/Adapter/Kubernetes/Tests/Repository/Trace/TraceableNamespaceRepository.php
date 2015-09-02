@@ -8,9 +8,14 @@ use Kubernetes\Client\Repository\NamespaceRepository;
 class TraceableNamespaceRepository implements NamespaceRepository
 {
     /**
-     * @var NamespaceRepository[]
+     * @var KubernetesNamespace[]
      */
-    private $createdRepositories = [];
+    private $created = [];
+
+    /**
+     * @var KubernetesNamespace[]
+     */
+    private $deleted = [];
 
     /**
      * @var NamespaceRepository
@@ -56,17 +61,25 @@ class TraceableNamespaceRepository implements NamespaceRepository
     {
         $created = $this->namespaceRepository->create($namespace);
 
-        $this->createdRepositories[] = $created;
+        $this->created[] = $created;
 
         return $created;
     }
 
     /**
-     * @return \Kubernetes\Client\Repository\NamespaceRepository[]
+     * @return \Kubernetes\Client\Model\KubernetesNamespace[]
      */
-    public function getCreatedRepositories()
+    public function getCreated()
     {
-        return $this->createdRepositories;
+        return $this->created;
+    }
+
+    /**
+     * @return \Kubernetes\Client\Model\KubernetesNamespace[]
+     */
+    public function getDeleted()
+    {
+        return $this->deleted;
     }
 
     /**
@@ -74,7 +87,8 @@ class TraceableNamespaceRepository implements NamespaceRepository
      */
     public function clear()
     {
-        $this->createdRepositories = [];
+        $this->created = [];
+        $this->deleted = [];
     }
 
     /**
@@ -82,6 +96,10 @@ class TraceableNamespaceRepository implements NamespaceRepository
      */
     public function delete(KubernetesNamespace $namespace)
     {
-        return $this->namespaceRepository->delete($namespace);
+        $deleted = $this->namespaceRepository->delete($namespace);
+
+        $this->deleted[] = $deleted;
+
+        return $deleted;
     }
 }
