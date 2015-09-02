@@ -96,9 +96,23 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     {
         return sprintf(
             '%s/flows/%s/tide/%s/logs',
-            $this->uiBaseUrl,
+            $this->getUiBaseUrl(),
             (string) $tideContext->getFlowUuid(),
             (string) $tideContext->getTideUuid()
         );
+    }
+
+    /**
+     * @return string
+     */
+    private function getUiBaseUrl()
+    {
+        $baseUrl = $this->uiBaseUrl;
+
+        if (strpos($baseUrl, 'http') !== 0) {
+            $baseUrl = 'http://'.$baseUrl;
+        }
+
+        return $baseUrl;
     }
 }

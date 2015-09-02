@@ -59,7 +59,7 @@ class RepositoryWebHookManager
             ));
         }
 
-        $targetUrl = $this->riverPublicUrl.$this->urlGenerator->generate('web_hook_github', ['uuid' => (string) $flow->getUuid()]);
+        $targetUrl = $this->getBaseUrl().$this->urlGenerator->generate('web_hook_github', ['uuid' => (string) $flow->getUuid()]);
         $configuration = new WebHookConfiguration($targetUrl, 'json', $this->githubSecret);
         $webHook = new WebHook('web', $configuration, [
             'pull_request',
@@ -71,5 +71,19 @@ class RepositoryWebHookManager
         } catch (BadResponseException $e) {
             throw new CouldNotCreateWebHookException('Could not create GitHub web hook for the repository.');
         }
+    }
+
+    /**
+     * @return string
+     */
+    private function getBaseUrl()
+    {
+        $baseUrl = $this->riverPublicUrl;
+
+        if (strpos($baseUrl, 'http') !== 0) {
+            $baseUrl = 'http://'.$baseUrl;
+        }
+
+        return $baseUrl;
     }
 }
