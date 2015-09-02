@@ -28,7 +28,8 @@
         "continuous-pipe/builder-model": "*@dev",
         "continuous-pipe/docker-compose": "*@dev",
         "nelmio/cors-bundle": "^1.4",
-        "doctrine/doctrine-migrations-bundle": "^1.0"
+        "doctrine/doctrine-migrations-bundle": "^1.0",
+        "raven/raven": "^0.12.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -77,7 +78,8 @@
             "file": "app/config/parameters.yml",
             "env-map": {
                 "river_public_url": "SERVICE_RIVER_PUBLIC_ENDPOINT",
-                "river_ui_url": "SERVICE_RIVERUI_PUBLIC_ENDPOINT"
+                "river_ui_url": "SERVICE_RIVERUI_PUBLIC_ENDPOINT",
+                "sentry_dsn": "SENTRY_DSN"
             }
         }]
     },

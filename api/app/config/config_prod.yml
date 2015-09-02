@@ -17,11 +17,21 @@ monolog:
     handlers:
         main:
             type:         fingers_crossed
-            action_level: error
-            handler:      nested
+            action_level: info
+            handler:      grouped_main
+        sentry:
+            type:  raven
+            dsn:   %sentry_dsn%
+            level: notice
+        grouped_main:
+            type:    group
+            members: [sentry, nested]
         nested:
             type:  stream
             path:  "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
         console:
+            type:    group
+            members: [sentry, console_display]
+        console_display:
             type:  console
