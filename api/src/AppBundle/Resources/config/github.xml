@@ -61,8 +61,6 @@
             <argument type="service" id="river.github.code_reference_resolver" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.event_store" />
-            <argument type="service" id="river.github.pull_request_deployment_notifier" />
         </service>
 
         <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\GitHubPullRequestResolver">
@@ -76,6 +74,22 @@
             <argument type="service" id="security.user_repository" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful"/>
+        </service>
+
+        <service id="river.listener.github.pull_request.comment_deployment_environment_endpoints" class="ContinuousPipe\River\EventListener\GitHub\PullRequestOpened\CommentDeploymentEnvironmentEndpoints">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.github.pull_request_deployment_notifier" />
+            <argument type="service" id="river.event_store" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestOpened"/>
+        </service>
+
+        <service id="river.listener.github.pull_request.delete_related_environment" class="ContinuousPipe\River\EventListener\GitHub\PullRequestClosed\DeleteRelatedEnvironment">
+            <argument type="service" id="river.pipe_client" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestClosed"/>
         </service>
     </services>
 </container>

@@ -5,6 +5,7 @@ use ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestDeploymentNotifier;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver;
+use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,19 +46,25 @@ class GitHubContext implements Context
      * @var Response
      */
     private $response;
+    /**
+     * @var TraceableClient
+     */
+    private $traceableClient;
 
     /**
-     * @param Kernel                            $kernel
-     * @param FakeCodeStatusUpdater             $fakeCodeStatusUpdater
+     * @param Kernel $kernel
+     * @param FakeCodeStatusUpdater $fakeCodeStatusUpdater
      * @param FakePullRequestDeploymentNotifier $fakePullRequestDeploymentNotifier
-     * @param FakePullRequestResolver           $fakePullRequestResolver
+     * @param FakePullRequestResolver $fakePullRequestResolver
+     * @param TraceableClient $traceableClient
      */
-    public function __construct(Kernel $kernel, FakeCodeStatusUpdater $fakeCodeStatusUpdater, FakePullRequestDeploymentNotifier $fakePullRequestDeploymentNotifier, FakePullRequestResolver $fakePullRequestResolver)
+    public function __construct(Kernel $kernel, FakeCodeStatusUpdater $fakeCodeStatusUpdater, FakePullRequestDeploymentNotifier $fakePullRequestDeploymentNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient)
     {
         $this->fakeCodeStatusUpdater = $fakeCodeStatusUpdater;
         $this->kernel = $kernel;
         $this->fakePullRequestDeploymentNotifier = $fakePullRequestDeploymentNotifier;
         $this->fakePullRequestResolver = $fakePullRequestResolver;
+        $this->traceableClient = $traceableClient;
     }
 
     /**
@@ -163,6 +170,36 @@ class GitHubContext implements Context
                 'Expected response code to be bellow 300, got %d',
                 $response->getStatusCode()
             ));
+        }
+    }
+
+    /**
+     * @When a pull-request is closed with head commit :sha
+     */
+    public function aPullRequestIsClosedWithHeadCommit($sha)
+    {
+        $contents = file_get_contents(__DIR__.'/../fixtures/pull_request-closed.json');
+        $decoded = json_decode($contents, true);
+        $decoded['pull_request']['head']['sha'] = $sha;
+        $contents = json_encode($decoded);
+
+        $flowUuid = $this->flowContext->getCurrentUuid();
+        $this->response = $this->kernel->handle(Request::create('/web-hook/github/'.$flowUuid, 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_X_GITHUB_EVENT' => 'pull_request',
+            'HTTP_X_GITHUB_DELIVERY' => '1234',
+        ], $contents));
+    }
+
+    /**
+     * @Then the environment should be deleted
+     */
+    public function theEnvironmentShouldBeDeleted()
+    {
+        $deletions = $this->traceableClient->getDeletions();
+
+        if (0 == count($deletions)) {
+            throw new \RuntimeException('No deleted environment found');
         }
     }
 }

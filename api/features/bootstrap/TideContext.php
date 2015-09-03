@@ -91,8 +91,19 @@ class TideContext implements Context
      */
     public function aTideIsCreated()
     {
-        $this->flowContext->iHaveAFlowWithTheBuildAndDeployTasks();
+        if (null === $this->flowContext->getCurrentFlow()) {
+            $this->flowContext->iHaveAFlowWithTheBuildAndDeployTasks();
+        }
+
         $this->createTide();
+    }
+
+    /**
+     * @Given a tide is created for branch :branch and commit :sha
+     */
+    public function aTideIsCreatedForBranchAndCommit($branch, $sha)
+    {
+        $this->createTide($branch, $sha);
     }
 
     /**

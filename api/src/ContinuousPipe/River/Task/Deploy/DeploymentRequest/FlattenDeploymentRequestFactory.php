@@ -6,6 +6,7 @@ use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Task\Deploy\DeployContext;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\DockerCompose\DockerComposeReader;
+use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
@@ -21,13 +22,20 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
     private $urlGenerator;
 
     /**
-     * @param DockerComposeReader   $dockerComposeReader
-     * @param UrlGeneratorInterface $urlGenerator
+     * @var EnvironmentNamingStrategy
      */
-    public function __construct(DockerComposeReader $dockerComposeReader, UrlGeneratorInterface $urlGenerator)
+    private $environmentNamingStrategy;
+
+    /**
+     * @param DockerComposeReader $dockerComposeReader
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param EnvironmentNamingStrategy $environmentNamingStrategy
+     */
+    public function __construct(DockerComposeReader $dockerComposeReader, UrlGeneratorInterface $urlGenerator, EnvironmentNamingStrategy $environmentNamingStrategy)
     {
         $this->dockerComposeReader = $dockerComposeReader;
         $this->urlGenerator = $urlGenerator;
+        $this->environmentNamingStrategy = $environmentNamingStrategy;
     }
 
     /**
@@ -39,6 +47,7 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
         $callbackUrl = $this->urlGenerator->generate('pipe_notification_post', [
             'tideUuid' => $context->getTideUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
+
 
         return new DeploymentRequest(
             new DeploymentRequest\Target(
@@ -54,14 +63,14 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
     }
 
     /**
-     * Get target environment name for the given deployment.
-     *
      * @param DeployContext $context
-     *
      * @return string
      */
     private function getEnvironmentName(DeployContext $context)
     {
-        return sprintf('%s-%s', (string) $context->getFlowUuid(), $context->getCodeReference()->getBranch());
+        return $this->environmentNamingStrategy->getName(
+            $context->getFlowUuid(),
+            $context->getCodeReference()
+        );
     }
 }

@@ -6,6 +6,5 @@
 
     <services>
         <service id="river.view.tide_repository" class="ContinuousPipe\River\Tests\View\InMemoryTideRepository" />
-        <service id="river.pipe_client" class="ContinuousPipe\River\Tests\Pipe\FakeClient" />
     </services>
 </container>

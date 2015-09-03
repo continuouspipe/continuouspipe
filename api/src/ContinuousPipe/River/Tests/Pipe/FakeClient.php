@@ -20,4 +20,11 @@ class FakeClient implements Client
             Client\Deployment::STATUS_PENDING
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteEnvironment(DeploymentRequest\Target $target, User $user)
+    {
+    }
 }

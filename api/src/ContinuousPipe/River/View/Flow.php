@@ -47,4 +47,12 @@ class Flow
     {
         return $this->uuid;
     }
+
+    /**
+     * @return \ContinuousPipe\River\Flow\Task[]
+     */
+    public function getTasks()
+    {
+        return $this->tasks;
+    }
 }

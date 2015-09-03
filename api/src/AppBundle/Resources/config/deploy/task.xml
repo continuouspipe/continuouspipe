@@ -30,9 +30,11 @@
                 <argument type="service" id="river.task.deploy.docker_compose.replace_build_by_images_transformer" />
             </argument>
         </service>
+        <service id="river.task.deploy.naming.environment_strategy" class="ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy" />
         <service id="river.task.deploy.deployment_request_factory" class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\FlattenDeploymentRequestFactory">
             <argument type="service" id="river.task.deploy.docker_compose.code_repository_reader" />
             <argument type="service" id="router" />
+            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
         </service>
         <service id="river.handler.start_deploy" class="ContinuousPipe\River\Task\Deploy\Handler\StartDeploymentHandler">
             <argument type="service" id="river.task.deploy.deployment_request_factory" />

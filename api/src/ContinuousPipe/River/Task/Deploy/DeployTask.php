@@ -15,6 +15,13 @@ use SimpleBus\Message\Bus\MessageBus;
 class DeployTask extends EventDrivenTask
 {
     /**
+     * Name of the task.
+     *
+     * @var string
+     */
+    const NAME = 'deploy';
+
+    /**
      * @var MessageBus
      */
     private $commandBus;

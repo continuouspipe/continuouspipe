@@ -15,3 +15,9 @@ Feature:
     Given a deployment for a commit "123" is successful
     When a pull-request is created with head commit "123"
     Then the addresses of the environment should be commented on the pull-request
+
+  Scenario: The environment should be deleted when a pull-request is closed
+    Given I have a flow with a deploy task
+    And a tide is created for branch "foo" and commit "12345"
+    When a pull-request is closed with head commit "12345"
+    Then the environment should be deleted

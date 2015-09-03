@@ -15,4 +15,10 @@ interface Client
      * @return Deployment
      */
     public function start(DeploymentRequest $deploymentRequest, User $user);
+
+    /**
+     * @param DeploymentRequest\Target $target
+     * @param User $user
+     */
+    public function deleteEnvironment(DeploymentRequest\Target $target, User $user);
 }

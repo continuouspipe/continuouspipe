@@ -19,6 +19,7 @@ default:
                     - @river.code_status_updater
                     - @river.github.pull_request_deployment_notifier
                     - @river.github.pull_request_resolver
+                    - @river.pipe_client.traceable
                 - FlowContext:
                     - @kernel
                     - @security.token_storage
