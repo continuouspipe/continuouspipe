@@ -53,11 +53,11 @@ class CreateComponentsHandler implements DeploymentHandler
     private $publicServiceVoter;
 
     /**
-     * @param ComponentTransformer $componentTransformer
+     * @param ComponentTransformer    $componentTransformer
      * @param DeploymentClientFactory $clientFactory
-     * @param MessageBus $eventBus
-     * @param LoggerFactory $loggerFactory
-     * @param PublicServiceVoter $publicServiceVoter
+     * @param MessageBus              $eventBus
+     * @param LoggerFactory           $loggerFactory
+     * @param PublicServiceVoter      $publicServiceVoter
      */
     public function __construct(ComponentTransformer $componentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, PublicServiceVoter $publicServiceVoter)
     {
@@ -135,7 +135,7 @@ class CreateComponentsHandler implements DeploymentHandler
 
         if ($objectRepository->exists($objectName)) {
             if ($component->isLocked()) {
-                $logger->append(new Text('NOT updated ' . $this->getObjectTypeAndName($object) . ' because it is locked'));
+                $logger->append(new Text('NOT updated '.$this->getObjectTypeAndName($object).' because it is locked'));
 
                 return;
             }

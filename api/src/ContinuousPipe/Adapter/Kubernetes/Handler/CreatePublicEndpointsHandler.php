@@ -149,7 +149,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
 
     /**
      * @param ServiceRepository $repository
-     * @param Service $service
+     * @param Service           $service
      *
      * @return bool
      */

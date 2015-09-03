@@ -2,9 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace;
 
-use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\Service;
-use Kubernetes\Client\Model\ServiceList;
 use Kubernetes\Client\Repository\ServiceRepository;
 
 class TraceableServiceRepository implements ServiceRepository
@@ -121,7 +119,6 @@ class TraceableServiceRepository implements ServiceRepository
 
     /**
      * Clear traces.
-     *
      */
     public function clear()
     {
