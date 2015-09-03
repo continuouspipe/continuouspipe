@@ -89,6 +89,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="kubernetes.naming_strategy.identifier" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
         </service>
