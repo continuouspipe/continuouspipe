@@ -4,6 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
+use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Adapter\Provider;
 use LogStream\LoggerFactory;
@@ -17,32 +18,18 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
     private $clientFactory;
 
     /**
-     * @var EnvironmentTransformer
+     * @var ComponentTransformer
      */
-    private $environmentTransformer;
-
-    /**
-     * @var LoggerFactory
-     */
-    private $loggerFactory;
-
-    /**
-     * @var MessageBus
-     */
-    private $eventBus;
+    private $componentTransformer;
 
     /**
      * @param KubernetesClientFactory $clientFactory
-     * @param EnvironmentTransformer  $environmentTransformer
-     * @param LoggerFactory           $loggerFactory
-     * @param MessageBus              $eventBus
+     * @param ComponentTransformer $componentTransformer
      */
-    public function __construct(KubernetesClientFactory $clientFactory, EnvironmentTransformer $environmentTransformer, LoggerFactory $loggerFactory, MessageBus $eventBus)
+    public function __construct(KubernetesClientFactory $clientFactory, ComponentTransformer $componentTransformer)
     {
         $this->clientFactory = $clientFactory;
-        $this->environmentTransformer = $environmentTransformer;
-        $this->loggerFactory = $loggerFactory;
-        $this->eventBus = $eventBus;
+        $this->componentTransformer = $componentTransformer;
     }
 
     /**
@@ -56,9 +43,7 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 
         return new KubernetesEnvironmentClient(
             $this->clientFactory->getByProvider($provider),
-            $this->environmentTransformer,
-            $this->loggerFactory,
-            $this->eventBus
+            $this->componentTransformer
         );
     }
 }

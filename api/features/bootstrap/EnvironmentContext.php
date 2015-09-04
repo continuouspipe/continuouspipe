@@ -293,4 +293,46 @@ class EnvironmentContext implements Context
             ));
         }
     }
+
+    /**
+     * @Then I should see the component :name in environment :environment
+     */
+    public function iShouldSeeTheComponentInEnvironment($name, $environment)
+    {
+        $environment = $this->getEnvironmentFromListResponse($environment);
+        $components = $environment['components'];
+        $matchingComponents = array_filter($components, function($component) use ($name) {
+            return $component['name'] == $name;
+        });
+
+        if (0 == count($matchingComponents)) {
+            throw new \RuntimeException(sprintf('No component named "%s" found in the environment', $name));
+        }
+    }
+
+    /**
+     * @param string $identifier
+     *
+     * @return array
+     */
+    private function getEnvironmentFromListResponse($identifier)
+    {
+        $response = $this->providerContext->getLastResponseJson();
+        if (!is_array($response)) {
+            throw new \RuntimeException('Expecting an array, got something else');
+        }
+
+        $matchingEnvironments = array_filter($response, function($environment) use ($identifier) {
+            return $environment['identifier'] == $identifier;
+        });
+
+        if (0 == count($matchingEnvironments)) {
+            throw new \RuntimeException(sprintf(
+                'No environment named "%s" found',
+                $identifier
+            ));
+        }
+
+        return current($matchingEnvironments);
+    }
 }

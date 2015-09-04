@@ -100,10 +100,10 @@ class ProviderContext implements Context
     /**
      * @When I request the environment list of provider :name
      */
-    public function iRequestTheEnvironmentListOfProvider($name)
+    public function iRequestTheEnvironmentListOfProvider($name, $type = 'fake')
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/providers/fake/%s/environments', $name)
+            sprintf('/providers/%s/%s/environments', $type, $name)
         ));
     }
 
@@ -147,7 +147,7 @@ class ProviderContext implements Context
     /**
      * @return mixed
      */
-    private function getLastResponseJson()
+    public function getLastResponseJson()
     {
         if (200 !== $this->response->getStatusCode()) {
             echo $this->response->getContent();
