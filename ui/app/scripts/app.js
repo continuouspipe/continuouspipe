@@ -20,8 +20,9 @@ angular
         'ncy-angular-breadcrumb',
         'angular-jwt'
     ])
-    .config(function($urlRouterProvider, $breadcrumbProvider) {
+    .config(function($urlRouterProvider, $breadcrumbProvider, $locationProvider) {
         $urlRouterProvider.otherwise('/flows');
+        $locationProvider.html5Mode(true);
         $breadcrumbProvider.setOptions({
             includeAbstract: true
         });
