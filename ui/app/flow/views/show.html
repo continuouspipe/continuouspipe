@@ -19,8 +19,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div class="col-md-6">
             <div class="card">
                 <div class="card-header ch-alt">
                     <h2>Tasks</h2>
@@ -41,6 +39,60 @@
                     </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header ch-alt">
+                    <h2>Environments</h2>
+                </div>
+
+                <remote-resource resource-name="environments">
+                    <table class="table table-inner table-vmiddle">
+                        <thead>
+                        <tr>
+                            <th width="20"></th>
+                            <th>Name</th>
+                            <th></th>
+                            <th># of components</th>
+                        </tr>
+                        </thead>
+                        <tbody ng-repeat="environment in environments">
+                        <tr class="bgm-alt">
+                            <td width="20">
+                                <ul class="actions">
+                                    <li>
+                                        <a ng-click="environment.showComponents = !environment.showComponents" href="javascript:;">
+                                            <i ng-class="{'md-expand-more': environment.showComponents, 'md-chevron-right': !environment.showComponents}" class="md"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td colspan="2">
+                                <strong>{{ environment.name }}</strong>
+                            </td>
+                            <td>{{ environment.components.length }}</td>
+                        </tr>
+                        <tr ng-repeat="component in environment.components" ng-show="environment.showComponents">
+                            <td width="20"></td>
+                            <td>
+                                <strong>{{ component.name }}</strong>
+                            </td>
+                            <td>
+                                <ul ng-show="component.status.public_endpoints.length" class="m-0 p-l-10">
+                                    <li ng-repeat="endpoint in component.status.public_endpoints">
+                                        <a href="http://{{ endpoint }}">{{ endpoint }}</a>
+                                    </li>
+                                </ul>
+                                <span ng-hide="component.status.public_endpoints.length">No endpoint.</span>
+                            </td>
+                            <td>
+                                <span ng-class="{'c-green': component.status.status == 'healthy', 'c-red': component.status.status == 'unhealthy', 'c-blue': component.status.status === 'unknown'}">{{ component.status.status }}</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </remote-resource>
             </div>
         </div>
     </div>
