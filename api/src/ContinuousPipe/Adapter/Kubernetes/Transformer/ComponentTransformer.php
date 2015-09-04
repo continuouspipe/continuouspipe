@@ -56,16 +56,6 @@ class ComponentTransformer
     }
 
     /**
-     * @param KubernetesObject[] $objects
-     *
-     * @return Component[]
-     */
-    public function getComponentsFromObjectList(array $objects)
-    {
-        return [];
-    }
-
-    /**
      * @param Component $component
      *
      * @return bool

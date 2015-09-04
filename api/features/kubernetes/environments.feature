@@ -10,5 +10,5 @@ Feature:
   Scenario:
     Given I have the application "simple-app-public" deployed
     When I request the environment list of the Kubernetes provider
-    Then I should see the component "api" in environment "simple-app-public"
+    Then I should see the component "app" in environment "simple-app-public"
     And I should see the component "mysql" in environment "simple-app-public"

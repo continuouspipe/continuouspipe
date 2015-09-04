@@ -4,6 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes;
 
 use ContinuousPipe\Adapter\EnvironmentClient;
 use ContinuousPipe\Adapter\EnvironmentNotFound;
+use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
 use ContinuousPipe\Model\Environment;
 use Kubernetes\Client\Client;
@@ -18,18 +19,18 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     private $client;
 
     /**
-     * @var ComponentTransformer
+     * @var NamespaceInspector
      */
-    private $componentTransformer;
+    private $namespaceInspector;
 
     /**
      * @param Client $client
-     * @param ComponentTransformer $componentTransformer
+     * @param NamespaceInspector $namespaceInspector
      */
-    public function __construct(Client $client, ComponentTransformer $componentTransformer)
+    public function __construct(Client $client, NamespaceInspector $namespaceInspector)
     {
         $this->client = $client;
-        $this->componentTransformer = $componentTransformer;
+        $this->namespaceInspector = $namespaceInspector;
     }
 
     /**
@@ -81,15 +82,11 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     {
         $namespaceMetadata = $namespace->getMetadata();
         $namespaceClient = $this->client->getNamespaceClient($namespace);
-        $objects = array_merge(
-            $namespaceClient->getServiceRepository()->findAll()->getServices(),
-            $namespaceClient->getReplicationControllerRepository()->findAll()->getReplicationControllers()
-        );
 
         return new Environment(
             $namespaceMetadata->getName(),
             $namespaceMetadata->getName(),
-            $this->componentTransformer->getComponentsFromObjectList($objects)
+            $this->namespaceInspector->getComponents($namespaceClient)
         );
     }
 }

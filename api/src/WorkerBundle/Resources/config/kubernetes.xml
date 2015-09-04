@@ -24,6 +24,7 @@
         <service id="kubernetes.transformer.environment" class="ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer">
             <argument type="service" id="kubernetes.transformer.component" />
         </service>
+        <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector" />
         <service id="kubernetes.public_endpoint.public_service_voter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter" />
 
         <!-- Kubernetes client -->
@@ -42,7 +43,7 @@
         </service>
         <service id="pipe.adapter.kubernetes.environment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\KubernetesEnvironmentClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
-            <argument type="service" id="kubernetes.transformer.component" />
+            <argument type="service" id="kubernetes.inspector.namespace" />
         </service>
         <service id="pipe.adapter.kubernetes.repository" class="ContinuousPipe\Adapter\Kubernetes\Repository">
             <argument type="service" id="doctrine.orm.entity_manager" />

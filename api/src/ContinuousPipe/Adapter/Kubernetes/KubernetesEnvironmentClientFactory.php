@@ -4,6 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
+use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Adapter\Provider;
@@ -18,18 +19,18 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
     private $clientFactory;
 
     /**
-     * @var ComponentTransformer
+     * @var NamespaceInspector
      */
-    private $componentTransformer;
+    private $namespaceInspector;
 
     /**
      * @param KubernetesClientFactory $clientFactory
-     * @param ComponentTransformer $componentTransformer
+     * @param NamespaceInspector $namespaceInspector
      */
-    public function __construct(KubernetesClientFactory $clientFactory, ComponentTransformer $componentTransformer)
+    public function __construct(KubernetesClientFactory $clientFactory, NamespaceInspector $namespaceInspector)
     {
         $this->clientFactory = $clientFactory;
-        $this->componentTransformer = $componentTransformer;
+        $this->namespaceInspector = $namespaceInspector;
     }
 
     /**
@@ -43,7 +44,7 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 
         return new KubernetesEnvironmentClient(
             $this->clientFactory->getByProvider($provider),
-            $this->componentTransformer
+            $this->namespaceInspector
         );
     }
 }
