@@ -1,8 +1,8 @@
 <?php
 
-namespace ContinuousPipe\Pipe\Listener\PublicEndpointsCreated;
+namespace ContinuousPipe\Pipe\Listener\PublicEndpointsProxied;
 
-use ContinuousPipe\Pipe\Event\PublicEndpointsCreated;
+use ContinuousPipe\Pipe\Event\PublicEndpointsProxied;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 
 class PopulateDeploymentEndpoints
@@ -21,9 +21,9 @@ class PopulateDeploymentEndpoints
     }
 
     /**
-     * @param PublicEndpointsCreated $event
+     * @param PublicEndpointsProxied $event
      */
-    public function notify(PublicEndpointsCreated $event)
+    public function notify(PublicEndpointsProxied $event)
     {
         $context = $event->getDeploymentContext();
 

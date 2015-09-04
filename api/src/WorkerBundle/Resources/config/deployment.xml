@@ -28,13 +28,18 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentSuccessful" />
         </service>
 
-        <service id="pipe.deployment.listemer.public_endpoints.inject_as_variables" class="ContinuousPipe\Pipe\Listener\PublicEndpointsCreated\InjectPublicEndpointsAsVariable">
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsCreated" priority="" />
+        <service id="pipe.deployment.listemer.public_endpoints.inject_as_variables" class="ContinuousPipe\Pipe\Listener\PublicEndpointsProxied\InjectPublicEndpointsAsVariable">
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsProxied" priority="" />
         </service>
-        <service id="pipe.deployment.listemer.public_endpoints.populate_deployment_endpoints" class="ContinuousPipe\Pipe\Listener\PublicEndpointsCreated\PopulateDeploymentEndpoints">
+        <service id="pipe.deployment.listemer.public_endpoints.populate_deployment_endpoints" class="ContinuousPipe\Pipe\Listener\PublicEndpointsProxied\PopulateDeploymentEndpoints">
             <argument type="service" id="pipe.view.deployment_repository" />
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsProxied" />
+        </service>
+
+        <service id="pipe.deployment.listener.public_endpoints.proxy" class="ContinuousPipe\Pipe\Listener\PublicEndpointsCreated\ProxyPublicEndpoints">
+            <argument type="service" id="command_bus" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsCreated" priority="" />
         </service>
 
         <service id="pipe.deployment_saga" class="ContinuousPipe\Pipe\DeploymentSaga">
