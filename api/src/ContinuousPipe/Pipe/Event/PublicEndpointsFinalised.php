@@ -5,7 +5,7 @@ namespace ContinuousPipe\Pipe\Event;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 
-class PublicEndpointsProxied implements DeploymentEvent
+class PublicEndpointsFinalised implements DeploymentEvent
 {
     /**
      * @var DeploymentContext

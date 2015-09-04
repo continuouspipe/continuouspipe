@@ -28,18 +28,13 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentSuccessful" />
         </service>
 
-        <service id="pipe.deployment.listemer.public_endpoints.inject_as_variables" class="ContinuousPipe\Pipe\Listener\PublicEndpointsProxied\InjectPublicEndpointsAsVariable">
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsProxied" priority="" />
+        <service id="pipe.deployment.listemer.public_endpoints.inject_as_variables" class="ContinuousPipe\Pipe\Listener\PublicEndpointsFinalised\InjectPublicEndpointsAsVariable">
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsFinalised" priority="" />
         </service>
-        <service id="pipe.deployment.listemer.public_endpoints.populate_deployment_endpoints" class="ContinuousPipe\Pipe\Listener\PublicEndpointsProxied\PopulateDeploymentEndpoints">
+        <service id="pipe.deployment.listemer.public_endpoints.populate_deployment_endpoints" class="ContinuousPipe\Pipe\Listener\PublicEndpointsFinalised\PopulateDeploymentEndpoints">
             <argument type="service" id="pipe.view.deployment_repository" />
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsProxied" />
-        </service>
-
-        <service id="pipe.deployment.listener.public_endpoints.proxy" class="ContinuousPipe\Pipe\Listener\PublicEndpointsCreated\ProxyPublicEndpoints">
-            <argument type="service" id="command_bus" />
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsCreated" priority="" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsFinalised" />
         </service>
 
         <service id="pipe.deployment_saga" class="ContinuousPipe\Pipe\DeploymentSaga">
@@ -50,6 +45,7 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentStarted" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\EnvironmentPrepared" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsFinalised" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\ComponentsCreated" />
         </service>
     </services>

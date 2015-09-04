@@ -1,17 +1,17 @@
 <?php
 
-namespace ContinuousPipe\Pipe\Listener\PublicEndpointsProxied;
+namespace ContinuousPipe\Pipe\Listener\PublicEndpointsFinalised;
 
 use ContinuousPipe\Model\Component\EnvironmentVariable;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
-use ContinuousPipe\Pipe\Event\PublicEndpointsProxied;
+use ContinuousPipe\Pipe\Event\PublicEndpointsFinalised;
 
 class InjectPublicEndpointsAsVariable
 {
     /**
-     * @param PublicEndpointsProxied $event
+     * @param PublicEndpointsFinalised $event
      */
-    public function notify(PublicEndpointsProxied $event)
+    public function notify(PublicEndpointsFinalised $event)
     {
         $context = $event->getDeploymentContext();
         $components = $context->getEnvironment()->getComponents();

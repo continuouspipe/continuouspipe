@@ -6,9 +6,14 @@
 
     <services>
 
-        <service id="pipe.adapter.httplabs.proxy_public_endpoints" class="ContinuousPipe\Adapter\HttpLabs\Handler\ProxyPublicEndpointsHandler">
-            <argument type="service" id="event_bus" />
-            <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\ProxyPublicEndpointsCommand" />
+        <service id="pipe.adapter.httplabs.proxy_public_endpoints"
+                 class="ContinuousPipe\Adapter\HttpLabs\Handler\ProxyPublicEndpointsHandler">
+            <argument type="service" id="event_bus"/>
+            <argument type="service" id="pipe.adapter.httplabs.proxyier"/>
+            <tag name="command_handler" handles="ContinuousPipe\Pipe\Command\ProxyPublicEndpointsCommand"/>
+        </service>
+
+        <service id="pipe.adapter.httplabs.proxyier" class="ContinuousPipe\Adapter\HttpLabs\EndpointProxier">
         </service>
 
     </services>

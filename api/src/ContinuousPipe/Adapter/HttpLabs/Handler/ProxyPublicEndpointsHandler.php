@@ -2,15 +2,13 @@
 
 namespace ContinuousPipe\Adapter\HttpLabs\Handler;
 
-use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
+use ContinuousPipe\Adapter\HttpLabs\EndpointProxier;
 use ContinuousPipe\Pipe\Command\ProxyPublicEndpointsCommand;
-use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
-use ContinuousPipe\Pipe\Event\PublicEndpointsProxied;
-use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
+use ContinuousPipe\Pipe\Event\PublicEndpointsFinalised;
 use SimpleBus\Message\Bus\MessageBus;
 
-class ProxyPublicEndpointsHandler implements DeploymentHandler
+class ProxyPublicEndpointsHandler
 {
     /**
      * @var MessageBus
@@ -18,11 +16,18 @@ class ProxyPublicEndpointsHandler implements DeploymentHandler
     private $eventBus;
 
     /**
-     * @param MessageBus $eventBus
+     * @var EndpointProxier
      */
-    public function __construct(MessageBus $eventBus)
+    private $proxier;
+
+    /**
+     * @param MessageBus $eventBus
+     * @param EndpointProxier $proxier
+     */
+    public function __construct(MessageBus $eventBus, EndpointProxier $proxier)
     {
         $this->eventBus = $eventBus;
+        $this->proxier = $proxier;
     }
 
     /**
@@ -30,19 +35,13 @@ class ProxyPublicEndpointsHandler implements DeploymentHandler
      */
     public function handle(ProxyPublicEndpointsCommand $command)
     {
-        $this->eventBus->handle(
-            new PublicEndpointsProxied($command->getContext(), [
-                new PublicEndpoint('api', 'badger-carrot-5678.httplabs.io'),
-                new PublicEndpoint('ui', 'monkey-potato-5678.httplabs.io')
-            ])
+        $proxiedEndpoints = array_map(
+            function (PublicEndpoint $endpoint) {
+                return new PublicEndpoint($endpoint->getName(), $this->proxier->createProxy($endpoint));
+            },
+            $command->getEndpoints()
         );
-    }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function supports(DeploymentContext $context)
-    {
-        return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
+        $this->eventBus->handle(new PublicEndpointsFinalised($command->getContext(), $proxiedEndpoints));
     }
 }
