@@ -1,12 +1,15 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Model\Environment;
+use ContinuousPipe\River\Tests\Pipe\FakeClient;
 use Rhumsaa\Uuid\Uuid;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\FlowContext as RiverFlowContext;
 use ContinuousPipe\User\User;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
@@ -36,33 +39,48 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var Kernel
      */
     private $kernel;
+
     /**
      * @var TokenStorageInterface
      */
     private $tokenStorage;
+
     /**
      * @var InMemoryCodeRepositoryRepository
      */
     private $codeRepositoryRepository;
+
     /**
      * @var InMemoryAuthenticatorClient
      */
     private $authenticatorClient;
 
     /**
-     * @param Kernel                           $kernel
-     * @param TokenStorageInterface            $tokenStorage
-     * @param FlowRepository                   $flowRepository
-     * @param InMemoryCodeRepositoryRepository $codeRepositoryRepository
-     * @param InMemoryAuthenticatorClient      $authenticatorClient
+     * @var FakeClient
      */
-    public function __construct(Kernel $kernel, TokenStorageInterface $tokenStorage, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient)
+    private $pipeClient;
+
+    /**
+     * @var Response|null
+     */
+    private $response;
+
+    /**
+     * @param Kernel $kernel
+     * @param TokenStorageInterface $tokenStorage
+     * @param FlowRepository $flowRepository
+     * @param InMemoryCodeRepositoryRepository $codeRepositoryRepository
+     * @param InMemoryAuthenticatorClient $authenticatorClient
+     * @param FakeClient $pipeClient
+     */
+    public function __construct(Kernel $kernel, TokenStorageInterface $tokenStorage, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient, FakeClient $pipeClient)
     {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
         $this->tokenStorage = $tokenStorage;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
         $this->authenticatorClient = $authenticatorClient;
+        $this->pipeClient = $pipeClient;
     }
 
     /**
@@ -150,11 +168,79 @@ EOF;
     }
 
     /**
+     * @Given I have a flow with UUID :uuid
+     */
+    public function iHaveAFlowWithUuid($uuid)
+    {
+        $this->createFlow(Uuid::fromString($uuid));
+    }
+
+    /**
+     * @Given I have the a deployed environment named :name
+     */
+    public function iHaveTheADeployedEnvironmentNamed($name)
+    {
+        $this->pipeClient->addEnvironment(new Environment($name, $name));
+    }
+
+    /**
+     * @When I request the list of deployed environments
+     */
+    public function iRequestTheListOfDeployedEnvironments()
+    {
+        $url = sprintf('/flows/%s/environments', (string) $this->flowUuid);
+        $this->response = $this->kernel->handle(Request::create($url, 'GET'));
+
+        if ($this->response->getStatusCode() != 200) {
+            throw new \RuntimeException(sprintf(
+                'Expected response code 200, but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
+     * @Then I should see the environment :name
+     */
+    public function iShouldSeeTheEnvironment($name)
+    {
+        $environments = json_decode($this->response->getContent(), true);
+        $matchingEnvironments = array_filter($environments, function(array $environment) use ($name) {
+            return $environment['name'] == $name;
+        });
+
+        if (0 == count($matchingEnvironments)) {
+            throw new \RuntimeException(sprintf(
+                'No environment named "%s" found',
+                $name
+            ));
+        }
+    }
+
+    /**
+     * @Then I should not see the environment :name
+     */
+    public function iShouldNotSeeTheEnvironment($name)
+    {
+        $environments = json_decode($this->response->getContent(), true);
+        $matchingEnvironments = array_filter($environments, function(array $environment) use ($name) {
+            return $environment['name'] == $name;
+        });
+
+        if (0 != count($matchingEnvironments)) {
+            throw new \RuntimeException(sprintf(
+                'Environment named "%s" found',
+                $name
+            ));
+        }
+    }
+
+    /**
      * @return Flow
      */
-    public function createFlow()
+    public function createFlow(Uuid $uuid = null)
     {
-        $context = $this->createFlowContext();
+        $context = $this->createFlowContext($uuid);
 
         return $this->createFlowWithContextAndTasks($context, [
             new Flow\Task('build'),
@@ -179,9 +265,9 @@ EOF;
      *
      * @return RiverFlowContext
      */
-    private function createFlowContextWithCodeRepository(CodeRepository $codeRepository)
+    private function createFlowContextWithCodeRepository(CodeRepository $codeRepository, Uuid $uuid = null)
     {
-        $this->flowUuid = Uuid::uuid1();
+        $this->flowUuid = $uuid ?: Uuid::uuid1();
         $user = new User('samuel.roze@gmail.com');
 
         $this->codeRepositoryRepository->add($codeRepository);
@@ -221,10 +307,10 @@ EOF;
     /**
      * @return RiverFlowContext
      */
-    private function createFlowContext()
+    private function createFlowContext(Uuid $uuid = null)
     {
         return $this->createFlowContextWithCodeRepository(new CodeRepository\GitHub\GitHubCodeRepository(
             new Repository('foo', 'bar')
-        ));
+        ), $uuid);
     }
 }

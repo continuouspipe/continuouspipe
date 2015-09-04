@@ -87,6 +87,9 @@ jms_serializer:
             ContinuousPipeBuilder:
                 namespace_prefix: "ContinuousPipe\\Builder"
                 path: "%kernel.root_dir%/../vendor/continuous-pipe/builder-model/src/Resources/serializer"
+            ContinuousPipeModel:
+                namespace_prefix: "ContinuousPipe\\Model"
+                path: "%kernel.root_dir%/../vendor/continuous-pipe/model/src/Resources/serializer"
 
 lexik_jwt_authentication:
     private_key_path: %jwt_private_key_path%

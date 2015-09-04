@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Tests\Pipe;
 
+use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\User\User;
@@ -9,6 +10,11 @@ use Rhumsaa\Uuid\Uuid;
 
 class FakeClient implements Client
 {
+    /**
+     * @var Environment[]
+     */
+    private $environments = [];
+
     /**
      * {@inheritdoc}
      */
@@ -26,5 +32,21 @@ class FakeClient implements Client
      */
     public function deleteEnvironment(DeploymentRequest\Target $target, User $user)
     {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnvironments($providerName, User $user)
+    {
+        return $this->environments;
+    }
+
+    /**
+     * @param Environment $environment
+     */
+    public function addEnvironment(Environment $environment)
+    {
+        $this->environments[] = $environment;
     }
 }

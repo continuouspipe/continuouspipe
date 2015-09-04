@@ -28,9 +28,9 @@ class CommentDeploymentEnvironmentEndpoints
     private $eventStore;
 
     /**
-     * @param TideRepository $tideRepository
+     * @param TideRepository                $tideRepository
      * @param PullRequestDeploymentNotifier $pullRequestDeploymentNotifier
-     * @param EventStore $eventStore
+     * @param EventStore                    $eventStore
      */
     public function __construct(TideRepository $tideRepository, PullRequestDeploymentNotifier $pullRequestDeploymentNotifier, EventStore $eventStore)
     {

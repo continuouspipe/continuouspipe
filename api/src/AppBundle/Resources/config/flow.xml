@@ -5,6 +5,13 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="river.flow.environment_client" class="ContinuousPipe\River\Flow\EnvironmentClient">
+            <argument type="service" id="river.pipe_client" />
+            <argument type="service" id="river.pipe.provider_name_resolver" />
+            <argument type="service" id="security.user_context" />
+            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
+        </service>
+
         <service id="river.repository.flow" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="security.user_repository" />

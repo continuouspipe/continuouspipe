@@ -19,7 +19,7 @@ class PullRequestOpened
 
     /**
      * @param PullRequestEvent $event
-     * @param CodeReference $codeReference
+     * @param CodeReference    $codeReference
      */
     public function __construct(PullRequestEvent $event, CodeReference $codeReference)
     {

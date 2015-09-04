@@ -4,6 +4,7 @@ namespace ContinuousPipe\Pipe;
 
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\User\User;
 
 interface Client
@@ -18,7 +19,17 @@ interface Client
 
     /**
      * @param DeploymentRequest\Target $target
-     * @param User $user
+     * @param User                     $user
      */
     public function deleteEnvironment(DeploymentRequest\Target $target, User $user);
+
+    /**
+     * List environments for that given flow.
+     *
+     * @param string $providerName
+     * @param User   $user
+     *
+     * @return \ContinuousPipe\Model\Environment[]
+     */
+    public function getEnvironments($providerName, User $user);
 }

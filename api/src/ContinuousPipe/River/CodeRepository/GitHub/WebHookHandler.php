@@ -37,10 +37,10 @@ class WebHookHandler
     private $tideRepository;
 
     /**
-     * @param TideFactory                   $tideFactory
-     * @param CodeReferenceResolver         $codeReferenceResolver
-     * @param MessageBus                    $eventBus
-     * @param TideRepository                $tideRepository
+     * @param TideFactory           $tideFactory
+     * @param CodeReferenceResolver $codeReferenceResolver
+     * @param MessageBus            $eventBus
+     * @param TideRepository        $tideRepository
      */
     public function __construct(
         TideFactory $tideFactory,
@@ -107,7 +107,7 @@ class WebHookHandler
 
         if ($event->getAction() == PullRequestEvent::ACTION_OPENED) {
             $this->eventBus->handle(new PullRequestOpened($event, $codeReference));
-        } else if ($event->getAction() == PullRequestEvent::ACTION_CLOSED) {
+        } elseif ($event->getAction() == PullRequestEvent::ACTION_CLOSED) {
             $this->eventBus->handle(new PullRequestClosed($event, $codeReference));
         }
     }

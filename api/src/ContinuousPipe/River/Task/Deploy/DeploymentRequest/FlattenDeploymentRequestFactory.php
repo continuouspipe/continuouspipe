@@ -27,8 +27,8 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
     private $environmentNamingStrategy;
 
     /**
-     * @param DockerComposeReader $dockerComposeReader
-     * @param UrlGeneratorInterface $urlGenerator
+     * @param DockerComposeReader       $dockerComposeReader
+     * @param UrlGeneratorInterface     $urlGenerator
      * @param EnvironmentNamingStrategy $environmentNamingStrategy
      */
     public function __construct(DockerComposeReader $dockerComposeReader, UrlGeneratorInterface $urlGenerator, EnvironmentNamingStrategy $environmentNamingStrategy)
@@ -48,7 +48,6 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
             'tideUuid' => $context->getTideUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-
         return new DeploymentRequest(
             new DeploymentRequest\Target(
                 $this->getEnvironmentName($context),
@@ -64,6 +63,7 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
 
     /**
      * @param DeployContext $context
+     *
      * @return string
      */
     private function getEnvironmentName(DeployContext $context)

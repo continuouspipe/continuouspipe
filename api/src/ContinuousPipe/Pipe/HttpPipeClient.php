@@ -2,12 +2,12 @@
 
 namespace ContinuousPipe\Pipe;
 
+use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Message\Response;
 use GuzzleHttp\Message\ResponseInterface;
 use JMS\Serializer\Serializer;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
@@ -81,6 +81,26 @@ class HttpPipeClient implements Client
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getEnvironments($providerName, User $user)
+    {
+        $url = sprintf(
+            $this->baseUrl.'/providers/%s/environments',
+            $providerName
+        );
+
+        $response = $this->client->get($url, [
+            'headers' => $this->getRequestHeaders($user),
+        ]);
+
+        $contents = $this->getResponseContents($response);
+        $environments = $this->serializer->deserialize($contents, 'array<'.Environment::class.'>', 'json');
+
+        return $environments;
+    }
+
+    /**
      * @param User $user
      *
      * @return array
@@ -97,6 +117,7 @@ class HttpPipeClient implements Client
 
     /**
      * @param ResponseInterface $response
+     *
      * @return string
      */
     private function getResponseContents(ResponseInterface $response)

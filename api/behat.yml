@@ -19,13 +19,14 @@ default:
                     - @river.code_status_updater
                     - @river.github.pull_request_deployment_notifier
                     - @river.github.pull_request_resolver
-                    - @river.pipe_client.traceable
+                    - @river.pipe_client
                 - FlowContext:
                     - @kernel
                     - @security.token_storage
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
                     - @security.authenticator.client
+                    - @river.pipe_client.fake
                 - Task\BuildContext:
                     - @river.event_store
                     - @event_bus

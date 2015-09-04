@@ -163,7 +163,7 @@ class BuildTask extends EventDrivenTask
     private function isBuildSuccessful(BuilderBuild $build)
     {
         $buildSuccessfulEvents = $this->getEventsOfType(BuildSuccessful::class);
-        $matchingEvents = array_filter($buildSuccessfulEvents, function(BuildSuccessful $event) use ($build) {
+        $matchingEvents = array_filter($buildSuccessfulEvents, function (BuildSuccessful $event) use ($build) {
             return $event->getBuild()->getUuid() == $build->getUuid();
         });
 

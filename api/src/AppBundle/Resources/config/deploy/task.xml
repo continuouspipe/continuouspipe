@@ -21,6 +21,7 @@
             <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
             <argument>%pipe_base_url%</argument>
         </service>
+        <service id="river.pipe.provider_name_resolver" class="ContinuousPipe\River\Pipe\ProviderNameResolver" />
 
         <service id="river.task.deploy.docker_compose.replace_build_by_images_transformer" class="ContinuousPipe\River\Task\Deploy\DockerCompose\Transformer\ReplaceBuildByFinalImagesTransformer" />
         <service id="river.task.deploy.docker_compose.code_repository_reader" class="ContinuousPipe\River\Task\Deploy\DockerCompose\CodeRepositoryReader">

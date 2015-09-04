@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Tests\Pipe;
 
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\User\User;
 
@@ -50,5 +49,13 @@ class TraceableClient implements Client
     public function getDeletions()
     {
         return $this->deletions;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnvironments($providerName, User $user)
+    {
+        return $this->client->getEnvironments($providerName, $user);
     }
 }

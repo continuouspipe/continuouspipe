@@ -3,11 +3,8 @@
 namespace ContinuousPipe\River\EventListener\GitHub\PullRequestClosed;
 
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\River\ArrayContext;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
-use ContinuousPipe\River\Flow\Task;
-use ContinuousPipe\River\Task\Deploy\DeployContext;
-use ContinuousPipe\River\Task\Deploy\DeployTask;
+use ContinuousPipe\River\Pipe\ProviderNameResolver;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
@@ -30,15 +27,22 @@ class DeleteRelatedEnvironment
     private $environmentNamingStrategy;
 
     /**
-     * @param Client $client
-     * @param TideRepository $tideRepository
-     * @param EnvironmentNamingStrategy $environmentNamingStrategy
+     * @var ProviderNameResolver
      */
-    public function __construct(Client $client, TideRepository $tideRepository, EnvironmentNamingStrategy $environmentNamingStrategy)
+    private $providerNameResolver;
+
+    /**
+     * @param Client                    $client
+     * @param TideRepository            $tideRepository
+     * @param EnvironmentNamingStrategy $environmentNamingStrategy
+     * @param ProviderNameResolver      $providerNameResolver
+     */
+    public function __construct(Client $client, TideRepository $tideRepository, EnvironmentNamingStrategy $environmentNamingStrategy, ProviderNameResolver $providerNameResolver)
     {
         $this->client = $client;
         $this->tideRepository = $tideRepository;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
+        $this->providerNameResolver = $providerNameResolver;
     }
 
     /**
@@ -71,37 +75,7 @@ class DeleteRelatedEnvironment
                 $tide->getFlow()->getUuid(),
                 $tide->getCodeReference()
             ),
-            $this->getProviderName($tide)
+            $this->providerNameResolver->getProviderName($tide->getFlow())
         );
-    }
-
-    /**
-     * @param Tide $tide
-     * @return string
-     */
-    private function getProviderName(Tide $tide)
-    {
-        $deployTask = $this->getDeployTask($tide);
-        $context = new DeployContext(ArrayContext::fromRaw($deployTask->getContext()));
-
-        return $context->getProviderName();
-    }
-
-    /**
-     * @param Tide $tide
-     * @throws \LogicException
-     * @return Task
-     */
-    private function getDeployTask(Tide $tide)
-    {
-        $deployTasks = array_filter($tide->getFlow()->getTasks(), function(Task $task) {
-            return $task->getName() == DeployTask::NAME;
-        });
-
-        if (0 == count($deployTasks)) {
-            throw new \LogicException('Deploy task not found');
-        }
-
-        return current($deployTasks);
     }
 }

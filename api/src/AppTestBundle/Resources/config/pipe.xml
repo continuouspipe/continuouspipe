@@ -5,10 +5,10 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.pipe_client" class="ContinuousPipe\River\Tests\Pipe\FakeClient" />
+        <service id="river.pipe_client.fake" class="ContinuousPipe\River\Tests\Pipe\FakeClient" />
 
-        <service id="river.pipe_client.traceable" class="ContinuousPipe\River\Tests\Pipe\TraceableClient" decorates="river.pipe_client">
-            <argument type="service" id="river.pipe_client.traceable.inner" />
+        <service id="river.pipe_client" class="ContinuousPipe\River\Tests\Pipe\TraceableClient">
+            <argument type="service" id="river.pipe_client.fake" />
         </service>
     </services>
 </container>
