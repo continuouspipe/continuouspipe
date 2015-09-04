@@ -6,8 +6,13 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableReplicationControllerRepository;
 use Kubernetes\Client\Exception\ReplicationControllerNotFound;
+use Kubernetes\Client\Model\KeyValueObjectList;
+use Kubernetes\Client\Model\Label;
 use Kubernetes\Client\Model\ObjectMetadata;
+use Kubernetes\Client\Model\Pod;
+use Kubernetes\Client\Model\PodSpecification;
 use Kubernetes\Client\Model\ReplicationController;
+use Kubernetes\Client\Repository\PodRepository;
 
 class ReplicationControllerContext implements Context
 {
@@ -17,11 +22,18 @@ class ReplicationControllerContext implements Context
     private $replicationControllerRepository;
 
     /**
-     * @param TraceableReplicationControllerRepository $replicationControllerRepository
+     * @var PodRepository
      */
-    public function __construct(TraceableReplicationControllerRepository $replicationControllerRepository)
+    private $podRepository;
+
+    /**
+     * @param TraceableReplicationControllerRepository $replicationControllerRepository
+     * @param PodRepository $podRepository
+     */
+    public function __construct(TraceableReplicationControllerRepository $replicationControllerRepository, PodRepository $podRepository)
     {
         $this->replicationControllerRepository = $replicationControllerRepository;
+        $this->podRepository = $podRepository;
     }
 
     /**
@@ -97,6 +109,39 @@ class ReplicationControllerContext implements Context
                         $expectedVariable['value']
                     ));
                 }
+            }
+        }
+    }
+
+    /**
+     * @Given pods are not running for the replication controller :name
+     */
+    public function podsAreNotRunningForTheReplicationController($name)
+    {
+        $pods = $this->podRepository->findByReplicationController($this->replicationControllerRepository->findOneByName($name));
+
+        foreach ($pods as $pod) {
+            $this->podRepository->delete($pod);
+        }
+    }
+
+    /**
+     * @Given pods are running for the replication controller :name
+     */
+    public function podsAreRunningForTheReplicationController($name)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($name);
+        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
+
+        if (0 == count($pods)) {
+            $selector = $replicationController->getSpecification()->getSelector();
+            $counts = $replicationController->getSpecification()->getReplicas();
+
+            for ($i = 0; $i < $counts; $i++) {
+                $this->podRepository->create(new Pod(
+                    new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
+                    $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()
+                ));
             }
         }
     }

@@ -46,6 +46,11 @@ class EnvironmentContext implements Context
     private $lastDeploymentUuid;
 
     /**
+     * @var string
+     */
+    private $deploymentEnvironmentName;
+
+    /**
      * @var MessageBus
      */
     private $eventBus;
@@ -170,6 +175,7 @@ class EnvironmentContext implements Context
         }
 
         $this->lastDeploymentUuid = Uuid::fromString($deployment['uuid']);
+        $this->deploymentEnvironmentName = $environmentName;
     }
 
     /**
@@ -295,18 +301,39 @@ class EnvironmentContext implements Context
     }
 
     /**
-     * @Then I should see the component :name in environment :environment
+     * @Then I should see the component :name
      */
-    public function iShouldSeeTheComponentInEnvironment($name, $environment)
+    public function iShouldSeeTheComponentInEnvironment($name)
     {
-        $environment = $this->getEnvironmentFromListResponse($environment);
-        $components = $environment['components'];
-        $matchingComponents = array_filter($components, function($component) use ($name) {
-            return $component['name'] == $name;
-        });
+        $this->getComponentFromListResponse($name);
+    }
 
-        if (0 == count($matchingComponents)) {
-            throw new \RuntimeException(sprintf('No component named "%s" found in the environment', $name));
+    /**
+     * @Then the status of the component :name should contain the public endpoint :endpoint
+     */
+    public function theStatusOfTheComponentShouldContainThePublicEndpoint($name, $endpoint)
+    {
+        $component = $this->getComponentFromListResponse($name);
+
+        if ($endpoint != $component['status']['public_endpoints'][0]) {
+            throw new \RuntimeException('Public endpoint was not found');
+        }
+    }
+
+    /**
+     * @Then the status of the component :name should be :status
+     */
+    public function theStatusOfTheComponentShouldBe($name, $status)
+    {
+        $component = $this->getComponentFromListResponse($name);
+        $foundStatus = $component['status']['status'];
+
+        if ($foundStatus != $status) {
+            throw new \RuntimeException(sprintf(
+                'Found status "%s" while expecting "%s"',
+                $foundStatus,
+                $status
+            ));
         }
     }
 
@@ -315,8 +342,9 @@ class EnvironmentContext implements Context
      *
      * @return array
      */
-    private function getEnvironmentFromListResponse($identifier)
+    private function getEnvironmentFromListResponse($identifier = null)
     {
+        $identifier = $identifier ?: $this->deploymentEnvironmentName;
         $response = $this->providerContext->getLastResponseJson();
         if (!is_array($response)) {
             throw new \RuntimeException('Expecting an array, got something else');
@@ -334,5 +362,24 @@ class EnvironmentContext implements Context
         }
 
         return current($matchingEnvironments);
+    }
+
+    /**
+     * @param string $name
+     * @return array
+     */
+    private function getComponentFromListResponse($name)
+    {
+        $environment = $this->getEnvironmentFromListResponse();
+        $components = $environment['components'];
+        $matchingComponents = array_filter($components, function($component) use ($name) {
+            return $component['name'] == $name;
+        });
+
+        if (0 == count($matchingComponents)) {
+            throw new \RuntimeException(sprintf('No component named "%s" found in the environment', $name));
+        }
+
+        return current($matchingComponents);
     }
 }

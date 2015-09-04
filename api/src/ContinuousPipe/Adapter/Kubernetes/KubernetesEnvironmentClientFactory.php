@@ -5,11 +5,7 @@ namespace ContinuousPipe\Adapter\Kubernetes;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
-use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
-use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Adapter\Provider;
-use LogStream\LoggerFactory;
-use SimpleBus\Message\Bus\MessageBus;
 
 class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 {
@@ -25,7 +21,7 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 
     /**
      * @param KubernetesClientFactory $clientFactory
-     * @param NamespaceInspector $namespaceInspector
+     * @param NamespaceInspector      $namespaceInspector
      */
     public function __construct(KubernetesClientFactory $clientFactory, NamespaceInspector $namespaceInspector)
     {

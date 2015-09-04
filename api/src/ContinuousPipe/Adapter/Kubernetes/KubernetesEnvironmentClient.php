@@ -5,7 +5,6 @@ namespace ContinuousPipe\Adapter\Kubernetes;
 use ContinuousPipe\Adapter\EnvironmentClient;
 use ContinuousPipe\Adapter\EnvironmentNotFound;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
-use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
 use ContinuousPipe\Model\Environment;
 use Kubernetes\Client\Client;
 use Kubernetes\Client\Exception\NamespaceNotFound;
@@ -24,7 +23,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     private $namespaceInspector;
 
     /**
-     * @param Client $client
+     * @param Client             $client
      * @param NamespaceInspector $namespaceInspector
      */
     public function __construct(Client $client, NamespaceInspector $namespaceInspector)

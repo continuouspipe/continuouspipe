@@ -7,8 +7,26 @@ Feature:
     Given I am authenticated
     And I have a valid Kubernetes provider
 
-  Scenario:
-    Given I have the application "simple-app-public" deployed
+  Scenario: I get the list of running components
+    Given I have the application "simple-app" deployed
     When I request the environment list of the Kubernetes provider
-    Then I should see the component "app" in environment "simple-app-public"
-    And I should see the component "mysql" in environment "simple-app-public"
+    Then I should see the component "app"
+    And I should see the component "mysql"
+
+  Scenario:
+    Given I have the application "simple-app" deployed
+    And pods are not running for the replication controller "app"
+    When I request the environment list of the Kubernetes provider
+    Then the status of the component "app" should be "unhealthy"
+
+  Scenario:
+    Given I have the application "simple-app" deployed
+    And pods are running for the replication controller "app"
+    When I request the environment list of the Kubernetes provider
+    Then the status of the component "app" should be "healthy"
+
+  Scenario:
+    Given I have the application "simple-app" deployed
+    And the service "app" have the public endpoint "1.2.3.4"
+    When I request the environment list of the Kubernetes provider
+    Then the status of the component "app" should contain the public endpoint "1.2.3.4"

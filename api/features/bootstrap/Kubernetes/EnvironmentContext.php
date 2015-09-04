@@ -31,7 +31,7 @@ class EnvironmentContext implements Context
      */
     public function iHaveTheApplicationDeployed($name)
     {
-        $this->environmentContext->sendDeploymentRequest('kubernetes/'.ProviderContext::DEFAULT_PROVIDER_NAME, $name);
+        $this->environmentContext->sendDeploymentRequest('kubernetes/'.ProviderContext::DEFAULT_PROVIDER_NAME, $name, $name);
     }
 
     /**
