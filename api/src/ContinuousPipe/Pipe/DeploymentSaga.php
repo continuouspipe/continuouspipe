@@ -6,7 +6,6 @@ use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
 use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
 use ContinuousPipe\Pipe\Command\ProxyPublicEndpointsCommand;
-use ContinuousPipe\Pipe\Environment\ProxiedPublicEndpoint;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\Event\DeploymentStarted;
@@ -75,7 +74,7 @@ class DeploymentSaga
      */
     private function handlePublicEndpointsCreated(PublicEndpointsCreated $event)
     {
-        if ($this->hasProxiedEndpoints($event)) {
+        if ($event->hasEndpointsToProxy()) {
             $this->commandBus->handle(
                 new ProxyPublicEndpointsCommand($event->getDeploymentContext(), $event->getEndpoints())
             );
@@ -85,22 +84,6 @@ class DeploymentSaga
 
         $this->eventBus->handle(
             new PublicEndpointsFinalised($event->getDeploymentContext(), $event->getEndpoints())
-        );
-    }
-
-    /**
-     * @param PublicEndpointsCreated $event
-     * @return mixed
-     */
-    private function hasProxiedEndpoints(PublicEndpointsCreated $event)
-    {
-        return array_reduce(
-            $event->getDeploymentContext()->getEnvironment()->getComponents(),
-            function ($hasProxiedEndpoints, $component) {
-                $labels = $component->getLabels();
-                return isset($labels['com.continuouspipe.http-labs']) ? : $hasProxiedEndpoints;
-            },
-            false
         );
     }
 }
