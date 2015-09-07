@@ -6,12 +6,11 @@ use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesDeploymentContext;
+use ContinuousPipe\Adapter\Kubernetes\Naming\NamingStrategy;
 use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
-use Kubernetes\Client\Model\KubernetesNamespace;
-use Kubernetes\Client\Model\ObjectMetadata;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -27,21 +26,29 @@ class PrepareEnvironmentHandler implements DeploymentHandler
      * @var MessageBus
      */
     private $eventBus;
+
     /**
      * @var LoggerFactory
      */
     private $loggerFactory;
 
     /**
+     * @var NamingStrategy
+     */
+    private $namingStrategy;
+
+    /**
      * @param KubernetesClientFactory $clientFactory
      * @param MessageBus              $eventBus
      * @param LoggerFactory           $loggerFactory
+     * @param NamingStrategy          $namingStrategy
      */
-    public function __construct(KubernetesClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory)
+    public function __construct(KubernetesClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, NamingStrategy $namingStrategy)
     {
         $this->clientFactory = $clientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
+        $this->namingStrategy = $namingStrategy;
     }
 
     /**
@@ -54,10 +61,10 @@ class PrepareEnvironmentHandler implements DeploymentHandler
         $environment = $context->getEnvironment();
 
         $namespaceRepository = $this->clientFactory->getByProvider($context->getProvider())->getNamespaceRepository();
-        $namespaceName = $environment->getIdentifier();
+        $namespace = $this->namingStrategy->getEnvironmentNamespace($environment);
+        $namespaceName = $namespace->getMetadata()->getName();
 
         if (!$namespaceRepository->exists($namespaceName)) {
-            $namespace = new KubernetesNamespace(new ObjectMetadata($environment->getIdentifier()));
             $namespace = $namespaceRepository->create($namespace);
             $logger->append(new Text(sprintf('Created new namespace "%s"', $namespaceName)));
 

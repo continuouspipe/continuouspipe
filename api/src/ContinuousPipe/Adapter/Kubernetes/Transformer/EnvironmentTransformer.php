@@ -12,6 +12,9 @@ class EnvironmentTransformer
      */
     private $componentTransformer;
 
+    /**
+     * @param ComponentTransformer $componentTransformer
+     */
     public function __construct(ComponentTransformer $componentTransformer)
     {
         $this->componentTransformer = $componentTransformer;

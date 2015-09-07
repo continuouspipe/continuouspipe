@@ -58,6 +58,7 @@ class EnvironmentController extends Controller
     /**
      * @param string $type
      * @param string $identifier
+     *
      * @return \ContinuousPipe\Adapter\EnvironmentClient
      */
     private function getEnvironmentClient($type, $identifier)

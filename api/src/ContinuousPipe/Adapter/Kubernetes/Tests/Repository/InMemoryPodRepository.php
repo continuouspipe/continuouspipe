@@ -28,7 +28,7 @@ class InMemoryPodRepository implements PodRepository
      */
     public function findByLabels(array $labels)
     {
-        return array_values(array_filter($this->pods, function (Pod $pod) use ($labels) {
+        $pods = array_values(array_filter($this->pods, function (Pod $pod) use ($labels) {
             $podLabels = $pod->getMetadata()->getLabelsAsAssociativeArray();
 
             foreach ($labels as $key => $value) {
@@ -39,6 +39,8 @@ class InMemoryPodRepository implements PodRepository
 
             return true;
         }));
+
+        return PodList::fromPods($pods);
     }
 
     /**
