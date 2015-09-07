@@ -24,7 +24,10 @@
         <service id="kubernetes.transformer.environment" class="ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer">
             <argument type="service" id="kubernetes.transformer.component" />
         </service>
-        <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector" />
+        <service id="kubernetes.reverse_transformer.component" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ComponentTransformer" />
+        <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector">
+            <argument type="service" id="kubernetes.reverse_transformer.component" />
+        </service>
         <service id="kubernetes.public_endpoint.public_service_voter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter" />
 
         <!-- Kubernetes client -->
