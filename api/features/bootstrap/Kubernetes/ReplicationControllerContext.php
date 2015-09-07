@@ -6,11 +6,14 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableReplicationControllerRepository;
 use Kubernetes\Client\Exception\ReplicationControllerNotFound;
+use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\Label;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodSpecification;
+use Kubernetes\Client\Model\PodStatus;
+use Kubernetes\Client\Model\PodStatusCondition;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Repository\PodRepository;
 
@@ -140,7 +143,38 @@ class ReplicationControllerContext implements Context
             for ($i = 0; $i < $counts; $i++) {
                 $this->podRepository->create(new Pod(
                     new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
-                    $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()
+                    $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification(),
+                    new PodStatus('Ready', '10.240.162.87', '10.132.1.47', [
+                        new PodStatusCondition('Ready', true)
+                    ], [
+                        new ContainerStatus($name, 1, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, true)
+                    ])
+                ));
+            }
+        }
+    }
+
+    /**
+     * @Given pods are running but not ready for the replication controller :name
+     */
+    public function podsAreRunningButNotReadyForTheReplicationController($name)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($name);
+        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
+
+        if (0 == count($pods)) {
+            $selector = $replicationController->getSpecification()->getSelector();
+            $counts = $replicationController->getSpecification()->getReplicas();
+
+            for ($i = 0; $i < $counts; $i++) {
+                $this->podRepository->create(new Pod(
+                    new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
+                    $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification(),
+                    new PodStatus('Ready', '10.240.162.87', '10.132.1.47', [
+                        new PodStatusCondition('Ready', false)
+                    ], [
+                        new ContainerStatus($name, 13, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, false)
+                    ])
                 ));
             }
         }

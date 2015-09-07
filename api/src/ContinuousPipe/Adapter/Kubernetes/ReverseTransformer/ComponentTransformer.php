@@ -5,6 +5,8 @@ namespace ContinuousPipe\Adapter\Kubernetes\ReverseTransformer;
 use ContinuousPipe\Model\Component;
 use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\Container;
+use Kubernetes\Client\Model\ContainerStatus;
+use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Model\ServiceSpecification;
 use Kubernetes\Client\NamespaceClient;
@@ -85,10 +87,11 @@ class ComponentTransformer
     private function getComponentStatus(NamespaceClient $namespaceClient, ReplicationController $replicationController)
     {
         $pods = $namespaceClient->getPodRepository()->findByReplicationController($replicationController)->getPods();
+        $healthyPods = $this->filterHealthyPods($pods);
 
-        if (count($pods) == $replicationController->getSpecification()->getReplicas()) {
+        if (count($healthyPods) == $replicationController->getSpecification()->getReplicas()) {
             $status = Component\Status::HEALTHY;
-        } elseif (count($pods) > 0) {
+        } elseif (count($healthyPods) > 0) {
             $status = Component\Status::WARNING;
         } else {
             $status = Component\Status::UNHEALTHY;
@@ -119,5 +122,22 @@ class ComponentTransformer
         }
 
         return [];
+    }
+
+    /**
+     * @param Pod[] $pods
+     * @return Pod[]
+     */
+    private function filterHealthyPods(array $pods)
+    {
+        return array_filter($pods, function(Pod $pod) {
+            if (null === ($status = $pod->getStatus())) {
+                return false;
+            }
+
+            return array_reduce($status->getContainerStatuses(), function($ready, ContainerStatus $containerStatus) {
+                return $ready && $containerStatus->isReady();
+            }, true);
+        });
     }
 }

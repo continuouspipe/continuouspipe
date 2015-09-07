@@ -21,6 +21,12 @@ Feature:
 
   Scenario:
     Given I have the application "simple-app" deployed
+    And pods are running but not ready for the replication controller "app"
+    When I request the environment list of the Kubernetes provider
+    Then the status of the component "app" should be "unhealthy"
+
+  Scenario:
+    Given I have the application "simple-app" deployed
     And pods are running for the replication controller "app"
     When I request the environment list of the Kubernetes provider
     Then the status of the component "app" should be "healthy"
