@@ -49,10 +49,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.client" />
         </service>
 
-        <service id="pipe.adapter.kubernetes.predictable_service_waiter" class="ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWaiter" />
+        <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWaiter" />
 
-        <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableProxiedServiceWaiter">
-            <argument type="service" id="pipe.adapter.kubernetes.predictable_service_waiter" />
-        </service>
     </services>
 </container>

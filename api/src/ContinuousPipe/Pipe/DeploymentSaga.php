@@ -95,9 +95,10 @@ class DeploymentSaga
     private function hasProxiedEndpoints(PublicEndpointsCreated $event)
     {
         return array_reduce(
-            $event->getEndpoints(),
-            function ($hasProxiedEndpoints, $endpoint) {
-                return $endpoint instanceof ProxiedPublicEndpoint ? true : $hasProxiedEndpoints;
+            $event->getDeploymentContext()->getEnvironment()->getComponents(),
+            function ($hasProxiedEndpoints, $component) {
+                $labels = $component->getLabels();
+                return isset($labels['com.continuouspipe.http-labs']) ? : $hasProxiedEndpoints;
             },
             false
         );

@@ -3,7 +3,6 @@
 namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableProxiedServiceWaiter;
 use ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWaiter;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceRepository;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
@@ -29,7 +28,7 @@ class ServiceContext implements Context
      * @param PredictableServiceWaiter $serviceWaiter
      * @param TraceableServiceRepository $serviceRepository
      */
-    public function __construct(PredictableProxiedServiceWaiter $serviceWaiter, TraceableServiceRepository $serviceRepository)
+    public function __construct(PredictableServiceWaiter $serviceWaiter, TraceableServiceRepository $serviceRepository)
     {
         $this->serviceWaiter = $serviceWaiter;
         $this->serviceRepository = $serviceRepository;
