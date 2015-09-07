@@ -37,7 +37,7 @@ class ProxiedServiceWaiter implements ServiceWaiter
         $endpoint = $this->decoratedWaiter->waitService($context, $service, $log);
         $labels = $service->getMetadata()->getLabelsAsAssociativeArray();
 
-        if (isset($labels['com.continuouspipe.proxied']) && $labels['com.continuouspipe.proxied']) {
+        if (isset($labels['com.continuouspipe.http-labs'])) {
             return new ProxiedPublicEndpoint($endpoint->getName(), $endpoint->getAddress());
         }
 
