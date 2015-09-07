@@ -6,6 +6,7 @@ use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
 use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
 use ContinuousPipe\Pipe\Command\ProxyPublicEndpointsCommand;
+use ContinuousPipe\Pipe\Environment\ProxiedPublicEndpoint;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\Event\DeploymentStarted;
@@ -65,9 +66,40 @@ class DeploymentSaga
                 )
             );
         } elseif ($event instanceof PublicEndpointsCreated) {
+            $this->handlePublicEndpointsCreated($event);
+        }
+    }
+
+    /**
+     * @param PublicEndpointsCreated $event
+     */
+    private function handlePublicEndpointsCreated(PublicEndpointsCreated $event)
+    {
+        if ($this->hasProxiedEndpoints($event)) {
             $this->commandBus->handle(
                 new ProxyPublicEndpointsCommand($event->getDeploymentContext(), $event->getEndpoints())
             );
+
+            return;
         }
+
+        $this->eventBus->handle(
+            new PublicEndpointsFinalised($event->getDeploymentContext(), $event->getEndpoints())
+        );
+    }
+
+    /**
+     * @param PublicEndpointsCreated $event
+     * @return mixed
+     */
+    private function hasProxiedEndpoints(PublicEndpointsCreated $event)
+    {
+        return array_reduce(
+            $event->getEndpoints(),
+            function ($hasProxiedEndpoints, $endpoint) {
+                return $endpoint instanceof ProxiedPublicEndpoint ? true : $hasProxiedEndpoints;
+            },
+            false
+        );
     }
 }

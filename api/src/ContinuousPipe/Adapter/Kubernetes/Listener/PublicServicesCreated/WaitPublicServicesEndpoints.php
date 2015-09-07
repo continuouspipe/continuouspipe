@@ -57,7 +57,6 @@ class WaitPublicServicesEndpoints
         try {
             $endpoints = $this->waitEndpoints($context, $event->getServices(), $logger->getLog());
             $logger->success();
-
             $this->eventBus->handle(new PublicEndpointsCreated($context, $endpoints));
         } catch (EndpointNotFound $e) {
             $logger->failure();
