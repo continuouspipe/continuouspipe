@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
+use ContinuousPipe\River\Pipe\ProviderNameNotFound;
 use ContinuousPipe\River\Pipe\ProviderNameResolver;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\View\Flow;
@@ -54,7 +55,12 @@ class EnvironmentClient
      */
     public function findByFlow(Flow $flow)
     {
-        $providerName = $this->providerNameResolver->getProviderName($flow);
+        try {
+            $providerName = $this->providerNameResolver->getProviderName($flow);
+        } catch (ProviderNameNotFound $e) {
+            return [];
+        }
+
         $environments = $this->pipeClient->getEnvironments($providerName, $this->userContext->getCurrent());
         $matchingEnvironments = array_filter($environments, function (Environment $environment) use ($flow) {
             return $this->environmentNamingStrategy->isEnvironmentPartOfFlow($flow->getUuid(), $environment);

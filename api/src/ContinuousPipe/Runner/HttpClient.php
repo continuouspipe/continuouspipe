@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\Runner;
 
-use ContinuousPipe\Runner\Client;
 use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
 use GuzzleHttp\Client as GuzzleClient;
@@ -56,7 +55,7 @@ class HttpClient implements Client
         try {
             $response = $this->client->post($this->baseUrl, [
                 'body' => $this->serializer->serialize($request, 'json'),
-                'headers' => $this->getRequestHeaders($user)
+                'headers' => $this->getRequestHeaders($user),
             ]);
         } catch (RequestException $e) {
             throw new RunnerException(sprintf(

@@ -176,6 +176,18 @@ EOF;
     }
 
     /**
+     * @Given I have a flow with UUID :arg1 and with just a build task
+     */
+    public function iHaveAFlowWithUuidAndWithJustABuildTask($uuid)
+    {
+        $context = $this->createFlowContext(Uuid::fromString($uuid));
+
+        return $this->createFlowWithContextAndTasks($context, [
+            new Flow\Task('build'),
+        ]);
+    }
+
+    /**
      * @Given I have the a deployed environment named :name
      */
     public function iHaveTheADeployedEnvironmentNamed($name)
@@ -213,6 +225,25 @@ EOF;
             throw new \RuntimeException(sprintf(
                 'No environment named "%s" found',
                 $name
+            ));
+        }
+    }
+
+    /**
+     * @Then I should receive an empty list of environments
+     */
+    public function iShouldReceiveAnEmptyListOfEnvironments()
+    {
+        $environments = json_decode($this->response->getContent(), true);
+
+        if (!is_array($environments)) {
+            throw new \RuntimeException('The response do not looks like to be a JSON array');
+        }
+
+        if (count($environments) > 0) {
+            throw new \RuntimeException(sprintf(
+                'Expected to have 0 environments, found %d',
+                count($environments)
             ));
         }
     }

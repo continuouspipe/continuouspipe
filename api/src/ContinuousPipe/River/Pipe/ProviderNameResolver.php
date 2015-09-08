@@ -13,14 +13,20 @@ class ProviderNameResolver
     /**
      * @param Flow $flow
      *
+     * @throws ProviderNameNotFound
+     *
      * @return string
      */
     public function getProviderName(Flow $flow)
     {
-        $deployTask = $this->getDeployTask($flow);
-        $context = new DeployContext(ArrayContext::fromRaw($deployTask->getContext()));
+        try {
+            $deployTask = $this->getDeployTask($flow);
+            $context = new DeployContext(ArrayContext::fromRaw($deployTask->getContext()));
 
-        return $context->getProviderName();
+            return $context->getProviderName();
+        } catch (\LogicException $e) {
+            throw new ProviderNameNotFound();
+        }
     }
 
     /**
