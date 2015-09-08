@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Adapter\HttpLabs\Handler;
 
-use ContinuousPipe\Adapter\HttpLabs\EndpointProxier;
+use ContinuousPipe\Adapter\HttpLabs\Endpoint\EndpointProxier;
 use ContinuousPipe\Pipe\Command\ProxyPublicEndpointsCommand;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Pipe\Event\PublicEndpointsFinalised;
@@ -16,7 +16,7 @@ class ProxyPublicEndpointsHandler
     private $eventBus;
 
     /**
-     * @var EndpointProxier
+     * @var GuzzleEndpointProxier
      */
     private $proxier;
 
@@ -35,9 +35,16 @@ class ProxyPublicEndpointsHandler
      */
     public function handle(ProxyPublicEndpointsCommand $command)
     {
+        $deploymentId = $command->getContext()->getDeployment()->getUuid();
+        $environment = $command->getContext()->getEnvironment();
+
         $proxiedEndpoints = array_map(
-            function (PublicEndpoint $endpoint) {
-                return new PublicEndpoint($endpoint->getName(), $this->proxier->createProxy($endpoint));
+            function (PublicEndpoint $endpoint) use ($deploymentId, $environment) {
+                return new PublicEndpoint($endpoint->getName(), $this->proxier->createProxy(
+                    $endpoint,
+                    sprintf('%s-%s', $deploymentId, $endpoint->getName()),
+                    $environment->getComponent($endpoint->getName())
+                ));
             },
             $command->getEndpoints()
         );

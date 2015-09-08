@@ -34,5 +34,7 @@ class TestExtension extends Extension
             $loader->load('in-memory/deployment.xml');
             $loader->load('kubernetes/in-memory/adapter.xml');
         }
+
+        $loader->load('httplabs.xml');
     }
 }
