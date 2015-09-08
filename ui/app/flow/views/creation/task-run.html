@@ -1,5 +1,13 @@
-<button class="btn btn-danger pull-right" ng-click="removeTask(i)">Remove</button>
+<p><strong>run</strong><br />Run commands in the given container.</p>
 
 <form>
-    <textarea ng-model="task.context.commands"></textarea>
+    <div class="form-group fg-line">
+        <label for="imageNameImput">Image name</label>
+        <input type="text" ng-model="task.context.image" class="form-control input-sm" id="imageNameImput" placeholder="Enter image name">
+    </div>
+
+    <div class="form-group fg-line">
+        <label for="commandsInput">Commands</label>
+        <textarea ng-model="task.context.commands" class="form-control" placeholder="Commands" id="commandsInput"></textarea>
+    </div>
 </form>
