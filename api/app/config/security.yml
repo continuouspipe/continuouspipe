@@ -18,8 +18,9 @@ security:
         # TODO: Secure with GitHub IPs
         - { path: ^/web-hook/github/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
-        # TODO: Secure with Builder IPs
+        # TODO: Secure with local IPs
         - { path: ^/builder/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/pipe/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/runner/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

@@ -33,6 +33,9 @@ default:
                 - Task\DeployContext:
                     - @river.event_store
                     - @event_bus
+                - Task\RunContext:
+                    - @kernel
+                    - @runner.client
                 - OrganisationContext:
                     - @kernel
                     - @repository_river.organisation_repository

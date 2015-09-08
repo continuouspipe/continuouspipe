@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="runner.client" class="ContinuousPipe\Runner\HttpClient">
+            <argument type="service" id="river.pipe_client.guzzle_client" />
+            <argument type="service" id="jms_serializer" />
+            <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
+            <argument>%runner_base_url%</argument>
+        </service>
+
+        <service id="runner.handler.start_run" class="ContinuousPipe\River\Task\Run\Handler\StartRunHandler">
+            <argument type="service" id="runner.client" />
+            <argument type="service" id="router" />
+            <argument type="service" id="simple_bus.event_bus" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Task\Run\Command\StartRunCommand" />
+        </service>
+    </services>
+</container>
