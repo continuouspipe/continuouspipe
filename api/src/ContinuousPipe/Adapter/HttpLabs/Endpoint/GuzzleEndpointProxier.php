@@ -5,6 +5,7 @@ namespace ContinuousPipe\Adapter\HttpLabs\Endpoint;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\TransferException;
 use Nocarrier\Hal;
 use RMiller\HalGuzzleResponse\GuzzleSubscriber;
 
@@ -20,9 +21,13 @@ class GuzzleEndpointProxier implements EndpointProxier
 
     public function createProxy(PublicEndpoint $endpoint, $name, Component $component)
     {
-        $stack = $this->createStackForEndpoint($name, $endpoint);
-        $this->addMiddlewares($component, $stack);
-        $this->deployStack($stack);
+        try {
+            $stack = $this->createStackForEndpoint($name, $endpoint);
+            $this->addMiddlewares($component, $stack);
+            $this->deployStack($stack);
+        } catch (TransferException $exception) {
+            throw new EndpointCouldNotBeProxied("Endpoint proxy $name could not be created", null, $exception);
+        }
 
         return $stack->getData()['url'];
     }
