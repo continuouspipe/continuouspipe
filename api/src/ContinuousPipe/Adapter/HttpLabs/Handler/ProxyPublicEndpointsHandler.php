@@ -77,6 +77,8 @@ class ProxyPublicEndpointsHandler
             throw $e;
         }
 
+        $logger->success();
+
         $this->eventBus->handle(new PublicEndpointsFinalised($command->getContext(), $proxiedEndpoints));
     }
 }
