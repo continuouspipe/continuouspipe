@@ -3,9 +3,9 @@
 namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
+use ContinuousPipe\Adapter\Kubernetes\Service\Service;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
-use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\NamespaceClient;
 use LogStream\Log;
 use LogStream\Logger;
@@ -40,7 +40,7 @@ class LoopServiceWaiter implements ServiceWaiter
 
     /**
      * @param DeploymentClientFactory $clientFactory
-     * @param LoggerFactory           $loggerFactory
+     * @param LoggerFactory $loggerFactory
      */
     public function __construct(DeploymentClientFactory $clientFactory, LoggerFactory $loggerFactory)
     {
@@ -50,8 +50,8 @@ class LoopServiceWaiter implements ServiceWaiter
 
     /**
      * @param DeploymentContext $context
-     * @param Service           $service
-     * @param Log               $log
+     * @param Service $service
+     * @param Log $log
      *
      * @return PublicEndpoint
      *
@@ -59,8 +59,8 @@ class LoopServiceWaiter implements ServiceWaiter
      */
     public function waitService(DeploymentContext $context, Service $service, Log $log)
     {
-        $serviceName = $service->getMetadata()->getName();
-        $log = $this->loggerFactory->from($log)->append(new Text('Waiting public endpoint of service '.$serviceName));
+        $serviceName = $service->getService()->getMetadata()->getName();
+        $log = $this->loggerFactory->from($log)->append(new Text('Waiting public endpoint of service ' . $serviceName));
         $logger = $this->loggerFactory->from($log);
         $client = $this->clientFactory->get($context);
 
@@ -69,7 +69,9 @@ class LoopServiceWaiter implements ServiceWaiter
 
             $endpoint = $this->waitServicePublicEndpoint($client, $service, $logger);
 
-            $logger->append(new Text(sprintf('Found public endpoint "%s": %s', $endpoint->getName(), $endpoint->getAddress())));
+            $logger->append(
+                new Text(sprintf('Found public endpoint "%s": %s', $endpoint->getName(), $endpoint->getAddress()))
+            );
             $logger->success();
         } catch (EndpointNotFound $e) {
             $logger->append(new Text($e->getMessage()));
@@ -83,8 +85,8 @@ class LoopServiceWaiter implements ServiceWaiter
 
     /**
      * @param NamespaceClient $namespaceClient
-     * @param Service         $service
-     * @param Logger          $logger
+     * @param Service $service
+     * @param Logger $logger
      *
      * @return PublicEndpoint
      *
@@ -92,7 +94,7 @@ class LoopServiceWaiter implements ServiceWaiter
      */
     private function waitServicePublicEndpoint(NamespaceClient $namespaceClient, Service $service, Logger $logger)
     {
-        $serviceName = $service->getMetadata()->getName();
+        $serviceName = $service->getService()->getMetadata()->getName();
 
         $attempts = 0;
         do {
@@ -110,7 +112,7 @@ class LoopServiceWaiter implements ServiceWaiter
 
     /**
      * @param NamespaceClient $namespaceClient
-     * @param string          $serviceName
+     * @param string $serviceName
      *
      * @return PublicEndpoint
      *

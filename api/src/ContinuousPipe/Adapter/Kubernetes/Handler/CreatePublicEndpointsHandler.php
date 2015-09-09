@@ -6,6 +6,8 @@ use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
+use ContinuousPipe\Adapter\Kubernetes\Service\CreatedService;
+use ContinuousPipe\Adapter\Kubernetes\Service\FoundService;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
@@ -49,14 +51,19 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     private $publicServiceVoter;
 
     /**
-     * @param EnvironmentTransformer  $environmentTransformer
+     * @param EnvironmentTransformer $environmentTransformer
      * @param DeploymentClientFactory $clientFactory
-     * @param MessageBus              $eventBus
-     * @param LoggerFactory           $loggerFactory
-     * @param PublicServiceVoter      $publicServiceVoter
+     * @param MessageBus $eventBus
+     * @param LoggerFactory $loggerFactory
+     * @param PublicServiceVoter $publicServiceVoter
      */
-    public function __construct(EnvironmentTransformer $environmentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, PublicServiceVoter $publicServiceVoter)
-    {
+    public function __construct(
+        EnvironmentTransformer $environmentTransformer,
+        DeploymentClientFactory $clientFactory,
+        MessageBus $eventBus,
+        LoggerFactory $loggerFactory,
+        PublicServiceVoter $publicServiceVoter
+    ) {
         $this->environmentTransformer = $environmentTransformer;
         $this->clientFactory = $clientFactory;
         $this->eventBus = $eventBus;
@@ -80,7 +87,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
         try {
             $createdServices = $this->createServices($serviceRepository, $services, $logger);
         } catch (ClientError $e) {
-            $logger->append(new Text('Error: '.$e->getMessage()));
+            $logger->append(new Text('Error: ' . $e->getMessage()));
             $logger->failure();
 
             $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
@@ -95,8 +102,8 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
 
     /**
      * @param ServiceRepository $serviceRepository
-     * @param Service[]         $services
-     * @param Logger            $logger
+     * @param Service[] $services
+     * @param Logger $logger
      *
      * @return \Kubernetes\Client\Model\Service[]
      */
@@ -108,7 +115,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
 
             if ($serviceRepository->exists($serviceName)) {
                 if (!$this->serviceNeedsToBeUpdated($serviceRepository, $service)) {
-                    $publicServices[] = $serviceRepository->findOneByName($serviceName);
+                    $publicServices[] = new FoundService($serviceRepository->findOneByName($serviceName));
 
                     continue;
                 }
@@ -117,7 +124,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
                 $logger->append(new Text(sprintf('Deleted service "%s"', $serviceName)));
             }
 
-            $publicServices[] = $serviceRepository->create($service);
+            $publicServices[] = new CreatedService($serviceRepository->create($service));
             $logger->append(new Text(sprintf('Created service "%s"', $serviceName)));
         }
 
@@ -132,9 +139,12 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     private function getPublicServices(Environment $environment)
     {
         $namespaceObjects = $this->environmentTransformer->getElementListFromEnvironment($environment);
-        $publicServices = array_filter($namespaceObjects, function (KubernetesObject $object) {
-            return $this->publicServiceVoter->isAPublicService($object);
-        });
+        $publicServices = array_filter(
+            $namespaceObjects,
+            function (KubernetesObject $object) {
+                return $this->publicServiceVoter->isAPublicService($object);
+            }
+        );
 
         return array_values($publicServices);
     }
@@ -149,7 +159,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
 
     /**
      * @param ServiceRepository $repository
-     * @param Service           $service
+     * @param Service $service
      *
      * @return bool
      */

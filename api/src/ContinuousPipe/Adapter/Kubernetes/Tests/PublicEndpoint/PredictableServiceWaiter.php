@@ -4,9 +4,9 @@ namespace ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint;
 
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointNotFound;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\ServiceWaiter;
+use ContinuousPipe\Adapter\Kubernetes\Service\Service;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
-use Kubernetes\Client\Model\Service;
 use LogStream\Log;
 
 class PredictableServiceWaiter implements ServiceWaiter
@@ -18,7 +18,7 @@ class PredictableServiceWaiter implements ServiceWaiter
      */
     public function waitService(DeploymentContext $context, Service $service, Log $log)
     {
-        $serviceName = $service->getMetadata()->getName();
+        $serviceName = $service->getService()->getMetadata()->getName();
         if (!array_key_exists($serviceName, $this->endpoints)) {
             throw new EndpointNotFound();
         }

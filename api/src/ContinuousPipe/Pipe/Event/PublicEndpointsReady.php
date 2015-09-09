@@ -5,7 +5,7 @@ namespace ContinuousPipe\Pipe\Event;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 
-class PublicEndpointsCreated implements DeploymentEvent
+class PublicEndpointsReady implements DeploymentEvent
 {
     /**
      * @var DeploymentContext
@@ -19,7 +19,7 @@ class PublicEndpointsCreated implements DeploymentEvent
 
     /**
      * @param DeploymentContext $deploymentContext
-     * @param PublicEndpoint[] $endpoints
+     * @param PublicEndpoint[]  $endpoints
      */
     public function __construct(DeploymentContext $deploymentContext, array $endpoints)
     {
@@ -49,5 +49,12 @@ class PublicEndpointsCreated implements DeploymentEvent
     public function getEndpoints()
     {
         return $this->endpoints;
+    }
+
+    public function hasEndpointsToProxy()
+    {
+        return $this->deploymentContext->getEnvironment()->hasComponentWithExtension(
+            'com.continuouspipe.http-labs'
+        );
     }
 }

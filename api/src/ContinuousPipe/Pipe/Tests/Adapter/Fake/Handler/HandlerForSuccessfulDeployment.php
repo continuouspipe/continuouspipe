@@ -9,7 +9,7 @@ use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
 use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
-use ContinuousPipe\Pipe\Event\PublicEndpointsCreated;
+use ContinuousPipe\Pipe\Event\PublicEndpointsReady;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeAdapter;
 use SimpleBus\Message\Bus\MessageBus;
@@ -39,7 +39,7 @@ class HandlerForSuccessfulDeployment implements DeploymentHandler
         } elseif ($command instanceof PrepareEnvironmentCommand) {
             $this->messageBus->handle(new EnvironmentPrepared($command->getContext()));
         } elseif ($command instanceof CreatePublicEndpointsCommand) {
-            $this->messageBus->handle(new PublicEndpointsCreated($command->getContext(), []));
+            $this->messageBus->handle(new PublicEndpointsReady($command->getContext(), []));
         }
     }
 

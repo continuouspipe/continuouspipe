@@ -11,8 +11,8 @@ use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\Event\DeploymentStarted;
 use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
 use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
-use ContinuousPipe\Pipe\Event\PublicEndpointsCreated;
 use ContinuousPipe\Pipe\Event\PublicEndpointsFinalised;
+use ContinuousPipe\Pipe\Event\PublicEndpointsReady;
 use SimpleBus\Message\Bus\MessageBus;
 
 class DeploymentSaga
@@ -64,15 +64,15 @@ class DeploymentSaga
                     $event->getDeploymentUuid()
                 )
             );
-        } elseif ($event instanceof PublicEndpointsCreated) {
+        } elseif ($event instanceof PublicEndpointsReady) {
             $this->handlePublicEndpointsCreated($event);
         }
     }
 
     /**
-     * @param PublicEndpointsCreated $event
+     * @param PublicEndpointsReady $event
      */
-    private function handlePublicEndpointsCreated(PublicEndpointsCreated $event)
+    private function handlePublicEndpointsCreated(PublicEndpointsReady $event)
     {
         if ($event->hasEndpointsToProxy()) {
             $this->commandBus->handle(

@@ -5,9 +5,11 @@ namespace ContinuousPipe\Adapter\Kubernetes\Listener\PublicServicesCreated;
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointNotFound;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\ServiceWaiter;
+use ContinuousPipe\Adapter\Kubernetes\Service\CreatedService;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\PublicEndpointsCreated;
+use ContinuousPipe\Pipe\Event\PublicEndpointsReady;
 use Kubernetes\Client\Model\Service;
 use LogStream\Log;
 use LogStream\LoggerFactory;
@@ -32,7 +34,7 @@ class WaitPublicServicesEndpoints
     private $loggerFactory;
 
     /**
-     * @param MessageBus    $eventBus
+     * @param MessageBus $eventBus
      * @param ServiceWaiter $waiter
      * @param LoggerFactory $loggerFactory
      */
@@ -50,14 +52,21 @@ class WaitPublicServicesEndpoints
     {
         $context = $event->getContext();
 
-        $log = $this->loggerFactory->from($context->getLog())->append(new Text('Waiting public endpoints to be created'));
+        $log = $this->loggerFactory->from($context->getLog())->append(
+            new Text('Waiting public endpoints to be created')
+        );
         $logger = $this->loggerFactory->from($log);
         $logger->start();
 
         try {
             $endpoints = $this->waitEndpoints($context, $event->getServices(), $logger->getLog());
             $logger->success();
-            $this->eventBus->handle(new PublicEndpointsCreated($context, $endpoints));
+
+            if ($this->hasNewlyCreatedEndpoints($event->getServices())) {
+                $this->eventBus->handle(new PublicEndpointsCreated($context, $endpoints));
+            }
+
+            $this->eventBus->handle(new PublicEndpointsReady($context, $endpoints));
         } catch (EndpointNotFound $e) {
             $logger->failure();
 
@@ -67,8 +76,8 @@ class WaitPublicServicesEndpoints
 
     /**
      * @param DeploymentContext $context
-     * @param Service[]         $services
-     * @param Log               $log
+     * @param Service[] $services
+     * @param Log $log
      *
      * @return \ContinuousPipe\Pipe\Environment\PublicEndpoint[]
      */
@@ -80,5 +89,16 @@ class WaitPublicServicesEndpoints
         }
 
         return $endpoints;
+    }
+
+    private function hasNewlyCreatedEndpoints(array $services)
+    {
+        return array_reduce(
+            $services,
+            function ($hasNewEndpoints, $service) {
+                return $service instanceof CreatedService ? : $hasNewEndpoints;
+            },
+            false
+        );
     }
 }
