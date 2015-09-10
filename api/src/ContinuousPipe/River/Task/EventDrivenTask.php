@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
+use ContinuousPipe\River\TideContext;
 
 abstract class EventDrivenTask implements Task
 {
@@ -26,9 +27,9 @@ abstract class EventDrivenTask implements Task
     }
 
     /**
-     * @param TideEvent $event
+     * {@inheritdoc}
      */
-    public function apply(TideEvent $event)
+    public function apply(TideContext $context, TideEvent $event)
     {
         $this->events->add($event);
     }

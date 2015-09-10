@@ -43,11 +43,11 @@ class BuildTask extends EventDrivenTask
     }
 
     /**
-     * @param TideEvent $event
+     * {@inheritdoc}
      */
-    public function apply(TideEvent $event)
+    public function apply(TideContext $tideContext, TideEvent $event)
     {
-        parent::apply($event);
+        parent::apply($tideContext, $event);
 
         if ($event instanceof BuildSuccessful) {
             $this->applyBuildSuccessful($event);

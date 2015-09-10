@@ -5,6 +5,7 @@ namespace ContinuousPipe\River;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Repository\FlowRepository;
+use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRegistry;
 use LogStream\LoggerFactory;
@@ -99,11 +100,15 @@ class TideFactory
     private function createTideTaskList(Flow $flow)
     {
         $tasks = [];
-        foreach ($flow->getTasks() as $flowTask) {
+        foreach ($flow->getTasks() as $taskId => $flowTask) {
             $task = $this->taskRegistry->find($flowTask->getName());
             $task->clear();
 
-            $taskContext = ArrayContext::fromRaw($flowTask->getContext() ?: []);
+            $taskContext = TaskContext::createTaskContext(
+                ArrayContext::fromRaw($flowTask->getContext() ?: []),
+                $taskId
+            );
+
             $tasks[] = new ContextualizedTask($task, $taskContext);
         }
 

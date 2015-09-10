@@ -61,7 +61,8 @@ class StartRunHandler
 
         $this->eventBus->handle(new RunStarted(
             $context->getTideUuid(),
-            $runUuid
+            $runUuid,
+            $command->getTaskId()
         ));
     }
 

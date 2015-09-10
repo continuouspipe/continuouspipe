@@ -10,6 +10,7 @@ use ContinuousPipe\River\Task\Build\BuildTask;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
+use ContinuousPipe\River\Task\Run\RunTask;
 use ContinuousPipe\River\Task\Task;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -84,6 +85,23 @@ class TasksContext implements Context
     {
         if ($this->getTasksOfType(BuildTask::class)[0]->isRunning()) {
             throw new \RuntimeException('The build task is running');
+        }
+    }
+
+    /**
+     * @Then the second run task should be running
+     */
+    public function theSecondRunTaskShouldBeRunning()
+    {
+        $task = $this->getTasksOfType(RunTask::class)[1];
+
+        if (!$task->isRunning()) {
+            throw new \RuntimeException(sprintf(
+                'The second run task is not running (successful=%b failed=%b pending=%b)',
+                $task->isSuccessful(),
+                $task->isFailed(),
+                $task->isPending()
+            ));
         }
     }
 

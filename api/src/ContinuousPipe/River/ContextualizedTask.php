@@ -32,17 +32,15 @@ class ContextualizedTask implements Task
      */
     public function start(TideContext $context)
     {
-        $context = new TideContext(new ContextTree($this->taskContext, $context));
-
-        return $this->task->start($context);
+        return $this->task->start($this->getTaskContext($context));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function apply(TideEvent $event)
+    public function apply(TideContext $tideContext, TideEvent $event)
     {
-        return $this->task->apply($event);
+        return $this->task->apply($this->getTaskContext($tideContext), $event);
     }
 
     /**
@@ -107,5 +105,14 @@ class ContextualizedTask implements Task
     public function getEvents()
     {
         return $this->task->getEvents();
+    }
+
+    /**
+     * @param TideContext $context
+     * @return TideContext
+     */
+    private function getTaskContext(TideContext $context)
+    {
+        return new TideContext(new ContextTree($this->taskContext, $context));
     }
 }

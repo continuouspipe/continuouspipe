@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
 use Rhumsaa\Uuid\Uuid;
@@ -165,6 +166,20 @@ EOF;
     public function iHaveAFlowWithTheBuildAndDeployTasks()
     {
         $this->createFlow();
+    }
+
+    /**
+     * @Given I have a flow with the following tasks:
+     */
+    public function iHaveAFlowWithTheFollowingTasks(TableNode $tasks)
+    {
+        $tasks = array_map(function($task) {
+            $context = !empty($task['context']) ? json_decode($task['context'], true) : [];
+
+            return new Flow\Task($task['name'], $context);
+        }, $tasks->getHash());
+
+        $this->createFlowWithTasks($tasks);
     }
 
     /**

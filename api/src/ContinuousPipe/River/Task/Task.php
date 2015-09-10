@@ -9,9 +9,10 @@ use ContinuousPipe\River\TideContext;
 interface Task
 {
     /**
+     * @param TideContext $context
      * @param TideEvent $event
      */
-    public function apply(TideEvent $event);
+    public function apply(TideContext $context, TideEvent $event);
 
     /**
      * @return TideEvent[]

@@ -18,13 +18,20 @@ class StartRunCommand
     private $context;
 
     /**
-     * @param Uuid       $uuid
-     * @param RunContext $context
+     * @var int
      */
-    public function __construct(Uuid $uuid, RunContext $context)
+    private $taskId;
+
+    /**
+     * @param Uuid $uuid
+     * @param RunContext $context
+     * @param int $taskId
+     */
+    public function __construct(Uuid $uuid, RunContext $context, $taskId)
     {
         $this->uuid = $uuid;
         $this->context = $context;
+        $this->taskId = $taskId;
     }
 
     /**
@@ -41,5 +48,13 @@ class StartRunCommand
     public function getContext()
     {
         return $this->context;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTaskId()
+    {
+        return $this->taskId;
     }
 }

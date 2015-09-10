@@ -5,6 +5,7 @@ namespace ContinuousPipe\Runner\Tests;
 use ContinuousPipe\Runner\Client;
 use ContinuousPipe\Runner\Client\RunRequest;
 use ContinuousPipe\User\User;
+use Rhumsaa\Uuid\Uuid;
 
 class TraceableClient implements Client
 {
@@ -17,6 +18,11 @@ class TraceableClient implements Client
      * @var Client
      */
     private $client;
+
+    /**
+     * @var Uuid
+     */
+    private $lastUuid;
 
     /**
      * @param Client $client
@@ -33,7 +39,9 @@ class TraceableClient implements Client
     {
         $this->requests[] = $request;
 
-        return $this->client->run($request, $user);
+        $this->lastUuid = $this->client->run($request, $user);
+
+        return $this->lastUuid;
     }
 
     /**
@@ -42,5 +50,13 @@ class TraceableClient implements Client
     public function getRequests()
     {
         return $this->requests;
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getLastUuid()
+    {
+        return $this->lastUuid;
     }
 }

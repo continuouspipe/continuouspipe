@@ -102,12 +102,12 @@ class Tide
      */
     public function apply(TideEvent $event)
     {
-        $this->removeEventIfAlreadyInCollection($event);
+        // $this->removeEventIfAlreadyInCollection($event);
 
         if ($event instanceof TideCreated) {
             $this->applyTideCreated($event);
         } elseif (!$event instanceof TideFailed) {
-            $this->tasks->apply($event);
+            $this->tasks->apply($this->context, $event);
 
             if (($event instanceof TideStarted || $this->isRunning()) && !$this->locked) {
                 $this->handleTasks($event);

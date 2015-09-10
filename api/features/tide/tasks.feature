@@ -30,3 +30,16 @@ Feature:
     And the build task failed
     Then the tide should be failed
     And the deploy task should not be started
+
+  Scenario: I can have different tasks of the same time in a flow
+    Given I have a flow with the following tasks:
+      | name   | context                                 |
+      | build  | {"image": "foo"}                        |
+      | run    | {"image": "foo", "commands": "bin/foo"} |
+      | deploy | {"providerName": "foo"}                 |
+      | run    | {"image": "bar", "commands": "bin/bar"} |
+    When a tide is started based on that workflow
+    And the build task succeed
+    And the run succeed
+    And the deploy task succeed
+    Then the second run task should be running

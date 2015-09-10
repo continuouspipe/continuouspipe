@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\TideContext;
 
 class TaskList
 {
@@ -30,12 +31,13 @@ class TaskList
     /**
      * Apply an event on all the tasks.
      *
+     * @param TideContext $context
      * @param TideEvent $event
      */
-    public function apply(TideEvent $event)
+    public function apply(TideContext $context, TideEvent $event)
     {
         foreach ($this->tasks as $task) {
-            $task->apply($event);
+            $task->apply($context, $event);
         }
     }
 

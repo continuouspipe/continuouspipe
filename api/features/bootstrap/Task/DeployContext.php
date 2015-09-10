@@ -120,6 +120,14 @@ class DeployContext implements Context
     }
 
     /**
+     * @When the deploy task succeed
+     */
+    public function theDeployTaskSucceed()
+    {
+        $this->theDeploymentSucceed();
+    }
+
+    /**
      * @Then the deploy task should be successful
      */
     public function theTaskShouldBeSuccessful()
@@ -157,6 +165,9 @@ class DeployContext implements Context
             return $event instanceof DeploymentStarted;
         });
 
+        if (count($deploymentStartedEvents) == 0) {
+            throw new \RuntimeException('No deployment started event');
+        }
         return current($deploymentStartedEvents);
     }
 }

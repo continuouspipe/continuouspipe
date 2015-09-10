@@ -6,7 +6,7 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\Runner\Client\RunNotification;
 use Rhumsaa\Uuid\Uuid;
 
-class RunFailed implements TideEvent
+class RunFailed implements TideEvent, RunEvent
 {
     /**
      * @var Uuid
@@ -42,5 +42,13 @@ class RunFailed implements TideEvent
     public function getRun()
     {
         return $this->run;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRunUuid()
+    {
+        return Uuid::fromString($this->run->getUuid());
     }
 }

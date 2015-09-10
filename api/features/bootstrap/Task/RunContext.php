@@ -92,7 +92,7 @@ class RunContext implements Context
     public function theRunFailed()
     {
         $this->sendRunnerNotification([
-            'uuid' => (string) Uuid::uuid1(),
+            'uuid' => (string) $this->traceableRunnerClient->getLastUuid(),
             'status' => 'failure'
         ]);
     }
@@ -123,7 +123,7 @@ class RunContext implements Context
     public function theRunSucceed()
     {
         $this->sendRunnerNotification([
-            'uuid' => (string) Uuid::uuid1(),
+            'uuid' => (string) $this->traceableRunnerClient->getLastUuid(),
             'status' => 'success'
         ]);
     }
@@ -146,8 +146,6 @@ class RunContext implements Context
         ));
 
         if (!in_array($response->getStatusCode(), [200, 204])) {
-            echo $response->getContent();
-
             throw new \RuntimeException(sprintf(
                 'Expected status code 200 but got %d',
                 $response->getStatusCode()
