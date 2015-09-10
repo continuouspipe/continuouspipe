@@ -81,7 +81,12 @@ class BuildContext implements Context
     {
         $buildTask = $this->getBuildTask();
         if (!$buildTask->isFailed()) {
-            throw new \RuntimeException('Expected the task to be failed');
+            throw new \RuntimeException(sprintf(
+                'Expected the task to be failed (successful=%b failed=%b pending=%b)',
+                $buildTask->isSuccessful(),
+                $buildTask->isFailed(),
+                $buildTask->isPending()
+            ));
         }
     }
 
@@ -100,8 +105,14 @@ class BuildContext implements Context
      */
     public function theBuildTaskShouldBeSuccessful()
     {
-        if (!$this->getBuildTask()->isSuccessful()) {
-            throw new \RuntimeException('Expected the task to be successful');
+        $buildTask = $this->getBuildTask();
+        if (!$buildTask->isSuccessful()) {
+            throw new \RuntimeException(sprintf(
+                'Expected the task to be successful (successful=%b failed=%b pending=%b)',
+                $buildTask->isSuccessful(),
+                $buildTask->isFailed(),
+                $buildTask->isPending()
+            ));
         }
     }
 
@@ -366,6 +377,10 @@ class BuildContext implements Context
         $imageBuildsStartedEvents = array_filter($events, function (TideEvent $event) {
             return $event instanceof ImageBuildsStarted;
         });
+
+        if (0 == count($imageBuildsStartedEvents)) {
+            throw new \RuntimeException('No image build started event');
+        }
 
         return current($imageBuildsStartedEvents);
     }

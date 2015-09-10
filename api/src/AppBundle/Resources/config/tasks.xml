@@ -5,7 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.task_registry" class="ContinuousPipe\River\Task\TaskRegistry">
+        <service id="river.task_factory_registry" class="ContinuousPipe\River\Task\TaskFactoryRegistry">
             <argument type="service" id="service_container" />
         </service>
     </services>

@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\TideContext;
 
 class TaskList
 {
@@ -31,13 +30,12 @@ class TaskList
     /**
      * Apply an event on all the tasks.
      *
-     * @param TideContext $context
      * @param TideEvent $event
      */
-    public function apply(TideContext $context, TideEvent $event)
+    public function apply(TideEvent $event)
     {
         foreach ($this->tasks as $task) {
-            $task->apply($context, $event);
+            $task->apply($event);
         }
     }
 
@@ -87,15 +85,5 @@ class TaskList
         return array_reduce($this->tasks, function ($successful, Task $task) {
             return $successful && $task->isSuccessful();
         }, true);
-    }
-
-    /**
-     * @param $event
-     */
-    public function removeEventIfAlreadyInCollection($event)
-    {
-        foreach ($this->tasks as $task) {
-            $task->getEvents()->removeIfExists($event);
-        }
     }
 }

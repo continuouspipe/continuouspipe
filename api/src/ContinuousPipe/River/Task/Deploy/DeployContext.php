@@ -13,14 +13,12 @@ class DeployContext extends TideContext
 
     /**
      * @param Context $parent
-     * @param Log     $log
      *
      * @return DeployContext
      */
-    public static function createDeployContext(Context $parent, Log $log)
+    public static function createDeployContext(Context $parent)
     {
         $context = new self($parent);
-        $context->set(self::DEPLOY_LOG_KEY, $log);
 
         return $context;
     }
@@ -36,8 +34,24 @@ class DeployContext extends TideContext
     /**
      * @return Log
      */
+    public function getTideLog()
+    {
+        return parent::getLog();
+    }
+
+    /**
+     * @return Log
+     */
     public function getLog()
     {
         return $this->get(self::DEPLOY_LOG_KEY);
+    }
+
+    /**
+     * @param Log $log
+     */
+    public function setLog(Log $log)
+    {
+        $this->set(self::DEPLOY_LOG_KEY, $log);
     }
 }

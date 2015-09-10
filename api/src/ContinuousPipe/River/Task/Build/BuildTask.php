@@ -13,7 +13,7 @@ use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
-use ContinuousPipe\River\TideContext;
+use ContinuousPipe\River\Task\TaskContext;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -31,23 +31,30 @@ class BuildTask extends EventDrivenTask
     private $loggerFactory;
 
     /**
+     * @var TaskContext
+     */
+    private $context;
+
+    /**
      * @param MessageBus    $commandBus
      * @param LoggerFactory $loggerFactory
+     * @param TaskContext   $context
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory)
+    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, TaskContext $context)
     {
         parent::__construct();
 
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
+        $this->context = $context;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function apply(TideContext $tideContext, TideEvent $event)
+    public function apply(TideEvent $event)
     {
-        parent::apply($tideContext, $event);
+        parent::apply($event);
 
         if ($event instanceof BuildSuccessful) {
             $this->applyBuildSuccessful($event);
@@ -118,13 +125,13 @@ class BuildTask extends EventDrivenTask
     /**
      * {@inheritdoc}
      */
-    public function start(TideContext $context)
+    public function start()
     {
-        $logger = $this->loggerFactory->from($context->getLog());
+        $logger = $this->loggerFactory->from($this->context->getLog());
         $log = $logger->append(new Text('Building application images'));
 
         $this->commandBus->handle(new BuildImagesCommand(
-            $context->getTideUuid(),
+            $this->context->getTideUuid(),
             $log
         ));
     }

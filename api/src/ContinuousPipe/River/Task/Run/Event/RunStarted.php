@@ -25,7 +25,7 @@ class RunStarted implements TideEvent, RunEvent
     /**
      * @param Uuid $tideUuid
      * @param Uuid $runUuid
-     * @param int $taskId
+     * @param int  $taskId
      */
     public function __construct(Uuid $tideUuid, Uuid $runUuid, $taskId)
     {

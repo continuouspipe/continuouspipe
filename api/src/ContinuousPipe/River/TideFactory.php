@@ -6,8 +6,8 @@ use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Task\TaskContext;
+use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\Task\TaskList;
-use ContinuousPipe\River\Task\TaskRegistry;
 use LogStream\LoggerFactory;
 use Rhumsaa\Uuid\Uuid;
 
@@ -19,23 +19,23 @@ class TideFactory
     private $loggerFactory;
 
     /**
-     * @var TaskRegistry
+     * @var TaskFactoryRegistry
      */
-    private $taskRegistry;
+    private $taskFactoryRegistry;
     /**
      * @var FlowRepository
      */
     private $flowRepository;
 
     /**
-     * @param LoggerFactory  $loggerFactory
-     * @param TaskRegistry   $taskRegistry
-     * @param FlowRepository $flowRepository
+     * @param LoggerFactory       $loggerFactory
+     * @param TaskFactoryRegistry $taskFactoryRegistry
+     * @param FlowRepository      $flowRepository
      */
-    public function __construct(LoggerFactory $loggerFactory, TaskRegistry $taskRegistry, FlowRepository $flowRepository)
+    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository)
     {
         $this->loggerFactory = $loggerFactory;
-        $this->taskRegistry = $taskRegistry;
+        $this->taskFactoryRegistry = $taskFactoryRegistry;
         $this->flowRepository = $flowRepository;
     }
 
@@ -47,7 +47,7 @@ class TideFactory
      */
     public function create(Flow $flow, TideContext $tideContext)
     {
-        $taskList = $this->createTideTaskList($flow);
+        $taskList = $this->createTideTaskList($flow, $tideContext);
 
         return Tide::create($taskList, $tideContext);
     }
@@ -74,42 +74,42 @@ class TideFactory
     public function createFromEvents(array $events)
     {
         /** @var TideCreated[] $tideCreatedEvents */
-        $tideCreatedEvents = array_filter($events, function (TideEvent $event) {
+        $tideCreatedEvents = array_values(array_filter($events, function (TideEvent $event) {
             return $event instanceof TideCreated;
-        });
+        }));
 
         if (count($tideCreatedEvents) == 0) {
             throw new \RuntimeException('Can\'t recreate a tide from events without the created event');
         }
 
-        $tideCreatedEvent = current($tideCreatedEvents);
-        $flowUuid = $tideCreatedEvent->getTideContext()->getFlowUuid();
+        $tideCreatedEvent = $tideCreatedEvents[0];
+        $tideContext = $tideCreatedEvent->getTideContext();
+        $flowUuid = $tideContext->getFlowUuid();
         $flow = $this->flowRepository->find($flowUuid);
-        $taskList = $this->createTideTaskList($flow);
+        $taskList = $this->createTideTaskList($flow, $tideContext);
 
         return Tide::fromEvents($taskList, $events);
     }
 
     /**
-     * @param Flow $flow
+     * @param Flow        $flow
+     * @param TideContext $tideContext
+     *
+     * @throws Task\TaskFactoryNotFound
      *
      * @return TaskList
-     *
-     * @throws Task\TaskNotFound
      */
-    private function createTideTaskList(Flow $flow)
+    private function createTideTaskList(Flow $flow, TideContext $tideContext)
     {
         $tasks = [];
         foreach ($flow->getTasks() as $taskId => $flowTask) {
-            $task = $this->taskRegistry->find($flowTask->getName());
-            $task->clear();
-
+            $taskFactory = $this->taskFactoryRegistry->find($flowTask->getName());
             $taskContext = TaskContext::createTaskContext(
-                ArrayContext::fromRaw($flowTask->getContext() ?: []),
+                new ContextTree(ArrayContext::fromRaw($flowTask->getContext() ?: []), $tideContext),
                 $taskId
             );
 
-            $tasks[] = new ContextualizedTask($task, $taskContext);
+            $tasks[] = $taskFactory->create($taskContext);
         }
 
         return new TaskList($tasks);

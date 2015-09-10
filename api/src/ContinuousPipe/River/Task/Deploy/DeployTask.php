@@ -7,7 +7,6 @@ use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
-use ContinuousPipe\River\TideContext;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -32,28 +31,37 @@ class DeployTask extends EventDrivenTask
     private $loggerFactory;
 
     /**
+     * @var DeployContext
+     */
+    private $context;
+
+    /**
      * @param MessageBus    $commandBus
      * @param LoggerFactory $loggerFactory
+     * @param DeployContext $context
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory)
+    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, DeployContext $context)
     {
         parent::__construct();
 
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
+        $this->context = $context;
     }
 
     /**
-     * @param TideContext $context
+     * {@inheritdoc}
      */
-    public function start(TideContext $context)
+    public function start()
     {
-        $logger = $this->loggerFactory->from($context->getLog());
+        $logger = $this->loggerFactory->from($this->context->getTideLog());
         $log = $logger->append(new Text('Deploying environment'));
 
+        $this->context->setLog($log);
+
         $this->commandBus->handle(new StartDeploymentCommand(
-            $context->getTideUuid(),
-            DeployContext::createDeployContext($context, $log)
+            $this->context->getTideUuid(),
+            $this->context
         ));
     }
 

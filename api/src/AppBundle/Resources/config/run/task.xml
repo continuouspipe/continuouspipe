@@ -5,11 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.task.run" class="ContinuousPipe\River\Task\Run\RunTask">
+        <service id="river.task.run_factory" class="ContinuousPipe\River\Task\Run\RunTaskFactory">
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="command_bus" />
 
-            <tag name="river.task" task="run" />
+            <tag name="river.task_factory" task="run" />
         </service>
     </services>
 </container>

@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Task;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class TaskRegistry
+class TaskFactoryRegistry
 {
     /**
      * @var string[]
@@ -36,14 +36,14 @@ class TaskRegistry
     /**
      * @param string $name
      *
-     * @return Task
+     * @return TaskFactory
      *
-     * @throws TaskNotFound
+     * @throws TaskFactoryNotFound
      */
     public function find($name)
     {
         if (!array_key_exists($name, $this->tasksByServiceName)) {
-            throw new TaskNotFound(sprintf(
+            throw new TaskFactoryNotFound(sprintf(
                 'Task "%s" is not found',
                 $name
             ));

@@ -9,8 +9,6 @@ use ContinuousPipe\River\Task\Run\Event\RunEvent;
 use ContinuousPipe\River\Task\Run\Event\RunFailed;
 use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\Event\RunSuccessful;
-use ContinuousPipe\River\Task\TaskContext;
-use ContinuousPipe\River\TideContext;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -28,45 +26,54 @@ class RunTask extends EventDrivenTask
     private $commandBus;
 
     /**
+     * @var RunContext
+     */
+    private $context;
+
+    /**
      * @param LoggerFactory $loggerFactory
      * @param MessageBus    $commandBus
+     * @param RunContext    $context
      */
-    public function __construct(LoggerFactory $loggerFactory, MessageBus $commandBus)
+    public function __construct(LoggerFactory $loggerFactory, MessageBus $commandBus, RunContext $context)
     {
         parent::__construct();
 
         $this->loggerFactory = $loggerFactory;
         $this->commandBus = $commandBus;
+        $this->context = $context;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function start(TideContext $context)
+    public function start()
     {
-        $context = RunContext::createRunContext($context);
-
-        $logger = $this->loggerFactory->from($context->getLog());
+        $logger = $this->loggerFactory->from($this->context->getLog());
         $log = $logger->append(new Text(sprintf(
             'Running commands on image "%s"',
-            $context->getImageName()
+            $this->context->getImageName()
         )));
 
-        $context->setRunnerLog($log);
+        $this->context->setRunnerLog($log);
 
-        $this->commandBus->handle(new StartRunCommand($context->getTideUuid(), $context, $this->getTaskId($context)));
+        $this->commandBus->handle(new StartRunCommand(
+            $this->context->getTideUuid(),
+            $this->context,
+            $this->context->getTaskId()
+        ));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function apply(TideContext $tideContext, TideEvent $event)
+    public function apply(TideEvent $event)
     {
-        if (!$this->isRelatedEvent($tideContext, $event)) {
+        if (!$this->isRelatedEvent($event)) {
             return;
         }
 
-        parent::apply($tideContext, $event);
+        parent::apply($event);
     }
 
     /**
@@ -94,23 +101,24 @@ class RunTask extends EventDrivenTask
     }
 
     /**
-     * Returns true if the event is related to this
+     * Returns true if the event is related to this.
      *
-     * @param TideContext $context
      * @param TideEvent $event
+     *
      * @return bool
      */
-    private function isRelatedEvent(TideContext $context, TideEvent $event)
+    private function isRelatedEvent(TideEvent $event)
     {
         if (!$event instanceof RunEvent) {
             return false;
         }
 
         if ($event instanceof RunStarted) {
-            var_dump($this->getTaskId($context), $event->getTaskId(), spl_object_hash($this));
-            $acceptRunStarted = $this->getTaskId($context) == $event->getTaskId();
-            var_dump($acceptRunStarted);
-            return $acceptRunStarted;
+            return $this->context->getTaskId() == $event->getTaskId();
+        }
+
+        if ($this->isPending()) {
+            return false;
         }
 
         $startedEvent = $this->getRunStartedEvent();
@@ -123,16 +131,12 @@ class RunTask extends EventDrivenTask
      */
     private function getRunStartedEvent()
     {
-        return $this->getEventsOfType(RunStarted::class)[0];
-    }
+        $runStartedEvents = $this->getEventsOfType(RunStarted::class);
 
-    /**
-     * @param TideContext $context
-     *
-     * @return int
-     */
-    private function getTaskId(TideContext $context)
-    {
-        return $context->get(TaskContext::KEY_TASK_ID);
+        if (0 === count($runStartedEvents)) {
+            throw new \RuntimeException('No started event found');
+        }
+
+        return $runStartedEvents[0];
     }
 }

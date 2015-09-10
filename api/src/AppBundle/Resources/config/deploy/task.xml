@@ -5,11 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.task.deploy" class="ContinuousPipe\River\Task\Deploy\DeployTask">
+        <service id="river.task.deploy_factory" class="ContinuousPipe\River\Task\Deploy\DeployTaskFactory">
             <argument type="service" id="command_bus" />
             <argument type="service" id="log_stream.logger_factory" />
 
-            <tag name="river.task" task="deploy" />
+            <tag name="river.task_factory" task="deploy" />
         </service>
 
         <service id="river.pipe_client.guzzle_client" class="GuzzleHttp\Client">

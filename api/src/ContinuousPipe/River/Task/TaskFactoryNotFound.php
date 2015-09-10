@@ -2,6 +2,6 @@
 
 namespace ContinuousPipe\River\Task;
 
-class TaskNotFound extends \Exception
+class TaskFactoryNotFound extends \Exception
 {
 }

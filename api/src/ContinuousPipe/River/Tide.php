@@ -102,12 +102,10 @@ class Tide
      */
     public function apply(TideEvent $event)
     {
-        // $this->removeEventIfAlreadyInCollection($event);
-
         if ($event instanceof TideCreated) {
             $this->applyTideCreated($event);
         } elseif (!$event instanceof TideFailed) {
-            $this->tasks->apply($this->context, $event);
+            $this->tasks->apply($event);
 
             if (($event instanceof TideStarted || $this->isRunning()) && !$this->locked) {
                 $this->handleTasks($event);
@@ -126,8 +124,8 @@ class Tide
         $this->newEvents = [];
 
         // Get tasks' events
-        foreach ($this->tasks->getTasks() as $tasks) {
-            foreach ($tasks->popNewEvents() as $event) {
+        foreach ($this->tasks->getTasks() as $task) {
+            foreach ($task->popNewEvents() as $event) {
                 $events[] = $event;
             }
         }
@@ -169,7 +167,7 @@ class Tide
         } elseif ($this->tasks->hasFailed()) {
             $this->newEvents[] = new TideFailed($event->getTideUuid());
         } elseif (null !== ($nextTask = $this->tasks->next())) {
-            $nextTask->start($this->context);
+            $nextTask->start();
         } elseif ($this->tasks->allSuccessful()) {
             $this->newEvents[] = new TideSuccessful($event->getTideUuid());
         }
@@ -205,14 +203,5 @@ class Tide
     private function isSuccessful()
     {
         return 0 < $this->events->numberOfEventsOfType(TideSuccessful::class);
-    }
-
-    /**
-     * @param $event
-     */
-    private function removeEventIfAlreadyInCollection($event)
-    {
-        $this->tasks->removeEventIfAlreadyInCollection($event);
-        $this->events->removeIfExists($event);
     }
 }

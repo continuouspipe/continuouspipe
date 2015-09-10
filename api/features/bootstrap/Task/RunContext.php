@@ -146,6 +146,7 @@ class RunContext implements Context
         ));
 
         if (!in_array($response->getStatusCode(), [200, 204])) {
+            echo $response->getContent();
             throw new \RuntimeException(sprintf(
                 'Expected status code 200 but got %d',
                 $response->getStatusCode()

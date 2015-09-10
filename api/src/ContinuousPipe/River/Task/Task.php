@@ -3,26 +3,18 @@
 namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\EventCollection;
-use ContinuousPipe\River\TideContext;
 
 interface Task
 {
     /**
-     * @param TideContext $context
+     * Start the task.
+     */
+    public function start();
+
+    /**
      * @param TideEvent $event
      */
-    public function apply(TideContext $context, TideEvent $event);
-
-    /**
-     * @return TideEvent[]
-     */
-    public function popNewEvents();
-
-    /**
-     * @param TideContext $context
-     */
-    public function start(TideContext $context);
+    public function apply(TideEvent $event);
 
     /**
      * Is this task running ?
@@ -51,12 +43,7 @@ interface Task
     public function isPending();
 
     /**
-     * Clear the state of the task, as it's being reused.
+     * @return TideEvent[]
      */
-    public function clear();
-
-    /**
-     * @return EventCollection
-     */
-    public function getEvents();
+    public function popNewEvents();
 }

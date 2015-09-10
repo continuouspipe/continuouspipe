@@ -22,7 +22,7 @@
         </service>
         <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
             <argument type="service" id="log_stream.logger_factory" />
-            <argument type="service" id="river.task_registry" />
+            <argument type="service" id="river.task_factory_registry" />
             <argument type="service" id="river.repository.flow" />
         </service>
 

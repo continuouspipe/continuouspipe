@@ -3,10 +3,10 @@
 namespace ContinuousPipe\River\Task\Run;
 
 use ContinuousPipe\River\Context;
-use ContinuousPipe\River\TideContext;
+use ContinuousPipe\River\Task\TaskContext;
 use LogStream\Log;
 
-class RunContext extends TideContext
+class RunContext extends TaskContext
 {
     const KEY_IMAGE_NAME = 'image';
     const KEY_COMMANDS = 'commands';

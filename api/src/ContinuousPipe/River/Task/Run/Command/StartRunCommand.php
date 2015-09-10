@@ -23,9 +23,9 @@ class StartRunCommand
     private $taskId;
 
     /**
-     * @param Uuid $uuid
+     * @param Uuid       $uuid
      * @param RunContext $context
-     * @param int $taskId
+     * @param int        $taskId
      */
     public function __construct(Uuid $uuid, RunContext $context, $taskId)
     {

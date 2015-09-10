@@ -11,6 +11,7 @@ class TaskContext extends TideContext
 
     /**
      * @param Context $parent
+     * @param int     $taskId
      *
      * @return TaskContext
      */
