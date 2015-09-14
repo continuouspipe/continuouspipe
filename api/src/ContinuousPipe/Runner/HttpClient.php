@@ -53,7 +53,7 @@ class HttpClient implements Client
     public function run(Client\RunRequest $request, User $user)
     {
         try {
-            $response = $this->client->post($this->baseUrl, [
+            $response = $this->client->post($this->baseUrl.'/run', [
                 'body' => $this->serializer->serialize($request, 'json'),
                 'headers' => $this->getRequestHeaders($user),
             ]);
