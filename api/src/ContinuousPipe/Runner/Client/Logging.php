@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 class Logging
 {
     /**
-     * @JMS\Type("ContinuousPipe\Running\Client\Logging\LogStream")
+     * @JMS\Type("ContinuousPipe\Runner\Client\Logging\LogStream")
      *
      * @var LogStream
      */
