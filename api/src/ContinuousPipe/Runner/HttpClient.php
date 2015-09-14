@@ -66,7 +66,7 @@ class HttpClient implements Client
 
         $contents = json_decode($this->getResponseContents($response));
 
-        return Uuid::fromString($contents['uuid']);
+        return Uuid::fromString($contents->uuid);
     }
 
     /**
