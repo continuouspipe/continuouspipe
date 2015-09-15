@@ -71,12 +71,18 @@ class BuildHandler
             $message = $e->getMessage() ? ': '.$e->getMessage() : '';
             $logger->append(new Text('An Docker error occurred'.$message));
             $build->updateStatus(Build::STATUS_ERROR);
+
+            throw $e;
         } catch (BuildException $e) {
             $logger->append(new Text($e->getMessage()));
             $build->updateStatus(Build::STATUS_ERROR);
+
+            throw $e;
         } catch (\Exception $e) {
             $this->appendException($logger, $e);
             $build->updateStatus(Build::STATUS_ERROR);
+
+            throw $e;
         } finally {
             $build = $this->buildRepository->save($build);
         }

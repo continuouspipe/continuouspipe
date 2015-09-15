@@ -27,9 +27,10 @@ class ArchivePacker
      * Create an archive from the given ZIP archive.
      *
      * @param Context $context
-     * @param string $url
+     * @param string  $url
      *
      * @throws ArchiveCreationException
+     *
      * @return FileSystemArchive
      */
     public function createFromUrl(Context $context, $url)
@@ -53,7 +54,8 @@ class ArchivePacker
      * This methods returns the local temporary path of the created tar archive.
      *
      * @param Context $context
-     * @param string $archiveFilePath
+     * @param string  $archiveFilePath
+     *
      * @return string
      */
     private function repackageWithTarAndWithDirectoriesAtTheRoot(Context $context, $archiveFilePath)
@@ -74,7 +76,9 @@ class ArchivePacker
 
     /**
      * @param string $archiveFilePath
+     *
      * @return string
+     *
      * @throws ArchiveCreationException
      */
     private function extractGitHubArchive($archiveFilePath)
@@ -94,7 +98,8 @@ class ArchivePacker
 
     /**
      * @param Context $context
-     * @param string $rootProjectDirectory
+     * @param string  $rootProjectDirectory
+     *
      * @return string
      */
     private function getRootBuildDirectory(Context $context, $rootProjectDirectory)
@@ -111,7 +116,9 @@ class ArchivePacker
 
     /**
      * @param string $extractedArchivePath
+     *
      * @return string
+     *
      * @throws ArchiveCreationException
      */
     private function getRootProjectDirectory($extractedArchivePath)
@@ -145,5 +152,4 @@ class ArchivePacker
     {
         return sys_get_temp_dir().DIRECTORY_SEPARATOR.uniqid($prefix);
     }
-
 }

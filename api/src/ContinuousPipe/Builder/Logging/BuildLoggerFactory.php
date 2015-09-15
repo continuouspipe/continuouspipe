@@ -3,9 +3,7 @@
 namespace ContinuousPipe\Builder\Logging;
 
 use ContinuousPipe\Builder\Build;
-use LogStream\EmptyLogger;
 use LogStream\LoggerFactory;
-use LogStream\WrappedLog;
 
 class BuildLoggerFactory
 {
@@ -31,12 +29,10 @@ class BuildLoggerFactory
     {
         if ($logging = $build->getRequest()->getLogging()) {
             if ($logStream = $logging->getLogstream()) {
-                return $this->loggerFactory->from(
-                    new WrappedLog($logStream->getParentLogIdentifier())
-                );
+                return $this->loggerFactory->fromId($logStream->getParentLogIdentifier());
             }
         }
 
-        return new EmptyLogger();
+        return $this->loggerFactory->create();
     }
 }

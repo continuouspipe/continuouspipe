@@ -4,7 +4,6 @@ namespace ContinuousPipe\Builder\GitHub;
 
 use ContinuousPipe\Builder\Archive;
 use GuzzleHttp\Client;
-use Symfony\Component\Finder\Finder;
 
 class GitHubArchive implements Archive
 {

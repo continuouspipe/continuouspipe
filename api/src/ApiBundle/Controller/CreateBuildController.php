@@ -10,7 +10,7 @@ use ContinuousPipe\User\Security\UserContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use SimpleBus\Message\Bus\MessageBus;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use FOS\RestBundle\Controller\Annotations\View;
 
 /**
  * @Route(service="api.controller.create_build")
@@ -46,6 +46,7 @@ class CreateBuildController
     /**
      * @Route("/build", methods={"POST"})
      * @ParamConverter("request", converter="build_request")
+     * @View
      */
     public function postAction(BuildRequest $request)
     {
@@ -56,6 +57,6 @@ class CreateBuildController
 
         $this->commandBus->handle(BuildCommand::forBuild($build));
 
-        return new JsonResponse($build);
+        return $build->jsonSerialize();
     }
 }

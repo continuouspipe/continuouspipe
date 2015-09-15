@@ -71,9 +71,9 @@ class HttpClient implements Client
                     }
 
                     throw new DockerException($output);
-                } else if (array_key_exists('stream', $output)) {
+                } elseif (array_key_exists('stream', $output)) {
                     $output = $output['stream'];
-                } else if (array_key_exists('status', $output)) {
+                } elseif (array_key_exists('status', $output)) {
                     $output = $output['status'];
                 }
             }

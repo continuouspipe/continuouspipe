@@ -2,6 +2,11 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
+use ContinuousPipe\User\DockerRegistryCredentials;
+use ContinuousPipe\User\Tests\Authenticator\InMemoryAuthenticatorClient;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use ContinuousPipe\Builder\Tests\Docker\FakeDockerBuilder;
@@ -14,25 +19,39 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var Kernel
      */
     private $kernel;
-    /**
-     * @var FakeDockerBuilder
-     */
-    private $fakeDockerBuilder;
+
     /**
      * @var TokenStorageInterface
      */
     private $tokenStorage;
 
     /**
-     * @param Kernel $kernel
-     * @param FakeDockerBuilder $fakeDockerBuilder
-     * @param TokenStorageInterface $tokenStorage
+     * @var TraceableDockerClient
      */
-    public function __construct(Kernel $kernel, FakeDockerBuilder $fakeDockerBuilder, TokenStorageInterface $tokenStorage)
+    private $traceableDockerClient;
+
+    /**
+     * @var InMemoryAuthenticatorClient
+     */
+    private $inMemoryAuthenticatorClient;
+
+    /**
+     * @var Response|null
+     */
+    private $response;
+
+    /**
+     * @param Kernel $kernel
+     * @param TraceableDockerClient $traceableDockerClient
+     * @param TokenStorageInterface $tokenStorage
+     * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
+     */
+    public function __construct(Kernel $kernel, TraceableDockerClient $traceableDockerClient, TokenStorageInterface $tokenStorage, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient)
     {
         $this->kernel = $kernel;
-        $this->fakeDockerBuilder = $fakeDockerBuilder;
         $this->tokenStorage = $tokenStorage;
+        $this->traceableDockerClient = $traceableDockerClient;
+        $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
     }
 
     /**
@@ -51,19 +70,11 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      */
     public function iSendTheFollowingBuildRequest(PyStringNode $requestJson)
     {
-        $response = $this->kernel->handle(Request::create(
+        $this->response = $this->kernel->handle(Request::create(
             '/build',
             'POST', [], [], [], [],
             $requestJson->getRaw()
         ));
-
-        if ($response->getStatusCode() !== 200) {
-            echo ($response->getContent());
-            throw new \RuntimeException(sprintf(
-                'Got response code %d, expected 200',
-                $response->getStatusCode()
-            ));
-        }
     }
 
     /**
@@ -72,9 +83,10 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     public function theImageShouldBeBuilt($name)
     {
         $found = [];
+        $buildRequests = $this->traceableDockerClient->getBuilds();
 
-        foreach ($this->fakeDockerBuilder->getBuilds() as $build) {
-            $image = $build->getRequest()->getImage();
+        foreach ($buildRequests as $request) {
+            $image = $request->getImage();
             $imageName = sprintf('%s:%s', $image->getName(), $image->getTag());
             if ($imageName == $name) {
                 return;
@@ -84,5 +96,123 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         }
 
         throw new \RuntimeException(sprintf('Image "%s" not found (but found %s)', $name, implode(', ', $found)));
+    }
+
+    /**
+     * @Then the image :name should be pushed
+     */
+    public function theImageShouldBePushed($name)
+    {
+        $found = [];
+        $pushedImages = $this->traceableDockerClient->getPushes();
+
+        foreach ($pushedImages as $image) {
+            $imageName = sprintf('%s:%s', $image->getName(), $image->getTag());
+            if ($imageName == $name) {
+                return;
+            }
+
+            $found[] = $imageName;
+        }
+
+        throw new \RuntimeException(sprintf('Image "%s" not found (but found %s)', $name, implode(', ', $found)));
+    }
+
+    /**
+     * @When I send a build request for the fixture repository :repository with the following environment:
+     */
+    public function iSendABuildRequestForTheFixtureRepositoryWithTheFollowingEnvironment($repository, TableNode $table)
+    {
+        $environmentJson = json_encode(array_reduce($table->getHash(), function($list, $env) {
+            $list[$env['name']] = $env['value'];
+        }, []));
+
+        $contents = <<<EOF
+{
+  "image": {
+    "name": "my/image",
+    "tag": "master"
+  },
+  "repository": {
+    "address": "fixtures://$repository",
+    "branch": "master"
+  },
+  "environment": $environmentJson
+}
+EOF;
+
+        $this->response = $this->kernel->handle(Request::create(
+            '/build',
+            'POST', [], [], [], [],
+            $contents
+        ));
+    }
+
+    /**
+     * @Then the build should be successful
+     */
+    public function theBuildShouldBeSuccessful()
+    {
+        if ($this->response->getStatusCode() !== 200) {
+            echo $this->response->getContent();
+            throw new \RuntimeException(sprintf(
+                'Got response code %d, expected 200',
+                $this->response->getStatusCode()
+            ));
+        }
+
+        $json = json_decode($this->response->getContent(), true);
+        if (false === $json) {
+            throw new \RuntimeException('Found non-JSON response');
+        }
+
+        if ($json['status'] != 'success') {
+            throw new \RuntimeException(sprintf(
+                'Expected status to be successful, but found "%s"',
+                $json['status']
+            ));
+        }
+    }
+
+    /**
+     * @Given I have docker registry credentials
+     */
+    public function iHaveDockerRegistryCredentials()
+    {
+        $this->inMemoryAuthenticatorClient->addDockerCredentials('samuel', new DockerRegistryCredentials('samuel', 'samuel', 'samuel', 'default'));
+    }
+
+    /**
+     * @Then the build should be errored
+     */
+    public function theBuildShouldBeErrored()
+    {
+        $json = json_decode($this->response->getContent(), true);
+        if (false === $json) {
+            throw new \RuntimeException('Found non-JSON response');
+        }
+
+        if (isset($json['status']) && $json['status'] != 'error') {
+            throw new \RuntimeException(sprintf(
+                'Expected status to be errored, but found "%s"',
+                $json['status']
+            ));
+        }
+    }
+
+    /**
+     * @Then the command :command should be ran on image :image
+     */
+    public function theCommandShouldBeRanOnImage($command, $image)
+    {
+        throw new \RuntimeException('Not implemented');
+    }
+
+    /**
+     * @Then a container should be commited with tag :tag
+     */
+    public function aContainerShouldBeCommitedWithTag($tag)
+    {
+        throw new \RuntimeException('Not implemented');
     }
 }
