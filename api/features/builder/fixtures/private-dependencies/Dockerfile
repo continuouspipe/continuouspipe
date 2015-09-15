@@ -4,6 +4,6 @@ ADD . /app
 RUN chmod +x private-check.sh
 RUN ./private-check.sh
 RUN echo "bar" /app/bar
-#~continuous-pipe:inject-environment~#
 WORKDIR /app
+#~continuous-pipe:inject-environment~#
 RUN ./private-check.sh
