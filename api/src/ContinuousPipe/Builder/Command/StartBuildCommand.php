@@ -5,7 +5,7 @@ namespace ContinuousPipe\Builder\Command;
 use ContinuousPipe\Builder\Build;
 use JMS\Serializer\Annotation as JMS;
 
-class BuildCommand
+class StartBuildCommand
 {
     /**
      * @JMS\Type("ContinuousPipe\Builder\Build")
@@ -19,7 +19,7 @@ class BuildCommand
      *
      * @param Build $build
      *
-     * @return BuildCommand
+     * @return StartBuildCommand
      */
     public static function forBuild(Build $build)
     {

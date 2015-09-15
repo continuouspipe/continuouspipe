@@ -44,7 +44,6 @@ class DockerBuilder implements Builder
     public function build(Build $build, Logger $logger)
     {
         $request = $build->getRequest();
-        $targetImage = $request->getImage();
 
         try {
             $archive = $this->archiveBuilder->getArchive($request, $build->getUser(), $logger);
@@ -53,6 +52,15 @@ class DockerBuilder implements Builder
         }
 
         $this->dockerClient->build($archive, $request, $logger);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function push(Build $build, Logger $logger)
+    {
+        $request = $build->getRequest();
+        $targetImage = $request->getImage();
 
         try {
             $credentials = $this->credentialsRepository->findByImage($targetImage, $build->getUser());

@@ -4,7 +4,7 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\BuildRepository;
-use ContinuousPipe\Builder\Command\BuildCommand;
+use ContinuousPipe\Builder\Command\StartBuildCommand;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\User\Security\UserContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -55,7 +55,7 @@ class CreateBuildController
         $build = Build::fromRequest($request, $user);
         $this->buildRepository->save($build);
 
-        $this->commandBus->handle(BuildCommand::forBuild($build));
+        $this->commandBus->handle(StartBuildCommand::forBuild($build));
 
         return $build->jsonSerialize();
     }
