@@ -22,14 +22,16 @@
         "friendsofsymfony/rest-bundle": "~1.7",
         "ramsey/uuid": "~2.8",
         "simple-bus/symfony-bridge": "~4.0",
-        "sroze/github-webhook": "*@dev",
-        "sroze/log-stream": "*@dev",
-        "continuous-pipe/security-bundle": "*@dev",
-        "continuous-pipe/builder-model": "*@dev",
-        "continuous-pipe/docker-compose": "*@dev",
         "nelmio/cors-bundle": "^1.4",
         "doctrine/doctrine-migrations-bundle": "^1.0",
-        "raven/raven": "^0.12.1"
+        "raven/raven": "^0.12.1",
+        "sroze/github-webhook": "*@dev",
+        "sroze/log-stream": "*@dev",
+        "continuous-pipe/user": "*@dev",
+        "continuous-pipe/model": "*@dev",
+        "continuous-pipe/security-bundle": "*@dev",
+        "continuous-pipe/builder-model": "*@dev",
+        "continuous-pipe/docker-compose": "*@dev"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -38,15 +40,6 @@
         "behat/symfony2-extension": "~2.0"
     },
     "scripts": {
-        "pre-install-cmd": [
-            "../../bin/conductor update -c ../.."
-        ],
-        "pre-update-cmd": [
-            "../../bin/conductor update -c ../.."
-        ],
-        "pre-autoload-dump": [
-            "../../bin/conductor symlink -c ../.."
-        ],
         "post-root-package-install": [
             "SymfonyStandard\\Composer::hookRootPackageInstall"
         ],
@@ -57,7 +50,6 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
         ],
         "post-update-cmd": [
-            "../../bin/conductor fix-composer-lock -c ../..",
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
@@ -85,8 +77,32 @@
     },
     "repositories": [
         {
-            "type": "artifact",
-            "url": "../../artifact/"
+            "type": "path",
+            "url": "../../package/github-webhook"
+        },
+        {
+            "type": "path",
+            "url": "../../package/log-stream"
+        },
+        {
+            "type": "path",
+            "url": "../../package/continuous-pipe-security-bundle"
+        },
+        {
+            "type": "path",
+            "url": "../../package/continuous-pipe-builder-model"
+        },
+        {
+            "type": "path",
+            "url": "../../package/continuous-pipe-user"
+        },
+        {
+            "type": "path",
+            "url": "../../package/docker-compose"
+        },
+        {
+            "type": "path",
+            "url": "../../package/model"
         }
     ]
 }
