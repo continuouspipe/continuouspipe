@@ -8,6 +8,7 @@ class LogStream
 {
     /**
      * @JMS\Type("string")
+     * @JMS\SerializedName("parentLogIdentifier")
      *
      * @var string
      */

@@ -15,6 +15,7 @@ class RunRequest
 
     /**
      * @JMS\Type("array<string, string>")
+     * @JMS\SerializedName("env")
      *
      * @var array
      */

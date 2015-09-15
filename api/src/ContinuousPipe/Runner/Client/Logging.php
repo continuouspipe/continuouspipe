@@ -9,6 +9,7 @@ class Logging
 {
     /**
      * @JMS\Type("ContinuousPipe\Runner\Client\Logging\LogStream")
+     * @JMS\SerializedName("logStream")
      *
      * @var LogStream
      */
