@@ -6,6 +6,8 @@
 
     <services>
         <service id="builder.build_repository" class="ContinuousPipe\Builder\Tests\Infrastructure\InMemory\InMemoryBuildRepository" />
-        <service id="builder.archive_builder" class="ContinuousPipe\Builder\Tests\FakeArchiveBuilder" />
+        <service id="builder.archive_builder" class="ContinuousPipe\Builder\Tests\FixturesArchiveBuilder">
+            <argument>%kernel.root_dir%/../features/fixtures</argument>
+        </service>
     </services>
 </container>

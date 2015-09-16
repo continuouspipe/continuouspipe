@@ -21,10 +21,14 @@ interface ArchiveReader
     /**
      * Extract an archive to the given repository.
      *
+     * Returns the path of the directory where the archive was extracted.
+     *
      * @param Archive $archive
      * @param string  $path
      *
+     * @return string
+     *
      * @throws ArchiveException
      */
-    public function extract(Archive $archive, $path);
+    public function extract(Archive $archive, $path = null);
 }

@@ -21,20 +21,20 @@ class DockerfileCommandExtractor implements CommandExtractor
     private $dockerfileResolver;
 
     /**
-     * @var Archive\Mutable\MutableArchiveBuilder
+     * @var Archive\Manipulator\ArchiveManipulatorFactory
      */
-    private $mutableArchiveBuilder;
+    private $archiveManipulatorFactory;
 
     /**
-     * @param Archive\ArchiveReader                 $archiveReader
-     * @param DockerfileResolver                    $dockerfileResolver
-     * @param Archive\Mutable\MutableArchiveBuilder $mutableArchiveBuilder
+     * @param Archive\ArchiveReader                         $archiveReader
+     * @param DockerfileResolver                            $dockerfileResolver
+     * @param Archive\Manipulator\ArchiveManipulatorFactory $archiveManipulatorFactory
      */
-    public function __construct(Archive\ArchiveReader $archiveReader, DockerfileResolver $dockerfileResolver, Archive\Mutable\MutableArchiveBuilder $mutableArchiveBuilder)
+    public function __construct(Archive\ArchiveReader $archiveReader, DockerfileResolver $dockerfileResolver, Archive\Manipulator\ArchiveManipulatorFactory $archiveManipulatorFactory)
     {
         $this->archiveReader = $archiveReader;
         $this->dockerfileResolver = $dockerfileResolver;
-        $this->mutableArchiveBuilder = $mutableArchiveBuilder;
+        $this->archiveManipulatorFactory = $archiveManipulatorFactory;
     }
 
     /**
@@ -75,10 +75,10 @@ class DockerfileCommandExtractor implements CommandExtractor
         // Get the first part before the boundary
         $dockerfileContents = substr($dockerfileContents, 0, $boundaryPosition);
 
-        $mutableArchive = $this->mutableArchiveBuilder->createFromArchive($archive);
-        $mutableArchive->write($dockerfilePath, $dockerfileContents);
+        $archiveManipulator = $this->archiveManipulatorFactory->getManipulatorForArchive($archive);
+        $archiveManipulator->write($dockerfilePath, $dockerfileContents);
 
-        return $mutableArchive->getArchive();
+        return $archiveManipulator->getArchive();
     }
 
     /**

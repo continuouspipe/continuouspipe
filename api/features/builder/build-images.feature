@@ -16,7 +16,7 @@ Feature:
         "tag": "continuous"
       },
       "repository": {
-        "address": "https://github.com/sroze/docker-php-example",
+        "address": "fixtures://php-example",
         "branch": "747850e8c821a443a7b5cee28a48581069049739"
       }
     }
@@ -34,7 +34,7 @@ Feature:
         "tag": "continuous"
       },
       "repository": {
-        "address": "https://github.com/sroze/docker-php-example",
+        "address": "fixtures://php-example",
         "branch": "747850e8c821a443a7b5cee28a48581069049739"
       }
     }
