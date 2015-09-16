@@ -70,7 +70,7 @@ class DockerBuilder implements Builder
         // Build the image
         $image = $this->dockerClient->build($archive, $request, $logger);
 
-        $this->runCommandsAndCommitImage($image, $commands);
+        $this->runCommandsAndCommitImage($logger, $image, $commands);
 
         return $image;
     }
@@ -93,12 +93,13 @@ class DockerBuilder implements Builder
     }
 
     /**
-     * @param Image $image
-     * @param array $commands
+     * @param Logger $logger
+     * @param Image  $image
+     * @param array  $commands
      *
      * @return Image
      */
-    private function runCommandsAndCommitImage(Image $image, array $commands)
+    private function runCommandsAndCommitImage(Logger $logger, Image $image, array $commands)
     {
         if (count($commands) == 0) {
             return $image;
@@ -106,7 +107,7 @@ class DockerBuilder implements Builder
 
         $container = $this->dockerClient->createContainer($image);
         foreach ($commands as $command) {
-            $container = $this->dockerClient->run($container, $command);
+            $container = $this->dockerClient->run($container, $logger, $command);
         }
 
         $this->dockerClient->commit($container, $image);
