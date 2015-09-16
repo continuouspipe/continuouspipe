@@ -123,9 +123,13 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      */
     public function iSendABuildRequestForTheFixtureRepositoryWithTheFollowingEnvironment($repository, TableNode $table)
     {
-        $environmentJson = json_encode(array_reduce($table->getHash(), function($list, $env) {
+        $environmentVariables = array_reduce($table->getHash(), function($list, $env) {
             $list[$env['name']] = $env['value'];
-        }, []));
+
+            return $list;
+        }, []);
+
+        $environmentVariablesJson = json_encode($environmentVariables);
 
         $contents = <<<EOF
 {
@@ -137,7 +141,7 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     "address": "fixtures://$repository",
     "branch": "master"
   },
-  "environment": $environmentJson
+  "environment": $environmentVariablesJson
 }
 EOF;
 
@@ -154,7 +158,6 @@ EOF;
     public function theBuildShouldBeSuccessful()
     {
         if ($this->response->getStatusCode() !== 200) {
-            echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
                 'Got response code %d, expected 200',
                 $this->response->getStatusCode()
@@ -205,14 +208,42 @@ EOF;
      */
     public function theCommandShouldBeRanOnImage($command, $image)
     {
-        throw new \RuntimeException('Not implemented');
+        $found = [];
+        $matchingRuns = array_filter($this->traceableDockerClient->getRuns(), function(array $run) use ($command, $image, &$found) {
+            /** @var \Docker\Container $container */
+            $container = $run['container'];
+            $containerImageName = $container->getImage()->getRepository().':'.$container->getImage()->getTag();
+
+            $found[] = $run['command'];
+
+            return $containerImageName == $image && $command == $run['command'];
+        });
+
+        if (0 == count($matchingRuns)) {
+            throw new \RuntimeException(sprintf(
+                'Found no matching runs, but found commands "%s"',
+                implode('", "', $found)
+            ));
+        }
     }
 
     /**
-     * @Then a container should be commited with tag :tag
+     * @Then a container should be committed with the image name :name
      */
-    public function aContainerShouldBeCommitedWithTag($tag)
+    public function aContainerShouldBeCommittedWithTheImageName($name)
     {
-        throw new \RuntimeException('Not implemented');
+        $matchingCommits = array_filter($this->traceableDockerClient->getCommits(), function(array $commit) use ($name) {
+            /** @var \ContinuousPipe\Builder\Image $image */
+            $image = $commit['image'];
+            $imageName = $image->getName().':'.$image->getTag();
+
+            return $imageName == $name;
+        });
+
+        if (0 == count($matchingCommits)) {
+            throw new \RuntimeException(sprintf(
+                'Found no matching commits'
+            ));
+        }
     }
 }

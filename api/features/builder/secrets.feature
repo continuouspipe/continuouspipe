@@ -14,5 +14,5 @@ Feature:
     Then the build should be successful
     And the image "my/image:master" should be built
     And the command "MY_PRIVATE_ENVIRON=foo sh -c './private-check.sh'" should be ran on image "my/image:master"
-    And a container should be commited with tag "my/image:master"
+    And a container should be committed with the image name "my/image:master"
     And the image "my/image:master" should be pushed

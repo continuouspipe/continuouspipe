@@ -32,6 +32,10 @@ class EmptyDockerClient implements Client
      */
     public function createContainer(Image $image)
     {
+        $container = new Container();
+        $container->setImage($image->getName().':'.$image->getTag());
+
+        return $container;
     }
 
     /**
@@ -39,6 +43,7 @@ class EmptyDockerClient implements Client
      */
     public function run(Container $container, Logger $logger, $command)
     {
+        return $container;
     }
 
     /**
@@ -46,5 +51,6 @@ class EmptyDockerClient implements Client
      */
     public function commit(Container $container, Image $image)
     {
+        return $image;
     }
 }

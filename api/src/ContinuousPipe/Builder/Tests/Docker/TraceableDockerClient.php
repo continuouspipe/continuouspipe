@@ -23,6 +23,16 @@ class TraceableDockerClient implements Client
     private $pushes = [];
 
     /**
+     * @var array
+     */
+    private $runs = [];
+
+    /**
+     * @var array
+     */
+    private $commits = [];
+
+    /**
      * @var Client
      */
     private $client;
@@ -70,7 +80,11 @@ class TraceableDockerClient implements Client
      */
     public function run(Container $container, Logger $logger, $command)
     {
-        return $this->client->run($container, $logger, $command);
+        $container = $this->client->run($container, $logger, $command);
+
+        $this->runs[] = ['container' => $container, 'command' => $command];
+
+        return $container;
     }
 
     /**
@@ -78,7 +92,11 @@ class TraceableDockerClient implements Client
      */
     public function commit(Container $container, Image $image)
     {
-        return $this->client->commit($container, $image);
+        $image = $this->client->commit($container, $image);
+
+        $this->commits[] = ['container' => $container, 'image' => $image];
+
+        return $image;
     }
 
     /**
@@ -95,5 +113,21 @@ class TraceableDockerClient implements Client
     public function getPushes()
     {
         return $this->pushes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRuns()
+    {
+        return $this->runs;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommits()
+    {
+        return $this->commits;
     }
 }
