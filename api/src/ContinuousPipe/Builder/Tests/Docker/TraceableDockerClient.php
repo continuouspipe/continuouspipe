@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Docker\Client;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
+use Docker\Container;
 use LogStream\Logger;
 
 class TraceableDockerClient implements Client
@@ -39,9 +40,11 @@ class TraceableDockerClient implements Client
      */
     public function build(Archive $archive, BuildRequest $request, Logger $logger)
     {
-        $this->client->build($archive, $request, $logger);
+        $image = $this->client->build($archive, $request, $logger);
 
         $this->builds[] = $request;
+
+        return $image;
     }
 
     /**
@@ -52,6 +55,30 @@ class TraceableDockerClient implements Client
         $this->client->push($image, $credentials, $logger);
 
         $this->pushes[] = $image;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createContainer(Image $image)
+    {
+        return $this->client->createContainer($image);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function run(Container $container, Logger $logger, $command)
+    {
+        return $this->client->run($container, $logger, $command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function commit(Container $container, Image $image)
+    {
+        return $this->client->commit($container, $image);
     }
 
     /**

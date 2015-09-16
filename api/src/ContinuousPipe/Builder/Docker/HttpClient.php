@@ -6,6 +6,7 @@ use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Request\BuildRequest;
+use Docker\Container;
 use Docker\Docker;
 use Docker\Exception\UnexpectedStatusCodeException;
 use GuzzleHttp\Exception\RequestException;
@@ -21,11 +22,18 @@ class HttpClient implements Client
     private $docker;
 
     /**
-     * @param Docker $docker
+     * @var DockerfileResolver
      */
-    public function __construct(Docker $docker)
+    private $dockerfileResolver;
+
+    /**
+     * @param Docker             $docker
+     * @param DockerfileResolver $dockerfileResolver
+     */
+    public function __construct(Docker $docker, DockerfileResolver $dockerfileResolver)
     {
         $this->docker = $docker;
+        $this->dockerfileResolver = $dockerfileResolver;
     }
 
     /**
@@ -33,7 +41,7 @@ class HttpClient implements Client
      */
     public function build(Archive $archive, BuildRequest $request, Logger $logger)
     {
-        $this->doBuild($archive, $request, $this->getOutputCallback($logger));
+        return $this->doBuild($archive, $request, $this->getOutputCallback($logger));
     }
 
     /**
@@ -50,6 +58,58 @@ class HttpClient implements Client
         } catch (UnexpectedStatusCodeException $e) {
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
         } catch (RequestException $e) {
+            throw new DockerException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createContainer(Image $image)
+    {
+        $container = new Container([
+            'Image' => $this->getImageName($image),
+        ]);
+
+        $this->docker->getContainerManager()->create($container);
+
+        return $container;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function run(Container $container, Logger $logger, $command)
+    {
+        $manager = $this->docker->getContainerManager();
+        try {
+            $execId = $manager->exec($container, [
+                '/bin/sh', '-c', $command,
+            ]);
+        } catch (UnexpectedStatusCodeException $e) {
+            throw new DockerException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        try {
+            $manager->execstart($execId, $this->getOutputCallback($logger));
+        } catch (RequestException $e) {
+            throw new DockerException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return $container;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function commit(Container $container, Image $image)
+    {
+        try {
+            return $this->docker->commit($container, [
+                'repo' => $image->getName(),
+                'tag' => $image->getTag(),
+            ]);
+        } catch (UnexpectedStatusCodeException $e) {
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
         }
     }
@@ -93,33 +153,40 @@ class HttpClient implements Client
      * @param BuildRequest $request
      * @param callable     $callback
      *
-     * @return \GuzzleHttp\Message\ResponseInterface
+     * @return Image
      */
     private function doBuild(Archive $archive, BuildRequest $request, callable $callback)
     {
         $image = $request->getImage();
-        $imageName = $image->getName().':'.$image->getTag();
 
         $options = [
             'q' => (integer) false,
-            't' => $imageName,
+            't' => $this->getImageName($image),
             'nocache' => (integer) false,
             'rm' => (integer) false,
+            'dockerfile' => $this->dockerfileResolver->getFilePath($request->getContext()),
         ];
-
-        $dockerFilePath = $request->getContext() ? $request->getContext()->getDockerFilePath() : null;
-        if (!empty($dockerFilePath)) {
-            $options['dockerfile'] = $dockerFilePath;
-        }
 
         $content = $archive->isStreamed() ? new Stream($archive->read()) : $archive->read();
 
-        return $this->docker->getHttpClient()->post(['/build{?data*}', ['data' => $options]], [
+        $this->docker->getHttpClient()->post(['/build{?data*}', ['data' => $options]], [
             'headers' => ['Content-Type' => 'application/tar'],
             'body' => $content,
             'stream' => true,
             'callback' => $callback,
             'wait' => true,
         ]);
+
+        return $image;
+    }
+
+    /**
+     * @param Image $image
+     *
+     * @return string
+     */
+    private function getImageName(Image $image)
+    {
+        return $image->getName().':'.$image->getTag();
     }
 }
