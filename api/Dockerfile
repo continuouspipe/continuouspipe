@@ -17,16 +17,10 @@ RUN mv composer.phar /usr/bin/composer
 
 # Add the application
 ADD . /app
-WORKDIR /app
-
-# Install main dependencies
-RUN composer install -o --no-dev
 
 # Install application dependencies
 WORKDIR /app/apps/river
-
-# Workarround waiting a better solution than conductor
-RUN composer update -o
+RUN composer install -o
 
 # Fixes permissions, as apache will run as `www-data`
 RUN rm -rf app/cache/* && rm -rf app/logs/* && \

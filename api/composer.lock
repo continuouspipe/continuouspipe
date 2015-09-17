@@ -62,7 +62,7 @@
         },
         {
             "name": "continuous-pipe/builder-model",
-            "version": "dev-composer-path",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "../../package/continuous-pipe-builder-model",
@@ -78,7 +78,7 @@
         },
         {
             "name": "continuous-pipe/docker-compose",
-            "version": "dev-composer-path",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "../../package/docker-compose",
@@ -98,7 +98,7 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "dev-composer-path",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "../../package/model",
@@ -114,7 +114,7 @@
         },
         {
             "name": "continuous-pipe/security-bundle",
-            "version": "dev-composer-path",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "../../package/continuous-pipe-security-bundle",
@@ -134,7 +134,7 @@
         },
         {
             "name": "continuous-pipe/user",
-            "version": "dev-composer-path",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "../../package/continuous-pipe-user",
@@ -488,16 +488,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "v2.5.1",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "628c2256b646ae2417d44e063bce8aec5199d48d"
+                "reference": "01dbcbc5cd0a913d751418e635434a18a2f2a75c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/628c2256b646ae2417d44e063bce8aec5199d48d",
-                "reference": "628c2256b646ae2417d44e063bce8aec5199d48d",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/01dbcbc5cd0a913d751418e635434a18a2f2a75c",
+                "reference": "01dbcbc5cd0a913d751418e635434a18a2f2a75c",
                 "shasum": ""
             },
             "require": {
@@ -555,7 +555,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2015-01-12 21:52:47"
+            "time": "2015-09-16 16:29:33"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -2843,7 +2843,7 @@
         },
         {
             "name": "sroze/github-webhook",
-            "version": "dev-composer-path",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "../../package/github-webhook",
@@ -2869,7 +2869,7 @@
         },
         {
             "name": "sroze/log-stream",
-            "version": "dev-composer-path",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "../../package/log-stream",
