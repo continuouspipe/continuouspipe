@@ -1,9 +1,9 @@
-<p><strong>run</strong><br />Run commands in the given container.</p>
+<p><strong>run</strong><br />Run commands on the given service.</p>
 
 <form>
     <div class="form-group fg-line">
-        <label for="imageNameImput">Image name</label>
-        <input type="text" ng-model="task.context.image" class="form-control input-sm" id="imageNameImput" placeholder="Enter image name">
+        <label for="serviceNameImput">Docker compose service</label>
+        <input type="text" ng-model="task.context.service" class="form-control input-sm" id="serviceNameImput" placeholder="Enter docker compose service name">
     </div>
 
     <div class="form-group fg-line">
