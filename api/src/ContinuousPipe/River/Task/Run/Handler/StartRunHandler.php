@@ -84,8 +84,12 @@ class StartRunHandler
      */
     private function getImage(RunContext $context)
     {
-        $imageName = $this->dockerComposeReader->getImageName($context);
-        $tag = $context->getCodeReference()->getBranch();
+        try {
+            $imageName = $this->dockerComposeReader->getImageName($context);
+            $tag = $context->getCodeReference()->getBranch();
+        } catch (DockerCompose\ImageNameNotFound $e) {
+            return $context->getServiceName();
+        }
 
         return $imageName . ':' . $tag;
     }

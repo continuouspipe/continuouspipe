@@ -31,6 +31,7 @@ class Reader
 
     /**
      * @param RunContext $context
+     * @throws ImageNameNotFound
      *
      * @return string
      */
