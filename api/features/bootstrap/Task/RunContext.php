@@ -67,7 +67,7 @@ class RunContext implements Context
         $this->flowContext->createFlowWithTasks([
             new Task('run', [
                 'commands' => 'bin/behat',
-                'image' => 'sroze/behat'
+                'service' => 'image0'
             ])
         ]);
 
@@ -75,7 +75,7 @@ class RunContext implements Context
     }
 
     /**
-     * @When a run request should be sent
+     * @Then a run request should be sent
      */
     public function aRunRequestShouldBeSent()
     {

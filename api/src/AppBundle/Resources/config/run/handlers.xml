@@ -5,6 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="river.task.run.docker_compose.reader" class="ContinuousPipe\River\Task\Run\DockerCompose\Reader">
+            <argument type="service" id="river.docker_compose.parser.project" />
+            <argument type="service" id="river.file_system_resolver" />
+        </service>
+
         <service id="runner.client" class="ContinuousPipe\Runner\HttpClient">
             <argument type="service" id="river.pipe_client.guzzle_client" />
             <argument type="service" id="jms_serializer" />
@@ -15,6 +20,7 @@
         <service id="runner.handler.start_run" class="ContinuousPipe\River\Task\Run\Handler\StartRunHandler">
             <argument type="service" id="runner.client" />
             <argument type="service" id="router" />
+            <argument type="service" id="river.task.run.docker_compose.reader" />
             <argument type="service" id="simple_bus.event_bus" />
 
             <tag name="command_handler" handles="ContinuousPipe\River\Task\Run\Command\StartRunCommand" />

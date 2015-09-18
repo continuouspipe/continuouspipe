@@ -3,9 +3,12 @@ Feature:
   As a developer
   I want to be able to run arbitrary commands in images
 
+  Background:
+    Given there is 1 application images in the repository
+
   Scenario:
-    Given a run task is started
-    When a run request should be sent
+    When a run task is started
+    Then a run request should be sent
 
   Scenario:
     Given a run task is started
