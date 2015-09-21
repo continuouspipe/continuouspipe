@@ -2,8 +2,10 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
+use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use Github\Client;
+use GuzzleHttp\Exception\RequestException;
 
 class GitHubRelativeFileSystem implements RelativeFileSystem
 {
@@ -51,14 +53,23 @@ class GitHubRelativeFileSystem implements RelativeFileSystem
      */
     public function getContents($filePath)
     {
-        $contentsResult = $this->client->repo()->contents()->show(
-            $this->repositoryDescription->getUsername(),
-            $this->repositoryDescription->getRepository(),
-            $filePath,
-            $this->reference
-        );
+        try {
+            $contentsResult = $this->client->repo()->contents()->show(
+                $this->repositoryDescription->getUsername(),
+                $this->repositoryDescription->getRepository(),
+                $filePath,
+                $this->reference
+            );
+        } catch (RequestException $e) {
+            throw new FileNotFound($e->getMessage(), $e->getCode(), $e);
+        }
 
-        $contents = base64_decode($contentsResult['content']);
+        if (false === ($contents = base64_decode($contentsResult['content']))) {
+            throw new FileNotFound(sprintf(
+                'Unable to decode base64 content of file "%s"',
+                $filePath
+            ));
+        }
 
         return $contents;
     }

@@ -2,12 +2,14 @@
 
 namespace ContinuousPipe\River\Task\Build\Handler;
 
+use ContinuousPipe\Builder\BuilderException;
 use ContinuousPipe\Builder\BuildRequestCreator;
-use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Build\Command\BuildImageCommand;
 use ContinuousPipe\River\Task\Build\Command\BuildImagesCommand;
+use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
+use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -65,14 +67,20 @@ class BuildImagesHandler
 
         try {
             $buildRequests = $this->buildRequestCreator->createBuildRequests($tideContext->getCodeReference(), $tideContext->getUser());
-            if (empty($buildRequests)) {
-                throw new \RuntimeException('No image to build');
-            }
-        } catch (FileNotFound $e) {
-            $buildRequests = [];
+        } catch (BuilderException $e) {
+            $logger->append(new Text($e->getMessage()));
+            $this->eventBus->handle(new ImageBuildsFailed($tideUuid, $command->getLog()));
+
+            return;
         }
 
         $this->eventBus->handle(new ImageBuildsStarted($tideUuid, $buildRequests, $command->getLog()));
+
+        if (empty($buildRequests)) {
+            $logger->append(new Text('Found no image to build'));
+            $this->eventBus->handle(new ImageBuildsSuccessful($tideUuid, $command->getLog()));
+        }
+
         foreach ($buildRequests as $buildRequest) {
             $log = $logger->append(new Text(sprintf('Building image \'%s\'', $buildRequest->getImage()->getName())));
 

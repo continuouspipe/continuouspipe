@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
+use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
@@ -39,10 +40,14 @@ class BuildRequestCreator
      */
     public function createBuildRequests(CodeReference $codeReference, User $user)
     {
-        $dockerComposeComponents = $this->dockerComposeProjectParser->parse(
-            $this->fileSystemResolver->getFileSystem($codeReference, $user),
-            $codeReference->getBranch()
-        );
+        try {
+            $dockerComposeComponents = $this->dockerComposeProjectParser->parse(
+                $this->fileSystemResolver->getFileSystem($codeReference, $user),
+                $codeReference->getBranch()
+            );
+        } catch (FileNotFound $e) {
+            throw new BuilderException($e->getMessage(), $e->getCode(), $e);
+        }
 
         $buildRequests = [];
         foreach ($dockerComposeComponents as $componentName => $rawDockerComposeComponent) {
