@@ -6,6 +6,7 @@ use ContinuousPipe\River\ArrayContext;
 use ContinuousPipe\River\Task\Deploy\DeployContext;
 use JMS\Serializer\GraphNavigator;
 use JMS\Serializer\Handler\SubscribingHandlerInterface;
+use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\JsonSerializationVisitor;
 
 class DeployContextSerializerHandler implements SubscribingHandlerInterface
@@ -41,19 +42,19 @@ class DeployContextSerializerHandler implements SubscribingHandlerInterface
      */
     public function serializeContext(JsonSerializationVisitor $visitor, DeployContext $context)
     {
-        return json_encode($context->getBag());
+        return base64_encode(serialize($context));
     }
 
     /**
      * Deserialize UUID from string.
      *
-     * @param JsonSerializationVisitor $visitor
-     * @param string                   $string
+     * @param JsonDeserializationVisitor $visitor
+     * @param string                     $string
      *
      * @return DeployContext
      */
-    public function deserializeContext(JsonSerializationVisitor $visitor, $string)
+    public function deserializeContext(JsonDeserializationVisitor $visitor, $string)
     {
-        return new DeployContext(ArrayContext::fromRaw(json_decode($string, true)));
+        return unserialize(base64_decode($string));
     }
 }
