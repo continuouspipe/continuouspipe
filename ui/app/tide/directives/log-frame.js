@@ -9,7 +9,7 @@ angular.module('continuousPipeRiver')
             },
             template: '<iframe class="log-frame"></iframe>',
             link: function(scope, element) {
-                $('iframe', element).attr('src', LOG_STREAM_URL+'/#/log/'+scope.log);
+                $('iframe', element).attr('src', LOG_STREAM_URL+'/#/log/'+scope.log).attr('allowtransparency', 'true');
 
                 setTimeout(function() {
                     $('iframe', element).iFrameResize({
