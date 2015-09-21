@@ -3,34 +3,42 @@
 namespace ContinuousPipe\River\Task\Build\Command;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
-use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
+use JMS\Serializer\Annotation as JMS;
 
 class BuildImageCommand
 {
     /**
+     * @JMS\Type("ContinuousPipe\Builder\Request\BuildRequest")
+     *
      * @var BuildRequest
      */
     private $buildRequest;
+
     /**
+     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     *
      * @var Uuid
      */
     private $tideUuid;
+
     /**
-     * @var Log
+     * @JMS\Type("string")
+     *
+     * @var string
      */
-    private $log;
+    private $logId;
 
     /**
      * @param Uuid         $tideUuid
      * @param BuildRequest $buildRequest
-     * @param Log          $log
+     * @param string       $logId
      */
-    public function __construct(Uuid $tideUuid, BuildRequest $buildRequest, Log $log)
+    public function __construct(Uuid $tideUuid, BuildRequest $buildRequest, $logId)
     {
         $this->buildRequest = $buildRequest;
         $this->tideUuid = $tideUuid;
-        $this->log = $log;
+        $this->logId = $logId;
     }
 
     /**
@@ -50,10 +58,10 @@ class BuildImageCommand
     }
 
     /**
-     * @return Log
+     * @return string
      */
-    public function getLog()
+    public function getLogId()
     {
-        return $this->log;
+        return $this->logId;
     }
 }

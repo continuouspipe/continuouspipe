@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Serializer;
 use JMS\Serializer\GraphNavigator;
 use JMS\Serializer\Handler\SubscribingHandlerInterface;
 use JMS\Serializer\JsonSerializationVisitor;
+use JMS\Serializer\VisitorInterface;
 use Rhumsaa\Uuid\Uuid;
 
 class UuidHandler implements SubscribingHandlerInterface
@@ -21,6 +22,12 @@ class UuidHandler implements SubscribingHandlerInterface
                 'format' => 'json',
                 'method' => 'serializeUuid',
             ],
+            [
+                'direction' => GraphNavigator::DIRECTION_DESERIALIZATION,
+                'type' => Uuid::class,
+                'format' => 'json',
+                'method' => 'deserializeUuid',
+            ],
         ];
     }
 
@@ -35,5 +42,18 @@ class UuidHandler implements SubscribingHandlerInterface
     public function serializeUuid(JsonSerializationVisitor $visitor, Uuid $uuid)
     {
         return (string) $uuid;
+    }
+
+    /**
+     * Deserialize UUID from string.
+     *
+     * @param VisitorInterface $visitor
+     * @param string           $string
+     *
+     * @return Uuid
+     */
+    public function deserializeUuid(VisitorInterface $visitor, $string)
+    {
+        return Uuid::fromString($string);
     }
 }

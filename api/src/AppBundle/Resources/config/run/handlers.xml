@@ -17,6 +17,10 @@
             <argument>%runner_base_url%</argument>
         </service>
 
+        <service id="river.task.run.serializer.context_handler" class="ContinuousPipe\River\Task\Run\Serializer\RunContextSerializerHandler">
+            <tag name="jms_serializer.subscribing_handler" />
+        </service>
+
         <service id="runner.handler.start_run" class="ContinuousPipe\River\Task\Run\Handler\StartRunHandler">
             <argument type="service" id="runner.client" />
             <argument type="service" id="router" />

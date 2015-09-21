@@ -49,4 +49,12 @@ class ArrayContext implements Context
     {
         $this->bag[$key] = $value;
     }
+
+    /**
+     * @return array
+     */
+    public function getBag()
+    {
+        return $this->bag;
+    }
 }

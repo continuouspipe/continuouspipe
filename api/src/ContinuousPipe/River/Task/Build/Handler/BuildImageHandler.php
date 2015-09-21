@@ -11,7 +11,6 @@ use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Build\Command\BuildImageCommand;
 use ContinuousPipe\River\Task\Build\Event\BuildStarted;
-use LogStream\Log;
 use LogStream\LoggerFactory;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
@@ -60,7 +59,7 @@ class BuildImageHandler
         $tideUuid = $command->getTideUuid();
         $tide = $this->tideRepository->find($tideUuid);
 
-        $buildRequest = $this->getBuildRequestWithNotificationConfiguration($tideUuid, $command->getBuildRequest(), $command->getLog());
+        $buildRequest = $this->getBuildRequestWithNotificationConfiguration($tideUuid, $command->getBuildRequest(), $command->getLogId());
         $build = $this->builderClient->build($buildRequest, $tide->getContext()->getUser());
 
         $this->eventBus->handle(new BuildStarted($tideUuid, $build));
@@ -71,11 +70,11 @@ class BuildImageHandler
      *
      * @param Uuid         $tideUuid
      * @param BuildRequest $buildRequest
-     * @param Log          $parentLog
+     * @param string       $parentLogId
      *
      * @return BuildRequest
      */
-    private function getBuildRequestWithNotificationConfiguration(Uuid $tideUuid, BuildRequest $buildRequest, Log $parentLog)
+    private function getBuildRequestWithNotificationConfiguration(Uuid $tideUuid, BuildRequest $buildRequest, $parentLogId)
     {
         $address = $this->urlGenerator->generate('builder_notification_post', [
             'tideUuid' => (string) $tideUuid,
@@ -86,7 +85,7 @@ class BuildImageHandler
             $buildRequest->getImage(),
             $buildRequest->getContext(),
             Notification::withHttp(HttpNotification::fromAddress($address)),
-            Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLog->getId()))
+            Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLogId))
         );
 
         return $buildRequest;

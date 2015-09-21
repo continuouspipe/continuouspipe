@@ -79,4 +79,20 @@ class FlowContext implements Context
     {
         return $this->context->set($key, $value);
     }
+
+    /**
+     * @return Context
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBag()
+    {
+        return $this->context->getBag();
+    }
 }

@@ -59,7 +59,7 @@ class StartDeploymentHandler
             $deployment = $this->pipeClient->start($deploymentRequest, $deployContext->getUser());
             $this->eventBus->handle(new DeploymentStarted($command->getTideUuid(), $deployment));
         } catch (\Exception $e) {
-            $failedDeployment = new Client\Deployment(Uuid::uuid1(), $deploymentRequest, Client\Deployment::STATUS_FAILURE);
+            $failedDeployment = new Client\Deployment(Uuid::fromString(Uuid::NIL), $deploymentRequest, Client\Deployment::STATUS_FAILURE);
             $this->eventBus->handle(new DeploymentFailed($command->getTideUuid(), $failedDeployment));
 
             $logger = $this->loggerFactory->from($deployContext->getLog());

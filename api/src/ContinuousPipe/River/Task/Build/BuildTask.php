@@ -132,7 +132,7 @@ class BuildTask extends EventDrivenTask
 
         $this->commandBus->handle(new BuildImagesCommand(
             $this->context->getTideUuid(),
-            $log
+            $log->getId()
         ));
     }
 

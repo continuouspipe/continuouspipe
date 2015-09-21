@@ -45,5 +45,9 @@
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand" />
         </service>
+
+        <service id="river.task.deploy.serializer.context_handler" class="ContinuousPipe\River\Task\Deploy\Serializer\DeployContextSerializerHandler">
+            <tag name="jms_serializer.subscribing_handler" />
+        </service>
     </services>
 </container>

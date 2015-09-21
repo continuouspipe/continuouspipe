@@ -3,10 +3,13 @@
 namespace ContinuousPipe\River\Command;
 
 use Rhumsaa\Uuid\Uuid;
+use JMS\Serializer\Annotation as JMS;
 
 class StartTideCommand
 {
     /**
+     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     *
      * @var Uuid
      */
     private $tideUuid;

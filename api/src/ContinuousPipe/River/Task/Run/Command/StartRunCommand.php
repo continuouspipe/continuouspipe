@@ -4,20 +4,27 @@ namespace ContinuousPipe\River\Task\Run\Command;
 
 use ContinuousPipe\River\Task\Run\RunContext;
 use Rhumsaa\Uuid\Uuid;
+use JMS\Serializer\Annotation as JMS;
 
 class StartRunCommand
 {
     /**
+     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     *
      * @var Uuid
      */
     private $uuid;
 
     /**
+     * @JMS\Type("ContinuousPipe\River\Task\Run\RunContext")
+     *
      * @var RunContext
      */
     private $context;
 
     /**
+     * @JMS\Type("integer")
+     *
      * @var int
      */
     private $taskId;

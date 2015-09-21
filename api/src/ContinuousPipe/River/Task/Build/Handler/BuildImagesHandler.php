@@ -58,7 +58,7 @@ class BuildImagesHandler
      */
     public function handle(BuildImagesCommand $command)
     {
-        $logger = $this->loggerFactory->from($command->getLog());
+        $logger = $this->loggerFactory->fromId($command->getLogId());
         $logger->start();
 
         $tideUuid = $command->getTideUuid();
@@ -69,22 +69,22 @@ class BuildImagesHandler
             $buildRequests = $this->buildRequestCreator->createBuildRequests($tideContext->getCodeReference(), $tideContext->getUser());
         } catch (BuilderException $e) {
             $logger->append(new Text($e->getMessage()));
-            $this->eventBus->handle(new ImageBuildsFailed($tideUuid, $command->getLog()));
+            $this->eventBus->handle(new ImageBuildsFailed($tideUuid, $logger->getLog()));
 
             return;
         }
 
-        $this->eventBus->handle(new ImageBuildsStarted($tideUuid, $buildRequests, $command->getLog()));
+        $this->eventBus->handle(new ImageBuildsStarted($tideUuid, $buildRequests, $logger->getLog()));
 
         if (empty($buildRequests)) {
             $logger->append(new Text('Found no image to build'));
-            $this->eventBus->handle(new ImageBuildsSuccessful($tideUuid, $command->getLog()));
+            $this->eventBus->handle(new ImageBuildsSuccessful($tideUuid, $logger->getLog()));
         }
 
         foreach ($buildRequests as $buildRequest) {
             $log = $logger->append(new Text(sprintf('Building image \'%s\'', $buildRequest->getImage()->getName())));
 
-            $command = new BuildImageCommand($tideUuid, $buildRequest, $log);
+            $command = new BuildImageCommand($tideUuid, $buildRequest, $log->getId());
             $this->commandBus->handle($command);
         }
     }
