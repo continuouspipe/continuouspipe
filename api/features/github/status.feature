@@ -3,6 +3,9 @@ Feature:
   As a developer
   I want to see the tide status on the GitHub interface
 
+  Background:
+    Given there is 1 application images in the repository
+
   Scenario:
     When a tide is started
     Then the GitHub commit status should be "pending"

@@ -3,6 +3,9 @@ Feature:
   As a developer
   I need to be able to have a view representation of the tide
 
+  Background:
+    Given there is 1 application images in the repository
+
   Scenario:
     When a tide is created
     Then a tide view representation should have be created

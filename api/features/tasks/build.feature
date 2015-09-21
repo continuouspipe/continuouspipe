@@ -3,6 +3,7 @@ Feature:
   The images found in application code should be built
 
   Scenario:
+    Given there is 1 application images in the repository
     When a build task is started
     Then it should build the application images
 
@@ -12,6 +13,7 @@ Feature:
     Then it should build the 2 application images
 
   Scenario: If a build fails, the task should fail at the same time
+    Given there is 1 application images in the repository
     When a build task is started
     And an image build was started
     And the build is failing

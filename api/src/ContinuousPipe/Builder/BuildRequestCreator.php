@@ -46,7 +46,7 @@ class BuildRequestCreator
                 $codeReference->getBranch()
             );
         } catch (FileNotFound $e) {
-            throw new BuilderException($e->getMessage(), $e->getCode(), $e);
+            throw new BuilderException('`docker-compose.yml` file not found', 0, $e);
         }
 
         $buildRequests = [];
