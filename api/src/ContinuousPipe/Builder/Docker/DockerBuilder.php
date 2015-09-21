@@ -67,10 +67,25 @@ class DockerBuilder implements Builder
             $archive = $this->commandExtractor->getArchiveWithStrippedDockerfile($build, $archive);
         }
 
-        // Build the image
-        $image = $this->dockerClient->build($archive, $request, $logger);
+        try {
+            $image = $this->dockerClient->build($archive, $request, $logger);
+        } catch (DockerException $e) {
+            throw new BuildException(
+                sprintf('Unable to build image: %s', $e->getMessage()),
+                $e->getCode(),
+                $e
+            );
+        }
 
-        $this->runCommandsAndCommitImage($logger, $image, $commands);
+        try {
+            $this->runCommandsAndCommitImage($logger, $image, $commands);
+        } catch (DockerException $e) {
+            throw new BuildException(
+                sprintf('Unable to run isolated command: %s', $e->getMessage()),
+                $e->getCode(),
+                $e
+            );
+        }
 
         return $image;
     }
@@ -89,13 +104,23 @@ class DockerBuilder implements Builder
             throw new BuildException('Credentials not found.', $e->getCode(), $e);
         }
 
-        $this->dockerClient->push($targetImage, $credentials, $logger);
+        try {
+            $this->dockerClient->push($targetImage, $credentials, $logger);
+        } catch (DockerException $e) {
+            throw new BuildException(
+                sprintf('Unable to push image: %s', $e->getMessage()),
+                $e->getCode(),
+                $e
+            );
+        }
     }
 
     /**
      * @param Logger $logger
      * @param Image  $image
      * @param array  $commands
+     *
+     * @throws DockerException
      *
      * @return Image
      */

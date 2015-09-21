@@ -41,7 +41,15 @@ class HttpClient implements Client
      */
     public function build(Archive $archive, BuildRequest $request, Logger $logger)
     {
-        return $this->doBuild($archive, $request, $this->getOutputCallback($logger));
+        try {
+            return $this->doBuild($archive, $request, $this->getOutputCallback($logger));
+        } catch (RequestException $e) {
+            if ($e->getPrevious() instanceof DockerException) {
+                throw $e->getPrevious();
+            }
+
+            throw new DockerException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -58,6 +66,10 @@ class HttpClient implements Client
         } catch (UnexpectedStatusCodeException $e) {
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
         } catch (RequestException $e) {
+            if ($e->getPrevious() instanceof DockerException) {
+                throw $e->getPrevious();
+            }
+
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
         }
     }
@@ -126,11 +138,11 @@ class HttpClient implements Client
         return function ($output) use ($logger) {
             if (is_array($output)) {
                 if (array_key_exists('error', $output)) {
-                    if (!is_string($output)) {
-                        $output = 'Stringified error: '.print_r($output, true);
+                    if (!is_string($output['error'])) {
+                        $output['error'] = 'Stringified error: '.print_r($output, true);
                     }
 
-                    throw new DockerException($output);
+                    throw new DockerException($output['error']);
                 } elseif (array_key_exists('stream', $output)) {
                     $output = $output['stream'];
                 } elseif (array_key_exists('status', $output)) {
