@@ -4,13 +4,13 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\BuildRepository;
-use ContinuousPipe\Builder\Command\BuildCommand;
+use ContinuousPipe\Builder\Command\StartBuildCommand;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\User\Security\UserContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use SimpleBus\Message\Bus\MessageBus;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use FOS\RestBundle\Controller\Annotations\View;
 
 /**
  * @Route(service="api.controller.create_build")
@@ -46,6 +46,7 @@ class CreateBuildController
     /**
      * @Route("/build", methods={"POST"})
      * @ParamConverter("request", converter="build_request")
+     * @View
      */
     public function postAction(BuildRequest $request)
     {
@@ -54,8 +55,8 @@ class CreateBuildController
         $build = Build::fromRequest($request, $user);
         $this->buildRepository->save($build);
 
-        $this->commandBus->handle(BuildCommand::forBuild($build));
+        $this->commandBus->handle(StartBuildCommand::forBuild($build));
 
-        return new JsonResponse($build);
+        return $build->jsonSerialize();
     }
 }

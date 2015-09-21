@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Builder\GitHub;
 
 use ContinuousPipe\Builder\ArchiveBuilder;
-use ContinuousPipe\Builder\Repository;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\User\User;
 use LogStream\Logger;
@@ -22,7 +21,7 @@ class GitHubArchiveBuilder implements ArchiveBuilder
     private $remoteArchiveLocator;
 
     /**
-     * @param RemoteArchiveLocator $remoteArchiveLocator
+     * @param RemoteArchiveLocator    $remoteArchiveLocator
      * @param GitHubHttpClientFactory $gitHubHttpClientFactory
      */
     public function __construct(RemoteArchiveLocator $remoteArchiveLocator, GitHubHttpClientFactory $gitHubHttpClientFactory)
@@ -42,6 +41,7 @@ class GitHubArchiveBuilder implements ArchiveBuilder
         $logger->append(new Text(sprintf('Will download code from archive: %s', $archiveUrl)));
 
         $packer = new ArchivePacker($httpClient);
+
         return $packer->createFromUrl($buildRequest->getContext(), $archiveUrl);
     }
 }

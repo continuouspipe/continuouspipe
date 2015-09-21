@@ -5,6 +5,20 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="builder.archive_reader" class="ContinuousPipe\Builder\Archive\Reader\DownloaderArchiveReader" />
+        <service id="builder.archive_manipulator_factory" class="ContinuousPipe\Builder\Archive\Manipulator\ArchiveManipulatorFactory">
+            <argument type="service" id="builder.archive_reader" />
+        </service>
+        <service id="builder.docker_file_resolver" class="ContinuousPipe\Builder\Docker\DockerfileResolver" />
+        <service id="builder.dockerfile_command_extractor" class="ContinuousPipe\Builder\IsolatedCommands\DockerfileCommandExtractor">
+            <argument type="service" id="builder.archive_reader" />
+            <argument type="service" id="builder.docker_file_resolver" />
+            <argument type="service" id="builder.archive_manipulator_factory" />
+        </service>
+        <service id="builder.command_extractor" class="ContinuousPipe\Builder\IsolatedCommands\ContextualizedCommandsWithEnvironment">
+            <argument type="service" id="builder.dockerfile_command_extractor" />
+        </service>
+
         <service id="docker.client" class="Docker\Http\DockerClient">
             <argument type="collection"/>
             <argument>%docker_entrypoint%</argument>
@@ -19,6 +33,7 @@
 
         <service id="builder.docker.client" class="ContinuousPipe\Builder\Docker\HttpClient">
             <argument type="service" id="docker" />
+            <argument type="service" id="builder.docker_file_resolver" />
         </service>
         <service id="builder.github.repository_address_descriptor" class="ContinuousPipe\Builder\GitHub\RepositoryAddressDescriptor" />
         <service id="builder.github.http_client" class="GuzzleHttp\Client">
@@ -38,6 +53,7 @@
             <argument type="service" id="builder.archive_builder" />
             <argument type="service" id="builder.docker.client" />
             <argument type="service" id="builder.docker.authenticator_credentials_repository" />
+            <argument type="service" id="builder.command_extractor" />
         </service>
         <service id="builder.build_repository" class="ContinuousPipe\Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
