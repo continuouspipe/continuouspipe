@@ -126,16 +126,17 @@ class ComponentTransformer
 
     /**
      * @param Pod[] $pods
+     *
      * @return Pod[]
      */
     private function filterHealthyPods(array $pods)
     {
-        return array_filter($pods, function(Pod $pod) {
+        return array_filter($pods, function (Pod $pod) {
             if (null === ($status = $pod->getStatus())) {
                 return false;
             }
 
-            return array_reduce($status->getContainerStatuses(), function($ready, ContainerStatus $containerStatus) {
+            return array_reduce($status->getContainerStatuses(), function ($ready, ContainerStatus $containerStatus) {
                 return $ready && $containerStatus->isReady();
             }, true);
         });

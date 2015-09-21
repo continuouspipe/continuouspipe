@@ -34,7 +34,7 @@ class WaitPublicServicesEndpoints
     private $loggerFactory;
 
     /**
-     * @param MessageBus $eventBus
+     * @param MessageBus    $eventBus
      * @param ServiceWaiter $waiter
      * @param LoggerFactory $loggerFactory
      */
@@ -76,8 +76,8 @@ class WaitPublicServicesEndpoints
 
     /**
      * @param DeploymentContext $context
-     * @param Service[] $services
-     * @param Log $log
+     * @param Service[]         $services
+     * @param Log               $log
      *
      * @return \ContinuousPipe\Pipe\Environment\PublicEndpoint[]
      */
@@ -96,7 +96,7 @@ class WaitPublicServicesEndpoints
         return array_reduce(
             $services,
             function ($hasNewEndpoints, $service) {
-                return $service instanceof CreatedService ? : $hasNewEndpoints;
+                return $service instanceof CreatedService ?: $hasNewEndpoints;
             },
             false
         );

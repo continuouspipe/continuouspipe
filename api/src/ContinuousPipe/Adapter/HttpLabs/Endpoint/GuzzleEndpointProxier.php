@@ -62,8 +62,9 @@ class GuzzleEndpointProxier implements EndpointProxier
     }
 
     /**
-     * @param string $name
+     * @param string         $name
      * @param PublicEndpoint $endpoint
+     *
      * @return Hal
      */
     private function createStackForEndpoint($name, PublicEndpoint $endpoint)
@@ -76,11 +77,11 @@ class GuzzleEndpointProxier implements EndpointProxier
 
     /**
      * @param PublicEndpoint $endpoint
-     * @param Hal $stack
+     * @param Hal            $stack
      */
     private function addBackend(PublicEndpoint $endpoint, Hal $stack)
     {
-        $this->client->put($stack->getUri(), ['json' => ['backend' => 'http://' . $endpoint->getAddress()]]);
+        $this->client->put($stack->getUri(), ['json' => ['backend' => 'http://'.$endpoint->getAddress()]]);
     }
 
     /**
@@ -93,7 +94,7 @@ class GuzzleEndpointProxier implements EndpointProxier
 
     /**
      * @param array $config
-     * @param Hal $stack
+     * @param Hal   $stack
      */
     private function addBasicAuth(array $config, Hal $stack)
     {
@@ -103,18 +104,18 @@ class GuzzleEndpointProxier implements EndpointProxier
 
         $this->addMiddleware(
             $stack,
-            "basic_authentication",
+            'basic_authentication',
             [
                 'realm' => 'auth needed',
                 'username' => $config['username'],
-                'password' => $config['password']
+                'password' => $config['password'],
             ]
         );
     }
 
     /**
      * @param array $config
-     * @param Hal $stack
+     * @param Hal   $stack
      */
     private function addIPWhitelisting(array $config, Hal $stack)
     {
@@ -124,7 +125,7 @@ class GuzzleEndpointProxier implements EndpointProxier
 
         $this->addMiddleware(
             $stack,
-            "ip_restrict",
+            'ip_restrict',
             [
                 'ips' => $config['whitelisted-ips'],
             ]
@@ -141,6 +142,7 @@ class GuzzleEndpointProxier implements EndpointProxier
 
     /**
      * @param Component $component
+     *
      * @return array
      */
     private function getComponentConfig(Component $component)
@@ -150,7 +152,7 @@ class GuzzleEndpointProxier implements EndpointProxier
 
     /**
      * @param Component $component
-     * @param Hal $stack
+     * @param Hal       $stack
      */
     private function addMiddlewares(Component $component, Hal $stack)
     {
@@ -159,7 +161,7 @@ class GuzzleEndpointProxier implements EndpointProxier
     }
 
     /**
-     * @param Hal $stack
+     * @param Hal    $stack
      * @param string $templateSlug
      * @param string $middlewareConfig
      */
@@ -169,17 +171,17 @@ class GuzzleEndpointProxier implements EndpointProxier
         $this->client->post(
             (string) $stack->getFirstLink('sp:middlewares'),
             [
-                'json' =>
-                    [
+                'json' => [
                         'template' => "$templatesLink/$templateSlug",
-                        'config' => $middlewareConfig
-                    ]
+                        'config' => $middlewareConfig,
+                    ],
             ]
         );
     }
 
     /**
      * @param $name
+     *
      * @return mixed
      */
     private function createStack($name)
@@ -209,6 +211,7 @@ class GuzzleEndpointProxier implements EndpointProxier
 
         if ($this->isProjectMissing($projects)) {
             $this->addProject();
+
             return $this->fetchProjects();
         }
 
@@ -222,6 +225,7 @@ class GuzzleEndpointProxier implements EndpointProxier
 
     /**
      * @param array $projects
+     *
      * @return bool
      */
     private function isProjectMissing(array $projects)

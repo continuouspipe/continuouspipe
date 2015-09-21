@@ -4,7 +4,6 @@ namespace ContinuousPipe\Adapter\HttpLabs\Tests;
 
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
-use GuzzleHttp\Client;
 
 class EndpointProxier implements \ContinuousPipe\Adapter\HttpLabs\Endpoint\EndpointProxier
 {

@@ -11,8 +11,8 @@ interface ServiceWaiter
 {
     /**
      * @param DeploymentContext $context
-     * @param Service $service
-     * @param Log $log
+     * @param Service           $service
+     * @param Log               $log
      *
      * @throws EndpointNotFound
      *

@@ -42,6 +42,4 @@ class ProxyPublicEndpointsCommand implements DeploymentCommand
     {
         return $this->context;
     }
-
-
 }

@@ -33,9 +33,9 @@ class DeploymentSaga
     private $eventBus;
 
     /**
-     * @param MessageBus $commandBus
+     * @param MessageBus                $commandBus
      * @param View\DeploymentRepository $deploymentRepository
-     * @param MessageBus $eventBus
+     * @param MessageBus                $eventBus
      */
     public function __construct(
         MessageBus $commandBus,

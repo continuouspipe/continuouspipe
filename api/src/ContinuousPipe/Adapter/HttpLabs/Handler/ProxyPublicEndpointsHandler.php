@@ -30,9 +30,9 @@ class ProxyPublicEndpointsHandler
     private $loggerFactory;
 
     /**
-     * @param MessageBus $eventBus
+     * @param MessageBus      $eventBus
      * @param EndpointProxier $proxier
-     * @param LoggerFactory $loggerFactory
+     * @param LoggerFactory   $loggerFactory
      */
     public function __construct(MessageBus $eventBus, EndpointProxier $proxier, LoggerFactory $loggerFactory)
     {
@@ -43,6 +43,7 @@ class ProxyPublicEndpointsHandler
 
     /**
      * @param ProxyPublicEndpointsCommand $command
+     *
      * @throws \ContinuousPipe\Adapter\HttpLabs\Endpoint\EndpointCouldNotBeProxied
      * @throws \Exception
      */
@@ -71,7 +72,7 @@ class ProxyPublicEndpointsHandler
         try {
             $proxiedEndpoints = array_map($createEndpoint, $command->getEndpoints());
         } catch (EndpointCouldNotBeProxied $e) {
-            $logger->append(new Text('Error: ' . $e->getMessage()));
+            $logger->append(new Text('Error: '.$e->getMessage()));
             $logger->failure();
             $this->eventBus->handle(new DeploymentFailed($command->getContext()->getDeployment()->getUuid()));
             throw $e;

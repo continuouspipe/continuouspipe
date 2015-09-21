@@ -40,7 +40,7 @@ class LoopServiceWaiter implements ServiceWaiter
 
     /**
      * @param DeploymentClientFactory $clientFactory
-     * @param LoggerFactory $loggerFactory
+     * @param LoggerFactory           $loggerFactory
      */
     public function __construct(DeploymentClientFactory $clientFactory, LoggerFactory $loggerFactory)
     {
@@ -50,8 +50,8 @@ class LoopServiceWaiter implements ServiceWaiter
 
     /**
      * @param DeploymentContext $context
-     * @param Service $service
-     * @param Log $log
+     * @param Service           $service
+     * @param Log               $log
      *
      * @return PublicEndpoint
      *
@@ -60,7 +60,7 @@ class LoopServiceWaiter implements ServiceWaiter
     public function waitService(DeploymentContext $context, Service $service, Log $log)
     {
         $serviceName = $service->getService()->getMetadata()->getName();
-        $log = $this->loggerFactory->from($log)->append(new Text('Waiting public endpoint of service ' . $serviceName));
+        $log = $this->loggerFactory->from($log)->append(new Text('Waiting public endpoint of service '.$serviceName));
         $logger = $this->loggerFactory->from($log);
         $client = $this->clientFactory->get($context);
 
@@ -85,8 +85,8 @@ class LoopServiceWaiter implements ServiceWaiter
 
     /**
      * @param NamespaceClient $namespaceClient
-     * @param Service $service
-     * @param Logger $logger
+     * @param Service         $service
+     * @param Logger          $logger
      *
      * @return PublicEndpoint
      *
@@ -112,7 +112,7 @@ class LoopServiceWaiter implements ServiceWaiter
 
     /**
      * @param NamespaceClient $namespaceClient
-     * @param string $serviceName
+     * @param string          $serviceName
      *
      * @return PublicEndpoint
      *

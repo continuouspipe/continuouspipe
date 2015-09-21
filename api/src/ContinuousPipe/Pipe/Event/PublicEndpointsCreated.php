@@ -19,7 +19,7 @@ class PublicEndpointsCreated implements DeploymentEvent
 
     /**
      * @param DeploymentContext $deploymentContext
-     * @param PublicEndpoint[] $endpoints
+     * @param PublicEndpoint[]  $endpoints
      */
     public function __construct(DeploymentContext $deploymentContext, array $endpoints)
     {

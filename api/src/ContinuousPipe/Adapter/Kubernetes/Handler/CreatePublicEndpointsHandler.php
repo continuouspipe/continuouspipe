@@ -51,11 +51,11 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     private $publicServiceVoter;
 
     /**
-     * @param EnvironmentTransformer $environmentTransformer
+     * @param EnvironmentTransformer  $environmentTransformer
      * @param DeploymentClientFactory $clientFactory
-     * @param MessageBus $eventBus
-     * @param LoggerFactory $loggerFactory
-     * @param PublicServiceVoter $publicServiceVoter
+     * @param MessageBus              $eventBus
+     * @param LoggerFactory           $loggerFactory
+     * @param PublicServiceVoter      $publicServiceVoter
      */
     public function __construct(
         EnvironmentTransformer $environmentTransformer,
@@ -87,7 +87,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
         try {
             $createdServices = $this->createServices($serviceRepository, $services, $logger);
         } catch (ClientError $e) {
-            $logger->append(new Text('Error: ' . $e->getMessage()));
+            $logger->append(new Text('Error: '.$e->getMessage()));
             $logger->failure();
 
             $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
@@ -102,8 +102,8 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
 
     /**
      * @param ServiceRepository $serviceRepository
-     * @param Service[] $services
-     * @param Logger $logger
+     * @param Service[]         $services
+     * @param Logger            $logger
      *
      * @return \Kubernetes\Client\Model\Service[]
      */
@@ -159,7 +159,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
 
     /**
      * @param ServiceRepository $repository
-     * @param Service $service
+     * @param Service           $service
      *
      * @return bool
      */
