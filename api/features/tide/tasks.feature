@@ -35,9 +35,9 @@ Feature:
     Given I have a flow with the following tasks:
       | name   | context                                   |
       | build  | {"image": "foo"}                          |
-      | run    | {"service": "foo", "commands": "bin/foo"} |
+      | run    | {"image": "foo", "commands": "bin/foo"} |
       | deploy | {"providerName": "foo"}                   |
-      | run    | {"service": "bar", "commands": "bin/bar"} |
+      | run    | {"image": "bar", "commands": "bin/bar"} |
     When a tide is started based on that workflow
     And the build task succeed
     And the run succeed

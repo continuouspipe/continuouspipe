@@ -50,10 +50,7 @@ class RunTask extends EventDrivenTask
     public function start()
     {
         $logger = $this->loggerFactory->from($this->context->getLog());
-        $log = $logger->append(new Text(sprintf(
-            'Running commands on service "%s"',
-            $this->context->getServiceName()
-        )));
+        $log = $logger->append(new Text($this->getLogText()));
 
         $this->context->setRunnerLog($log);
 
@@ -138,5 +135,23 @@ class RunTask extends EventDrivenTask
         }
 
         return $runStartedEvents[0];
+    }
+
+    /**
+     * @return string
+     */
+    private function getLogText()
+    {
+        try {
+            return sprintf(
+                'Running commands on image "%s"',
+                $this->context->getImageName()
+            );
+        } catch (\RuntimeException $e) {
+            return sprintf(
+                'Running commands on service "%s"',
+                $this->context->getServiceName()
+            );
+        }
     }
 }

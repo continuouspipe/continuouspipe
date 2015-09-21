@@ -9,6 +9,7 @@ use LogStream\Log;
 class RunContext extends TaskContext
 {
     const KEY_SERVICE_NAME = 'service';
+    const KEY_IMAGE_NAME = 'image';
     const KEY_COMMANDS = 'commands';
     const KEY_RUNNER_LOG = 'runnerLog';
 
@@ -28,6 +29,14 @@ class RunContext extends TaskContext
     public function getServiceName()
     {
         return $this->get(self::KEY_SERVICE_NAME);
+    }
+
+    /**
+     * @return string
+     */
+    public function getImageName()
+    {
+        return $this->get(self::KEY_IMAGE_NAME);
     }
 
     /**

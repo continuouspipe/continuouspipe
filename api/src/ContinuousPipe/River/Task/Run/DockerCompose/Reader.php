@@ -5,7 +5,6 @@ namespace ContinuousPipe\River\Task\Run\DockerCompose;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\River\Task\Run\RunContext;
-use Symfony\Component\Yaml\Yaml;
 
 class Reader
 {
@@ -31,6 +30,7 @@ class Reader
 
     /**
      * @param RunContext $context
+     *
      * @throws ImageNameNotFound
      *
      * @return string
@@ -41,12 +41,12 @@ class Reader
         $services = $this->projectParser->parse($fileSystem, $context->getCodeReference()->getBranch());
 
         $serviceName = $context->getServiceName();
-        if (! isset($services[$serviceName])) {
+        if (!isset($services[$serviceName])) {
             throw new ImageNameNotFound("Service '$serviceName' does not exist in docker-compose.yml");
         }
 
         $service = $services[$serviceName];
-        if (! isset($service['labels']['com.continuouspipe.image-name'])) {
+        if (!isset($service['labels']['com.continuouspipe.image-name'])) {
             throw new ImageNameNotFound("Service '$serviceName' does not have 'com.continuouspipe.image-name' label");
         }
 

@@ -35,13 +35,10 @@ class StartRunHandler
     /**
      * @param Client                $runnerClient
      * @param UrlGeneratorInterface $urlGenerator
+     * @param DockerCompose\Reader  $dockerComposeReader
      * @param MessageBus            $eventBus
      */
-    public function __construct(
-        Client $runnerClient,
-        UrlGeneratorInterface $urlGenerator,
-        DockerCompose\Reader $dockerComposeReader,
-        MessageBus $eventBus)
+    public function __construct(Client $runnerClient, UrlGeneratorInterface $urlGenerator, DockerCompose\Reader $dockerComposeReader, MessageBus $eventBus)
     {
         $this->runnerClient = $runnerClient;
         $this->urlGenerator = $urlGenerator;
@@ -85,13 +82,21 @@ class StartRunHandler
     private function getImage(RunContext $context)
     {
         try {
-            $imageName = $this->dockerComposeReader->getImageName($context);
+            $imageName = $context->getImageName();
+        } catch (\RuntimeException $e) {
+            if (!$context->getServiceName()) {
+                throw new DockerCompose\ImageNameNotFound(sprintf(
+                    'Unable to guess the image on which to run commands'
+                ));
+            }
+
+            $serviceImage = $this->dockerComposeReader->getImageName($context);
             $tag = $context->getCodeReference()->getBranch();
-        } catch (DockerCompose\ImageNameNotFound $e) {
-            return $context->getServiceName();
+
+            $imageName = $serviceImage.':'.$tag;
         }
 
-        return $imageName . ':' . $tag;
+        return $imageName;
     }
 
     /**
