@@ -2,7 +2,7 @@ FROM php:5.6-cli
 
 # PHP extension
 RUN apt-get update && apt-get install -y zlib1g-dev libpq-dev git supervisor
-RUN docker-php-ext-install pdo pdo_pgsql zip mbstring
+RUN docker-php-ext-install pdo pdo_pgsql zip mbstring bcmath
 
 # Supervisord configuration
 ADD apps/river/docker/worker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
