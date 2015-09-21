@@ -7,6 +7,19 @@ angular.module('continuousPipeRiver')
         }];
 
         $httpProvider.interceptors.push('jwtInterceptor');
+
+        $httpProvider.interceptors.push(function($q, $authenticationProvider) {
+            return {
+                'responseError': function(response) {
+                    if (response.status == 401) {
+                        $authenticationProvider.handleAuthentication();
+                    }
+
+                    return $q.reject(response);
+                }
+            };
+        });
+
     })
     .run(function($authenticationProvider) {
         if (!$authenticationProvider.isAuthenticated()) {
