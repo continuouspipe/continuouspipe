@@ -29,7 +29,10 @@ class DoctrineSecurityUserRepository implements SecurityUserRepository
         ]);
 
         if (null === $user) {
-            throw new UserNotFound();
+            throw new UserNotFound(sprintf(
+                'User with email "%s" is not found',
+                $email
+            ));
         }
 
         return $user;
