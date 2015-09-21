@@ -43,7 +43,10 @@ class IdentifierNamingStrategy implements NamingStrategy
     {
         $namespaceName = $environment->getIdentifier();
 
-        return new KubernetesNamespace(new ObjectMetadata($namespaceName));
+        return new KubernetesNamespace(new ObjectMetadata($namespaceName, new KeyValueObjectList([
+            new Label('continuous-pipe-environment', $environment->getIdentifier()),
+            new Label('created-by', 'continuous-pipe'),
+        ])));
     }
 
     /**

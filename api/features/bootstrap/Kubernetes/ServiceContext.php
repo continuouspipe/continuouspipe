@@ -7,9 +7,12 @@ use ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWai
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceRepository;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use Kubernetes\Client\Exception\ServiceNotFound;
+use Kubernetes\Client\Model\LoadBalancerIngress;
+use Kubernetes\Client\Model\LoadBalancerStatus;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServiceSpecification;
+use Kubernetes\Client\Model\ServiceStatus;
 use Kubernetes\Client\Repository\ServiceRepository;
 
 class ServiceContext implements Context
@@ -100,7 +103,7 @@ class ServiceContext implements Context
     }
 
     /**
-     * @Then the service :arg1 should not be created
+     * @Then the service :name should not be created
      */
     public function theServiceShouldNotBeCreated($name)
     {
@@ -110,6 +113,23 @@ class ServiceContext implements Context
             throw new \RuntimeException('Service found in list of created services');
         } catch (ServiceNotFound $e) {
         }
+    }
+
+
+    /**
+     * @Given the service :name have the public endpoint :address
+     */
+    public function theServiceHaveThePublicEndpoint($name, $address)
+    {
+        $service = $this->serviceRepository->findOneByName($name);
+
+        $this->serviceRepository->update(new Service(
+            $service->getMetadata(),
+            $service->getSpecification(),
+            new ServiceStatus(new LoadBalancerStatus([
+                new LoadBalancerIngress($address)
+            ]))
+        ));
     }
 
     /**

@@ -24,6 +24,10 @@
         <service id="kubernetes.transformer.environment" class="ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer">
             <argument type="service" id="kubernetes.transformer.component" />
         </service>
+        <service id="kubernetes.reverse_transformer.component" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ComponentTransformer" />
+        <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector">
+            <argument type="service" id="kubernetes.reverse_transformer.component" />
+        </service>
         <service id="kubernetes.public_endpoint.public_service_voter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter" />
 
         <!-- Kubernetes client -->
@@ -42,9 +46,7 @@
         </service>
         <service id="pipe.adapter.kubernetes.environment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\KubernetesEnvironmentClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
-            <argument type="service" id="kubernetes.transformer.environment" />
-            <argument type="service" id="log_stream.logger_factory" />
-            <argument type="service" id="event_bus" />
+            <argument type="service" id="kubernetes.inspector.namespace" />
         </service>
         <service id="pipe.adapter.kubernetes.repository" class="ContinuousPipe\Adapter\Kubernetes\Repository">
             <argument type="service" id="doctrine.orm.entity_manager" />
@@ -89,6 +91,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="kubernetes.naming_strategy.identifier" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
         </service>

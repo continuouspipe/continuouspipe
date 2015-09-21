@@ -4,10 +4,8 @@ namespace ContinuousPipe\Adapter\Kubernetes;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
-use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
+use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Adapter\Provider;
-use LogStream\LoggerFactory;
-use SimpleBus\Message\Bus\MessageBus;
 
 class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 {
@@ -17,32 +15,18 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
     private $clientFactory;
 
     /**
-     * @var EnvironmentTransformer
+     * @var NamespaceInspector
      */
-    private $environmentTransformer;
-
-    /**
-     * @var LoggerFactory
-     */
-    private $loggerFactory;
-
-    /**
-     * @var MessageBus
-     */
-    private $eventBus;
+    private $namespaceInspector;
 
     /**
      * @param KubernetesClientFactory $clientFactory
-     * @param EnvironmentTransformer  $environmentTransformer
-     * @param LoggerFactory           $loggerFactory
-     * @param MessageBus              $eventBus
+     * @param NamespaceInspector      $namespaceInspector
      */
-    public function __construct(KubernetesClientFactory $clientFactory, EnvironmentTransformer $environmentTransformer, LoggerFactory $loggerFactory, MessageBus $eventBus)
+    public function __construct(KubernetesClientFactory $clientFactory, NamespaceInspector $namespaceInspector)
     {
         $this->clientFactory = $clientFactory;
-        $this->environmentTransformer = $environmentTransformer;
-        $this->loggerFactory = $loggerFactory;
-        $this->eventBus = $eventBus;
+        $this->namespaceInspector = $namespaceInspector;
     }
 
     /**
@@ -56,9 +40,7 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 
         return new KubernetesEnvironmentClient(
             $this->clientFactory->getByProvider($provider),
-            $this->environmentTransformer,
-            $this->loggerFactory,
-            $this->eventBus
+            $this->namespaceInspector
         );
     }
 }
