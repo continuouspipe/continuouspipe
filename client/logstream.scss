@@ -7,6 +7,10 @@ $running-color: #2979ca;
 // Layout
 $text-rounds-radius: 20px;
 
+body {
+    background: transparent;
+}
+
 .log-container {
     .children {
         padding-top: 10px;
