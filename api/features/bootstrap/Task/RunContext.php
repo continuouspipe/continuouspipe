@@ -60,9 +60,24 @@ class RunContext implements Context
     }
 
     /**
-     * @Given a run task is started
+     * @Given a run task is started with a service name
      */
-    public function aRunTaskIsStarted()
+    public function aRunTaskIsStartedWithAServiceName()
+    {
+        $this->flowContext->createFlowWithTasks([
+            new Task('run', [
+                'commands' => 'bin/behat',
+                'service' => 'image0'
+            ])
+        ]);
+
+        $this->tideContext->aTideIsStartedBasedOnThatWorkflow();
+    }
+
+    /**
+     * @Given a run task is started with an image name
+     */
+    public function aRunTaskIsStartedWithAnImageName()
     {
         $this->flowContext->createFlowWithTasks([
             new Task('run', [
@@ -75,7 +90,7 @@ class RunContext implements Context
     }
 
     /**
-     * @When a run request should be sent
+     * @Then a run request should be sent
      */
     public function aRunRequestShouldBeSent()
     {

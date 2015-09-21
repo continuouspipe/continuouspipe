@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Task\Run\Handler;
 use ContinuousPipe\River\Task\Run\Command\StartRunCommand;
 use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\RunContext;
+use ContinuousPipe\River\Task\Run\DockerCompose;
 use ContinuousPipe\Runner\Client;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -27,14 +28,21 @@ class StartRunHandler
     private $eventBus;
 
     /**
+     * @var DockerCompose\Reader
+     */
+    private $dockerComposeReader;
+
+    /**
      * @param Client                $runnerClient
      * @param UrlGeneratorInterface $urlGenerator
+     * @param DockerCompose\Reader  $dockerComposeReader
      * @param MessageBus            $eventBus
      */
-    public function __construct(Client $runnerClient, UrlGeneratorInterface $urlGenerator, MessageBus $eventBus)
+    public function __construct(Client $runnerClient, UrlGeneratorInterface $urlGenerator, DockerCompose\Reader $dockerComposeReader, MessageBus $eventBus)
     {
         $this->runnerClient = $runnerClient;
         $this->urlGenerator = $urlGenerator;
+        $this->dockerComposeReader = $dockerComposeReader;
         $this->eventBus = $eventBus;
     }
 
@@ -46,7 +54,7 @@ class StartRunHandler
         $context = $command->getContext();
         $runUuid = $this->runnerClient->run(
             new Client\RunRequest(
-                $context->getImageName(),
+                $this->getImage($context),
                 [],
                 $context->getCommands(),
                 new Client\Logging(new Client\Logging\LogStream(
@@ -64,6 +72,31 @@ class StartRunHandler
             $runUuid,
             $command->getTaskId()
         ));
+    }
+
+    /**
+     * @param RunContext $context
+     *
+     * @return string Docker image name
+     */
+    private function getImage(RunContext $context)
+    {
+        try {
+            $imageName = $context->getImageName();
+        } catch (\RuntimeException $e) {
+            if (!$context->getServiceName()) {
+                throw new DockerCompose\ImageNameNotFound(sprintf(
+                    'Unable to guess the image on which to run commands'
+                ));
+            }
+
+            $serviceImage = $this->dockerComposeReader->getImageName($context);
+            $tag = $context->getCodeReference()->getBranch();
+
+            $imageName = $serviceImage.':'.$tag;
+        }
+
+        return $imageName;
     }
 
     /**

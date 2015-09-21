@@ -33,10 +33,10 @@ Feature:
 
   Scenario: I can have different tasks of the same time in a flow
     Given I have a flow with the following tasks:
-      | name   | context                                 |
-      | build  | {"image": "foo"}                        |
+      | name   | context                                   |
+      | build  | {"image": "foo"}                          |
       | run    | {"image": "foo", "commands": "bin/foo"} |
-      | deploy | {"providerName": "foo"}                 |
+      | deploy | {"providerName": "foo"}                   |
       | run    | {"image": "bar", "commands": "bin/bar"} |
     When a tide is started based on that workflow
     And the build task succeed
