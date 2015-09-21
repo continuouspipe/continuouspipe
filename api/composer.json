@@ -21,7 +21,7 @@
         "csa/guzzle-bundle": "@stable",
         "friendsofsymfony/rest-bundle": "~1.7",
         "ramsey/uuid": "~2.8",
-        "simple-bus/symfony-bridge": "~4.0",
+        "simple-bus/symfony-bridge": "^4.1",
         "nelmio/cors-bundle": "^1.4",
         "doctrine/doctrine-migrations-bundle": "^1.0",
         "raven/raven": "^0.12.1",
@@ -31,7 +31,9 @@
         "continuous-pipe/model": "*@dev",
         "continuous-pipe/security-bundle": "*@dev",
         "continuous-pipe/builder-model": "*@dev",
-        "continuous-pipe/docker-compose": "*@dev"
+        "continuous-pipe/docker-compose": "*@dev",
+        "simple-bus/rabbitmq-bundle-bridge": "^2.2",
+        "simple-bus/jms-serializer-bundle-bridge": "^2.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

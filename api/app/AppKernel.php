@@ -31,6 +31,10 @@ class AppKernel extends Kernel
 
         $bundles[] = new SimpleBus\SymfonyBridge\SimpleBusCommandBusBundle();
         $bundles[] = new SimpleBus\SymfonyBridge\SimpleBusEventBusBundle();
+        $bundles[] = new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle();
+        $bundles[] = new SimpleBus\AsynchronousBundle\SimpleBusAsynchronousBundle();
+        $bundles[] = new SimpleBus\RabbitMQBundleBridge\SimpleBusRabbitMQBundleBridgeBundle();
+        $bundles[] = new SimpleBus\JMSSerializerBundleBridge\SimpleBusJMSSerializerBundleBridgeBundle();
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();

@@ -138,3 +138,39 @@ command_bus:
 
 log_stream:
     url: %logstream_url%
+
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     %rabbitmq_host%
+            port:     5672
+            user:     %rabbitmq_user%
+            password: %rabbitmq_password%
+            vhost:    %rabbitmq_vhost%
+            lazy:     true
+            connection_timeout: 3
+            read_write_timeout: 3
+            keepalive: false
+            heartbeat: 0
+
+    producers:
+        asynchronous_commands:
+            connection:       default
+            exchange_options: { name: 'river_commands', type: direct }
+    consumers:
+        asynchronous_commands:
+            connection:       default
+            exchange_options: { name: 'river_commands', type: direct }
+            queue_options:    { name: 'river_commands' }
+            callback:         simple_bus.rabbit_mq_bundle_bridge.commands_consumer
+            qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
+
+simple_bus_rabbit_mq_bundle_bridge:
+    commands:
+        # this producer service is defined by OldSoundRabbitMqBundle,
+        # its name is old_sound_rabbit_mq.%producer_name%_producer
+        producer_service_id: old_sound_rabbit_mq.asynchronous_commands_producer
+
+simple_bus_asynchronous:
+    commands:
+        logging: ~

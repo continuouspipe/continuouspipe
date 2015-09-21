@@ -1,0 +1,27 @@
+FROM php:5.6-cli
+
+# PHP extension
+RUN apt-get update && apt-get install -y zlib1g-dev libpq-dev git supervisor
+RUN docker-php-ext-install pdo pdo_pgsql zip mbstring
+
+# Supervisord configuration
+ADD apps/river/docker/worker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# PHP confiugration
+ADD apps/river/docker/php.ini /usr/local/etc/php/php.ini
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php
+RUN mv composer.phar /usr/bin/composer
+
+# Add the application
+ADD . /app
+
+# Install application dependencies
+WORKDIR /app/apps/river
+RUN composer install -o
+
+# Fixes the execution permissions
+RUN chmod +x /app/apps/river/docker/worker/run.sh
+
+CMD ["/app/apps/river/docker/worker/run.sh"]
