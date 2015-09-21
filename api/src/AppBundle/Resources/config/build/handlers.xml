@@ -11,7 +11,7 @@
             <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="router" />
 
-            <tag name="command_handler" handles="ContinuousPipe\River\Task\Build\Command\BuildImageCommand" />
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Build\Command\BuildImageCommand" />
         </service>
         <service id="river.handler.build_images" class="ContinuousPipe\River\Task\Build\Handler\BuildImagesHandler">
             <argument type="service" id="simple_bus.command_bus" />
@@ -20,7 +20,7 @@
             <argument type="service" id="builder.build_request_creator" />
             <argument type="service" id="log_stream.logger_factory" />
 
-            <tag name="command_handler" handles="ContinuousPipe\River\Task\Build\Command\BuildImagesCommand" />
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Build\Command\BuildImagesCommand" />
         </service>
     </services>
 </container>

@@ -23,7 +23,7 @@
             <argument type="service" id="river.task.run.docker_compose.reader" />
             <argument type="service" id="simple_bus.event_bus" />
 
-            <tag name="command_handler" handles="ContinuousPipe\River\Task\Run\Command\StartRunCommand" />
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Run\Command\StartRunCommand" />
         </service>
     </services>
 </container>
