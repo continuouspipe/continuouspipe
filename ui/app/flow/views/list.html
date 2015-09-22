@@ -24,7 +24,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="flow in flows">
-                    <td><a ui-sref="flow({uuid: flow.uuid})">{{ flow.uuid }}</a></td>
+                    <td><a ui-sref="flow.overview({uuid: flow.uuid})">{{ flow.uuid }}</a></td>
                     <td><small>{{ flow.repository.repository.owner.login }}/</small> {{ flow.repository.repository.name }}</td>
                     <td>
                         <ul class="actions">

@@ -26,6 +26,7 @@ angular.module('continuousPipeRiver')
                 }
             })
             .state('flow', {
+                abstract: true,
                 parent: 'flows',
                 url: '/:uuid',
                 resolve: {
@@ -34,13 +35,25 @@ angular.module('continuousPipeRiver')
                     }
                 },
                 views: {
+                    'aside@layout': {
+                        templateUrl: 'flow/views/layout/aside.html'
+                    }
+                },
+                ncyBreadcrumb: {
+                    label: '#{{ flow.uuid }}'
+                },
+                aside: true
+            })
+            .state('flow.overview', {
+                url: '',
+                views: {
                     '@layout': {
                         templateUrl: 'flow/views/show.html',
                         controller: 'FlowController'
                     }
                 },
                 ncyBreadcrumb: {
-                    label: '#{{ flow.uuid }}'
+                    label: 'Overview'
                 }
             })
         ;
