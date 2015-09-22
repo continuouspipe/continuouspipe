@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Serializer;
 
-use ContinuousPipe\River\ArrayContext;
 use ContinuousPipe\River\Task\Deploy\DeployContext;
 use JMS\Serializer\GraphNavigator;
 use JMS\Serializer\Handler\SubscribingHandlerInterface;

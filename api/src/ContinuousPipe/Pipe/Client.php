@@ -29,6 +29,8 @@ interface Client
      * @param string $providerName
      * @param User   $user
      *
+     * @throws ProviderNotFound
+     *
      * @return \ContinuousPipe\Model\Environment[]
      */
     public function getEnvironments($providerName, User $user);

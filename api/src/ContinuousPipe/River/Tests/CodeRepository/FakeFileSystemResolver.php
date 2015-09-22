@@ -18,7 +18,7 @@ class FakeFileSystemResolver implements FileSystemResolver
      */
     public function prepareFileSystem(array $files)
     {
-        $this->files = $files;
+        $this->files = array_merge($this->files, $files);
     }
 
     /**

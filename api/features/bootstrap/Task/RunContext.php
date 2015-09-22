@@ -64,14 +64,14 @@ class RunContext implements Context
      */
     public function aRunTaskIsStartedWithAServiceName()
     {
-        $this->flowContext->createFlowWithTasks([
-            new Task('run', [
-                'commands' => 'bin/behat',
-                'service' => 'image0'
-            ])
+        $this->tideContext->aTideIsStartedWithTasks([
+            [
+                'run' => [
+                    'commands' => ['bin/behat'],
+                    'service' => 'image0'
+                ]
+            ]
         ]);
-
-        $this->tideContext->aTideIsStartedBasedOnThatWorkflow();
     }
 
     /**
@@ -79,14 +79,14 @@ class RunContext implements Context
      */
     public function aRunTaskIsStartedWithAnImageName()
     {
-        $this->flowContext->createFlowWithTasks([
-            new Task('run', [
-                'commands' => 'bin/behat',
-                'image' => 'sroze/behat'
-            ])
+        $this->tideContext->aTideIsStartedWithTasks([
+            [
+                'run' => [
+                    'commands' => ['bin/behat'],
+                    'image' => 'sroze/behat'
+                ]
+            ]
         ]);
-
-        $this->tideContext->aTideIsStartedBasedOnThatWorkflow();
     }
 
     /**

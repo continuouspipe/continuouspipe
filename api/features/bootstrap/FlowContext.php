@@ -113,11 +113,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
 
         $creationRequest = <<<EOF
 {
-   "repository": "1234",
-   "tasks": [
-      {"name": "build"},
-      {"name": "deploy"}
-   ]
+   "repository": "1234"
 }
 EOF;
 
@@ -138,48 +134,13 @@ EOF;
     }
 
     /**
-     * @Given I have a flow with the build task
-     */
-    public function iHaveAFlowWithTheBuildTask()
-    {
-        $this->createFlowWithTasks([
-            new Flow\Task('build'),
-        ]);
-    }
-
-    /**
-     * @Given I have a flow with a deploy task
-     */
-    public function iHaveAFlowWithADeployTask()
-    {
-        $this->createFlowWithTasks([
-            new Flow\Task('deploy', [
-                'providerName' => 'fake/provider',
-            ]),
-        ]);
-    }
-
-    /**
      * @Given I have a flow
-     * @Given I have a flow with the build and deploy tasks
      */
-    public function iHaveAFlowWithTheBuildAndDeployTasks()
+    public function iHaveAFlow()
     {
-        $this->createFlow();
-    }
-
-    /**
-     * @Given I have a flow with the following tasks:
-     */
-    public function iHaveAFlowWithTheFollowingTasks(TableNode $tasks)
-    {
-        $tasks = array_map(function($task) {
-            $context = !empty($task['context']) ? json_decode($task['context'], true) : [];
-
-            return new Flow\Task($task['name'], $context);
-        }, $tasks->getHash());
-
-        $this->createFlowWithTasks($tasks);
+        if (null === $this->currentFlow) {
+            $this->createFlow();
+        }
     }
 
     /**
@@ -187,19 +148,9 @@ EOF;
      */
     public function iHaveAFlowWithUuid($uuid)
     {
-        $this->createFlow(Uuid::fromString($uuid));
-    }
-
-    /**
-     * @Given I have a flow with UUID :arg1 and with just a build task
-     */
-    public function iHaveAFlowWithUuidAndWithJustABuildTask($uuid)
-    {
-        $context = $this->createFlowContext(Uuid::fromString($uuid));
-
-        return $this->createFlowWithContextAndTasks($context, [
-            new Flow\Task('build'),
-        ]);
+        if (null === $this->currentFlow) {
+            $this->createFlow(Uuid::fromString($uuid));
+        }
     }
 
     /**
@@ -219,6 +170,7 @@ EOF;
         $this->response = $this->kernel->handle(Request::create($url, 'GET'));
 
         if ($this->response->getStatusCode() != 200) {
+            echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
                 'Expected response code 200, but got %d',
                 $this->response->getStatusCode()
@@ -288,22 +240,12 @@ EOF;
     {
         $context = $this->createFlowContext($uuid);
 
-        return $this->createFlowWithContextAndTasks($context, [
-            new Flow\Task('build'),
-            new Flow\Task('deploy', [
-                'providerName' => 'fake/provider',
-            ]),
-        ]);
-    }
+        $flow = new Flow($context);
+        $this->flowRepository->save($flow);
 
-    /**
-     * @param Flow\Task[] $tasks
-     */
-    public function createFlowWithTasks(array $tasks)
-    {
-        $context = $this->createFlowContext();
+        $this->currentFlow = $flow;
 
-        $this->createFlowWithContextAndTasks($context, $tasks);
+        return $flow;
     }
 
     /**
@@ -324,22 +266,6 @@ EOF;
             $user,
             $codeRepository
         );
-    }
-
-    /**
-     * @param RiverFlowContext $context
-     * @param Flow\Task[]      $tasks
-     *
-     * @return Flow
-     */
-    public function createFlowWithContextAndTasks(RiverFlowContext $context, array $tasks)
-    {
-        $flow = new Flow($context, $tasks);
-        $this->flowRepository->save($flow);
-
-        $this->currentFlow = $flow;
-
-        return $flow;
     }
 
     /**

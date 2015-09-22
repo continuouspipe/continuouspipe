@@ -45,6 +45,11 @@ class Tide
     private $logId;
 
     /**
+     * @var array
+     */
+    private $configuration;
+
+    /**
      * @var \DateTime
      */
     private $creationDate;
@@ -71,11 +76,12 @@ class Tide
      * @param CodeReference $codeReference
      * @param Log           $log
      * @param User          $user
+     * @param array         $configuration
      * @param \DateTime     $creationDate
      *
      * @return Tide
      */
-    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $log, User $user, \DateTime $creationDate = null)
+    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $log, User $user, array $configuration, \DateTime $creationDate = null)
     {
         $tide = new self();
         $tide->uuid = $uuid;
@@ -84,6 +90,7 @@ class Tide
         $tide->logId = $log->getId();
         $tide->creationDate = $creationDate ?: new \DateTime();
         $tide->user = $user;
+        $tide->configuration = $configuration;
 
         return $tide;
     }
@@ -182,5 +189,13 @@ class Tide
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
     }
 }

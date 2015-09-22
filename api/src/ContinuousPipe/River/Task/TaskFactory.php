@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River\Task;
 
+use Symfony\Component\Config\Definition\Builder\NodeDefinition;
+
 interface TaskFactory
 {
     /**
@@ -10,4 +12,9 @@ interface TaskFactory
      * @return Task
      */
     public function create(TaskContext $taskContext);
+
+    /**
+     * @return NodeDefinition
+     */
+    public function getConfigTree();
 }

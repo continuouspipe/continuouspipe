@@ -51,7 +51,6 @@ class DoctrineFlowRepository implements FlowRepository
         }
 
         $dto->context = $flowContext;
-        $dto->tasks = $flow->getTasks();
 
         $this->entityManager->persist($dto);
         $this->entityManager->flush();
@@ -103,7 +102,7 @@ class DoctrineFlowRepository implements FlowRepository
      */
     public function flowFromDto(FlowDto $dto)
     {
-        $flow = new Flow($dto->context, $dto->tasks);
+        $flow = new Flow($dto->context);
 
         return $flow;
     }

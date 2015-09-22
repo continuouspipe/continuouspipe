@@ -4,9 +4,8 @@ Feature:
   I want to have the environment addresses commented on my pull-requests
 
   Scenario: The addresses are commented when the deployment is successful
-    Given I have a flow with a deploy task
-    And there is 1 application images in the repository
-    And a tide is started based on that workflow
+    Given there is 1 application images in the repository
+    And a tide is started with a deploy task
     And a pull-request contains the tide-related commit
     When the deployment succeed
     Then the addresses of the environment should be commented on the pull-request
@@ -17,7 +16,6 @@ Feature:
     Then the addresses of the environment should be commented on the pull-request
 
   Scenario: The environment should be deleted when a pull-request is closed
-    Given I have a flow with a deploy task
-    And a tide is created for branch "foo" and commit "12345"
+    Given a tide is created for branch "foo" and commit "12345" with a deploy task
     When a pull-request is closed with head commit "12345"
     Then the environment should be deleted

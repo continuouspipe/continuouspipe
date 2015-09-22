@@ -20,10 +20,15 @@
             <argument type="service" id="river.event_store" />
             <argument type="service" id="river.tide_factory" />
         </service>
+        <service id="river.tide_configuration_factory" class="ContinuousPipe\River\TideConfigurationFactory">
+            <argument type="service" id="river.file_system_resolver" />
+            <argument type="service" id="river.task_factory_registry" />
+        </service>
         <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.task_factory_registry" />
             <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.tide_configuration_factory" />
         </service>
 
         <service id="river.view.tide_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\View\DoctrineTideRepository">

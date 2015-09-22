@@ -7,7 +7,8 @@ use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\River\Pipe\ProviderNameNotFound;
 use ContinuousPipe\River\Pipe\ProviderNameResolver;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\User\Security\UserContext;
 
 class EnvironmentClient
@@ -33,17 +34,24 @@ class EnvironmentClient
     private $environmentNamingStrategy;
 
     /**
+     * @var TideRepository
+     */
+    private $tideRepository;
+
+    /**
      * @param Client                    $pipeClient
      * @param ProviderNameResolver      $providerNameResolver
      * @param UserContext               $userContext
      * @param EnvironmentNamingStrategy $environmentNamingStrategy
+     * @param TideRepository            $tideRepository
      */
-    public function __construct(Client $pipeClient, ProviderNameResolver $providerNameResolver, UserContext $userContext, EnvironmentNamingStrategy $environmentNamingStrategy)
+    public function __construct(Client $pipeClient, ProviderNameResolver $providerNameResolver, UserContext $userContext, EnvironmentNamingStrategy $environmentNamingStrategy, TideRepository $tideRepository)
     {
         $this->pipeClient = $pipeClient;
         $this->providerNameResolver = $providerNameResolver;
         $this->userContext = $userContext;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -55,17 +63,38 @@ class EnvironmentClient
      */
     public function findByFlow(Flow $flow)
     {
-        try {
-            $providerName = $this->providerNameResolver->getProviderName($flow);
-        } catch (ProviderNameNotFound $e) {
-            return [];
+        $environments = [];
+        foreach ($this->findProviderNames($flow) as $providerName) {
+            $environments = array_merge(
+                $environments,
+                $this->pipeClient->getEnvironments($providerName, $this->userContext->getCurrent())
+            );
         }
 
-        $environments = $this->pipeClient->getEnvironments($providerName, $this->userContext->getCurrent());
         $matchingEnvironments = array_filter($environments, function (Environment $environment) use ($flow) {
             return $this->environmentNamingStrategy->isEnvironmentPartOfFlow($flow->getUuid(), $environment);
         });
 
         return array_values($matchingEnvironments);
+    }
+
+    /**
+     * @param Flow $flow
+     *
+     * @return array
+     */
+    private function findProviderNames(Flow $flow)
+    {
+        $tides = $this->tideRepository->findByFlow($flow);
+        $providerNames = [];
+
+        foreach ($tides as $tide) {
+            try {
+                $providerNames[] = $this->providerNameResolver->getProviderName($tide);
+            } catch (ProviderNameNotFound $e) {
+            }
+        }
+
+        return array_unique($providerNames);
     }
 }

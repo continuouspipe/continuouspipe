@@ -2,50 +2,36 @@
 
 namespace ContinuousPipe\River\Pipe;
 
-use ContinuousPipe\River\ArrayContext;
 use ContinuousPipe\River\Flow\Task;
-use ContinuousPipe\River\View\Flow;
-use ContinuousPipe\River\Task\Deploy\DeployContext;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
+use ContinuousPipe\River\View\Tide;
 
 class ProviderNameResolver
 {
     /**
-     * @param Flow $flow
+     * @param Tide $tide
      *
      * @throws ProviderNameNotFound
      *
      * @return string
      */
-    public function getProviderName(Flow $flow)
+    public function getProviderName(Tide $tide)
     {
-        try {
-            $deployTask = $this->getDeployTask($flow);
-            $context = new DeployContext(ArrayContext::fromRaw($deployTask->getContext()));
-
-            return $context->getProviderName();
-        } catch (\LogicException $e) {
-            throw new ProviderNameNotFound();
-        }
-    }
-
-    /**
-     * @param Flow $flow
-     *
-     * @throws \LogicException
-     *
-     * @return Task
-     */
-    private function getDeployTask(Flow $flow)
-    {
-        $deployTasks = array_filter($flow->getTasks(), function (Task $task) {
-            return $task->getName() == DeployTask::NAME;
+        $tideConfiguration = $tide->getConfiguration();
+        $tasks = $tideConfiguration['tasks'];
+        $deployTasks = array_filter($tasks, function (array $task) {
+            return array_key_exists(DeployTask::NAME, $task);
         });
 
-        if (0 == count($deployTasks)) {
-            throw new \LogicException('Deploy task not found');
+        if (count($deployTasks) == 0) {
+            throw new ProviderNameNotFound('No deploy task found in tide');
         }
 
-        return current($deployTasks);
+        $deployTask = current($deployTasks)[DeployTask::NAME];
+        if (!array_key_exists('providerName', $deployTask)) {
+            throw new ProviderNameNotFound('No provider name found in deploy task configuration');
+        }
+
+        return $deployTask['providerName'];
     }
 }

@@ -6,6 +6,7 @@ use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
 use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 class BuildTaskFactory implements TaskFactory
 {
@@ -35,5 +36,29 @@ class BuildTaskFactory implements TaskFactory
     public function create(TaskContext $taskContext)
     {
         return new BuildTask($this->commandBus, $this->loggerFactory, $taskContext);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConfigTree()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('build');
+
+        $node
+            ->children()
+                ->arrayNode('environment')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('name')->isRequired()->end()
+                            ->scalarNode('value')->isRequired()->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
     }
 }

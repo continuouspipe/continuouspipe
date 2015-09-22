@@ -68,7 +68,7 @@ class Tide
     public static function create(TaskList $tasks, TideContext $context)
     {
         $tide = new self($tasks);
-        $event = new TideCreated($context, $tasks);
+        $event = new TideCreated($context);
         $tide->apply($event);
         $tide->newEvents = [$event];
 

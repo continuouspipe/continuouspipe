@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\View\Flow as FlowView;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -33,6 +32,6 @@ class FlowEnvironmentController
      */
     public function listAction(Flow $flow)
     {
-        return $this->environmentClient->findByFlow(FlowView::fromFlow($flow));
+        return $this->environmentClient->findByFlow($flow);
     }
 }

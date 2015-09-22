@@ -7,18 +7,15 @@ Feature:
     Given there is 1 application images in the repository
 
   Scenario:
-    Given I have a flow with a deploy task
-    When a tide is started based on that workflow
+    When a tide is started with a deploy task
     Then a "Deploying environment" log should be created
 
   Scenario:
-    Given I have a flow with a deploy task
-    When a tide is started based on that workflow
-    And the deployment succeed
+    Given a tide is started with a deploy task
+    When the deployment succeed
     Then the "Deploying environment" log should be successful
 
   Scenario:
-    Given I have a flow with a deploy task
-    When a tide is started based on that workflow
-    And the deployment failed
+    Given a tide is started with a deploy task
+    When the deployment failed
     Then the "Deploying environment" log should be failed

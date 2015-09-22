@@ -44,7 +44,12 @@ class RunContext extends TaskContext
      */
     public function getCommands()
     {
-        return explode("\n", $this->get(self::KEY_COMMANDS));
+        $commands = $this->get(self::KEY_COMMANDS);
+        if (!is_array($commands)) {
+            $commands = explode("\n", $commands);
+        }
+
+        return $commands;
     }
 
     /**

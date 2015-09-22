@@ -70,8 +70,7 @@ class BuildContext implements Context
      */
     public function aBuildTaskIsStarted()
     {
-        $this->flowContext->iHaveAFlowWithTheBuildTask();
-        $this->tideContext->aTideIsStartedBasedOnThatWorkflow();
+        $this->tideContext->aTideIsStartedWithABuildTask();
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\CodeReference;
@@ -92,17 +93,28 @@ class TideContext implements Context
     public function aTideIsCreated()
     {
         if (null === $this->flowContext->getCurrentFlow()) {
-            $this->flowContext->iHaveAFlowWithTheBuildAndDeployTasks();
+            $this->flowContext->iHaveAFlow();
         }
 
         $this->createTide();
     }
 
     /**
-     * @Given a tide is created for branch :branch and commit :sha
+     * @Given a tide is created for branch :branch and commit :sha with a deploy task
      */
-    public function aTideIsCreatedForBranchAndCommit($branch, $sha)
+    public function aTideIsCreatedForBranchAndCommitWithADeployTask($branch, $sha)
     {
+        $this->flowContext->iHaveAFlow();
+        $continuousPipeFile = <<<EOF
+tasks:
+    - deploy:
+          providerName: fake/provider
+EOF;
+
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'continuous-pipe.yml' => $continuousPipeFile
+        ]);
+
         $this->createTide($branch, $sha);
     }
 
@@ -330,7 +342,18 @@ class TideContext implements Context
     public function aDeploymentForACommitIsSuccessful($sha)
     {
         $this->thereIsApplicationImagesInTheRepository(1);
-        $this->flowContext->iHaveAFlowWithADeployTask();
+        $this->flowContext->iHaveAFlow();
+
+        $continuousPipeFile = <<<EOF
+tasks:
+    - deploy:
+          providerName: fake/provider
+EOF;
+
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'continuous-pipe.yml' => $continuousPipeFile
+        ]);
+
         $this->createTide('foo', $sha);
         $this->startTide();
 
@@ -345,6 +368,152 @@ class TideContext implements Context
             $this->getCurrentTideUuid(),
             $deploymentStarted->getDeployment()
         ));
+    }
+
+    /**
+     * @param array $tasks
+     */
+    public function aTideIsStartedWithTasks(array $tasks)
+    {
+        $this->flowContext->iHaveAFlow();
+        $continuousPipeFile = Yaml::dump([
+            'tasks' => $tasks
+        ]);
+
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'continuous-pipe.yml' => $continuousPipeFile
+        ]);
+
+        $this->createTide();
+        $this->startTide();
+    }
+
+    /**
+     * @When a tide is started with a build and deploy task
+     */
+    public function aTideIsStartedWithABuildAndDeployTask()
+    {
+        $this->aTideIsStartedWithTasks([
+            [
+                'build' => []
+            ],
+            [
+                'deploy' => [
+                    'providerName' => 'fake/foo'
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * @When a tide is started with a build task
+     */
+    public function aTideIsStartedWithABuildTask()
+    {
+        $this->aTideIsStartedWithTasks([
+            [
+                'build' => []
+            ]
+        ]);
+    }
+
+    /**
+     * @When a tide is started for the branch :branch with a build and deploy task
+     */
+    public function aTideIsStartedForTheBranchWithABuildAndDeployTask($branch)
+    {
+        $this->flowContext->iHaveAFlow();
+        $continuousPipeFile = Yaml::dump([
+            'tasks' => [
+                [
+                    'build' => []
+                ],
+                [
+                    'deploy' => [
+                        'providerName' => 'fake/foo'
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'continuous-pipe.yml' => $continuousPipeFile
+        ]);
+
+        $this->createTide($branch);
+        $this->startTide();
+    }
+
+    /**
+     * @Given a tide is created with just a build task
+     */
+    public function aTideIsCreatedWithJustABuildTask()
+    {
+        $this->flowContext->iHaveAFlow();
+        $continuousPipeFile = Yaml::dump([
+            'tasks' => [
+                [
+                    'build' => []
+                ]
+            ]
+        ]);
+
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'continuous-pipe.yml' => $continuousPipeFile
+        ]);
+
+        $this->createTide();
+    }
+
+    /**
+     * @Given a tide is created with a deploy task
+     */
+    public function aTideIsCreatedWithADeployTask()
+    {
+        $this->flowContext->iHaveAFlow();
+        $continuousPipeFile = Yaml::dump([
+            'tasks' => [
+                [
+                    'deploy' => [
+                        'providerName' => 'fake/foo'
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'continuous-pipe.yml' => $continuousPipeFile
+        ]);
+
+        $this->createTide();
+    }
+
+    /**
+     * @When a tide is started with a deploy task
+     */
+    public function aTideIsStartedWithADeployTask()
+    {
+        $this->aTideIsStartedWithTasks([
+            [
+                'deploy' => [
+                    'providerName' => 'fake/foo'
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * @Given I tide is started with the following tasks:
+     */
+    public function iTideIsStartedWithTheFollowingTasks(TableNode $tasks)
+    {
+        $tasks = array_map(function($task) {
+            $context = !empty($task['context']) ? json_decode($task['context'], true) : [];
+
+            return [$task['name'] => $context];
+        }, $tasks->getHash());
+
+        $this->aTideIsStartedWithTasks($tasks);
     }
 
     /**

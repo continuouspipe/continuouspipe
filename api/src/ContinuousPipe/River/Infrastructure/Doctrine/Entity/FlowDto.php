@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Infrastructure\Doctrine\Entity;
 
-use ContinuousPipe\River\Flow\Task;
 use ContinuousPipe\River\FlowContext;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -26,13 +25,6 @@ class FlowDto
      * @var FlowContext
      */
     public $context;
-
-    /**
-     * @ORM\Column(type="b64Object")
-     *
-     * @var Task[]
-     */
-    public $tasks;
 
     /**
      * @ORM\Column(type="string")

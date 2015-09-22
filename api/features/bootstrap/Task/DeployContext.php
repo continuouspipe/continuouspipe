@@ -65,8 +65,7 @@ class DeployContext implements Context
      */
     public function aDeployTaskIsStarted()
     {
-        $this->flowContext->iHaveAFlowWithADeployTask();
-        $this->tideContext->aTideIsStartedBasedOnThatWorkflow();
+        $this->tideContext->aTideIsStartedWithADeployTask();
     }
 
     /**

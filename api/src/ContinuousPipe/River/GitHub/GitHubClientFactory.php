@@ -31,12 +31,20 @@ class GitHubClientFactory
      * @param User $user
      *
      * @return Client
+     *
+     * @throws UserCredentialsNotFound
      */
     public function createClientForUser(User $user)
     {
         $client = new Client($this->githubHttpClient);
 
-        $userCredentials = $user->getGitHubCredentials();
+        if (null === ($userCredentials = $user->getGitHubCredentials())) {
+            throw new UserCredentialsNotFound(sprintf(
+                'No GitHub credentials found for user "%s"',
+                $user->getEmail()
+            ));
+        }
+
         $client->authenticate($userCredentials->getAccessToken(), null, Client::AUTH_HTTP_TOKEN);
 
         return $client;

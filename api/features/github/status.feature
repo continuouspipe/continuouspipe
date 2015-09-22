@@ -7,15 +7,15 @@ Feature:
     Given there is 1 application images in the repository
 
   Scenario:
-    When a tide is started
+    When a tide is started with a build task
     Then the GitHub commit status should be "pending"
 
   Scenario:
-    Given a tide is started
+    Given a tide is started with a build task
     When the tide failed
     Then the GitHub commit status should be "failure"
 
   Scenario:
-    Given a tide is started
+    Given a tide is started with a build task
     When the tide is successful
     Then the GitHub commit status should be "success"

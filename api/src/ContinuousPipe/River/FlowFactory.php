@@ -13,17 +13,27 @@ class FlowFactory
      * @var UserContext
      */
     private $userContext;
+
     /**
      * @var CodeRepositoryRepository
      */
     private $codeRepositoryRepository;
 
+    /**
+     * @param UserContext              $userContext
+     * @param CodeRepositoryRepository $codeRepositoryRepository
+     */
     public function __construct(UserContext $userContext, CodeRepositoryRepository $codeRepositoryRepository)
     {
         $this->userContext = $userContext;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
     }
 
+    /**
+     * @param FlowCreationRequest $creationRequest
+     *
+     * @return Flow
+     */
     public function fromCreationRequest(FlowCreationRequest $creationRequest)
     {
         $flowContext = FlowContext::createFlow(
@@ -32,6 +42,6 @@ class FlowFactory
             $this->codeRepositoryRepository->findByIdentifier($creationRequest->getRepository())
         );
 
-        return new Flow($flowContext, $creationRequest->getTasks());
+        return new Flow($flowContext);
     }
 }

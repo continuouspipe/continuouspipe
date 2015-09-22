@@ -8,6 +8,7 @@ use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Message\ResponseInterface;
 use JMS\Serializer\Serializer;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
@@ -90,9 +91,20 @@ class HttpPipeClient implements Client
             $providerName
         );
 
-        $response = $this->client->get($url, [
-            'headers' => $this->getRequestHeaders($user),
-        ]);
+        try {
+            $response = $this->client->get($url, [
+                'headers' => $this->getRequestHeaders($user),
+            ]);
+        } catch (ClientException $e) {
+            if ($e->getResponse()->getStatusCode() == 404) {
+                throw new ProviderNotFound(sprintf(
+                    'Provider named "%s" is not found',
+                    $providerName
+                ));
+            }
+
+            throw $e;
+        }
 
         $contents = $this->getResponseContents($response);
         $environments = $this->serializer->deserialize($contents, 'array<'.Environment::class.'>', 'json');

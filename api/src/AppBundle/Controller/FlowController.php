@@ -22,10 +22,12 @@ class FlowController
      * @var MessageBus
      */
     private $eventBus;
+
     /**
      * @var FlowRepository
      */
     private $flowRepository;
+
     /**
      * @var FlowFactory
      */

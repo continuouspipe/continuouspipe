@@ -12,7 +12,7 @@ Feature:
     And the tide is represented as pending
 
   Scenario:
-    When a tide is started
+    When a tide is started with a build task
     Then the tide is represented as running
 
   Scenario:

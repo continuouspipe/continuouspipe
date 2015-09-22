@@ -9,6 +9,7 @@ use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\Task\TaskList;
 use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 use Rhumsaa\Uuid\Uuid;
 
 class TideFactory
@@ -22,34 +23,29 @@ class TideFactory
      * @var TaskFactoryRegistry
      */
     private $taskFactoryRegistry;
+
     /**
      * @var FlowRepository
      */
     private $flowRepository;
 
     /**
-     * @param LoggerFactory       $loggerFactory
-     * @param TaskFactoryRegistry $taskFactoryRegistry
-     * @param FlowRepository      $flowRepository
+     * @var TideConfigurationFactory
      */
-    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository)
+    private $configurationFactory;
+
+    /**
+     * @param LoggerFactory            $loggerFactory
+     * @param TaskFactoryRegistry      $taskFactoryRegistry
+     * @param FlowRepository           $flowRepository
+     * @param TideConfigurationFactory $configurationFactory
+     */
+    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory)
     {
         $this->loggerFactory = $loggerFactory;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
         $this->flowRepository = $flowRepository;
-    }
-
-    /**
-     * @param Flow        $flow
-     * @param TideContext $tideContext
-     *
-     * @return Tide
-     */
-    public function create(Flow $flow, TideContext $tideContext)
-    {
-        $taskList = $this->createTideTaskList($flow, $tideContext);
-
-        return Tide::create($taskList, $tideContext);
+        $this->configurationFactory = $configurationFactory;
     }
 
     /**
@@ -61,9 +57,32 @@ class TideFactory
     public function createFromCodeReference(Flow $flow, CodeReference $codeReference)
     {
         $log = $this->loggerFactory->create()->getLog();
-        $tideContext = TideContext::createTide($flow->getContext(), Uuid::uuid1(), $codeReference, $log);
 
-        return $this->create($flow, $tideContext);
+        try {
+            $configuration = $this->configurationFactory->getConfiguration($flow, $codeReference);
+        } catch (TideConfigurationException $e) {
+            $configuration = [];
+
+            $logger = $this->loggerFactory->from($log);
+            $logger->append(new Text(sprintf(
+                'Unable to create tide task list: %s',
+                $e->getMessage()
+            )));
+
+            $logger->failure();
+        }
+
+        $tideContext = TideContext::createTide(
+            $flow->getContext(),
+            Uuid::uuid1(),
+            $codeReference,
+            $log,
+            $configuration
+        );
+
+        $taskList = $this->createTideTaskList($tideContext);
+
+        return Tide::create($taskList, $tideContext);
     }
 
     /**
@@ -84,28 +103,31 @@ class TideFactory
 
         $tideCreatedEvent = $tideCreatedEvents[0];
         $tideContext = $tideCreatedEvent->getTideContext();
-        $flowUuid = $tideContext->getFlowUuid();
-        $flow = $this->flowRepository->find($flowUuid);
-        $taskList = $this->createTideTaskList($flow, $tideContext);
+        $taskList = $this->createTideTaskList($tideContext);
 
         return Tide::fromEvents($taskList, $events);
     }
 
     /**
-     * @param Flow        $flow
      * @param TideContext $tideContext
      *
      * @throws Task\TaskFactoryNotFound
      *
      * @return TaskList
      */
-    private function createTideTaskList(Flow $flow, TideContext $tideContext)
+    private function createTideTaskList(TideContext $tideContext)
     {
+        $configuration = $tideContext->getConfiguration();
+        $tasksConfiguration = array_key_exists('tasks', $configuration) ? $configuration['tasks'] : [];
+
         $tasks = [];
-        foreach ($flow->getTasks() as $taskId => $flowTask) {
-            $taskFactory = $this->taskFactoryRegistry->find($flowTask->getName());
+        foreach ($tasksConfiguration as $taskId => $taskConfig) {
+            $taskName = array_keys($taskConfig)[0];
+            $taskConfiguration = $taskConfig[$taskName];
+
+            $taskFactory = $this->taskFactoryRegistry->find($taskName);
             $taskContext = TaskContext::createTaskContext(
-                new ContextTree(ArrayContext::fromRaw($flowTask->getContext() ?: []), $tideContext),
+                new ContextTree(ArrayContext::fromRaw($taskConfiguration ?: []), $tideContext),
                 $taskId
             );
 

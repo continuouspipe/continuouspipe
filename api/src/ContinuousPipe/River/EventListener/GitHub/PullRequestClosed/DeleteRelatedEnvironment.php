@@ -4,10 +4,12 @@ namespace ContinuousPipe\River\EventListener\GitHub\PullRequestClosed;
 
 use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
+use ContinuousPipe\River\Pipe\ProviderNameNotFound;
 use ContinuousPipe\River\Pipe\ProviderNameResolver;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
+use Psr\Log\LoggerInterface;
 
 class DeleteRelatedEnvironment
 {
@@ -32,17 +34,24 @@ class DeleteRelatedEnvironment
     private $providerNameResolver;
 
     /**
+     * @var LoggerInterface
+     */
+    private $systemLogger;
+
+    /**
      * @param Client                    $client
      * @param TideRepository            $tideRepository
      * @param EnvironmentNamingStrategy $environmentNamingStrategy
      * @param ProviderNameResolver      $providerNameResolver
+     * @param LoggerInterface           $systemLogger
      */
-    public function __construct(Client $client, TideRepository $tideRepository, EnvironmentNamingStrategy $environmentNamingStrategy, ProviderNameResolver $providerNameResolver)
+    public function __construct(Client $client, TideRepository $tideRepository, EnvironmentNamingStrategy $environmentNamingStrategy, ProviderNameResolver $providerNameResolver, LoggerInterface $systemLogger)
     {
         $this->client = $client;
         $this->tideRepository = $tideRepository;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
         $this->providerNameResolver = $providerNameResolver;
+        $this->systemLogger = $systemLogger;
     }
 
     /**
@@ -55,7 +64,12 @@ class DeleteRelatedEnvironment
         foreach ($tides as $tide) {
             try {
                 $target = $this->getTideTarget($tide);
-            } catch (\LogicException $e) {
+            } catch (ProviderNameNotFound $e) {
+                $this->systemLogger->error('Unable to resolve tide target provider', [
+                    'exception' => $e,
+                    'tide' => $tide,
+                ]);
+
                 continue;
             }
 
@@ -75,7 +89,7 @@ class DeleteRelatedEnvironment
                 $tide->getFlow()->getUuid(),
                 $tide->getCodeReference()
             ),
-            $this->providerNameResolver->getProviderName($tide->getFlow())
+            $this->providerNameResolver->getProviderName($tide)
         );
     }
 }

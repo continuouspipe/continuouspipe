@@ -53,4 +53,14 @@ class TaskFactoryRegistry
 
         return $this->container->get($serviceId);
     }
+
+    /**
+     * @return TaskFactory[]
+     */
+    public function findAll()
+    {
+        return array_map(function ($serviceName) {
+            return $this->container->get($serviceName);
+        }, $this->tasksByServiceName);
+    }
 }

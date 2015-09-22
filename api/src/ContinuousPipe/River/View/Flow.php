@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeRepository;
-use ContinuousPipe\River\Flow\Task;
 use Rhumsaa\Uuid\Uuid;
 
 class Flow
@@ -19,11 +18,6 @@ class Flow
     private $repository;
 
     /**
-     * @var Task[]
-     */
-    private $tasks;
-
-    /**
      * @param \ContinuousPipe\River\Flow $flow
      *
      * @return Flow
@@ -35,7 +29,6 @@ class Flow
         $view = new self();
         $view->uuid = $flowContext->getFlowUuid();
         $view->repository = $flowContext->getCodeRepository();
-        $view->tasks = $flow->getTasks();
 
         return $view;
     }
@@ -46,13 +39,5 @@ class Flow
     public function getUuid()
     {
         return $this->uuid;
-    }
-
-    /**
-     * @return \ContinuousPipe\River\Flow\Task[]
-     */
-    public function getTasks()
-    {
-        return $this->tasks;
     }
 }
