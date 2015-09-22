@@ -22,3 +22,48 @@ Feature:
     """
     When a tide is started
     Then the tide should be failed
+
+  Scenario: The configuration should be merged with the one stored on CP's side
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        - deploy:
+              providerName: foo/bar
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        - build: ~
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        - deploy:
+              providerName: foo/bar
+        - build: {}
+    """
+
+  Scenario: The configuration in the repository file is more important
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        named:
+            deploy:
+                providerName: foo/bar
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                providerName: bar/baz
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                providerName: bar/baz
+    """

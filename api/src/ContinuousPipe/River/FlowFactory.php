@@ -6,6 +6,7 @@ use ContinuousPipe\River\Flow\Request\FlowCreationRequest;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
 use ContinuousPipe\User\Security\UserContext;
 use Rhumsaa\Uuid\Uuid;
+use Symfony\Component\Yaml\Yaml;
 
 class FlowFactory
 {
@@ -39,9 +40,25 @@ class FlowFactory
         $flowContext = FlowContext::createFlow(
             Uuid::uuid1(),
             $this->userContext->getCurrent(),
-            $this->codeRepositoryRepository->findByIdentifier($creationRequest->getRepository())
+            $this->codeRepositoryRepository->findByIdentifier($creationRequest->getRepository()),
+            $this->parseConfiguration($creationRequest)
         );
 
         return new Flow($flowContext);
+    }
+
+    /**
+     * @param FlowCreationRequest $creationRequest
+     *
+     * @return array
+     */
+    private function parseConfiguration(FlowCreationRequest $creationRequest)
+    {
+        $configuration = $creationRequest->getYmlConfiguration();
+        if (empty($configuration)) {
+            return [];
+        }
+
+        return Yaml::parse($configuration);
     }
 }

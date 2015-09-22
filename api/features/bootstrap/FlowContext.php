@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
@@ -18,6 +19,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use GitHub\WebHook\Model\Repository;
 use ContinuousPipe\User\Tests\Authenticator\InMemoryAuthenticatorClient;
+use Symfony\Component\Yaml\Yaml;
 
 class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
@@ -154,6 +156,16 @@ EOF;
     }
 
     /**
+     * @Given I have a flow with the following configuration:
+     */
+    public function iHaveAFlowWithTheFollowingConfiguration(PyStringNode $string)
+    {
+        if (null === $this->currentFlow) {
+            $this->createFlow(null, Yaml::parse($string->getRaw()));
+        }
+    }
+
+    /**
      * @Given I have the a deployed environment named :name
      */
     public function iHaveTheADeployedEnvironmentNamed($name)
@@ -234,11 +246,13 @@ EOF;
     }
 
     /**
+     * @param Uuid $uuid
+     * @param array $configuration
      * @return Flow
      */
-    public function createFlow(Uuid $uuid = null)
+    public function createFlow(Uuid $uuid = null, array $configuration = [])
     {
-        $context = $this->createFlowContext($uuid);
+        $context = $this->createFlowContext($uuid, $configuration);
 
         $flow = new Flow($context);
         $this->flowRepository->save($flow);
@@ -251,9 +265,11 @@ EOF;
     /**
      * @param CodeRepository $codeRepository
      *
+     * @param Uuid $uuid
+     * @param array $configuration
      * @return RiverFlowContext
      */
-    private function createFlowContextWithCodeRepository(CodeRepository $codeRepository, Uuid $uuid = null)
+    private function createFlowContextWithCodeRepository(CodeRepository $codeRepository, Uuid $uuid = null, array $configuration = [])
     {
         $this->flowUuid = $uuid ?: Uuid::uuid1();
         $user = new User('samuel.roze@gmail.com');
@@ -264,7 +280,8 @@ EOF;
         return RiverFlowContext::createFlow(
             $this->flowUuid,
             $user,
-            $codeRepository
+            $codeRepository,
+            $configuration
         );
     }
 
@@ -277,12 +294,14 @@ EOF;
     }
 
     /**
+     * @param Uuid $uuid
+     * @param array $configuration
      * @return RiverFlowContext
      */
-    private function createFlowContext(Uuid $uuid = null)
+    private function createFlowContext(Uuid $uuid = null, array $configuration = [])
     {
         return $this->createFlowContextWithCodeRepository(new CodeRepository\GitHub\GitHubCodeRepository(
             new Repository('foo', 'bar')
-        ), $uuid);
+        ), $uuid, $configuration);
     }
 }

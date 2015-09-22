@@ -48,11 +48,25 @@ class Configuration implements ConfigurationInterface
         $builder = new TreeBuilder();
         $node = $builder->root('tasks');
 
+        $i = 0;
         $nodeChildren = $node
             ->isRequired()
             ->requiresAtLeastOneElement()
+            ->useAttributeAsKey('name')
+            ->beforeNormalization()
+                ->ifArray()
+                ->then(function ($tasks) use (&$i) {
+                    foreach ($tasks as $name => &$task) {
+                        if (!is_string($name)) {
+                            $task['name'] = $i++;
+                        }
+                    }
+
+                    return $tasks;
+                })
+            ->end()
             ->prototype('array')
-                ->children();
+            ->children();
 
         foreach ($this->taskFactoryRegistry->findAll() as $factory) {
             $nodeChildren->append($factory->getConfigTree());

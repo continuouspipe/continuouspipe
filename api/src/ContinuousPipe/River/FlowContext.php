@@ -10,6 +10,7 @@ class FlowContext implements Context
     const CODE_REPOSITORY_KEY = 'codeRepository';
     const USER_KEY = 'user';
     const FLOW_UUID_KEY = 'flowUuid';
+    const CONFIGURATION_KEY = 'configuration';
 
     /**
      * @var Context
@@ -28,15 +29,17 @@ class FlowContext implements Context
      * @param Uuid           $flowUuid
      * @param User           $user
      * @param CodeRepository $codeRepository
+     * @param array          $configuration
      *
      * @return FlowContext
      */
-    public static function createFlow(Uuid $flowUuid, User $user, CodeRepository $codeRepository)
+    public static function createFlow(Uuid $flowUuid, User $user, CodeRepository $codeRepository, array $configuration)
     {
         $context = new ArrayContext();
         $context->set(self::FLOW_UUID_KEY, $flowUuid);
         $context->set(self::USER_KEY, $user);
         $context->set(self::CODE_REPOSITORY_KEY, $codeRepository);
+        $context->set(self::CONFIGURATION_KEY, json_encode($configuration));
 
         return new self($context);
     }
@@ -65,19 +68,12 @@ class FlowContext implements Context
         return $this->context->get(self::FLOW_UUID_KEY);
     }
 
-    public function has($key)
+    /**
+     * @return array
+     */
+    public function getConfiguration()
     {
-        return $this->context->has($key);
-    }
-
-    public function get($key)
-    {
-        return $this->context->get($key);
-    }
-
-    public function set($key, $value)
-    {
-        return $this->context->set($key, $value);
+        return json_decode($this->get(self::CONFIGURATION_KEY), true);
     }
 
     /**
@@ -94,5 +90,20 @@ class FlowContext implements Context
     public function getBag()
     {
         return $this->context->getBag();
+    }
+
+    public function has($key)
+    {
+        return $this->context->has($key);
+    }
+
+    public function get($key)
+    {
+        return $this->context->get($key);
+    }
+
+    public function set($key, $value)
+    {
+        return $this->context->set($key, $value);
     }
 }

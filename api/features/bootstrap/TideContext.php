@@ -528,6 +528,31 @@ EOF;
     }
 
     /**
+     * @Then the configuration of the tide should contain at least:
+     */
+    public function theConfigurationOfTheTideShouldContainAtLeast(PyStringNode $string)
+    {
+        $tideCreatedEvents = $this->getEventsOfType(TideCreated::class);
+        if (0 == count($tideCreatedEvents)) {
+            throw new \RuntimeException('No tide created event found');
+        }
+
+        /** @var TideCreated $created */
+        $created = current($tideCreatedEvents);
+        $tideConfiguration = $created->getTideContext()->getConfiguration();
+
+        $expectedConfiguration = Yaml::parse($string->getRaw());
+        $intersection = $this->array_intersect_recursive($expectedConfiguration, $tideConfiguration);
+
+        if ($intersection != $expectedConfiguration) {
+            throw new \RuntimeException(sprintf(
+                'Expected to have at least this configuration but found: %s',
+                PHP_EOL.Yaml::dump($tideConfiguration)
+            ));
+        }
+    }
+
+    /**
      * @return null|Uuid
      */
     public function getCurrentTideUuid()
@@ -577,5 +602,28 @@ EOF;
     private function startTide()
     {
         $this->commandBus->handle(new StartTideCommand($this->tideUuid));
+    }
+
+    private function array_intersect_recursive($array1, $array2)
+    {
+        foreach($array1 as $key => $value)
+        {
+            if (!isset($array2[$key]))
+            {
+                unset($array1[$key]);
+            }
+            else
+            {
+                if (is_array($array1[$key]))
+                {
+                    $array1[$key] = $this->array_intersect_recursive($array1[$key], $array2[$key]);
+                }
+                elseif ($array2[$key] !== $value)
+                {
+                    unset($array1[$key]);
+                }
+            }
+        }
+        return $array1;
     }
 }

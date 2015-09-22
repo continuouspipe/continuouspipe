@@ -53,6 +53,7 @@ class TideConfigurationFactory
         }
 
         $configs = [
+            $flow->getContext()->getConfiguration(),
             Yaml::parse($fileSystem->getContents(self::FILENAME)),
         ];
 
