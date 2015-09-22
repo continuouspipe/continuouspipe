@@ -56,56 +56,7 @@
                 </tbody>
             </table>
         </remote-resource>
-    </div>
 
-    <div class="block-header">
-        <h2>2. Select the task for your flow</h2>
-
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Available tasks<small>Move these tasks to right to enable them in your flow.</small></h2>
-                    </div>
-                    <div class="table-response">
-                        <ul class="tasks">
-                            <li ng-repeat="(i, task) in availableTasks">
-                                <div class="task-name">
-                                    <strong>{{ task.name }}</strong>
-                                </div>
-                                <div class="description">{{ task.description }}</div>
-                                <div class="task-actions">
-                                    <button class="btn btn-primary" ng-click="addTask(i)">Add</button>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Selected tasks</h2>
-                    </div>
-                    <div class="table-response" ng-show="selectedTasks.length">
-                        <ul class="tasks" dnd-list="selectedTasks">
-                            <li ng-repeat="(i, task) in selectedTasks track by i">
-                                <div class="action-icons">
-                                    <i class="md md-vertical-align-top" ng-click="moveTask($index, -1)" ng-show="!$first"></i>
-                                    <i class="md md-vertical-align-bottom" ng-click="moveTask($index, 1)" ng-show="!$last"></i>
-                                </div>
-                                <div ng-include="'flow/views/creation/task-'+task.name+'.html'"></div>
-                                <div>
-                                    <button class="btn btn-danger pull-right" ng-click="removeTask($index)">Remove</button>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <button class="btn btn-primary" ng-disabled="selectedTasks.length === 0" ng-click="create()">Create</button>
+        <button class="btn btn-primary" ng-disabled="!selectedRepository" ng-click="create()">Create</button>
     </div>
 </div>

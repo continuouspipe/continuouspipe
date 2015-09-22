@@ -56,5 +56,17 @@ angular.module('continuousPipeRiver')
                     label: 'Overview'
                 }
             })
+            .state('flow.configuration', {
+                url: '/configuration',
+                views: {
+                    '@layout': {
+                        templateUrl: 'flow/views/configuration.html',
+                        controller: 'FlowConfigurationController'
+                    }
+                },
+                ncyBreadcrumb: {
+                    label: 'Configuration'
+                }
+            })
         ;
     });

@@ -16,10 +16,9 @@ angular.module('continuousPipeRiver')
             return this.resource.delete({uuid: flow.uuid}).$promise;
         };
 
-        this.createFromRepositoryAndTasks = function(repository, tasks) {
+        this.createFromRepository = function(repository) {
             return $resource(RIVER_API_URL+'/flows', {identifier: '@id'}).save({
-                repository: repository.repository.id,
-                tasks: tasks
+                repository: repository.repository.id
             }).$promise;
         };
     });

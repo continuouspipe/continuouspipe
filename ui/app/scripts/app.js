@@ -19,7 +19,8 @@ angular
         'ui.router',
         'ncy-angular-breadcrumb',
         'angular-jwt',
-        'dndLists'
+        'dndLists',
+        'ui.ace'
     ])
     .config(function($urlRouterProvider, $breadcrumbProvider, $locationProvider) {
         $urlRouterProvider.otherwise('/flows');

@@ -31,30 +31,11 @@ angular.module('continuousPipeRiver')
         $scope.selectPersonal();
 
         $scope.create = function() {
-            FlowRepository.createFromRepositoryAndTasks($scope.selectedRepository, $scope.selectedTasks).then(function(flow) {
+            FlowRepository.createFromRepository($scope.selectedRepository).then(function(flow) {
                 $state.go('flow', {uuid: flow.uuid});
             }, function(error) {
                 var message = ((error || {}).data || {}).message || "An unknown error occured while creating flow";
                 swal("Error !", message, "error");
             });
-        };
-
-        $scope.availableTasks = [
-            {name: 'build', description: 'Build Docker images found in your `docker-compose.yml` file.'},
-            {name: 'run', description: 'Run a sequence of commands in a container.', context: {}},
-            {name: 'deploy', description: 'Deploy the environment to a given Cloud Provider.', context: {}}
-        ];
-        $scope.selectedTasks = [];
-
-        $scope.addTask = function(index) {
-            $scope.selectedTasks.push($.extend(true, {}, $scope.availableTasks[index]));
-        };
-
-        $scope.moveTask = function(index, direction) {
-            $scope.selectedTasks.splice(index + direction, 0, $scope.selectedTasks.splice(index, 1)[0])
-        };
-
-        $scope.removeTask = function(index) {
-            $scope.selectedTasks.splice(index, 1);
         };
     });
