@@ -43,19 +43,15 @@ class TideConfigurationFactory
      */
     public function getConfiguration(Flow $flow, CodeReference $codeReference)
     {
-        // Read configuration from YML
-        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flow->getContext()->getUser());
-        if (!$fileSystem->exists(self::FILENAME)) {
-            throw new TideConfigurationException(sprintf(
-                'The configuration file "%s" do not exists in code repository',
-                self::FILENAME
-            ));
-        }
-
         $configs = [
             $flow->getContext()->getConfiguration(),
-            Yaml::parse($fileSystem->getContents(self::FILENAME)),
         ];
+
+        // Read configuration from YML
+        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flow->getContext()->getUser());
+        if ($fileSystem->exists(self::FILENAME)) {
+            $configs[] = Yaml::parse($fileSystem->getContents(self::FILENAME));
+        }
 
         $configuration = new Configuration($this->taskFactoryRegistry);
         $processor = new Processor();

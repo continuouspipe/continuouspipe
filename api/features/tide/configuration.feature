@@ -67,3 +67,13 @@ Feature:
             deploy:
                 providerName: bar/baz
     """
+
+  Scenario: The configuration can be fully configured on the CP's side
+    Given there is 1 application images in the repository
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        - build: ~
+    """
+    When a tide is started
+    Then the build task should be running
