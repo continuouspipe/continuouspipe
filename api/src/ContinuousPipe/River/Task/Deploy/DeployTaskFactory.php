@@ -51,7 +51,7 @@ class DeployTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->scalarNode('providerName')->isRequired()->end()
+                ->scalarNode(DeployContext::PROVIDER_NAME_KEY)->isRequired()->end()
             ->end()
         ;
 

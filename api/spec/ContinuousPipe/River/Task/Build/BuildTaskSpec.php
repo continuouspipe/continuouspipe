@@ -2,10 +2,9 @@
 
 namespace spec\ContinuousPipe\River\Task\Build;
 
-use ContinuousPipe\River\Task\Build\Event\BuildFailed;
+use ContinuousPipe\River\Task\Build\BuildContext;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
-use ContinuousPipe\River\Task\TaskContext;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use PhpSpec\ObjectBehavior;
@@ -14,7 +13,7 @@ use SimpleBus\Message\Bus\MessageBus;
 
 class BuildTaskSpec extends ObjectBehavior
 {
-    public function let(MessageBus $commandBus, LoggerFactory $loggerFactory, Log $log, TaskContext $buildContext)
+    public function let(MessageBus $commandBus, LoggerFactory $loggerFactory, Log $log, BuildContext $buildContext)
     {
         $this->beConstructedWith($commandBus, $loggerFactory, $buildContext);
         $this->apply(new ImageBuildsStarted(

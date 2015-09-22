@@ -4,6 +4,7 @@ namespace Task;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
@@ -351,6 +352,34 @@ class BuildContext implements Context
                 $foundPath,
                 $path
             ));
+        }
+    }
+
+    /**
+     * @Then the build should be started with the following environment variables:
+     */
+    public function theBuildShouldBeStartedWithTheFollowingEnvironmentVariables(TableNode $environs)
+    {
+        $buildStartedEvent = $this->getBuildStartedEvents()[0];
+        $request = $buildStartedEvent->getBuild()->getRequest();
+        $environment = $request->getEnvironment();
+
+        foreach ($environs->getHash() as $environ) {
+            if (!array_key_exists($environ['name'], $environment)) {
+                throw new \RuntimeException(sprintf(
+                    'Environment variable named "%s" not found in request',
+                    $environ['name']
+                ));
+            }
+
+            if ($environment[$environ['name']] != $environ['value']) {
+                throw new \RuntimeException(sprintf(
+                    'Expected to find value "%s" in environment variable named "%s" but found "%s" instead',
+                    $environ['value'],
+                    $environ['name'],
+                    $environment[$environ['name']]
+                ));
+            }
         }
     }
 

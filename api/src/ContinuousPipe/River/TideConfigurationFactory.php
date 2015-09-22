@@ -67,16 +67,17 @@ class TideConfigurationFactory
 
     /**
      * @param array $configuration
+     *
      * @return array
      */
     private function replaceVariables(array $configuration)
     {
         $variables = $this->resolveVariables($configuration);
-        $variableKeys = array_map(function($key) {
+        $variableKeys = array_map(function ($key) {
             return sprintf('${%s}', $key);
         }, array_keys($variables));
 
-        array_walk_recursive($configuration, function(&$value) use ($variableKeys, $variables) {
+        array_walk_recursive($configuration, function (&$value) use ($variableKeys, $variables) {
             if (is_string($value)) {
                 $value = str_replace($variableKeys, array_values($variables), $value);
             }
@@ -87,6 +88,7 @@ class TideConfigurationFactory
 
     /**
      * @param array $configuration
+     *
      * @return array
      */
     private function resolveVariables(array $configuration)

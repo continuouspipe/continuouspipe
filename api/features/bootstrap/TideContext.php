@@ -419,6 +419,20 @@ EOF;
     }
 
     /**
+     * @When a tide is started with a build task that have the following environment variables:
+     */
+    public function aTideIsStartedWithABuildTaskThatHaveTheFollowingEnvironmentVariables(TableNode $environ)
+    {
+        $this->aTideIsStartedWithTasks([
+            [
+                'build' => [
+                    'environment' => $environ->getHash()
+                ]
+            ]
+        ]);
+    }
+
+    /**
      * @When a tide is started for the branch :branch with a build and deploy task
      */
     public function aTideIsStartedForTheBranchWithABuildAndDeployTask($branch)

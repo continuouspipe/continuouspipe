@@ -48,9 +48,9 @@ class RunTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->scalarNode('image')->end()
-                ->scalarNode('service')->end()
-                ->arrayNode('commands')
+                ->scalarNode(RunContext::KEY_IMAGE_NAME)->end()
+                ->scalarNode(RunContext::KEY_SERVICE_NAME)->end()
+                ->arrayNode(RunContext::KEY_COMMANDS)
                     ->prototype('scalar')->end()
                 ->end()
                 ->arrayNode('environment')

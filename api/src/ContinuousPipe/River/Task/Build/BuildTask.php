@@ -13,7 +13,6 @@ use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
-use ContinuousPipe\River\Task\TaskContext;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -31,16 +30,16 @@ class BuildTask extends EventDrivenTask
     private $loggerFactory;
 
     /**
-     * @var TaskContext
+     * @var BuildContext
      */
     private $context;
 
     /**
      * @param MessageBus    $commandBus
      * @param LoggerFactory $loggerFactory
-     * @param TaskContext   $context
+     * @param BuildContext  $context
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, TaskContext $context)
+    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, BuildContext $context)
     {
         parent::__construct();
 
@@ -132,6 +131,7 @@ class BuildTask extends EventDrivenTask
 
         $this->commandBus->handle(new BuildImagesCommand(
             $this->context->getTideUuid(),
+            $this->context->getEnvironment(),
             $log->getId()
         ));
     }

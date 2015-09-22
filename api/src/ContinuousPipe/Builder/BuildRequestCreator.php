@@ -33,12 +33,13 @@ class BuildRequestCreator
     /**
      * @param CodeReference $codeReference
      * @param User          $user
+     * @param array         $buildEnvironment
      *
      * @return Request\BuildRequest[]
      *
      * @throws BuilderException
      */
-    public function createBuildRequests(CodeReference $codeReference, User $user)
+    public function createBuildRequests(CodeReference $codeReference, User $user, array $buildEnvironment)
     {
         try {
             $dockerComposeComponents = $this->dockerComposeProjectParser->parse(
@@ -68,9 +69,24 @@ class BuildRequestCreator
             $buildRequests[] = new BuildRequest($buildRequestRepository, $image, new Context(
                 $dockerComposeComponent->getDockerfilePath(),
                 $dockerComposeComponent->getBuildDirectory()
-            ));
+            ), null, null, $this->flattenEnvironmentVariables($buildEnvironment));
         }
 
         return $buildRequests;
+    }
+
+    /**
+     * @param array $buildEnvironment
+     *
+     * @return array
+     */
+    private function flattenEnvironmentVariables(array $buildEnvironment)
+    {
+        $variables = [];
+        foreach ($buildEnvironment as $environ) {
+            $variables[$environ['name']] = $environ['value'];
+        }
+
+        return $variables;
     }
 }

@@ -22,13 +22,22 @@ class BuildImagesCommand
     private $logId;
 
     /**
+     * @JMS\Type("array<string,string>")
+     *
+     * @var array
+     */
+    private $buildEnvironment;
+
+    /**
      * @param Uuid   $tideUuid
+     * @param array  $buildEnvironment
      * @param string $logId
      */
-    public function __construct(Uuid $tideUuid, $logId)
+    public function __construct(Uuid $tideUuid, array $buildEnvironment, $logId)
     {
         $this->tideUuid = $tideUuid;
         $this->logId = $logId;
+        $this->buildEnvironment = $buildEnvironment;
     }
 
     /**
@@ -45,5 +54,13 @@ class BuildImagesCommand
     public function getLogId()
     {
         return $this->logId;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBuildEnvironment()
+    {
+        return $this->buildEnvironment;
     }
 }

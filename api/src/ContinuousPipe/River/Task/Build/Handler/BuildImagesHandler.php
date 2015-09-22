@@ -66,7 +66,7 @@ class BuildImagesHandler
         $tideContext = $tide->getContext();
 
         try {
-            $buildRequests = $this->buildRequestCreator->createBuildRequests($tideContext->getCodeReference(), $tideContext->getUser());
+            $buildRequests = $this->buildRequestCreator->createBuildRequests($tideContext->getCodeReference(), $tideContext->getUser(), $command->getBuildEnvironment());
         } catch (BuilderException $e) {
             $logger->append(new Text($e->getMessage()));
             $this->eventBus->handle(new ImageBuildsFailed($tideUuid, $logger->getLog()));

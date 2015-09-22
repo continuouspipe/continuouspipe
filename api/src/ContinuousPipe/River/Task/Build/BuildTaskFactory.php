@@ -35,7 +35,7 @@ class BuildTaskFactory implements TaskFactory
      */
     public function create(TaskContext $taskContext)
     {
-        return new BuildTask($this->commandBus, $this->loggerFactory, $taskContext);
+        return new BuildTask($this->commandBus, $this->loggerFactory, BuildContext::createBuildContext($taskContext));
     }
 
     /**
@@ -48,7 +48,7 @@ class BuildTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->arrayNode('environment')
+                ->arrayNode(BuildContext::ENVIRONMENT_KEY)
                     ->prototype('array')
                         ->children()
                             ->scalarNode('name')->isRequired()->end()
