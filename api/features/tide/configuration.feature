@@ -77,3 +77,26 @@ Feature:
     """
     When a tide is started
     Then the build task should be running
+
+  Scenario: The variables are replaced in the configuration
+    Given I have a flow with the following configuration:
+    """
+    environment_variables:
+        - name: FOO
+          value: BAR
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                providerName: ${FOO}
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                providerName: BAR
+    """
