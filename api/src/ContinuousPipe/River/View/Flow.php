@@ -18,6 +18,11 @@ class Flow
     private $repository;
 
     /**
+     * @var array
+     */
+    private $configuration;
+
+    /**
      * @param \ContinuousPipe\River\Flow $flow
      *
      * @return Flow
@@ -29,6 +34,7 @@ class Flow
         $view = new self();
         $view->uuid = $flowContext->getFlowUuid();
         $view->repository = $flowContext->getCodeRepository();
+        $view->configuration = $flowContext->getConfiguration();
 
         return $view;
     }

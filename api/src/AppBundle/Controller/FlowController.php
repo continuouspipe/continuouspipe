@@ -88,6 +88,22 @@ class FlowController
     }
 
     /**
+     * Update a flow.
+     *
+     * @Route("/flows/{uuid}", methods={"PUT"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @ParamConverter("updateRequest", converter="fos_rest.request_body")
+     * @View
+     */
+    public function updateAction(Flow $flow, Flow\Request\FlowUpdateRequest $updateRequest)
+    {
+        $flow = $this->flowFactory->fromUpdateRequest($flow, $updateRequest);
+        $this->flowRepository->save($flow);
+
+        return FlowView::fromFlow($flow);
+    }
+
+    /**
      * Delete a flow.
      *
      * @Route("/flows/{uuid}", methods={"DELETE"})

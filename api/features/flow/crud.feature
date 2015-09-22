@@ -3,7 +3,14 @@ Feature:
   As a developer
   I need to be able to create a new flow
 
-  Scenario:
+  Background:
     Given I am authenticated
+
+  Scenario:
     When I send a flow creation request
+    Then the flow is successfully saved
+
+  Scenario:
+    Given I have a flow
+    When I send an update request with a configuration
     Then the flow is successfully saved

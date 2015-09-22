@@ -4,20 +4,20 @@ namespace ContinuousPipe\River\Flow\Request;
 
 use JMS\Serializer\Annotation as JMS;
 
-class FlowCreationRequest extends FlowUpdateRequest
+class FlowUpdateRequest
 {
     /**
      * @JMS\Type("string")
      *
      * @var string
      */
-    private $repository;
+    private $ymlConfiguration;
 
     /**
      * @return string
      */
-    public function getRepository()
+    public function getYmlConfiguration()
     {
-        return $this->repository;
+        return $this->ymlConfiguration;
     }
 }

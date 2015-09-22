@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\Flow\Request\FlowCreationRequest;
+use ContinuousPipe\River\Flow\Request\FlowUpdateRequest;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
 use ContinuousPipe\User\Security\UserContext;
 use Rhumsaa\Uuid\Uuid;
@@ -48,13 +49,31 @@ class FlowFactory
     }
 
     /**
-     * @param FlowCreationRequest $creationRequest
+     * @param Flow              $flow
+     * @param FlowUpdateRequest $updateRequest
+     *
+     * @return Flow
+     */
+    public function fromUpdateRequest(Flow $flow, FlowUpdateRequest $updateRequest)
+    {
+        $context = $flow->getContext();
+
+        return new Flow(FlowContext::createFlow(
+            $flow->getUuid(),
+            $context->getUser(),
+            $context->getCodeRepository(),
+            $this->parseConfiguration($updateRequest)
+        ));
+    }
+
+    /**
+     * @param FlowUpdateRequest $updateRequest
      *
      * @return array
      */
-    private function parseConfiguration(FlowCreationRequest $creationRequest)
+    private function parseConfiguration(FlowUpdateRequest $updateRequest)
     {
-        $configuration = $creationRequest->getYmlConfiguration();
+        $configuration = $updateRequest->getYmlConfiguration();
         if (empty($configuration)) {
             return [];
         }

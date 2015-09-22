@@ -119,12 +119,45 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
 }
 EOF;
 
-        $response = $this->kernel->handle(Request::create('/flows', 'POST', [], [], [], [
+        $this->response = $this->kernel->handle(Request::create('/flows', 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
         ], $creationRequest));
 
-        $flowView = json_decode($response->getContent(), true);
+        $flowView = json_decode($this->response->getContent(), true);
         $this->flowUuid = $flowView['uuid'];
+    }
+
+    /**
+     * @When I send an update request with a configuration
+     */
+    public function iSendAnUpdateRequestWithAValidConfiguration()
+    {
+        $configuration = <<<EOF
+tasks:
+    - build: ~
+    - deploy:
+        providerName: foo
+EOF;
+
+        $url = sprintf('/flows/%s', $this->flowUuid);
+        $this->response = $this->kernel->handle(Request::create($url, 'PUT', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], json_encode([
+            'configuration' => $configuration
+        ])));
+    }
+
+    /**
+     * @Then the flow is not saved
+     */
+    public function theFlowIsNotSaved()
+    {
+        if ($this->response->getStatusCode() !== 400) {
+            throw new \RuntimeException(sprintf(
+                'Expected a response code 400 but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
     }
 
     /**
@@ -132,7 +165,12 @@ EOF;
      */
     public function theFlowIsSuccessfullySaved()
     {
-        $this->flowRepository->find(Uuid::fromString($this->flowUuid));
+        if ($this->response->getStatusCode() !== 200) {
+            throw new \RuntimeException(sprintf(
+                'Expected a response code 200 but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
     }
 
     /**
