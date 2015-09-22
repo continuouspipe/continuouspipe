@@ -26,7 +26,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header ch-alt">
-                    <h2>Environments</h2>
+                    <h2>Deployed environments</h2>
                 </div>
 
                 <remote-resource resource-name="environments">
@@ -39,6 +39,11 @@
                             <th># of components</th>
                         </tr>
                         </thead>
+                        <tbody ng-hide="environments.length">
+                        <tr>
+                            <td colspan="4">No deployed environment found.</td>
+                        </tr>
+                        </tbody>
                         <tbody ng-repeat="environment in environments">
                         <tr class="bgm-alt">
                             <td width="20">
