@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Command\StartTideCommand;
@@ -517,6 +518,16 @@ EOF;
     }
 
     /**
+     * @Given I have a :filePath file in my repository that contains:
+     */
+    public function iHaveAFileInMyRepositoryThatContains($filePath, PyStringNode $string)
+    {
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            $filePath => $string->getRaw()
+        ]);
+    }
+
+    /**
      * @return null|Uuid
      */
     public function getCurrentTideUuid()
@@ -561,10 +572,6 @@ EOF;
         );
 
         $this->tideUuid = $tide->getContext()->getTideUuid();
-
-        foreach ($tide->popNewEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
     }
 
     private function startTide()

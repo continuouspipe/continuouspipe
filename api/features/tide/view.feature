@@ -7,7 +7,7 @@ Feature:
     Given there is 1 application images in the repository
 
   Scenario:
-    When a tide is created
+    When a tide is created with just a build task
     Then a tide view representation should have be created
     And the tide is represented as pending
 

@@ -94,8 +94,14 @@ class BuildContext implements Context
      */
     public function theBuildTaskShouldBeRunning()
     {
-        if (!$this->getBuildTask()->isRunning()) {
-            throw new \RuntimeException('Expected the task to be running');
+        $buildTask = $this->getBuildTask();
+        if (!$buildTask->isRunning()) {
+            throw new \RuntimeException(sprintf(
+                'Expected the task to be running (successful=%b failed=%b pending=%b)',
+                $buildTask->isSuccessful(),
+                $buildTask->isFailed(),
+                $buildTask->isPending()
+            ));
         }
     }
 

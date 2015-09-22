@@ -88,10 +88,6 @@ class WebHookHandler
         $codeReference = $this->codeReferenceResolver->fromPushEvent($event);
         $tide = $this->tideFactory->createFromCodeReference($flow, $codeReference);
 
-        foreach ($tide->popNewEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
-
         return [
             $this->tideRepository->find($tide->getUuid()),
         ];

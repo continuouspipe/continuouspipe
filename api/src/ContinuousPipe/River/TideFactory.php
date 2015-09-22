@@ -4,6 +4,7 @@ namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
@@ -11,6 +12,7 @@ use ContinuousPipe\River\Task\TaskList;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Rhumsaa\Uuid\Uuid;
+use SimpleBus\Message\Bus\MessageBus;
 
 class TideFactory
 {
@@ -35,17 +37,24 @@ class TideFactory
     private $configurationFactory;
 
     /**
+     * @var MessageBus
+     */
+    private $eventBus;
+
+    /**
      * @param LoggerFactory            $loggerFactory
      * @param TaskFactoryRegistry      $taskFactoryRegistry
      * @param FlowRepository           $flowRepository
      * @param TideConfigurationFactory $configurationFactory
+     * @param MessageBus               $eventBus
      */
-    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory)
+    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory, MessageBus $eventBus)
     {
         $this->loggerFactory = $loggerFactory;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
         $this->flowRepository = $flowRepository;
         $this->configurationFactory = $configurationFactory;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -57,6 +66,8 @@ class TideFactory
     public function createFromCodeReference(Flow $flow, CodeReference $codeReference)
     {
         $log = $this->loggerFactory->create()->getLog();
+        $tideUuid = Uuid::uuid1();
+        $extraEvents = [];
 
         try {
             $configuration = $this->configurationFactory->getConfiguration($flow, $codeReference);
@@ -69,12 +80,12 @@ class TideFactory
                 $e->getMessage()
             )));
 
-            $logger->failure();
+            $extraEvents[] = new TideFailed($tideUuid);
         }
 
         $tideContext = TideContext::createTide(
             $flow->getContext(),
-            Uuid::uuid1(),
+            $tideUuid,
             $codeReference,
             $log,
             $configuration
@@ -82,7 +93,12 @@ class TideFactory
 
         $taskList = $this->createTideTaskList($tideContext);
 
-        return Tide::create($taskList, $tideContext);
+        $tide = Tide::create($taskList, $tideContext);
+        foreach (array_merge($tide->popNewEvents(), $extraEvents) as $event) {
+            $this->eventBus->handle($event);
+        }
+
+        return $tide;
     }
 
     /**
