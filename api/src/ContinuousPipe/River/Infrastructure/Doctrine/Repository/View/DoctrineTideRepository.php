@@ -111,7 +111,7 @@ class DoctrineTideRepository implements TideRepository
             $wrappedTide->getCodeReference(),
             new WrappedLog($wrappedTide->getLogId()),
             new User($tideDto->getUserEmail()),
-            $wrappedTide->getConfiguration(),
+            $wrappedTide->getConfiguration() ?: [],
             $wrappedTide->getCreationDate()
         );
 

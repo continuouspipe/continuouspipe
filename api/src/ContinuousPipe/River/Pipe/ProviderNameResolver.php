@@ -18,6 +18,10 @@ class ProviderNameResolver
     public function getProviderName(Tide $tide)
     {
         $tideConfiguration = $tide->getConfiguration();
+        if (!array_key_exists('tasks', $tideConfiguration)) {
+            throw new ProviderNameNotFound('No task configuration found');
+        }
+        
         $tasks = $tideConfiguration['tasks'];
         $deployTasks = array_filter($tasks, function (array $task) {
             return array_key_exists(DeployTask::NAME, $task);
