@@ -73,7 +73,11 @@ class FlowContext implements Context
      */
     public function getConfiguration()
     {
-        return json_decode($this->get(self::CONFIGURATION_KEY), true);
+        try {
+            return json_decode($this->get(self::CONFIGURATION_KEY), true);
+        } catch (ContextKeyNotFound $e) {
+            return [];
+        }
     }
 
     /**

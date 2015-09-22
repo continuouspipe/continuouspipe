@@ -33,7 +33,7 @@ class ArrayContext implements Context
     public function get($key)
     {
         if (!$this->has($key)) {
-            throw new \RuntimeException(sprintf(
+            throw new ContextKeyNotFound(sprintf(
                 'No key named "%s" in the context',
                 $key
             ));

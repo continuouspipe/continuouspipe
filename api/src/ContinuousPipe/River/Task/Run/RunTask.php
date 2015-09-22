@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Run;
 
+use ContinuousPipe\River\ContextKeyNotFound;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\Run\Command\StartRunCommand;
@@ -147,7 +148,7 @@ class RunTask extends EventDrivenTask
                 'Running commands on image "%s"',
                 $this->context->getImageName()
             );
-        } catch (\RuntimeException $e) {
+        } catch (ContextKeyNotFound $e) {
             return sprintf(
                 'Running commands on service "%s"',
                 $this->context->getServiceName()

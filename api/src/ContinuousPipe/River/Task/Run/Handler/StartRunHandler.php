@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Run\Handler;
 
+use ContinuousPipe\River\ContextKeyNotFound;
 use ContinuousPipe\River\Task\Run\Command\StartRunCommand;
 use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\RunContext;
@@ -83,7 +84,7 @@ class StartRunHandler
     {
         try {
             $imageName = $context->getImageName();
-        } catch (\RuntimeException $e) {
+        } catch (ContextKeyNotFound $e) {
             if (!$context->getServiceName()) {
                 throw new DockerCompose\ImageNameNotFound(sprintf(
                     'Unable to guess the image on which to run commands'

@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeRepository;
 use Rhumsaa\Uuid\Uuid;
+use Symfony\Component\Yaml\Yaml;
 
 class Flow
 {
@@ -18,9 +19,9 @@ class Flow
     private $repository;
 
     /**
-     * @var array
+     * @var string
      */
-    private $configuration;
+    private $ymlConfiguration;
 
     /**
      * @param \ContinuousPipe\River\Flow $flow
@@ -34,7 +35,7 @@ class Flow
         $view = new self();
         $view->uuid = $flowContext->getFlowUuid();
         $view->repository = $flowContext->getCodeRepository();
-        $view->configuration = $flowContext->getConfiguration();
+        $view->ymlConfiguration = Yaml::dump($flowContext->getConfiguration());
 
         return $view;
     }
