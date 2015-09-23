@@ -4,9 +4,10 @@ namespace ContinuousPipe\River\EventListener;
 
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\Event\TideCreated;
+use ContinuousPipe\River\Event\TideValidated;
 use SimpleBus\Message\Bus\MessageBus;
 
-class TideCreatedListener
+class StartTideWhenValidatedListener
 {
     /**
      * @var MessageBus
@@ -22,9 +23,9 @@ class TideCreatedListener
     }
 
     /**
-     * @param TideCreated $event
+     * @param TideValidated $event
      */
-    public function notify(TideCreated $event)
+    public function notify(TideValidated $event)
     {
         $startCommand = new StartTideCommand($event->getTideUuid());
 

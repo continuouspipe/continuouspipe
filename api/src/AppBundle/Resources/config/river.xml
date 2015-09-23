@@ -15,10 +15,10 @@
         </service>
 
         <!-- Event subscribers -->
-        <service id="river.listener.tide_created" class="ContinuousPipe\River\EventListener\TideCreatedListener">
+        <service id="river.listener.start_tide_when_validated" class="ContinuousPipe\River\EventListener\StartTideWhenValidatedListener">
             <argument type="service" id="simple_bus.command_bus" />
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideValidated"/>
         </service>
     </services>
 </container>

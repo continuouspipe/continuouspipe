@@ -12,6 +12,6 @@ class RemoveAutomaticTideStartCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $container->getDefinition('river.listener.tide_created')->clearTag('event_subscriber');
+        $container->getDefinition('river.listener.start_tide_when_validated')->clearTag('event_subscriber');
     }
 }

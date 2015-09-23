@@ -5,6 +5,7 @@ namespace ContinuousPipe\River;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
+use ContinuousPipe\River\Event\TideValidated;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
@@ -64,6 +65,8 @@ class TideFactory
 
         try {
             $configuration = $this->configurationFactory->getConfiguration($flow, $codeReference);
+
+            $extraEvents[] = new TideValidated($tideUuid);
         } catch (TideConfigurationException $e) {
             $configuration = [];
 
