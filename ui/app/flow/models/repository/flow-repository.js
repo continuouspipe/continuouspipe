@@ -2,7 +2,11 @@
 
 angular.module('continuousPipeRiver')
     .service('FlowRepository', function($resource, RIVER_API_URL) {
-        this.resource = $resource(RIVER_API_URL+'/flows/:uuid', {identifier: '@id'});
+        this.resource = $resource(RIVER_API_URL+'/flows/:uuid', {identifier: '@id'}, {
+            update: {
+                method: 'PUT'
+            }
+        });
 
         this.findAll = function() {
             return this.resource.query().$promise;
@@ -14,6 +18,12 @@ angular.module('continuousPipeRiver')
 
         this.remove = function(flow) {
             return this.resource.delete({uuid: flow.uuid}).$promise;
+        };
+
+        this.update = function(flow) {
+            return this.resource.update({uuid: flow.uuid}, {
+                configuration: flow.yml_configuration
+            }).$promise;
         };
 
         this.createFromRepository = function(repository) {

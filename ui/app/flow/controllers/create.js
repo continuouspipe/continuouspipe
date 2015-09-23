@@ -32,7 +32,7 @@ angular.module('continuousPipeRiver')
 
         $scope.create = function() {
             FlowRepository.createFromRepository($scope.selectedRepository).then(function(flow) {
-                $state.go('flow', {uuid: flow.uuid});
+                $state.go('flow.configuration', {uuid: flow.uuid});
             }, function(error) {
                 var message = ((error || {}).data || {}).message || "An unknown error occured while creating flow";
                 swal("Error !", message, "error");

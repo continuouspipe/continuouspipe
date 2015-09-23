@@ -21,7 +21,10 @@
 
                 <div class="yaml-editor" ui-ace="aceOption" ng-model="flow.yml_configuration"></div>
                 <div class="yaml-editor-buttons">
-                    <button class="btn btn-primary" ng-click="update()">Update</button>
+                    <button class="btn btn-primary" ng-click="update()" ng-disabled="isLoading" ng-class="{'btn-success': successMessage}">
+                        <span ng-show="successMessage">{{ successMessage }}</span>
+                        <span ng-hide="successMessage">Update</span>
+                    </button>
                 </div>
             </div>
         </div>
