@@ -64,6 +64,19 @@ smoke:
                     - @repository_river.code_repository_repository
                     - @security.authenticator.client
                     - @river.pipe_client.fake
+                - TideContext:
+                    - @command_bus
+                    - @event_bus
+                    - @river.event_store
+                    - @river.file_system_resolver.fake
+                    - @river.tide_factory
+                    - @river.view.tide_repository
+                - GitHubContext:
+                    - @kernel
+                    - @river.code_status_updater
+                    - @river.github.pull_request_deployment_notifier
+                    - @river.github.pull_request_resolver
+                    - @river.pipe_client
 
     extensions:
         Behat\Symfony2Extension:
