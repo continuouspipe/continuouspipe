@@ -8,7 +8,6 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use Docker\Container;
 use Docker\Docker;
-use Docker\Exception\UnexpectedStatusCodeException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Stream\Stream;
 use LogStream\Logger;
@@ -63,7 +62,7 @@ class HttpClient implements Client
                 $credentials->getAuthenticationString(),
                 $this->getOutputCallback($logger)
             );
-        } catch (UnexpectedStatusCodeException $e) {
+        } catch (\Docker\Exception $e) {
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
         } catch (RequestException $e) {
             if ($e->getPrevious() instanceof DockerException) {
@@ -98,7 +97,7 @@ class HttpClient implements Client
             $execId = $manager->exec($container, [
                 '/bin/sh', '-c', $command,
             ]);
-        } catch (UnexpectedStatusCodeException $e) {
+        } catch (\Docker\Exception $e) {
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
         }
 
@@ -121,7 +120,7 @@ class HttpClient implements Client
                 'repo' => $image->getName(),
                 'tag' => $image->getTag(),
             ]);
-        } catch (UnexpectedStatusCodeException $e) {
+        } catch (\Docker\Exception $e) {
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
         }
     }
