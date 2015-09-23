@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "040db7800bcd11544358fce49198b508",
-    "content-hash": "943c599ed1a383c657bcc22cc84a41d1",
+    "hash": "ef41fda0536fef48bcf51c864a6666fc",
+    "content-hash": "bf25c49b170c071b4aff990f96b8d9a9",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3052,16 +3052,16 @@
         },
         {
             "name": "simple-bus/rabbitmq-bundle-bridge",
-            "version": "v2.2.0",
+            "version": "dev-proper-consumer-return",
             "source": {
                 "type": "git",
-                "url": "https://github.com/SimpleBus/RabbitMQBundleBridge.git",
-                "reference": "34581c20892fcfcfff19b0e936475f7698b62fbb"
+                "url": "https://github.com/sroze/RabbitMQBundleBridge.git",
+                "reference": "fa6498c154f116721861f46250b7b85aaac91aec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/RabbitMQBundleBridge/zipball/34581c20892fcfcfff19b0e936475f7698b62fbb",
-                "reference": "34581c20892fcfcfff19b0e936475f7698b62fbb",
+                "url": "https://api.github.com/repos/sroze/RabbitMQBundleBridge/zipball/fa6498c154f116721861f46250b7b85aaac91aec",
+                "reference": "fa6498c154f116721861f46250b7b85aaac91aec",
                 "shasum": ""
             },
             "require": {
@@ -3088,7 +3088,11 @@
                     "SimpleBus\\RabbitMQBundleBridge\\": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "SimpleBus\\RabbitMQBundleBridge\\Tests\\": "tests"
+                }
+            },
             "license": [
                 "MIT"
             ],
@@ -3102,13 +3106,16 @@
             "description": "Use OldSoundRabbitMQBundle with SimpleBus/AsynchronousBundle",
             "homepage": "http://github.com/SimpleBus/RabbitMQBundleBridge",
             "keywords": [
+                "RabbitMQ",
                 "command bus",
                 "event bus",
                 "message bus",
-                "messages",
-                "rabbitmq"
+                "messages"
             ],
-            "time": "2015-07-29 09:25:49"
+            "support": {
+                "source": "https://github.com/sroze/RabbitMQBundleBridge/tree/proper-consumer-return"
+            },
+            "time": "2015-09-23 13:35:16"
         },
         {
             "name": "simple-bus/serialization",
@@ -4590,7 +4597,8 @@
         "continuous-pipe/model": 20,
         "continuous-pipe/security-bundle": 20,
         "continuous-pipe/builder-model": 20,
-        "continuous-pipe/docker-compose": 20
+        "continuous-pipe/docker-compose": 20,
+        "simple-bus/rabbitmq-bundle-bridge": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
