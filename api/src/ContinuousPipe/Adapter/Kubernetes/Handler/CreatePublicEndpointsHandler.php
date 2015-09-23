@@ -86,18 +86,16 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
 
         try {
             $createdServices = $this->createServices($serviceRepository, $services, $logger);
+
+            $logger->success();
+
+            $this->eventBus->handle(new PublicServicesCreated($context, $createdServices));
         } catch (ClientError $e) {
             $logger->append(new Text('Error: '.$e->getMessage()));
             $logger->failure();
 
             $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
-
-            throw $e;
         }
-
-        $logger->success();
-
-        $this->eventBus->handle(new PublicServicesCreated($context, $createdServices));
     }
 
     /**
