@@ -15,14 +15,18 @@ class AppTestExtension extends Extension
     public function load(array $config, ContainerBuilder $container)
     {
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('events.xml');
-        $loader->load('logging.xml');
-        $loader->load('authenticator.xml');
-        $loader->load('builder.xml');
-        $loader->load('flow.xml');
-        $loader->load('tide.xml');
-        $loader->load('pipe.xml');
-        $loader->load('github.xml');
-        $loader->load('runner.xml');
+        $environment = $container->getParameter('kernel.environment');
+
+        if ($environment != 'smoke_test') {
+            $loader->load('in-memory/event-store.xml');
+            $loader->load('in-memory/repositories.xml');
+        }
+
+        $loader->load('integration/authenticator.xml');
+        $loader->load('integration/builder.xml');
+        $loader->load('integration/github.xml');
+        $loader->load('integration/logstream.xml');
+        $loader->load('integration/pipe.xml');
+        $loader->load('integration/runner.xml');
     }
 }

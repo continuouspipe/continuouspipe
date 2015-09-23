@@ -6,5 +6,6 @@
 
     <services>
         <service id="river.repository.flow" class="ContinuousPipe\River\Tests\Repository\InMemoryFlowRepository" />
+        <service id="river.view.tide_repository" class="ContinuousPipe\River\Tests\View\InMemoryTideRepository" />
     </services>
 </container>

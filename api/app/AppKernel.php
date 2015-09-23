@@ -25,7 +25,7 @@ class AppKernel extends Kernel
             new AppBundle\AppBundle(),
         );
 
-        if ($this->getEnvironment() === 'test') {
+        if (in_array($this->getEnvironment(), ['test', 'smoke_test'])) {
             $bundles[] = new AppTestBundle\AppTestBundle();
         }
 
@@ -36,7 +36,7 @@ class AppKernel extends Kernel
         $bundles[] = new SimpleBus\RabbitMQBundleBridge\SimpleBusRabbitMQBundleBridgeBundle();
         $bundles[] = new SimpleBus\JMSSerializerBundleBridge\SimpleBusJMSSerializerBundleBridgeBundle();
 
-        if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+        if (in_array($this->getEnvironment(), array('dev', 'test', 'smoke_test'))) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();

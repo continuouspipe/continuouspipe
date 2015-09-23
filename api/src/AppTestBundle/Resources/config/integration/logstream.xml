@@ -12,6 +12,5 @@
         <service id="log_stream.display_logger_factory" class="LogStream\Tests\Debug\DisplayLoggerFactory" decorates="log_stream.logger_factory">
             <argument type="service" id="log_stream.display_logger_factory.inner" />
         </service>
-        <service id="river.code_status_updater" class="ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater" />
     </services>
 </container>

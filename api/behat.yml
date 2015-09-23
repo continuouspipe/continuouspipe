@@ -51,3 +51,25 @@ default:
     gherkin:
         filters:
             tags: "~@wip"
+
+
+smoke:
+    suites:
+        application:
+            contexts:
+                - FlowContext:
+                    - @kernel
+                    - @security.token_storage
+                    - @river.repository.flow
+                    - @repository_river.code_repository_repository
+                    - @security.authenticator.client
+                    - @river.pipe_client.fake
+
+    extensions:
+        Behat\Symfony2Extension:
+            kernel:
+                env: smoke_test
+
+    gherkin:
+        filters:
+            tags: "@smoke && ~@wip"

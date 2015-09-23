@@ -10,5 +10,6 @@
         <service id="repository_river.github.webhook_manager" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakeWebHookManager" />
         <service id="river.github.pull_request_deployment_notifier" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestDeploymentNotifier" />
         <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver" />
+        <service id="river.code_status_updater" class="ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater" />
     </services>
 </container>

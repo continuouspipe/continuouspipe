@@ -10,6 +10,7 @@ Feature:
     When I send a flow creation request
     Then the flow is successfully saved
 
+  @smoke
   Scenario:
     Given I have a flow
     When I send an update request with a configuration
