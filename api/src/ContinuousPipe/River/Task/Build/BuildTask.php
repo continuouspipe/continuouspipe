@@ -129,11 +129,27 @@ class BuildTask extends EventDrivenTask
         $logger = $this->loggerFactory->from($this->context->getLog());
         $log = $logger->append(new Text('Building application images'));
 
+        $environment = $this->flattenEnvironmentVariables($this->context->getEnvironment());
         $this->commandBus->handle(new BuildImagesCommand(
             $this->context->getTideUuid(),
-            $this->context->getEnvironment(),
+            $environment,
             $log->getId()
         ));
+    }
+
+    /**
+     * @param array $buildEnvironment
+     *
+     * @return array
+     */
+    private function flattenEnvironmentVariables(array $buildEnvironment)
+    {
+        $variables = [];
+        foreach ($buildEnvironment as $environ) {
+            $variables[$environ['name']] = $environ['value'];
+        }
+
+        return $variables;
     }
 
     /**

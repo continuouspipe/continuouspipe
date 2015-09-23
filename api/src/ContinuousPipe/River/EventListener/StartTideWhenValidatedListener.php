@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\EventListener;
 
 use ContinuousPipe\River\Command\StartTideCommand;
-use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideValidated;
 use SimpleBus\Message\Bus\MessageBus;
 

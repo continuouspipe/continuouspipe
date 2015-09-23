@@ -8,6 +8,7 @@ use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\User\User;
+use Psr\Log\LoggerInterface;
 
 class BuildRequestCreator
 {
@@ -15,19 +16,27 @@ class BuildRequestCreator
      * @var ProjectParser
      */
     private $dockerComposeProjectParser;
+
     /**
      * @var CodeRepository\FileSystemResolver
      */
     private $fileSystemResolver;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param ProjectParser                     $dockerComposeProjectParser
      * @param CodeRepository\FileSystemResolver $fileSystemResolver
+     * @param LoggerInterface                   $logger
      */
-    public function __construct(ProjectParser $dockerComposeProjectParser, CodeRepository\FileSystemResolver $fileSystemResolver)
+    public function __construct(ProjectParser $dockerComposeProjectParser, CodeRepository\FileSystemResolver $fileSystemResolver, LoggerInterface $logger)
     {
         $this->dockerComposeProjectParser = $dockerComposeProjectParser;
         $this->fileSystemResolver = $fileSystemResolver;
+        $this->logger = $logger;
     }
 
     /**
@@ -41,6 +50,11 @@ class BuildRequestCreator
      */
     public function createBuildRequests(CodeReference $codeReference, User $user, array $buildEnvironment)
     {
+        $this->logger->info('Creating build requests', [
+            'codeReference' => $codeReference,
+            'buildEnvironment' => $buildEnvironment,
+        ]);
+
         try {
             $dockerComposeComponents = $this->dockerComposeProjectParser->parse(
                 $this->fileSystemResolver->getFileSystem($codeReference, $user),
@@ -64,29 +78,13 @@ class BuildRequestCreator
             }
 
             $image = new Image($imageName, $codeReference->getBranch());
-
             $buildRequestRepository = new Repository($codeReference->getRepository()->getAddress(), $codeReference->getCommitSha());
             $buildRequests[] = new BuildRequest($buildRequestRepository, $image, new Context(
                 $dockerComposeComponent->getDockerfilePath(),
                 $dockerComposeComponent->getBuildDirectory()
-            ), null, null, $this->flattenEnvironmentVariables($buildEnvironment));
+            ), null, null, $buildEnvironment);
         }
 
         return $buildRequests;
-    }
-
-    /**
-     * @param array $buildEnvironment
-     *
-     * @return array
-     */
-    private function flattenEnvironmentVariables(array $buildEnvironment)
-    {
-        $variables = [];
-        foreach ($buildEnvironment as $environ) {
-            $variables[$environ['name']] = $environ['value'];
-        }
-
-        return $variables;
     }
 }

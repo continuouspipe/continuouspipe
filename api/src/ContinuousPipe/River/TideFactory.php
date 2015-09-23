@@ -13,7 +13,6 @@ use ContinuousPipe\River\Task\TaskList;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Rhumsaa\Uuid\Uuid;
-use SimpleBus\Message\Bus\MessageBus;
 
 class TideFactory
 {
