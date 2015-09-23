@@ -610,6 +610,10 @@ EOF;
             )
         );
 
+        foreach ($tide->popNewEvents() as $event) {
+            $this->eventBus->handle($event);
+        }
+
         $this->tideUuid = $tide->getContext()->getTideUuid();
     }
 

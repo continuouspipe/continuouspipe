@@ -37,24 +37,17 @@ class TideFactory
     private $configurationFactory;
 
     /**
-     * @var MessageBus
-     */
-    private $eventBus;
-
-    /**
      * @param LoggerFactory            $loggerFactory
      * @param TaskFactoryRegistry      $taskFactoryRegistry
      * @param FlowRepository           $flowRepository
      * @param TideConfigurationFactory $configurationFactory
-     * @param MessageBus               $eventBus
      */
-    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory, MessageBus $eventBus)
+    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory)
     {
         $this->loggerFactory = $loggerFactory;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
         $this->flowRepository = $flowRepository;
         $this->configurationFactory = $configurationFactory;
-        $this->eventBus = $eventBus;
     }
 
     /**
@@ -94,8 +87,8 @@ class TideFactory
         $taskList = $this->createTideTaskList($tideContext);
 
         $tide = Tide::create($taskList, $tideContext);
-        foreach (array_merge($tide->popNewEvents(), $extraEvents) as $event) {
-            $this->eventBus->handle($event);
+        foreach ($extraEvents as $event) {
+            $tide->pushNewEvent($event);
         }
 
         return $tide;

@@ -204,4 +204,12 @@ class Tide
     {
         return 0 < $this->events->numberOfEventsOfType(TideSuccessful::class);
     }
+
+    /**
+     * @param TideEvent $event
+     */
+    public function pushNewEvent(TideEvent $event)
+    {
+        $this->newEvents[] = $event;
+    }
 }
