@@ -17,3 +17,4 @@ Feature:
     And the command "MY_PRIVATE_ENVIRON=foo sh -c './private-check.sh'" should be ran on image "my/image:master"
     And a container should be committed with the image name "my/image:master"
     And the image "my/image:master" should be pushed
+    And the command of the image "my/image:master" should be "/app/my-cmd.sh"

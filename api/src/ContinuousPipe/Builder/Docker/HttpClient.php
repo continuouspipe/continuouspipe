@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use Docker\Container;
+use Docker\Context\Context;
 use Docker\Docker;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Stream\Stream;
@@ -100,6 +101,48 @@ class HttpClient implements Client
      * {@inheritdoc}
      */
     public function runAndCommit(Image $image, Logger $logger, $command)
+    {
+        // Memorize the previous image command
+        $imageManager = $this->docker->getImageManager();
+        $imageInspection = $imageManager->inspect(new \Docker\Image($image->getName(), $image->getTag()));
+        $imageCommands = $imageInspection['Config']['Cmd'];
+
+        // Run a commit the command in the image
+        $image = $this->doRunAndCommitCommand($image, $logger, $command);
+
+        // Restore previous image command
+        $imageName = $this->getImageName($image);
+        $command = '["'.implode('", "', $imageCommands).'"]';
+        $dockerFile = <<<EOF
+FROM $imageName
+
+CMD $command
+EOF;
+
+        $directory = $this->getTemporaryDirectoryPath('restore');
+        file_put_contents($directory.DIRECTORY_SEPARATOR.'Dockerfile', $dockerFile);
+
+        try {
+            $this->docker->build(new Context($directory), $imageName);
+        } catch (RequestException $e) {
+            throw new DockerException(
+                sprintf('Unable to restore image commands: %s', $e->getMessage()),
+                $e->getCode(),
+                $e
+            );
+        }
+
+        return $image;
+    }
+
+    /**
+     * @param Image  $image
+     * @param Logger $logger
+     * @param string $command
+     * @return Image
+     * @throws DockerException
+     */
+    private function doRunAndCommitCommand(Image $image, Logger $logger, $command)
     {
         $containerManager = $this->docker->getContainerManager();
         $container = new Container([
@@ -255,5 +298,20 @@ class HttpClient implements Client
     private function getImageName(Image $image)
     {
         return $image->getName().':'.$image->getTag();
+    }
+
+    /**
+     * @param string $prefix
+     * @return string
+     * @throws DockerException
+     */
+    private function getTemporaryDirectoryPath($prefix = 'gha')
+    {
+        $path = sys_get_temp_dir().DIRECTORY_SEPARATOR.uniqid($prefix);
+        if (!mkdir($path)) {
+            throw new DockerException('Unable to create a temporary directory');
+        }
+
+        return $path;
     }
 }
