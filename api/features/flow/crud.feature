@@ -14,3 +14,4 @@ Feature:
     Given I have a flow
     When I send an update request with a configuration
     Then the flow is successfully saved
+    And the stored configuration is not empty

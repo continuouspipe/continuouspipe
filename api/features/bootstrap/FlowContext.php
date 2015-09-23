@@ -69,6 +69,11 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     private $response;
 
     /**
+     * @var string|null
+     */
+    private $lastConfiguration;
+
+    /**
      * @param Kernel $kernel
      * @param TokenStorageInterface $tokenStorage
      * @param FlowRepository $flowRepository
@@ -132,7 +137,7 @@ EOF;
      */
     public function iSendAnUpdateRequestWithAValidConfiguration()
     {
-        $configuration = <<<EOF
+        $this->lastConfiguration = <<<EOF
 tasks:
     - build: ~
     - deploy:
@@ -143,7 +148,7 @@ EOF;
         $this->response = $this->kernel->handle(Request::create($url, 'PUT', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
         ], json_encode([
-            'configuration' => $configuration
+            'yml_configuration' => $this->lastConfiguration
         ])));
     }
 
@@ -170,6 +175,19 @@ EOF;
                 'Expected a response code 200 but got %d',
                 $this->response->getStatusCode()
             ));
+        }
+    }
+
+    /**
+     * @Then the stored configuration is not empty
+     */
+    public function theStoredConfigurationIsNotEmpty()
+    {
+        $flow = $this->flowRepository->find(Uuid::fromString($this->flowUuid));
+        $configuration = $flow->getContext()->getConfiguration();
+
+        if (empty($configuration)) {
+            throw new \RuntimeException('Found empty configuration while expecting it to be saved');
         }
     }
 
