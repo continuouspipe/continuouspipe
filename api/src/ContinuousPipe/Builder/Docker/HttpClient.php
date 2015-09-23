@@ -12,6 +12,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Stream\Stream;
 use LogStream\Logger;
 use LogStream\Node\Text;
+use Psr\Log\LoggerInterface;
 
 class HttpClient implements Client
 {
@@ -26,13 +27,20 @@ class HttpClient implements Client
     private $dockerfileResolver;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param Docker             $docker
      * @param DockerfileResolver $dockerfileResolver
+     * @param LoggerInterface    $logger
      */
-    public function __construct(Docker $docker, DockerfileResolver $dockerfileResolver)
+    public function __construct(Docker $docker, DockerfileResolver $dockerfileResolver, LoggerInterface $logger)
     {
         $this->docker = $docker;
         $this->dockerfileResolver = $dockerfileResolver;
+        $this->logger = $logger;
     }
 
     /**
@@ -43,6 +51,11 @@ class HttpClient implements Client
         try {
             return $this->doBuild($archive, $request, $this->getOutputCallback($logger));
         } catch (RequestException $e) {
+            $this->logger->notice('An error appeared while building an image', [
+                'buildRequest' => $request,
+                'exception' => $e,
+            ]);
+
             if ($e->getPrevious() instanceof DockerException) {
                 throw $e->getPrevious();
             }
@@ -63,11 +76,21 @@ class HttpClient implements Client
                 $this->getOutputCallback($logger)
             );
         } catch (\Docker\Exception $e) {
+            $this->logger->notice('An error appeared while pushing an image', [
+                'image' => $image,
+                'exception' => $e,
+            ]);
+
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
         } catch (RequestException $e) {
             if ($e->getPrevious() instanceof DockerException) {
                 throw $e->getPrevious();
             }
+
+            $this->logger->warning('An unexpected error appeared while building an image', [
+                'image' => $image,
+                'exception' => $e,
+            ]);
 
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
         }
@@ -78,6 +101,7 @@ class HttpClient implements Client
      */
     public function runAndCommit(Image $image, Logger $logger, $command)
     {
+        $containerManager = $this->docker->getContainerManager();
         $container = new Container([
             'Image' => $this->getImageName($image),
             'Cmd' => [
@@ -86,31 +110,45 @@ class HttpClient implements Client
         ]);
 
         try {
-            $containerManager = $this->docker->getContainerManager();
-            $containerManager->create($container);
-        } catch (\Docker\Exception $e) {
-            throw new DockerException(sprintf(
-                'Unable to create container: %s',
-                $e->getMessage()
-            ), $e->getCode(), $e);
-        }
+            $this->logger->debug('Running a container', [
+                'container' => $container,
+            ]);
 
-        try {
-            $containerManager->start($container);
-            $containerManager->attach($container, $this->getOutputCallback($logger));
+            $successful = $containerManager->run($container, $this->getOutputCallback($logger));
+            if (!$successful) {
+                throw new DockerException(sprintf(
+                    'Expected exit code 0, but got %d',
+                    $container->getExitCode()
+                ));
+            }
+
+            $this->logger->debug('Committing a container', [
+                'container' => $container,
+                'image' => $image,
+            ]);
 
             $this->commit($container, $image);
         } catch (\Docker\Exception $e) {
-            throw new DockerException($e->getMessage(), $e->getCode(), $e);
+            $this->logger->warning('An error appeared while running container', [
+                'container' => $container,
+                'exception' => $e,
+            ]);
+
+            throw new DockerException(sprintf(
+                'Unable to run container: %s',
+                $e->getMessage()
+            ), $e->getCode(), $e);
         } finally {
             try {
-                $containerManager->remove($container, true);
-            } catch (\Docker\Exception $e) {
-                throw new DockerException(
-                    sprintf('Unable to remove container: %s', $e->getMessage()),
-                    $e->getCode(),
-                    $e
-                );
+                if ($container->getId()) {
+                    $containerManager->remove($container, true);
+                }
+            } catch (\Exception $e) {
+                $this->logger->warning('An error appeared while removing a container', [
+                    'container' => $container,
+                    'image' => $image,
+                    'exception' => $e,
+                ]);
             }
         }
 
@@ -135,7 +173,11 @@ class HttpClient implements Client
                 'tag' => $image->getTag(),
             ]);
         } catch (\Docker\Exception $e) {
-            throw new DockerException($e->getMessage(), $e->getCode(), $e);
+            throw new DockerException(
+                sprintf('Unable to commit container: %s', $e->getMessage()),
+                $e->getCode(),
+                $e
+            );
         }
     }
 

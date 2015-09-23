@@ -88,6 +88,24 @@ class LoggedDockerClient implements Client
      */
     public function runAndCommit(Image $image, Logger $logger, $command)
     {
-        return $this->client->runAndCommit($image, $logger, $command);
+        $log = $logger->append(new Text(sprintf('Running "%s"', $command)));
+        $pushLogger = $this->loggerFactory->from($log);
+        $pushLogger->start();
+
+        $raw = $pushLogger->append(new Raw());
+        $rawPushLogger = $this->loggerFactory->from($raw);
+
+        try {
+            $image = $this->client->runAndCommit($image, $rawPushLogger, $command);
+
+            $pushLogger->success();
+        } catch (DockerException $e) {
+            $pushLogger->append(new Text($e->getMessage()));
+            $pushLogger->failure();
+
+            throw $e;
+        }
+
+        return $image;
     }
 }

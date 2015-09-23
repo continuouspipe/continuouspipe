@@ -34,6 +34,7 @@
         <service id="builder.docker.client" class="ContinuousPipe\Builder\Docker\HttpClient">
             <argument type="service" id="docker" />
             <argument type="service" id="builder.docker_file_resolver" />
+            <argument type="service" id="logger" />
         </service>
         <service id="builder.github.repository_address_descriptor" class="ContinuousPipe\Builder\GitHub\RepositoryAddressDescriptor" />
         <service id="builder.github.http_client" class="GuzzleHttp\Client">
@@ -54,6 +55,7 @@
             <argument type="service" id="builder.docker.client" />
             <argument type="service" id="builder.docker.authenticator_credentials_repository" />
             <argument type="service" id="builder.command_extractor" />
+            <argument type="service" id="log_stream.logger_factory" />
         </service>
         <service id="builder.build_repository" class="ContinuousPipe\Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />

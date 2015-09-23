@@ -12,6 +12,8 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\IsolatedCommands\CommandExtractor;
 use ContinuousPipe\User\Authenticator\CredentialsNotFound;
 use LogStream\Logger;
+use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 
 class DockerBuilder implements Builder
 {
@@ -36,17 +38,24 @@ class DockerBuilder implements Builder
     private $commandExtractor;
 
     /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
+
+    /**
      * @param ArchiveBuilder        $archiveBuilder
      * @param Client                $dockerClient
      * @param CredentialsRepository $credentialsRepository
      * @param CommandExtractor      $commandExtractor
+     * @param LoggerFactory         $loggerFactory
      */
-    public function __construct(ArchiveBuilder $archiveBuilder, Client $dockerClient, CredentialsRepository $credentialsRepository, CommandExtractor $commandExtractor)
+    public function __construct(ArchiveBuilder $archiveBuilder, Client $dockerClient, CredentialsRepository $credentialsRepository, CommandExtractor $commandExtractor, LoggerFactory $loggerFactory)
     {
         $this->archiveBuilder = $archiveBuilder;
         $this->dockerClient = $dockerClient;
         $this->credentialsRepository = $credentialsRepository;
         $this->commandExtractor = $commandExtractor;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -130,8 +139,20 @@ class DockerBuilder implements Builder
             return $image;
         }
 
-        foreach ($commands as $command) {
-            $image = $this->dockerClient->runAndCommit($image, $logger, $command);
+        $log = $logger->append(new Text('Running extra build commands'));
+        $logger = $this->loggerFactory->from($log);
+        $logger->start();
+
+        try {
+            foreach ($commands as $command) {
+                $image = $this->dockerClient->runAndCommit($image, $logger, $command);
+            }
+
+            $logger->success();
+        } catch (DockerException $e) {
+            $logger->failure();
+
+            throw $e;
         }
 
         return $image;
