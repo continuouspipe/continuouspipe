@@ -9,14 +9,27 @@ use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 
-class EmptyDockerClient implements Client
+class BuildOnlyClient implements Client
 {
+    /**
+     * @var Client
+     */
+    private $client;
+
+    /**
+     * @param Client $client
+     */
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function build(Archive $archive, BuildRequest $request, Logger $logger)
     {
-        return $request->getImage();
+        return $this->client->build($archive, $request, $logger);
     }
 
     /**
@@ -31,6 +44,6 @@ class EmptyDockerClient implements Client
      */
     public function runAndCommit(Image $image, Logger $logger, $command)
     {
-        return $image;
+        return $this->client->runAndCommit($image, $logger, $command);
     }
 }

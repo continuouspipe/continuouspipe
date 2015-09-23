@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\BuildException;
 use ContinuousPipe\Builder\Command\PushImageCommand;
 use ContinuousPipe\Builder\Event\BuildFailed;
 use ContinuousPipe\Builder\Event\ImagePushed;
+use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
 class PushImageHandler
@@ -22,13 +23,20 @@ class PushImageHandler
     private $eventBus;
 
     /**
-     * @param Builder    $builder
-     * @param MessageBus $eventBus
+     * @var LoggerInterface
      */
-    public function __construct(Builder $builder, MessageBus $eventBus)
+    private $logger;
+
+    /**
+     * @param Builder         $builder
+     * @param MessageBus      $eventBus
+     * @param LoggerInterface $logger
+     */
+    public function __construct(Builder $builder, MessageBus $eventBus, LoggerInterface $logger)
     {
         $this->builder = $builder;
         $this->eventBus = $eventBus;
+        $this->logger = $logger;
     }
 
     /**
@@ -36,6 +44,10 @@ class PushImageHandler
      */
     public function handle(PushImageCommand $command)
     {
+        $this->logger->info('Push an image', [
+            'build' => $command->getBuild(),
+        ]);
+
         try {
             $this->builder->push($command->getBuild(), $command->getLogger());
 
@@ -43,6 +55,11 @@ class PushImageHandler
                 $command->getBuild()
             ));
         } catch (BuildException $e) {
+            $this->logger->notice('An error appeared while pushing an image', [
+                'build' => $command->getBuild(),
+                'exception' => $e,
+            ]);
+
             $this->eventBus->handle(new BuildFailed($command->getBuild()));
         }
     }

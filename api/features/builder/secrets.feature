@@ -6,6 +6,7 @@ Feature:
   Background:
     Given I am authenticated
 
+  @integration
   Scenario:
     Given I have docker registry credentials
     When I send a build request for the fixture repository "private-dependencies" with the following environment:

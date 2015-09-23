@@ -3,13 +3,13 @@
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
 use ContinuousPipe\User\DockerRegistryCredentials;
 use ContinuousPipe\User\Tests\Authenticator\InMemoryAuthenticatorClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
-use ContinuousPipe\Builder\Tests\Docker\FakeDockerBuilder;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 
@@ -210,9 +210,9 @@ EOF;
     {
         $found = [];
         $matchingRuns = array_filter($this->traceableDockerClient->getRuns(), function(array $run) use ($command, $image, &$found) {
-            /** @var \Docker\Container $container */
-            $container = $run['container'];
-            $containerImageName = $container->getImage()->getRepository().':'.$container->getImage()->getTag();
+            /** @var Image $image */
+            $foundImage = $run['image'];
+            $containerImageName = $foundImage->getName().':'.$foundImage->getTag();
 
             $found[] = $run['command'];
 

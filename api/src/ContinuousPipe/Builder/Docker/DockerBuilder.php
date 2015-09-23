@@ -130,12 +130,9 @@ class DockerBuilder implements Builder
             return $image;
         }
 
-        $container = $this->dockerClient->createContainer($image);
         foreach ($commands as $command) {
-            $container = $this->dockerClient->run($container, $logger, $command);
+            $image = $this->dockerClient->runAndCommit($image, $logger, $command);
         }
-
-        $this->dockerClient->commit($container, $image);
 
         return $image;
     }

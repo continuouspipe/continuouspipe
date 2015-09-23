@@ -8,6 +8,7 @@ use ContinuousPipe\Builder\Command\BuildImageCommand;
 use ContinuousPipe\Builder\Event\BuildFailed;
 use ContinuousPipe\Builder\Event\ImageBuilt;
 use LogStream\Node\Text;
+use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
 class BuildImageHandler
@@ -23,13 +24,20 @@ class BuildImageHandler
     private $eventBus;
 
     /**
-     * @param Builder    $builder
-     * @param MessageBus $eventBus
+     * @var LoggerInterface
      */
-    public function __construct(Builder $builder, MessageBus $eventBus)
+    private $logger;
+
+    /**
+     * @param Builder         $builder
+     * @param MessageBus      $eventBus
+     * @param LoggerInterface $logger
+     */
+    public function __construct(Builder $builder, MessageBus $eventBus, LoggerInterface $logger)
     {
         $this->builder = $builder;
         $this->eventBus = $eventBus;
+        $this->logger = $logger;
     }
 
     /**
@@ -37,6 +45,10 @@ class BuildImageHandler
      */
     public function handle(BuildImageCommand $command)
     {
+        $this->logger->info('Building an image', [
+            'build' => $command->getBuild(),
+        ]);
+
         $logger = $command->getLogger();
 
         try {
@@ -48,6 +60,11 @@ class BuildImageHandler
             ));
         } catch (BuildException $e) {
             $logger->append(new Text($e->getMessage()));
+
+            $this->logger->notice('An error appeared while building an image', [
+                'build' => $command->getBuild(),
+                'exception' => $e,
+            ]);
 
             $this->eventBus->handle(new BuildFailed($command->getBuild()));
         }

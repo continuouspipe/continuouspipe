@@ -10,21 +10,27 @@
             <argument type="service" id="builder.build_repository" />
             <argument type="service" id="builder.build_logger_factory" />
             <argument type="service" id="command_bus" />
+            <argument type="service" id="logger" />
 
+            <tag name="monolog.logger" channel="worker" />
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Command\StartBuildCommand"/>
         </service>
 
         <service id="builder.build_image_handler" class="ContinuousPipe\Builder\Handler\BuildImageHandler">
             <argument type="service" id="builder.builder" />
             <argument type="service" id="event_bus" />
+            <argument type="service" id="logger" />
 
+            <tag name="monolog.logger" channel="worker" />
             <tag name="command_handler" handles="ContinuousPipe\Builder\Command\BuildImageCommand"/>
         </service>
 
         <service id="builder.push_image_handler" class="ContinuousPipe\Builder\Handler\PushImageHandler">
             <argument type="service" id="builder.builder" />
             <argument type="service" id="event_bus" />
+            <argument type="service" id="logger" />
 
+            <tag name="monolog.logger" channel="worker" />
             <tag name="command_handler" handles="ContinuousPipe\Builder\Command\PushImageCommand"/>
         </service>
 

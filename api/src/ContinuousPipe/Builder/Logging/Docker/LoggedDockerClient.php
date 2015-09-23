@@ -8,7 +8,6 @@ use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
-use Docker\Container;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Raw;
@@ -87,24 +86,8 @@ class LoggedDockerClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function createContainer(Image $image)
+    public function runAndCommit(Image $image, Logger $logger, $command)
     {
-        return $this->client->createContainer($image);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function run(Container $container, Logger $logger, $command)
-    {
-        return $this->client->run($container, $logger, $command);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function commit(Container $container, Image $image)
-    {
-        return $this->client->commit($container, $image);
+        return $this->client->runAndCommit($image, $logger, $command);
     }
 }

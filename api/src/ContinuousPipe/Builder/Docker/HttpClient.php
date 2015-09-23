@@ -76,44 +76,58 @@ class HttpClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function createContainer(Image $image)
+    public function runAndCommit(Image $image, Logger $logger, $command)
     {
         $container = new Container([
             'Image' => $this->getImageName($image),
+            'Cmd' => [
+                '/bin/sh', '-c', $command,
+            ],
         ]);
 
-        $this->docker->getContainerManager()->create($container);
-
-        return $container;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function run(Container $container, Logger $logger, $command)
-    {
-        $manager = $this->docker->getContainerManager();
         try {
-            $execId = $manager->exec($container, [
-                '/bin/sh', '-c', $command,
-            ]);
+            $containerManager = $this->docker->getContainerManager();
+            $containerManager->create($container);
+        } catch (\Docker\Exception $e) {
+            throw new DockerException(sprintf(
+                'Unable to create container: %s',
+                $e->getMessage()
+            ), $e->getCode(), $e);
+        }
+
+        try {
+            $containerManager->start($container);
+            $containerManager->attach($container, $this->getOutputCallback($logger));
+
+            $this->commit($container, $image);
         } catch (\Docker\Exception $e) {
             throw new DockerException($e->getMessage(), $e->getCode(), $e);
+        } finally {
+            try {
+                $containerManager->remove($container, true);
+            } catch (\Docker\Exception $e) {
+                throw new DockerException(
+                    sprintf('Unable to remove container: %s', $e->getMessage()),
+                    $e->getCode(),
+                    $e
+                );
+            }
         }
 
-        try {
-            $manager->execstart($execId, $this->getOutputCallback($logger));
-        } catch (RequestException $e) {
-            throw new DockerException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        return $container;
+        return $image;
     }
 
     /**
-     * {@inheritdoc}
+     * Commit the given container.
+     *
+     * @param Container $container
+     * @param Image     $image
+     *
+     * @return \Docker\Image
+     *
+     * @throws DockerException
      */
-    public function commit(Container $container, Image $image)
+    private function commit(Container $container, Image $image)
     {
         try {
             return $this->docker->commit($container, [
