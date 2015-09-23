@@ -22,7 +22,7 @@ angular.module('continuousPipeRiver')
 
         this.update = function(flow) {
             return this.resource.update({uuid: flow.uuid}, {
-                configuration: flow.yml_configuration
+                yml_configuration: flow.yml_configuration
             }).$promise;
         };
 
