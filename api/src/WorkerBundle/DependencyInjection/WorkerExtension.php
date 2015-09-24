@@ -21,7 +21,6 @@ class WorkerExtension extends Extension
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('handler.xml');
-        $loader->load('docker-compose.xml');
         $loader->load('adapter.xml');
         $loader->load('deployment.xml');
         $loader->load('kubernetes.xml');
