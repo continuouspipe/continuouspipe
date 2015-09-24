@@ -231,10 +231,10 @@ class EnvironmentContext implements Context
      */
     public function iSendADeploymentRequestWithoutAGivenTarget()
     {
-        $simpleAppComposeContents = file_get_contents(__DIR__.'/../fixtures/simple-app.yml');
+        $simpleAppComponents = json_decode(file_get_contents(__DIR__.'/../fixtures/simple-app.json'), true);
         $contents = json_encode([
             'specification' => [
-                'dockerComposeContents' => $simpleAppComposeContents,
+                'components' => $simpleAppComponents,
             ],
         ], true);
         $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
