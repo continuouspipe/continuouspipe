@@ -2,24 +2,33 @@
 
 namespace ContinuousPipe\Pipe\Client\DeploymentRequest;
 
+use ContinuousPipe\Model\Component;
 use JMS\Serializer\Annotation as JMS;
 
 class Specification
 {
     /**
-     * @JMS\Type("string")
-     * @JMS\SerializedName("dockerComposeContents")
+     * @JMS\Type("array<ContinuousPipe\Model\Component>")
+     * @JMS\SerializedName("components")
      *
-     * @var string
+     * @var Component[]
      */
-    private $dockerComposeContents;
+    private $components;
 
     /**
-     * @param string $dockerComposeContents
+     * @param Component[] $components
      */
-    public function __construct($dockerComposeContents)
+    public function __construct(array $components)
     {
-        $this->dockerComposeContents = $dockerComposeContents;
+        $this->components = $components;
+    }
+
+    /**
+     * @return \ContinuousPipe\Model\Component[]
+     */
+    public function getComponents()
+    {
+        return $this->components;
     }
 
     /**

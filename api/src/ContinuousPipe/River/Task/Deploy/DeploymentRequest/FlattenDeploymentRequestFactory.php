@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy\DeploymentRequest;
 
+use ContinuousPipe\DockerCompose\Loader\YamlLoader;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Task\Deploy\DeployContext;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
@@ -27,15 +28,22 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
     private $environmentNamingStrategy;
 
     /**
+     * @var YamlLoader
+     */
+    private $yamlLoader;
+
+    /**
      * @param DockerComposeReader       $dockerComposeReader
      * @param UrlGeneratorInterface     $urlGenerator
      * @param EnvironmentNamingStrategy $environmentNamingStrategy
+     * @param YamlLoader                $yamlLoader
      */
-    public function __construct(DockerComposeReader $dockerComposeReader, UrlGeneratorInterface $urlGenerator, EnvironmentNamingStrategy $environmentNamingStrategy)
+    public function __construct(DockerComposeReader $dockerComposeReader, UrlGeneratorInterface $urlGenerator, EnvironmentNamingStrategy $environmentNamingStrategy, YamlLoader $yamlLoader)
     {
         $this->dockerComposeReader = $dockerComposeReader;
         $this->urlGenerator = $urlGenerator;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
+        $this->yamlLoader = $yamlLoader;
     }
 
     /**
@@ -44,6 +52,8 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
     public function create(DeployContext $context)
     {
         $dockerComposeContents = $this->dockerComposeReader->getContents($context);
+        $environment = $this->yamlLoader->load($context->getProviderName(), $dockerComposeContents);
+
         $callbackUrl = $this->urlGenerator->generate('pipe_notification_post', [
             'tideUuid' => $context->getTideUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -53,7 +63,9 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
                 $this->getEnvironmentName($context),
                 $context->getProviderName()
             ),
-            new DeploymentRequest\Specification($dockerComposeContents),
+            new DeploymentRequest\Specification(
+                $environment->getComponents()
+            ),
             new DeploymentRequest\Notification(
                 $callbackUrl,
                 $context->getLog()->getId()

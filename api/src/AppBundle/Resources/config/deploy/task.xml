@@ -36,6 +36,7 @@
             <argument type="service" id="river.task.deploy.docker_compose.code_repository_reader" />
             <argument type="service" id="router" />
             <argument type="service" id="river.task.deploy.naming.environment_strategy" />
+            <argument type="service" id="pipe.docker_compose.yaml_loader" />
         </service>
         <service id="river.handler.start_deploy" class="ContinuousPipe\River\Task\Deploy\Handler\StartDeploymentHandler">
             <argument type="service" id="river.task.deploy.deployment_request_factory" />

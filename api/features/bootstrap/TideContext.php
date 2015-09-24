@@ -298,11 +298,11 @@ EOF;
 
         $componentImage = 'image0:'.$tag;
         $builtImages = array_map(function (DeploymentStarted $event) {
-            $dockerComposeContents = $event->getDeployment()->getRequest()->getSpecification()->getDockerComposeContents();
-            $parsed = Yaml::parse($dockerComposeContents);
-            $component = current($parsed);
+            $components = $event->getDeployment()->getRequest()->getSpecification()->getComponents();
+            $component = $components[0];
+            $source = $component->getSpecification()->getSource();
 
-            return $component['image'];
+            return $source->getImage();
         }, $deploymentStartedEvents);
 
         if (!in_array($componentImage, $builtImages)) {
