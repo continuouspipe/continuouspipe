@@ -1,4 +1,4 @@
 ContinuousPipe\Pipe\DeploymentRequest\Specification:
     properties:
-        dockerComposeContents:
-            - NotBlank: ~
+        components:
+            - NotNull: ~

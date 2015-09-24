@@ -1,0 +1,82 @@
+[
+  {
+    "name": "api",
+    "identifier": "api",
+    "specification": {
+      "source": {
+        "image": "sroze\/php-example"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": true
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "port_mappings": [
+      ],
+      "environment_variables": [
+      ],
+      "volumes": [
+      ],
+      "volume_mounts": [
+      ]
+    },
+    "extensions": [
+      {
+        "name": "com.continuouspipe.visibility",
+        "configuration": "public"
+      },
+      {
+        "name": "com.continuouspipe.http-labs",
+        "configuration": "{\"username\": \"guest\", \"password\": \"potato\"}"
+      }
+    ],
+    "labels": {
+      "com.continuouspipe.visibility": "public",
+      "com.continuouspipe.http-labs": "{\"username\": \"guest\", \"password\": \"potato\"}"
+    },
+    "locked": false
+  },
+  {
+    "name": "ui",
+    "identifier": "ui",
+    "specification": {
+      "source": {
+        "image": "sroze\/php-example"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": true
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "port_mappings": [
+      ],
+      "environment_variables": [
+      ],
+      "volumes": [
+      ],
+      "volume_mounts": [
+      ]
+    },
+    "extensions": [
+      {
+        "name": "com.continuouspipe.visibility",
+        "configuration": "public"
+      },
+      {
+        "name": "com.continuouspipe.http-labs",
+        "configuration": "{\"whitelisted-ips\": [\"9.9.9.9\", \"6.6.6.6\", \"3.3.3.3\"]}"
+      }
+    ],
+    "labels": {
+      "com.continuouspipe.visibility": "public",
+      "com.continuouspipe.http-labs": "{\"whitelisted-ips\": [\"9.9.9.9\", \"6.6.6.6\", \"3.3.3.3\"]}"
+    },
+    "locked": false
+  }
+]

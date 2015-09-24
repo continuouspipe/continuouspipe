@@ -2,20 +2,22 @@
 
 namespace ContinuousPipe\Pipe\DeploymentRequest;
 
+use ContinuousPipe\Model\Component;
+
 class Specification
 {
     /**
-     * Contents of the Docker-Compose file.
+     * Components expected to be deployed.
      *
-     * @var string
+     * @var Component[]
      */
-    private $dockerComposeContents;
+    private $components;
 
     /**
-     * @return string
+     * @return \ContinuousPipe\Model\Component[]
      */
-    public function getDockerComposeContents()
+    public function getComponents()
     {
-        return $this->dockerComposeContents;
+        return $this->components;
     }
 }

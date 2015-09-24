@@ -4,7 +4,7 @@ namespace ContinuousPipe\Pipe\Handler;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\ProviderRepository;
-use ContinuousPipe\DockerCompose\Loader\YamlLoader;
+use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\AdapterProviderRepository;
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
@@ -19,11 +19,6 @@ class StartDeploymentHandler
      * @var AdapterProviderRepository
      */
     private $providerRepository;
-
-    /**
-     * @var YamlLoader
-     */
-    private $dockerComposeYamlLoader;
 
     /**
      * @var EnvironmentClientFactory
@@ -42,15 +37,13 @@ class StartDeploymentHandler
 
     /**
      * @param AdapterProviderRepository $providerRepository
-     * @param YamlLoader                $dockerComposeYamlLoader
      * @param EnvironmentClientFactory  $environmentClientFactory
      * @param MessageBus                $eventBus
      * @param DeploymentLoggerFactory   $loggerFactory
      */
-    public function __construct(AdapterProviderRepository $providerRepository, YamlLoader $dockerComposeYamlLoader, EnvironmentClientFactory $environmentClientFactory, MessageBus $eventBus, DeploymentLoggerFactory $loggerFactory)
+    public function __construct(AdapterProviderRepository $providerRepository, EnvironmentClientFactory $environmentClientFactory, MessageBus $eventBus, DeploymentLoggerFactory $loggerFactory)
     {
         $this->providerRepository = $providerRepository;
-        $this->dockerComposeYamlLoader = $dockerComposeYamlLoader;
         $this->environmentClientFactory = $environmentClientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
@@ -76,9 +69,10 @@ class StartDeploymentHandler
             $target->getProviderName()
         )));
 
-        $environment = $this->dockerComposeYamlLoader->load(
+        $environment = new Environment(
             $target->getEnvironmentName(),
-            $specification->getDockerComposeContents()
+            $target->getEnvironmentName(),
+            $specification->getComponents()
         );
 
         $logger->append(new Text(sprintf(

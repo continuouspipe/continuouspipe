@@ -144,14 +144,14 @@ class EnvironmentContext implements Context
      */
     public function sendDeploymentRequest($providerName, $environmentName, $template = 'simple-app')
     {
-        $simpleAppComposeContents = file_get_contents(__DIR__.'/../fixtures/'.$template.'.yml');
+        $simpleAppComposeContents = json_decode(file_get_contents(__DIR__.'/../fixtures/'.$template.'.json'), true);
         $contents = json_encode([
             'target' => [
                 'environmentName' => $environmentName,
                 'providerName' => $providerName,
             ],
             'specification' => [
-                'dockerComposeContents' => $simpleAppComposeContents,
+                'components' => $simpleAppComposeContents,
             ],
         ]);
 

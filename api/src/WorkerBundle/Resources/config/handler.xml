@@ -7,7 +7,6 @@
     <services>
         <service id="pipe.handler.start_deployment" class="ContinuousPipe\Pipe\Handler\StartDeploymentHandler">
             <argument type="service" id="pipe.provider_repository" />
-            <argument type="service" id="pipe.docker_compose.yaml_loader" />
             <argument type="service" id="pipe.chain_environment_client_factory" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="pipe.deployment_logger_factory" />
