@@ -68,8 +68,9 @@ class BuildTaskFactory implements TaskFactory
                     ->prototype('array')
                         ->children()
                             ->scalarNode('image')->isRequired()->end()
-                            ->scalarNode('build_directory')->end()
-                            ->scalarNode('docker_file_path')->end()
+                            ->scalarNode('tag')->isRequired()->end()
+                            ->scalarNode('build_directory')->defaultNull()->end()
+                            ->scalarNode('docker_file_path')->defaultNull()->end()
                         ->end()
                     ->end()
                 ->end()
@@ -112,6 +113,7 @@ class BuildTaskFactory implements TaskFactory
         return array_map(function (array $service) {
             return new ServiceConfiguration(
                 $service['image'],
+                $service['tag'],
                 $service['build_directory'],
                 $service['docker_file_path']
             );

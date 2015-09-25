@@ -28,6 +28,7 @@ class StartDeploymentHandler
      * @var MessageBus
      */
     private $eventBus;
+
     /**
      * @var LoggerFactory
      */
@@ -53,7 +54,7 @@ class StartDeploymentHandler
     public function handle(StartDeploymentCommand $command)
     {
         $deployContext = $command->getDeployContext();
-        $deploymentRequest = $this->deploymentRequestFactory->create($deployContext);
+        $deploymentRequest = $this->deploymentRequestFactory->create($deployContext, $command->getConfiguration());
 
         try {
             $deployment = $this->pipeClient->start($deploymentRequest, $deployContext->getUser());

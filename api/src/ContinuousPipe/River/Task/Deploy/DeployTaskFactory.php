@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
+use ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
 use LogStream\LoggerFactory;
@@ -21,13 +22,20 @@ class DeployTaskFactory implements TaskFactory
     private $loggerFactory;
 
     /**
-     * @param MessageBus    $commandBus
-     * @param LoggerFactory $loggerFactory
+     * @var ComponentFactory
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory)
+    private $componentFactory;
+
+    /**
+     * @param MessageBus       $commandBus
+     * @param LoggerFactory    $loggerFactory
+     * @param ComponentFactory $componentFactory
+     */
+    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, ComponentFactory $componentFactory)
     {
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
+        $this->componentFactory = $componentFactory;
     }
 
     /**
@@ -35,7 +43,15 @@ class DeployTaskFactory implements TaskFactory
      */
     public function create(TaskContext $taskContext, array $configuration)
     {
-        return new DeployTask($this->commandBus, $this->loggerFactory, DeployContext::createDeployContext($taskContext));
+        return new DeployTask(
+            $this->commandBus,
+            $this->loggerFactory,
+            DeployContext::createDeployContext($taskContext),
+            new DeployTaskConfiguration(
+                $configuration['providerName'],
+                $this->generateServices($configuration['services'])
+            )
+        );
     }
 
     /**
@@ -53,9 +69,45 @@ class DeployTaskFactory implements TaskFactory
                     ->isRequired()
                     ->useAttributeAsKey('name')
                     ->prototype('array')
+                        ->addDefaultsIfNotSet()
                         ->children()
-                            ->scalarNode('visibility')->end()
-                            ->scalarNode('update')->end()
+                            ->arrayNode('specification')
+                                ->isRequired()
+                                ->addDefaultsIfNotSet()
+                                ->children()
+                                    ->arrayNode('source')
+                                        ->isRequired()
+                                        ->children()
+                                            ->scalarNode('image')->isRequired()->end()
+                                            ->scalarNode('tag')->defaultNull()->end()
+                                            ->scalarNode('repository')->end()
+                                        ->end()
+                                    ->end()
+                                    ->arrayNode('accessibility')
+                                        ->addDefaultsIfNotSet()
+                                        ->children()
+                                            ->scalarNode('from_cluster')->defaultTrue()->end()
+                                            ->scalarNode('from_external')->defaultFalse()->end()
+                                        ->end()
+                                    ->end()
+                                    ->arrayNode('scalability')
+                                        ->addDefaultsIfNotSet()
+                                        ->children()
+                                            ->booleanNode('enabled')->defaultTrue()->end()
+                                            ->integerNode('number_of_replicas')->defaultValue(1)->end()
+                                        ->end()
+                                    ->end()
+                                    ->arrayNode('environment_variables')
+                                        ->prototype('array')
+                                            ->children()
+                                                ->scalarNode('name')->isRequired()->end()
+                                                ->scalarNode('value')->isRequired()->end()
+                                            ->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                            ->booleanNode('locked')->defaultFalse()->end()
                         ->end()
                     ->end()
                 ->end()
@@ -63,5 +115,21 @@ class DeployTaskFactory implements TaskFactory
         ;
 
         return $node;
+    }
+
+    /**
+     * @param array $servicesConfiguration
+     *
+     * @return array
+     */
+    private function generateServices(array $servicesConfiguration)
+    {
+        $services = [];
+
+        foreach ($servicesConfiguration as $name => $configuration) {
+            $services[] = $this->componentFactory->createFromConfiguration($name, $configuration);
+        }
+
+        return $services;
     }
 }

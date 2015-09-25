@@ -1,16 +1,20 @@
 <?php
 
-namespace ContinuousPipe\River\CodeRepository\DockerCompose;
+namespace ContinuousPipe\River\Flow\ConfigurationEnhancer;
 
 use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\DockerCompose\DockerComposeComponent;
+use ContinuousPipe\River\CodeRepository\DockerCompose\ResolveException;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\River\Flow;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-class DockerComposeConfigurationEnhancer implements Flow\ConfigurationEnhancer
+class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
 {
+    use Flow\ConfigurationEnhancer\Helper\TaskLocator;
+
     /**
      * @var ProjectParser
      */
@@ -50,7 +54,7 @@ class DockerComposeConfigurationEnhancer implements Flow\ConfigurationEnhancer
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $enhancedConfig = [];
 
-        foreach ($this->getTaskPathsByType($configs) as $path => $taskType) {
+        foreach ($this->getTaskPathsAndType($configs) as $path => $taskType) {
             // Initialize paths else it will break the configuration order
             $propertyAccessor->setValue($enhancedConfig, $path, []);
             if (!in_array($taskType, ['build', 'deploy'])) {
@@ -68,31 +72,6 @@ class DockerComposeConfigurationEnhancer implements Flow\ConfigurationEnhancer
     }
 
     /**
-     * @param array $configs
-     *
-     * @return array
-     */
-    private function getTaskPathsByType(array $configs)
-    {
-        $paths = [];
-
-        foreach ($configs as $config) {
-            if (!array_key_exists('tasks', $config)) {
-                continue;
-            }
-
-            foreach ($config['tasks'] as $key => $task) {
-                foreach ($task as $taskName => $taskConfiguration) {
-                    $path = '[tasks]['.$key.']['.$taskName.']';
-                    $paths[$path] = $taskName;
-                }
-            }
-        }
-
-        return $paths;
-    }
-
-    /**
      * @param string                   $taskType
      * @param DockerComposeComponent[] $dockerComposeComponents
      *
@@ -105,6 +84,12 @@ class DockerComposeConfigurationEnhancer implements Flow\ConfigurationEnhancer
         foreach ($dockerComposeComponents as $component) {
             $configuration = [];
 
+            try {
+                $imageName = $component->getImageName();
+            } catch (ResolveException $e) {
+                $imageName = null;
+            }
+
             if ($taskType == 'build') {
                 if (!$component->hasToBeBuilt()) {
                     continue;
@@ -113,18 +98,25 @@ class DockerComposeConfigurationEnhancer implements Flow\ConfigurationEnhancer
                 $configuration = [
                     'build_directory' => $component->getBuildDirectory(),
                     'docker_file_path' => $component->getDockerfilePath(),
+                    'image' => $imageName,
+                ];
+            } elseif ($taskType == 'deploy') {
+                $configuration = [
+                    'specification' => [
+                        'source' => [
+                            'image' => $imageName,
+                        ],
+                    ],
                 ];
 
-                try {
-                    $configuration['image'] = $component->getImageName();
-                } catch (ResolveException $e) {
-                }
-            } elseif ($taskType == 'deploy') {
                 if ($updatePolicy = $component->getUpdatePolicy()) {
-                    $configuration['update'] = $updatePolicy;
+                    $configuration['locked'] = $updatePolicy == 'lock';
                 }
+
                 if ($visibility = $component->getVisibility()) {
-                    $configuration['visibility'] = $visibility;
+                    $configuration['specification']['accessibility'] = [
+                        'from_external' => $visibility == 'public',
+                    ];
                 }
             }
 

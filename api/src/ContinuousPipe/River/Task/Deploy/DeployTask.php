@@ -36,17 +36,24 @@ class DeployTask extends EventDrivenTask
     private $context;
 
     /**
-     * @param MessageBus    $commandBus
-     * @param LoggerFactory $loggerFactory
-     * @param DeployContext $context
+     * @var DeployTaskConfiguration
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, DeployContext $context)
+    private $configuration;
+
+    /**
+     * @param MessageBus              $commandBus
+     * @param LoggerFactory           $loggerFactory
+     * @param DeployContext           $context
+     * @param DeployTaskConfiguration $configuration
+     */
+    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, DeployContext $context, DeployTaskConfiguration $configuration)
     {
         parent::__construct();
 
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
         $this->context = $context;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -61,7 +68,8 @@ class DeployTask extends EventDrivenTask
 
         $this->commandBus->handle(new StartDeploymentCommand(
             $this->context->getTideUuid(),
-            $this->context
+            $this->context,
+            $this->configuration
         ));
     }
 

@@ -44,16 +44,4 @@ class ReplaceBuildByFinalImagesTransformer implements DockerComposeTransformer
 
         return $imageName;
     }
-
-    /**
-     * Return true if the image name contains a tag.
-     *
-     * @param string $imageName
-     *
-     * @return bool
-     */
-    private function imageHasTag($imageName)
-    {
-        return strpos($imageName, ':') !== false;
-    }
 }

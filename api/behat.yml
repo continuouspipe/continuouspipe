@@ -33,6 +33,7 @@ default:
                 - Task\DeployContext:
                     - @river.event_store
                     - @event_bus
+                    - @river.pipe_client
                 - Task\RunContext:
                     - @kernel
                     - @runner.client

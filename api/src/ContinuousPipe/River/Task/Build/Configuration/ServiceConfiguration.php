@@ -28,15 +28,22 @@ class ServiceConfiguration
     private $dockerFilePath;
 
     /**
+     * @var string
+     */
+    private $tag;
+
+    /**
      * @param string $image
+     * @param string $tag
      * @param string $buildDirectory
      * @param string $dockerFilePath
      */
-    public function __construct($image, $buildDirectory, $dockerFilePath)
+    public function __construct($image, $tag, $buildDirectory, $dockerFilePath)
     {
         $this->image = $image;
         $this->buildDirectory = $buildDirectory;
         $this->dockerFilePath = $dockerFilePath;
+        $this->tag = $tag;
     }
 
     /**
@@ -45,6 +52,14 @@ class ServiceConfiguration
     public function getImage()
     {
         return $this->image;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTag()
+    {
+        return $this->tag;
     }
 
     /**

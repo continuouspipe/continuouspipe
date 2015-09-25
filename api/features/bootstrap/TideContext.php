@@ -310,7 +310,7 @@ EOF;
             $component = $components[0];
             $source = $component->getSpecification()->getSource();
 
-            return $source->getImage();
+            return $source ? $source->getImage().':'.$source->getTag() : null;
         }, $deploymentStartedEvents);
 
         if (!in_array($componentImage, $builtImages)) {
@@ -521,7 +521,15 @@ EOF;
             [
                 'deploy' => [
                     'providerName' => 'fake/foo',
-                    'services' => []
+                    'services' => [
+                        'image0' => [
+                            'specification' => [
+                                'source' => [
+                                    'tag' => 'foo'
+                                ]
+                            ]
+                        ]
+                    ]
                 ]
             ]
         ]);

@@ -41,7 +41,7 @@ class BuildRequestCreator
 
         $buildRequests = [];
         foreach ($configuration->getServices() as $serviceName => $service) {
-            $image = new Image($service->getImage(), $codeReference->getBranch());
+            $image = new Image($service->getImage(), $service->getTag());
             $buildRequestRepository = new Repository($codeReference->getRepository()->getAddress(), $codeReference->getCommitSha());
             $buildRequests[] = new BuildRequest(
                 $buildRequestRepository,

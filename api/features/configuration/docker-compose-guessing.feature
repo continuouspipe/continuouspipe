@@ -100,7 +100,11 @@ Feature:
             deploy:
                 services:
                     api:
-                        visibility: public
+                        specification:
+                            source:
+                                image: sroze/my-image
+                            accessibility:
+                                from_external: true
                     mysql:
-                        update: lock
+                        locked: true
     """

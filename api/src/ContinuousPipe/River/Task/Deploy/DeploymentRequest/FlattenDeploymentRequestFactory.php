@@ -2,21 +2,15 @@
 
 namespace ContinuousPipe\River\Task\Deploy\DeploymentRequest;
 
-use ContinuousPipe\DockerCompose\Loader\YamlLoader;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Task\Deploy\DeployContext;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
-use ContinuousPipe\River\Task\Deploy\DockerCompose\DockerComposeReader;
+use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
 {
-    /**
-     * @var DockerComposeReader
-     */
-    private $dockerComposeReader;
-
     /**
      * @var UrlGeneratorInterface
      */
@@ -28,32 +22,20 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
     private $environmentNamingStrategy;
 
     /**
-     * @var YamlLoader
-     */
-    private $yamlLoader;
-
-    /**
-     * @param DockerComposeReader       $dockerComposeReader
      * @param UrlGeneratorInterface     $urlGenerator
      * @param EnvironmentNamingStrategy $environmentNamingStrategy
-     * @param YamlLoader                $yamlLoader
      */
-    public function __construct(DockerComposeReader $dockerComposeReader, UrlGeneratorInterface $urlGenerator, EnvironmentNamingStrategy $environmentNamingStrategy, YamlLoader $yamlLoader)
+    public function __construct(UrlGeneratorInterface $urlGenerator, EnvironmentNamingStrategy $environmentNamingStrategy)
     {
-        $this->dockerComposeReader = $dockerComposeReader;
         $this->urlGenerator = $urlGenerator;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
-        $this->yamlLoader = $yamlLoader;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function create(DeployContext $context)
+    public function create(DeployContext $context, DeployTaskConfiguration $configuration)
     {
-        $dockerComposeContents = $this->dockerComposeReader->getContents($context);
-        $environment = $this->yamlLoader->load($context->getProviderName(), $dockerComposeContents);
-
         $callbackUrl = $this->urlGenerator->generate('pipe_notification_post', [
             'tideUuid' => $context->getTideUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -61,10 +43,10 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
         return new DeploymentRequest(
             new DeploymentRequest\Target(
                 $this->getEnvironmentName($context),
-                $context->getProviderName()
+                $configuration->getProviderName()
             ),
             new DeploymentRequest\Specification(
-                $environment->getComponents()
+                $configuration->getComponents()
             ),
             new DeploymentRequest\Notification(
                 $callbackUrl,

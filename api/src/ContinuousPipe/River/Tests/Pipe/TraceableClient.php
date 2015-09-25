@@ -14,6 +14,11 @@ class TraceableClient implements Client
     private $deletions = [];
 
     /**
+     * @var DeploymentRequest[]
+     */
+    private $requests;
+
+    /**
      * @var Client
      */
     private $client;
@@ -31,7 +36,11 @@ class TraceableClient implements Client
      */
     public function start(DeploymentRequest $deploymentRequest, User $user)
     {
-        return $this->client->start($deploymentRequest, $user);
+        $deployment = $this->client->start($deploymentRequest, $user);
+
+        $this->requests[] = $deploymentRequest;
+
+        return $deployment;
     }
 
     /**
@@ -44,6 +53,14 @@ class TraceableClient implements Client
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getEnvironments($providerName, User $user)
+    {
+        return $this->client->getEnvironments($providerName, $user);
+    }
+
+    /**
      * @return DeploymentRequest\Target[]
      */
     public function getDeletions()
@@ -52,10 +69,10 @@ class TraceableClient implements Client
     }
 
     /**
-     * {@inheritdoc}
+     * @return Client\DeploymentRequest[]
      */
-    public function getEnvironments($providerName, User $user)
+    public function getRequests()
     {
-        return $this->client->getEnvironments($providerName, $user);
+        return $this->requests;
     }
 }

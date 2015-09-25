@@ -4,6 +4,8 @@ namespace Task;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
+use ContinuousPipe\Model\Component;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
@@ -11,6 +13,7 @@ use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\Task;
+use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use SimpleBus\Message\Bus\MessageBus;
 
 class DeployContext implements Context
@@ -41,13 +44,20 @@ class DeployContext implements Context
     private $eventBus;
 
     /**
+     * @var TraceableClient
+     */
+    private $traceablePipeClient;
+
+    /**
      * @param EventStore $eventStore
      * @param MessageBus $eventBus
+     * @param TraceableClient $traceablePipeClient
      */
-    public function __construct(EventStore $eventStore, MessageBus $eventBus)
+    public function __construct(EventStore $eventStore, MessageBus $eventBus, TraceableClient $traceablePipeClient)
     {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
+        $this->traceablePipeClient = $traceablePipeClient;
     }
 
     /**
@@ -134,6 +144,88 @@ class DeployContext implements Context
         if (!$this->getDeployTask()->isSuccessful()) {
             throw new \RuntimeException('Expected the task to be successful');
         }
+    }
+
+    /**
+     * @Then the component :component should be deployed as accessible from outside
+     */
+    public function theComponentShouldBeDeployedAsAccessibleFromOutside($componentName)
+    {
+        $component = $this->getDeployedComponent($componentName);
+
+        if (!$component->getSpecification()->getAccessibility()->isFromExternal()) {
+            throw new \RuntimeException('Component is not accessible from outside');
+        }
+    }
+
+    /**
+     * @Then the component :component should be deployed as locked
+     */
+    public function theComponentShouldBeDeployedAsLocked($componentName)
+    {
+        $component = $this->getDeployedComponent($componentName);
+
+        if (!$component->isLocked()) {
+            throw new \RuntimeException('Component is not locked');
+        }
+    }
+
+    /**
+     * @Then the component :component should not be deployed as accessible from outside
+     */
+    public function theComponentShouldNotBeDeployedAsAccessibleFromOutside($componentName)
+    {
+        $component = $this->getDeployedComponent($componentName);
+
+        if ($component->getSpecification()->getAccessibility()->isFromExternal()) {
+            throw new \RuntimeException('Component is accessible from outside');
+        }
+    }
+
+    /**
+     * @Then the component :component should be deployed with the image :image
+     */
+    public function theComponentShouldBeDeployedWithTheImage($componentName, $image)
+    {
+        $component = $this->getDeployedComponent($componentName);
+        $foundImage = $component->getSpecification()->getSource()->getImage();
+
+        if ($image != $foundImage) {
+            throw new \RuntimeException(sprintf(
+                'Found image "%s" instead',
+                $foundImage
+            ));
+        }
+    }
+
+    /**
+     * @param string $componentName
+     * @return Component
+     */
+    private function getDeployedComponent($componentName)
+    {
+        $deploymentRequests = $this->traceablePipeClient->getRequests();
+        if (0 == count($deploymentRequests)) {
+            throw new \RuntimeException('No deployment request found');
+        }
+
+        $deploymentRequest = current($deploymentRequests);
+        $components = $deploymentRequest->getSpecification()->getComponents();
+        $matchingComponents = array_filter($components, function(Component $component) use ($componentName) {
+            return $component->getName() == $componentName;
+        });
+
+        if (0 == count($matchingComponents)) {
+            throw new \RuntimeException(sprintf(
+                'No component named "%s" found in the deployment request',
+                $componentName
+            ));
+        }
+
+        /** @var Component $component */
+        $component = current($matchingComponents);
+
+        return $component;
     }
 
     /**

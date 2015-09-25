@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Deploy\Command;
 
 use ContinuousPipe\River\Task\Deploy\DeployContext;
+use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
 use Rhumsaa\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
@@ -23,13 +24,20 @@ class StartDeploymentCommand
     private $deployContext;
 
     /**
-     * @param Uuid          $tideUuid
-     * @param DeployContext $deployContext
+     * @var DeployTaskConfiguration
      */
-    public function __construct(Uuid $tideUuid, DeployContext $deployContext)
+    private $configuration;
+
+    /**
+     * @param Uuid                    $tideUuid
+     * @param DeployContext           $deployContext
+     * @param DeployTaskConfiguration $configuration
+     */
+    public function __construct(Uuid $tideUuid, DeployContext $deployContext, DeployTaskConfiguration $configuration)
     {
         $this->tideUuid = $tideUuid;
         $this->deployContext = $deployContext;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -46,5 +54,13 @@ class StartDeploymentCommand
     public function getDeployContext()
     {
         return $this->deployContext;
+    }
+
+    /**
+     * @return DeployTaskConfiguration
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
     }
 }
