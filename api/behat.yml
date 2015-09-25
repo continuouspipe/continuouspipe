@@ -42,6 +42,8 @@ default:
                 - RepositoryContext:
                     - @kernel
                     - @repository_river.code_repository_repository
+                - TideConfigurationContext:
+                    - @river.tide_configuration_factory
 
     extensions:
         Behat\Symfony2Extension:
@@ -77,6 +79,8 @@ smoke:
                     - @river.github.pull_request_deployment_notifier
                     - @river.github.pull_request_resolver
                     - @river.pipe_client
+                - TideConfigurationContext:
+                    - @river.tide_configuration_factory
 
     extensions:
         Behat\Symfony2Extension:

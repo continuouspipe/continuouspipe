@@ -45,6 +45,14 @@ class DockerComposeComponent
     }
 
     /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * @return bool
      */
     public function hasToBeBuilt()

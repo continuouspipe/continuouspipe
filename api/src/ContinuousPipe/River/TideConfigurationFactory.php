@@ -4,6 +4,7 @@ namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\River\Flow\Configuration;
+use ContinuousPipe\River\Flow\ConfigurationEnhancer;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
@@ -24,13 +25,20 @@ class TideConfigurationFactory
     private $taskFactoryRegistry;
 
     /**
-     * @param FileSystemResolver  $fileSystemResolver
-     * @param TaskFactoryRegistry $taskFactoryRegistry
+     * @var Flow\ConfigurationEnhancer[]
      */
-    public function __construct(FileSystemResolver $fileSystemResolver, TaskFactoryRegistry $taskFactoryRegistry)
+    private $configurationEnhancers;
+
+    /**
+     * @param FileSystemResolver      $fileSystemResolver
+     * @param TaskFactoryRegistry     $taskFactoryRegistry
+     * @param ConfigurationEnhancer[] $configurationEnhancers
+     */
+    public function __construct(FileSystemResolver $fileSystemResolver, TaskFactoryRegistry $taskFactoryRegistry, array $configurationEnhancers)
     {
         $this->fileSystemResolver = $fileSystemResolver;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
+        $this->configurationEnhancers = $configurationEnhancers;
     }
 
     /**
@@ -43,14 +51,21 @@ class TideConfigurationFactory
      */
     public function getConfiguration(Flow $flow, CodeReference $codeReference)
     {
+        $flowContext = $flow->getContext();
+        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flowContext->getUser());
+
         $configs = [
-            $flow->getContext()->getConfiguration(),
+            $flowContext->getConfiguration(),
         ];
 
         // Read configuration from YML
-        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flow->getContext()->getUser());
         if ($fileSystem->exists(self::FILENAME)) {
             $configs[] = Yaml::parse($fileSystem->getContents(self::FILENAME));
+        }
+
+        // Enhance configuration
+        foreach ($this->configurationEnhancers as $enhancer) {
+            $configs = $enhancer->enhance($flow, $codeReference, $configs);
         }
 
         $configurationDefinition = new Configuration($this->taskFactoryRegistry);
@@ -59,6 +74,8 @@ class TideConfigurationFactory
         try {
             $configuration = $processor->processConfiguration($configurationDefinition, $configs);
         } catch (InvalidConfigurationException $e) {
+            print_r($configs);
+
             throw new TideConfigurationException($e->getMessage(), 0, $e);
         }
 

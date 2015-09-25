@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\River\Flow;
@@ -63,6 +64,11 @@ class TideContext implements Context
     private $viewTideRepository;
 
     /**
+     * @var \TideConfigurationContext
+     */
+    private $tideConfigurationContext;
+
+    /**
      * @param MessageBus             $commandBus
      * @param MessageBus             $eventBus
      * @param EventStore             $eventStore
@@ -86,6 +92,7 @@ class TideContext implements Context
     public function gatherContexts(BeforeScenarioScope $scope)
     {
         $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
+        $this->tideConfigurationContext = $scope->getEnvironment()->getContext('TideConfigurationContext');
     }
 
     /**
@@ -556,7 +563,7 @@ EOF;
         $tideConfiguration = $created->getTideContext()->getConfiguration();
 
         $expectedConfiguration = Yaml::parse($string->getRaw());
-        $intersection = $this->array_intersect_recursive($expectedConfiguration, $tideConfiguration);
+        $intersection = $this->tideConfigurationContext->array_intersect_recursive($expectedConfiguration, $tideConfiguration);
 
         if ($intersection != $expectedConfiguration) {
             throw new \RuntimeException(sprintf(
@@ -620,28 +627,5 @@ EOF;
     private function startTide()
     {
         $this->commandBus->handle(new StartTideCommand($this->tideUuid));
-    }
-
-    private function array_intersect_recursive($array1, $array2)
-    {
-        foreach($array1 as $key => $value)
-        {
-            if (!isset($array2[$key]))
-            {
-                unset($array1[$key]);
-            }
-            else
-            {
-                if (is_array($array1[$key]))
-                {
-                    $array1[$key] = $this->array_intersect_recursive($array1[$key], $array2[$key]);
-                }
-                elseif ($array2[$key] !== $value)
-                {
-                    unset($array1[$key]);
-                }
-            }
-        }
-        return $array1;
     }
 }

@@ -18,7 +18,8 @@ Feature:
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
-        - deploy: ~
+        kubernetes:
+            deploy: ~
     """
     When a tide is started
     Then the tide should be failed
@@ -27,21 +28,27 @@ Feature:
     Given I have a flow with the following configuration:
     """
     tasks:
-        - deploy:
-              providerName: foo/bar
+        kubernetes:
+            deploy:
+                providerName: foo/bar
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
-        - build: ~
+        images:
+            build:
+                services: []
     """
     When a tide is created
     Then the configuration of the tide should contain at least:
     """
     tasks:
-        - deploy:
-              providerName: foo/bar
-        - build: {}
+        images:
+            build: {}
+
+        kubernetes:
+            deploy:
+                providerName: foo/bar
     """
 
   Scenario: The configuration in the repository file is more important
@@ -73,7 +80,8 @@ Feature:
     Given I have a flow with the following configuration:
     """
     tasks:
-        - build: ~
+        foo:
+            build: ~
     """
     When a tide is started
     Then the build task should be running

@@ -56,6 +56,17 @@ class BuildTaskFactory implements TaskFactory
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('services')
+                    ->isRequired()
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('image')->isRequired()->end()
+                            ->scalarNode('build_directory')->end()
+                            ->scalarNode('docker_file_path')->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 

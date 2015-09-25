@@ -20,9 +20,14 @@
             <argument type="service" id="river.event_store" />
             <argument type="service" id="river.tide_factory" />
         </service>
+        <service id="river.tide.configuration_enhancer.unnamed_tasks" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\TaskListAsUnnamedArrayEnhancer" />
         <service id="river.tide_configuration_factory" class="ContinuousPipe\River\TideConfigurationFactory">
             <argument type="service" id="river.file_system_resolver" />
             <argument type="service" id="river.task_factory_registry" />
+            <argument type="collection">
+                <argument type="service" id="river.tide.configuration_enhancer.unnamed_tasks" />
+                <argument type="service" id="river.docker_compose.configuration_enhancer" />
+            </argument>
         </service>
         <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
             <argument type="service" id="log_stream.logger_factory" />

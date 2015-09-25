@@ -36,7 +36,6 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->append($this->getTasksNode())
-                ->append($this->getServicesNode())
             ->end()
         ;
 
@@ -48,23 +47,10 @@ class Configuration implements ConfigurationInterface
         $builder = new TreeBuilder();
         $node = $builder->root('tasks');
 
-        $i = 0;
         $nodeChildren = $node
             ->isRequired()
             ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
-            ->beforeNormalization()
-                ->ifArray()
-                ->then(function ($tasks) use (&$i) {
-                    foreach ($tasks as $name => &$task) {
-                        if (!is_string($name)) {
-                            $task['name'] = $i++;
-                        }
-                    }
-
-                    return $tasks;
-                })
-            ->end()
             ->prototype('array')
             ->children();
 
@@ -74,25 +60,6 @@ class Configuration implements ConfigurationInterface
 
         $nodeChildren
                     ->end()
-                ->end()
-            ->end()
-        ;
-
-        return $node;
-    }
-
-    private function getServicesNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('services');
-
-        $node
-            ->useAttributeAsKey('name')
-            ->prototype('array')
-                ->children()
-                    ->scalarNode('image')->isRequired()->end()
-                    ->scalarNode('visibility')->defaultValue('private')->end()
-                    ->scalarNode('update')->defaultNull()->end()
                 ->end()
             ->end()
         ;
