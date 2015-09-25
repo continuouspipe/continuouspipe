@@ -24,14 +24,6 @@
         </service>
         <service id="river.pipe.provider_name_resolver" class="ContinuousPipe\River\Pipe\ProviderNameResolver" />
 
-        <service id="river.task.deploy.docker_compose.replace_build_by_images_transformer" class="ContinuousPipe\River\Task\Deploy\DockerCompose\Transformer\ReplaceBuildByFinalImagesTransformer" />
-        <service id="river.task.deploy.docker_compose.code_repository_reader" class="ContinuousPipe\River\Task\Deploy\DockerCompose\CodeRepositoryReader">
-            <argument type="service" id="river.docker_compose.parser.project" />
-            <argument type="service" id="river.file_system_resolver" />
-            <argument type="collection">
-                <argument type="service" id="river.task.deploy.docker_compose.replace_build_by_images_transformer" />
-            </argument>
-        </service>
         <service id="river.task.deploy.naming.environment_strategy" class="ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy" />
         <service id="river.task.deploy.deployment_request_factory" class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\FlattenDeploymentRequestFactory">
             <argument type="service" id="router" />
