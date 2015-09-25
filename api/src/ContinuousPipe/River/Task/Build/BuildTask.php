@@ -35,17 +35,24 @@ class BuildTask extends EventDrivenTask
     private $context;
 
     /**
-     * @param MessageBus    $commandBus
-     * @param LoggerFactory $loggerFactory
-     * @param BuildContext  $context
+     * @var BuildTaskConfiguration
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, BuildContext $context)
+    private $configuration;
+
+    /**
+     * @param MessageBus             $commandBus
+     * @param LoggerFactory          $loggerFactory
+     * @param BuildContext           $context
+     * @param BuildTaskConfiguration $configuration
+     */
+    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, BuildContext $context, BuildTaskConfiguration $configuration)
     {
         parent::__construct();
 
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
         $this->context = $context;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -129,27 +136,11 @@ class BuildTask extends EventDrivenTask
         $logger = $this->loggerFactory->from($this->context->getLog());
         $log = $logger->append(new Text('Building application images'));
 
-        $environment = $this->flattenEnvironmentVariables($this->context->getEnvironment());
         $this->commandBus->handle(new BuildImagesCommand(
             $this->context->getTideUuid(),
-            $environment,
+            $this->configuration,
             $log->getId()
         ));
-    }
-
-    /**
-     * @param array $buildEnvironment
-     *
-     * @return array
-     */
-    private function flattenEnvironmentVariables(array $buildEnvironment)
-    {
-        $variables = [];
-        foreach ($buildEnvironment as $environ) {
-            $variables[$environ['name']] = $environ['value'];
-        }
-
-        return $variables;
     }
 
     /**

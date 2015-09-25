@@ -8,10 +8,11 @@ interface TaskFactory
 {
     /**
      * @param TaskContext $taskContext
+     * @param array       $configuration
      *
      * @return Task
      */
-    public function create(TaskContext $taskContext);
+    public function create(TaskContext $taskContext, array $configuration);
 
     /**
      * @return NodeDefinition

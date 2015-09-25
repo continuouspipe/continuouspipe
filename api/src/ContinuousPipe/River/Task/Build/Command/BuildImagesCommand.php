@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Build\Command;
 
+use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
 use Rhumsaa\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
@@ -22,22 +23,22 @@ class BuildImagesCommand
     private $logId;
 
     /**
-     * @JMS\Type("array<string,string>")
+     * @JMS\Type("ContinuousPipe\River\Task\Build\BuildTaskConfiguration")
      *
-     * @var array
+     * @var BuildTaskConfiguration
      */
-    private $buildEnvironment;
+    private $configuration;
 
     /**
-     * @param Uuid   $tideUuid
-     * @param array  $buildEnvironment
-     * @param string $logId
+     * @param Uuid                   $tideUuid
+     * @param BuildTaskConfiguration $configuration
+     * @param string                 $logId
      */
-    public function __construct(Uuid $tideUuid, array $buildEnvironment, $logId)
+    public function __construct(Uuid $tideUuid, BuildTaskConfiguration $configuration, $logId)
     {
         $this->tideUuid = $tideUuid;
         $this->logId = $logId;
-        $this->buildEnvironment = $buildEnvironment;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -57,10 +58,10 @@ class BuildImagesCommand
     }
 
     /**
-     * @return array
+     * @return BuildTaskConfiguration
      */
-    public function getBuildEnvironment()
+    public function getConfiguration()
     {
-        return $this->buildEnvironment;
+        return $this->configuration;
     }
 }

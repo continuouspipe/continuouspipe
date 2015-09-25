@@ -338,6 +338,24 @@ class BuildContext implements Context
     }
 
     /**
+     * @Then the build should be started with the image name :imageName
+     */
+    public function theBuildShouldBeStartedWithTheImageName($imageName)
+    {
+        $buildStartedEvent = $this->getBuildStartedEvents()[0];
+        $request = $buildStartedEvent->getBuild()->getRequest();
+        $foundImageName = $request->getImage()->getName();
+
+        if ($imageName != $foundImageName) {
+            throw new \RuntimeException(sprintf(
+                'The image name found is "%s" while expecting "%s"',
+                $foundImageName,
+                $imageName
+            ));
+        }
+    }
+
+    /**
      * @Then the build should be started with the sub-directory :path
      */
     public function theBuildShouldBeStartedWithTheSubDirectory($path)

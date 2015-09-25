@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Build;
 
+use ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
 use LogStream\LoggerFactory;
@@ -33,9 +34,14 @@ class BuildTaskFactory implements TaskFactory
     /**
      * {@inheritdoc}
      */
-    public function create(TaskContext $taskContext)
+    public function create(TaskContext $taskContext, array $configuration)
     {
-        return new BuildTask($this->commandBus, $this->loggerFactory, BuildContext::createBuildContext($taskContext));
+        return new BuildTask(
+            $this->commandBus,
+            $this->loggerFactory,
+            BuildContext::createBuildContext($taskContext),
+            $this->createConfiguration($configuration)
+        );
     }
 
     /**
@@ -71,5 +77,44 @@ class BuildTaskFactory implements TaskFactory
         ;
 
         return $node;
+    }
+
+    private function createConfiguration(array $configuration)
+    {
+        return new BuildTaskConfiguration(
+            $this->flattenEnvironmentVariables($configuration['environment']),
+            $this->createServiceConfiguration($configuration['services'])
+        );
+    }
+
+    /**
+     * @param array $buildEnvironment
+     *
+     * @return array
+     */
+    private function flattenEnvironmentVariables(array $buildEnvironment)
+    {
+        $variables = [];
+        foreach ($buildEnvironment as $environ) {
+            $variables[$environ['name']] = $environ['value'];
+        }
+
+        return $variables;
+    }
+
+    /**
+     * @param array $services
+     *
+     * @return ServiceConfiguration[]
+     */
+    private function createServiceConfiguration(array $services)
+    {
+        return array_map(function (array $service) {
+            return new ServiceConfiguration(
+                $service['image'],
+                $service['build_directory'],
+                $service['docker_file_path']
+            );
+        }, $services);
     }
 }

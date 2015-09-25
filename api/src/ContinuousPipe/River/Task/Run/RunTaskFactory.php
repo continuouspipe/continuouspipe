@@ -33,7 +33,7 @@ class RunTaskFactory implements TaskFactory
     /**
      * {@inheritdoc}
      */
-    public function create(TaskContext $taskContext)
+    public function create(TaskContext $taskContext, array $configuration)
     {
         return new RunTask($this->loggerFactory, $this->commandBus, RunContext::createRunContext($taskContext));
     }

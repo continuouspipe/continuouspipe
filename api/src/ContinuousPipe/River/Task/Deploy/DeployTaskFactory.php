@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
-use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
 use LogStream\LoggerFactory;
@@ -32,11 +31,9 @@ class DeployTaskFactory implements TaskFactory
     }
 
     /**
-     * @param TaskContext $taskContext
-     *
-     * @return Task
+     * {@inheritdoc}
      */
-    public function create(TaskContext $taskContext)
+    public function create(TaskContext $taskContext, array $configuration)
     {
         return new DeployTask($this->commandBus, $this->loggerFactory, DeployContext::createDeployContext($taskContext));
     }

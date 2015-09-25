@@ -142,7 +142,7 @@ class TideFactory
                 $taskId
             );
 
-            $tasks[] = $taskFactory->create($taskContext);
+            $tasks[] = $taskFactory->create($taskContext, $taskConfiguration);
         }
 
         return new TaskList($tasks);
