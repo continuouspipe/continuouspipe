@@ -3,6 +3,7 @@
 namespace spec\ContinuousPipe\River\Task\Build;
 
 use ContinuousPipe\River\Task\Build\BuildContext;
+use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use LogStream\Log;
@@ -13,9 +14,9 @@ use SimpleBus\Message\Bus\MessageBus;
 
 class BuildTaskSpec extends ObjectBehavior
 {
-    public function let(MessageBus $commandBus, LoggerFactory $loggerFactory, Log $log, BuildContext $buildContext)
+    public function let(MessageBus $commandBus, LoggerFactory $loggerFactory, Log $log, BuildContext $buildContext, BuildTaskConfiguration $configuration)
     {
-        $this->beConstructedWith($commandBus, $loggerFactory, $buildContext);
+        $this->beConstructedWith($commandBus, $loggerFactory, $buildContext, $configuration);
         $this->apply(new ImageBuildsStarted(
             Uuid::uuid1(),
             [],
