@@ -28,11 +28,11 @@ Feature:
     And the deploy task should not be started
 
   Scenario: I can have different tasks of the same time in a flow
-    Given I tide is started with the following tasks:
-      | name   | context                                   |
-      | build  |                                           |
+    Given I tide is started with the following configurations:
+      | name   | configuration                             |
+      | build  | {"services": []}                          |
       | run    | {"image": "foo", "commands": ["bin/foo"]} |
-      | deploy | {"providerName": "foo"}                   |
+      | deploy | {"providerName": "foo", "services": []}   |
       | run    | {"image": "bar", "commands": ["bin/bar"]} |
     When the build task succeed
     And the run succeed

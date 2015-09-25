@@ -117,6 +117,7 @@ class TideContext implements Context
 tasks:
     - deploy:
           providerName: fake/provider
+          services: []
 EOF;
 
         $this->fakeFileSystemResolver->prepareFileSystem([
@@ -497,7 +498,8 @@ EOF;
             'tasks' => [
                 [
                     'deploy' => [
-                        'providerName' => 'fake/foo'
+                        'providerName' => 'fake/foo',
+                        'services' => []
                     ]
                 ]
             ]
@@ -518,21 +520,22 @@ EOF;
         $this->aTideIsStartedWithTasks([
             [
                 'deploy' => [
-                    'providerName' => 'fake/foo'
+                    'providerName' => 'fake/foo',
+                    'services' => []
                 ]
             ]
         ]);
     }
 
     /**
-     * @Given I tide is started with the following tasks:
+     * @Given I tide is started with the following configurations:
      */
-    public function iTideIsStartedWithTheFollowingTasks(TableNode $tasks)
+    public function iTideIsStartedWithTheFollowingConfigurations(TableNode $tasks)
     {
         $tasks = array_map(function($task) {
-            $context = !empty($task['context']) ? json_decode($task['context'], true) : [];
+            $configuration = !empty($task['configuration']) ? json_decode($task['configuration'], true) : [];
 
-            return [$task['name'] => $context];
+            return [$task['name'] => $configuration];
         }, $tasks->getHash());
 
         $this->aTideIsStartedWithTasks($tasks);

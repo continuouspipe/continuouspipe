@@ -74,8 +74,6 @@ class TideConfigurationFactory
         try {
             $configuration = $processor->processConfiguration($configurationDefinition, $configs);
         } catch (InvalidConfigurationException $e) {
-            print_r($configs);
-
             throw new TideConfigurationException($e->getMessage(), 0, $e);
         }
 

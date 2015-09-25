@@ -31,6 +31,7 @@ Feature:
         kubernetes:
             deploy:
                 providerName: foo/bar
+                services: []
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
@@ -65,6 +66,7 @@ Feature:
         named:
             deploy:
                 providerName: bar/baz
+                services: []
     """
     When a tide is created
     Then the configuration of the tide should contain at least:
@@ -99,6 +101,7 @@ Feature:
         named:
             deploy:
                 providerName: ${FOO}
+                services: []
     """
     When a tide is created
     Then the configuration of the tide should contain at least:

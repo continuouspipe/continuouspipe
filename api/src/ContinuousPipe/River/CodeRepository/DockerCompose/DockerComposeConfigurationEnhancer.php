@@ -50,16 +50,16 @@ class DockerComposeConfigurationEnhancer implements Flow\ConfigurationEnhancer
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $enhancedConfig = [];
 
-        foreach ($this->getTaskPathsByType($configs) as $taskType => $paths) {
-            if (!in_array($taskType, ['build'])) {
+        foreach ($this->getTaskPathsByType($configs) as $path => $taskType) {
+            // Initialize paths else it will break the configuration order
+            $propertyAccessor->setValue($enhancedConfig, $path, []);
+            if (!in_array($taskType, ['build', 'deploy'])) {
                 continue;
             }
 
             $servicesConfiguration = $this->getServicesConfigurationForTask($taskType, $dockerComposeComponents);
 
-            foreach ($paths as $path) {
-                $propertyAccessor->setValue($enhancedConfig, $path.'[services]', $servicesConfiguration);
-            }
+            $propertyAccessor->setValue($enhancedConfig, $path.'[services]', $servicesConfiguration);
         }
 
         array_unshift($configs, $enhancedConfig);
@@ -83,11 +83,8 @@ class DockerComposeConfigurationEnhancer implements Flow\ConfigurationEnhancer
 
             foreach ($config['tasks'] as $key => $task) {
                 foreach ($task as $taskName => $taskConfiguration) {
-                    if (!array_key_exists($taskName, $paths)) {
-                        $paths[$taskName] = [];
-                    }
-
-                    $paths[$taskName][] = '[tasks]['.$key.']['.$taskName.']';
+                    $path = '[tasks]['.$key.']['.$taskName.']';
+                    $paths[$path] = $taskName;
                 }
             }
         }
@@ -123,6 +120,12 @@ class DockerComposeConfigurationEnhancer implements Flow\ConfigurationEnhancer
                 } catch (ResolveException $e) {
                 }
             } elseif ($taskType == 'deploy') {
+                if ($updatePolicy = $component->getUpdatePolicy()) {
+                    $configuration['update'] = $updatePolicy;
+                }
+                if ($visibility = $component->getVisibility()) {
+                    $configuration['visibility'] = $visibility;
+                }
             }
 
             $services[$component->getName()] = $configuration;

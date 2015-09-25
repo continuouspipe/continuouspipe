@@ -72,7 +72,6 @@ Feature:
     When the configuration of the tide is generated
     Then the generated configuration should not contain the path "[tasks][images][build][services][mysql]"
 
-  @wip
   Scenario: It loads the deployment options from the docker-compose labels
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """

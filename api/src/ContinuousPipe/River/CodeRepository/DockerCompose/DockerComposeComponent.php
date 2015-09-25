@@ -103,4 +103,24 @@ class DockerComposeComponent
     {
         return array_key_exists('build', $this->parsed) ? $this->parsed['build'] : '.';
     }
+
+    /**
+     * @return string
+     */
+    public function getUpdatePolicy()
+    {
+        $labels = $this->getLabels();
+
+        return array_key_exists('com.continuouspipe.update', $labels) ? $labels['com.continuouspipe.update'] : null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVisibility()
+    {
+        $labels = $this->getLabels();
+
+        return array_key_exists('com.continuouspipe.visibility', $labels) ? $labels['com.continuouspipe.visibility'] : null;
+    }
 }
