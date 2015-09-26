@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
+use ContinuousPipe\Model\Component\Port;
 use ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
@@ -111,8 +112,8 @@ class DeployTaskFactory implements TaskFactory
                                                 ->scalarNode('identifier')->isRequired()->end()
                                                 ->integerNode('port')->isRequired()->end()
                                                 ->enumNode('protocol')
-                                                    ->values(['tcp', 'ucp'])
-                                                    ->defaultValue('tcp')
+                                                    ->values([Port::PROTOCOL_TCP, Port::PROTOCOL_UDP])
+                                                    ->defaultValue(Port::PROTOCOL_TCP)
                                                 ->end()
                                             ->end()
                                         ->end()
