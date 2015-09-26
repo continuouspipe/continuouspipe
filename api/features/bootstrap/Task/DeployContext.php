@@ -208,7 +208,7 @@ class DeployContext implements Context
         $matchingPorts = array_filter($ports, function(Component\Port $port) use ($portNumber, $portName) {
             return $port->getIdentifier() == $portName && $port->getPort() == $portNumber;
         });
-        
+
         if (0 == count($matchingPorts)) {
             throw new \RuntimeException('No matching port found');
         }

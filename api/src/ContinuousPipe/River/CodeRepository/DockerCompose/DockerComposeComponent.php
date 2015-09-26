@@ -105,6 +105,14 @@ class DockerComposeComponent
     }
 
     /**
+     * @return array
+     */
+    public function getExposedPorts()
+    {
+        return array_key_exists('expose', $this->parsed) ? $this->parsed['expose'] : [];
+    }
+
+    /**
      * @return string
      */
     public function getUpdatePolicy()

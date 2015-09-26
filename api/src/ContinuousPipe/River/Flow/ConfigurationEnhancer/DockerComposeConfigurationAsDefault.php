@@ -106,6 +106,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                         'source' => [
                             'image' => $imageName,
                         ],
+                        'ports' => []
                     ],
                 ];
 
@@ -116,6 +117,13 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                 if ($visibility = $component->getVisibility()) {
                     $configuration['specification']['accessibility'] = [
                         'from_external' => $visibility == 'public',
+                    ];
+                }
+
+                foreach ($component->getExposedPorts() as $exposedPort) {
+                    $configuration['specification']['ports'][] = [
+                        'identifier' => $component->getName().((string) $exposedPort),
+                        'port' => $exposedPort
                     ];
                 }
             }

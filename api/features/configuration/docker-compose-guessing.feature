@@ -87,6 +87,8 @@ Feature:
         labels:
             com.continuouspipe.image-name: sroze/my-image
             com.continuouspipe.visibility: public
+        expose:
+            - 80
     mysql:
         image: mysql
         labels:
@@ -105,6 +107,9 @@ Feature:
                                 image: sroze/my-image
                             accessibility:
                                 from_external: true
+                            ports:
+                                - identifier: api80
+                                  port: 80
                     mysql:
                         locked: true
     """
