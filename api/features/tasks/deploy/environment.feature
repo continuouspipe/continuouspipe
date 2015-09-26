@@ -23,6 +23,9 @@ Feature:
                       specification:
                           accessibility:
                               from_external: true
+                          ports:
+                              - identifier: twohttp
+                                port: 80
     """
     When a tide is started
     And the build succeed
@@ -30,3 +33,4 @@ Feature:
     And the component "one" should not be deployed as accessible from outside
     And the component "two" should be deployed as accessible from outside
     And the component "two" should be deployed with the image "mine"
+    And the component "two" should be deployed with a TCP port 80 named "twohttp" opened

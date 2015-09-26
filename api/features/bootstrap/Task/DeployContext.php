@@ -199,6 +199,22 @@ class DeployContext implements Context
     }
 
     /**
+     * @Then the component :componentName should be deployed with a TCP port :portNumber named :portName opened
+     */
+    public function theComponentShouldBeDeployedWithATcpPortNamedOpened($componentName, $portNumber, $portName)
+    {
+        $component = $this->getDeployedComponent($componentName);
+        $ports = $component->getSpecification()->getPorts();
+        $matchingPorts = array_filter($ports, function(Component\Port $port) use ($portNumber, $portName) {
+            return $port->getIdentifier() == $portName && $port->getPort() == $portNumber;
+        });
+        
+        if (0 == count($matchingPorts)) {
+            throw new \RuntimeException('No matching port found');
+        }
+    }
+
+    /**
      * @param string $componentName
      * @return Component
      */
