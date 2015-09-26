@@ -23,9 +23,9 @@ class StartRunCommand
     private $context;
 
     /**
-     * @JMS\Type("integer")
+     * @JMS\Type("string")
      *
-     * @var int
+     * @var string
      */
     private $taskId;
 

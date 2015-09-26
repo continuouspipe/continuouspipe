@@ -28,6 +28,8 @@ class ServiceConfiguration
     private $dockerFilePath;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $tag;

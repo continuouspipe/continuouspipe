@@ -24,6 +24,8 @@ class StartDeploymentCommand
     private $deployContext;
 
     /**
+     * @JMS\Type("ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration")
+     *
      * @var DeployTaskConfiguration
      */
     private $configuration;
