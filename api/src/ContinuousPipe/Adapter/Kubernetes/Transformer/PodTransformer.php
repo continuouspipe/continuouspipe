@@ -35,9 +35,14 @@ class PodTransformer
      */
     public function getPodFromComponent(Component $component)
     {
-        $specification = new PodSpecification([
-            $this->createContainer($component->getIdentifier(), $component->getSpecification()),
-        ], $this->createVolumes($component->getSpecification()));
+        $specification = new PodSpecification(
+            [
+                $this->createContainer($component->getIdentifier(), $component->getSpecification()),
+            ],
+            $this->createVolumes($component->getSpecification()),
+            PodSpecification::RESTART_POLICY_ALWAYS,
+            PodSpecification::DNS_POLICY_CLUSTER_FIRST
+        );
 
         $metadata = $this->namingStrategy->getObjectMetadataFromComponent($component);
 
@@ -72,8 +77,10 @@ class PodTransformer
             $name,
             $this->getImageName($specification->getSource()),
             $this->createEnvironmentVariables($specification->getEnvironmentVariables()),
-            $this->createPorts($specification->getPortMappings()),
-            $this->createVolumeMounts($specification->getVolumeMounts())
+            $this->createPorts($specification->getPorts()),
+            $this->createVolumeMounts($specification->getVolumeMounts()),
+            Container::PULL_POLICY_ALWAYS,
+            $specification->getCommand()
         );
     }
 

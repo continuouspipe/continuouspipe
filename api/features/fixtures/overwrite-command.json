@@ -1,0 +1,26 @@
+[{
+    "name": "mysql",
+    "identifier": "mysql",
+    "specification": {
+      "source": {
+        "image": "mysql"
+      },
+      "command": ["sh", "-c", "echo hello"],
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": false
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "port_mappings": [
+      ],
+      "environment_variables": [],
+      "volumes": [],
+      "volume_mounts": []
+    },
+    "extensions": [],
+    "locked": false
+  }
+]

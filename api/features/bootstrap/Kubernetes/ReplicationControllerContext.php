@@ -181,6 +181,34 @@ class ReplicationControllerContext implements Context
     }
 
     /**
+     * @Then the component :componentName should be deployed with the command :expectedCommand
+     */
+    public function theComponentShouldBeDeployedWithTheCommand($componentName, $expectedCommand)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($componentName);
+        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
+
+        if (0 == count($pods)) {
+            throw new \RuntimeException('No pods found');
+        }
+
+        foreach ($pods as $pod) {
+            $container = $pod->getSpecification()->getContainers()[0];
+            if (null == ($command = $container->getCommand())) {
+                throw new \RuntimeException('Found null command');
+            }
+
+            if (!in_array($expectedCommand, $command)) {
+                throw new \RuntimeException(sprintf(
+                    'Command "%s" not found is "%s"',
+                    $expectedCommand,
+                    implode(' ', $command)
+                ));
+            }
+        }
+    }
+
+    /**
      * @param string $name
      * @param array  $collection
      *
