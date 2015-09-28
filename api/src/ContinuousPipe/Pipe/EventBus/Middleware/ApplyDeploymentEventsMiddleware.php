@@ -34,12 +34,10 @@ class ApplyDeploymentEventsMiddleware implements MessageBusMiddleware
      */
     public function handle($message, callable $next)
     {
-        if (!$message instanceof DeploymentEvent) {
-            return $next($message);
-        }
-
         $next($message);
 
-        $this->eventStore->add($message);
+        if ($message instanceof DeploymentEvent) {
+            $this->eventStore->add($message);
+        }
     }
 }

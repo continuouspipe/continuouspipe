@@ -72,6 +72,18 @@ class ReplicationControllerContext implements Context
     }
 
     /**
+     * @Then the replication controller :name should not be created
+     */
+    public function theReplicationControllerShouldNotBeCreated($name)
+    {
+        $matchingRCs = $this->getReplicationControllersByName($name, $this->replicationControllerRepository->getCreatedReplicationControllers());
+
+        if (count($matchingRCs) != 0) {
+            throw new \RuntimeException(sprintf('Replication controller "%s" should NOT be created but found in traces', $name));
+        }
+    }
+
+    /**
      * @Then the replication controller :name should be updated
      */
     public function theReplicationControllerShouldBeUpdated($name)

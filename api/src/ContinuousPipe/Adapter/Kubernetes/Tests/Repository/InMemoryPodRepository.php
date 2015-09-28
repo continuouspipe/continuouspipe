@@ -16,6 +16,11 @@ class InMemoryPodRepository implements PodRepository
     private $pods = [];
 
     /**
+     * @var callable
+     */
+    private $attachCallback;
+
+    /**
      * @return PodList
      */
     public function findAll()
@@ -49,6 +54,8 @@ class InMemoryPodRepository implements PodRepository
     public function create(Pod $pod)
     {
         $this->pods[$pod->getMetadata()->getName()] = $pod;
+
+        return $pod;
     }
 
     /**
@@ -57,6 +64,8 @@ class InMemoryPodRepository implements PodRepository
     public function update(Pod $pod)
     {
         $this->pods[$pod->getMetadata()->getName()] = $pod;
+
+        return $pod;
     }
 
     /**
@@ -98,5 +107,27 @@ class InMemoryPodRepository implements PodRepository
     public function exists($name)
     {
         return array_key_exists($name, $this->pods);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attach(Pod $pod, callable $callable)
+    {
+        if (null === $this->attachCallback) {
+            throw new \RuntimeException('No attach callback registered');
+        }
+
+        $callback = $this->attachCallback;
+
+        return $callback($pod, $callable);
+    }
+
+    /**
+     * @param callable $attachCallback
+     */
+    public function setAttachCallback(callable $attachCallback)
+    {
+        $this->attachCallback = $attachCallback;
     }
 }

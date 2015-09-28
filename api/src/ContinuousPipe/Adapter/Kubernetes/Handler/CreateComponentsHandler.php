@@ -3,6 +3,9 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
+use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
+use ContinuousPipe\Adapter\Kubernetes\Component\ComponentException;
+use ContinuousPipe\Adapter\Kubernetes\Event\ComponentCreated;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
@@ -81,7 +84,9 @@ class CreateComponentsHandler implements DeploymentHandler
 
         foreach ($environment->getComponents() as $component) {
             try {
-                $this->createComponent($client, $logger, $component);
+                $status = $this->createComponent($client, $logger, $component);
+
+                $this->eventBus->handle(new ComponentCreated($context, $component, $status));
             } catch (ClientError $e) {
                 $logger->append(new Text(sprintf(
                     'An error appeared while creating the component "%s": %s',
@@ -92,6 +97,8 @@ class CreateComponentsHandler implements DeploymentHandler
                 $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
 
                 throw $e;
+            } catch (ComponentException $e) {
+                $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
             }
         }
 
@@ -104,10 +111,13 @@ class CreateComponentsHandler implements DeploymentHandler
      * @param NamespaceClient $client
      * @param Logger          $logger
      * @param Component       $component
+     *
+     * @return ComponentCreationStatus
      */
     private function createComponent(NamespaceClient $client, Logger $logger, Component $component)
     {
         $objects = $this->componentTransformer->getElementListFromComponent($component);
+        $creationStatus = new ComponentCreationStatus();
 
         foreach ($objects as $object) {
             if ($this->publicServiceVoter->isAPublicService($object)) {
@@ -116,19 +126,22 @@ class CreateComponentsHandler implements DeploymentHandler
                 continue;
             }
 
-            $this->createObject($client, $logger, $component, $object);
+            $this->createObject($client, $logger, $creationStatus, $component, $object);
         }
+
+        return $creationStatus;
     }
 
     /**
      * Create or update the object.
      *
-     * @param NamespaceClient  $client
-     * @param Logger           $logger
-     * @param Component        $component
-     * @param KubernetesObject $object
+     * @param NamespaceClient         $client
+     * @param Logger                  $logger
+     * @param ComponentCreationStatus $status
+     * @param Component               $component
+     * @param KubernetesObject        $object
      */
-    private function createObject(NamespaceClient $client, Logger $logger, Component $component, KubernetesObject $object)
+    private function createObject(NamespaceClient $client, Logger $logger, ComponentCreationStatus $status, Component $component, KubernetesObject $object)
     {
         $objectRepository = $this->getObjectRepository($client, $object);
         $objectName = $object->getMetadata()->getName();
@@ -142,16 +155,18 @@ class CreateComponentsHandler implements DeploymentHandler
 
             $logger->append(new Text('Updating '.$this->getObjectTypeAndName($object)));
             $objectRepository->update($object);
+            $status->addUpdated($object);
 
             // Has an extremely simple RC-update feature, we can delete matching RC's pods
             // Wait the "real" rolling-update feature
             // @link https://github.com/sroze/continuouspipe/issues/54
             if ($object instanceof ReplicationController) {
-                $this->deleteReplicationControllerPods($client, $object);
+                $this->deleteReplicationControllerPods($client, $status, $object);
             }
         } else {
             $logger->append(new Text('Creating '.$this->getObjectTypeAndName($object)));
             $objectRepository->create($object);
+            $status->addCreated($object);
         }
     }
 
@@ -186,16 +201,18 @@ class CreateComponentsHandler implements DeploymentHandler
      *
      * That will force the replication controller to recreate them and pull the new image.
      *
-     * @param NamespaceClient       $namespaceClient
-     * @param ReplicationController $object
+     * @param NamespaceClient         $namespaceClient
+     * @param ComponentCreationStatus $status
+     * @param ReplicationController   $object
      */
-    private function deleteReplicationControllerPods(NamespaceClient $namespaceClient, ReplicationController $object)
+    private function deleteReplicationControllerPods(NamespaceClient $namespaceClient, ComponentCreationStatus $status, ReplicationController $object)
     {
         $podRepository = $namespaceClient->getPodRepository();
         $pods = $podRepository->findByReplicationController($object);
 
         foreach ($pods as $pod) {
             $podRepository->delete($pod);
+            $status->addDeleted($pod);
         }
     }
 

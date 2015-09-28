@@ -1,0 +1,108 @@
+<?php
+
+namespace Kubernetes;
+
+use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryPodRepository;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePodRepository;
+use Kubernetes\Client\Model\Pod;
+use Kubernetes\Client\Model\PodStatus;
+
+class PodContext implements Context
+{
+    /**
+     * @var TraceablePodRepository
+     */
+    private $podRepository;
+
+    /**
+     * @var InMemoryPodRepository
+     */
+    private $inMemoryPodRepository;
+
+    /**
+     * @param TraceablePodRepository $podRepository
+     * @param InMemoryPodRepository $inMemoryPodRepository
+     */
+    public function __construct(TraceablePodRepository $podRepository, InMemoryPodRepository $inMemoryPodRepository)
+    {
+        $this->podRepository = $podRepository;
+        $this->inMemoryPodRepository = $inMemoryPodRepository;
+    }
+
+    /**
+     * @Given the pod :podName will fail with exit code :exitCode
+     */
+    public function thePodWillFailWithExitCode($podName, $exitCode)
+    {
+        $calls = 0;
+        $this->inMemoryPodRepository->setAttachCallback(function(Pod $pod, callable $callable) use ($podName, &$calls) {
+            if ($pod->getMetadata()->getName() != $podName) {
+                return $pod;
+            }
+
+            return new Pod($pod->getMetadata(), $pod->getSpecification(), new PodStatus(
+                PodStatus::PHASE_FAILED,
+                null,
+                null,
+                [],
+                []
+            ));
+        });
+    }
+
+    /**
+     * @Given the pod :podName will run successfully
+     */
+    public function thePodWillRunSuccessfully($podName)
+    {
+        $this->inMemoryPodRepository->setAttachCallback(function(Pod $pod, callable $callable) use ($podName, &$calls) {
+            if ($pod->getMetadata()->getName() != $podName) {
+                return $pod;
+            }
+
+            return new Pod($pod->getMetadata(), $pod->getSpecification(), new PodStatus(
+                PodStatus::PHASE_SUCCEEDED,
+                null,
+                null,
+                [],
+                []
+            ));
+        });
+    }
+
+    /**
+     * @Then the pod :podName should be created
+     */
+    public function thePodShouldBeCreated($podName)
+    {
+        $matchingCreated = array_filter($this->podRepository->getCreated(), function(Pod $pod) use ($podName) {
+            return $pod->getMetadata()->getName() == $podName;
+        });
+
+        if (0 == count($matchingCreated)) {
+            throw new \RuntimeException(sprintf(
+                'No created pod named "%s"',
+                $podName
+            ));
+        }
+    }
+
+    /**
+     * @Then the pod :podName should be deleted
+     */
+    public function thePodShouldBeDeleted($podName)
+    {
+        $matchingDeleted = array_filter($this->podRepository->getDeleted(), function(Pod $pod) use ($podName) {
+            return $pod->getMetadata()->getName() == $podName;
+        });
+
+        if (0 == count($matchingDeleted)) {
+            throw new \RuntimeException(sprintf(
+                'No deleted pod named "%s"',
+                $podName
+            ));
+        }
+    }
+}

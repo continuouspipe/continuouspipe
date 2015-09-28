@@ -133,7 +133,25 @@ class EnvironmentContext implements Context
         });
 
         if (count($deploymentSuccessfulEvents) == 0) {
-            throw new \RuntimeException('No event successful events found');
+            throw new \RuntimeException('No event successful deployment found');
+        }
+    }
+
+    /**
+     * @Then the deployment should be failed
+     */
+    public function theDeploymentShouldBeFailed()
+    {
+        $events = $this->eventStore->findByDeploymentUuid(
+            $this->lastDeploymentUuid
+        );
+
+        $deploymentFailedEvents = array_filter($events, function ($event) {
+            return $event instanceof DeploymentFailed;
+        });
+
+        if (count($deploymentFailedEvents) == 0) {
+            throw new \RuntimeException('No event failed deployment found');
         }
     }
 

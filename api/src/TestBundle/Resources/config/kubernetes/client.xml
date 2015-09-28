@@ -28,9 +28,12 @@
         <service id="pipe.adapter.kubernetes.traceable.service_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_repository" />
         </service>
+        <service id="pipe.adapter.kubernetes.traceable.pod_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePodRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.pod_repository" />
+        </service>
 
         <service id="pipe.adapter.kubernetes.namespace_client" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedRepositoriesNamespaceClient">
-            <argument type="service" id="pipe.adapter.kubernetes.in_memory.pod_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.pod_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.traceable.service_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.traceable.replication_controller_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.traceable.secret_repository" />
