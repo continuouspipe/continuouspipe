@@ -40,7 +40,7 @@ class PodTransformer
                 $this->createContainer($component->getIdentifier(), $component->getSpecification()),
             ],
             $this->createVolumes($component->getSpecification()),
-            PodSpecification::RESTART_POLICY_ALWAYS,
+            $this->getPodRestartPolicy($component),
             PodSpecification::DNS_POLICY_CLUSTER_FIRST
         );
 
@@ -137,5 +137,19 @@ class PodTransformer
         }
 
         return $image;
+    }
+
+    /**
+     * Get pod's restart policy.
+     *
+     * @param Component $component
+     *
+     * @return string
+     */
+    private function getPodRestartPolicy(Component $component)
+    {
+        $scalability = $component->getSpecification()->getScalability();
+
+        return $scalability->isEnabled() ? PodSpecification::RESTART_POLICY_ALWAYS : PodSpecification::RESTART_POLICY_NEVER;
     }
 }
