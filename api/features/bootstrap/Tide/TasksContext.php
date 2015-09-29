@@ -106,6 +106,23 @@ class TasksContext implements Context
     }
 
     /**
+     * @Then the second deploy task should be pending
+     */
+    public function theSecondDeployTaskShouldBePending()
+    {
+        $task = $this->getTasksOfType(DeployTask::class)[1];
+
+        if (!$task->isPending()) {
+            throw new \RuntimeException(sprintf(
+                'The second run task is not running (successful=%b failed=%b pending=%b)',
+                $task->isSuccessful(),
+                $task->isFailed(),
+                $task->isPending()
+            ));
+        }
+    }
+
+    /**
      * @When the build task succeed
      */
     public function theBuildTaskSucceed()

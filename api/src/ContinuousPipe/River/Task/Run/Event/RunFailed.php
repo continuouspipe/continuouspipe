@@ -6,7 +6,7 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\Runner\Client\RunNotification;
 use Rhumsaa\Uuid\Uuid;
 
-class RunFailed implements TideEvent, RunEvent
+class RunFailed implements TideEvent
 {
     /**
      * @var Uuid

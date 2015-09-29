@@ -3,9 +3,9 @@
 namespace ContinuousPipe\River\Task\Build;
 
 use ContinuousPipe\River\Context;
-use ContinuousPipe\River\TideContext;
+use ContinuousPipe\River\Task\TaskContext;
 
-class BuildContext extends TideContext
+class BuildContext extends TaskContext
 {
     const ENVIRONMENT_KEY = 'environment';
 

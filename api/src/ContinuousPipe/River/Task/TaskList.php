@@ -35,7 +35,9 @@ class TaskList
     public function apply(TideEvent $event)
     {
         foreach ($this->tasks as $task) {
-            $task->apply($event);
+            if ($task->accept($event)) {
+                $task->apply($event);
+            }
         }
     }
 

@@ -8,6 +8,11 @@ use ContinuousPipe\River\EventCollection;
 abstract class EventDrivenTask implements Task
 {
     /**
+     * @var TaskContext
+     */
+    private $context;
+
+    /**
      * @var EventCollection
      */
     protected $events;
@@ -18,10 +23,11 @@ abstract class EventDrivenTask implements Task
     protected $newEvents = [];
 
     /**
-     * Constructor.
+     * @param TaskContext $context
      */
-    public function __construct()
+    public function __construct(TaskContext $context)
     {
+        $this->context = $context;
         $this->events = new EventCollection();
     }
 
@@ -31,6 +37,18 @@ abstract class EventDrivenTask implements Task
     public function apply(TideEvent $event)
     {
         $this->events->add($event);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function accept(TideEvent $event)
+    {
+        if ($event instanceof TaskEvent) {
+            return $this->context->getTaskId() == $event->getTaskId();
+        }
+
+        return true;
     }
 
     /**

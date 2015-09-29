@@ -47,7 +47,7 @@ class BuildTask extends EventDrivenTask
      */
     public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, BuildContext $context, BuildTaskConfiguration $configuration)
     {
-        parent::__construct();
+        parent::__construct($context);
 
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;

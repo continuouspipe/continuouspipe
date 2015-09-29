@@ -3,9 +3,10 @@
 namespace ContinuousPipe\River\Task\Run\Event;
 
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Task\TaskEvent;
 use Rhumsaa\Uuid\Uuid;
 
-class RunStarted implements TideEvent, RunEvent
+class RunStarted implements TideEvent, TaskEvent
 {
     /**
      * @var Uuid
@@ -13,26 +14,27 @@ class RunStarted implements TideEvent, RunEvent
     private $tideUuid;
 
     /**
-     * @var Uuid
-     */
-    private $runUuid;
-
-    /**
      * @var int
      */
     private $taskId;
 
     /**
-     * @param Uuid $tideUuid
-     * @param Uuid $runUuid
-     * @param int  $taskId
+     * @var Uuid
      */
-    public function __construct(Uuid $tideUuid, Uuid $runUuid, $taskId)
+    private $runUuid;
+
+    /**
+     * @param Uuid $tideUuid
+     * @param int  $taskId
+     * @param Uuid $runUuid
+     */
+    public function __construct(Uuid $tideUuid, $taskId, Uuid $runUuid)
     {
         $this->tideUuid = $tideUuid;
-        $this->runUuid = $runUuid;
         $this->taskId = $taskId;
+        $this->runUuid = $runUuid;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -44,16 +46,16 @@ class RunStarted implements TideEvent, RunEvent
     /**
      * {@inheritdoc}
      */
-    public function getRunUuid()
-    {
-        return $this->runUuid;
-    }
-
-    /**
-     * @return int
-     */
     public function getTaskId()
     {
         return $this->taskId;
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getRunUuid()
+    {
+        return $this->runUuid;
     }
 }

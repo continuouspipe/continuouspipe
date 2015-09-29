@@ -6,7 +6,6 @@ use ContinuousPipe\River\ContextKeyNotFound;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\Run\Command\StartRunCommand;
-use ContinuousPipe\River\Task\Run\Event\RunEvent;
 use ContinuousPipe\River\Task\Run\Event\RunFailed;
 use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\Event\RunSuccessful;
@@ -38,7 +37,7 @@ class RunTask extends EventDrivenTask
      */
     public function __construct(LoggerFactory $loggerFactory, MessageBus $commandBus, RunContext $context)
     {
-        parent::__construct();
+        parent::__construct($context);
 
         $this->loggerFactory = $loggerFactory;
         $this->commandBus = $commandBus;
@@ -65,13 +64,17 @@ class RunTask extends EventDrivenTask
     /**
      * {@inheritdoc}
      */
-    public function apply(TideEvent $event)
+    public function accept(TideEvent $event)
     {
-        if (!$this->isRelatedEvent($event)) {
-            return;
+        if ($event instanceof RunFailed || $event instanceof RunSuccessful) {
+            if (!$this->isStarted()) {
+                return false;
+            }
+
+            return $this->getRunStartedEvent()->getRunUuid()->equals($event->getRunUuid());
         }
 
-        parent::apply($event);
+        return parent::accept($event);
     }
 
     /**
@@ -99,29 +102,11 @@ class RunTask extends EventDrivenTask
     }
 
     /**
-     * Returns true if the event is related to this.
-     *
-     * @param TideEvent $event
-     *
      * @return bool
      */
-    private function isRelatedEvent(TideEvent $event)
+    private function isStarted()
     {
-        if (!$event instanceof RunEvent) {
-            return false;
-        }
-
-        if ($event instanceof RunStarted) {
-            return $this->context->getTaskId() == $event->getTaskId();
-        }
-
-        if ($this->isPending()) {
-            return false;
-        }
-
-        $startedEvent = $this->getRunStartedEvent();
-
-        return $startedEvent->getRunUuid()->equals($event->getRunUuid());
+        return 0 < $this->numberOfEventsOfType(RunStarted::class);
     }
 
     /**
@@ -129,13 +114,7 @@ class RunTask extends EventDrivenTask
      */
     private function getRunStartedEvent()
     {
-        $runStartedEvents = $this->getEventsOfType(RunStarted::class);
-
-        if (0 === count($runStartedEvents)) {
-            throw new \RuntimeException('No started event found');
-        }
-
-        return $runStartedEvents[0];
+        return $this->getEventsOfType(RunStarted::class)[0];
     }
 
     /**

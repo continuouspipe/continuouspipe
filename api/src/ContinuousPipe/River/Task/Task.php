@@ -17,6 +17,15 @@ interface Task
     public function apply(TideEvent $event);
 
     /**
+     * Returns true if this task accepts the given event.
+     *
+     * @param TideEvent $event
+     *
+     * @return bool
+     */
+    public function accept(TideEvent $event);
+
+    /**
      * Is this task running ?
      *
      * @return bool

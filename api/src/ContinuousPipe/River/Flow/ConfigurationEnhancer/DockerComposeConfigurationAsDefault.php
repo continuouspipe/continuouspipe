@@ -106,7 +106,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                         'source' => [
                             'image' => $imageName,
                         ],
-                        'ports' => []
+                        'ports' => [],
                     ],
                 ];
 
@@ -123,7 +123,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                 foreach ($component->getExposedPorts() as $exposedPort) {
                     $configuration['specification']['ports'][] = [
                         'identifier' => $component->getName().((string) $exposedPort),
-                        'port' => $exposedPort
+                        'port' => $exposedPort,
                     ];
                 }
             }

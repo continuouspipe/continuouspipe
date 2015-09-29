@@ -4,6 +4,7 @@ namespace Task;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\River\Flow\Task;
 use ContinuousPipe\River\Task\Run\RunTask;
 use ContinuousPipe\Runner\Tests\TraceableClient;
@@ -141,6 +142,22 @@ class RunContext implements Context
             'uuid' => (string) $this->traceableRunnerClient->getLastUuid(),
             'status' => 'success'
         ]);
+    }
+
+    /**
+     * @Then the pod :podName should be deployed as attached
+     */
+    public function thePodShouldBeDeployedAsAttached($podName)
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then the pod :podName should be deployed as not restarting after termination
+     */
+    public function thePodShouldBeDeployedAsNotRestartingAfterTermination($podName)
+    {
+        throw new PendingException();
     }
 
     /**

@@ -3,10 +3,10 @@
 namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\River\Context;
-use ContinuousPipe\River\TideContext;
+use ContinuousPipe\River\Task\TaskContext;
 use LogStream\Log;
 
-class DeployContext extends TideContext
+class DeployContext extends TaskContext
 {
     const PROVIDER_NAME_KEY = 'providerName';
     const DEPLOY_LOG_KEY = 'deployLog';

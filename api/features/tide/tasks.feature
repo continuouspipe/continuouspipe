@@ -34,7 +34,9 @@ Feature:
       | run    | {"image": "foo", "commands": ["bin/foo"]} |
       | deploy | {"providerName": "foo", "services": []}   |
       | run    | {"image": "bar", "commands": ["bin/bar"]} |
+      | deploy | {"providerName": "bar", "services": []}   |
     When the build task succeed
     And the run succeed
     And the deploy task succeed
     Then the second run task should be running
+    And the second deploy task should be pending

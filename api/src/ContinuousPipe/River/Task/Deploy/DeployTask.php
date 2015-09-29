@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
+use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
@@ -48,7 +49,7 @@ class DeployTask extends EventDrivenTask
      */
     public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, DeployContext $context, DeployTaskConfiguration $configuration)
     {
-        parent::__construct();
+        parent::__construct($context);
 
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
@@ -73,6 +74,17 @@ class DeployTask extends EventDrivenTask
         ));
     }
 
+    public function accept(TideEvent $event)
+    {
+        if ($event instanceof DeploymentSuccessful || $event instanceof DeploymentFailed) {
+            if (null === $event->getTaskId()) {
+                return $this->isStarted() && $this->getStartedEvent()->getDeployment()->getUuid()->equals($event->getDeployment()->getUuid());
+            }
+        }
+
+        return parent::accept($event);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -95,5 +107,21 @@ class DeployTask extends EventDrivenTask
     public function isPending()
     {
         return 0 === $this->numberOfEventsOfType(DeploymentStarted::class);
+    }
+
+    /**
+     * @return bool
+     */
+    private function isStarted()
+    {
+        return 0 < $this->numberOfEventsOfType(DeploymentStarted::class);
+    }
+
+    /**
+     * @return DeploymentStarted
+     */
+    private function getStartedEvent()
+    {
+        return $this->getEventsOfType(DeploymentStarted::class)[0];
     }
 }
