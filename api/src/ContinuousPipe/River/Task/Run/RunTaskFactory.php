@@ -35,7 +35,12 @@ class RunTaskFactory implements TaskFactory
      */
     public function create(TaskContext $taskContext, array $configuration)
     {
-        return new RunTask($this->loggerFactory, $this->commandBus, RunContext::createRunContext($taskContext));
+        return new RunTask(
+            $this->loggerFactory,
+            $this->commandBus,
+            RunContext::createRunContext($taskContext),
+            $this->createConfiguration($configuration)
+        );
     }
 
     /**
@@ -48,9 +53,21 @@ class RunTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->scalarNode(RunContext::KEY_IMAGE_NAME)->end()
-                ->scalarNode(RunContext::KEY_SERVICE_NAME)->end()
-                ->arrayNode(RunContext::KEY_COMMANDS)
+                ->scalarNode('providerName')->isRequired()->end()
+                ->arrayNode('image')
+                    ->isRequired()
+                    ->beforeNormalization()
+                        ->ifString()
+                        ->then(function ($value) {
+                            return ['name' => $value];
+                        })
+                    ->end()
+                    ->children()
+                        ->scalarNode('name')->isRequired()->end()
+                        ->scalarNode('from_service')->end()
+                    ->end()
+                ->end()
+                ->arrayNode('commands')
                     ->prototype('scalar')->end()
                 ->end()
                 ->arrayNode('environment')
@@ -65,5 +82,35 @@ class RunTaskFactory implements TaskFactory
         ;
 
         return $node;
+    }
+
+    /**
+     * @param array $configuration
+     *
+     * @return RunTaskConfiguration
+     */
+    private function createConfiguration(array $configuration)
+    {
+        return new RunTaskConfiguration(
+            $configuration['providerName'],
+            $configuration['image']['name'],
+            $configuration['commands'],
+            $this->resolveEnvironment($configuration)
+        );
+    }
+
+    /**
+     * @param array $configuration
+     *
+     * @return array
+     */
+    private function resolveEnvironment(array $configuration)
+    {
+        $variables = [];
+        foreach ($configuration['environment'] as $item) {
+            $variables[$item['name']] = $item['value'];
+        }
+
+        return $variables;
     }
 }

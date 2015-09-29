@@ -29,12 +29,12 @@ Feature:
 
   Scenario: I can have different tasks of the same time in a flow
     Given I tide is started with the following configurations:
-      | name   | configuration                             |
-      | build  | {"services": []}                          |
-      | run    | {"image": "foo", "commands": ["bin/foo"]} |
-      | deploy | {"providerName": "foo", "services": []}   |
-      | run    | {"image": "bar", "commands": ["bin/bar"]} |
-      | deploy | {"providerName": "bar", "services": []}   |
+      | name   | configuration                                                    |
+      | build  | {"services": []}                                                 |
+      | run    | {"providerName": "foo", "image": "foo", "commands": ["bin/foo"]} |
+      | deploy | {"providerName": "foo", "services": []}                          |
+      | run    | {"providerName": "foo", "image": "bar", "commands": ["bin/bar"]} |
+      | deploy | {"providerName": "bar", "services": []}                          |
     When the build task succeed
     And the run succeed
     And the deploy task succeed

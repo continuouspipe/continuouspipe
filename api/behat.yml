@@ -36,7 +36,7 @@ default:
                     - @river.pipe_client
                 - Task\RunContext:
                     - @kernel
-                    - @runner.client
+                    - @river.pipe_client
                 - OrganisationContext:
                     - @kernel
                     - @repository_river.organisation_repository

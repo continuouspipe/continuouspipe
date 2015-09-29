@@ -87,4 +87,29 @@ trait TaskLocator
 
         return array_unique($serviceNames);
     }
+
+    /**
+     * @param array  $configs
+     * @param string $serviceName
+     *
+     * @return string|null
+     */
+    private function getBuiltServiceValue(array $configs, $serviceName, $key)
+    {
+        $buildPaths = array_keys(array_filter($this->getTaskPathsAndType($configs), function ($type) {
+            return $type == 'build';
+        }));
+
+        $values = [];
+        foreach ($buildPaths as $path) {
+            $serviceTagPath = $path.'[services]['.$serviceName.']['.$key.']';
+            $values = array_merge($values, $this->getValuesAtPath($configs, $serviceTagPath));
+        }
+
+        if (0 == count($values)) {
+            return;
+        }
+
+        return $values[count($values) - 1];
+    }
 }

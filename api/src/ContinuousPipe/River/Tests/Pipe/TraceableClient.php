@@ -19,6 +19,11 @@ class TraceableClient implements Client
     private $requests;
 
     /**
+     * @var Client\Deployment|null
+     */
+    private $lastDeployment;
+
+    /**
      * @var Client
      */
     private $client;
@@ -39,6 +44,7 @@ class TraceableClient implements Client
         $deployment = $this->client->start($deploymentRequest, $user);
 
         $this->requests[] = $deploymentRequest;
+        $this->lastDeployment = $deployment;
 
         return $deployment;
     }
@@ -74,5 +80,13 @@ class TraceableClient implements Client
     public function getRequests()
     {
         return $this->requests;
+    }
+
+    /**
+     * @return Client\Deployment|null
+     */
+    public function getLastDeployment()
+    {
+        return $this->lastDeployment;
     }
 }

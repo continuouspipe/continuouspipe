@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Run\Command;
 
 use ContinuousPipe\River\Task\Run\RunContext;
+use ContinuousPipe\River\Task\Run\RunTaskConfiguration;
 use Rhumsaa\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
@@ -23,22 +24,22 @@ class StartRunCommand
     private $context;
 
     /**
-     * @JMS\Type("string")
+     * @JMS\Type("ContinuousPipe\River\Task\Run\RunTaskConfiguration")
      *
-     * @var string
+     * @var RunTaskConfiguration
      */
-    private $taskId;
+    private $configuration;
 
     /**
-     * @param Uuid       $uuid
-     * @param RunContext $context
-     * @param int        $taskId
+     * @param Uuid                 $uuid
+     * @param RunContext           $context
+     * @param RunTaskConfiguration $configuration
      */
-    public function __construct(Uuid $uuid, RunContext $context, $taskId)
+    public function __construct(Uuid $uuid, RunContext $context, RunTaskConfiguration $configuration)
     {
         $this->uuid = $uuid;
         $this->context = $context;
-        $this->taskId = $taskId;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -62,6 +63,14 @@ class StartRunCommand
      */
     public function getTaskId()
     {
-        return $this->taskId;
+        return $this->context->getTaskId();
+    }
+
+    /**
+     * @return RunTaskConfiguration
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
     }
 }

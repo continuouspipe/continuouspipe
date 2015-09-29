@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Task\Run;
 
-use ContinuousPipe\River\ContextKeyNotFound;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\Run\Command\StartRunCommand;
@@ -31,17 +30,24 @@ class RunTask extends EventDrivenTask
     private $context;
 
     /**
-     * @param LoggerFactory $loggerFactory
-     * @param MessageBus    $commandBus
-     * @param RunContext    $context
+     * @var RunTaskConfiguration
      */
-    public function __construct(LoggerFactory $loggerFactory, MessageBus $commandBus, RunContext $context)
+    private $configuration;
+
+    /**
+     * @param LoggerFactory        $loggerFactory
+     * @param MessageBus           $commandBus
+     * @param RunContext           $context
+     * @param RunTaskConfiguration $configuration
+     */
+    public function __construct(LoggerFactory $loggerFactory, MessageBus $commandBus, RunContext $context, RunTaskConfiguration $configuration)
     {
         parent::__construct($context);
 
         $this->loggerFactory = $loggerFactory;
         $this->commandBus = $commandBus;
         $this->context = $context;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -50,14 +56,18 @@ class RunTask extends EventDrivenTask
     public function start()
     {
         $logger = $this->loggerFactory->from($this->context->getLog());
-        $log = $logger->append(new Text($this->getLogText()));
+        $log = $logger->append(new Text(sprintf(
+            'Running "%s" on the image "%s"',
+            implode(' ', $this->configuration->getCommands()),
+            $this->configuration->getImage()
+        )));
 
         $this->context->setRunnerLog($log);
 
         $this->commandBus->handle(new StartRunCommand(
             $this->context->getTideUuid(),
             $this->context,
-            $this->context->getTaskId()
+            $this->configuration
         ));
     }
 
@@ -115,23 +125,5 @@ class RunTask extends EventDrivenTask
     private function getRunStartedEvent()
     {
         return $this->getEventsOfType(RunStarted::class)[0];
-    }
-
-    /**
-     * @return string
-     */
-    private function getLogText()
-    {
-        try {
-            return sprintf(
-                'Running commands on image "%s"',
-                $this->context->getImageName()
-            );
-        } catch (ContextKeyNotFound $e) {
-            return sprintf(
-                'Running commands on service "%s"',
-                $this->context->getServiceName()
-            );
-        }
     }
 }

@@ -5,10 +5,9 @@ namespace Task;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
-use ContinuousPipe\River\Flow\Task;
+use ContinuousPipe\Model\Component;
 use ContinuousPipe\River\Task\Run\RunTask;
-use ContinuousPipe\Runner\Tests\TraceableClient;
-use Rhumsaa\Uuid\Uuid;
+use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Kernel;
 use Tide\TasksContext;
@@ -33,7 +32,7 @@ class RunContext implements Context
     /**
      * @var TraceableClient
      */
-    private $traceableRunnerClient;
+    private $traceablePipeClient;
 
     /**
      * @var Kernel
@@ -42,11 +41,11 @@ class RunContext implements Context
 
     /**
      * @param Kernel $kernel
-     * @param TraceableClient $traceableRunnerClient
+     * @param TraceableClient $traceablePipeClient
      */
-    public function __construct(Kernel $kernel, TraceableClient $traceableRunnerClient)
+    public function __construct(Kernel $kernel, TraceableClient $traceablePipeClient)
     {
-        $this->traceableRunnerClient = $traceableRunnerClient;
+        $this->traceablePipeClient = $traceablePipeClient;
         $this->kernel = $kernel;
     }
 
@@ -61,15 +60,19 @@ class RunContext implements Context
     }
 
     /**
-     * @Given a run task is started with a service name
+     * @Given a build and run task is started with a service name
      */
     public function aRunTaskIsStartedWithAServiceName()
     {
         $this->tideContext->aTideIsStartedWithTasks([
             [
+                'build' => [],
+            ],
+            [
                 'run' => [
                     'commands' => ['bin/behat'],
-                    'service' => 'image0'
+                    'image' => ['from_service' => 'image0'],
+                    'providerName' => 'foo'
                 ]
             ]
         ]);
@@ -84,7 +87,8 @@ class RunContext implements Context
             [
                 'run' => [
                     'commands' => ['bin/behat'],
-                    'image' => 'sroze/behat'
+                    'image' => 'sroze/behat',
+                    'providerName' => 'foo'
                 ]
             ]
         ]);
@@ -95,7 +99,7 @@ class RunContext implements Context
      */
     public function aRunRequestShouldBeSent()
     {
-        $requests = $this->traceableRunnerClient->getRequests();
+        $requests = $this->traceablePipeClient->getRequests();
 
         if (count($requests) == 0) {
             throw new \RuntimeException('Expected to find runner requests, found 0');
@@ -107,8 +111,12 @@ class RunContext implements Context
      */
     public function theRunFailed()
     {
+        if (null === ($deployment = $this->traceablePipeClient->getLastDeployment())) {
+            throw new \RuntimeException('No deployment found');
+        }
+
         $this->sendRunnerNotification([
-            'uuid' => (string) $this->traceableRunnerClient->getLastUuid(),
+            'uuid' => (string) $deployment->getUuid(),
             'status' => 'failure'
         ]);
     }
@@ -138,26 +146,42 @@ class RunContext implements Context
      */
     public function theRunSucceed()
     {
+        if (null === ($deployment = $this->traceablePipeClient->getLastDeployment())) {
+            throw new \RuntimeException('No deployment found');
+        }
+
         $this->sendRunnerNotification([
-            'uuid' => (string) $this->traceableRunnerClient->getLastUuid(),
+            'uuid' => (string) $deployment->getUuid(),
             'status' => 'success'
         ]);
     }
 
     /**
-     * @Then the pod :podName should be deployed as attached
+     * @Then the component :name should be deployed as attached
      */
-    public function thePodShouldBeDeployedAsAttached($podName)
+    public function theComponentShouldBeDeployedAsAttached($name)
     {
-        throw new PendingException();
+        $component = $this->getDeployedComponentNamed($name);
+
+        if (null === ($deploymentStrategy = $component->getDeploymentStrategy())) {
+            throw new \RuntimeException('The component do not have any deployment strategy');
+        }
+
+        if (!$deploymentStrategy->isAttached()) {
+            throw new \RuntimeException('Component is not deployed as attached');
+        }
     }
 
     /**
-     * @Then the pod :podName should be deployed as not restarting after termination
+     * @Then the component :name should be deployed as not scaling
      */
-    public function thePodShouldBeDeployedAsNotRestartingAfterTermination($podName)
+    public function thePodShouldBeDeployedAsNotRestartingAfterTermination($name)
     {
-        throw new PendingException();
+        $component = $this->getDeployedComponentNamed($name);
+
+        if ($component->getSpecification()->getScalability()->isEnabled()) {
+            throw new \RuntimeException('Component is deployed as scaling');
+        }
     }
 
     /**
@@ -199,5 +223,27 @@ class RunContext implements Context
         }
 
         return current($runTasks);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Component
+     */
+    private function getDeployedComponentNamed($name)
+    {
+        $request = $this->traceablePipeClient->getRequests()[0];
+        $matchingComponents = array_filter($request->getSpecification()->getComponents(), function(Component $component) use ($name) {
+            return $component->getName() == $name;
+        });
+
+        if (0 == count($matchingComponents)) {
+            throw new \RuntimeException(sprintf(
+                'No component named "%s" found in deployment request',
+                $name
+            ));
+        }
+
+        return current($matchingComponents);
     }
 }

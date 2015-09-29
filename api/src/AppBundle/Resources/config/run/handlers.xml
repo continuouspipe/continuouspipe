@@ -5,26 +5,18 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.task.run.docker_compose.reader" class="ContinuousPipe\River\Task\Run\DockerCompose\Reader">
-            <argument type="service" id="river.docker_compose.parser.project" />
-            <argument type="service" id="river.file_system_resolver" />
-        </service>
-
-        <service id="runner.client" class="ContinuousPipe\Runner\HttpClient">
-            <argument type="service" id="river.pipe_client.guzzle_client" />
-            <argument type="service" id="jms_serializer" />
-            <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
-            <argument>%runner_base_url%</argument>
-        </service>
-
         <service id="river.task.run.serializer.context_handler" class="ContinuousPipe\River\Task\Run\Serializer\RunContextSerializerHandler">
             <tag name="jms_serializer.subscribing_handler" />
         </service>
 
-        <service id="runner.handler.start_run" class="ContinuousPipe\River\Task\Run\Handler\StartRunHandler">
-            <argument type="service" id="runner.client" />
+        <service id="river.task.run.deployment_request_factory" class="ContinuousPipe\River\Task\Run\RunRequest\DeploymentRequestFactory">
             <argument type="service" id="router" />
-            <argument type="service" id="river.task.run.docker_compose.reader" />
+            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
+        </service>
+
+        <service id="river.task.run.handler.start_run" class="ContinuousPipe\River\Task\Run\Handler\StartRunHandler">
+            <argument type="service" id="river.pipe_client" />
+            <argument type="service" id="river.task.run.deployment_request_factory" />
             <argument type="service" id="simple_bus.event_bus" />
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Run\Command\StartRunCommand" />
