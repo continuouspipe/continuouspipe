@@ -1,0 +1,15 @@
+ui:
+  build: .
+  volumes:
+    - .:/app
+  environment:
+    - RIVER_API_URL=river.continuouspipe.io
+    - AUTHENTICATOR_API_URL=authenticator.continuouspipe.io
+    - LOG_STREAM_URL=logstream.continuouspipe.io
+    - PIPE_API_URL=pipe.continuouspipe.io
+  labels:
+    com.continuouspipe.image-name: inviqasession/cp-river-ui
+    com.continuouspipe.visibility: public
+  expose:
+    - 80
+    - 35729

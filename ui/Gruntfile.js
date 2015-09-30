@@ -436,10 +436,10 @@ module.exports = function (grunt) {
           dest: '.tmp/scripts/config.js'
         },
         constants: {
-          RIVER_API_URL: 'http://'+(process.env.SERVICE_RIVER_PUBLIC_ENDPOINT || 'continuouspipe_river.docker/app_dev.php'),
-          AUTHENTICATOR_API_URL: 'http://'+(process.env.SERVICE_AUTHENTICATOR_PUBLIC_ENDPOINT || 'continuouspipe_authenticator.docker/app_dev.php'),
-          LOG_STREAM_URL: 'http://'+(process.env.SERVICE_LOGSTREAM_PUBLIC_ENDPOINT || 'logstream.docker'),
-          PIPE_API_URL: 'http://'+(process.env.SERVICE_PIPE_PUBLIC_ENDPOINT || 'continuouspipe_pipe.docker/app_dev.php')
+          RIVER_API_URL: 'http://'+(process.env.RIVER_API_URL || 'continuouspipe_river.docker/app_dev.php'),
+          AUTHENTICATOR_API_URL: 'http://'+(process.env.AUTHENTICATOR_API_URL || 'continuouspipe_authenticator.docker/app_dev.php'),
+          LOG_STREAM_URL: 'http://'+(process.env.LOG_STREAM_URL || 'logstream.docker'),
+          PIPE_API_URL: 'http://'+(process.env.PIPE_API_URL || 'continuouspipe_pipe.docker/app_dev.php')
         }
       }
     }

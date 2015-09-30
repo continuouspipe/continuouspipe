@@ -1,7 +1,7 @@
 FROM node
 
-RUN mkdir -p /app/apps/river-ui
-WORKDIR /app/apps/river-ui
+RUN mkdir -p /app
+WORKDIR /app
 
 # Install prerequisites CLI tools
 RUN npm install -g grunt-cli
@@ -12,16 +12,16 @@ RUN apt-get update -y && apt-get install -y ruby ruby-dev build-essential && \
     gem install compass
 
 # Install Node
-ADD package.json /app/apps/river-ui/package.json
+ADD package.json /app/package.json
 RUN npm install
 
 # Install bower dependencies
-ADD .bowerrc /app/apps/river-ui/.bowerrc
-ADD bower.json /app/apps/river-ui/bower.json
+ADD .bowerrc /app/.bowerrc
+ADD bower.json /app/bower.json
 RUN bower install --config.interactive=false --allow-root
 
 # Add application code
-ADD . /app/apps/river-ui
+ADD . /app
 
 # Set the environment to the development one
 ENV NODE_ENV development
@@ -31,6 +31,5 @@ ENV NODE_ENV development
 EXPOSE 80 35729
 
 # Add running permissions
-RUN chmod +x /app/apps/river-ui/docker/run.sh
-
-CMD ["/app/apps/river-ui/docker/run.sh"]
+RUN chmod +x /app/docker/run.sh
+CMD ["/app/docker/run.sh"]
