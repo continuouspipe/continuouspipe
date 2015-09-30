@@ -29,7 +29,8 @@
         "continuous-pipe/model": "*@dev",
         "continuous-pipe/security": "*@dev",
         "simple-bus/rabbitmq-bundle-bridge": "dev-proper-consumer-return",
-        "simple-bus/jms-serializer-bundle-bridge": "^2.0"
+        "simple-bus/jms-serializer-bundle-bridge": "^2.0",
+        "knplabs/github-api": "^1.5"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -72,7 +73,11 @@
                 "database_user": "DATABASE_USER",
                 "river_public_url": "SERVICE_RIVER_PUBLIC_ENDPOINT",
                 "river_ui_url": "SERVICE_RIVERUI_PUBLIC_ENDPOINT",
-                "sentry_dsn": "SENTRY_DSN"
+                "sentry_dsn": "SENTRY_DSN",
+                "authenticator_url": "AUTHENTICATOR_URL",
+                "builder_base_url": "BUILDER_URL",
+                "pipe_base_url": "PIPE_URL",
+                "logstream_url": "LOGSTREAM_URL"
             }
         }]
     },

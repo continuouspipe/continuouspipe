@@ -1,0 +1,57 @@
+api:
+  build: .
+  volumes:
+    - .:/app
+  links:
+    - database
+    - rabbitmq
+  environment:
+    - SERVICE_RIVER_PUBLIC_ENDPOINT
+    - SERVICE_RIVERUI_PUBLIC_ENDPOINT=ui.continuouspipe.io
+    - SENTRY_DSN=http://0cd6915cf66c44feb0a0fc00137147ac:b2e09cf0a35641fb901e667734e979b1@tsuru.cluster.sroze.io:82/5
+    - AUTHENTICATOR_URL=authenticator.continuouspipe.io
+    - BUILDER_URL=builder.continuouspipe.io
+    - PIPE_URL=pipe.continuouspipe.io
+    - LOGSTREAM_URL=logstream.continuouspipe.io
+  labels:
+    com.continuouspipe.image-name: inviqasession/cp-river
+    com.continuouspipe.visibility: public
+  expose:
+    - 80
+
+worker:
+  build: .
+  dockerfile: Dockerfile-worker
+  volumes:
+    - .:/app
+  links:
+    - database
+    - rabbitmq
+  labels:
+    com.continuouspipe.image-name: inviqasession/cp-river-worker
+  expose:
+    - 80
+  environment:
+    - SENTRY_DSN=http://0cd6915cf66c44feb0a0fc00137147ac:b2e09cf0a35641fb901e667734e979b1@tsuru.cluster.sroze.io:82/5
+    - AUTHENTICATOR_URL=authenticator.continuouspipe.io
+    - BUILDER_URL=builder.continuouspipe.io
+    - PIPE_URL=pipe.continuouspipe.io
+    - LOGSTREAM_URL=logstream.continuouspipe.io
+
+database:
+  image: postgres
+  environment:
+    POSTGRES_USER: river
+    POSTGRES_PASSWORD: river
+  labels:
+    com.continuouspipe.update: lock
+  expose:
+    - 5432
+
+rabbitmq:
+  image: rabbitmq:3-management
+  labels:
+    com.continuouspipe.update: lock
+  expose:
+    - 15672
+    - 5672

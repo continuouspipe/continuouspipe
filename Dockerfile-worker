@@ -5,10 +5,10 @@ RUN apt-get update && apt-get install -y zlib1g-dev libpq-dev git supervisor
 RUN docker-php-ext-install pdo pdo_pgsql zip mbstring bcmath
 
 # Supervisord configuration
-ADD apps/river/docker/worker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+ADD docker/worker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # PHP confiugration
-ADD apps/river/docker/php.ini /usr/local/etc/php/php.ini
+ADD docker/php.ini /usr/local/etc/php/php.ini
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php
@@ -16,12 +16,16 @@ RUN mv composer.phar /usr/bin/composer
 
 # Add the application
 ADD . /app
+WORKDIR /app
 
-# Install application dependencies
-WORKDIR /app/apps/river
-RUN composer install -o
+# Set image endpoint
+RUN chmod +x /app/docker/worker/run.sh
+CMD ["/app/docker/worker/run.sh"]
 
-# Fixes the execution permissions
-RUN chmod +x /app/apps/river/docker/worker/run.sh
+# Copy installer
+ADD docker/install-dependencies.sh /install-dependencies.sh
+RUN chmod +x /install-dependencies.sh
 
-CMD ["/app/apps/river/docker/worker/run.sh"]
+# Run installation with private credentials
+#~continuous-pipe:inject-environment~#
+RUN /install-dependencies.sh

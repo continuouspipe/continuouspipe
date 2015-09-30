@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ef41fda0536fef48bcf51c864a6666fc",
-    "content-hash": "bf25c49b170c071b4aff990f96b8d9a9",
+    "hash": "0733eb6102f38c918bbc9d38c6802712",
+    "content-hash": "c580a5445da2f26ba012a7c748aa6ba0",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -61,109 +61,75 @@
             "time": "2015-08-21 16:50:17"
         },
         {
-            "name": "continuous-pipe/builder-model",
-            "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "../../package/continuous-pipe-builder-model",
-                "reference": "",
-                "shasum": null
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "ContinuousPipe\\Builder\\": "src/"
-                }
-            }
-        },
-        {
-            "name": "continuous-pipe/docker-compose",
-            "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "../../package/docker-compose",
-                "reference": "",
-                "shasum": null
-            },
-            "require": {
-                "continuous-pipe/model": "*@dev",
-                "symfony/yaml": "~2.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "ContinuousPipe\\DockerCompose\\": "src/"
-                }
-            }
-        },
-        {
             "name": "continuous-pipe/model",
             "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/model.git",
+                "reference": "239d71e41dcb643611a14c2ce1e8f2a282bac141"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../package/model",
-                "reference": "",
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/239d71e41dcb643611a14c2ce1e8f2a282bac141",
+                "reference": "239d71e41dcb643611a14c2ce1e8f2a282bac141",
+                "shasum": ""
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "ContinuousPipe\\Model\\": "src/"
                 }
-            }
+            },
+            "support": {
+                "source": "https://github.com/continuouspipe/model/tree/master",
+                "issues": "https://github.com/continuouspipe/model/issues"
+            },
+            "time": "2015-09-29 14:37:50"
         },
         {
-            "name": "continuous-pipe/security-bundle",
+            "name": "continuous-pipe/security",
             "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/security.git",
+                "reference": "093231147b4b5cbe58e1c55e61d3dd01f5f545e2"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../package/continuous-pipe-security-bundle",
-                "reference": "",
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/093231147b4b5cbe58e1c55e61d3dd01f5f545e2",
+                "reference": "093231147b4b5cbe58e1c55e61d3dd01f5f545e2",
+                "shasum": ""
             },
             "require": {
-                "continuous-pipe/user": "*@dev",
+                "guzzlehttp/guzzle": "~4.1",
+                "jms/serializer": "1.0.0",
                 "lexik/jwt-authentication-bundle": "~1.0"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "ContinuousPipe\\SecurityBundle\\": "src/"
+                    "ContinuousPipe\\User\\": "src/User/",
+                    "ContinuousPipe\\SecurityBundle\\": "src/SecurityBundle/"
                 }
-            }
-        },
-        {
-            "name": "continuous-pipe/user",
-            "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "../../package/continuous-pipe-user",
-                "reference": "",
-                "shasum": null
             },
-            "require": {
-                "guzzlehttp/guzzle": "~4.1",
-                "jms/serializer": "1.0.0"
+            "support": {
+                "source": "https://github.com/continuouspipe/security/tree/master",
+                "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "ContinuousPipe\\User\\": "src/"
-                }
-            }
+            "time": "2015-09-30 10:17:20"
         },
         {
             "name": "csa/guzzle-bundle",
-            "version": "v1.3.3",
+            "version": "v1.3.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/csarrazi/CsaGuzzleBundle.git",
-                "reference": "ed42551e0c003856fad61b7cc55ee3debab27a21"
+                "reference": "adca59fb1d616207c738b77077c035fe062d6289"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/csarrazi/CsaGuzzleBundle/zipball/ed42551e0c003856fad61b7cc55ee3debab27a21",
-                "reference": "ed42551e0c003856fad61b7cc55ee3debab27a21",
+                "url": "https://api.github.com/repos/csarrazi/CsaGuzzleBundle/zipball/adca59fb1d616207c738b77077c035fe062d6289",
+                "reference": "adca59fb1d616207c738b77077c035fe062d6289",
                 "shasum": ""
             },
             "require": {
@@ -207,7 +173,7 @@
                 }
             ],
             "description": "A bundle integrating GuzzleHttp >= 4.0",
-            "time": "2015-09-08 12:16:52"
+            "time": "2015-09-22 13:37:23"
         },
         {
             "name": "doctrine/annotations",
@@ -559,16 +525,16 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "v1.5.1",
+            "version": "v1.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "8c5cedb4f2f7ebb66a963ae46ad9daa1e31cee01"
+                "reference": "d63be7eb9a95d46720f7d6badac4e5bc2bcff2e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/8c5cedb4f2f7ebb66a963ae46ad9daa1e31cee01",
-                "reference": "8c5cedb4f2f7ebb66a963ae46ad9daa1e31cee01",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/d63be7eb9a95d46720f7d6badac4e5bc2bcff2e3",
+                "reference": "d63be7eb9a95d46720f7d6badac4e5bc2bcff2e3",
                 "shasum": ""
             },
             "require": {
@@ -595,7 +561,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.5.x-dev"
+                    "dev-master": "1.6.x-dev"
                 }
             },
             "autoload": {
@@ -633,7 +599,7 @@
                 "orm",
                 "persistence"
             ],
-            "time": "2015-08-12 15:52:00"
+            "time": "2015-08-31 14:47:06"
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
@@ -721,34 +687,33 @@
         },
         {
             "name": "doctrine/doctrine-migrations-bundle",
-            "version": "1.0.1",
-            "target-dir": "Doctrine/Bundle/MigrationsBundle",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMigrationsBundle.git",
-                "reference": "1e8cd4415bd2f893eb828216b529a75e8b61d579"
+                "reference": "93ec729e3f2f1bb882904cce9d2c1dde6f139ec8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMigrationsBundle/zipball/1e8cd4415bd2f893eb828216b529a75e8b61d579",
-                "reference": "1e8cd4415bd2f893eb828216b529a75e8b61d579",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMigrationsBundle/zipball/93ec729e3f2f1bb882904cce9d2c1dde6f139ec8",
+                "reference": "93ec729e3f2f1bb882904cce9d2c1dde6f139ec8",
                 "shasum": ""
             },
             "require": {
                 "doctrine/doctrine-bundle": "~1.0",
-                "doctrine/migrations": "~1.0@dev",
+                "doctrine/migrations": "~1.0",
                 "php": ">=5.3.2",
                 "symfony/framework-bundle": "~2.3|~3.0"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.1.x-dev"
+                    "dev-master": "1.1-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Doctrine\\Bundle\\MigrationsBundle": ""
+                "psr-4": {
+                    "Doctrine\\Bundle\\MigrationsBundle\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -776,7 +741,7 @@
                 "migrations",
                 "schema"
             ],
-            "time": "2015-05-06 08:32:15"
+            "time": "2015-09-29 10:07:00"
         },
         {
             "name": "doctrine/inflector",
@@ -955,16 +920,16 @@
         },
         {
             "name": "doctrine/migrations",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/migrations.git",
-                "reference": "3a787de7c4a64460436dc2eb2e3cde8920d5fadd"
+                "reference": "d196ddc229f50c66c5a015c158adb78a2dfb4351"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/migrations/zipball/3a787de7c4a64460436dc2eb2e3cde8920d5fadd",
-                "reference": "3a787de7c4a64460436dc2eb2e3cde8920d5fadd",
+                "url": "https://api.github.com/repos/doctrine/migrations/zipball/d196ddc229f50c66c5a015c158adb78a2dfb4351",
+                "reference": "d196ddc229f50c66c5a015c158adb78a2dfb4351",
                 "shasum": ""
             },
             "require": {
@@ -990,12 +955,12 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "v1.1.x-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Doctrine\\DBAL\\Migrations": "lib"
+                "psr-4": {
+                    "Doctrine\\DBAL\\Migrations\\": "lib/Doctrine/DBAL/Migrations"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1018,7 +983,7 @@
                 "database",
                 "migrations"
             ],
-            "time": "2015-07-29 20:43:19"
+            "time": "2015-09-29 11:13:06"
         },
         {
             "name": "doctrine/orm",
@@ -1776,16 +1741,16 @@
         },
         {
             "name": "knplabs/github-api",
-            "version": "1.4.14",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/php-github-api.git",
-                "reference": "9010dbe21f4b0bae0edae26bbe031d7d91347938"
+                "reference": "313d7ed61494f525ab93cfd8595ec2d398533220"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/php-github-api/zipball/9010dbe21f4b0bae0edae26bbe031d7d91347938",
-                "reference": "9010dbe21f4b0bae0edae26bbe031d7d91347938",
+                "url": "https://api.github.com/repos/KnpLabs/php-github-api/zipball/313d7ed61494f525ab93cfd8595ec2d398533220",
+                "reference": "313d7ed61494f525ab93cfd8595ec2d398533220",
                 "shasum": ""
             },
             "require": {
@@ -1833,7 +1798,7 @@
                 "gist",
                 "github"
             ],
-            "time": "2015-07-03 14:59:20"
+            "time": "2015-08-20 09:44:33"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -1915,17 +1880,17 @@
         },
         {
             "name": "lexik/jwt-authentication-bundle",
-            "version": "v1.1.0",
+            "version": "v1.2.0",
             "target-dir": "Lexik/Bundle/JWTAuthenticationBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lexik/LexikJWTAuthenticationBundle.git",
-                "reference": "fb8c731e564bd5e1070fa9b0510aceea665b6da6"
+                "reference": "c3122ded0cbb65535028f41cda584a93ff8b86e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lexik/LexikJWTAuthenticationBundle/zipball/fb8c731e564bd5e1070fa9b0510aceea665b6da6",
-                "reference": "fb8c731e564bd5e1070fa9b0510aceea665b6da6",
+                "url": "https://api.github.com/repos/lexik/LexikJWTAuthenticationBundle/zipball/c3122ded0cbb65535028f41cda584a93ff8b86e5",
+                "reference": "c3122ded0cbb65535028f41cda584a93ff8b86e5",
                 "shasum": ""
             },
             "require": {
@@ -1981,7 +1946,7 @@
                 "jwt",
                 "rest"
             ],
-            "time": "2015-07-08 11:18:29"
+            "time": "2015-09-28 13:29:49"
         },
         {
             "name": "monolog/monolog",
@@ -3228,39 +3193,18 @@
             "time": "2015-08-23 11:37:08"
         },
         {
-            "name": "sroze/github-webhook",
-            "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "../../package/github-webhook",
-                "reference": "",
-                "shasum": null
-            },
-            "require": {
-                "jms/serializer": "^1.0.0",
-                "knplabs/github-api": "~1.4"
-            },
-            "require-dev": {
-                "sensio/framework-extra-bundle": "~3.0"
-            },
-            "suggest": {
-                "sensio/framework-extra-bundle": "ParamConverter integration"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "GitHub\\WebHook\\": "src/"
-                }
-            }
-        },
-        {
             "name": "sroze/log-stream",
             "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/logstream-client.git",
+                "reference": "fe89f8920b5bb0ca3a6f15f6d1ce9a6614575333"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../package/log-stream",
-                "reference": "",
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/logstream-client/zipball/fe89f8920b5bb0ca3a6f15f6d1ce9a6614575333",
+                "reference": "fe89f8920b5bb0ca3a6f15f6d1ce9a6614575333",
+                "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "~4.0",
@@ -3275,7 +3219,12 @@
                 "psr-4": {
                     "LogStream\\": "src/"
                 }
-            }
+            },
+            "support": {
+                "source": "https://github.com/continuouspipe/logstream-client/tree/master",
+                "issues": "https://github.com/continuouspipe/logstream-client/issues"
+            },
+            "time": "2015-09-23 12:47:35"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -3335,12 +3284,12 @@
             "version": "v2.7.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/AsseticBundle.git",
+                "url": "https://github.com/symfony/assetic-bundle.git",
                 "reference": "3ae5c8ca3079b6e0033cc9fbfb6500e2bc964da5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/3ae5c8ca3079b6e0033cc9fbfb6500e2bc964da5",
+                "url": "https://api.github.com/repos/symfony/assetic-bundle/zipball/3ae5c8ca3079b6e0033cc9fbfb6500e2bc964da5",
                 "reference": "3ae5c8ca3079b6e0033cc9fbfb6500e2bc964da5",
                 "shasum": ""
             },
@@ -3402,34 +3351,34 @@
         },
         {
             "name": "symfony/monolog-bundle",
-            "version": "v2.7.1",
+            "version": "v2.8.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/MonologBundle.git",
-                "reference": "9320b6863404c70ebe111e9040dab96f251de7ac"
+                "url": "https://github.com/symfony/monolog-bundle.git",
+                "reference": "78883d8c1cfa523ac3a28a482b7793036b243f7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/MonologBundle/zipball/9320b6863404c70ebe111e9040dab96f251de7ac",
-                "reference": "9320b6863404c70ebe111e9040dab96f251de7ac",
+                "url": "https://api.github.com/repos/symfony/monolog-bundle/zipball/78883d8c1cfa523ac3a28a482b7793036b243f7d",
+                "reference": "78883d8c1cfa523ac3a28a482b7793036b243f7d",
                 "shasum": ""
             },
             "require": {
                 "monolog/monolog": "~1.8",
                 "php": ">=5.3.2",
-                "symfony/config": "~2.3",
-                "symfony/dependency-injection": "~2.3",
-                "symfony/http-kernel": "~2.3",
-                "symfony/monolog-bridge": "~2.3"
+                "symfony/config": "~2.3|3.*",
+                "symfony/dependency-injection": "~2.3|3.*",
+                "symfony/http-kernel": "~2.3|3.*",
+                "symfony/monolog-bridge": "~2.3|3.*"
             },
             "require-dev": {
-                "symfony/console": "~2.3",
+                "symfony/console": "~2.3|3.*",
                 "symfony/yaml": "~2.3"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7.x-dev"
+                    "dev-master": "2.8.x-dev"
                 }
             },
             "autoload": {
@@ -3457,19 +3406,19 @@
                 "log",
                 "logging"
             ],
-            "time": "2015-01-04 20:21:17"
+            "time": "2015-09-29 17:13:11"
         },
         {
             "name": "symfony/swiftmailer-bundle",
             "version": "v2.3.8",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/SwiftmailerBundle.git",
+                "url": "https://github.com/symfony/swiftmailer-bundle.git",
                 "reference": "970b13d01871207e81d17b17ddda025e7e21e797"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/SwiftmailerBundle/zipball/970b13d01871207e81d17b17ddda025e7e21e797",
+                "url": "https://api.github.com/repos/symfony/swiftmailer-bundle/zipball/970b13d01871207e81d17b17ddda025e7e21e797",
                 "reference": "970b13d01871207e81d17b17ddda025e7e21e797",
                 "shasum": ""
             },
@@ -3518,20 +3467,20 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.7.4",
+            "version": "v2.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "1fdf23fe28876844b887b0e1935c9adda43ee645"
+                "reference": "619528a274647cffc1792063c3ea04c4fa8266a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/1fdf23fe28876844b887b0e1935c9adda43ee645",
-                "reference": "1fdf23fe28876844b887b0e1935c9adda43ee645",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/619528a274647cffc1792063c3ea04c4fa8266a0",
+                "reference": "619528a274647cffc1792063c3ea04c4fa8266a0",
                 "shasum": ""
             },
             "require": {
-                "doctrine/common": "~2.3",
+                "doctrine/common": "~2.4",
                 "php": ">=5.3.9",
                 "psr/log": "~1.0",
                 "twig/twig": "~1.20|~2.0"
@@ -3584,9 +3533,9 @@
             },
             "require-dev": {
                 "doctrine/data-fixtures": "1.0.*",
-                "doctrine/dbal": "~2.2",
+                "doctrine/dbal": "~2.4",
                 "doctrine/doctrine-bundle": "~1.2",
-                "doctrine/orm": "~2.2,>=2.2.3",
+                "doctrine/orm": "~2.4,>=2.4.5",
                 "egulias/email-validator": "~1.2",
                 "ircmaxell/password-compat": "~1.0",
                 "monolog/monolog": "~1.11",
@@ -3636,20 +3585,20 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2015-09-08 14:26:39"
+            "time": "2015-09-25 11:16:52"
         },
         {
             "name": "twig/twig",
-            "version": "v1.22.1",
+            "version": "v1.22.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "b7fc2469fa009897871fb95b68237286fc54a5ad"
+                "reference": "79249fc8c9ff62e41e217e0c630e2e00bcadda6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/b7fc2469fa009897871fb95b68237286fc54a5ad",
-                "reference": "b7fc2469fa009897871fb95b68237286fc54a5ad",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/79249fc8c9ff62e41e217e0c630e2e00bcadda6a",
+                "reference": "79249fc8c9ff62e41e217e0c630e2e00bcadda6a",
                 "shasum": ""
             },
             "require": {
@@ -3697,7 +3646,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-09-15 06:50:16"
+            "time": "2015-09-22 13:59:32"
         },
         {
             "name": "videlalvaro/php-amqplib",
@@ -3827,7 +3776,7 @@
             ],
             "authors": [
                 {
-                    "name": "William DURAND",
+                    "name": "William Durand",
                     "email": "william.durand1@gmail.com"
                 }
             ],
@@ -3927,16 +3876,16 @@
         },
         {
             "name": "behat/gherkin",
-            "version": "v4.3.0",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Gherkin.git",
-                "reference": "43777c51058b77bcd84a8775b7a6ad05e986b5db"
+                "reference": "6b3f8cf3560dc4909c4cddd4f1af3e1f6e9d80af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Gherkin/zipball/43777c51058b77bcd84a8775b7a6ad05e986b5db",
-                "reference": "43777c51058b77bcd84a8775b7a6ad05e986b5db",
+                "url": "https://api.github.com/repos/Behat/Gherkin/zipball/6b3f8cf3560dc4909c4cddd4f1af3e1f6e9d80af",
+                "reference": "6b3f8cf3560dc4909c4cddd4f1af3e1f6e9d80af",
                 "shasum": ""
             },
             "require": {
@@ -3952,7 +3901,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.2-dev"
+                    "dev-master": "4.4-dev"
                 }
             },
             "autoload": {
@@ -3981,20 +3930,20 @@
                 "gherkin",
                 "parser"
             ],
-            "time": "2014-06-06 01:24:32"
+            "time": "2015-09-29 13:41:19"
         },
         {
             "name": "behat/symfony2-extension",
-            "version": "v2.0.0",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Symfony2Extension.git",
-                "reference": "815ec1f6764fca0882cd744731c48edb82dea204"
+                "reference": "845bb7a2308c3057379d29489b96e677b023dc09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Symfony2Extension/zipball/815ec1f6764fca0882cd744731c48edb82dea204",
-                "reference": "815ec1f6764fca0882cd744731c48edb82dea204",
+                "url": "https://api.github.com/repos/Behat/Symfony2Extension/zipball/845bb7a2308c3057379d29489b96e677b023dc09",
+                "reference": "845bb7a2308c3057379d29489b96e677b023dc09",
                 "shasum": ""
             },
             "require": {
@@ -4012,7 +3961,7 @@
             "type": "behat-extension",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-master": "2.1.x-dev"
                 }
             },
             "autoload": {
@@ -4041,20 +3990,20 @@
                 "framework",
                 "symfony"
             ],
-            "time": "2014-09-04 22:10:45"
+            "time": "2015-09-29 14:11:22"
         },
         {
             "name": "behat/transliterator",
-            "version": "v1.0.1",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Transliterator.git",
-                "reference": "c93521d3462a554332d1ef5bb0e9b5b8ca4106c4"
+                "reference": "868e05be3a9f25ba6424c2dd4849567f50715003"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Transliterator/zipball/c93521d3462a554332d1ef5bb0e9b5b8ca4106c4",
-                "reference": "c93521d3462a554332d1ef5bb0e9b5b8ca4106c4",
+                "url": "https://api.github.com/repos/Behat/Transliterator/zipball/868e05be3a9f25ba6424c2dd4849567f50715003",
+                "reference": "868e05be3a9f25ba6424c2dd4849567f50715003",
                 "shasum": ""
             },
             "require": {
@@ -4063,7 +4012,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0-dev"
+                    "dev-master": "1.1-dev"
                 }
             },
             "autoload": {
@@ -4081,7 +4030,7 @@
                 "slug",
                 "transliterator"
             ],
-            "time": "2014-05-15 22:08:22"
+            "time": "2015-09-28 16:26:35"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -4591,13 +4540,9 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 0,
-        "sroze/github-webhook": 20,
         "sroze/log-stream": 20,
-        "continuous-pipe/user": 20,
         "continuous-pipe/model": 20,
-        "continuous-pipe/security-bundle": 20,
-        "continuous-pipe/builder-model": 20,
-        "continuous-pipe/docker-compose": 20,
+        "continuous-pipe/security": 20,
         "simple-bus/rabbitmq-bundle-bridge": 20
     },
     "prefer-stable": false,
