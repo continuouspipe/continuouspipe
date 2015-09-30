@@ -1,0 +1,4 @@
+ContinuousPipe\Builder\Notification:
+    properties:
+        http:
+            type: ContinuousPipe\Builder\HttpNotification
