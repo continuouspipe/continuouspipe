@@ -1,0 +1,13 @@
+tasks:
+    - build:
+          environment:
+              - name: GITHUB_TOKEN
+                value: ${GITHUB_TOKEN}
+    - deploy:
+          providerName: kubernetes/cp-cluster
+    - run:
+          providerName: kubernetes/cp-cluster
+          image:
+              from_service: api
+          commands:
+              - php app/console doctrine:migrations:migrate --no-interaction
