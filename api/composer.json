@@ -80,12 +80,16 @@
     },
     "repositories": [
         {
-            "type": "path",
-            "url": "../../package/log-stream"
+            "type": "vcs",
+            "url": "https://github.com/continuouspipe/logstream-client"
         },
         {
-            "type": "path",
-            "url": "../../package/continuous-pipe-security-bundle"
+            "type": "vcs",
+            "url": "https://github.com/continuouspipe/security"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/continuouspipe/model"
         },
         {
             "type": "path",
@@ -93,15 +97,7 @@
         },
         {
             "type": "path",
-            "url": "../../package/continuous-pipe-user"
-        },
-        {
-            "type": "path",
             "url": "../../package/docker-compose"
-        },
-        {
-            "type": "path",
-            "url": "../../package/model"
         },
         {
             "type": "vcs",
