@@ -37,6 +37,7 @@ default:
                 - Task\RunContext:
                     - @kernel
                     - @river.pipe_client
+                    - @jms_serializer
                 - OrganisationContext:
                     - @kernel
                     - @repository_river.organisation_repository

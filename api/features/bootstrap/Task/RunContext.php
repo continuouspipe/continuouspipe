@@ -6,8 +6,10 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Model\Component;
+use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Task\Run\RunTask;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
+use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Kernel;
 use Tide\TasksContext;
@@ -40,13 +42,20 @@ class RunContext implements Context
     private $kernel;
 
     /**
+     * @var Serializer
+     */
+    private $serializer;
+
+    /**
      * @param Kernel $kernel
      * @param TraceableClient $traceablePipeClient
+     * @param Serializer $serializer
      */
-    public function __construct(Kernel $kernel, TraceableClient $traceablePipeClient)
+    public function __construct(Kernel $kernel, TraceableClient $traceablePipeClient, Serializer $serializer)
     {
         $this->traceablePipeClient = $traceablePipeClient;
         $this->kernel = $kernel;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -115,10 +124,9 @@ class RunContext implements Context
             throw new \RuntimeException('No deployment found');
         }
 
-        $this->sendRunnerNotification([
-            'uuid' => (string) $deployment->getUuid(),
-            'status' => 'failure'
-        ]);
+        $this->sendRunnerNotification(
+            new Deployment($deployment->getUuid(), $deployment->getRequest(), Deployment::STATUS_FAILURE)
+        );
     }
 
     /**
@@ -150,10 +158,9 @@ class RunContext implements Context
             throw new \RuntimeException('No deployment found');
         }
 
-        $this->sendRunnerNotification([
-            'uuid' => (string) $deployment->getUuid(),
-            'status' => 'success'
-        ]);
+        $this->sendRunnerNotification(
+            new Deployment($deployment->getUuid(), $deployment->getRequest(), Deployment::STATUS_SUCCESS)
+        );
     }
 
     /**
@@ -185,9 +192,9 @@ class RunContext implements Context
     }
 
     /**
-     * @param array $contents
+     * @param Deployment $deployment
      */
-    private function sendRunnerNotification(array $contents)
+    private function sendRunnerNotification(Deployment $deployment)
     {
         $response = $this->kernel->handle(Request::create(
             sprintf('/runner/notification/tide/%s', (string) $this->tideContext->getCurrentTideUuid()),
@@ -198,7 +205,7 @@ class RunContext implements Context
             [
                 'CONTENT_TYPE' => 'application/json'
             ],
-            json_encode($contents)
+            $this->serializer->serialize($deployment, 'json')
         ));
 
         if (!in_array($response->getStatusCode(), [200, 204])) {

@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\Task\Run\Event;
 
+use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\Runner\Client\RunNotification;
 use Rhumsaa\Uuid\Uuid;
 
 class RunSuccessful implements TideEvent
@@ -14,18 +14,18 @@ class RunSuccessful implements TideEvent
     private $tideUuid;
 
     /**
-     * @var RunNotification
+     * @var Deployment
      */
-    private $run;
+    private $deployment;
 
     /**
-     * @param Uuid            $tideUuid
-     * @param RunNotification $run
+     * @param Uuid       $tideUuid
+     * @param Deployment $deployment
      */
-    public function __construct(Uuid $tideUuid, RunNotification $run)
+    public function __construct(Uuid $tideUuid, Deployment $deployment)
     {
         $this->tideUuid = $tideUuid;
-        $this->run = $run;
+        $this->deployment = $deployment;
     }
 
     /**
@@ -37,18 +37,18 @@ class RunSuccessful implements TideEvent
     }
 
     /**
-     * @return RunNotification
+     * @return Deployment
      */
-    public function getRun()
+    public function getDeployment()
     {
-        return $this->run;
+        return $this->deployment;
     }
 
     /**
-     * {@inheritdoc}
+     * @return Uuid
      */
     public function getRunUuid()
     {
-        return Uuid::fromString($this->run->getUuid());
+        return $this->deployment->getUuid();
     }
 }
