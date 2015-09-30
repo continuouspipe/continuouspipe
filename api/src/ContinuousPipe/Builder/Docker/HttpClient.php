@@ -279,7 +279,10 @@ EOF;
 
         $content = $archive->isStreamed() ? new Stream($archive->read()) : $archive->read();
 
-        $this->docker->getHttpClient()->post(['/build{?data*}', ['data' => $options]], [
+        // Allow a build to be up to half an hour
+        $client = $this->docker->getHttpClient();
+        $client->setDefaultOption('timeout', 1800);
+        $client->post(['/build{?data*}', ['data' => $options]], [
             'headers' => ['Content-Type' => 'application/tar'],
             'body' => $content,
             'stream' => true,
