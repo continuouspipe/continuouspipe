@@ -25,11 +25,9 @@
         "nelmio/cors-bundle": "^1.4",
         "doctrine/doctrine-migrations-bundle": "^1.0",
         "raven/raven": "^0.12.1",
-        "sroze/github-webhook": "*@dev",
         "sroze/log-stream": "*@dev",
-        "continuous-pipe/user": "*@dev",
         "continuous-pipe/model": "*@dev",
-        "continuous-pipe/security-bundle": "*@dev",
+        "continuous-pipe/security": "*@dev",
         "continuous-pipe/builder-model": "*@dev",
         "continuous-pipe/docker-compose": "*@dev",
         "simple-bus/rabbitmq-bundle-bridge": "dev-proper-consumer-return",
@@ -81,10 +79,6 @@
         }]
     },
     "repositories": [
-        {
-            "type": "path",
-            "url": "../../package/github-webhook"
-        },
         {
             "type": "path",
             "url": "../../package/log-stream"
