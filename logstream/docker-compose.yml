@@ -5,5 +5,16 @@ app:
         MONGO_URL: mongodb://mongodb:27017/logstream
     links:
         - mongodb
+    labels:
+        com.continuouspipe.image-name: sroze/cp-logstream
+        com.continuouspipe.visibility: public
+    expose:
+        - 80
+        - 43130
+
 mongodb:
     image: mongo
+    labels:
+        com.continuouspipe.update: lock
+    expose:
+        - 27017
