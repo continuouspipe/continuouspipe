@@ -113,3 +113,40 @@ Feature:
                     mysql:
                         locked: true
     """
+
+  Scenario: It loads the environment variables and replaces variable values if some
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    environment_variables:
+        - name: baz
+          value: bar
+
+    tasks:
+        kube:
+            deploy:
+                providerName: foo
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    container:
+        image: helloworld
+        environment:
+          FOO: ${baz}
+          EXTRA: raw
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        kube:
+            deploy:
+                providerName: foo
+                services:
+                    container:
+                        specification:
+                            environment_variables:
+                                - name: FOO
+                                  value: bar
+                                - name: EXTRA
+                                  value: raw
+    """

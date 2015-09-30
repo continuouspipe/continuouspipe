@@ -131,4 +131,33 @@ class DockerComposeComponent
 
         return array_key_exists('com.continuouspipe.visibility', $labels) ? $labels['com.continuouspipe.visibility'] : null;
     }
+
+    /**
+     * @return array
+     */
+    public function getEnvironmentVariables()
+    {
+        if (!isset($this->parsed['environment']) || !is_array($this->parsed['environment'])) {
+            return [];
+        }
+
+        $variables = [];
+        foreach ($this->parsed['environment'] as $name => $value) {
+            if (is_int($name)) {
+                $equalExploded = explode('=', $value);
+
+                if (count($equalExploded) == 1) {
+                    // Ignore docker-compose's host variables
+                    continue;
+                }
+
+                $name = array_shift($equalExploded);
+                $value = implode('=', $equalExploded);
+            }
+
+            $variables[$name] = $value;
+        }
+
+        return $variables;
+    }
 }
