@@ -28,8 +28,6 @@
         "sroze/log-stream": "*@dev",
         "continuous-pipe/model": "*@dev",
         "continuous-pipe/security": "*@dev",
-        "continuous-pipe/builder-model": "*@dev",
-        "continuous-pipe/docker-compose": "*@dev",
         "simple-bus/rabbitmq-bundle-bridge": "dev-proper-consumer-return",
         "simple-bus/jms-serializer-bundle-bridge": "^2.0"
     },
@@ -90,14 +88,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/continuouspipe/model"
-        },
-        {
-            "type": "path",
-            "url": "../../package/continuous-pipe-builder-model"
-        },
-        {
-            "type": "path",
-            "url": "../../package/docker-compose"
         },
         {
             "type": "vcs",

@@ -1,0 +1,5 @@
+ContinuousPipe\Builder\Logging:
+    properties:
+        logStream:
+            serialized_name: logStream
+            type: ContinuousPipe\Builder\LogStreamLogging

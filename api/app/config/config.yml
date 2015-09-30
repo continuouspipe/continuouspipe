@@ -83,10 +83,10 @@ jms_serializer:
         directories:
             GitHubWebHook:
                 namespace_prefix: "GitHub\\WebHook"
-                path: "%kernel.root_dir%/../vendor/sroze/github-webhook/src/Resources/serializer"
+                path: "%kernel.root_dir%/../src/GitHub/WebHook/Resources/serializer"
             ContinuousPipeBuilder:
                 namespace_prefix: "ContinuousPipe\\Builder"
-                path: "%kernel.root_dir%/../vendor/continuous-pipe/builder-model/src/Resources/serializer"
+                path: "%kernel.root_dir%/../src/ContinuousPipe/Builder/Resources/serializer"
             ContinuousPipeModel:
                 namespace_prefix: "ContinuousPipe\\Model"
                 path: "%kernel.root_dir%/../vendor/continuous-pipe/model/src/Resources/serializer"
