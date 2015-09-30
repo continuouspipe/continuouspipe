@@ -64,6 +64,10 @@
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="log_stream.logger_factory" />
         </service>
+        <service id="pipe.adapter.kubernetes.component.attacher" class="ContinuousPipe\Adapter\Kubernetes\Component\ComponentAttacher">
+            <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
+            <argument type="service" id="log_stream.logger_factory" />
+        </service>
 
         <!-- Listeners -->
         <service id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" class="ContinuousPipe\Adapter\Kubernetes\PrivateImages\DockerCfgFileGenerator" />
@@ -84,12 +88,6 @@
             <argument type="service" id="log_stream.logger_factory" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated" />
-        </service>
-        <service id="pipe.adapter.kubernetes.listener.attach_components" class="ContinuousPipe\Adapter\Kubernetes\Listener\ComponentCreated\AttachComponent">
-            <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
-            <argument type="service" id="log_stream.logger_factory" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\ComponentCreated" />
         </service>
 
         <!-- Handlers -->
@@ -116,6 +114,7 @@
             <argument type="service" id="event_bus" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="kubernetes.public_endpoint.public_service_voter" />
+            <argument type="service" id="pipe.adapter.kubernetes.component.attacher" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
         </service>

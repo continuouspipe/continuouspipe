@@ -1,20 +1,18 @@
 <?php
 
-namespace ContinuousPipe\Adapter\Kubernetes\Listener\ComponentCreated;
+namespace ContinuousPipe\Adapter\Kubernetes\Component;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
-use ContinuousPipe\Adapter\Kubernetes\Component\ComponentException;
-use ContinuousPipe\Adapter\Kubernetes\Event\ComponentCreated;
-use ContinuousPipe\Model\Component;
-use Kubernetes\Client\Exception\Exception;
+use ContinuousPipe\Pipe\DeploymentContext;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodStatus;
 use LogStream\LoggerFactory;
 use LogStream\Node\Raw;
 use LogStream\Node\Text;
+use Kubernetes\Client\Exception\Exception;
 
-class AttachComponent
+class ComponentAttacher
 {
     /**
      * @var DeploymentClientFactory
@@ -37,15 +35,14 @@ class AttachComponent
     }
 
     /**
-     * @param ComponentCreated $event
+     * @param DeploymentContext $context
+     * @param ComponentCreationStatus $status
+     * @throws ComponentException
      */
-    public function notify(ComponentCreated $event)
+    public function attach(DeploymentContext $context, ComponentCreationStatus $status)
     {
-        if (!$this->haveToAttach($event->getComponent())) {
-            return;
-        }
+        $createdObjects = $status->getCreated();
 
-        $createdObjects = $event->getStatus()->getCreated();
         /** @var Pod[] $createdPods */
         $createdPods = array_filter($createdObjects, function (KubernetesObject $object) {
             return $object instanceof Pod;
@@ -55,7 +52,6 @@ class AttachComponent
             return;
         }
 
-        $context = $event->getContext();
         $namespaceClient = $this->clientFactory->get($context);
         $podRepository = $namespaceClient->getPodRepository();
         $logger = $this->loggerFactory->from($context->getLog());
@@ -90,22 +86,8 @@ class AttachComponent
             } finally {
                 $podRepository->delete($pod);
             }
-        }
-    }
 
-    /**
-     * Returns true if the component have to be attached.
-     *
-     * @param Component $component
-     *
-     * @return bool
-     */
-    private function haveToAttach(Component $component)
-    {
-        if ($deploymentStrategy = $component->getDeploymentStrategy()) {
-            return $deploymentStrategy->isAttached();
+            $podLogger->success();
         }
-
-        return false;
     }
 }
