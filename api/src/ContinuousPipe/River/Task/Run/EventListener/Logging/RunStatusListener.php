@@ -30,7 +30,7 @@ class RunStatusListener
     {
         if ($event instanceof RunFailed) {
             $this->getLogger($event->getDeployment())->failure();
-        } elseif ($event instanceof RugnSuccessful) {
+        } elseif ($event instanceof RunSuccessful) {
             $this->getLogger($event->getDeployment())->success();
         }
     }
