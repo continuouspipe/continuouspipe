@@ -8,6 +8,6 @@ angular.module('continuousPipeRiver')
     })
     .run(function($rootScope, $aside) {
         $rootScope.$on('$stateChangeSuccess', function(event, toState) {
-            $aside.set(toState.aside !== false);
+            $aside.set(toState.aside === true);
         });
     });

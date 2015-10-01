@@ -10,8 +10,7 @@ angular.module('continuousPipeRiver')
                 controller: 'FlowListController',
                 ncyBreadcrumb: {
                     label: 'Flows'
-                },
-                aside: false
+                }
             })
             .state('flows.create', {
                 url: '/create',
@@ -66,7 +65,8 @@ angular.module('continuousPipeRiver')
                 },
                 ncyBreadcrumb: {
                     label: 'Configuration'
-                }
+                },
+                aside: true
             })
         ;
     });
