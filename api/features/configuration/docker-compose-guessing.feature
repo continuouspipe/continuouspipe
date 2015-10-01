@@ -150,3 +150,46 @@ Feature:
                                 - name: EXTRA
                                   value: raw
     """
+
+  Scenario: The environment variables from the `continuous-pipe.yml` file overrides the environment variables in `docker-compose.yml` file
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        kube:
+            deploy:
+                providerName: foo
+                services:
+                    container:
+                        specification:
+                            environment_variables:
+                                - name: TWO
+                                  value: two
+                                - name: THREE
+                                  value: three
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    container:
+        image: helloworld
+        environment:
+          ONE: one
+          TWO: one
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        kube:
+            deploy:
+                providerName: foo
+                services:
+                    container:
+                        specification:
+                            environment_variables:
+                                - name: ONE
+                                  value: one
+                                - name: TWO
+                                  value: two
+                                - name: THREE
+                                  value: three
+    """
