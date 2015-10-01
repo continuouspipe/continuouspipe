@@ -2,15 +2,21 @@
 
 angular.module('continuousPipeRiver')
     .service('TideRepository', function($resource, RIVER_API_URL) {
-        this.resource = $resource(RIVER_API_URL+'/tides/:uuid', {identifier: '@id'});
+        this.resource = $resource(RIVER_API_URL+'/tides/:uuid');
 
         this.findByFlow = function(flow) {
-            return $resource(RIVER_API_URL+'/flows/:uuid/tides', {identifier: '@id'}).query({
+            return $resource(RIVER_API_URL+'/flows/:uuid/tides').query({
                 uuid: flow.uuid
             }).$promise;
         };
 
         this.find = function(uuid) {
             return this.resource.get({uuid: uuid}).$promise;
+        };
+
+        this.create = function(flow, tide) {
+            return $resource(RIVER_API_URL+'/flows/:uuid/tides').save({
+                uuid: flow.uuid
+            }, tide).$promise;
         };
     });

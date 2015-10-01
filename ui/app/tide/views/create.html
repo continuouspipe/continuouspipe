@@ -1,0 +1,35 @@
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2>What code reference would you like to use?</h2>
+        </div>
+
+        <form name="form" class="form-horizontal" ng-submit="create(tide)">
+            <div class="card-body card-padding">
+                <div class="alert alert-danger" role="alert" ng-show="error">{{ error }}</div>
+
+                <div class="form-group">
+                    <label for="inputBranch" class="col-sm-2 control-label">Branch</label>
+                    <div class="col-sm-10">
+                        <div class="fg-line">
+                            <input type="text" ng-model="tide.branch" class="form-control input-sm" id="inputBranch" required="required">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputCommit" class="col-sm-2 control-label">Commit SHA1 (optional)</label>
+                    <div class="col-sm-10">
+                        <div class="fg-line">
+                            <input type="text" ng-model="tide.sha1" class="form-control input-sm" id="inputCommit">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary btn-sm" ng-disabled="isLoading">Create</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -3,9 +3,23 @@
 angular.module('continuousPipeRiver')
     .config(function($stateProvider) {
         $stateProvider
-            .state('tide', {
+            .state('tides', {
                 parent: 'flow',
-                url: '/tide/:tideUuid',
+                url: '/tides',
+                abstract: true
+            })
+            .state('tides.create', {
+                url: '/create',
+                views: {
+                    '@layout': {
+                        controller: 'TideCreateController',
+                        templateUrl: 'tide/views/create.html'
+                    }
+                }
+            })
+            .state('tide', {
+                parent: 'tides',
+                url: '/:tideUuid',
                 abstract: true,
                 resolve: {
                     tide: function($stateParams, TideRepository) {
@@ -26,7 +40,8 @@ angular.module('continuousPipeRiver')
                 },
                 ncyBreadcrumb: {
                     label: 'Logs'
-                }
+                },
+                aside: true
             })
         ;
     });
