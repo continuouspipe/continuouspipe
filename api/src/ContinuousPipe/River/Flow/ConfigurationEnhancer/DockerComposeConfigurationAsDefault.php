@@ -107,7 +107,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                             'image' => $imageName,
                         ],
                         'ports' => [],
-                        'environment_variables' => []
+                        'environment_variables' => [],
                     ],
                 ];
 
@@ -124,7 +124,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                 foreach ($component->getEnvironmentVariables() as $name => $value) {
                     $configuration['specification']['environment_variables'][] = [
                         'name' => $name,
-                        'value' => $value
+                        'value' => $value,
                     ];
                 }
 
