@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0733eb6102f38c918bbc9d38c6802712",
-    "content-hash": "c580a5445da2f26ba012a7c748aa6ba0",
+    "hash": "c90d855c38142fb585c154eea65c5759",
+    "content-hash": "7ce00adf0026c67fb251d91e398db855",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -88,16 +88,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "dev-master",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "093231147b4b5cbe58e1c55e61d3dd01f5f545e2"
+                "reference": "e0aa4ebd168ca21ef396111602b0983a411728e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/093231147b4b5cbe58e1c55e61d3dd01f5f545e2",
-                "reference": "093231147b4b5cbe58e1c55e61d3dd01f5f545e2",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/e0aa4ebd168ca21ef396111602b0983a411728e4",
+                "reference": "e0aa4ebd168ca21ef396111602b0983a411728e4",
                 "shasum": ""
             },
             "require": {
@@ -113,10 +113,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/master",
+                "source": "https://github.com/continuouspipe/security/tree/0.2.0",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2015-09-30 10:17:20"
+            "time": "2015-10-01 10:29:51"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -4542,7 +4542,6 @@
         "csa/guzzle-bundle": 0,
         "sroze/log-stream": 20,
         "continuous-pipe/model": 20,
-        "continuous-pipe/security": 20,
         "simple-bus/rabbitmq-bundle-bridge": 20
     },
     "prefer-stable": false,
