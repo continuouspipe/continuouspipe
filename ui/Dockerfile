@@ -1,6 +1,6 @@
 FROM node
 
-RUN mkdir -p /app
+RUN mkdir /app
 WORKDIR /app
 
 # Install prerequisites CLI tools

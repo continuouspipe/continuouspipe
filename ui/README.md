@@ -2,14 +2,14 @@
 
 This application is an AngularJS application that provides a UI to River API.
 
-## Getting started
+## Development
 
-Install dependencies:
+Just run the bootstrap script and it'll use the docker configuration to start the UI.
 ```
-npm install
-bower install
+./bootstrap.sh
 ```
 
-## Build & development
-
-Run `grunt` for building and `grunt serve` for preview.
+**WARNING:** if you add a new Bower or NPM dependency, you'll need to rebuild the Docker image:
+```
+docker-compose build && docker-compose restart
+```
