@@ -38,8 +38,14 @@ class FlowFactory
      */
     public function fromCreationRequest(FlowCreationRequest $creationRequest)
     {
+        if (null != $creationRequest->getUuid()) {
+            $uuid = Uuid::fromString($creationRequest->getUuid());
+        } else {
+            $uuid = Uuid::uuid1();
+        }
+
         $flowContext = FlowContext::createFlow(
-            Uuid::uuid1(),
+            $uuid,
             $this->userContext->getCurrent(),
             $this->codeRepositoryRepository->findByIdentifier($creationRequest->getRepository()),
             $this->parseConfiguration($creationRequest)

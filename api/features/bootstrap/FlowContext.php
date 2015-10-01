@@ -24,7 +24,7 @@ use Symfony\Component\Yaml\Yaml;
 class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
     /**
-     * @var Uuid
+     * @var string
      */
     private $flowUuid;
 
@@ -107,6 +107,44 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     public function getCurrentUuid()
     {
         return $this->flowUuid;
+    }
+
+    /**
+     * @When I send a flow creation request with the UUID :uuid
+     */
+    public function iSendAFlowCreationRequestWithTheUuid($uuid)
+    {
+        $this->codeRepositoryRepository->add(new CodeRepository\GitHub\GitHubCodeRepository(
+            new Repository('foo', 'bar', false, '1234')
+        ));
+
+        $creationRequest = <<<EOF
+{
+   "repository": "1234",
+   "uuid": "$uuid"
+}
+EOF;
+
+        $this->response = $this->kernel->handle(Request::create('/flows', 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], $creationRequest));
+
+        $flowView = json_decode($this->response->getContent(), true);
+        $this->flowUuid = $flowView['uuid'];
+    }
+
+    /**
+     * @Then the flow UUID should be :uuid
+     */
+    public function theFlowUuidShouldBe($uuid)
+    {
+        if ($this->flowUuid != $uuid) {
+            throw new \RuntimeException(sprintf(
+                'Found UUID %s but expected %s',
+                $this->flowUuid,
+                $uuid
+            ));
+        }
     }
 
     /**
@@ -327,14 +365,14 @@ EOF;
      */
     private function createFlowContextWithCodeRepository(CodeRepository $codeRepository, Uuid $uuid = null, array $configuration = [])
     {
-        $this->flowUuid = $uuid ?: Uuid::uuid1();
+        $this->flowUuid = (string) ($uuid ?: Uuid::uuid1());
         $user = new User('samuel.roze@gmail.com');
 
         $this->codeRepositoryRepository->add($codeRepository);
         $this->authenticatorClient->addUser($user);
 
         return RiverFlowContext::createFlow(
-            $this->flowUuid,
+            Uuid::fromString($this->flowUuid),
             $user,
             $codeRepository,
             $configuration
