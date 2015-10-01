@@ -14,10 +14,25 @@ class FlowCreationRequest extends FlowUpdateRequest
     private $repository;
 
     /**
+     * @JMS\Type("string")
+     *
+     * @var string
+     */
+    private $uuid;
+
+    /**
      * @return string
      */
     public function getRepository()
     {
         return $this->repository;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
     }
 }
