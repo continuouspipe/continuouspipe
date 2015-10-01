@@ -40,7 +40,8 @@ angular.module('continuousPipeRiver')
                 },
                 ncyBreadcrumb: {
                     label: 'Logs'
-                }
+                },
+                aside: true
             })
         ;
     });

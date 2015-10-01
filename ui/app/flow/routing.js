@@ -53,7 +53,8 @@ angular.module('continuousPipeRiver')
                 },
                 ncyBreadcrumb: {
                     label: 'Overview'
-                }
+                },
+                aside: true
             })
             .state('flow.configuration', {
                 url: '/configuration',
