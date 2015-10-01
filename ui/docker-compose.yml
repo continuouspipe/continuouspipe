@@ -3,10 +3,10 @@ ui:
   volumes:
     - ./app:/app/app
   environment:
-    - RIVER_API_URL=river_api.docker
-    - AUTHENTICATOR_API_URL=authenticator_app.docker
-    - LOG_STREAM_URL=logstream.docker
-    - PIPE_API_URL=pipe_api.docker
+    - RIVER_API_URL=river_api.docker/app_dev.php
+    - AUTHENTICATOR_API_URL=authenticator_app.docker/app_dev.php
+    - LOG_STREAM_URL=logstream.docker/app_dev.php
+    - PIPE_API_URL=pipe_api.docker/app_dev.php
   labels:
     com.continuouspipe.image-name: inviqasession/cp-river-ui
     com.continuouspipe.visibility: public
