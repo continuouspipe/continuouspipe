@@ -10,8 +10,8 @@ api:
     - SENTRY_DSN=http://0cd6915cf66c44feb0a0fc00137147ac:b2e09cf0a35641fb901e667734e979b1@tsuru.cluster.sroze.io:82/5
     - SERVICE_RIVERUI_PUBLIC_ENDPOINT=http://ui_app.docker
     - AUTHENTICATOR_URL=authenticator_app.docker
-    - BUILDER_URL=builder_api.docker
-    - PIPE_URL=pipe_api.docker
+    - BUILDER_URL=builder_api.docker/app_dev.php
+    - PIPE_URL=pipe_api.docker/app_dev.php
     - LOGSTREAM_URL=logstream.docker
   labels:
     com.continuouspipe.image-name: inviqasession/cp-river
@@ -34,8 +34,8 @@ worker:
   environment:
     - SENTRY_DSN=http://0cd6915cf66c44feb0a0fc00137147ac:b2e09cf0a35641fb901e667734e979b1@tsuru.cluster.sroze.io:82/5
     - AUTHENTICATOR_URL=authenticator_app.docker
-    - BUILDER_URL=builder_api.docker
-    - PIPE_URL=pipe_api.docker
+    - BUILDER_URL=builder_api.docker/app_dev.php
+    - PIPE_URL=pipe_api.docker/app_dev.php
     - LOGSTREAM_URL=logstream.docker
 
 database:
