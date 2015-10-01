@@ -8,6 +8,7 @@ use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\User\User;
+use GuzzleHttp\Exception\RequestException;
 
 class GitHubCommitResolver implements CommitResolver
 {
@@ -42,8 +43,27 @@ class GitHubCommitResolver implements CommitResolver
             throw new CommitResolverException('Unable to find GitHub credentials', $e->getCode(), $e);
         }
 
-        $description = $this->addressDescriptor->getDescription($repository->getAddress());
-        $branch = $client->repository()->branches($description->getUsername(), $description->getRepository(), $branch);
+        try {
+            $description = $this->addressDescriptor->getDescription($repository->getAddress());
+        } catch (CodeRepository\InvalidRepositoryAddress $e) {
+            throw new CommitResolverException('Invalid repository address', $e->getCode(), $e);
+        }
+
+        try {
+            $branch = $client->repository()->branches($description->getUsername(), $description->getRepository(), $branch);
+        } catch (RequestException $e) {
+            if ($response = $e->getResponse()) {
+                if ($response->getStatusCode() == 404) {
+                    throw new CommitResolverException(sprintf(
+                        'Branch "%s" not found in repository',
+                        $branch
+                    ), $e->getCode(), $e);
+                }
+            }
+
+            throw new CommitResolverException($e->getMessage(), $e->getCode(), $e);
+        }
+
         if (!isset($branch['commit']['sha'])) {
             throw new CommitResolverException(sprintf(
                 'Unable to find the SHA1 of the branch "%s"',
