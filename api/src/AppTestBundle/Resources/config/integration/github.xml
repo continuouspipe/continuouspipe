@@ -11,5 +11,6 @@
         <service id="river.github.pull_request_deployment_notifier" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestDeploymentNotifier" />
         <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver" />
         <service id="river.code_status_updater" class="ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater" />
+        <service id="river.commit_resolver" class="ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver" />
     </services>
 </container>

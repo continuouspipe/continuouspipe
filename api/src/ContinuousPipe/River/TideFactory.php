@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\River\CodeRepository\CommitResolver;
+use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
@@ -10,6 +12,7 @@ use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\Task\TaskList;
+use ContinuousPipe\River\Tide\Request\TideCreationRequest;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Rhumsaa\Uuid\Uuid;
@@ -37,17 +40,47 @@ class TideFactory
     private $configurationFactory;
 
     /**
+     * @var CommitResolver
+     */
+    private $commitResolver;
+
+    /**
      * @param LoggerFactory            $loggerFactory
      * @param TaskFactoryRegistry      $taskFactoryRegistry
      * @param FlowRepository           $flowRepository
      * @param TideConfigurationFactory $configurationFactory
+     * @param CommitResolver           $commitResolver
      */
-    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory)
+    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory, CommitResolver $commitResolver)
     {
         $this->loggerFactory = $loggerFactory;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
         $this->flowRepository = $flowRepository;
         $this->configurationFactory = $configurationFactory;
+        $this->commitResolver = $commitResolver;
+    }
+
+    /**
+     * @param Flow                $flow
+     * @param TideCreationRequest $creationRequest
+     *
+     * @return Tide
+     *
+     * @throws CommitResolverException
+     */
+    public function createFromCreationRequest(Flow $flow, TideCreationRequest $creationRequest)
+    {
+        $context = $flow->getContext();
+        $repository = $context->getCodeRepository();
+        if (null == ($sha1 = $creationRequest->getSha1())) {
+            $sha1 = $this->commitResolver->getHeadCommitOfBranch($repository, $context->getUser(), $creationRequest->getBranch());
+        }
+
+        return $this->createFromCodeReference($flow, new CodeReference(
+            $repository,
+            $sha1,
+            $creationRequest->getBranch()
+        ));
     }
 
     /**

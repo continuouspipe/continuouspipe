@@ -11,6 +11,7 @@ use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideCreated;
+use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
@@ -21,6 +22,9 @@ use ContinuousPipe\River\Task\Build\Event\BuildStarted;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Event\TideStarted;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Yaml\Yaml;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 
@@ -50,14 +54,17 @@ class TideContext implements Context
      * @var FakeFileSystemResolver
      */
     private $fakeFileSystemResolver;
+
     /**
      * @var MessageBus
      */
     private $eventBus;
+
     /**
      * @var \ContinuousPipe\River\TideFactory
      */
     private $tideFactory;
+
     /**
      * @var \ContinuousPipe\River\View\TideRepository
      */
@@ -69,14 +76,30 @@ class TideContext implements Context
     private $tideConfigurationContext;
 
     /**
-     * @param MessageBus             $commandBus
-     * @param MessageBus             $eventBus
-     * @param EventStore             $eventStore
-     * @param FakeFileSystemResolver $fakeFileSystemResolver
-     * @param TideFactory            $tideFactory
-     * @param TideRepository         $viewTideRepository
+     * @var Kernel
      */
-    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository)
+    private $kernel;
+
+    /**
+     * @var Response|null
+     */
+    private $response;
+    /**
+     * @var PredictableCommitResolver
+     */
+    private $commitResolver;
+
+    /**
+     * @param MessageBus $commandBus
+     * @param MessageBus $eventBus
+     * @param EventStore $eventStore
+     * @param FakeFileSystemResolver $fakeFileSystemResolver
+     * @param TideFactory $tideFactory
+     * @param TideRepository $viewTideRepository
+     * @param Kernel $kernel
+     * @param PredictableCommitResolver $commitResolver
+     */
+    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository, Kernel $kernel, PredictableCommitResolver $commitResolver)
     {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
@@ -84,6 +107,8 @@ class TideContext implements Context
         $this->eventBus = $eventBus;
         $this->tideFactory = $tideFactory;
         $this->viewTideRepository = $viewTideRepository;
+        $this->kernel = $kernel;
+        $this->commitResolver = $commitResolver;
     }
 
     /**
@@ -582,6 +607,83 @@ EOF;
                 PHP_EOL.Yaml::dump($tideConfiguration)
             ));
         }
+    }
+
+    /**
+     * @When I send a tide creation request for branch :branch and commit :sha1
+     */
+    public function iSendATideCreationRequestForBranchAndCommit($branch, $sha1)
+    {
+        $url = sprintf('/flows/%s/tides', (string) $this->flowContext->getCurrentUuid());
+
+        $this->response = $this->kernel->handle(Request::create($url, 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json'
+        ], json_encode([
+            'branch' => $branch,
+            'sha1' => $sha1
+        ])));
+    }
+
+    /**
+     * @Then a tide should be created
+     */
+    public function aTideShouldBeCreated()
+    {
+        if ($this->response->getStatusCode() != 201) {
+            throw new \RuntimeException(sprintf(
+                'Expected status code 201, but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
+     * @Given the head commit of branch :branch is :sha1
+     */
+    public function theHeadCommitOfBranchIs($branch, $sha1)
+    {
+        $this->commitResolver->headOfBranchIs($branch, $sha1);
+    }
+
+    /**
+     * @When I send a tide creation request for branch :branch
+     */
+    public function iSendATideCreationRequestForBranch($branch)
+    {
+        $url = sprintf('/flows/%s/tides', (string) $this->flowContext->getCurrentUuid());
+
+        $this->response = $this->kernel->handle(Request::create($url, 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json'
+        ], json_encode([
+            'branch' => $branch,
+        ])));
+    }
+
+    /**
+     * @Then a bad request error should be returned
+     */
+    public function aBadRequestErrorShouldBeReturned()
+    {
+        if ($this->response->getStatusCode() != 400) {
+            throw new \RuntimeException(sprintf(
+                'Expected status code 201, but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
+     * @When I send a tide creation request for commit :sha1
+     */
+    public function iSendATideCreationRequestForCommit($sha1)
+    {
+        $url = sprintf('/flows/%s/tides', (string) $this->flowContext->getCurrentUuid());
+
+        $this->response = $this->kernel->handle(Request::create($url, 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json'
+        ], json_encode([
+            'sha1' => $sha1
+        ])));
     }
 
     /**

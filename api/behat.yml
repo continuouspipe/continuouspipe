@@ -9,6 +9,8 @@ default:
                     - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
+                    - @kernel
+                    - @river.commit_resolver
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -75,6 +77,8 @@ smoke:
                     - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
+                    - @kernel
+                    - @river.commit_resolver
                 - GitHubContext:
                     - @kernel
                     - @river.code_status_updater

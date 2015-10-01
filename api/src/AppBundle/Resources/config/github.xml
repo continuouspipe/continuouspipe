@@ -75,6 +75,10 @@
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful"/>
         </service>
+        <service id="river.commit_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCommitResolver">
+            <argument type="service" id="river.github.client_factory" />
+            <argument type="service" id="river.github.repository_address_descriptor" />
+        </service>
 
         <service id="river.listener.github.pull_request.comment_deployment_environment_endpoints" class="ContinuousPipe\River\EventListener\GitHub\PullRequestOpened\CommentDeploymentEnvironmentEndpoints">
             <argument type="service" id="river.view.tide_repository" />

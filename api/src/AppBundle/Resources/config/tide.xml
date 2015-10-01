@@ -41,6 +41,7 @@
             <argument type="service" id="river.task_factory_registry" />
             <argument type="service" id="river.repository.flow" />
             <argument type="service" id="river.tide_configuration_factory" />
+            <argument type="service" id="river.commit_resolver" />
         </service>
 
         <service id="river.view.tide_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\View\DoctrineTideRepository">
