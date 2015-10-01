@@ -5,6 +5,32 @@ tasks:
                 value: ${GITHUB_TOKEN}
     - deploy:
           providerName: kubernetes/cp-cluster
+          services:
+              api:
+                  specification:
+                      environment:
+                          - name: AUTHENTICATOR_URL
+                            value: http://authenticator.continuouspipe.io
+                          - name: LOGSTREAM_URL
+                            value: http://logstream.continuouspipe.io
+                          - name: BUILDER_URL
+                            value: http://builder.continuouspipe.io
+                          - name: PIPE_URL
+                            value: http://pipe.continuouspipe.io
+                          - name: SERVICE_RIVERUI_PUBLIC_ENDPOINT
+                            value: http://ui.continuouspipe.io
+              worker:
+                  specification:
+                      environment:
+                          - name: AUTHENTICATOR_URL
+                            value: http://authenticator.continuouspipe.io
+                          - name: LOGSTREAM_URL
+                            value: http://logstream.continuouspipe.io
+                          - name: BUILDER_URL
+                            value: http://builder.continuouspipe.io
+                          - name: PIPE_URL
+                            value: http://pipe.continuouspipe.io
+
     - run:
           providerName: kubernetes/cp-cluster
           image:

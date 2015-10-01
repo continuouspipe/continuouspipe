@@ -7,12 +7,12 @@ api:
     - rabbitmq
   environment:
     - SERVICE_RIVER_PUBLIC_ENDPOINT
-    - SERVICE_RIVERUI_PUBLIC_ENDPOINT=ui.continuouspipe.io
     - SENTRY_DSN=http://0cd6915cf66c44feb0a0fc00137147ac:b2e09cf0a35641fb901e667734e979b1@tsuru.cluster.sroze.io:82/5
-    - AUTHENTICATOR_URL=authenticator.continuouspipe.io
-    - BUILDER_URL=builder.continuouspipe.io
-    - PIPE_URL=pipe.continuouspipe.io
-    - LOGSTREAM_URL=logstream.continuouspipe.io
+    - SERVICE_RIVERUI_PUBLIC_ENDPOINT=http://ui_app.docker
+    - AUTHENTICATOR_URL=authenticator_app.docker
+    - BUILDER_URL=builder_api.docker
+    - PIPE_URL=pipe_api.docker
+    - LOGSTREAM_URL=logstream.docker
   labels:
     com.continuouspipe.image-name: inviqasession/cp-river
     com.continuouspipe.visibility: public
@@ -33,10 +33,10 @@ worker:
     - 80
   environment:
     - SENTRY_DSN=http://0cd6915cf66c44feb0a0fc00137147ac:b2e09cf0a35641fb901e667734e979b1@tsuru.cluster.sroze.io:82/5
-    - AUTHENTICATOR_URL=authenticator.continuouspipe.io
-    - BUILDER_URL=builder.continuouspipe.io
-    - PIPE_URL=pipe.continuouspipe.io
-    - LOGSTREAM_URL=logstream.continuouspipe.io
+    - AUTHENTICATOR_URL=authenticator_app.docker
+    - BUILDER_URL=builder_api.docker
+    - PIPE_URL=pipe_api.docker
+    - LOGSTREAM_URL=logstream.docker
 
 database:
   image: postgres

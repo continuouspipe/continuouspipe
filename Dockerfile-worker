@@ -17,6 +17,7 @@ RUN mv composer.phar /usr/bin/composer
 # Add the application
 ADD . /app
 WORKDIR /app
+RUN rm -rf app/cache/* && rm -rf app/logs/*
 
 # Set image endpoint
 RUN chmod +x /app/docker/worker/run.sh
