@@ -57,6 +57,7 @@
             <argument type="service" id="builder.command_extractor" />
             <argument type="service" id="log_stream.logger_factory" />
         </service>
+
         <service id="builder.build_repository" class="ContinuousPipe\Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>

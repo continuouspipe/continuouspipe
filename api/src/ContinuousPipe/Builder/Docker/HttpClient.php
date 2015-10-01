@@ -139,7 +139,9 @@ EOF;
      * @param Image  $image
      * @param Logger $logger
      * @param string $command
+     *
      * @return Image
+     *
      * @throws DockerException
      */
     private function doRunAndCommitCommand(Image $image, Logger $logger, $command)
@@ -305,7 +307,9 @@ EOF;
 
     /**
      * @param string $prefix
+     *
      * @return string
+     *
      * @throws DockerException
      */
     private function getTemporaryDirectoryPath($prefix = 'gha')

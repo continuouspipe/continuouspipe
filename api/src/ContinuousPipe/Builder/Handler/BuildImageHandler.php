@@ -7,7 +7,6 @@ use ContinuousPipe\Builder\BuildException;
 use ContinuousPipe\Builder\Command\BuildImageCommand;
 use ContinuousPipe\Builder\Event\BuildFailed;
 use ContinuousPipe\Builder\Event\ImageBuilt;
-use LogStream\Node\Text;
 use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -49,18 +48,14 @@ class BuildImageHandler
             'build' => $command->getBuild(),
         ]);
 
-        $logger = $command->getLogger();
-
         try {
-            $this->builder->build($command->getBuild(), $logger);
+            $this->builder->build($command->getBuild(), $command->getLogger());
 
             $this->eventBus->handle(new ImageBuilt(
                 $command->getBuild(),
                 $command->getLogger()
             ));
         } catch (BuildException $e) {
-            $logger->append(new Text($e->getMessage()));
-
             $this->logger->notice('An error appeared while building an image', [
                 'build' => $command->getBuild(),
                 'exception' => $e,
