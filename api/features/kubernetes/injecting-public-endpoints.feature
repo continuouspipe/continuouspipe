@@ -16,6 +16,9 @@ Feature:
       | name                        | value   |
       | SERVICE_API_PUBLIC_ENDPOINT | 1.2.3.4 |
       | SERVICE_UI_PUBLIC_ENDPOINT  | 5.6.7.8 |
+    And the replication controller "ui" should be created with the following environment variables:
+      | name    | value   |
+      | API_URL | 1.2.3.4 |
 
   Scenario:
     Given the service "api" will be created with the public endpoint "1.2.3.4"

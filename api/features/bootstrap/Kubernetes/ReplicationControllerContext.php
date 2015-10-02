@@ -100,6 +100,10 @@ class ReplicationControllerContext implements Context
         $containers = $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()->getContainers();
         $expectedVariables = $environs->getHash();
 
+        if (0 === count($containers)) {
+            throw new \RuntimeException('No container found');
+        }
+
         foreach ($containers as $container) {
             $foundVariables = [];
             foreach ($container->getEnvironmentVariables() as $variable) {

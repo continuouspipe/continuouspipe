@@ -52,6 +52,7 @@
       "port_mappings": [
       ],
       "environment_variables": [
+        {"name": "API_URL", "value": "${SERVICE_API_PUBLIC_ENDPOINT}"}
       ],
       "volumes": [
       ],

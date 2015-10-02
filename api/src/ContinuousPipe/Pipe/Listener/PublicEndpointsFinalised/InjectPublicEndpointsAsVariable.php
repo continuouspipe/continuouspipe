@@ -25,7 +25,9 @@ class InjectPublicEndpointsAsVariable
                 $environmentVariables[] = $this->getEnvironmentVariableForEndpoint($publicEndpoint);
             }
 
-            $specification->setEnvironmentVariables($environmentVariables);
+            $specification->setEnvironmentVariables(
+                $this->replaceEnvironmentVariableParameters($environmentVariables)
+            );
         }
     }
 
@@ -39,5 +41,28 @@ class InjectPublicEndpointsAsVariable
         $variableName = sprintf('SERVICE_%s_PUBLIC_ENDPOINT', strtoupper($endpoint->getName()));
 
         return new EnvironmentVariable($variableName, $endpoint->getAddress());
+    }
+
+    /**
+     * @param EnvironmentVariable[] $environmentVariables
+     *
+     * @return EnvironmentVariable[]
+     */
+    private function replaceEnvironmentVariableParameters(array $environmentVariables)
+    {
+        $mapping = [];
+        foreach ($environmentVariables as $environmentVariable) {
+            $mapping['${'.$environmentVariable->getName().'}'] = $environmentVariable->getValue();
+        }
+
+        $replacedVariables = [];
+        foreach ($environmentVariables as $environmentVariable) {
+            $replacedVariables[] = new EnvironmentVariable(
+                $environmentVariable->getName(),
+                str_replace(array_keys($mapping), array_values($mapping), $environmentVariable->getValue())
+            );
+        }
+
+        return $replacedVariables;
     }
 }

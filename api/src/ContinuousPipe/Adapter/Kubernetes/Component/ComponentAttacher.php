@@ -35,8 +35,9 @@ class ComponentAttacher
     }
 
     /**
-     * @param DeploymentContext $context
+     * @param DeploymentContext       $context
      * @param ComponentCreationStatus $status
+     *
      * @throws ComponentException
      */
     public function attach(DeploymentContext $context, ComponentCreationStatus $status)
