@@ -5,7 +5,7 @@ tasks:
           services:
               ui:
                   specification:
-                      environment:
+                      environment_variables:
                           - name: AUTHENTICATOR_API_URL
                             value: authenticator.continuouspipe.io
                           - name: LOG_STREAM_URL
