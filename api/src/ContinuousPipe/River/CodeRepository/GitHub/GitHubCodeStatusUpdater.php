@@ -95,7 +95,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     private function generateTideUrl(TideContext $tideContext)
     {
         return sprintf(
-            '%s/flows/%s/tide/%s/logs',
+            '%s/flows/%s/tides/%s/logs',
             $this->getUiBaseUrl(),
             (string) $tideContext->getFlowUuid(),
             (string) $tideContext->getTideUuid()
