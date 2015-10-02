@@ -6,7 +6,6 @@ use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Component\ComponentAttacher;
 use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
 use ContinuousPipe\Adapter\Kubernetes\Component\ComponentException;
-use ContinuousPipe\Adapter\Kubernetes\Event\ComponentCreated;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
@@ -55,18 +54,19 @@ class CreateComponentsHandler implements DeploymentHandler
      * @var PublicServiceVoter
      */
     private $publicServiceVoter;
+
     /**
      * @var ComponentAttacher
      */
     private $attacher;
 
     /**
-     * @param ComponentTransformer $componentTransformer
+     * @param ComponentTransformer    $componentTransformer
      * @param DeploymentClientFactory $clientFactory
-     * @param MessageBus $eventBus
-     * @param LoggerFactory $loggerFactory
-     * @param PublicServiceVoter $publicServiceVoter
-     * @param ComponentAttacher $attacher
+     * @param MessageBus              $eventBus
+     * @param LoggerFactory           $loggerFactory
+     * @param PublicServiceVoter      $publicServiceVoter
+     * @param ComponentAttacher       $attacher
      */
     public function __construct(ComponentTransformer $componentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, PublicServiceVoter $publicServiceVoter, ComponentAttacher $attacher)
     {
@@ -104,8 +104,6 @@ class CreateComponentsHandler implements DeploymentHandler
                 )));
 
                 $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
-
-                throw $e;
             } catch (ComponentException $e) {
                 $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
             }
