@@ -30,15 +30,22 @@ class TideConfigurationFactory
     private $configurationEnhancers;
 
     /**
+     * @var Flow\ConfigurationFinalizer[]
+     */
+    private $configurationFinalizers;
+
+    /**
      * @param FileSystemResolver      $fileSystemResolver
      * @param TaskFactoryRegistry     $taskFactoryRegistry
      * @param ConfigurationEnhancer[] $configurationEnhancers
+     * @param array                   $configurationFinalizers
      */
-    public function __construct(FileSystemResolver $fileSystemResolver, TaskFactoryRegistry $taskFactoryRegistry, array $configurationEnhancers)
+    public function __construct(FileSystemResolver $fileSystemResolver, TaskFactoryRegistry $taskFactoryRegistry, array $configurationEnhancers, array $configurationFinalizers)
     {
         $this->fileSystemResolver = $fileSystemResolver;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
         $this->configurationEnhancers = $configurationEnhancers;
+        $this->configurationFinalizers = $configurationFinalizers;
     }
 
     /**
@@ -77,42 +84,10 @@ class TideConfigurationFactory
             throw new TideConfigurationException($e->getMessage(), 0, $e);
         }
 
-        return $this->replaceVariables($configuration);
-    }
-
-    /**
-     * @param array $configuration
-     *
-     * @return array
-     */
-    private function replaceVariables(array $configuration)
-    {
-        $variables = $this->resolveVariables($configuration);
-        $variableKeys = array_map(function ($key) {
-            return sprintf('${%s}', $key);
-        }, array_keys($variables));
-
-        array_walk_recursive($configuration, function (&$value) use ($variableKeys, $variables) {
-            if (is_string($value)) {
-                $value = str_replace($variableKeys, array_values($variables), $value);
-            }
-        });
-
-        return $configuration;
-    }
-
-    /**
-     * @param array $configuration
-     *
-     * @return array
-     */
-    private function resolveVariables(array $configuration)
-    {
-        $variables = [];
-        foreach ($configuration['environment_variables'] as $item) {
-            $variables[$item['name']] = $item['value'];
+        foreach ($this->configurationFinalizers as $finalizer) {
+            $configuration = $finalizer->finalize($configuration);
         }
 
-        return $variables;
+        return $configuration;
     }
 }
