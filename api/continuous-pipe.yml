@@ -8,7 +8,7 @@ tasks:
           services:
               api:
                   specification:
-                      environment:
+                      environment_variables:
                           - name: AUTHENTICATOR_URL
                             value: http://authenticator.continuouspipe.io
                           - name: LOGSTREAM_URL
@@ -21,7 +21,7 @@ tasks:
                             value: http://ui.continuouspipe.io
               worker:
                   specification:
-                      environment:
+                      environment_variables:
                           - name: AUTHENTICATOR_URL
                             value: http://authenticator.continuouspipe.io
                           - name: LOGSTREAM_URL
