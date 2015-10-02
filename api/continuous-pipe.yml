@@ -17,8 +17,11 @@ tasks:
                             value: http://builder.continuouspipe.io
                           - name: PIPE_URL
                             value: http://pipe.continuouspipe.io
-                          - name: SERVICE_RIVERUI_PUBLIC_ENDPOINT
+                          - name: RIVER_UI_URL
                             value: http://ui.continuouspipe.io
+                          - name: RIVER_URL
+                            value: ${SERVICE_API_PUBLIC_ENDPOINT}
+
               worker:
                   specification:
                       environment_variables:
@@ -30,6 +33,8 @@ tasks:
                             value: http://builder.continuouspipe.io
                           - name: PIPE_URL
                             value: http://pipe.continuouspipe.io
+                          - name: RIVER_URL
+                            value: ${SERVICE_API_PUBLIC_ENDPOINT}
 
     - run:
           providerName: kubernetes/cp-cluster
