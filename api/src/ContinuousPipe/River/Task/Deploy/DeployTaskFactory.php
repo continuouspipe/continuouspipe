@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\Model\Component\Port;
+use ContinuousPipe\River\Flow\Configuration;
 use ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
@@ -98,14 +99,7 @@ class DeployTaskFactory implements TaskFactory
                                             ->integerNode('number_of_replicas')->defaultValue(1)->end()
                                         ->end()
                                     ->end()
-                                    ->arrayNode('environment_variables')
-                                        ->prototype('array')
-                                            ->children()
-                                                ->scalarNode('name')->isRequired()->end()
-                                                ->scalarNode('value')->isRequired()->end()
-                                            ->end()
-                                        ->end()
-                                    ->end()
+                                    ->append(Configuration::getEnvironmentVariablesNode())
                                     ->arrayNode('ports')
                                         ->prototype('array')
                                             ->children()
