@@ -33,5 +33,7 @@ class AppExtension extends Extension
         $loader->load('run/task.xml');
         $loader->load('run/handlers.xml');
         $loader->load('run/logging.xml');
+        $loader->load('wait/task.xml');
+        $loader->load('wait/logging.xml');
     }
 }

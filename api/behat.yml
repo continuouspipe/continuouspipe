@@ -40,6 +40,7 @@ default:
                     - @kernel
                     - @river.pipe_client
                     - @jms_serializer
+                - Task\WaitContext: ~
                 - OrganisationContext:
                     - @kernel
                     - @repository_river.organisation_repository

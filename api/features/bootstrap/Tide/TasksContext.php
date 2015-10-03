@@ -188,8 +188,10 @@ class TasksContext implements Context
      */
     private function getCurrentTide()
     {
-        return $this->tideRepository->find(
-            $this->tideContext->getCurrentTideUuid()
-        );
+        if (null === ($uuid = $this->tideContext->getCurrentTideUuid())) {
+            throw new \RuntimeException('No running tide found');
+        }
+
+        return $this->tideRepository->find($uuid);
     }
 }
