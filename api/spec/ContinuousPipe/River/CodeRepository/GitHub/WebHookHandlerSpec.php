@@ -13,6 +13,7 @@ use ContinuousPipe\River\View\TideRepository;
 use GitHub\WebHook\Event\PushEvent;
 use GitHub\WebHook\GitHubRequest;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -51,6 +52,7 @@ class WebHookHandlerSpec extends ObjectBehavior
         $tideFactory->createFromCodeReference($flow, $codeReference)->shouldBeCalled()->willReturn($tide);
         $tide->getUuid()->willReturn($uuid);
         $tide->popNewEvents()->willReturn([]);
+        $tide->apply(Argument::any())->willReturn(null);
 
         $this->handle($flow, $gitHubRequest);
     }

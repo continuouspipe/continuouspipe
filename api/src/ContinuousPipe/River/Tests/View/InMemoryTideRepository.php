@@ -57,7 +57,10 @@ class InMemoryTideRepository implements TideRepository
     public function find(Uuid $uuid)
     {
         if (!array_key_exists((string) $uuid, $this->tides)) {
-            throw new TideNotFound();
+            throw new TideNotFound(sprintf(
+                'Tide with UUID "%s" not found',
+                $uuid
+            ));
         }
 
         return $this->tides[(string) $uuid];

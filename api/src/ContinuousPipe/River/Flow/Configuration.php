@@ -36,6 +36,18 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->append($this->getTasksNode())
+                ->arrayNode('starts_after')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('push')->defaultValue('true')->end()
+                        ->arrayNode('status')
+                            ->children()
+                                ->scalarNode('context')->isRequired()->end()
+                                ->scalarNode('value')->isRequired()->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 

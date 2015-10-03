@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestDeploymentNotifier;
@@ -100,12 +101,39 @@ class GitHubContext implements Context
     public function aPushWebhookIsReceived()
     {
         $contents = file_get_contents(__DIR__.'/../fixtures/push-master.json');
-        $flowUuid = $this->flowContext->getCurrentUuid();
-        $this->response = $this->kernel->handle(Request::create('/web-hook/github/'.$flowUuid, 'POST', [], [], [], [
-            'CONTENT_TYPE' => 'application/json',
-            'HTTP_X_GITHUB_EVENT' => 'push',
-            'HTTP_X_GITHUB_DELIVERY' => '1234',
-        ], $contents));
+
+        $this->sendWebHook('push', $contents);
+    }
+
+    /**
+     * @When a status webhook is received with the context :context and the value :state
+     */
+    public function aStatusWebhookIsReceivedWithTheContextAndTheValue($context, $state)
+    {
+        $decoded = json_decode(file_get_contents(__DIR__.'/../fixtures/status-pending.json'), true);
+        $decoded['context'] = $context;
+        $decoded['state'] = $state;
+
+        /** @var TideCreated $tideCreatedEvent */
+        $tideCreatedEvent = $this->tideContext->getEventsOfType(TideCreated::class)[0];
+        $codeReference = $tideCreatedEvent->getTideContext()->getCodeReference();
+        $decoded['repository']['id'] = $codeReference->getRepository()->getIdentifier();
+        $decoded['branches'][0]['name'] = $codeReference->getBranch();
+        $decoded['branches'][0]['commit']['sha'] = $codeReference->getCommitSha();
+
+        $this->sendWebHook('status', json_encode($decoded));
+    }
+
+    /**
+     * @When a status webhook is received with the context :arg1 and the value :arg2 for a different code reference
+     */
+    public function aStatusWebhookIsReceivedWithTheContextAndTheValueForADifferentCodeReference($context, $state)
+    {
+        $decoded = json_decode(file_get_contents(__DIR__.'/../fixtures/status-pending.json'), true);
+        $decoded['context'] = $context;
+        $decoded['state'] = $state;
+
+        $this->sendWebHook('status', json_encode($decoded));
     }
 
     /**
@@ -114,16 +142,15 @@ class GitHubContext implements Context
     public function theCreatedTideUuidShouldBeReturned()
     {
         if (200 !== $this->response->getStatusCode()) {
-            echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
                 'Expected status code 200 but got %d',
                 $this->response->getStatusCode()
             ));
         }
 
-        $json = json_decode($this->response->getContent(), true);
-        $uuid = $json[0]['uuid'];
-        $this->tideContext->setCurrentTideUuid(\Rhumsaa\Uuid\Uuid::fromString($uuid));
+        if (false === ($json = json_decode($this->response->getContent(), true)) || !isset($json['uuid'])) {
+            throw new \RuntimeException('No `uuid` found');
+        }
     }
 
     /**
@@ -200,6 +227,36 @@ class GitHubContext implements Context
 
         if (0 == count($deletions)) {
             throw new \RuntimeException('No deleted environment found');
+        }
+    }
+
+    /**
+     * @param string $type
+     * @param string $contents
+     */
+    private function sendWebHook($type, $contents)
+    {
+        $flowUuid = $this->flowContext->getCurrentUuid();
+        $this->response = $this->kernel->handle(Request::create('/web-hook/github/'.$flowUuid, 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_X_GITHUB_EVENT' => $type,
+            'HTTP_X_GITHUB_DELIVERY' => '1234',
+        ], $contents));
+
+        if (200 !== $this->response->getStatusCode()) {
+            echo $this->response->getContent();
+            throw new \RuntimeException(sprintf(
+                'Expected status code %d, but got %d',
+                200,
+                $this->response->getStatusCode()
+            ));
+        }
+
+        $json = json_decode($this->response->getContent(), true);
+
+        if (isset($json['uuid'])) {
+            $uuid = $json['uuid'];
+            $this->tideContext->setCurrentTideUuid(\Rhumsaa\Uuid\Uuid::fromString($uuid));
         }
     }
 }

@@ -210,12 +210,37 @@ EOF;
      */
     public function theTideShouldBeFailed()
     {
-        $numberOfImageBuildStartedEvents = count($this->getEventsOfType(TideFailed::class));
+        $numberOfTideFailedEvents = count($this->getEventsOfType(TideFailed::class));
 
-        if (1 !== $numberOfImageBuildStartedEvents) {
+        if (1 !== $numberOfTideFailedEvents) {
             throw new \Exception(sprintf(
-                'Found %d tail failed event, expected 1',
-                $numberOfImageBuildStartedEvents
+                'Found %d tide failed event, expected 1',
+                $numberOfTideFailedEvents
+            ));
+        }
+    }
+
+    /**
+     * @Then the tide should be running
+     */
+    public function theTideShouldBeRunning()
+    {
+        $numberOfTideFailedEvents = count($this->getEventsOfType(TideFailed::class));
+        $numberOfTideSuccessfulEvents = count($this->getEventsOfType(TideSuccessful::class));
+        $numberOfTideStartedEvents = count($this->getEventsOfType(TideStarted::class));
+
+        if (1 !== $numberOfTideStartedEvents) {
+            throw new \Exception(sprintf(
+                'Found %d tide started event, expected 1',
+                $numberOfTideStartedEvents
+            ));
+        }
+
+        if (0 !== $numberOfTideSuccessfulEvents || 0 !== $numberOfTideFailedEvents) {
+            throw new \Exception(sprintf(
+                'Found tide failed event (%d) or tide successful (%d), expected 0',
+                $numberOfTideFailedEvents,
+                $numberOfTideSuccessfulEvents
             ));
         }
     }
@@ -707,8 +732,12 @@ EOF;
      *
      * @return TideEvent[] array
      */
-    private function getEventsOfType($eventType)
+    public function getEventsOfType($eventType)
     {
+        if (null === $this->tideUuid) {
+            throw new \RuntimeException('Found not tide UUID');
+        }
+
         $events = $this->eventStore->findByTideUuid($this->tideUuid);
 
         return array_values(array_filter($events, function (TideEvent $event) use ($eventType) {

@@ -64,6 +64,7 @@ class RepositoryWebHookManager
         $webHook = new WebHook('web', $configuration, [
             'pull_request',
             'push',
+            'status',
         ]);
 
         try {

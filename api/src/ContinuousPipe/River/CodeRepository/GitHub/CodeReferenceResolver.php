@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 use ContinuousPipe\River\CodeReference;
 use GitHub\WebHook\Event\PullRequestEvent;
 use GitHub\WebHook\Event\PushEvent;
+use GitHub\WebHook\Event\StatusEvent;
 use GitHub\WebHook\Model\Repository;
 
 class CodeReferenceResolver
@@ -38,6 +39,29 @@ class CodeReferenceResolver
             $event->getRepository(),
             $headReference->getReference(),
             $headReference->getSha1()
+        );
+    }
+
+    /**
+     * Create a CodeReference from the given status event object.
+     *
+     * @param StatusEvent $event
+     *
+     * @return CodeReference
+     */
+    public function fromStatusEvent(StatusEvent $event)
+    {
+        $branches = $event->getBranches();
+        if (count($branches) == 0) {
+            throw new \InvalidArgumentException('The status event is not related to any branch');
+        }
+
+        $branch = $branches[0];
+
+        return $this->create(
+            $event->getRepository(),
+            $branch->getName(),
+            $branch->getCommit()->getSha1()
         );
     }
 
