@@ -60,6 +60,20 @@ class Configuration implements ConfigurationInterface
             ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
             ->prototype('array')
+                ->validate()
+                    ->always()
+                    ->then(function($value) {
+                        $keys = array_keys($value);
+                        if (count($keys) != 1) {
+                            throw new \InvalidArgumentException(sprintf(
+                                'Only one task should be configured here but found "%s"',
+                                implode('" & "', $keys)
+                            ));
+                        }
+
+                        return $value;
+                    })
+                ->end()
                 ->children();
 
         foreach ($this->taskFactoryRegistry->findAll() as $factory) {

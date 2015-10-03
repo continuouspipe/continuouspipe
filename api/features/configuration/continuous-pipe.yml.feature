@@ -13,8 +13,7 @@ Feature:
     When a tide is started
     Then the build task should be running
 
-  # Note: the `deploy` task need to know where
-  Scenario: The configuration file should be validated
+  Scenario: When the deploy task is missing some arguments, then the tide should be failed
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -111,3 +110,16 @@ Feature:
             deploy:
                 providerName: BAR
     """
+
+  Scenario: The configuration is not valid if many task configuration are in the same task
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        - deploy:
+              providerName: foo
+              services: []
+          build:
+              services: []
+    """
+    When a tide is started
+    Then the tide should be failed
