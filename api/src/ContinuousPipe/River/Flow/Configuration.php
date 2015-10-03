@@ -60,14 +60,13 @@ class Configuration implements ConfigurationInterface
             ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
             ->prototype('array')
-            ->children();
+                ->children();
 
         foreach ($this->taskFactoryRegistry->findAll() as $factory) {
             $nodeChildren->append($factory->getConfigTree());
         }
 
         $nodeChildren
-                    ->end()
                 ->end()
             ->end()
         ;
