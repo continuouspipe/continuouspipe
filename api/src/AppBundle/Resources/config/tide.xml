@@ -25,15 +25,7 @@
         <service id="river.tide.configuration_enhancer.deploy_built_images" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\DeployBuiltImagesByDefault" />
         <service id="river.tide.configuration_enhancer.run.get_images_name_from_built_services" class="ContinuousPipe\River\Task\Run\ConfigurationEnhancer\GetImageNameFromBuiltServices" />
 
-        <service id="river.tide.configuration_finalizer.merge_environment_variables" class="ContinuousPipe\River\Flow\ConfigurationFinalizer\MergeEnvironmentVariables">
-            <argument type="collection">
-                <argument>[environment_variables]</argument>
-                <argument>[tasks][*][deploy][services][*][specification][environment_variables]</argument>
-            </argument>
-        </service>
-        <service id="river.tide.configuration_finalizer.replace_environ_values" class="ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues" />
-
-        <service id="river.tide_configuration_factory" class="ContinuousPipe\River\TideConfigurationFactory">
+        <service id="river.tide_configuration_factory" class="ContinuousPipe\River\Flow\ConfigurationFactory">
             <argument type="service" id="river.file_system_resolver" />
             <argument type="service" id="river.task_factory_registry" />
             <argument type="collection">
@@ -43,11 +35,24 @@
                 <argument type="service" id="river.tide.configuration_enhancer.deploy_built_images" />
                 <argument type="service" id="river.tide.configuration_enhancer.run.get_images_name_from_built_services" />
             </argument>
+        </service>
+
+        <service id="river.tide.configuration_factory.merge_environment_variables"
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\MergeEnvironmentVariables"
+                 decorates="river.tide_configuration_factory">
+            <argument type="service" id="river.tide.configuration_factory.merge_environment_variables.inner" />
             <argument type="collection">
-                <argument type="service" id="river.tide.configuration_finalizer.merge_environment_variables" />
-                <argument type="service" id="river.tide.configuration_finalizer.replace_environ_values" />
+                <argument>[environment_variables]</argument>
+                <argument>[tasks][*][deploy][services][*][specification][environment_variables]</argument>
             </argument>
         </service>
+
+        <service id="river.tide.configuration_finalizer.replace_environ_values"
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues"
+                 decorates="river.tide_configuration_factory">
+            <argument type="service" id="river.tide.configuration_finalizer.replace_environ_values.inner" />
+        </service>
+
         <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.task_factory_registry" />
