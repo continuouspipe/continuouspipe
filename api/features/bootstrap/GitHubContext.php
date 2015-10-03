@@ -122,7 +122,7 @@ class GitHubContext implements Context
         }
 
         $json = json_decode($this->response->getContent(), true);
-        $uuid = $json[0]['uuid'];
+        $uuid = $json['uuid'];
         $this->tideContext->setCurrentTideUuid(\Rhumsaa\Uuid\Uuid::fromString($uuid));
     }
 

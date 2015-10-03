@@ -58,17 +58,23 @@ class WebHookHandler
      * @param Flow          $flow
      * @param GitHubRequest $gitHubRequest
      *
-     * @return \ContinuousPipe\River\View\Tide[]|Flow|null
+     * @return array
      */
     public function handle(Flow $flow, GitHubRequest $gitHubRequest)
     {
         $event = $gitHubRequest->getEvent();
         if ($event instanceof PingEvent) {
-            return $flow;
+            return [
+                'flow' => $flow,
+            ];
         } elseif ($event instanceof PushEvent) {
             return $this->handlePushEvent($flow, $event);
         } elseif ($event instanceof PullRequestEvent) {
-            return $this->handlePullRequestEvent($flow, $event);
+            $this->handlePullRequestEvent($event);
+
+            return [
+                'flow' => $flow,
+            ];
         }
 
         throw new UnsupportedMediaTypeHttpException(sprintf(
@@ -81,7 +87,7 @@ class WebHookHandler
      * @param Flow      $flow
      * @param PushEvent $event
      *
-     * @return \ContinuousPipe\River\View\Tide[]
+     * @return \ContinuousPipe\River\View\Tide
      */
     private function handlePushEvent(Flow $flow, PushEvent $event)
     {
@@ -92,16 +98,13 @@ class WebHookHandler
             $this->eventBus->handle($event);
         }
 
-        return [
-            $this->tideRepository->find($tide->getUuid()),
-        ];
+        return $this->tideRepository->find($tide->getUuid());
     }
 
     /**
-     * @param Flow             $flow
      * @param PullRequestEvent $event
      */
-    private function handlePullRequestEvent(Flow $flow, PullRequestEvent $event)
+    private function handlePullRequestEvent(PullRequestEvent $event)
     {
         $codeReference = $this->codeReferenceResolver->fromPullRequestEvent($event);
 
