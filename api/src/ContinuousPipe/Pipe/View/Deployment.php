@@ -40,6 +40,11 @@ class Deployment
     private $publicEndpoints;
 
     /**
+     * @var ComponentStatus[]
+     */
+    private $componentStatuses;
+
+    /**
      * @param DeploymentRequest $request
      * @param User              $user
      *
@@ -110,5 +115,21 @@ class Deployment
     public function setPublicEndpoints($publicEndpoints)
     {
         $this->publicEndpoints = $publicEndpoints;
+    }
+
+    /**
+     * @return ComponentStatus[]
+     */
+    public function getComponentStatuses()
+    {
+        return $this->componentStatuses;
+    }
+
+    /**
+     * @param ComponentStatus[] $componentStatuses
+     */
+    public function setComponentStatuses($componentStatuses)
+    {
+        $this->componentStatuses = $componentStatuses;
     }
 }

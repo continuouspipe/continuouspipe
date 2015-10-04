@@ -15,6 +15,7 @@ use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
+use ContinuousPipe\Pipe\View\ComponentStatus;
 use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
@@ -88,10 +89,12 @@ class CreateComponentsHandler implements DeploymentHandler
 
         $environment = $context->getEnvironment();
         $logger = $this->loggerFactory->from($context->getLog());
+        $componentStatus = [];
 
         foreach ($environment->getComponents() as $component) {
             try {
                 $status = $this->createComponent($client, $logger, $component);
+                $componentStatus[$component->getName()] = $this->createComponentStatus($status);
 
                 if ($this->haveToAttach($component)) {
                     $this->attacher->attach($context, $status);
@@ -109,7 +112,7 @@ class CreateComponentsHandler implements DeploymentHandler
             }
         }
 
-        $this->eventBus->handle(new ComponentsCreated($context));
+        $this->eventBus->handle(new ComponentsCreated($context, $componentStatus));
     }
 
     /**
@@ -258,5 +261,19 @@ class CreateComponentsHandler implements DeploymentHandler
     public function supports(DeploymentContext $context)
     {
         return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
+    }
+
+    /**
+     * @param ComponentCreationStatus $status
+     *
+     * @return ComponentStatus
+     */
+    private function createComponentStatus(ComponentCreationStatus $status)
+    {
+        return new ComponentStatus(
+            count($status->getCreated()) > 0,
+            count($status->getUpdated()) > 0,
+            count($status->getDeleted()) > 0
+        );
     }
 }
