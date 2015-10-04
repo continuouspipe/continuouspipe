@@ -63,7 +63,7 @@ class StartDeploymentHandler
             $failedDeployment = new Client\Deployment(Uuid::fromString(Uuid::NIL), $deploymentRequest, Client\Deployment::STATUS_FAILURE);
             $this->eventBus->handle(new DeploymentFailed($command->getTideUuid(), $failedDeployment, $deployContext->getTaskId()));
 
-            $logger = $this->loggerFactory->from($deployContext->getLog());
+            $logger = $this->loggerFactory->from($deployContext->getTaskLog());
             $logger->append(new Text(sprintf(
                 'PANIC (%s): %s',
                 get_class($e),

@@ -62,10 +62,10 @@ class DeployTask extends EventDrivenTask
      */
     public function start()
     {
-        $logger = $this->loggerFactory->from($this->context->getTideLog());
+        $logger = $this->loggerFactory->from($this->context->getLog());
         $log = $logger->append(new Text('Deploying environment'));
 
-        $this->context->setLog($log);
+        $this->context->setTaskLog($log);
 
         $this->commandBus->handle(new StartDeploymentCommand(
             $this->context->getTideUuid(),

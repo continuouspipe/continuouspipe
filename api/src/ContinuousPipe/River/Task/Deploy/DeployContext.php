@@ -34,15 +34,7 @@ class DeployContext extends TaskContext
     /**
      * @return Log
      */
-    public function getTideLog()
-    {
-        return parent::getLog();
-    }
-
-    /**
-     * @return Log
-     */
-    public function getLog()
+    public function getTaskLog()
     {
         return $this->get(self::DEPLOY_LOG_KEY);
     }
@@ -50,7 +42,7 @@ class DeployContext extends TaskContext
     /**
      * @param Log $log
      */
-    public function setLog(Log $log)
+    public function setTaskLog(Log $log)
     {
         $this->set(self::DEPLOY_LOG_KEY, $log);
     }
