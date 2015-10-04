@@ -7,6 +7,7 @@ Feature:
     Given I am authenticated
     And I have a valid Kubernetes provider
 
+  @smoke
   Scenario: The status of the deployed components should be sent in the notification
     When I send a deployment request from application template "simple-app"
     And the deployment is successful
