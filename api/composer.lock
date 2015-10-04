@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ab09cc819325ee3bd697e3655f466638",
-    "content-hash": "10966bcd00a32e4317b6a575addbe97f",
+    "hash": "9ee388a3f916cf8cd8e14bbfa9002675",
+    "content-hash": "24c9d9d20443a1ffa0c06872129123b2",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3197,12 +3197,12 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:continuouspipe/logstream-client.git",
+                "url": "https://github.com/sroze/logstream-client.git",
                 "reference": "fe89f8920b5bb0ca3a6f15f6d1ce9a6614575333"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/logstream-client/zipball/fe89f8920b5bb0ca3a6f15f6d1ce9a6614575333",
+                "url": "https://api.github.com/repos/sroze/logstream-client/zipball/fe89f8920b5bb0ca3a6f15f6d1ce9a6614575333",
                 "reference": "fe89f8920b5bb0ca3a6f15f6d1ce9a6614575333",
                 "shasum": ""
             },

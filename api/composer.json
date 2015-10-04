@@ -85,7 +85,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/continuouspipe/logstream-client"
+            "url": "https://github.com/sroze/logstream-client"
         },
         {
             "type": "vcs",
