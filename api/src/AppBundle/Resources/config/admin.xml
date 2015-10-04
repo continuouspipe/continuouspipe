@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.admin.white_listed_user" class="AppBundle\Admin\WhiteListedUserAdmin">
+            <tag name="sonata.admin" manager_type="orm" group="Users" label="White list"/>
+            <argument />
+            <argument>ContinuousPipe\User\WhiteListedUser</argument>
+            <argument />
+        </service>
+
+        <service id="app.admin.user" class="AppBundle\Admin\UserAdmin">
+            <tag name="sonata.admin" manager_type="orm" group="Users" label="Users"/>
+            <argument />
+            <argument>ContinuousPipe\User\SecurityUser</argument>
+            <argument />
+        </service>
+    </services>
+</container>

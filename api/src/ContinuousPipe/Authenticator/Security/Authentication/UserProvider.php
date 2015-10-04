@@ -26,6 +26,10 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     private $userDetails;
 
+    /**
+     * @param SecurityUserRepository $securityUserRepository
+     * @param UserDetails            $userDetails
+     */
     public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails)
     {
         $this->securityUserRepository = $securityUserRepository;
@@ -37,6 +41,9 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
+        $gitHubResponse = $response->getResponse();
+        $gitHubLogin = $gitHubResponse['login'];
+
         $email = $this->getEmail($response);
 
         try {
@@ -45,9 +52,8 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
             $securityUser = $this->createUserFromEmail($email);
         }
 
-        $gitHubResponse = $response->getResponse();
         $securityUser->getUser()->setGitHubCredentials(new GitHubCredentials(
-            $gitHubResponse['login'],
+            $gitHubLogin,
             $response->getAccessToken(),
             $response->getRefreshToken()
         ));
