@@ -50,7 +50,7 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
             ),
             new DeploymentRequest\Notification(
                 $callbackUrl,
-                $context->getLog()->getId()
+                $context->getTaskLog()->getId()
             )
         );
     }

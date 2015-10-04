@@ -84,6 +84,14 @@ abstract class EventDrivenTask implements Task
     }
 
     /**
+     * @return bool
+     */
+    public function isSkipped()
+    {
+        return $this->numberOfEventsOfType(TaskSkipped::class) > 0;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function popNewEvents()
@@ -92,5 +100,21 @@ abstract class EventDrivenTask implements Task
         $this->newEvents = [];
 
         return $events;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExposedContext()
+    {
+        return [];
     }
 }

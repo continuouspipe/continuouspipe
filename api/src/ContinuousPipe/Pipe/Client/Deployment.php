@@ -49,15 +49,26 @@ class Deployment
     private $publicEndpoints;
 
     /**
+     * @JMS\Type("array<string, ContinuousPipe\Pipe\Client\ComponentStatuses>")
+     *
+     * @var ComponentStatus[]
+     */
+    private $componentStatuses;
+
+    /**
      * @param Uuid              $uuid
      * @param DeploymentRequest $request
      * @param string            $status
+     * @param array             $publicEndpoints
+     * @param array             $componentStatuses
      */
-    public function __construct(Uuid $uuid, DeploymentRequest $request, $status)
+    public function __construct(Uuid $uuid, DeploymentRequest $request, $status, array $publicEndpoints = [], array $componentStatuses = [])
     {
         $this->uuid = (string) $uuid;
         $this->request = $request;
         $this->status = $status;
+        $this->publicEndpoints = $publicEndpoints;
+        $this->componentStatuses = $componentStatuses;
     }
 
     /**
@@ -114,5 +125,13 @@ class Deployment
     public function getPublicEndpoints()
     {
         return $this->publicEndpoints;
+    }
+
+    /**
+     * @return ComponentStatus[]
+     */
+    public function getComponentStatuses()
+    {
+        return $this->componentStatuses;
     }
 }

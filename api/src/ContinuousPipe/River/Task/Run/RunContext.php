@@ -55,7 +55,7 @@ class RunContext extends TaskContext
     /**
      * @return Log
      */
-    public function getLog()
+    public function getTaskLog()
     {
         return $this->get(self::KEY_RUNNER_LOG);
     }
@@ -63,16 +63,8 @@ class RunContext extends TaskContext
     /**
      * @param Log $log
      */
-    public function setLog(Log $log)
+    public function setTaskLog(Log $log)
     {
         $this->set(self::KEY_RUNNER_LOG, $log);
-    }
-
-    /**
-     * @return Log
-     */
-    public function getTideLog()
-    {
-        return parent::getLog();
     }
 }

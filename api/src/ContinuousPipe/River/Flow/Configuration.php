@@ -13,6 +13,9 @@ class Configuration implements ConfigurationInterface
      */
     private $taskFactoryRegistry;
 
+    /**
+     * @param TaskFactoryRegistry $taskFactoryRegistry
+     */
     public function __construct(TaskFactoryRegistry $taskFactoryRegistry)
     {
         $this->taskFactoryRegistry = $taskFactoryRegistry;
@@ -27,14 +30,7 @@ class Configuration implements ConfigurationInterface
         $root = $treeBuilder->root('flow');
         $root
             ->children()
-                ->arrayNode('environment_variables')
-                    ->prototype('array')
-                        ->children()
-                            ->scalarNode('name')->isRequired()->end()
-                            ->scalarNode('value')->isRequired()->end()
-                        ->end()
-                    ->end()
-                ->end()
+                ->append(self::getEnvironmentVariablesNode())
                 ->append($this->getTasksNode())
                 ->arrayNode('starts_after')
                     ->addDefaultsIfNotSet()
@@ -64,14 +60,54 @@ class Configuration implements ConfigurationInterface
             ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
             ->prototype('array')
-            ->children();
+                ->validate()
+                    ->always()
+                    ->then(function ($value) {
+                        $keys = array_filter(array_keys($value), function ($key) {
+                            return $key != 'filter';
+                        });
+
+                        if (count($keys) == 0) {
+                            throw new \InvalidArgumentException('You have to configure a task here, found nothing');
+                        } elseif (count($keys) > 1) {
+                            throw new \InvalidArgumentException(sprintf(
+                                'Only one task should be configured here but found "%s"',
+                                implode('" & "', $keys)
+                            ));
+                        }
+
+                        return $value;
+                    })
+                ->end()
+                ->children();
 
         foreach ($this->taskFactoryRegistry->findAll() as $factory) {
             $nodeChildren->append($factory->getConfigTree());
         }
 
         $nodeChildren
+                    ->arrayNode('filter')
+                        ->children()
+                            ->scalarNode('expression')->isRequired()->end()
+                        ->end()
                     ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    public static function getEnvironmentVariablesNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('environment_variables');
+
+        $node
+            ->prototype('array')
+                ->children()
+                    ->scalarNode('name')->isRequired()->end()
+                    ->scalarNode('value')->isRequired()->end()
                 ->end()
             ->end()
         ;

@@ -2,15 +2,32 @@
 
 namespace ContinuousPipe\River\Flow\ConfigurationFinalizer;
 
-use ContinuousPipe\River\Flow\ConfigurationFinalizer;
+use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\TideConfigurationFactory;
 
-class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
+class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
 {
+    /**
+     * @var TideConfigurationFactory
+     */
+    private $factory;
+
+    /**
+     * @param TideConfigurationFactory $factory
+     */
+    public function __construct(TideConfigurationFactory $factory)
+    {
+        $this->factory = $factory;
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function finalize(array $configuration)
+    public function getConfiguration(Flow $flow, CodeReference $codeReference)
     {
+        $configuration = $this->factory->getConfiguration($flow, $codeReference);
+
         $variables = $this->resolveVariables($configuration);
         $variableKeys = array_map(function ($key) {
             return sprintf('${%s}', $key);

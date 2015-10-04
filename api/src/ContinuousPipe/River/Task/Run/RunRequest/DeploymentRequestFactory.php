@@ -51,7 +51,7 @@ class DeploymentRequestFactory
             ]),
             new DeploymentRequest\Notification(
                 $this->getNotificationUrl($context),
-                $context->getLog()->getId()
+                $context->getTaskLog()->getId()
             )
         );
     }

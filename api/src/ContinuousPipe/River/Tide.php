@@ -7,11 +7,19 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Event\TideSuccessful;
+use ContinuousPipe\River\Task\TaskFailed;
 use ContinuousPipe\River\Task\TaskList;
+use ContinuousPipe\River\Task\TaskRunner;
+use ContinuousPipe\River\Task\TaskRunnerException;
 use Rhumsaa\Uuid\Uuid;
 
 class Tide
 {
+    /**
+     * @var TaskRunner
+     */
+    private $taskRunner;
+
     /**
      * This flag is set to true when we need to reconstruct a tide. It is locked
      * to prevent starting tasks.
@@ -41,10 +49,12 @@ class Tide
     private $newEvents = [];
 
     /**
-     * @param TaskList $taskList
+     * @param TaskRunner $taskRunner
+     * @param TaskList   $taskList
      */
-    public function __construct(TaskList $taskList)
+    public function __construct(TaskRunner $taskRunner, TaskList $taskList)
     {
+        $this->taskRunner = $taskRunner;
         $this->tasks = $taskList;
         $this->events = new EventCollection();
     }
@@ -60,14 +70,15 @@ class Tide
     /**
      * Create a new tide.
      *
+     * @param TaskRunner  $taskRunner
      * @param TaskList    $tasks
      * @param TideContext $context
      *
      * @return Tide
      */
-    public static function create(TaskList $tasks, TideContext $context)
+    public static function create(TaskRunner $taskRunner, TaskList $tasks, TideContext $context)
     {
-        $tide = new self($tasks);
+        $tide = new self($taskRunner, $tasks);
         $event = new TideCreated($context);
         $tide->apply($event);
         $tide->newEvents = [$event];
@@ -76,14 +87,15 @@ class Tide
     }
 
     /**
-     * @param TaskList $tasks
-     * @param $events
+     * @param TaskRunner  $taskRunner
+     * @param TaskList    $tasks
+     * @param TideEvent[] $events
      *
      * @return Tide
      */
-    public static function fromEvents(TaskList $tasks, $events)
+    public static function fromEvents(TaskRunner $taskRunner, TaskList $tasks, $events)
     {
-        $tide = new self($tasks);
+        $tide = new self($taskRunner, $tasks);
         $tide->locked = true;
         foreach ($events as $event) {
             $tide->apply($event);
@@ -162,14 +174,31 @@ class Tide
      */
     private function handleTasks(TideEvent $event)
     {
-        if ($this->tasks->hasRunning()) {
-            return;
-        } elseif ($this->tasks->hasFailed()) {
+        if ($this->tasks->hasFailed()) {
             $this->newEvents[] = new TideFailed($event->getTideUuid());
-        } elseif (null !== ($nextTask = $this->tasks->next())) {
-            $nextTask->start();
         } elseif ($this->tasks->allSuccessful()) {
             $this->newEvents[] = new TideSuccessful($event->getTideUuid());
+        } elseif (!$this->tasks->hasRunning() && !$event instanceof TaskFailed) {
+            try {
+                $this->nextTask();
+            } catch (TaskRunnerException $e) {
+                $this->newEvents[] = new TaskFailed($event->getTideUuid(), $e->getTask(), $e);
+                $this->newEvents[] = new TideFailed($event->getTideUuid());
+            }
+        }
+    }
+
+    /**
+     * Run the next task if possible.
+     */
+    private function nextTask()
+    {
+        if (null !== ($nextTask = $this->tasks->next())) {
+            $this->taskRunner->run($this, $nextTask);
+
+            if ($nextTask->isSkipped()) {
+                $this->nextTask();
+            }
         }
     }
 
