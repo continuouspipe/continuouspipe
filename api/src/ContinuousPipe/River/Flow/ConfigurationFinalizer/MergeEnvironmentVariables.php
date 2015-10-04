@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Flow\ConfigurationFinalizer;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\Flow\ConfigurationFinalizer;
 use ContinuousPipe\River\TideConfigurationFactory;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -22,7 +21,7 @@ class MergeEnvironmentVariables implements TideConfigurationFactory
 
     /**
      * @param TideConfigurationFactory $factory
-     * @param array $paths
+     * @param array                    $paths
      */
     public function __construct(TideConfigurationFactory $factory, array $paths)
     {

@@ -53,6 +53,12 @@
             <argument type="service" id="river.tide.configuration_finalizer.replace_environ_values.inner" />
         </service>
 
+        <service id="river.tide.configuration_finalizer.filter_tasks"
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\FilterTasks"
+                 decorates="river.tide_configuration_factory">
+            <argument type="service" id="river.tide.configuration_finalizer.filter_tasks.inner" />
+        </service>
+
         <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.task_factory_registry" />

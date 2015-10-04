@@ -62,14 +62,14 @@ class Configuration implements ConfigurationInterface
             ->prototype('array')
                 ->validate()
                     ->always()
-                    ->then(function($value) {
-                        $keys = array_filter(array_keys($value), function($key) {
+                    ->then(function ($value) {
+                        $keys = array_filter(array_keys($value), function ($key) {
                             return $key != 'filter';
                         });
 
                         if (count($keys) == 0) {
                             throw new \InvalidArgumentException('You have to configure a task here, found nothing');
-                        } else if (count($keys) > 1) {
+                        } elseif (count($keys) > 1) {
                             throw new \InvalidArgumentException(sprintf(
                                 'Only one task should be configured here but found "%s"',
                                 implode('" & "', $keys)

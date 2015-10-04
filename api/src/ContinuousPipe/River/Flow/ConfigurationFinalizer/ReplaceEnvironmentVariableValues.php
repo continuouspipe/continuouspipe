@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Flow\ConfigurationFinalizer;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\Flow\ConfigurationFinalizer;
 use ContinuousPipe\River\TideConfigurationFactory;
 
 class ReplaceEnvironmentVariableValues implements TideConfigurationFactory

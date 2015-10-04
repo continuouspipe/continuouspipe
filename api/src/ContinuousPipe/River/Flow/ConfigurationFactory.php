@@ -5,8 +5,6 @@ namespace ContinuousPipe\River\Flow;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\Flow\Configuration;
-use ContinuousPipe\River\Flow\ConfigurationEnhancer;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
