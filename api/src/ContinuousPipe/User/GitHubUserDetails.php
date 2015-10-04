@@ -40,12 +40,13 @@ class GitHubUserDetails implements UserDetails
 
     /**
      * @param string $token
+     *
      * @return GuzzleHttp\Message\Response
      */
     private function getEmailAddresses($token)
     {
-        return $this->client->get(self::GITHUB_API . '/user/emails', [
-            'headers' => ['Authorization' => 'token ' . $token ]
+        return $this->client->get(self::GITHUB_API.'/user/emails', [
+            'headers' => ['Authorization' => 'token '.$token],
         ]);
     }
 }

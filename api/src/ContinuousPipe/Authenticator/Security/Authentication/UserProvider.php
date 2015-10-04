@@ -4,12 +4,14 @@ namespace ContinuousPipe\Authenticator\Security\Authentication;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
+use ContinuousPipe\User\WhiteList;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use ContinuousPipe\User\EmailNotFoundException;
 use ContinuousPipe\User\GitHubCredentials;
 use ContinuousPipe\User\SecurityUser;
 use ContinuousPipe\User\User;
+use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -26,10 +28,21 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     private $userDetails;
 
-    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails)
+    /**
+     * @var WhiteList
+     */
+    private $whiteList;
+
+    /**
+     * @param SecurityUserRepository $securityUserRepository
+     * @param UserDetails            $userDetails
+     * @param WhiteList              $whiteList
+     */
+    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList)
     {
         $this->securityUserRepository = $securityUserRepository;
         $this->userDetails = $userDetails;
+        $this->whiteList = $whiteList;
     }
 
     /**
@@ -37,6 +50,15 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
+        $gitHubResponse = $response->getResponse();
+        $gitHubLogin = $gitHubResponse['login'];
+        if (!$this->whiteList->contains($gitHubLogin)) {
+            throw new InsufficientAuthenticationException(sprintf(
+                'User "%s" is not in the white list (yet? :)',
+                $gitHubLogin
+            ));
+        }
+
         $email = $this->getEmail($response);
 
         try {
@@ -45,9 +67,8 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
             $securityUser = $this->createUserFromEmail($email);
         }
 
-        $gitHubResponse = $response->getResponse();
         $securityUser->getUser()->setGitHubCredentials(new GitHubCredentials(
-            $gitHubResponse['login'],
+            $gitHubLogin,
             $response->getAccessToken(),
             $response->getRefreshToken()
         ));

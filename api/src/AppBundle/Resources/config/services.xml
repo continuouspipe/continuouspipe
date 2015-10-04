@@ -5,6 +5,9 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="app.white_list" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineWhiteList">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
         <service id="app.repository.security_user" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineSecurityUserRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
@@ -14,6 +17,7 @@
         <service id="app.security.user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\UserProvider">
             <argument type="service" id="app.repository.security_user" />
             <argument type="service" id="app.user_details.github" />
+            <argument type="service" id="app.white_list" />
         </service>
         <service id="app.security.authentication_provider" class="ContinuousPipe\Authenticator\Security\AuthenticationProvider">
             <argument type="service" id="router" />
