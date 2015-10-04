@@ -35,7 +35,7 @@ class HandlerForSuccessfulDeployment implements DeploymentHandler
     public function handle(DeploymentCommand $command)
     {
         if ($command instanceof CreateComponentsCommand) {
-            $this->messageBus->handle(new ComponentsCreated($command->getContext()));
+            $this->messageBus->handle(new ComponentsCreated($command->getContext(), []));
         } elseif ($command instanceof PrepareEnvironmentCommand) {
             $this->messageBus->handle(new EnvironmentPrepared($command->getContext()));
         } elseif ($command instanceof CreatePublicEndpointsCommand) {

@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Pipe\Event;
 
 use ContinuousPipe\Pipe\DeploymentContext;
+use ContinuousPipe\Pipe\View\ComponentStatus;
 
 class ComponentsCreated implements DeploymentEvent
 {
@@ -12,11 +13,18 @@ class ComponentsCreated implements DeploymentEvent
     private $deploymentContext;
 
     /**
-     * @param DeploymentContext $deploymentContext
+     * @var \ContinuousPipe\Pipe\View\ComponentStatus[]
      */
-    public function __construct(DeploymentContext $deploymentContext)
+    private $componentStatuses;
+
+    /**
+     * @param DeploymentContext $deploymentContext
+     * @param ComponentStatus[] $componentStatuses
+     */
+    public function __construct(DeploymentContext $deploymentContext, array $componentStatuses)
     {
         $this->deploymentContext = $deploymentContext;
+        $this->componentStatuses = $componentStatuses;
     }
 
     /**
@@ -33,5 +41,13 @@ class ComponentsCreated implements DeploymentEvent
     public function getDeploymentUuid()
     {
         return $this->deploymentContext->getDeployment()->getUuid();
+    }
+
+    /**
+     * @return \ContinuousPipe\Pipe\View\ComponentStatus[]
+     */
+    public function getComponentStatuses()
+    {
+        return $this->componentStatuses;
     }
 }

@@ -61,6 +61,18 @@ class ServiceContext implements Context
     }
 
     /**
+     * @Given I have an existing service :name
+     */
+    public function iHaveAnExistingService($name)
+    {
+        try {
+            $this->serviceRepository->findOneByName($name);
+        } catch (ServiceNotFound $e) {
+            $this->serviceRepository->create(new Service(new ObjectMetadata($name)));
+        }
+    }
+
+    /**
      * @Then the service :name should not be updated
      */
     public function theServiceShouldNotBeUpdated($name)

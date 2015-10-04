@@ -61,11 +61,6 @@ class EnvironmentContext implements Context
     private $deploymentRepository;
 
     /**
-     * @var TraceableNotifier
-     */
-    private $notifier;
-
-    /**
      * @var FakeEnvironmentClient
      */
     private $fakeEnvironmentClient;
@@ -75,16 +70,14 @@ class EnvironmentContext implements Context
      * @param EventStore $eventStore
      * @param DeploymentRepository $deploymentRepository
      * @param MessageBus $eventBus
-     * @param TraceableNotifier $notifier
      * @param FakeEnvironmentClient $fakeEnvironmentClient
      */
-    public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus, TraceableNotifier $notifier, FakeEnvironmentClient $fakeEnvironmentClient)
+    public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus, FakeEnvironmentClient $fakeEnvironmentClient)
     {
         $this->kernel = $kernel;
         $this->eventStore = $eventStore;
         $this->deploymentRepository = $deploymentRepository;
         $this->eventBus = $eventBus;
-        $this->notifier = $notifier;
         $this->fakeEnvironmentClient = $fakeEnvironmentClient;
     }
 
@@ -171,6 +164,9 @@ class EnvironmentContext implements Context
             'specification' => [
                 'components' => $simpleAppComposeContents,
             ],
+            'notification' => [
+                'httpCallbackUrl' => 'http://example.com'
+            ]
         ]);
 
         $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
@@ -231,17 +227,6 @@ class EnvironmentContext implements Context
     public function theDeploymentIsFailed()
     {
         $this->eventBus->handle(new DeploymentFailed($this->lastDeploymentUuid));
-    }
-
-    /**
-     * @Then a notification should be sent back
-     */
-    public function aNotificationShouldBeSentBack()
-    {
-        $notifications = $this->notifier->getNotifications();
-        if (0 == count($notifications)) {
-            throw new \RuntimeException('Expecting 1 or more notifications, found 0');
-        }
     }
 
     /**
