@@ -12,6 +12,7 @@ use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\Task\TaskList;
+use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Tide\Request\TideCreationRequest;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -45,19 +46,26 @@ class TideFactory
     private $commitResolver;
 
     /**
+     * @var TaskRunner
+     */
+    private $taskRunner;
+
+    /**
      * @param LoggerFactory            $loggerFactory
      * @param TaskFactoryRegistry      $taskFactoryRegistry
      * @param FlowRepository           $flowRepository
      * @param TideConfigurationFactory $configurationFactory
      * @param CommitResolver           $commitResolver
+     * @param TaskRunner               $taskRunner
      */
-    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory, CommitResolver $commitResolver)
+    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory, CommitResolver $commitResolver, TaskRunner $taskRunner)
     {
         $this->loggerFactory = $loggerFactory;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
         $this->flowRepository = $flowRepository;
         $this->configurationFactory = $configurationFactory;
         $this->commitResolver = $commitResolver;
+        $this->taskRunner = $taskRunner;
     }
 
     /**
@@ -121,7 +129,7 @@ class TideFactory
 
         $taskList = $this->createTideTaskList($tideContext);
 
-        $tide = Tide::create($taskList, $tideContext);
+        $tide = Tide::create($this->taskRunner, $taskList, $tideContext);
         foreach ($extraEvents as $event) {
             $tide->pushNewEvent($event);
         }
@@ -149,7 +157,7 @@ class TideFactory
         $tideContext = $tideCreatedEvent->getTideContext();
         $taskList = $this->createTideTaskList($tideContext);
 
-        return Tide::fromEvents($taskList, $events);
+        return Tide::fromEvents($this->taskRunner, $taskList, $events);
     }
 
     /**

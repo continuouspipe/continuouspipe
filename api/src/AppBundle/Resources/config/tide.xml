@@ -53,18 +53,21 @@
             <argument type="service" id="river.tide.configuration_finalizer.replace_environ_values.inner" />
         </service>
 
-        <service id="river.tide.configuration_finalizer.filter_tasks"
-                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\FilterTasks"
-                 decorates="river.tide_configuration_factory">
-            <argument type="service" id="river.tide.configuration_finalizer.filter_tasks.inner" />
+        <service id="river.task_filter.context_factory" class="ContinuousPipe\River\Filter\ContextFactory" />
+        <service id="river.tide.task_runner" class="ContinuousPipe\River\Task\StartTaskRunner" />
+        <service id="river.tide.task_runner.filter_tasks"
+                 class="ContinuousPipe\River\Filter\TaskRunner\FilterDecorator"
+                 decorates="river.tide.task_runner">
+            <argument type="service" id="river.tide.task_runner.filter_tasks.inner" />
+            <argument type="service" id="river.task_filter.context_factory" />
         </service>
-
         <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.task_factory_registry" />
             <argument type="service" id="river.repository.flow" />
             <argument type="service" id="river.tide_configuration_factory" />
             <argument type="service" id="river.commit_resolver" />
+            <argument type="service" id="river.tide.task_runner" />
         </service>
 
         <service id="river.view.tide_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\View\DoctrineTideRepository">

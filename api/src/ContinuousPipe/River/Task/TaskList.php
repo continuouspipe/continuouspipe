@@ -71,7 +71,7 @@ class TaskList
     public function next()
     {
         foreach ($this->tasks as $task) {
-            if ($task->isPending()) {
+            if ($task->isPending() && !$task->isSkipped()) {
                 return $task;
             }
         }
@@ -85,7 +85,7 @@ class TaskList
     public function allSuccessful()
     {
         return array_reduce($this->tasks, function ($successful, Task $task) {
-            return $successful && $task->isSuccessful();
+            return $successful && ($task->isSuccessful() || $task->isSkipped());
         }, true);
     }
 }

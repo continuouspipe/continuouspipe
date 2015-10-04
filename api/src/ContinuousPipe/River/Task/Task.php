@@ -52,7 +52,17 @@ interface Task
     public function isPending();
 
     /**
+     * @return bool
+     */
+    public function isSkipped();
+
+    /**
      * @return TideEvent[]
      */
     public function popNewEvents();
+
+    /**
+     * @return TaskContext
+     */
+    public function getContext();
 }

@@ -51,3 +51,57 @@ Feature:
     When a tide is started for the branch "master"
     Then the run task should be running
 
+  @wip
+  Scenario: I can run a run task only if a given service was created
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        deployment:
+            deploy:
+                providerName: foo
+                services:
+                    mysql:
+                        specification:
+                            source:
+                                image: mysql
+        fixtures:
+            run:
+                providerName: foo
+                image: busybox
+                commands:
+                    - foo
+            filter:
+                expression: tasks.deployment.services.mysql.created
+    """
+    And a tide is started
+    When the service mysql was created
+    And the deployment succeed
+    Then the run task should be running
+
+  @wip
+  Scenario: I can run a run task only if a given service was created
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        deployment:
+            deploy:
+                providerName: foo
+                services:
+                    mysql:
+                        specification:
+                            source:
+                                image: mysql
+        fixtures:
+            run:
+                providerName: foo
+                image: busybox
+                commands:
+                    - foo
+            filter:
+                expression: tasks.deployment.services.mysql.created
+    """
+    And a tide is started
+    When the service mysql was not created
+    And the deployment succeed
+    Then the tide should be successful
+

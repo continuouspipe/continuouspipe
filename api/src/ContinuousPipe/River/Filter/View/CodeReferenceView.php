@@ -1,10 +1,10 @@
 <?php
 
-namespace ContinuousPipe\River\Flow\FilterContext;
+namespace ContinuousPipe\River\Filter\View;
 
 use ContinuousPipe\River\CodeReference;
 
-class CodeReferenceRepresentation
+class CodeReferenceView
 {
     /**
      * @var string
@@ -19,7 +19,7 @@ class CodeReferenceRepresentation
     /**
      * @param CodeReference $codeReference
      *
-     * @return CodeReferenceRepresentation
+     * @return CodeReferenceView
      */
     public static function fromCodeReference(CodeReference $codeReference)
     {
