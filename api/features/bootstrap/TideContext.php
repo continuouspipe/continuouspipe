@@ -221,6 +221,21 @@ EOF;
     }
 
     /**
+     * @Then the tide should be successful
+     */
+    public function theTideShouldBeSuccessful()
+    {
+        $numberOfTideSuccessfulEvents = count($this->getEventsOfType(TideSuccessful::class));
+
+        if (1 !== $numberOfTideSuccessfulEvents) {
+            throw new \Exception(sprintf(
+                'Found %d tide successful event, expected 1',
+                $numberOfTideSuccessfulEvents
+            ));
+        }
+    }
+
+    /**
      * @Then the tide should be running
      */
     public function theTideShouldBeRunning()

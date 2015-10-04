@@ -51,7 +51,6 @@ Feature:
     When a tide is started for the branch "master"
     Then the run task should be running
 
-  @wip
   Scenario: I can run a run task only if a given service was created
     Given I have a flow with the following configuration:
     """
@@ -78,7 +77,6 @@ Feature:
     And the deployment succeed
     Then the run task should be running
 
-  @wip
   Scenario: I can run a run task only if a given service was created
     Given I have a flow with the following configuration:
     """
@@ -104,4 +102,3 @@ Feature:
     When the service mysql was not created
     And the deployment succeed
     Then the tide should be successful
-

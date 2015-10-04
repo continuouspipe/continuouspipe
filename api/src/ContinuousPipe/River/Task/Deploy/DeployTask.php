@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
+use ContinuousPipe\Pipe\Client\ComponentStatus;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
@@ -123,5 +124,30 @@ class DeployTask extends EventDrivenTask
     private function getStartedEvent()
     {
         return $this->getEventsOfType(DeploymentStarted::class)[0];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExposedContext()
+    {
+        /** @var DeploymentSuccessful[] $deploymentSuccessfulEvents */
+        $deploymentSuccessfulEvents = $this->getEventsOfType(DeploymentSuccessful::class);
+        if (count($deploymentSuccessfulEvents) == 0) {
+            return [];
+        }
+
+        $componentStatuses = $deploymentSuccessfulEvents[0]->getDeployment()->getComponentStatuses();
+        $services = array_map(function (ComponentStatus $status) {
+            return [
+                'created' => $status->isCreated(),
+                'updated' => $status->isUpdated(),
+                'deleted' => $status->isDeleted(),
+            ];
+        }, $componentStatuses);
+
+        return [
+            'services' => $services,
+        ];
     }
 }

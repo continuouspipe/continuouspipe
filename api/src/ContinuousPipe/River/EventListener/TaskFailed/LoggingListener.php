@@ -1,12 +1,12 @@
 <?php
 
-namespace ContinuousPipe\River\EventListener\Task;
+namespace ContinuousPipe\River\EventListener\TaskFailed;
 
 use ContinuousPipe\River\Task\TaskFailed;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 
-class TaskFailedLoggingListener
+class LoggingListener
 {
     /**
      * @var LoggerFactory

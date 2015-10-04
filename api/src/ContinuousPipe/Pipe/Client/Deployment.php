@@ -56,11 +56,11 @@ class Deployment
     private $componentStatuses;
 
     /**
-     * @param Uuid $uuid
+     * @param Uuid              $uuid
      * @param DeploymentRequest $request
-     * @param string $status
-     * @param array $publicEndpoints
-     * @param array $componentStatuses
+     * @param string            $status
+     * @param array             $publicEndpoints
+     * @param array             $componentStatuses
      */
     public function __construct(Uuid $uuid, DeploymentRequest $request, $status, array $publicEndpoints = [], array $componentStatuses = [])
     {

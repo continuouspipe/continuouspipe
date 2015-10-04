@@ -6,6 +6,8 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Model\Component;
+use ContinuousPipe\Pipe\Client\ComponentStatus;
+use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
@@ -47,6 +49,11 @@ class DeployContext implements Context
      * @var TraceableClient
      */
     private $traceablePipeClient;
+
+    /**
+     * @var Deployment|null
+     */
+    private $deployment;
 
     /**
      * @param EventStore $eventStore
@@ -118,13 +125,49 @@ class DeployContext implements Context
     }
 
     /**
+     * @When the service :name was created
+     */
+    public function theServiceWasCreated($name)
+    {
+        $this->deployment = $this->getDeployment();
+        $componentStatuses = $this->deployment->getComponentStatuses() ?: [];
+        $componentStatuses[$name] = new ComponentStatus(true, false, false);
+
+        $this->deployment = new Deployment(
+            $this->deployment->getUuid(),
+            $this->deployment->getRequest(),
+            $this->deployment->getStatus(),
+            $this->deployment->getPublicEndpoints() ?: [],
+            $componentStatuses
+        );
+    }
+
+    /**
+     * @When the service :name was not created
+     */
+    public function theServiceMysqlWasNotCreated($name)
+    {
+        $this->deployment = $this->getDeployment();
+        $componentStatuses = $this->deployment->getComponentStatuses() ?: [];
+        $componentStatuses[$name] = new ComponentStatus(false, false, false);
+
+        $this->deployment = new Deployment(
+            $this->deployment->getUuid(),
+            $this->deployment->getRequest(),
+            $this->deployment->getStatus(),
+            $this->deployment->getPublicEndpoints() ?: [],
+            $componentStatuses
+        );
+    }
+
+    /**
      * @When the deployment succeed
      */
     public function theDeploymentSucceed()
     {
         $this->eventBus->handle(new DeploymentSuccessful(
             $this->tideContext->getCurrentTideUuid(),
-            $this->getDeploymentStartedEvent()->getDeployment()
+            $this->getDeployment()
         ));
     }
 
@@ -276,5 +319,17 @@ class DeployContext implements Context
             throw new \RuntimeException('No deployment started event');
         }
         return current($deploymentStartedEvents);
+    }
+
+    /**
+     * @return Deployment|null
+     */
+    private function getDeployment()
+    {
+        if (null === $this->deployment) {
+            $this->deployment = $this->getDeploymentStartedEvent()->getDeployment();
+        }
+
+        return $this->deployment;
     }
 }

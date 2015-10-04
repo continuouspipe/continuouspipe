@@ -109,4 +109,12 @@ abstract class EventDrivenTask implements Task
     {
         return $this->context;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExposedContext()
+    {
+        return [];
+    }
 }

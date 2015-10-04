@@ -65,4 +65,9 @@ interface Task
      * @return TaskContext
      */
     public function getContext();
+
+    /**
+     * @return array
+     */
+    public function getExposedContext();
 }

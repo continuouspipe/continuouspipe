@@ -9,6 +9,7 @@ use ContinuousPipe\River\Task\TaskRunnerException;
 use ContinuousPipe\River\Task\TaskSkipped;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideConfigurationException;
+use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
@@ -25,13 +26,20 @@ class FilterDecorator implements TaskRunner
     private $contextFactory;
 
     /**
+     * @var MessageBus
+     */
+    private $eventBus;
+
+    /**
      * @param TaskRunner     $taskRunner
      * @param ContextFactory $contextFactory
+     * @param MessageBus     $eventBus
      */
-    public function __construct(TaskRunner $taskRunner, ContextFactory $contextFactory)
+    public function __construct(TaskRunner $taskRunner, ContextFactory $contextFactory, MessageBus $eventBus)
     {
         $this->taskRunner = $taskRunner;
         $this->contextFactory = $contextFactory;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -44,14 +52,16 @@ class FilterDecorator implements TaskRunner
         $taskConfiguration = $configuration['tasks'][$taskId];
 
         try {
-            if ($this->shouldSkipTask($taskConfiguration, $tide)) {
-                return $task->apply(new TaskSkipped($tide->getUuid(), $taskId));
-            }
+            $shouldBeSkipped = $this->shouldSkipTask($taskConfiguration, $tide);
         } catch (TideConfigurationException $e) {
             throw new TaskRunnerException($e->getMessage(), $e->getCode(), $e, $task);
         }
 
-        return $this->taskRunner->run($tide, $task);
+        if ($shouldBeSkipped) {
+            $this->eventBus->handle(new TaskSkipped($tide->getUuid(), $task));
+        } else {
+            $this->taskRunner->run($tide, $task);
+        }
     }
 
     /**
