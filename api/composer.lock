@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9ee388a3f916cf8cd8e14bbfa9002675",
-    "content-hash": "24c9d9d20443a1ffa0c06872129123b2",
+    "hash": "f951b192a8f9ce8cb74cb54bf5c54362",
+    "content-hash": "d1a208b1214aa0a9d8d424ab29da1160",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -88,19 +88,20 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "0.2.0",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "e0aa4ebd168ca21ef396111602b0983a411728e4"
+                "reference": "5dcfbdbe89606496d0a53473141563b5fdc8a693"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/e0aa4ebd168ca21ef396111602b0983a411728e4",
-                "reference": "e0aa4ebd168ca21ef396111602b0983a411728e4",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/5dcfbdbe89606496d0a53473141563b5fdc8a693",
+                "reference": "5dcfbdbe89606496d0a53473141563b5fdc8a693",
                 "shasum": ""
             },
             "require": {
+                "doctrine/cache": "^1.4",
                 "guzzlehttp/guzzle": "~4.1",
                 "jms/serializer": "1.0.0",
                 "lexik/jwt-authentication-bundle": "~1.0"
@@ -113,10 +114,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/0.2.0",
+                "source": "https://github.com/continuouspipe/security/tree/master",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2015-10-01 10:29:51"
+            "time": "2015-10-05 13:30:31"
         },
         {
             "name": "csa/guzzle-bundle",
