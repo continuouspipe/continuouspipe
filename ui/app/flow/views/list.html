@@ -19,6 +19,7 @@
                 <tr>
                     <th>UUID</th>
                     <th>Repository</th>
+                    <th>Last tide</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -26,6 +27,10 @@
                 <tr ng-repeat="flow in flows">
                     <td><a ui-sref="flow.overview({uuid: flow.uuid})">{{ flow.uuid }}</a></td>
                     <td><small>{{ flow.repository.repository.owner.login }}/</small> {{ flow.repository.repository.name }}</td>
+                    <td>
+                        <a ng-repeat="tide in flow.tides" ui-sref="tide.logs({tideUuid: tide.uuid, uuid: flow.uuid})" ng-class="{'c-green': tide.status == 'success', 'c-red': tide.status == 'failure', 'c-blue': tide.status === 'running'}">{{ tide.status }}</a>
+                        <span ng-show="flow.tides.length == 0"><em>No tide</em></span>
+                    </td>
                     <td>
                         <ul class="actions">
                             <li>
