@@ -10,3 +10,5 @@ ContinuousPipe\Pipe\View\Deployment:
             type: ContinuousPipe\User\User
         publicEndpoints:
             type: array<ContinuousPipe\Pipe\Environment\PublicEndpoint>
+        componentStatuses:
+            type: array<string, ContinuousPipe\Pipe\View\ComponentStatus>

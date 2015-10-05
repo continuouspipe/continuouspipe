@@ -1,0 +1,8 @@
+ContinuousPipe\Pipe\View\ComponentStatus:
+    properties:
+        created:
+            type: boolean
+        updated:
+            type: boolean
+        deleted:
+            type: boolean
