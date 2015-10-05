@@ -135,6 +135,6 @@ class DeploymentRequestFactory
      */
     private function getCommand(RunTaskConfiguration $configuration)
     {
-        return ['sh', '-c', implode(' ', $configuration->getCommands())];
+        return ['sh', '-cex', implode('; ', $configuration->getCommands())];
     }
 }
