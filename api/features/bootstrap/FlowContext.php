@@ -97,7 +97,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     public function iAmAuthenticated()
     {
         $token = new JWTUserToken(['ROLE_USER']);
-        $token->setUser(new \ContinuousPipe\User\SecurityUser(new \ContinuousPipe\User\User('samuel')));
+        $token->setUser(new \ContinuousPipe\User\SecurityUser(new \ContinuousPipe\User\User('samuel.roze@gmail.com')));
         $this->tokenStorage->setToken($token);
     }
 
@@ -188,6 +188,41 @@ EOF;
         ], json_encode([
             'yml_configuration' => $this->lastConfiguration
         ])));
+    }
+
+
+    /**
+     * @When I retrieve the list of the flows
+     */
+    public function iRetrieveTheListOfTheFlows()
+    {
+        $this->response = $this->kernel->handle(Request::create('/flows', 'GET'));
+    }
+
+    /**
+     * @Then I should see the flow :uuid
+     */
+    public function iShouldSeeTheFlow($uuid)
+    {
+        if ($this->response->getStatusCode() != 200) {
+            throw new \RuntimeException(sprintf(
+                'The status code 200 was expected, found %d',
+                $this->response->getStatusCode()
+            ));
+        }
+
+        $flows = json_decode($this->response->getContent(), true);
+        if (!is_array($flows)) {
+            throw new \RuntimeException('Expected to receive an array');
+        }
+
+        $matchingFlows = array_filter($flows, function(array $flow) use ($uuid) {
+            return $flow['uuid'] = $uuid;
+        });
+
+        if (0 == count($matchingFlows)) {
+            throw new \RuntimeException('No matching flow found');
+        }
     }
 
     /**
@@ -350,6 +385,7 @@ EOF;
 
         $flow = new Flow($context);
         $this->flowRepository->save($flow);
+
 
         $this->currentFlow = $flow;
 

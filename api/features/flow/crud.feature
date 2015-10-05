@@ -6,6 +6,11 @@ Feature:
   Background:
     Given I am authenticated
 
+  Scenario: I can list the flows
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    When I retrieve the list of the flows
+    Then I should see the flow "00000000-0000-0000-0000-000000000000"
+
   Scenario:
     When I send a flow creation request
     Then the flow is successfully saved
