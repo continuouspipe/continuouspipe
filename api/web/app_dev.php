@@ -17,6 +17,9 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
 //    exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
 }
 
+// Validate timestamps for the dev environment
+ini_set('opcache.validate_timestamps', 1);
+
 $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
 Debug::enable();
 

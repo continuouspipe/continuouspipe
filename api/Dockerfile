@@ -1,8 +1,16 @@
 FROM php:5.6-apache
 
 # PHP extension
-RUN apt-get update && apt-get install -y zlib1g-dev libpq-dev git
-RUN docker-php-ext-install pdo pdo_pgsql zip mbstring bcmath
+RUN requirements="libpq-dev zlib1g-dev libicu-dev git" \
+    && apt-get update && apt-get install -y $requirements && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install pdo_pgsql \
+    && docker-php-ext-install mbstring \
+    && docker-php-ext-install intl \
+    && docker-php-ext-install zip \
+    && docker-php-ext-install opcache \
+    && docker-php-ext-install bcmath \
+    && pecl install apcu-beta && echo extension=apcu.so > /usr/local/etc/php/conf.d/apcu.ini \
+    && apt-get purge --auto-remove -y
 
 # Apache configuration
 RUN a2enmod rewrite
@@ -12,8 +20,8 @@ ADD docker/apache-vhost.conf /etc/apache2/sites-enabled/default.conf
 ADD docker/php.ini /usr/local/etc/php/php.ini
 
 # Install composer
-RUN curl -sS https://getcomposer.org/installer | php
-RUN mv composer.phar /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/bin/composer
 
 # Add the application
 ADD . /app
