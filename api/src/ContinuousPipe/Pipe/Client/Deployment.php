@@ -49,7 +49,7 @@ class Deployment
     private $publicEndpoints;
 
     /**
-     * @JMS\Type("array<string, ContinuousPipe\Pipe\Client\ComponentStatuses>")
+     * @JMS\Type("array<string, ContinuousPipe\Pipe\Client\ComponentStatus>")
      *
      * @var ComponentStatus[]
      */
