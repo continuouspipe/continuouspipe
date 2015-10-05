@@ -11,6 +11,12 @@ Feature:
     When I retrieve the list of the flows
     Then I should see the flow "00000000-0000-0000-0000-000000000000"
 
+  Scenario: I can see the last tide of the flow
+    Given I have a flow
+    And a tide is created
+    When I retrieve the list of the flows
+    Then I should see the flow's last tide
+
   Scenario:
     When I send a flow creation request
     Then the flow is successfully saved

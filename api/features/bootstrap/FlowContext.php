@@ -226,6 +226,32 @@ EOF;
     }
 
     /**
+     * @Then I should see the flow's last tide
+     */
+    public function iShouldSeeTheFlowSLastTide()
+    {
+        if ($this->response->getStatusCode() != 200) {
+            throw new \RuntimeException(sprintf(
+                'The status code 200 was expected, found %d',
+                $this->response->getStatusCode()
+            ));
+        }
+
+        $flows = json_decode($this->response->getContent(), true);
+        if (!is_array($flows)) {
+            throw new \RuntimeException('Expected to receive an array');
+        }
+
+        $matchingFlows = array_filter($flows, function(array $flow) {
+            return isset($flow['tides']) && !empty($flow['tides']);
+        });
+
+        if (0 == count($matchingFlows)) {
+            throw new \RuntimeException('No matching flow found');
+        }
+    }
+
+    /**
      * @Then the flow is not saved
      */
     public function theFlowIsNotSaved()

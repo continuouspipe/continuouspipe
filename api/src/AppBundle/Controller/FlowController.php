@@ -7,6 +7,7 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\Flow as FlowView;
 use ContinuousPipe\River\FlowFactory;
 use ContinuousPipe\River\Repository\FlowRepository;
+use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -34,15 +35,22 @@ class FlowController
     private $flowFactory;
 
     /**
+     * @var TideRepository
+     */
+    private $tideRepository;
+
+    /**
      * @param FlowRepository $flowRepository
      * @param FlowFactory    $flowFactory
      * @param MessageBus     $eventBus
+     * @param TideRepository $tideRepository
      */
-    public function __construct(FlowRepository $flowRepository, FlowFactory $flowFactory, MessageBus $eventBus)
+    public function __construct(FlowRepository $flowRepository, FlowFactory $flowFactory, MessageBus $eventBus, TideRepository $tideRepository)
     {
         $this->flowRepository = $flowRepository;
         $this->eventBus = $eventBus;
         $this->flowFactory = $flowFactory;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -71,7 +79,9 @@ class FlowController
     public function listAction(User $user)
     {
         return array_map(function (Flow $flow) {
-            return FlowView::fromFlow($flow);
+            $lastTides = $this->tideRepository->findLastByFlow($flow, 1);
+
+            return FlowView::fromFlowAndTides($flow, $lastTides);
         }, $this->flowRepository->findByUser($user));
     }
 

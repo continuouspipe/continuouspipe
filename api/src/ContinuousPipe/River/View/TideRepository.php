@@ -19,6 +19,16 @@ interface TideRepository
     public function findByFlow(Flow $flow);
 
     /**
+     * Find last `$limit` tides of this flow.
+     *
+     * @param Flow $flow
+     * @param int  $limit
+     *
+     * @return Tide[]
+     */
+    public function findLastByFlow(Flow $flow, $limit);
+
+    /**
      * @param CodeReference $codeReference
      *
      * @return Tide[]
