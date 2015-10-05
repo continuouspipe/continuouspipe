@@ -25,7 +25,7 @@ class InMemoryTideRepository implements TideRepository
             return [];
         }
 
-        return $this->tideByFlow[$uuid];
+        return array_values($this->tideByFlow[$uuid]);
     }
 
     /**
@@ -77,5 +77,16 @@ class InMemoryTideRepository implements TideRepository
         }
 
         return $this->tideByCodeReference[$codeReferenceIdentifier];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findLastByFlow(Flow $flow, $limit)
+    {
+        $tides = $this->findByFlow($flow);
+        $offset = max(0, count($tides) - $limit);
+
+        return array_slice($tides, $offset, $limit);
     }
 }

@@ -56,6 +56,22 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
+    public function findLastByFlow(Flow $flow, $limit)
+    {
+        $dtos = $this->getEntityRepository()->findBy([
+            'flow' => (string) $flow->getUuid(),
+        ], [
+            'tide.creationDate' => 'DESC',
+        ], $limit);
+
+        return array_map(function (TideDto $dto) {
+            return $this->dtoToTide($dto);
+        }, $dtos);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function save(Tide $tide)
     {
         try {

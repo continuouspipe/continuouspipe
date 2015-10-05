@@ -24,6 +24,11 @@ class Flow
     private $ymlConfiguration;
 
     /**
+     * @var Tide[]
+     */
+    private $tides;
+
+    /**
      * @param \ContinuousPipe\River\Flow $flow
      *
      * @return Flow
@@ -36,6 +41,20 @@ class Flow
         $view->uuid = $flowContext->getFlowUuid();
         $view->repository = $flowContext->getCodeRepository();
         $view->ymlConfiguration = Yaml::dump($flowContext->getConfiguration());
+
+        return $view;
+    }
+
+    /**
+     * @param \ContinuousPipe\River\Flow $flow
+     * @param Tide[]                     $tides
+     *
+     * @return Flow
+     */
+    public static function fromFlowAndTides(\ContinuousPipe\River\Flow $flow, array $tides)
+    {
+        $view = self::fromFlow($flow);
+        $view->tides = $tides;
 
         return $view;
     }
