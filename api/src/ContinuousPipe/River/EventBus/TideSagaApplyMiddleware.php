@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\EventBus;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\TideSaga;
 use SimpleBus\Message\Bus\Middleware\MessageBusMiddleware;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class TideSagaApplyMiddleware implements MessageBusMiddleware
 {
@@ -14,11 +15,16 @@ class TideSagaApplyMiddleware implements MessageBusMiddleware
     private $tideSaga;
 
     /**
-     * @param TideSaga $tideSaga
+     * @var ContainerInterface
      */
-    public function __construct(TideSaga $tideSaga)
+    private $container;
+
+    /**
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
     {
-        $this->tideSaga = $tideSaga;
+        $this->container = $container;
     }
 
     /**
@@ -27,9 +33,21 @@ class TideSagaApplyMiddleware implements MessageBusMiddleware
     public function handle($message, callable $next)
     {
         if ($message instanceof TideEvent) {
-            $this->tideSaga->notify($message);
+            $this->getTideSaga()->notify($message);
         }
 
         $next($message);
+    }
+
+    /**
+     * @return TideSaga
+     */
+    private function getTideSaga()
+    {
+        if (null === $this->tideSaga) {
+            $this->tideSaga = $this->container->get('river.tide.saga');
+        }
+
+        return $this->tideSaga;
     }
 }
