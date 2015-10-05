@@ -54,7 +54,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $gitHubLogin = $gitHubResponse['login'];
         if (!$this->whiteList->contains($gitHubLogin)) {
             throw new InsufficientAuthenticationException(sprintf(
-                'User "%s" is not in the white list (yet? :)',
+                'User "%s" is not in the white list, yet? :)',
                 $gitHubLogin
             ));
         }
