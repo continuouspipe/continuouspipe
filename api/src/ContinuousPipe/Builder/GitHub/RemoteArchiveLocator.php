@@ -31,7 +31,7 @@ class RemoteArchiveLocator
         $description = $this->repositoryAddressDescriptor->getDescription($repository->getAddress());
 
         return sprintf(
-            'https://github.com/%s/%s/archive/%s.zip',
+            'https://github.com/%s/%s/archive/%s.tar.gz',
             $description->getUsername(),
             $description->getRepository(),
             $repository->getBranch()

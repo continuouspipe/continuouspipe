@@ -68,7 +68,11 @@ class ArchiveManipulator
     private function getExtractedArchiveDirectory()
     {
         if (!$this->archiveHasBeenExtracted()) {
-            $this->extractedDirectory = $this->archiveReader->extract($this->archive);
+            if ($this->archive instanceof Archive\FileSystemArchive) {
+                $this->extractedDirectory = $this->archive->getDirectory();
+            } else {
+                $this->extractedDirectory = $this->archiveReader->extract($this->archive);
+            }
         }
 
         return $this->extractedDirectory;
@@ -87,20 +91,6 @@ class ArchiveManipulator
      */
     private function generateArchive()
     {
-        $tarFilePath = $this->getTemporaryFilePath('tar').'.tar';
-        $phar = new \PharData($tarFilePath);
-        $phar->buildFromDirectory($this->extractedDirectory);
-
-        return new Archive\FileSystemArchive($tarFilePath);
-    }
-
-    /**
-     * @param string $prefix
-     *
-     * @return string
-     */
-    private function getTemporaryFilePath($prefix = 'am')
-    {
-        return sys_get_temp_dir().DIRECTORY_SEPARATOR.uniqid($prefix);
+        return new Archive\FileSystemArchive($this->extractedDirectory);
     }
 }

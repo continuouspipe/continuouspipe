@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Context;
 use GuzzleHttp\Client;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Process;
 
 class ArchivePacker
 {
@@ -24,7 +25,7 @@ class ArchivePacker
     }
 
     /**
-     * Create an archive from the given ZIP archive.
+     * Create an archive from the given archive.
      *
      * @param Context $context
      * @param string  $url
@@ -42,9 +43,15 @@ class ArchivePacker
             'save_to' => $archiveFile,
         ]);
 
-        $filePath = $this->repackageWithTarAndWithDirectoriesAtTheRoot($context, $archiveFile);
+        // Extract the archive in a directory
+        $archiveDirectory = $this->getArchiveDirectory($context, $archiveFile);
 
-        return new FileSystemArchive($filePath);
+        // Delete the downloaded archive
+        if (!unlink($archiveFile)) {
+            throw new ArchiveCreationException('Unable to remove downloaded archive');
+        }
+
+        return new FileSystemArchive($archiveDirectory);
     }
 
     /**
@@ -57,8 +64,10 @@ class ArchivePacker
      * @param string  $archiveFilePath
      *
      * @return string
+     *
+     * @throws ArchiveCreationException
      */
-    private function repackageWithTarAndWithDirectoriesAtTheRoot(Context $context, $archiveFilePath)
+    private function getArchiveDirectory(Context $context, $archiveFilePath)
     {
         $extractedArchivePath = $this->extractGitHubArchive($archiveFilePath);
 
@@ -66,12 +75,16 @@ class ArchivePacker
         $rootProjectDirectory = $this->getRootProjectDirectory($extractedArchivePath);
         $rootBuildDirectory = $this->getRootBuildDirectory($context, $rootProjectDirectory);
 
-        // Create the TAR archive
-        $temporaryTarFile = $this->getTemporaryFilePath('tar').'.tar';
-        $phar = new \PharData($temporaryTarFile);
-        $phar->buildFromDirectory($rootBuildDirectory);
+        // Move the build directory into a new root directory
+        $extractedNewPath = $this->getTemporaryFilePath();
+        if (!rename($rootBuildDirectory, $extractedNewPath)) {
+            throw new ArchiveCreationException('Unable to create temporary directory');
+        }
 
-        return $temporaryTarFile;
+        // Remove previous downloaded directory
+        (new FileSystemArchive($extractedArchivePath))->delete();
+
+        return $extractedNewPath;
     }
 
     /**
@@ -83,15 +96,17 @@ class ArchivePacker
      */
     private function extractGitHubArchive($archiveFilePath)
     {
-        $zip = new \ZipArchive();
-        if (true !== ($result = $zip->open($archiveFilePath))) {
-            throw new ArchiveCreationException('Unable to unzip archive from GitHub');
-        }
-
         $temporaryDirectory = $this->getTemporaryFilePath('extractedGHArchive');
         mkdir($temporaryDirectory);
 
-        $zip->extractTo($temporaryDirectory);
+        $process = new Process(sprintf('/usr/bin/env tar -xzf %s', $archiveFilePath), $temporaryDirectory);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ArchiveCreationException('Unable to untar the archive');
+        }
+
+        $process->stop();
 
         return $temporaryDirectory;
     }
@@ -101,6 +116,8 @@ class ArchivePacker
      * @param string  $rootProjectDirectory
      *
      * @return string
+     *
+     * @throws ArchiveCreationException
      */
     private function getRootBuildDirectory(Context $context, $rootProjectDirectory)
     {
@@ -111,7 +128,14 @@ class ArchivePacker
             $buildDirectory .= DIRECTORY_SEPARATOR.$subDirectory;
         }
 
-        return $buildDirectory;
+        if (false === ($realPath = realpath($buildDirectory))) {
+            throw new ArchiveCreationException(sprintf(
+                'Unable to locate the build directory at "%s"',
+                $subDirectory
+            ));
+        }
+
+        return $realPath;
     }
 
     /**

@@ -158,6 +158,7 @@ EOF;
     public function theBuildShouldBeSuccessful()
     {
         if ($this->response->getStatusCode() !== 200) {
+            echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
                 'Got response code %d, expected 200',
                 $this->response->getStatusCode()
@@ -182,7 +183,7 @@ EOF;
      */
     public function iHaveDockerRegistryCredentials()
     {
-        $this->inMemoryAuthenticatorClient->addDockerCredentials('samuel', new DockerRegistryCredentials('samuel', 'samuel', 'samuel', 'default'));
+        $this->inMemoryAuthenticatorClient->addDockerCredentials('samuel', new DockerRegistryCredentials('samuel', 'samuel', 'samuel', 'docker.io'));
     }
 
     /**
