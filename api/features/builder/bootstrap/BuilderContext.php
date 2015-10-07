@@ -183,7 +183,7 @@ EOF;
      */
     public function iHaveDockerRegistryCredentials()
     {
-        $this->inMemoryAuthenticatorClient->addDockerCredentials('samuel', new DockerRegistryCredentials('samuel', 'samuel', 'samuel', 'default'));
+        $this->inMemoryAuthenticatorClient->addDockerCredentials('samuel', new DockerRegistryCredentials('samuel', 'samuel', 'samuel', 'docker.io'));
     }
 
     /**
