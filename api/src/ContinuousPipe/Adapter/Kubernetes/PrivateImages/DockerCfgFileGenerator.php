@@ -39,7 +39,7 @@ class DockerCfgFileGenerator
     private function getServerAddress(DockerRegistryCredentials $credentials)
     {
         $serverAddress = $credentials->getServerAddress();
-        if ('default' == $serverAddress) {
+        if ('docker.io' == $serverAddress) {
             $serverAddress = 'https://index.docker.io/v1/';
         }
 
