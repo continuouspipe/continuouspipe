@@ -3,9 +3,9 @@
 namespace ContinuousPipe\Builder\Tests;
 
 use ContinuousPipe\Builder\Archive\ArchiveCreationException;
-use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Request\BuildRequest;
+use ContinuousPipe\Builder\Tests\Archive\FileSystemArchive;
 use ContinuousPipe\User\User;
 use LogStream\Logger;
 
@@ -49,20 +49,6 @@ class FixturesArchiveBuilder implements ArchiveBuilder
             ));
         }
 
-        $tarFilePath = $this->getTemporaryFilePath('tar').'.tar';
-        $phar = new \PharData($tarFilePath);
-        $phar->buildFromDirectory($fixturesDirectoryPath);
-
-        return new FileSystemArchive($tarFilePath);
-    }
-
-    /**
-     * @param string $prefix
-     *
-     * @return string
-     */
-    private function getTemporaryFilePath($prefix = 'fab')
-    {
-        return sys_get_temp_dir().DIRECTORY_SEPARATOR.uniqid($prefix);
+        return new FileSystemArchive($fixturesDirectoryPath);
     }
 }

@@ -12,17 +12,7 @@ class DownloaderArchiveReader implements ArchiveReader
      */
     public function getFileContents(Archive $archive, $path)
     {
-        $archivePath = $this->getLocalArchiveFile($archive);
-        $extractDirectoryPath = $this->getTemporaryDirectoryPath();
-        $path = $this->removePathPrefixes($path);
-
-        try {
-            $phar = new \PharData($archivePath);
-            $phar->extractTo($extractDirectoryPath, $path);
-        } catch (\PharException $e) {
-            throw new Archive\ArchiveException($e->getMessage(), $e->getCode(), $e);
-        }
-
+        $extractDirectoryPath = $this->getExtractedDirectory($archive, $path);
         $extractedFilePath = $extractDirectoryPath.DIRECTORY_SEPARATOR.$path;
         if (!file_exists($extractedFilePath)) {
             throw new Archive\ArchiveException(sprintf(
@@ -52,6 +42,34 @@ class DownloaderArchiveReader implements ArchiveReader
         }
 
         return $path;
+    }
+
+    /**
+     * @param Archive $archive
+     * @param string  $path
+     *
+     * @return string
+     *
+     * @throws Archive\ArchiveException
+     */
+    private function getExtractedDirectory(Archive $archive, $path)
+    {
+        if ($archive instanceof Archive\FileSystemArchive) {
+            return $archive->getDirectory();
+        }
+
+        $archivePath = $this->getLocalArchiveFile($archive);
+        $extractDirectoryPath = $this->getTemporaryDirectoryPath();
+        $path = $this->removePathPrefixes($path);
+
+        try {
+            $phar = new \PharData($archivePath);
+            $phar->extractTo($extractDirectoryPath, $path);
+        } catch (\PharException $e) {
+            throw new Archive\ArchiveException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return $extractDirectoryPath;
     }
 
     /**

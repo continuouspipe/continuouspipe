@@ -84,6 +84,8 @@ class DockerBuilder implements Builder
                 $e->getCode(),
                 $e
             );
+        } finally {
+            $archive->delete();
         }
 
         try {

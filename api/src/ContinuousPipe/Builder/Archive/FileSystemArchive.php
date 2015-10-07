@@ -3,35 +3,17 @@
 namespace ContinuousPipe\Builder\Archive;
 
 use ContinuousPipe\Builder\Archive;
+use Docker\Context\Context;
+use Symfony\Component\Filesystem\Filesystem;
 
-class FileSystemArchive implements Archive
+class FileSystemArchive extends Context implements Archive
 {
     /**
-     * @var string
+     * Delete the archive.
      */
-    private $filePath;
-
-    /**
-     * @param string $filePath
-     */
-    public function __construct($filePath)
+    public function delete()
     {
-        $this->filePath = $filePath;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isStreamed()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function read()
-    {
-        return fopen($this->filePath, 'r');
+        $fileSystem = new Filesystem();
+        $fileSystem->remove($this->getDirectory());
     }
 }
