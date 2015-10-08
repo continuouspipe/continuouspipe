@@ -148,7 +148,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                         continue;
                     }
 
-                    $volumeName = $component->getName().'_volume_'.$index;
+                    $volumeName = $component->getName().'-volume-'.$index;
                     $configuration['specification']['volumes'][] = [
                         'type' => 'hostPath',
                         'path' => $volume->getHostPath(),
