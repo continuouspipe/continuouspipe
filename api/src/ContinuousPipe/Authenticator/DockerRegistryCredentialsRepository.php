@@ -27,6 +27,8 @@ interface DockerRegistryCredentialsRepository
     /**
      * @param DockerRegistryCredentials $credentials
      * @param User                      $user
+     *
+     * @return DockerRegistryCredentials
      */
     public function save(DockerRegistryCredentials $credentials, User $user);
 }

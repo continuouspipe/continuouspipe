@@ -64,6 +64,8 @@ class DoctrineDockerRegistryCredentialsRepository implements DockerRegistryCrede
 
         $this->entityManager->persist($dto);
         $this->entityManager->flush();
+
+        return $credentials;
     }
 
     /**

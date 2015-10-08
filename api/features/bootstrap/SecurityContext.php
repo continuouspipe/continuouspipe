@@ -5,6 +5,10 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
 use ContinuousPipe\Authenticator\Tests\InMemoryWhiteList;
 use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
+use ContinuousPipe\User\SecurityUser;
+use ContinuousPipe\User\User;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class SecurityContext implements Context, SnippetAcceptingContext
 {
@@ -19,6 +23,11 @@ class SecurityContext implements Context, SnippetAcceptingContext
     private $whiteList;
 
     /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
+
+    /**
      * @var \Exception|null
      */
     private $exception = null;
@@ -26,11 +35,24 @@ class SecurityContext implements Context, SnippetAcceptingContext
     /**
      * @param UserProvider $userProvider
      * @param InMemoryWhiteList $whiteList
+     * @param TokenStorageInterface $tokenStorage
      */
-    public function __construct(UserProvider $userProvider, InMemoryWhiteList $whiteList)
+    public function __construct(UserProvider $userProvider, InMemoryWhiteList $whiteList, TokenStorageInterface $tokenStorage)
     {
         $this->userProvider = $userProvider;
         $this->whiteList = $whiteList;
+        $this->tokenStorage = $tokenStorage;
+    }
+
+    /**
+     * @Given I am authenticated as user :username
+     */
+    public function iAmAuthenticatedAsUser($username)
+    {
+        $token = new JWTUserToken(['ROLE_USER']);
+        $token->setUser(new SecurityUser(new User($username)));
+
+        $this->tokenStorage->setToken($token);
     }
 
     /**
