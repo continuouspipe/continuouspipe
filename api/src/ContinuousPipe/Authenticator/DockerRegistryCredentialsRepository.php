@@ -31,4 +31,14 @@ interface DockerRegistryCredentialsRepository
      * @return DockerRegistryCredentials
      */
     public function save(DockerRegistryCredentials $credentials, User $user);
+
+    /**
+     * Remove the given credentials.
+     *
+     * @param User                      $user
+     * @param DockerRegistryCredentials $credentials
+     *
+     * @throws CredentialsNotFound
+     */
+    public function remove(User $user, DockerRegistryCredentials $credentials);
 }

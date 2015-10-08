@@ -69,6 +69,17 @@ class DoctrineDockerRegistryCredentialsRepository implements DockerRegistryCrede
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function remove(User $user, DockerRegistryCredentials $credentials)
+    {
+        $dto = $this->getDtoByUserAndServerAddress($user, $credentials->getServerAddress());
+
+        $this->entityManager->remove($dto);
+        $this->entityManager->flush();
+    }
+
+    /**
      * @param User   $user
      * @param string $serverAddress
      *

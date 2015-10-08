@@ -53,4 +53,18 @@ class InMemoryDockerRegistryCredentialsRepository implements DockerRegistryCrede
 
         $this->credentials[$user->getEmail()][] = $credentials;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove(User $user, DockerRegistryCredentials $credentials)
+    {
+        if (!array_key_exists($user->getEmail(), $this->credentials)) {
+            throw new CredentialsNotFound(sprintf('No credentials found for user "%s"', $user->getEmail()));
+        }
+
+        $this->credentials[$user->getEmail()] = array_values(array_filter($this->credentials[$user->getEmail()], function ($found) use ($credentials) {
+            return $found != $credentials;
+        }));
+    }
 }
