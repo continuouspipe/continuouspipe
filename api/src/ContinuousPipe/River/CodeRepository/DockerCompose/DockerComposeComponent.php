@@ -160,4 +160,12 @@ class DockerComposeComponent
 
         return $variables;
     }
+
+    /**
+     * @return bool
+     */
+    public function isPrivileged()
+    {
+        return array_key_exists('privileged', $this->parsed) && $this->parsed['privileged'];
+    }
 }

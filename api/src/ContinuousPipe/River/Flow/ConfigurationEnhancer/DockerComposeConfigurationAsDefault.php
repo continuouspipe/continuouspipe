@@ -121,6 +121,12 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                     ];
                 }
 
+                if ($privileged = $component->isPrivileged()) {
+                    $configuration['specification']['runtime_policy'] = [
+                        'privileged' => true
+                    ];
+                }
+
                 foreach ($component->getEnvironmentVariables() as $name => $value) {
                     $configuration['specification']['environment_variables'][] = [
                         'name' => $name,
