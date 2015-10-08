@@ -160,4 +160,30 @@ class DockerComposeComponent
 
         return $variables;
     }
+
+    /**
+     * @return bool
+     */
+    public function isPrivileged()
+    {
+        return array_key_exists('privileged', $this->parsed) && $this->parsed['privileged'];
+    }
+
+    /**
+     * @return DockerComposeVolume[]
+     */
+    public function getVolumes()
+    {
+        if (!array_key_exists('volumes', $this->parsed)) {
+            return [];
+        }
+
+        if (!is_array($this->parsed['volumes'])) {
+            throw new ResolveException('Wrong volumes definition');
+        }
+
+        return array_map(function ($definition) {
+            return new DockerComposeVolume($definition);
+        }, $this->parsed['volumes']);
+    }
 }

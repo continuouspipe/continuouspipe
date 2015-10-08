@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f951b192a8f9ce8cb74cb54bf5c54362",
-    "content-hash": "d1a208b1214aa0a9d8d424ab29da1160",
+    "hash": "57372045f99a74e6c337a57fc4e8fe8e",
+    "content-hash": "9c233b25f347012f3b019ce0ef6647c3",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -62,17 +62,21 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
-                "reference": "239d71e41dcb643611a14c2ce1e8f2a282bac141"
+                "reference": "455786dadaa3de91a235024c8242888aab8f3581"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/239d71e41dcb643611a14c2ce1e8f2a282bac141",
-                "reference": "239d71e41dcb643611a14c2ce1e8f2a282bac141",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/455786dadaa3de91a235024c8242888aab8f3581",
+                "reference": "455786dadaa3de91a235024c8242888aab8f3581",
                 "shasum": ""
+            },
+            "require-dev": {
+                "jms/serializer": "^1.0",
+                "phpunit/phpunit": "^5.0"
             },
             "type": "library",
             "autoload": {
@@ -84,7 +88,7 @@
                 "source": "https://github.com/continuouspipe/model/tree/master",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2015-09-29 14:37:50"
+            "time": "2015-10-08 08:28:37"
         },
         {
             "name": "continuous-pipe/security",
@@ -4542,7 +4546,6 @@
     "stability-flags": {
         "csa/guzzle-bundle": 0,
         "sroze/log-stream": 20,
-        "continuous-pipe/model": 20,
         "simple-bus/rabbitmq-bundle-bridge": 20
     },
     "prefer-stable": false,

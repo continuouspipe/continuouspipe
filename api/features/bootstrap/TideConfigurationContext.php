@@ -71,6 +71,22 @@ class TideConfigurationContext implements Context
     }
 
     /**
+     * @Then the generated configuration should not contain:
+     */
+    public function theGeneratedConfigurationShouldNotContain(PyStringNode $string)
+    {
+        $expectedConfiguration = Yaml::parse($string->getRaw());
+        $intersection = $this->array_intersect_recursive($expectedConfiguration, $this->configuration);
+
+        if ($intersection == $expectedConfiguration) {
+            throw new \RuntimeException(sprintf(
+                'Expected to NOT have this configuration but found: %s',
+                PHP_EOL.Yaml::dump($this->configuration)
+            ));
+        }
+    }
+
+    /**
      * @Then the generated configuration should not contain the path :path
      */
     public function theGeneratedConfigurationShouldNotContainThePath($path)

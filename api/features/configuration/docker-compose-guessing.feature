@@ -193,3 +193,100 @@ Feature:
                                 - name: THREE
                                   value: three
     """
+
+  Scenario: The runtime policy should be completed with the privileged mode if there's in the `docker-compose.yml` file
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        kube:
+            deploy:
+                providerName: foo
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        image: mysql
+        privileged: true
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        kube:
+            deploy:
+                services:
+                    api:
+                        specification:
+                            source:
+                                image: mysql
+                            runtime_policy:
+                                privileged: true
+    """
+
+  Scenario: The absolute volume mappings should be transformed as volume and volume mappings
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        kube:
+            deploy:
+                providerName: foo
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        image: mysql
+        privileged: true
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        kube:
+            deploy:
+                services:
+                    api:
+                        specification:
+                            source:
+                                image: mysql
+                            runtime_policy:
+                                privileged: true
+                            volumes:
+                                - type: hostPath
+                                  path: /var/run/docker.sock
+                            volume_mounts:
+                                - mount_path: /var/run/docker.sock
+    """
+
+  Scenario: The local volume mappings should not be transformed
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        kube:
+            deploy:
+                providerName: foo
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        image: mysql
+        privileged: true
+        volumes:
+            - .:/app
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should not contain:
+    """
+    tasks:
+        kube:
+            deploy:
+                services:
+                    api:
+                        specification:
+                            volumes:
+                                - type: hostPath
+                                  path: /app
+                            volume_mounts:
+                                - mount_path: /app
+    """
