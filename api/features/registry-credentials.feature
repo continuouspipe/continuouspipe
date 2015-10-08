@@ -25,3 +25,11 @@ Feature:
     When I ask the list of my docker registry credentials
     Then I should receive a list
     And the list should contain the credential for server "docker.io"
+
+  Scenario: I can delete a docker registry credentials by the server name
+    Given I have the following docker registry credentials:
+      | serverAddress | username | password | email                 |
+      | docker.io     | foo      | bar      | samuel.roze@gmail.com |
+    When I delete the credentials of the docker registry "docker.io"
+    And I ask the list of my docker registry credentials
+    Then the list should not contain the credential for server "docker.io"

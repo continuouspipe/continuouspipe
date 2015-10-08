@@ -63,4 +63,16 @@ class DockerRegistryCredentialsController
 
         return $credentials;
     }
+
+    /**
+     * @Route("/docker-registries/{serverAddress}", methods={"DELETE"})
+     * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @View
+     */
+    public function deleteAction(User $user, $serverAddress)
+    {
+        $credentials = $this->dockerRegistryCredentialsRepository->findOneByUserAndServer($user, $serverAddress);
+
+        $this->dockerRegistryCredentialsRepository->remove($user, $credentials);
+    }
 }

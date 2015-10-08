@@ -40,6 +40,23 @@ class UserApiContext implements Context
             $content
         ));
     }
+    /**
+     * @When I delete the credentials of the docker registry :serverAddress
+     */
+    public function iDeleteTheCredentialsOfTheDockerRegistry($serverAddress)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/v1/docker-registries/%s', urlencode($serverAddress)),
+            'DELETE'
+        ));
+
+        if ($this->response->getStatusCode() != Response::HTTP_NO_CONTENT) {
+            throw new \RuntimeException(sprintf(
+                'Expected to get status code 204, got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
 
     /**
      * @Then the new credentials should have been saved successfully
@@ -122,6 +139,27 @@ class UserApiContext implements Context
 
         if (0 == count($matchingCredentials)) {
             throw new \RuntimeException('No matching credentials found');
+        }
+    }
+
+
+    /**
+     * @Then the list should not contain the credential for server :serverAddress
+     */
+    public function theListShouldNotContainTheCredentialForServer($serverAddress)
+    {
+        try {
+            $this->theListShouldContainTheCredentialForServer($serverAddress);
+            $contains = true;
+        } catch (\RuntimeException $e) {
+            $contains = false;
+        }
+
+        if ($contains) {
+            throw new \RuntimeException(sprintf(
+                'Found a credential for server address "%s"',
+                $serverAddress
+            ));
         }
     }
 }
