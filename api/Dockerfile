@@ -26,7 +26,10 @@ RUN curl -sS https://getcomposer.org/installer | php \
 # Add the application
 ADD . /app
 WORKDIR /app
-RUN rm -rf app/cache/* && rm -rf app/logs/*
+
+# Fixes permissions
+RUN rm -rf app/cache/* && rm -rf app/logs/* \
+    && chown www-data . app/cache app/logs
 
 # Set image endpoint
 RUN chmod +x /app/docker/run.sh
