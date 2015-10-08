@@ -23,12 +23,15 @@ trait TaskLocator
             foreach ($config['tasks'] as $key => $task) {
                 foreach ($task as $taskName => $taskConfiguration) {
                     $path = '[tasks]['.$key.']['.$taskName.']';
-                    $paths[$path] = $taskName;
+
+                    if (!array_key_exists($path, $paths)) {
+                        $paths[$path] = $taskName;
+                    }
                 }
             }
         }
 
-        return array_unique($paths);
+        return $paths;
     }
 
     /**
