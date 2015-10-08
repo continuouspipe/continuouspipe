@@ -108,6 +108,8 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                         ],
                         'ports' => [],
                         'environment_variables' => [],
+                        'volumes' => [],
+                        'volume_mounts' => [],
                     ],
                 ];
 
@@ -123,7 +125,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
 
                 if ($privileged = $component->isPrivileged()) {
                     $configuration['specification']['runtime_policy'] = [
-                        'privileged' => true
+                        'privileged' => true,
                     ];
                 }
 
@@ -138,6 +140,24 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                     $configuration['specification']['ports'][] = [
                         'identifier' => $component->getName().((string) $exposedPort),
                         'port' => $exposedPort,
+                    ];
+                }
+
+                foreach ($component->getVolumes() as $index => $volume) {
+                    if (!$volume->isHostMount()) {
+                        continue;
+                    }
+
+                    $volumeName = $component->getName().'_volume_'.$index;
+                    $configuration['specification']['volumes'][] = [
+                        'type' => 'hostPath',
+                        'path' => $volume->getHostPath(),
+                        'name' => $volumeName,
+                    ];
+
+                    $configuration['specification']['volume_mounts'][] = [
+                        'name' => $volumeName,
+                        'mount_path' => $volume->getMountPath(),
                     ];
                 }
             }

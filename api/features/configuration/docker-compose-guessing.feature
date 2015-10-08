@@ -223,7 +223,6 @@ Feature:
                                 privileged: true
     """
 
-  @wip
   Scenario: The absolute volume mappings should be transformed as volume and volume mappings
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
@@ -260,7 +259,6 @@ Feature:
                                 - mount_path: /var/run/docker.sock
     """
 
-  @wip
   Scenario: The local volume mappings should not be transformed
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
