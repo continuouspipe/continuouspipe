@@ -439,7 +439,8 @@ module.exports = function (grunt) {
           RIVER_API_URL: 'http://'+(process.env.RIVER_API_URL || 'continuouspipe_river.docker/app_dev.php'),
           AUTHENTICATOR_API_URL: 'http://'+(process.env.AUTHENTICATOR_API_URL || 'continuouspipe_authenticator.docker/app_dev.php'),
           LOG_STREAM_URL: 'http://'+(process.env.LOG_STREAM_URL || 'logstream.docker'),
-          PIPE_API_URL: 'http://'+(process.env.PIPE_API_URL || 'continuouspipe_pipe.docker/app_dev.php')
+          PIPE_API_URL: 'http://'+(process.env.PIPE_API_URL || 'continuouspipe_pipe.docker/app_dev.php'),
+          ACCOUNT_API_URL: 'http://'+(process.env.AUTHENTICATOR_API_URL || 'continuouspipe_authenticator.docker/app_dev.php')+'/api/v1'
         }
       }
     }
