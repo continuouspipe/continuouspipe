@@ -37,6 +37,16 @@ class DockerRegistryCredentialsController
     }
 
     /**
+     * @Route("/docker-registries", methods={"GET"})
+     * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @View
+     */
+    public function listAction(User $user)
+    {
+        return $this->dockerRegistryCredentialsRepository->findByUser($user);
+    }
+
+    /**
      * @Route("/docker-registries", methods={"POST"})
      * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
      * @ParamConverter("credentials", converter="fos_rest.request_body")

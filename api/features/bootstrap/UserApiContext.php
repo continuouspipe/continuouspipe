@@ -74,6 +74,7 @@ class UserApiContext implements Context
      */
     public function iHaveTheFollowingDockerRegistryCredentials(TableNode $table)
     {
+        $this->iCreateANewDockerRegistryWithTheFollowingConfiguration($table);
     }
 
     /**

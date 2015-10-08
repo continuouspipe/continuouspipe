@@ -18,7 +18,6 @@ Feature:
       | docker.io     | foo      | bar      |
     Then I should receive a bad request error
 
-  @wip
   Scenario: I can list my Docker Registry credentials
     Given I have the following docker registry credentials:
       | serverAddress | username | password | email                 |
