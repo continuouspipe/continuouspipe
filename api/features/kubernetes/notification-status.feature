@@ -10,8 +10,7 @@ Feature:
   @smoke
   Scenario: The status of the deployed components should be sent in the notification
     When I send a deployment request from application template "simple-app"
-    And the deployment is successful
-    Then a notification should be sent back
+    Then one notification should be sent back
     And the notification should contain the status of the component "app"
     And the notification should contain the status of the component "mysql"
     And the deployment status "created" of the component "app" should be true
@@ -22,8 +21,7 @@ Feature:
     Given I have an existing replication controller "mysql"
     And I have an existing service "mysql"
     When I send a deployment request from application template "simple-app"
-    And the deployment is successful
-    Then a notification should be sent back
+    Then one notification should be sent back
     And the notification should contain the status of the component "app"
     And the notification should contain the status of the component "mysql"
     And the deployment status "created" of the component "mysql" should be false

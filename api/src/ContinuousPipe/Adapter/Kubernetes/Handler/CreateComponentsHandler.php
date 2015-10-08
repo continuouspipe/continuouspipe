@@ -10,6 +10,7 @@ use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
 use ContinuousPipe\Model\Component;
+use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
@@ -86,11 +87,36 @@ class CreateComponentsHandler implements DeploymentHandler
     {
         $context = $command->getContext();
         $client = $this->clientFactory->get($context);
-
         $environment = $context->getEnvironment();
-        $logger = $this->loggerFactory->from($context->getLog());
-        $componentStatus = [];
 
+        try {
+            $componentStatus = $this->createComponents($client, $context, $environment);
+
+            $this->eventBus->handle(new ComponentsCreated($context, $componentStatus));
+        } catch (ComponentException $e) {
+            $logger = $this->loggerFactory->from($context->getLog());
+            $logger->append(new Text($e->getMessage()));
+
+            $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
+        }
+    }
+
+    /**
+     * Create the components and return the component statuses.
+     *
+     * @param NamespaceClient   $client
+     * @param DeploymentContext $context
+     * @param Environment       $environment
+     *
+     * @return array
+     *
+     * @throws ComponentException
+     */
+    private function createComponents(NamespaceClient $client, DeploymentContext $context, Environment $environment)
+    {
+        $logger = $this->loggerFactory->from($context->getLog());
+
+        $componentStatus = [];
         foreach ($environment->getComponents() as $component) {
             try {
                 $status = $this->createComponent($client, $logger, $component);
@@ -100,19 +126,15 @@ class CreateComponentsHandler implements DeploymentHandler
                     $this->attacher->attach($context, $status);
                 }
             } catch (ClientError $e) {
-                $logger->append(new Text(sprintf(
+                throw new ComponentException(sprintf(
                     'An error appeared while creating the component "%s": %s',
                     $component->getName(),
                     $e->getMessage()
-                )));
-
-                $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
-            } catch (ComponentException $e) {
-                $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
+                ));
             }
         }
 
-        $this->eventBus->handle(new ComponentsCreated($context, $componentStatus));
+        return $componentStatus;
     }
 
     /**

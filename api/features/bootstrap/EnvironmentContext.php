@@ -180,14 +180,6 @@ class EnvironmentContext implements Context
         }
 
         $deployment = json_decode($this->response->getContent(), true);
-        if (Deployment::STATUS_SUCCESS != $deployment['status']) {
-            throw new \RuntimeException(sprintf(
-                'Expected deployment status to be "%s" but got "%s"',
-                Deployment::STATUS_SUCCESS,
-                $deployment['status']
-            ));
-        }
-
         $this->lastDeploymentUuid = Uuid::fromString($deployment['uuid']);
         $this->deploymentEnvironmentName = $environmentName;
     }

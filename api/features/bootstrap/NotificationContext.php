@@ -20,11 +20,14 @@ class NotificationContext implements Context
     }
 
     /**
-     * @Then a notification should be sent back
+     * @Then one notification should be sent back
      */
-    public function aNotificationShouldBeSentBack()
+    public function oneNotificationShouldBeSentBack()
     {
-        $this->getNotification();
+        $notifications = $this->notifier->getNotifications();
+        if (1 != count($notifications)) {
+            throw new \RuntimeException(sprintf('Expecting 1 notifications, found %s', count($notifications)));
+        }
     }
 
     /**

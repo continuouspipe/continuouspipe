@@ -9,6 +9,7 @@ use Kubernetes\Client\Model\ContainerPort;
 use Kubernetes\Client\Model\EnvironmentVariable;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodSpecification;
+use Kubernetes\Client\Model\SecurityContext;
 use Kubernetes\Client\Model\VolumeMount;
 
 class PodTransformer
@@ -73,6 +74,12 @@ class PodTransformer
      */
     private function createContainer($name, Component\Specification $specification)
     {
+        if ($runtimePolicy = $specification->getRuntimePolicy()) {
+            $securityContext = new SecurityContext($runtimePolicy->isPrivileged());
+        } else {
+            $securityContext = null;
+        }
+
         return new Container(
             $name,
             $this->getImageName($specification->getSource()),
@@ -80,7 +87,8 @@ class PodTransformer
             $this->createPorts($specification->getPorts()),
             $this->createVolumeMounts($specification->getVolumeMounts()),
             Container::PULL_POLICY_ALWAYS,
-            $specification->getCommand()
+            $specification->getCommand(),
+            $securityContext
         );
     }
 

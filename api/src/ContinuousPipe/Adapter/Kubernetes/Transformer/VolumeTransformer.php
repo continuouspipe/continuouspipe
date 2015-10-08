@@ -10,8 +10,16 @@ class VolumeTransformer
     private static $classMapping = [
         Component\Volume\EmptyDirectory::class => ['setter' => 'setEmptyDir', 'converter' => 'emptyDirConverter'],
         Component\Volume\NFS::class => ['setter' => 'setNfs', 'converter' => 'nfsConverter'],
+        Component\Volume\HostPath::class => ['setter' => 'setHostPath', 'converter' => 'hostPathConverter'],
     ];
 
+    /**
+     * Create the Kubernetes volume object from the given component volume.
+     *
+     * @param Component\Volume $componentVolume
+     *
+     * @return Volume
+     */
     public function getVolumeFromComponentVolume(Component\Volume $componentVolume)
     {
         $volume = new Volume($componentVolume->getName());
@@ -42,5 +50,10 @@ class VolumeTransformer
     private function nfsConverter(Component\Volume\NFS $nfs)
     {
         return new Volume\NfsVolumeSource($nfs->getServer(), $nfs->getPath(), $nfs->isReadOnly());
+    }
+
+    private function hostPathConverter(Component\Volume\HostPath $hostPath)
+    {
+        return new Volume\HostPathVolumeSource($hostPath->getPath());
     }
 }
