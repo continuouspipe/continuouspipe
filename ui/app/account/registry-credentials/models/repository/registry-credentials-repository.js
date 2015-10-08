@@ -8,8 +8,8 @@ angular.module('continuousPipeRiver')
             return this.resource.query().$promise;
         };
 
-        this.remove = function(serverAddress) {
-            return this.resource.delete({serverAddress: serverAddress}).$promise;
+        this.remove = function(credentials) {
+            return this.resource.delete({serverAddress: credentials.serverAddress}).$promise;
         };
 
         this.create = function(credentials) {

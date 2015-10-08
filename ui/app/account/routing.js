@@ -18,7 +18,7 @@ angular.module('continuousPipeRiver')
                 views: {
                     '@layout': {
                         templateUrl: 'account/registry-credentials/views/create.html',
-                        controller: 'DockerCredentialsCreateController'
+                        controller: 'RegistryCredentialsCreateController'
                     }
                 },
                 ncyBreadcrumb: {
