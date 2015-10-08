@@ -8,6 +8,8 @@ use FOS\RestBundle\Controller\Annotations\View;
 use ContinuousPipe\Authenticator\DockerRegistryCredentialsRepository;
 use ContinuousPipe\User\DockerRegistryCredentials;
 use ContinuousPipe\User\User;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use FOS\RestBundle\View\View as FOSRestView;
 
 /**
  * @Route(service="user_api.controller.docker_registry_credentials")
@@ -20,11 +22,18 @@ class DockerRegistryCredentialsController
     private $dockerRegistryCredentialsRepository;
 
     /**
-     * @param DockerRegistryCredentialsRepository $dockerRegistryCredentialsRepository
+     * @var ValidatorInterface
      */
-    public function __construct(DockerRegistryCredentialsRepository $dockerRegistryCredentialsRepository)
+    private $validator;
+
+    /**
+     * @param DockerRegistryCredentialsRepository $dockerRegistryCredentialsRepository
+     * @param ValidatorInterface                  $validator
+     */
+    public function __construct(DockerRegistryCredentialsRepository $dockerRegistryCredentialsRepository, ValidatorInterface $validator)
     {
         $this->dockerRegistryCredentialsRepository = $dockerRegistryCredentialsRepository;
+        $this->validator = $validator;
     }
 
     /**
@@ -35,6 +44,11 @@ class DockerRegistryCredentialsController
      */
     public function createAction(User $user, DockerRegistryCredentials $credentials)
     {
+        $violations = $this->validator->validate($credentials);
+        if (count($violations) > 0) {
+            return FOSRestView::create($violations, 400);
+        }
+
         $credentials = $this->dockerRegistryCredentialsRepository->save($credentials, $user);
 
         return $credentials;

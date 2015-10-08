@@ -12,7 +12,6 @@ Feature:
       | docker.io     | foo      | bar      | samuel.roze@gmail.com |
     Then the new credentials should have been saved successfully
 
-  @wip
   Scenario: The credentials creation fails if some fields are missing
     When I create a new docker registry with the following configuration:
       | serverAddress | username | password |
