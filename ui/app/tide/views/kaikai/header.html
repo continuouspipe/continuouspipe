@@ -1,0 +1,46 @@
+<ul class="header-inner header-kaikai">
+    <li class="logo hidden-xs">
+        <a>
+            <small>{{ tide.code_reference.code_repository.repository.name }}</small>
+            {{ tide.code_reference.branch }}
+            <span ng-class="{'bgm-green': tide.status == 'success', 'bgm-red': tide.status == 'failure', 'bgm-blue': tide.status === 'running'}" class="tide-status">{{ tide.status }}</span>
+        </a>
+    </li>
+
+
+    <li class="header-links">
+        <ul class="top-menu">
+            <li ui-sref-active="active" ng-repeat="service in services">
+                <a ui-sref="kaikai.service({service: service.name })" class="header-link">{{ service.name }}</a>
+            </li>
+        </ul>
+        <div class="remote-resource loading">
+            <div class="loader loader-inner ball-clip-rotate">
+                <div></div>
+            </div>
+            <span>Loading...</span>
+        </div>
+    </li>
+
+    <li class="pull-right header-links">
+        <ul class="top-menu">
+            <li ui-sref-active="active">
+                <a ui-sref="kaikai.logs" class="header-link">Logs</a>
+            </li>
+            <li class="dropdown">
+                <a data-toggle="dropdown" class="tm-settings dropdown-only" href=""></a>
+                <ul class="dropdown-menu dm-icon pull-right">
+                    <li>
+                        <a ng-href="{{ logoutUrl }}"><i class="md md-settings-power"></i> Logout</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<!-- Top Search Content -->
+<div id="top-search-wrap">
+    <input type="text">
+    <i id="top-search-close">&times;</i>
+</div>
