@@ -58,7 +58,7 @@ class FilterDecorator implements TaskRunner
         }
 
         if ($shouldBeSkipped) {
-            $this->eventBus->handle(new TaskSkipped($tide->getUuid(), $task));
+            $this->eventBus->handle(new TaskSkipped($tide->getUuid(), $task->getContext()));
         } else {
             $this->taskRunner->run($tide, $task);
         }

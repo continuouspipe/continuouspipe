@@ -88,6 +88,9 @@ smoke:
                     - @river.pipe_client
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
+                - Tide\TasksContext:
+                    - @event_bus
+                    - @river.repository.tide
 
     extensions:
         Behat\Symfony2Extension:

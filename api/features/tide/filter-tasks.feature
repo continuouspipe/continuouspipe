@@ -15,6 +15,7 @@ Feature:
     When a tide is started
     Then the tide should be failed
 
+  @smoke
   Scenario: I can run a task only if the tide branch match a given name
     Given I have a flow with the following configuration:
     """

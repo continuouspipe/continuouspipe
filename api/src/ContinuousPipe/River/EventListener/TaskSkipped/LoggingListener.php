@@ -26,7 +26,7 @@ class LoggingListener
      */
     public function notify(TaskSkipped $event)
     {
-        $context = $event->getTask()->getContext();
+        $context = $event->getTaskContext();
         $logger = $this->loggerFactory->from($context->getLog());
 
         $logger->append(new Text(sprintf(
