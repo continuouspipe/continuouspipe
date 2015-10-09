@@ -27,8 +27,8 @@ RUN curl -sS https://getcomposer.org/installer | php \
 ADD . /app
 WORKDIR /app
 
-# Fixes permissions
-RUN rm -rf app/cache/* && rm -rf app/logs/* \
+# Remove cache and logs if some and fixes permissions
+RUN ((rm -rf app/cache/* && rm -rf app/logs/*) || true) \
     && chown www-data . app/cache app/logs
 
 # Set image endpoint
