@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Tide\Request\TideCreationRequest;
+use ContinuousPipe\River\Tide\TideSummaryCreator;
 use ContinuousPipe\River\TideFactory;
 use ContinuousPipe\River\View\TideRepository;
 use Rhumsaa\Uuid\Uuid;
@@ -41,17 +42,24 @@ class TideController
     private $eventBus;
 
     /**
+     * @var TideSummaryCreator
+     */
+    private $tideSummaryCreator;
+
+    /**
      * @param TideRepository     $tideRepository
      * @param ValidatorInterface $validator
      * @param TideFactory        $tideFactory
      * @param MessageBus         $eventBus
+     * @param TideSummaryCreator $tideSummaryCreator
      */
-    public function __construct(TideRepository $tideRepository, ValidatorInterface $validator, TideFactory $tideFactory, MessageBus $eventBus)
+    public function __construct(TideRepository $tideRepository, ValidatorInterface $validator, TideFactory $tideFactory, MessageBus $eventBus, TideSummaryCreator $tideSummaryCreator)
     {
         $this->tideRepository = $tideRepository;
         $this->validator = $validator;
         $this->tideFactory = $tideFactory;
         $this->eventBus = $eventBus;
+        $this->tideSummaryCreator = $tideSummaryCreator;
     }
 
     /**
@@ -107,5 +115,18 @@ class TideController
     public function getAction($uuid)
     {
         return $this->tideRepository->find(Uuid::fromString($uuid));
+    }
+
+    /**
+     * Get summary of a the given tide.
+     *
+     * @Route("/tides/{uuid}/summary", methods={"GET"})
+     * @View
+     */
+    public function summaryAction($uuid)
+    {
+        return $this->tideSummaryCreator->fromTide(
+            $this->tideRepository->find(Uuid::fromString($uuid))
+        );
     }
 }
