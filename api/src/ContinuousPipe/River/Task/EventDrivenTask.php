@@ -58,7 +58,7 @@ abstract class EventDrivenTask implements Task
      */
     protected function getEventsOfType($className)
     {
-        $events = array_merge($this->events->getEvents(), $this->newEvents);
+        $events = $this->events->getEvents();
         $matchingEvents = array_filter($events, function (TideEvent $event) use ($className) {
             return get_class($event) == $className || is_subclass_of($event, $className);
         });
