@@ -1,5 +1,6 @@
 {
   "includePaths": [
     ".meteor/local/bower"
-  ]
+  ],
+  "useIndex": true
 }
