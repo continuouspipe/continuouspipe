@@ -49,6 +49,8 @@ default:
                     - @repository_river.code_repository_repository
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
+                - TideSummaryContext:
+                    - @kernel
 
     extensions:
         Behat\Symfony2Extension:

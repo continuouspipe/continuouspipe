@@ -13,6 +13,7 @@ use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
+use ContinuousPipe\River\Task\TaskQueued;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -136,6 +137,9 @@ class BuildTask extends EventDrivenTask
         $logger = $this->loggerFactory->from($this->context->getLog());
         $log = $logger->append(new Text('Building application images'));
 
+        $this->context->setTaskLog($log);
+        $this->newEvents[] = TaskQueued::fromContext($this->context);
+
         $this->commandBus->handle(new BuildImagesCommand(
             $this->context->getTideUuid(),
             $this->configuration,
@@ -157,14 +161,6 @@ class BuildTask extends EventDrivenTask
     public function isFailed()
     {
         return 0 < $this->numberOfEventsOfType(ImageBuildsFailed::class);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isPending()
-    {
-        return 0 === $this->numberOfEventsOfType(ImageBuildsStarted::class);
     }
 
     /**

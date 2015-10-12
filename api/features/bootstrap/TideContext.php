@@ -468,10 +468,10 @@ EOF;
     public function aTideIsStartedWithABuildAndDeployTask()
     {
         $this->aTideIsStartedWithTasks([
-            [
+            'build' => [
                 'build' => []
             ],
-            [
+            'deploy' => [
                 'deploy' => [
                     'providerName' => 'fake/foo'
                 ]
@@ -590,6 +590,7 @@ EOF;
                         'image0' => [
                             'specification' => [
                                 'source' => [
+                                    'image' => 'foo',
                                     'tag' => 'foo'
                                 ]
                             ]

@@ -58,11 +58,12 @@ abstract class EventDrivenTask implements Task
      */
     protected function getEventsOfType($className)
     {
-        $events = array_filter($this->events->getEvents(), function (TideEvent $event) use ($className) {
+        $events = $this->events->getEvents();
+        $matchingEvents = array_filter($events, function (TideEvent $event) use ($className) {
             return get_class($event) == $className || is_subclass_of($event, $className);
         });
 
-        return array_values($events);
+        return array_values($matchingEvents);
     }
 
     /**
@@ -81,6 +82,14 @@ abstract class EventDrivenTask implements Task
     public function isRunning()
     {
         return !$this->isFailed() && !$this->isSuccessful() && !$this->isPending();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPending()
+    {
+        return 0 === $this->numberOfEventsOfType(TaskQueued::class);
     }
 
     /**
@@ -107,6 +116,15 @@ abstract class EventDrivenTask implements Task
      */
     public function getContext()
     {
+        if (null === $this->context->getTaskLog()) {
+            /** @var TaskLogCreated[] $logCreatedEvents */
+            $logCreatedEvents = $this->getEventsOfType(TaskLogCreated::class);
+
+            if (count($logCreatedEvents) > 0) {
+                $this->context->setTaskLog($logCreatedEvents[0]->getLog());
+            }
+        }
+
         return $this->context;
     }
 

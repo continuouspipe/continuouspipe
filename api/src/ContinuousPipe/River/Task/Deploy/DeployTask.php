@@ -9,6 +9,7 @@ use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
+use ContinuousPipe\River\Task\TaskQueued;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -67,6 +68,7 @@ class DeployTask extends EventDrivenTask
         $log = $logger->append(new Text('Deploying environment'));
 
         $this->context->setTaskLog($log);
+        $this->newEvents[] = TaskQueued::fromContext($this->context);
 
         $this->commandBus->handle(new StartDeploymentCommand(
             $this->context->getTideUuid(),
@@ -100,14 +102,6 @@ class DeployTask extends EventDrivenTask
     public function isFailed()
     {
         return 0 < $this->numberOfEventsOfType(DeploymentFailed::class);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isPending()
-    {
-        return 0 === $this->numberOfEventsOfType(DeploymentStarted::class);
     }
 
     /**
