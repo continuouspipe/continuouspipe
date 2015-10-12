@@ -7,7 +7,7 @@ api:
     - rabbitmq
   environment:
     - SENTRY_DSN=http://0cd6915cf66c44feb0a0fc00137147ac:b2e09cf0a35641fb901e667734e979b1@tsuru.cluster.sroze.io:82/5
-    - RIVER_UI_URL=http://ui_app.docker
+    - RIVER_UI_URL=http://ui_ui.docker
     - AUTHENTICATOR_URL=authenticator_app.docker
     - BUILDER_URL=builder_api.docker/app_dev.php
     - PIPE_URL=pipe_api.docker/app_dev.php
