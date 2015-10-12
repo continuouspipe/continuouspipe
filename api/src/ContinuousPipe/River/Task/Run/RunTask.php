@@ -8,6 +8,7 @@ use ContinuousPipe\River\Task\Run\Command\StartRunCommand;
 use ContinuousPipe\River\Task\Run\Event\RunFailed;
 use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\Event\RunSuccessful;
+use ContinuousPipe\River\Task\TaskQueued;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -63,6 +64,7 @@ class RunTask extends EventDrivenTask
         )));
 
         $this->context->setTaskLog($log);
+        $this->newEvents[] = TaskQueued::fromContext($this->context);
 
         $this->commandBus->handle(new StartRunCommand(
             $this->context->getTideUuid(),
@@ -101,14 +103,6 @@ class RunTask extends EventDrivenTask
     public function isFailed()
     {
         return 0 < $this->numberOfEventsOfType(RunFailed::class);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isPending()
-    {
-        return 0 === $this->numberOfEventsOfType(RunStarted::class);
     }
 
     /**

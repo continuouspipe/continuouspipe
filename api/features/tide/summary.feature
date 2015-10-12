@@ -5,6 +5,7 @@ Feature:
 
   Background:
     Given I am authenticated
+    And there is 1 application images in the repository
 
   Scenario: I can get the summary of a given tide
     Given a tide is created
@@ -20,3 +21,16 @@ Feature:
     Then I should see in the list the following deployed services:
     | name | address |
     | foo  | 1.2.3.4 |
+
+  Scenario: If the tide is running, it should return the current running task's log
+    And a tide is started with a build and deploy task
+    When I ask the summary of the tide
+    Then I should see that the tide is running
+    And I should see that the current task is the build task
+
+  Scenario: If the tide is running, it should return the current running task's log
+    Given a tide is started with a build and deploy task
+    And the build succeed
+    When I ask the summary of the tide
+    Then I should see that the tide is running
+    And I should see that the current task is the deploy task

@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Task\Run;
 
 use ContinuousPipe\River\Context;
 use ContinuousPipe\River\Task\TaskContext;
-use LogStream\Log;
 
 class RunContext extends TaskContext
 {
@@ -50,21 +49,5 @@ class RunContext extends TaskContext
         }
 
         return $commands;
-    }
-
-    /**
-     * @return Log
-     */
-    public function getTaskLog()
-    {
-        return $this->get(self::KEY_RUNNER_LOG);
-    }
-
-    /**
-     * @param Log $log
-     */
-    public function setTaskLog(Log $log)
-    {
-        $this->set(self::KEY_RUNNER_LOG, $log);
     }
 }

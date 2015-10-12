@@ -4,7 +4,10 @@ namespace ContinuousPipe\River\Tide;
 
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\EventBus\EventStore;
+use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use ContinuousPipe\River\Task\Task;
+use ContinuousPipe\River\Tide\Summary\CurrentTask;
 use ContinuousPipe\River\Tide\Summary\DeployedService;
 use ContinuousPipe\River\View\Tide;
 
@@ -16,11 +19,18 @@ class TideSummaryCreator
     private $eventStore;
 
     /**
-     * @param EventStore $eventStore
+     * @var TideRepository
      */
-    public function __construct(EventStore $eventStore)
+    private $tideRepository;
+
+    /**
+     * @param EventStore     $eventStore
+     * @param TideRepository $tideRepository
+     */
+    public function __construct(EventStore $eventStore, TideRepository $tideRepository)
     {
         $this->eventStore = $eventStore;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -32,7 +42,8 @@ class TideSummaryCreator
     {
         return new TideSummary(
             $tide->getStatus(),
-            $this->getDeployedServices($tide)
+            $this->getDeployedServices($tide),
+            $this->getCurrentTask($tide)
         );
     }
 
@@ -82,5 +93,45 @@ class TideSummaryCreator
         }
 
         return $array;
+    }
+
+    /**
+     * @param Tide $tideView
+     *
+     * @return CurrentTask|null
+     */
+    private function getCurrentTask(Tide $tideView)
+    {
+        if ($tideView->getStatus() != Tide::STATUS_RUNNING) {
+            return;
+        }
+
+        $tide = $this->tideRepository->find($tideView->getUuid());
+        if ($task = $tide->getTasks()->getCurrentTask()) {
+            return new CurrentTask(
+                $task->getContext()->getTaskId(),
+                $this->getTaskLog($task)
+            );
+        }
+
+        return;
+    }
+
+    /**
+     * @param Task $task
+     *
+     * @return string|null
+     */
+    private function getTaskLog(Task $task)
+    {
+        if ($taskLog = $task->getContext()->getTaskLog()) {
+            $serialized = $taskLog->jsonSerialize();
+
+            if (array_key_exists('contents', $serialized)) {
+                return $serialized['contents'];
+            }
+        }
+
+        return;
     }
 }

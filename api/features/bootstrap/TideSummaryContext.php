@@ -64,7 +64,7 @@ class TideSummaryContext implements Context
      */
     public function iShouldSeeThatTheTideIsFailed()
     {
-        $decoded = json_decode($this->response->getContent(), true);
+        $decoded = $this->getJson();
 
         if ($decoded['status'] != Tide::STATUS_FAILURE) {
             throw new \RuntimeException(sprintf(
@@ -79,7 +79,7 @@ class TideSummaryContext implements Context
      */
     public function iShouldSeeInTheListTheFollowingDeployedServices(TableNode $table)
     {
-        $decoded = json_decode($this->response->getContent(), true);
+        $decoded = $this->getJson();
         if (!array_key_exists('deployed_services', $decoded)) {
             throw new \RuntimeException('Expected the JSON to contain a "services" key but not found');
         }
@@ -106,5 +106,67 @@ class TideSummaryContext implements Context
                 ));
             }
         }
+    }
+
+    /**
+     * @Then I should see that the tide is running
+     */
+    public function iShouldSeeThatTheTideIsRunning()
+    {
+        $foundStatus = $this->getJson()['status'];
+        if ($foundStatus != 'running') {
+            throw new \RuntimeException(sprintf(
+                'Found status "%s" but expected "running"',
+                $foundStatus
+            ));
+        }
+    }
+
+    /**
+     * @Then I should see that the current task is the build task
+     */
+    public function iShouldSeeThatTheCurrentTaskIsTheBuildTask()
+    {
+        $this->assetCurrentTaskIs('build');
+    }
+
+    /**
+     * @Then I should see that the current task is the deploy task
+     */
+    public function iShouldSeeThatTheCurrentTaskIsTheDeployTask()
+    {
+        $this->assetCurrentTaskIs('deploy');
+    }
+
+    /**
+     * @param string $name
+     */
+    private function assetCurrentTaskIs($name)
+    {
+        $json = $this->getJson();
+        if (!array_key_exists('current_task', $json)) {
+            throw new \RuntimeException('Expected to find the `current_task` key but not found');
+        }
+
+        $currentTask = $json['current_task'];
+        if ($currentTask['name'] != $name) {
+            throw new \RuntimeException(sprintf(
+                'Found "%s" as current task name, expected "%s"',
+                $currentTask['name'],
+                $name
+            ));
+        }
+
+        if (empty($currentTask['log'])) {
+            throw new \RuntimeException('Empty log line for the current task');
+        }
+    }
+
+    /**
+     * @return array
+     */
+    private function getJson()
+    {
+        return json_decode($this->response->getContent(), true);
     }
 }

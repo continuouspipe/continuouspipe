@@ -23,6 +23,7 @@
 
         <service id="river.tide_summary_creator" class="ContinuousPipe\River\Tide\TideSummaryCreator">
             <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.repository.tide" />
         </service>
 
         <service id="river.tide.configuration_enhancer.unnamed_tasks" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\TaskListAsUnnamedArrayEnhancer" />

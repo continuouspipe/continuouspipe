@@ -88,4 +88,18 @@ class TaskList
             return $successful && ($task->isSuccessful() || $task->isSkipped());
         }, true);
     }
+
+    /**
+     * @return Task|null
+     */
+    public function getCurrentTask()
+    {
+        foreach ($this->tasks as $task) {
+            if ($task->isRunning()) {
+                return $task;
+            }
+        }
+
+        return;
+    }
 }
