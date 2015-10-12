@@ -38,6 +38,10 @@ header {
                     line-height: 35px;
                 }
             }
+
+            li {
+                vertical-align: top;
+            }
         }
     }
 }
@@ -182,4 +186,45 @@ ul.tasks {
 .yaml-editor-buttons {
     text-align: center;
     padding: 10px;
+}
+
+// KaiKai page
+.header-kaikai {
+    .tide-status {
+        padding: 5px;
+        font-size: 0.8em;
+        margin-left: 10px;
+    }
+
+    .remote-resource.loading {
+        padding: 0;
+        float: left;
+
+        .loader {
+            display: inline-block;
+
+            > div {
+                border-top-color: #fff;
+                border-left-color: #fff;
+                border-right-color: #fff;
+            }
+        }
+
+        > span {
+            color: #fff;
+            padding-left: 10px;
+            line-height: 35px;
+            display: inline-block;
+            vertical-align: top;
+        }
+    }
+}
+
+.kaikai-service-frame {
+    position: fixed;
+    top: 65px;
+    right: 0;
+    border: none;
+    width: 100%;
+    height: 100%;
 }

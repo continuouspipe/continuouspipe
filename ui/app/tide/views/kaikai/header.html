@@ -1,0 +1,50 @@
+<ul class="header-inner header-kaikai">
+    <li class="logo hidden-xs">
+        <a>
+            <small>{{ tide.code_reference.code_repository.repository.name }}</small>
+            {{ tide.code_reference.branch }}
+            <span ng-class="{'bgm-green': summary.status == 'success', 'bgm-red': summary.status == 'failure', 'bgm-blue': summary.status === 'running'}" class="tide-status">{{ summary.status }}</span>
+        </a>
+    </li>
+
+
+    <li class="header-links">
+        <ul class="top-menu" ng-show="summary.status != 'running'">
+            <li ui-sref-active="active" ng-repeat="(name, service) in summary.deployed_services">
+                <a ui-sref="kaikai.service({name: name})" class="header-link">
+                    <i class="md md-public" ng-show="service.public_endpoint"></i>
+                    <i class="md md-lock-outline" ng-show="!service.public_endpoint"></i>
+                    {{ name }}
+                </a>
+            </li>
+        </ul>
+        <div class="remote-resource loading" ng-show="summary.status == 'running'">
+            <div class="loader loader-inner ball-clip-rotate">
+                <div></div>
+            </div>
+            <span>{{ summary.current_task.log }}</span>
+        </div>
+    </li>
+
+    <li class="pull-right header-links">
+        <ul class="top-menu">
+            <li ui-sref-active="active">
+                <a ui-sref="kaikai.logs" class="header-link">Logs</a>
+            </li>
+            <li class="dropdown">
+                <a data-toggle="dropdown" class="tm-settings dropdown-only" href=""></a>
+                <ul class="dropdown-menu dm-icon pull-right">
+                    <li>
+                        <a ui-sref="flow.overview({uuid: tide.flow.uuid})"><i class="md md-input"></i> Go to flow overview</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<!-- Top Search Content -->
+<div id="top-search-wrap">
+    <input type="text">
+    <i id="top-search-close">&times;</i>
+</div>

@@ -1,5 +1,5 @@
 <header id="header" ui-view="header"></header>
-<ol class="breadcrumb" ncy-breadcrumb></ol>
+<ol class="breadcrumb" ncy-breadcrumb ng-show="!$root.breadcrumbHidden"></ol>
 <section id="main">
     <aside id="sidebar" ui-view="aside"></aside>
 </section>

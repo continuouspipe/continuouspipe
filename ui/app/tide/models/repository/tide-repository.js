@@ -19,4 +19,11 @@ angular.module('continuousPipeRiver')
                 uuid: flow.uuid
             }, tide).$promise;
         };
+    })
+    .service('TideSummaryRepository', function($resource, RIVER_API_URL) {
+        this.resource = $resource(RIVER_API_URL+'/tides/:uuid/summary');
+
+        this.findByTide = function(tide) {
+            return this.resource.get({uuid: tide.uuid}).$promise;
+        };
     });

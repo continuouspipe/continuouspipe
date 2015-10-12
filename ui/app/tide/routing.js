@@ -43,5 +43,49 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+
+            // KAI-KAI view
+            .state('kaikai', {
+                parent: 'layout',
+                url: '/kaikai/:tideUuid',
+                resolve: {
+                    tide: function($stateParams, TideRepository) {
+                        return TideRepository.find($stateParams.tideUuid);
+                    },
+                    summary: function(TideSummaryRepository, tide) {
+                        return TideSummaryRepository.findByTide(tide);
+                    }
+                },
+                views: {
+                    'header@layout': {
+                        templateUrl: 'tide/views/kaikai/header.html',
+                        controller: 'KaiKaiHeaderController'
+                    },
+                    '@layout': {
+                        controller: 'KaiKaiController'
+                    }
+                },
+                breadcrumb: false
+            })
+            .state('kaikai.logs', {
+                url: '/logs',
+                views: {
+                    '@layout': {
+                        controller: 'KaiKaiLogsController',
+                        templateUrl: 'tide/views/kaikai/logs.html'
+                    }
+                },
+                breadcrumb: false
+            })
+            .state('kaikai.service', {
+                url: '/service/:name',
+                views: {
+                    '@layout': {
+                        controller: 'KaiKaiServiceController',
+                        templateUrl: 'tide/views/kaikai/service.html'
+                    }
+                },
+                breadcrumb: false
+            })
         ;
     });
