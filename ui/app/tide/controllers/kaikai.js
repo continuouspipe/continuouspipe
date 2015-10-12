@@ -1,8 +1,21 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('KaiKaiController', function($scope, tide) {
-        $scope.tide = tide;
+    .controller('KaiKaiController', function($scope, $state, tide, summary) {
+        if (summary.status == 'running' || !summary.deployed_services) {
+            $state.go('kaikai.logs', {uuid: tide.uuid});
+        } else {
+            var publicServices = [];
+            for (var serviceName in summary.deployed_services) {
+                if (summary.deployed_services[serviceName].public_endpoint) {
+                    publicServices.push(serviceName);
+                }
+            }
+
+            if (publicServices.length > 0) {
+                $state.go('kaikai.service', {uuid: tide.uuid, name: publicServices[0]});
+            }
+        }
     })
     .controller('KaiKaiHeaderController', function($scope, tide, summary) {
         $scope.tide = tide;
