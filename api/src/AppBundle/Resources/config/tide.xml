@@ -21,7 +21,9 @@
             <argument type="service" id="river.tide_factory" />
         </service>
 
-        <service id="river.tide_summary_creator" class="ContinuousPipe\River\Tide\TideSummaryCreator" />
+        <service id="river.tide_summary_creator" class="ContinuousPipe\River\Tide\TideSummaryCreator">
+            <argument type="service" id="river.event_store" />
+        </service>
 
         <service id="river.tide.configuration_enhancer.unnamed_tasks" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\TaskListAsUnnamedArrayEnhancer" />
         <service id="river.tide.configuration_enhancer.add_default_build_tag" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\AddDefaultBuildTag" />

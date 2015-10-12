@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River\Tide;
 
+use ContinuousPipe\River\Tide\Summary\DeployedService;
+
 class TideSummary
 {
     /**
@@ -10,10 +12,17 @@ class TideSummary
     private $status;
 
     /**
-     * @param string $status
+     * @var DeployedService[]
      */
-    public function __construct($status)
+    private $deployedServices;
+
+    /**
+     * @param string            $status
+     * @param DeployedService[] $deployedServices
+     */
+    public function __construct($status, array $deployedServices = [])
     {
         $this->status = $status;
+        $this->deployedServices = $deployedServices;
     }
 }

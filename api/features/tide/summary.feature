@@ -12,9 +12,11 @@ Feature:
     When I ask the summary of the tide
     Then I should see that the tide is failed
 
-  @wip
   Scenario: If there's a deploy task, I should see the deployed components
-    Given a tide is created with a deploy task
+    Given a tide is started with a deploy task
+    And the service "foo" was created with the public address "1.2.3.4"
     And the deployment succeed
     When I ask the summary of the tide
-    Then I should see the list of the deployed services and their addresses
+    Then I should see in the list the following deployed services:
+    | name | address |
+    | foo  | 1.2.3.4 |

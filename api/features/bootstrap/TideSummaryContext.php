@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\River\View\Tide;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -74,21 +75,36 @@ class TideSummaryContext implements Context
     }
 
     /**
-     * @Then I should see the list of the deployed services and their addresses
+     * @Then I should see in the list the following deployed services:
      */
-    public function iShouldSeeTheListOfTheDeployedServicesAndTheirAddresses()
+    public function iShouldSeeInTheListTheFollowingDeployedServices(TableNode $table)
     {
         $decoded = json_decode($this->response->getContent(), true);
-        if (!array_key_exists('services', $decoded)) {
+        if (!array_key_exists('deployed_services', $decoded)) {
             throw new \RuntimeException('Expected the JSON to contain a "services" key but not found');
         }
 
-        if (empty($decoded['services'])) {
+        $services = $decoded['deployed_services'];
+        if (empty($services)) {
             throw new \RuntimeException('No services found in the answer');
         }
 
-        if (!array_key_exists('public_endpoints', $decoded['services'][0])) {
-            throw new \RuntimeException('No public endpoint found for first service');
+        foreach ($table->getHash() as $expectedService) {
+            if (!array_key_exists($expectedService['name'], $services)) {
+                throw new \RuntimeException(sprintf(
+                    'Service "%s" is not found',
+                    $expectedService['name']
+                ));
+            }
+
+            $address = $services[$expectedService['name']]['public_endpoint']['address'];
+            if ($expectedService['address'] != $address) {
+                throw new \RuntimeException(sprintf(
+                    'Address "%s" not found in service %s',
+                    $expectedService['address'],
+                    $expectedService['name']
+                ));
+            }
         }
     }
 }

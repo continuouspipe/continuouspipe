@@ -590,6 +590,7 @@ EOF;
                         'image0' => [
                             'specification' => [
                                 'source' => [
+                                    'image' => 'foo',
                                     'tag' => 'foo'
                                 ]
                             ]

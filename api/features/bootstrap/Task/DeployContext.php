@@ -8,6 +8,7 @@ use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\ComponentStatus;
 use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
@@ -129,17 +130,7 @@ class DeployContext implements Context
      */
     public function theServiceWasCreated($name)
     {
-        $this->deployment = $this->getDeployment();
-        $componentStatuses = $this->deployment->getComponentStatuses() ?: [];
-        $componentStatuses[$name] = new ComponentStatus(true, false, false);
-
-        $this->deployment = new Deployment(
-            $this->deployment->getUuid(),
-            $this->deployment->getRequest(),
-            $this->deployment->getStatus(),
-            $this->deployment->getPublicEndpoints() ?: [],
-            $componentStatuses
-        );
+        $this->theServiceWasCreatedWithThePublicAddress($name, null);
     }
 
     /**
@@ -156,6 +147,29 @@ class DeployContext implements Context
             $this->deployment->getRequest(),
             $this->deployment->getStatus(),
             $this->deployment->getPublicEndpoints() ?: [],
+            $componentStatuses
+        );
+    }
+
+    /**
+     * @Given the service :name was created with the public address :address
+     */
+    public function theServiceWasCreatedWithThePublicAddress($name, $address)
+    {
+        $this->deployment = $this->getDeployment();
+        $componentStatuses = $this->deployment->getComponentStatuses() ?: [];
+        $componentStatuses[$name] = new ComponentStatus(true, false, false);
+        $publicEndpoints = $this->deployment->getPublicEndpoints() ?: [];
+
+        if ($address !== null) {
+            $publicEndpoints[] = new PublicEndpoint($name, $address);
+        }
+
+        $this->deployment = new Deployment(
+            $this->deployment->getUuid(),
+            $this->deployment->getRequest(),
+            $this->deployment->getStatus(),
+            $publicEndpoints,
             $componentStatuses
         );
     }
