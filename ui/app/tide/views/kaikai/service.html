@@ -1,0 +1,2 @@
+<iframe ng-src="{{ service.public_endpoint.address | httpify }}" ng-if="isPublic" class="kaikai-service-frame"></iframe>
+<div ng-if="!isPublic">The service is not public so not accessible from here.</div>

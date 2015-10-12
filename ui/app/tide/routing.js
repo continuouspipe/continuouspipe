@@ -51,6 +51,9 @@ angular.module('continuousPipeRiver')
                 resolve: {
                     tide: function($stateParams, TideRepository) {
                         return TideRepository.find($stateParams.tideUuid);
+                    },
+                    summary: function(TideSummaryRepository, tide) {
+                        return TideSummaryRepository.findByTide(tide);
                     }
                 },
                 views: {
@@ -70,6 +73,16 @@ angular.module('continuousPipeRiver')
                     '@layout': {
                         controller: 'KaiKaiLogsController',
                         templateUrl: 'tide/views/kaikai/logs.html'
+                    }
+                },
+                breadcrumb: false
+            })
+            .state('kaikai.service', {
+                url: '/service/:name',
+                views: {
+                    '@layout': {
+                        controller: 'KaiKaiServiceController',
+                        templateUrl: 'tide/views/kaikai/service.html'
                     }
                 },
                 breadcrumb: false

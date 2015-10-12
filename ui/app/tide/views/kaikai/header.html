@@ -10,15 +10,20 @@
 
     <li class="header-links">
         <ul class="top-menu">
-            <li ui-sref-active="active" ng-repeat="service in services">
-                <a ui-sref="kaikai.service({service: service.name })" class="header-link">{{ service.name }}</a>
+            <li ui-sref-active="active" ng-repeat="(name, service) in summary.deployed_services">
+                <a ui-sref="kaikai.service({name: name})" class="header-link">
+                    <i class="md md-public" ng-show="service.public_endpoint"></i>
+                    <i class="md md-lock-outline" ng-show="!service.public_endpoint"></i>
+                    {{ name }}
+                </a>
             </li>
         </ul>
-        <div class="remote-resource loading">
-            <div class="loader loader-inner ball-clip-rotate">
+        <div class="remote-resource loading" ng-show="isLoading || error">
+            <div class="loader loader-inner ball-clip-rotate" ng-show="isLoading">
                 <div></div>
             </div>
-            <span>Loading...</span>
+            <span ng-show="isLoading">Loading...</span>
+            <span ng-show="error">{{ error }}</span>
         </div>
     </li>
 
