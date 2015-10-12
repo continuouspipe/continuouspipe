@@ -7,6 +7,18 @@ angular.module('continuousPipeRiver')
     .controller('KaiKaiHeaderController', function($scope, tide, summary) {
         $scope.tide = tide;
         $scope.summary = summary;
+
+        var reloadIfRunning = function() {
+            if ($scope.summary.status == 'running') {
+                setTimeout(function () {
+                    $scope.summary.$get({uuid: tide.uuid});
+
+                    reloadIfRunning();
+                }, 5000);
+            }
+        };
+
+        reloadIfRunning();
     })
     .controller('KaiKaiServiceController', function($scope, tide, summary, $stateParams) {
         $scope.tide = tide;
