@@ -79,4 +79,13 @@ class RunTaskConfiguration
     {
         return $this->environment;
     }
+
+    /**
+     * @param string $name
+     * @param string $address
+     */
+    public function addEnvironment($name, $address)
+    {
+        $this->environment[$name] = $address;
+    }
 }
