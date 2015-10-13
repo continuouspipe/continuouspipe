@@ -27,6 +27,12 @@ Feature:
     Then the tide should be failed
     And the deploy task should not be started
 
+  Scenario: The tide should be finished when all the tasks are finished
+    Given a tide is started with a build and deploy task
+    When all the image builds are successful
+    And the deployment succeed
+    Then the tide should be successful
+
   Scenario: I can have different tasks of the same time in a flow
     Given I tide is started with the following configurations:
       | name   | configuration                                                    |
