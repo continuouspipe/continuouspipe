@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Run;
 
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\Run\Command\StartRunCommand;
@@ -137,15 +138,24 @@ class RunTask extends EventDrivenTask
         $events = $this->getEventsOfType(DeploymentSuccessful::class);
         $publicEndpointMappings = array_reduce($events, function ($carry, DeploymentSuccessful $event) {
             foreach ($event->getDeployment()->getPublicEndpoints() as $publicEndpoint) {
-                $carry[$publicEndpoint->getName()] = $publicEndpoint->getAddress();
+                $serviceName = $publicEndpoint->getName();
+                $environName = sprintf('SERVICE_%s_PUBLIC_ENDPOINT', strtoupper($serviceName));
+
+                $carry[$environName] = $publicEndpoint->getAddress();
             }
 
             return $carry;
         }, []);
 
         foreach ($publicEndpointMappings as $name => $address) {
-            $environName = sprintf('SERVICE_%s_PUBLIC_ENDPOINT', strtoupper($name));
-            $this->configuration->addEnvironment($environName, $address);
+            $this->configuration->addEnvironment($name, $address);
         }
+
+        $this->configuration->setEnvironment(
+            ReplaceEnvironmentVariableValues::replaceValues(
+                $this->configuration->getEnvironment(),
+                $publicEndpointMappings
+            )
+        );
     }
 }

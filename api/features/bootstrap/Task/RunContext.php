@@ -199,7 +199,7 @@ class RunContext implements Context
     public function theCommandsShouldBeRunWithTheFollowingEnvironmentVariables(TableNode $table)
     {
         $requests = $this->traceablePipeClient->getRequests();
-        
+
         /** @var Component[] $components */
         $components = array_reduce($requests, function($carry, DeploymentRequest $request) {
             return array_merge($carry, $request->getSpecification()->getComponents());
@@ -227,7 +227,7 @@ class RunContext implements Context
                 $foundValue = $componentVariables[$environ['name']];
                 if ($foundValue != $environ['value']) {
                     throw new \RuntimeException(sprintf(
-                        'Environment variable "%s" not found in component "%s" have value "%s" while expecting "%s"',
+                        'Environment variable "%s" found in component "%s" have value "%s" while expecting "%s"',
                         $environ['name'],
                         $component->getName(),
                         $foundValue,
