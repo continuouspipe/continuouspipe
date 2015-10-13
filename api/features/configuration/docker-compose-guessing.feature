@@ -290,3 +290,35 @@ Feature:
                             volume_mounts:
                                 - mount_path: /app
     """
+
+  Scenario: When the image name is missing, then the tide should be failed
+    Given I have a flow with the following configuration:
+    """
+    environment_variables:
+        - { name: FOO, value: BAR }
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        build: .
+        volumes:
+            - .:/app
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deploy:
+            deploy:
+                providerName: kubernetes/cp-cluster
+
+        installation:
+            run:
+                commands:
+                    - echo hello
+    """
+    And I have a flow
+    When a tide is started for the branch "configuration"
+    Then the tide should be failed
