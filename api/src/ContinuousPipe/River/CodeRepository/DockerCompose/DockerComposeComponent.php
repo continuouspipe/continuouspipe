@@ -73,7 +73,7 @@ class DockerComposeComponent
      */
     public function getLabels()
     {
-        return $this->getComponent()->getLabels();
+        return array_key_exists('labels', $this->parsed) ? $this->parsed['labels'] : [];
     }
 
     /**

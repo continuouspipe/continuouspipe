@@ -5,8 +5,10 @@ namespace Task;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Task\Run\RunTask;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use JMS\Serializer\Serializer;
@@ -188,6 +190,51 @@ class RunContext implements Context
 
         if ($component->getSpecification()->getScalability()->isEnabled()) {
             throw new \RuntimeException('Component is deployed as scaling');
+        }
+    }
+
+    /**
+     * @Then the commands should be run with the following environment variables:
+     */
+    public function theCommandsShouldBeRunWithTheFollowingEnvironmentVariables(TableNode $table)
+    {
+        $requests = $this->traceablePipeClient->getRequests();
+
+        /** @var Component[] $components */
+        $components = array_reduce($requests, function($carry, DeploymentRequest $request) {
+            return array_merge($carry, $request->getSpecification()->getComponents());
+        }, []);
+
+        if (count($components) == 0) {
+            throw new \RuntimeException(sprintf('Found 0 deployment components (%d requests)', count($requests)));
+        }
+
+        foreach ($components as $component) {
+            $componentVariables = [];
+            foreach ($component->getSpecification()->getEnvironmentVariables() as $foundVariable) {
+                $componentVariables[$foundVariable->getName()] = $foundVariable->getValue();
+            }
+
+            foreach ($table->getHash() as $environ) {
+                if (!array_key_exists($environ['name'], $componentVariables)) {
+                    throw new \RuntimeException(sprintf(
+                        'Environment variable "%s" not found in component "%s"',
+                        $environ['name'],
+                        $component->getName()
+                    ));
+                }
+
+                $foundValue = $componentVariables[$environ['name']];
+                if ($foundValue != $environ['value']) {
+                    throw new \RuntimeException(sprintf(
+                        'Environment variable "%s" found in component "%s" have value "%s" while expecting "%s"',
+                        $environ['name'],
+                        $component->getName(),
+                        $foundValue,
+                        $environ['value']
+                    ));
+                }
+            }
         }
     }
 

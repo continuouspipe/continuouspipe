@@ -29,17 +29,8 @@ class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
         $configuration = $this->factory->getConfiguration($flow, $codeReference);
 
         $variables = $this->resolveVariables($configuration);
-        $variableKeys = array_map(function ($key) {
-            return sprintf('${%s}', $key);
-        }, array_keys($variables));
 
-        array_walk_recursive($configuration, function (&$value) use ($variableKeys, $variables) {
-            if (is_string($value)) {
-                $value = str_replace($variableKeys, array_values($variables), $value);
-            }
-        });
-
-        return $configuration;
+        return self::replaceValues($configuration, $variables);
     }
 
     /**
@@ -55,5 +46,26 @@ class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
         }
 
         return $variables;
+    }
+
+    /**
+     * @param array $array
+     * @param array $mapping
+     *
+     * @return array
+     */
+    public static function replaceValues(array $array, array $mapping)
+    {
+        $variableKeys = array_map(function ($key) {
+            return sprintf('${%s}', $key);
+        }, array_keys($mapping));
+
+        array_walk_recursive($array, function (&$value) use ($variableKeys, $mapping) {
+            if (is_string($value)) {
+                $value = str_replace($variableKeys, array_values($mapping), $value);
+            }
+        });
+
+        return $array;
     }
 }
