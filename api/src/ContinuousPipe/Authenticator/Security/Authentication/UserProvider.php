@@ -50,20 +50,28 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
         $gitHubResponse = $response->getResponse();
-        $gitHubLogin = $gitHubResponse['login'];
-        if (!$this->whiteList->contains($gitHubLogin)) {
+        $username = $gitHubResponse['login'];
+        if (!$this->whiteList->contains($username)) {
             throw new InsufficientAuthenticationException(sprintf(
                 'User "%s" is not in the white list, yet? :)',
-                $gitHubLogin
+                $username
             ));
         }
 
-        $email = $this->getEmail($response);
 
         try {
-            $securityUser = $this->securityUserRepository->findOneByEmail($email);
+            $securityUser = $this->securityUserRepository->findOneByUsername($username);
         } catch (UserNotFound $e) {
-            $securityUser = $this->createUserFromEmail($email);
+            $securityUser = $this->createUserFromUsername($username);
+        }
+
+        if (null === $securityUser->getUser()->getEmail()) {
+            try {
+                $email = $this->getEmail($response);
+
+                $securityUser->getUser()->setEmail($email);
+            } catch (EmailNotFoundException $e) {
+            }
         }
 
         /*
@@ -90,21 +98,17 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
             return $email;
         }
 
-        try {
-            return $this->userDetails->getEmailAddress($response->getAccessToken());
-        } catch (EmailNotFoundException $e) {
-            throw new UnsupportedUserException('User must have an email');
-        }
+        return $this->userDetails->getEmailAddress($response->getAccessToken());
     }
 
     /**
-     * @param string $email
+     * @param string $username
      *
      * @return SecurityUser
      */
-    private function createUserFromEmail($email)
+    private function createUserFromUsername($username)
     {
-        return new SecurityUser(new User($email));
+        return new SecurityUser(new User($username));
     }
 
     /**
@@ -112,7 +116,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     public function loadUserByUsername($username)
     {
-        return $this->securityUserRepository->findOneByEmail($username);
+        return $this->securityUserRepository->findOneByUsername($username);
     }
 
     /**
