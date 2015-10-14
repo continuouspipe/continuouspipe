@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Security\User;
 
-use ContinuousPipe\User\SecurityUser;
+use ContinuousPipe\Security\User\SecurityUser;
 
 interface SecurityUserRepository
 {

@@ -4,13 +4,12 @@ namespace ContinuousPipe\Authenticator\Security\Authentication;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
+use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Security\User\User;
 use ContinuousPipe\User\WhiteList;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use ContinuousPipe\User\EmailNotFoundException;
-use ContinuousPipe\User\GitHubCredentials;
-use ContinuousPipe\User\SecurityUser;
-use ContinuousPipe\User\User;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -67,11 +66,13 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
             $securityUser = $this->createUserFromEmail($email);
         }
 
+        /*
         $securityUser->getUser()->setGitHubCredentials(new GitHubCredentials(
             $gitHubLogin,
             $response->getAccessToken(),
             $response->getRefreshToken()
         ));
+        */
 
         $this->securityUserRepository->save($securityUser);
 

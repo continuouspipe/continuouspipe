@@ -5,8 +5,8 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
 use ContinuousPipe\Authenticator\Tests\InMemoryWhiteList;
 use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
-use ContinuousPipe\User\SecurityUser;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Security\User\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 

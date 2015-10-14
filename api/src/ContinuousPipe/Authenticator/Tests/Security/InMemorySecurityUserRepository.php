@@ -4,7 +4,7 @@ namespace ContinuousPipe\Authenticator\Tests\Security;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
-use ContinuousPipe\User\SecurityUser;
+use ContinuousPipe\Security\User\SecurityUser;
 
 class InMemorySecurityUserRepository implements SecurityUserRepository
 {
