@@ -2,11 +2,14 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\BucketRepository;
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 
-class UserApiContext implements Context
+class CredentialsBucketContext implements Context
 {
     /**
      * @var Kernel
@@ -19,43 +22,53 @@ class UserApiContext implements Context
     private $response;
 
     /**
-     * @param Kernel $kernel
+     * @var BucketRepository
      */
-    public function __construct(Kernel $kernel)
+    private $bucketRepository;
+
+    /**
+     * @param Kernel $kernel
+     * @param BucketRepository $bucketRepository
+     */
+    public function __construct(Kernel $kernel, BucketRepository $bucketRepository)
     {
         $this->kernel = $kernel;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
-     * @When I create a new docker registry with the following configuration:
+     * @Given I have access to the bucket :uuid
      */
-    public function iCreateANewDockerRegistryWithTheFollowingConfiguration(TableNode $table)
+    public function iHaveAccessToTheBucket($uuid)
+    {
+        $this->bucketRepository->save(new Bucket(Uuid::fromString($uuid)));
+    }
+
+    /**
+     * @When I create a new docker registry with the following configuration in the bucket :bucket:
+     */
+    public function iCreateANewDockerRegistryWithTheFollowingConfiguration($bucket, TableNode $table)
     {
         $content = json_encode($table->getHash()[0]);
 
         $this->response = $this->kernel->handle(Request::create(
-            '/api/v1/docker-registries',
+            sprintf('/api/v1/bucket/%s/docker-registries', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             $content
         ));
     }
     /**
-     * @When I delete the credentials of the docker registry :serverAddress
+     * @When I delete the credentials of the docker registry :serverAddress from the bucket :bucket
      */
-    public function iDeleteTheCredentialsOfTheDockerRegistry($serverAddress)
+    public function iDeleteTheCredentialsOfTheDockerRegistry($serverAddress, $bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/v1/docker-registries/%s', urlencode($serverAddress)),
+            sprintf('/api/v1/bucket/%s/docker-registries/%s', $bucket, urlencode($serverAddress)),
             'DELETE'
         ));
 
-        if ($this->response->getStatusCode() != Response::HTTP_NO_CONTENT) {
-            throw new \RuntimeException(sprintf(
-                'Expected to get status code 204, got %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCodeIs($this->response, Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -63,14 +76,7 @@ class UserApiContext implements Context
      */
     public function theNewCredentialsShouldHaveBeenSavedSuccessfully()
     {
-        if ($this->response->getStatusCode() != 201) {
-            echo $this->response->getContent();
-
-            throw new \RuntimeException(sprintf(
-                'Expected to have response code 201, but got %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCodeIs($this->response, 201);
     }
 
     /**
@@ -78,29 +84,24 @@ class UserApiContext implements Context
      */
     public function iShouldReceiveABadRequestError()
     {
-        if ($this->response->getStatusCode() != 400) {
-            throw new \RuntimeException(sprintf(
-                'Expected to have response code 400, but got %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCodeIs($this->response, 400);
     }
 
     /**
-     * @Given I have the following docker registry credentials:
+     * @Given I have the following docker registry credentials in the bucket :bucket:
      */
-    public function iHaveTheFollowingDockerRegistryCredentials(TableNode $table)
+    public function iHaveTheFollowingDockerRegistryCredentials($bucket, TableNode $table)
     {
-        $this->iCreateANewDockerRegistryWithTheFollowingConfiguration($table);
+        $this->iCreateANewDockerRegistryWithTheFollowingConfiguration($bucket, $table);
     }
 
     /**
-     * @When I ask the list of my docker registry credentials
+     * @When I ask the list of the docker registry credentials in the bucket :bucket
      */
-    public function iAskTheListOfMyDockerRegistryCredentials()
+    public function iAskTheListOfTheDockerRegistryCredentialsInTheBucket($bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/v1/docker-registries',
+            sprintf('/api/v1/bucket/%s/docker-registries', $bucket),
             'GET'
         ));
     }
@@ -110,12 +111,7 @@ class UserApiContext implements Context
      */
     public function iShouldReceiveAList()
     {
-        if ($this->response->getStatusCode() != 200) {
-            throw new \RuntimeException(sprintf(
-                'Expected to have response code 200, but got %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCodeIs($this->response, 200);
 
         $decoded = json_decode($this->response->getContent(), true);
         if (!is_array($decoded)) {
@@ -159,6 +155,22 @@ class UserApiContext implements Context
             throw new \RuntimeException(sprintf(
                 'Found a credential for server address "%s"',
                 $serverAddress
+            ));
+        }
+    }
+
+    /**
+     * @param Response $response
+     * @param int $statusCode
+     */
+    private function assertResponseCodeIs(Response $response, $statusCode)
+    {
+        if ($response->getStatusCode() != $statusCode) {
+            echo $response->getContent();
+            throw new \RuntimeException(sprintf(
+                'Expected to get status code %d, got %d',
+                $statusCode,
+                $response->getStatusCode()
             ));
         }
     }

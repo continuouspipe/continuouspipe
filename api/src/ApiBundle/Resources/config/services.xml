@@ -10,8 +10,8 @@
         <service id="api.controller.user_docker_registry_credentials" class="ApiBundle\Controller\System\UserDockerRegistryCredentialsController">
             <argument type="service" id="app.repository.docker_registry_credentials" />
         </service>
-        <service id="api.controller.docker_registry_credentials" class="ApiBundle\Controller\DockerRegistryCredentialsController">
-            <argument type="service" id="app.repository.docker_registry_credentials" />
+        <service id="api.controller.credentials_bucket" class="ApiBundle\Controller\CredentialsBucketController">
+            <argument type="service" id="app.repository.credentials_bucket" />
             <argument type="service" id="validator" />
         </service>
         <service id="api.controller.team" class="ApiBundle\Controller\TeamController">
@@ -23,6 +23,11 @@
             <argument type="service" id="app.repository.team" />
 
             <tag name="request.param_converter" converter="team" />
+        </service>
+        <service id="request.param_converter.bucket" class="ContinuousPipe\Security\Request\ParamConverter\BucketParamConverter">
+            <argument type="service" id="app.repository.credentials_bucket" />
+
+            <tag name="request.param_converter" converter="bucket" />
         </service>
 
         <!-- Security Voter -->
