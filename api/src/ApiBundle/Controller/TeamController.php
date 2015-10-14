@@ -44,8 +44,10 @@ class TeamController
      * @ParamConverter("team", converter="fos_rest.request_body")
      * @View(statusCode=201)
      */
-    public function createAction(Team $team)
+    public function createAction(Team $team, User $user)
     {
+        $team->getUserAssociations()->add(new UserAssociation($team, $user, ['ROLE_ADMIN']));
+
         $this->teamRepository->save($team);
 
         return $team;

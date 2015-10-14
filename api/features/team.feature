@@ -8,7 +8,8 @@ Feature:
 
   Scenario: I can create a team
     When I create a team "continuous-pipe"
-    And I should see the team "continuous-pipe" in my teams list
+    Then I should see the team "continuous-pipe" in my teams list
+    And the user "samuel" should be administrator of the team "continuous-pipe"
 
   Scenario: I can add a user to a team
     Given there is a team "foo"

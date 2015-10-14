@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
+use ContinuousPipe\Security\Team\UserAssociation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
@@ -109,6 +110,27 @@ class TeamContext implements Context
             throw new \RuntimeException(sprintf(
                 'Found 0 team matching in my teams list'
             ));
+        }
+    }
+
+    /**
+     * @Then the user :username should be administrator of the team :slug
+     */
+    public function theUserShouldBeAdministratorOfTheTeam($username, $slug)
+    {
+        $teamUserAssociations = $this->teamRepository->find($slug)->getUserAssociations();
+        $matchingUserAssociations = $teamUserAssociations->filter(function(UserAssociation $association) use ($username) {
+            return $association->getUser()->getUsername() == $username;
+        });
+
+        if (0 == $matchingUserAssociations->count()) {
+            throw new \RuntimeException('User not found in team');
+        }
+
+        /** @var UserAssociation $userAssociations */
+        $userAssociations = $matchingUserAssociations->first();
+        if (!in_array('ROLE_ADMIN', $userAssociations->getRoles())) {
+            throw new \RuntimeException('User is not administator');
         }
     }
 
