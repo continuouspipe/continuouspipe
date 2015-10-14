@@ -24,5 +24,12 @@
 
             <tag name="request.param_converter" converter="team" />
         </service>
+
+        <!-- Security Voter -->
+        <service id="security.access.team_voter"
+                 class="ContinuousPipe\Security\Voter\TeamPermissionVoter"
+                 public="false">
+            <tag name="security.voter" />
+        </service>
     </services>
 </container>

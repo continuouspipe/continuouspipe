@@ -5,6 +5,7 @@ use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Team\UserAssociation;
+use ContinuousPipe\Security\User\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
@@ -34,6 +35,24 @@ class TeamContext implements Context
     {
         $this->kernel = $kernel;
         $this->teamRepository = $teamRepository;
+    }
+
+    /**
+     * @Given there is a team :slug
+     */
+    public function thereIsATeam($slug)
+    {
+        $this->teamRepository->save(new Team($slug));
+    }
+
+    /**
+     * @Given the user :username is administrator of the team :slug
+     */
+    public function theUserIsAdministratorOfTheTeam($username, $slug)
+    {
+        $team = $this->teamRepository->find($slug);
+        $team->getUserAssociations()->add(new UserAssociation($team, new User($username), ['ADMIN']));
+        $this->teamRepository->save($team);
     }
 
     /**
@@ -74,22 +93,12 @@ class TeamContext implements Context
     }
 
     /**
-     * @Given there is a team :slug
-     */
-    public function thereIsATeam($slug)
-    {
-        $this->teamRepository->save(new Team($slug));
-    }
-
-    /**
      * @When I add the user :username in the team :teamSlug
      */
     public function iAddTheUserInTheTeam($username, $teamSlug)
     {
         $url = sprintf('/api/v1/teams/%s/users/%s', $teamSlug, $username);
         $this->response = $this->kernel->handle(Request::create($url, 'PUT'));
-
-        $this->assertResponseCodeIs($this->response, 204);
     }
 
     /**
@@ -129,9 +138,25 @@ class TeamContext implements Context
 
         /** @var UserAssociation $userAssociations */
         $userAssociations = $matchingUserAssociations->first();
-        if (!in_array('ROLE_ADMIN', $userAssociations->getRoles())) {
+        if (!in_array('ADMIN', $userAssociations->getPermissions())) {
             throw new \RuntimeException('User is not administator');
         }
+    }
+
+    /**
+     * @Then the user should be added to the team
+     */
+    public function theUserShouldBeAddedToTheTeam()
+    {
+        $this->assertResponseCodeIs($this->response, 204);
+    }
+
+    /**
+     * @Then I should be told that I don't have the authorization
+     */
+    public function iShouldBeToldThatIDonTHaveTheAuthorization()
+    {
+        $this->assertResponseCodeIs($this->response, 403);
     }
 
     /**

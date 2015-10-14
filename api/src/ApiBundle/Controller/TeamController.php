@@ -6,6 +6,7 @@ use ContinuousPipe\Security\Team\UserAssociation;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
@@ -46,7 +47,7 @@ class TeamController
      */
     public function createAction(Team $team, User $user)
     {
-        $team->getUserAssociations()->add(new UserAssociation($team, $user, ['ROLE_ADMIN']));
+        $team->getUserAssociations()->add(new UserAssociation($team, $user, ['ADMIN']));
 
         $this->teamRepository->save($team);
 
@@ -67,6 +68,7 @@ class TeamController
      * @Route("/teams/{slug}/users/{username}", methods={"PUT"})
      * @ParamConverter("user", converter="user", options={"byUsername"="username"})
      * @ParamConverter("team", converter="team")
+     * @Security("is_granted('ADMIN', team)")
      * @View
      */
     public function addUserAction(Team $team, User $user)
