@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
+use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Tests\InMemoryWhiteList;
 use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
 use ContinuousPipe\Security\User\SecurityUser;
@@ -31,17 +32,23 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @var \Exception|null
      */
     private $exception = null;
+    /**
+     * @var SecurityUserRepository
+     */
+    private $securityUserRepository;
 
     /**
      * @param UserProvider $userProvider
      * @param InMemoryWhiteList $whiteList
      * @param TokenStorageInterface $tokenStorage
+     * @param SecurityUserRepository $securityUserRepository
      */
-    public function __construct(UserProvider $userProvider, InMemoryWhiteList $whiteList, TokenStorageInterface $tokenStorage)
+    public function __construct(UserProvider $userProvider, InMemoryWhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository)
     {
         $this->userProvider = $userProvider;
         $this->whiteList = $whiteList;
         $this->tokenStorage = $tokenStorage;
+        $this->securityUserRepository = $securityUserRepository;
     }
 
     /**
@@ -53,6 +60,16 @@ class SecurityContext implements Context, SnippetAcceptingContext
         $token->setUser(new SecurityUser(new User($username)));
 
         $this->tokenStorage->setToken($token);
+    }
+
+    /**
+     * @Given there is a user :username
+     */
+    public function thereIsAUser($username)
+    {
+        $this->securityUserRepository->save(new SecurityUser(
+            new User($username)
+        ));
     }
 
     /**

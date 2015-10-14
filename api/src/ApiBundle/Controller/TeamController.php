@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Controller;
 
+use ContinuousPipe\Security\Team\UserAssociation;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -48,5 +49,28 @@ class TeamController
         $this->teamRepository->save($team);
 
         return $team;
+    }
+
+    /**
+     * @Route("/teams/{slug}", methods={"GET"})
+     * @ParamConverter("team", converter="team")
+     * @View
+     */
+    public function getAction(Team $team)
+    {
+        return $team;
+    }
+
+    /**
+     * @Route("/teams/{slug}/users/{username}", methods={"PUT"})
+     * @ParamConverter("user", converter="user", options={"byUsername"="username"})
+     * @ParamConverter("team", converter="team")
+     * @View
+     */
+    public function addUserAction(Team $team, User $user)
+    {
+        $team->getUserAssociations()->add(new UserAssociation($team, $user));
+
+        $this->teamRepository->save($team);
     }
 }

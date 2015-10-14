@@ -7,13 +7,13 @@ use ContinuousPipe\Security\User\SecurityUser;
 interface SecurityUserRepository
 {
     /**
-     * @param string $email
+     * @param string $username
      *
      * @throws UserNotFound
      *
      * @return SecurityUser
      */
-    public function findOneByEmail($email);
+    public function findOneByUsername($username);
 
     /**
      * @param SecurityUser $user
