@@ -1,6 +1,6 @@
 <?php
 
-namespace ApiBundle\Controller;
+namespace ApiBundle\Controller\System;
 
 use ContinuousPipe\Authenticator\DockerRegistryCredentialsRepository;
 use ContinuousPipe\User\User;
@@ -9,7 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
- * @Route(service="api.controller.user_docker_registry_credentials")
+ * @Route(service="api.system.controller.user_docker_registry_credentials")
  */
 class UserDockerRegistryCredentialsController
 {

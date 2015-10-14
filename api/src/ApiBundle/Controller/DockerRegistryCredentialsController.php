@@ -1,6 +1,6 @@
 <?php
 
-namespace UserApiBundle\Controller;
+namespace ApiBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use FOS\RestBundle\View\View as FOSRestView;
 
 /**
- * @Route(service="user_api.controller.docker_registry_credentials")
+ * @Route(service="api.controller.docker_registry_credentials")
  */
 class DockerRegistryCredentialsController
 {
