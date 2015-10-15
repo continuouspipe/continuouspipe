@@ -11,9 +11,6 @@
         <service id="app.repository.security_user" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineSecurityUserRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
-        <service id="app.repository.docker_registry_credentials" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineDockerRegistryCredentialsRepository">
-            <argument type="service" id="doctrine.orm.entity_manager" />
-        </service>
         <service id="app.repository.team_membership" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineTeamMembershipRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
@@ -46,14 +43,6 @@
         </service>
         <service id="app.controller.logged_in" class="AppBundle\Controller\LoggedInController">
             <argument type="service" id="app.security.authentication_provider" />
-        </service>
-        <service id="app.controller.account" class="AppBundle\Controller\AccountController">
-            <argument type="service" id="app.repository.docker_registry_credentials" />
-        </service>
-        <service id="app.controller.docker_registry_credentials" class="AppBundle\Controller\DockerRegistryCredentialsController">
-            <argument type="service" id="app.repository.docker_registry_credentials" />
-            <argument type="service" id="form.factory" />
-            <argument type="service" id="router" />
         </service>
 
         <service id="guzzle.client" class="GuzzleHttp\Client" />
