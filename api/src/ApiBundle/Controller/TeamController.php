@@ -2,7 +2,8 @@
 
 namespace ApiBundle\Controller;
 
-use ContinuousPipe\Security\Team\UserAssociation;
+use ContinuousPipe\Security\Team\TeamMembership;
+use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -22,11 +23,18 @@ class TeamController
     private $teamRepository;
 
     /**
-     * @param TeamRepository $teamRepository
+     * @var TeamMembershipRepository
      */
-    public function __construct(TeamRepository $teamRepository)
+    private $teamMembershipRepository;
+
+    /**
+     * @param TeamRepository           $teamRepository
+     * @param TeamMembershipRepository $teamMembershipRepository
+     */
+    public function __construct(TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository)
     {
         $this->teamRepository = $teamRepository;
+        $this->teamMembershipRepository = $teamMembershipRepository;
     }
 
     /**
@@ -47,9 +55,8 @@ class TeamController
      */
     public function createAction(Team $team, User $user)
     {
-        $team->getUserAssociations()->add(new UserAssociation($team, $user, ['ADMIN']));
-
         $this->teamRepository->save($team);
+        $this->teamMembershipRepository->save(new TeamMembership($team, $user, ['ADMIN']));
 
         return $team;
     }
@@ -73,8 +80,6 @@ class TeamController
      */
     public function addUserAction(Team $team, User $user)
     {
-        $team->getUserAssociations()->add(new UserAssociation($team, $user));
-
-        $this->teamRepository->save($team);
+        $this->teamMembershipRepository->save(new TeamMembership($team, $user));
     }
 }

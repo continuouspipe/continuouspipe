@@ -3,9 +3,11 @@
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\Team\TeamRepository;
-use ContinuousPipe\Security\Team\UserAssociation;
+use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\User\User;
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
@@ -26,15 +28,21 @@ class TeamContext implements Context
      * @var Response|null
      */
     private $response;
+    /**
+     * @var TeamMembershipRepository
+     */
+    private $teamMembershipRepository;
 
     /**
      * @param Kernel $kernel
      * @param TeamRepository $teamRepository
+     * @param TeamMembershipRepository $teamMembershipRepository
      */
-    public function __construct(Kernel $kernel, TeamRepository $teamRepository)
+    public function __construct(Kernel $kernel, TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository)
     {
         $this->kernel = $kernel;
         $this->teamRepository = $teamRepository;
+        $this->teamMembershipRepository = $teamMembershipRepository;
     }
 
     /**
@@ -42,7 +50,7 @@ class TeamContext implements Context
      */
     public function thereIsATeam($slug)
     {
-        $this->teamRepository->save(new Team($slug));
+        $this->teamRepository->save(new Team($slug, Uuid::uuid1()));
     }
 
     /**
@@ -51,7 +59,25 @@ class TeamContext implements Context
     public function theUserIsAdministratorOfTheTeam($username, $slug)
     {
         $team = $this->teamRepository->find($slug);
-        $team->getUserAssociations()->add(new UserAssociation($team, new User($username), ['ADMIN']));
+        $this->teamMembershipRepository->save(new TeamMembership($team, new User($username), ['ADMIN']));
+    }
+
+    /**
+     * @Given the user :username is in the team :slug
+     */
+    public function theUserIsInTheTeam($username, $slug)
+    {
+        $team = $this->teamRepository->find($slug);
+        $this->teamMembershipRepository->save(new TeamMembership($team, new User($username)));
+    }
+
+    /**
+     * @Given the bucket of the team :slug is the :uuid
+     */
+    public function theBucketOfTheTeamIsThe($slug, $uuid)
+    {
+        $team = $this->teamRepository->find($slug);
+        $team->setBucketUuid(Uuid::fromString($uuid));
         $this->teamRepository->save($team);
     }
 
@@ -110,7 +136,7 @@ class TeamContext implements Context
         $this->response = $this->kernel->handle(Request::create($url, 'GET'));
         $this->assertResponseCodeIs($this->response, 200);
 
-        $userAssociations = json_decode($this->response->getContent(), true)['user_associations'];
+        $userAssociations = json_decode($this->response->getContent(), true)['team_memberships'];
         $matchingUsers = array_filter($userAssociations, function(array $association) use ($username) {
             return $association['user']['username'] == $username;
         });
@@ -127,18 +153,19 @@ class TeamContext implements Context
      */
     public function theUserShouldBeAdministratorOfTheTeam($username, $slug)
     {
-        $teamUserAssociations = $this->teamRepository->find($slug)->getUserAssociations();
-        $matchingUserAssociations = $teamUserAssociations->filter(function(UserAssociation $association) use ($username) {
-            return $association->getUser()->getUsername() == $username;
+        $team = $this->teamRepository->find($slug);
+        $teamMemberships = $this->teamMembershipRepository->findByTeam($team);
+        $matchingMemberships = $teamMemberships->filter(function(TeamMembership $membership) use ($username) {
+            return $membership->getUser()->getUsername() == $username;
         });
 
-        if (0 == $matchingUserAssociations->count()) {
+        if (0 == $matchingMemberships->count()) {
             throw new \RuntimeException('User not found in team');
         }
 
-        /** @var UserAssociation $userAssociations */
-        $userAssociations = $matchingUserAssociations->first();
-        if (!in_array('ADMIN', $userAssociations->getPermissions())) {
+        /** @var TeamMembership $matchingMembership */
+        $matchingMembership = $matchingMemberships->first();
+        if (!in_array('ADMIN', $matchingMembership->getPermissions())) {
             throw new \RuntimeException('User is not administator');
         }
     }

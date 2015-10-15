@@ -16,6 +16,7 @@
         </service>
         <service id="api.controller.team" class="ApiBundle\Controller\TeamController">
             <argument type="service" id="app.repository.team" />
+            <argument type="service" id="app.repository.team_membership" />
         </service>
 
         <!-- Param Converter -->
@@ -34,6 +35,13 @@
         <service id="security.access.team_voter"
                  class="ContinuousPipe\Security\Voter\TeamPermissionVoter"
                  public="false">
+            <argument type="service" id="app.repository.team_membership" />
+            <tag name="security.voter" />
+        </service>
+        <service id="security.access.bucket_voter"
+                 class="ContinuousPipe\Security\Voter\BucketPermissionVoter"
+                 public="false">
+            <argument type="service" id="app.repository.team_membership" />
             <tag name="security.voter" />
         </service>
     </services>

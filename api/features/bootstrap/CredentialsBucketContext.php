@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -11,6 +12,11 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class CredentialsBucketContext implements Context
 {
+    /**
+     * @var \TeamContext
+     */
+    private $teamContext;
+
     /**
      * @var Kernel
      */
@@ -37,11 +43,38 @@ class CredentialsBucketContext implements Context
     }
 
     /**
-     * @Given I have access to the bucket :uuid
+     * @BeforeScenario
      */
-    public function iHaveAccessToTheBucket($uuid)
+    public function gatherContexts(BeforeScenarioScope $scope)
+    {
+        $this->teamContext = $scope->getEnvironment()->getContext('TeamContext');
+    }
+
+    /**
+     * @Given the user :username have access to the bucket :uuid
+     */
+    public function theUserHaveAccessToTheBucket($username, $uuid)
+    {
+        $this->thereIsABucket($uuid);
+        $this->teamContext->thereIsATeam($username);
+        $this->teamContext->theUserIsInTheTeam($username, $username);
+        $this->teamContext->theBucketOfTheTeamIsThe($username, $uuid);
+    }
+
+    /**
+     * @Given there is a bucket :uuid
+     */
+    public function thereIsABucket($uuid)
     {
         $this->bucketRepository->save(new Bucket(Uuid::fromString($uuid)));
+    }
+
+    /**
+     * @Given I have the following docker registry credentials in the bucket :bucket:
+     */
+    public function iHaveTheFollowingDockerRegistryCredentials($bucket, TableNode $table)
+    {
+        $this->iCreateANewDockerRegistryWithTheFollowingConfiguration($bucket, $table);
     }
 
     /**
@@ -72,6 +105,17 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @When I ask the list of the docker registry credentials in the bucket :bucket
+     */
+    public function iAskTheListOfTheDockerRegistryCredentialsInTheBucket($bucket)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/v1/bucket/%s/docker-registries', $bucket),
+            'GET'
+        ));
+    }
+
+    /**
      * @Then the new credentials should have been saved successfully
      */
     public function theNewCredentialsShouldHaveBeenSavedSuccessfully()
@@ -88,22 +132,11 @@ class CredentialsBucketContext implements Context
     }
 
     /**
-     * @Given I have the following docker registry credentials in the bucket :bucket:
+     * @Then I should be told that I don't have the authorization for this bucket
      */
-    public function iHaveTheFollowingDockerRegistryCredentials($bucket, TableNode $table)
+    public function iShouldBeToldThatIDonTHaveTheAuthorizationForThisBucket()
     {
-        $this->iCreateANewDockerRegistryWithTheFollowingConfiguration($bucket, $table);
-    }
-
-    /**
-     * @When I ask the list of the docker registry credentials in the bucket :bucket
-     */
-    public function iAskTheListOfTheDockerRegistryCredentialsInTheBucket($bucket)
-    {
-        $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/v1/bucket/%s/docker-registries', $bucket),
-            'GET'
-        ));
+        $this->assertResponseCodeIs($this->response, 403);
     }
 
     /**
@@ -138,6 +171,13 @@ class CredentialsBucketContext implements Context
         }
     }
 
+    /**
+     * @Then I should see the list of the docker registry credentials
+     */
+    public function iShouldSeeTheListOfTheDockerRegistryCredentials()
+    {
+        $this->assertResponseCodeIs($this->response, 200);
+    }
 
     /**
      * @Then the list should not contain the credential for server :serverAddress

@@ -11,7 +11,6 @@ use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use ContinuousPipe\User\EmailNotFoundException;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -57,7 +56,6 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
                 $username
             ));
         }
-
 
         try {
             $securityUser = $this->securityUserRepository->findOneByUsername($username);

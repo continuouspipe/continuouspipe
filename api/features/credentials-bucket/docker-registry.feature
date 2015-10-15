@@ -5,7 +5,7 @@ Feature:
 
   Background:
     Given I am authenticated as user "samuel"
-    And I have access to the bucket "00000000-0000-0000-0000-000000000000"
+    And the user "samuel" have access to the bucket "00000000-0000-0000-0000-000000000000"
 
   Scenario: I can create new Docker Registry credentials
     When I create a new docker registry with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":

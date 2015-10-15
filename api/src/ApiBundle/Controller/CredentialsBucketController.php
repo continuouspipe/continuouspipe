@@ -10,10 +10,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use FOS\RestBundle\View\View as FOSRestView;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * @Route("/bucket/{bucketUuid}", service="api.controller.credentials_bucket")
  * @ParamConverter("bucket", converter="bucket", options={"uuid"="bucketUuid"})
+ * @Security("is_granted('ACCESS', bucket)")
  */
 class CredentialsBucketController
 {
