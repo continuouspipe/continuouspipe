@@ -136,7 +136,7 @@ class TeamContext implements Context
         $this->response = $this->kernel->handle(Request::create($url, 'GET'));
         $this->assertResponseCodeIs($this->response, 200);
 
-        $userAssociations = json_decode($this->response->getContent(), true)['team_memberships'];
+        $userAssociations = json_decode($this->response->getContent(), true)['memberships'];
         $matchingUsers = array_filter($userAssociations, function(array $association) use ($username) {
             return $association['user']['username'] == $username;
         });
@@ -184,6 +184,16 @@ class TeamContext implements Context
     public function iShouldBeToldThatIDonTHaveTheAuthorization()
     {
         $this->assertResponseCodeIs($this->response, 403);
+    }
+
+    /**
+     * @Then the team :slug should have a credentials bucket
+     */
+    public function theTeamShouldHaveACredentialsBucket($slug)
+    {
+        if ($this->teamRepository->find($slug)->getBucketUuid() == null) {
+            throw new \RuntimeException('No bucket found');
+        }
     }
 
     /**

@@ -17,6 +17,7 @@
         <service id="api.controller.team" class="ApiBundle\Controller\TeamController">
             <argument type="service" id="app.repository.team" />
             <argument type="service" id="app.repository.team_membership" />
+            <argument type="service" id="event_dispatcher" />
         </service>
 
         <!-- Param Converter -->
@@ -43,6 +44,13 @@
                  public="false">
             <argument type="service" id="app.repository.team_membership" />
             <tag name="security.voter" />
+        </service>
+
+        <!-- Event listeners -->
+        <service id="app.listener.before_team_creation.create_credentials_bucket"
+                 class="ContinuousPipe\Authenticator\EventListener\BeforeTeamCreation\CreateCredentialsBucket">
+
+            <tag name="kernel.event_subscriber"/>
         </service>
     </services>
 </container>

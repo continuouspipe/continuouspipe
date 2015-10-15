@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Controller;
 
+use ContinuousPipe\Authenticator\Event\BeforeTeamCreation;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -11,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route(service="api.controller.team")
@@ -28,13 +30,20 @@ class TeamController
     private $teamMembershipRepository;
 
     /**
-     * @param TeamRepository           $teamRepository
-     * @param TeamMembershipRepository $teamMembershipRepository
+     * @var EventDispatcherInterface
      */
-    public function __construct(TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository)
+    private $eventDispatcher;
+
+    /**
+     * @param TeamRepository $teamRepository
+     * @param TeamMembershipRepository $teamMembershipRepository
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function __construct(TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository, EventDispatcherInterface $eventDispatcher)
     {
         $this->teamRepository = $teamRepository;
         $this->teamMembershipRepository = $teamMembershipRepository;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -55,6 +64,8 @@ class TeamController
      */
     public function createAction(Team $team, User $user)
     {
+        $this->eventDispatcher->dispatch(BeforeTeamCreation::EVENT_NAME, new BeforeTeamCreation($team));
+
         $this->teamRepository->save($team);
         $this->teamMembershipRepository->save(new TeamMembership($team, $user, ['ADMIN']));
 

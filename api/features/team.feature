@@ -7,7 +7,6 @@ Feature:
     Given I am authenticated as user "samuel"
 
   Scenario: I can create a team
-    Given I am authenticated as user "samuel"
     When I create a team "continuous-pipe"
     Then I should see the team "continuous-pipe" in my teams list
     And the user "samuel" should be administrator of the team "continuous-pipe"
@@ -25,3 +24,7 @@ Feature:
     And there is a user "bar"
     When I add the user "bar" in the team "foo"
     Then I should be told that I don't have the authorization
+
+  Scenario: Each team should have a credentials bucket
+    When I create a team "new"
+    Then the team "new" should have a credentials bucket
