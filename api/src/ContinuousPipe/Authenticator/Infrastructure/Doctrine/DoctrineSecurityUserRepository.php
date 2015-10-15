@@ -43,7 +43,9 @@ class DoctrineSecurityUserRepository implements SecurityUserRepository
      */
     public function save(SecurityUser $user)
     {
-        $this->entityManager->persist($user);
-        $this->entityManager->flush($user);
+        $this->entityManager->merge($user);
+        $this->entityManager->flush();
+
+        return $user;
     }
 }

@@ -14,6 +14,15 @@
         <service id="app.repository.docker_registry_credentials" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineDockerRegistryCredentialsRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
+        <service id="app.repository.team_membership" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineTeamMembershipRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+        <service id="app.repository.credentials_bucket" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineCredentialsBucketRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+        <service id="app.repository.team" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineTeamRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
         <service id="app.security.user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\UserProvider">
             <argument type="service" id="app.repository.security_user" />
             <argument type="service" id="app.user_details.github" />
@@ -48,7 +57,7 @@
         </service>
 
         <service id="guzzle.client" class="GuzzleHttp\Client" />
-        <service id="app.user_details.github" class="ContinuousPipe\User\GitHubUserDetails">
+        <service id="app.user_details.github" class="ContinuousPipe\Authenticator\GitHub\GitHubUserDetails">
             <argument type="service" id="guzzle.client" />
         </service>
     </services>

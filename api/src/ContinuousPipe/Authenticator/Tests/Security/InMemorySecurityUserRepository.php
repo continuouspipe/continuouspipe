@@ -34,5 +34,7 @@ class InMemorySecurityUserRepository implements SecurityUserRepository
     public function save(SecurityUser $user)
     {
         $this->users[$user->getUser()->getUsername()] = $user;
+
+        return $user;
     }
 }

@@ -6,6 +6,7 @@ Feature:
   Background:
     Given I am authenticated as user "samuel"
 
+  @smoke
   Scenario: I can create a team
     When I create a team "continuous-pipe"
     Then I should see the team "continuous-pipe" in my teams list

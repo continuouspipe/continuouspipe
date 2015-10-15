@@ -4,7 +4,6 @@ namespace ContinuousPipe\Authenticator\EventListener\BeforeTeamCreation;
 
 use ContinuousPipe\Authenticator\Event\BeforeTeamCreation;
 use ContinuousPipe\Security\Team\Team;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -16,7 +15,7 @@ class CreateCredentialsBucket implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            BeforeTeamCreation::EVENT_NAME => 'createBucketIfNotExists'
+            BeforeTeamCreation::EVENT_NAME => 'createBucketIfNotExists',
         ];
     }
 
@@ -36,4 +35,3 @@ class CreateCredentialsBucket implements EventSubscriberInterface
         return $team;
     }
 }
-

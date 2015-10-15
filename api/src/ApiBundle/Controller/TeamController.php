@@ -35,7 +35,7 @@ class TeamController
     private $eventDispatcher;
 
     /**
-     * @param TeamRepository $teamRepository
+     * @param TeamRepository           $teamRepository
      * @param TeamMembershipRepository $teamMembershipRepository
      * @param EventDispatcherInterface $eventDispatcher
      */
@@ -53,7 +53,12 @@ class TeamController
      */
     public function listAction(User $user)
     {
-        return $this->teamRepository->findByUser($user);
+        $memberships = $this->teamMembershipRepository->findByUser($user);
+        $teams = $memberships->map(function (TeamMembership $membership) {
+            return $membership->getTeam();
+        });
+
+        return $teams;
     }
 
     /**

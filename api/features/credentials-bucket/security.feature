@@ -13,6 +13,7 @@ Feature:
     When I ask the list of the docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000"
     Then I should be told that I don't have the authorization for this bucket
 
+  @smoke
   Scenario: I can have access to my teams' buckets
     Given the user "samuel" is in the team "foo"
     And the bucket of the team "foo" is the "00000000-0000-0000-0000-000000000000"

@@ -17,6 +17,8 @@ interface SecurityUserRepository
 
     /**
      * @param SecurityUser $user
+     *
+     * @return SecurityUser
      */
     public function save(SecurityUser $user);
 }

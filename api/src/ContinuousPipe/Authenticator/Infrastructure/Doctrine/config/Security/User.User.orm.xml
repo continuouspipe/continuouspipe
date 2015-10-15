@@ -4,9 +4,8 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
-    <embeddable name="ContinuousPipe\User\User">
-        <field name="email" type="string" nullable="false" unique="true" />
-
-        <embedded name="gitHubCredentials" class="ContinuousPipe\User\GitHubCredentials" column-prefix="github_" />
-    </embeddable>
+    <entity name="ContinuousPipe\Security\User\User" table="cp_user">
+        <id name="username" type="string" />
+        <field name="email" type="string" nullable="true" />
+    </entity>
 </doctrine-mapping>

@@ -4,7 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
-use ContinuousPipe\Authenticator\Tests\InMemoryWhiteList;
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
@@ -58,7 +58,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
     public function iAmAuthenticatedAsUser($username)
     {
         $token = new JWTUserToken(['ROLE_USER']);
-        $token->setUser(new SecurityUser(new User($username)));
+        $token->setUser($this->thereIsAUser($username));
 
         $this->tokenStorage->setToken($token);
     }
@@ -68,9 +68,13 @@ class SecurityContext implements Context, SnippetAcceptingContext
      */
     public function thereIsAUser($username)
     {
-        $this->securityUserRepository->save(new SecurityUser(
-            new User($username)
-        ));
+        try {
+            return $this->securityUserRepository->findOneByUsername($username);
+        } catch (UserNotFound $e) {
+            return $this->securityUserRepository->save(new SecurityUser(
+                new User($username)
+            ));
+        }
     }
 
     /**

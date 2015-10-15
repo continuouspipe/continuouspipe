@@ -80,7 +80,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         ));
         */
 
-        $this->securityUserRepository->save($securityUser);
+        $securityUser = $this->securityUserRepository->save($securityUser);
 
         return $securityUser;
     }

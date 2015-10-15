@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
@@ -14,6 +15,11 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class TeamContext implements Context
 {
+    /**
+     * @var \SecurityContext
+     */
+    private $securityContext;
+
     /**
      * @var Kernel
      */
@@ -46,6 +52,14 @@ class TeamContext implements Context
     }
 
     /**
+     * @BeforeScenario
+     */
+    public function gatherContexts(BeforeScenarioScope $scope)
+    {
+        $this->securityContext = $scope->getEnvironment()->getContext('SecurityContext');
+    }
+
+    /**
      * @Given there is a team :slug
      */
     public function thereIsATeam($slug)
@@ -59,7 +73,8 @@ class TeamContext implements Context
     public function theUserIsAdministratorOfTheTeam($username, $slug)
     {
         $team = $this->teamRepository->find($slug);
-        $this->teamMembershipRepository->save(new TeamMembership($team, new User($username), ['ADMIN']));
+        $user = $this->securityContext->thereIsAUser($username);
+        $this->teamMembershipRepository->save(new TeamMembership($team, $user->getUser(), ['ADMIN']));
     }
 
     /**
@@ -68,7 +83,8 @@ class TeamContext implements Context
     public function theUserIsInTheTeam($username, $slug)
     {
         $team = $this->teamRepository->find($slug);
-        $this->teamMembershipRepository->save(new TeamMembership($team, new User($username)));
+        $user = $this->securityContext->thereIsAUser($username);
+        $this->teamMembershipRepository->save(new TeamMembership($team, $user->getUser()));
     }
 
     /**
