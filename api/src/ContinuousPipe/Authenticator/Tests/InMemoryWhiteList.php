@@ -20,7 +20,7 @@ class InMemoryWhiteList implements WhiteList
     }
 
     /**
-     * @param string $username
+     * {@inheritdoc}
      */
     public function add($username)
     {
@@ -28,7 +28,7 @@ class InMemoryWhiteList implements WhiteList
     }
 
     /**
-     * @param string $username
+     * {@inheritdoc}
      */
     public function remove($username)
     {

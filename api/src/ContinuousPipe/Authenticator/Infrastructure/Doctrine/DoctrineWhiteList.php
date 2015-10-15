@@ -26,11 +26,38 @@ class DoctrineWhiteList implements WhiteList
      */
     public function contains($username)
     {
-        $user = $this->entityManager->getRepository(WhiteListedUser::class)
-            ->findOneBy([
-                'gitHubUsername' => $username,
-            ]);
+        $whiteListedUser = $this->getRepository()->findOneBy([
+            'gitHubUsername' => $username,
+        ]);
 
-        return null !== $user;
+        return null !== $whiteListedUser;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function add($username)
+    {
+        $this->entityManager->persist(new WhiteListedUser($username));
+        $this->entityManager->flush();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove($username)
+    {
+        $whiteListedUser = $this->getRepository()->findOneBy(['gitHubUsername' => $username]);
+
+        $this->entityManager->remove($whiteListedUser);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @return \Doctrine\ORM\EntityRepository
+     */
+    private function getRepository()
+    {
+        return $this->entityManager->getRepository(WhiteListedUser::class);
     }
 }

@@ -8,6 +8,7 @@ use ContinuousPipe\Authenticator\Tests\InMemoryWhiteList;
 use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
+use ContinuousPipe\User\WhiteList;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -19,7 +20,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
     private $userProvider;
 
     /**
-     * @var InMemoryWhiteList
+     * @var WhiteList
      */
     private $whiteList;
 
@@ -39,11 +40,11 @@ class SecurityContext implements Context, SnippetAcceptingContext
 
     /**
      * @param UserProvider $userProvider
-     * @param InMemoryWhiteList $whiteList
+     * @param WhiteList $whiteList
      * @param TokenStorageInterface $tokenStorage
      * @param SecurityUserRepository $securityUserRepository
      */
-    public function __construct(UserProvider $userProvider, InMemoryWhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository)
+    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository)
     {
         $this->userProvider = $userProvider;
         $this->whiteList = $whiteList;
