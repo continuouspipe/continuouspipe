@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Tests;
 
-use ContinuousPipe\User\WhiteList;
+use ContinuousPipe\Authenticator\WhiteList\WhiteList;
 
 class InMemoryWhiteList implements WhiteList
 {

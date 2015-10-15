@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\User;
+namespace ContinuousPipe\Authenticator\WhiteList;
 
 interface WhiteList
 {

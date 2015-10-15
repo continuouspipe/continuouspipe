@@ -8,7 +8,7 @@ use ContinuousPipe\Authenticator\Tests\InMemoryWhiteList;
 use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
-use ContinuousPipe\User\WhiteList;
+use ContinuousPipe\Authenticator\WhiteList\WhiteList;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 

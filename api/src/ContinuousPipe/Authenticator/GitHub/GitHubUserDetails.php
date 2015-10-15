@@ -1,9 +1,10 @@
 <?php
 
-namespace ContinuousPipe\User;
+namespace ContinuousPipe\Authenticator\GitHub;
 
 use ContinuousPipe\Authenticator\Security\Authentication\UserDetails;
 use GuzzleHttp\Client;
+use GuzzleHttp\Message\Response;
 
 class GitHubUserDetails implements UserDetails
 {
@@ -41,7 +42,7 @@ class GitHubUserDetails implements UserDetails
     /**
      * @param string $token
      *
-     * @return GuzzleHttp\Message\Response
+     * @return Response
      */
     private function getEmailAddresses($token)
     {

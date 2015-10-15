@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine;
 
-use ContinuousPipe\User\WhiteList;
-use ContinuousPipe\User\WhiteListedUser;
+use ContinuousPipe\Authenticator\WhiteList\WhiteList;
+use ContinuousPipe\Authenticator\WhiteList\WhiteListedUser;
 use Doctrine\ORM\EntityManager;
 
 class DoctrineWhiteList implements WhiteList
