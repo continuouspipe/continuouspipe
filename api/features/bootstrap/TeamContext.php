@@ -111,7 +111,7 @@ class TeamContext implements Context
     public function iCreateATeam($slug)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/v1/teams',
+            '/api/teams',
             'POST',
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -128,7 +128,7 @@ class TeamContext implements Context
      */
     public function iShouldSeeTheTeamInMyTeamsList($slug)
     {
-        $this->response = $this->kernel->handle(Request::create('/api/v1/teams', 'GET'));
+        $this->response = $this->kernel->handle(Request::create('/api/teams', 'GET'));
         $this->assertResponseCodeIs($this->response, 200);
         $list = json_decode($this->response->getContent(), true);
         $matchingTeam = array_filter($list, function(array $team) use ($slug) {
@@ -147,7 +147,7 @@ class TeamContext implements Context
      */
     public function iAddTheUserInTheTeam($username, $teamSlug)
     {
-        $url = sprintf('/api/v1/teams/%s/users/%s', $teamSlug, $username);
+        $url = sprintf('/api/teams/%s/users/%s', $teamSlug, $username);
         $this->response = $this->kernel->handle(Request::create($url, 'PUT'));
     }
 
@@ -156,7 +156,7 @@ class TeamContext implements Context
      */
     public function iCanSeeTheUserInTheTeam($username, $teamSlug)
     {
-        $url = sprintf('/api/v1/teams/%s', $teamSlug);
+        $url = sprintf('/api/teams/%s', $teamSlug);
         $this->response = $this->kernel->handle(Request::create($url, 'GET'));
         $this->assertResponseCodeIs($this->response, 200);
 

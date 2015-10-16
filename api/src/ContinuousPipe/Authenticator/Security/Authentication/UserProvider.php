@@ -159,9 +159,9 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         });
 
         if ($matchingTokens->count() > 0) {
-            $tokens->removeElement($matchingTokens->first());
+            $matchingTokens->first()->setAccessToken($response->getAccessToken());
+        } else {
+            $tokens->add(new GitHubToken($user->getUsername(), $response->getAccessToken()));
         }
-
-        $tokens->add(new GitHubToken($user->getUsername(), $response->getAccessToken()));
     }
 }

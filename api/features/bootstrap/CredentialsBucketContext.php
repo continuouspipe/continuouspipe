@@ -95,7 +95,7 @@ class CredentialsBucketContext implements Context
         $content = json_encode($table->getHash()[0]);
 
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/v1/bucket/%s/docker-registries', $bucket),
+            sprintf('/api/bucket/%s/docker-registries', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             $content
@@ -107,7 +107,7 @@ class CredentialsBucketContext implements Context
     public function iDeleteTheCredentialsOfTheDockerRegistry($serverAddress, $bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/v1/bucket/%s/docker-registries/%s', $bucket, urlencode($serverAddress)),
+            sprintf('/api/bucket/%s/docker-registries/%s', $bucket, urlencode($serverAddress)),
             'DELETE'
         ));
 
@@ -120,7 +120,7 @@ class CredentialsBucketContext implements Context
     public function iAskTheListOfTheDockerRegistryCredentialsInTheBucket($bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/v1/bucket/%s/docker-registries', $bucket),
+            sprintf('/api/bucket/%s/docker-registries', $bucket),
             'GET'
         ));
     }
@@ -133,7 +133,7 @@ class CredentialsBucketContext implements Context
         $content = json_encode($table->getHash()[0]);
 
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/v1/bucket/%s/github-tokens', $bucket),
+            sprintf('/api/bucket/%s/github-tokens', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             $content
@@ -146,7 +146,7 @@ class CredentialsBucketContext implements Context
     public function iAskTheListOfTheGithubTokensInTheBucket($bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/v1/bucket/%s/github-tokens', $bucket),
+            sprintf('/api/bucket/%s/github-tokens', $bucket),
             'GET'
         ));
     }

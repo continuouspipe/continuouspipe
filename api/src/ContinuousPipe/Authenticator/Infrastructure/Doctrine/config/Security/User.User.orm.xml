@@ -7,5 +7,6 @@
     <entity name="ContinuousPipe\Security\User\User" table="cp_user">
         <id name="username" type="string" />
         <field name="email" type="string" nullable="true" />
+        <field name="bucketUuid" type="string" />
     </entity>
 </doctrine-mapping>

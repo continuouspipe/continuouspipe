@@ -3,6 +3,7 @@ Feature:
   As a user
   My GitHub token credentials are automatically created when I login
 
+  @smoke
   Scenario: I am a new user, my account is created my bucket created and filled
     Given The user "sroze" is in the white list
     When a login with GitHub as "sroze" with the token "1234"
