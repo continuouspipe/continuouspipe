@@ -78,6 +78,14 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @Given I have the following GitHub tokens in the bucket :bucket:
+     */
+    public function iHaveTheFollowingGithubTokensInTheBucket($bucket, TableNode $table)
+    {
+        $this->iCreateAGithubTokenWithTheFollowingConfigurationInTheBucket($bucket, $table);
+    }
+
+    /**
      * @When I create a new docker registry with the following configuration in the bucket :bucket:
      */
     public function iCreateANewDockerRegistryWithTheFollowingConfiguration($bucket, TableNode $table)
@@ -113,6 +121,51 @@ class CredentialsBucketContext implements Context
             sprintf('/api/v1/bucket/%s/docker-registries', $bucket),
             'GET'
         ));
+    }
+
+    /**
+     * @When I create a GitHub token with the following configuration in the bucket :bucket:
+     */
+    public function iCreateAGithubTokenWithTheFollowingConfigurationInTheBucket($bucket, TableNode $table)
+    {
+        $content = json_encode($table->getHash()[0]);
+
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/v1/bucket/%s/github-tokens', $bucket),
+            'POST', [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $content
+        ));
+    }
+
+    /**
+     * @When I ask the list of the GitHub tokens in the bucket :bucket
+     */
+    public function iAskTheListOfTheGithubTokensInTheBucket($bucket)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/v1/bucket/%s/github-tokens', $bucket),
+            'GET'
+        ));
+    }
+
+    /**
+     * @Then the list should contain the access token :token
+     */
+    public function theListShouldContainTheAccessToken($token)
+    {
+        $decoded = json_decode($this->response->getContent(), true);
+        if (!is_array($decoded)) {
+            throw new \RuntimeException('Expected to get an array in the JSON response');
+        }
+
+        $matchingCredentials = array_filter($decoded, function(array $row) use ($token) {
+            return $row['accessToken'] == $token;
+        });
+
+        if (0 == count($matchingCredentials)) {
+            throw new \RuntimeException('No matching credentials found');
+        }
     }
 
     /**

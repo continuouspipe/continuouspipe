@@ -5,6 +5,7 @@ namespace ApiBundle\Controller;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
+use ContinuousPipe\Security\Credentials\GitHubToken;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -53,7 +54,7 @@ class CredentialsBucketController
      * @ParamConverter("credentials", converter="fos_rest.request_body")
      * @View(statusCode=201)
      */
-    public function createAction(Bucket $bucket, DockerRegistry $credentials)
+    public function createDockerRegistryAction(Bucket $bucket, DockerRegistry $credentials)
     {
         $violations = $this->validator->validate($credentials);
         if (count($violations) > 0) {
@@ -69,7 +70,7 @@ class CredentialsBucketController
      * @Route("/docker-registries/{serverAddress}", methods={"DELETE"})
      * @View
      */
-    public function deleteAction(Bucket $bucket, $serverAddress)
+    public function deleteDockerRegistryAction(Bucket $bucket, $serverAddress)
     {
         $registries = $bucket->getDockerRegistries();
         $matchingRegistries = $registries->filter(function (DockerRegistry $dockerRegistry) use ($serverAddress) {
@@ -81,5 +82,33 @@ class CredentialsBucketController
         }
 
         $this->bucketRepository->save($bucket);
+    }
+
+    /**
+     * @Route("/github-tokens", methods={"GET"})
+     * @View
+     */
+    public function listGitHubTokensAction(Bucket $bucket)
+    {
+        return $bucket->getGitHubTokens();
+    }
+
+    /**
+     * @Route("/github-tokens", methods={"POST"})
+     * @ParamConverter("token", converter="fos_rest.request_body")
+     * @View(statusCode=201)
+     */
+    public function createGitHubTokenAction(Bucket $bucket, GitHubToken $token)
+    {
+        $violations = $this->validator->validate($token);
+        if (count($violations) > 0) {
+            return FOSRestView::create($violations, 400);
+        }
+
+        $bucket->getGitHubTokens()->add($token);
+
+        $this->bucketRepository->save($bucket);
+
+        return $token;
     }
 }

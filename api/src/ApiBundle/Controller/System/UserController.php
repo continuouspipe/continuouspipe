@@ -2,7 +2,7 @@
 
 namespace ApiBundle\Controller\System;
 
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
