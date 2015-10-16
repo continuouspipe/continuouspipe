@@ -3,6 +3,8 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\Credentials\GitHubToken;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\Team\TeamRepository;
@@ -38,17 +40,23 @@ class TeamContext implements Context
      * @var TeamMembershipRepository
      */
     private $teamMembershipRepository;
+    /**
+     * @var BucketRepository
+     */
+    private $bucketRepository;
 
     /**
      * @param Kernel $kernel
      * @param TeamRepository $teamRepository
      * @param TeamMembershipRepository $teamMembershipRepository
+     * @param BucketRepository $bucketRepository
      */
-    public function __construct(Kernel $kernel, TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository)
+    public function __construct(Kernel $kernel, TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository, BucketRepository $bucketRepository)
     {
         $this->kernel = $kernel;
         $this->teamRepository = $teamRepository;
         $this->teamMembershipRepository = $teamMembershipRepository;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -209,6 +217,22 @@ class TeamContext implements Context
     {
         if ($this->teamRepository->find($slug)->getBucketUuid() == null) {
             throw new \RuntimeException('No bucket found');
+        }
+    }
+
+    /**
+     * @Then the bucket of the team :team should contain the GitHub token :token
+     */
+    public function theBucketOfTheTeamShouldContainTheGithubToken($team, $token)
+    {
+        $team = $this->teamRepository->find($team);
+        $bucket = $this->bucketRepository->find($team->getBucketUuid());
+        $matchingTokens = $bucket->getGitHubTokens()->filter(function(GitHubToken $found) use ($token) {
+            return $found->getAccessToken() == $token;
+        });
+
+        if (0 == count($matchingTokens)) {
+            throw new \RuntimeException('No matching token found');
         }
     }
 

@@ -4,12 +4,16 @@ namespace ContinuousPipe\Authenticator\Security\Authentication;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
+use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\Credentials\GitHubToken;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use ContinuousPipe\Authenticator\WhiteList\WhiteList;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use ContinuousPipe\Authenticator\GitHub\EmailNotFoundException;
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -32,15 +36,22 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     private $whiteList;
 
     /**
+     * @var BucketRepository
+     */
+    private $bucketRepository;
+
+    /**
      * @param SecurityUserRepository $securityUserRepository
      * @param UserDetails            $userDetails
      * @param WhiteList              $whiteList
+     * @param BucketRepository       $bucketRepository
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList)
+    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository)
     {
         $this->securityUserRepository = $securityUserRepository;
         $this->userDetails = $userDetails;
         $this->whiteList = $whiteList;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -63,24 +74,18 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
             $securityUser = $this->createUserFromUsername($username);
         }
 
-        if (null === $securityUser->getUser()->getEmail()) {
+        $user = $securityUser->getUser();
+        if (null === $user->getEmail()) {
             try {
-                $email = $this->getEmail($response);
-
-                $securityUser->getUser()->setEmail($email);
+                $user->setEmail($this->getEmail($response));
             } catch (EmailNotFoundException $e) {
             }
         }
 
-        /*
-        $securityUser->getUser()->setGitHubCredentials(new GitHubCredentials(
-            $gitHubLogin,
-            $response->getAccessToken(),
-            $response->getRefreshToken()
-        ));
-        */
-
-        $securityUser = $this->securityUserRepository->save($securityUser);
+        $bucket = $this->bucketRepository->find($user->getBucketUuid());
+        $this->updateUserGitHubTokenInBucket($bucket, $user, $response);
+        $this->bucketRepository->save($bucket);
+        $this->securityUserRepository->save($securityUser);
 
         return $securityUser;
     }
@@ -104,9 +109,17 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      *
      * @return SecurityUser
      */
-    private function createUserFromUsername($username)
+    public function createUserFromUsername($username)
     {
-        return new SecurityUser(new User($username));
+        // Create user's bucket
+        $bucketUuid = Uuid::uuid1();
+        $this->bucketRepository->save(new Bucket($bucketUuid));
+
+        // Create the user
+        $user = new SecurityUser(new User($username, $bucketUuid));
+        $this->securityUserRepository->save($user);
+
+        return $user;
     }
 
     /**
@@ -131,5 +144,24 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     public function supportsClass($class)
     {
         return $class == SecurityUser::class;
+    }
+
+    /**
+     * @param Bucket                $bucket
+     * @param User                  $user
+     * @param UserResponseInterface $response
+     */
+    private function updateUserGitHubTokenInBucket(Bucket $bucket, User $user, UserResponseInterface $response)
+    {
+        $tokens = $bucket->getGitHubTokens();
+        $matchingTokens = $tokens->filter(function (GitHubToken $token) use ($user) {
+            return $token->getLogin() == $user->getUsername();
+        });
+
+        if ($matchingTokens->count() > 0) {
+            $tokens->removeElement($matchingTokens->first());
+        }
+
+        $tokens->add(new GitHubToken($user->getUsername(), $response->getAccessToken()));
     }
 }

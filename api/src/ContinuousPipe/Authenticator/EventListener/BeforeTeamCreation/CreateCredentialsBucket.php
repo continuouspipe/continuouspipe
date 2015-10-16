@@ -2,7 +2,9 @@
 
 namespace ContinuousPipe\Authenticator\EventListener\BeforeTeamCreation;
 
-use ContinuousPipe\Authenticator\Event\BeforeTeamCreation;
+use ContinuousPipe\Authenticator\Event\TeamCreationEvent;
+use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Team\Team;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -10,26 +12,42 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class CreateCredentialsBucket implements EventSubscriberInterface
 {
     /**
+     * @var BucketRepository
+     */
+    private $bucketRepository;
+
+    /**
+     * @param BucketRepository $bucketRepository
+     */
+    public function __construct(BucketRepository $bucketRepository)
+    {
+        $this->bucketRepository = $bucketRepository;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
         return [
-            BeforeTeamCreation::EVENT_NAME => 'createBucketIfNotExists',
+            TeamCreationEvent::BEFORE_EVENT => 'createBucketIfNotExists',
         ];
     }
 
     /**
-     * @param BeforeTeamCreation $event
+     * @param TeamCreationEvent $event
      *
      * @return Team
      */
-    public function createBucketIfNotExists(BeforeTeamCreation $event)
+    public function createBucketIfNotExists(TeamCreationEvent $event)
     {
         $team = $event->getTeam();
 
         if (null === $team->getBucketUuid()) {
-            $team->setBucketUuid(Uuid::uuid1());
+            $bucketUuid = Uuid::uuid1();
+            $this->bucketRepository->save(new Bucket($bucketUuid));
+
+            $team->setBucketUuid($bucketUuid);
         }
 
         return $team;

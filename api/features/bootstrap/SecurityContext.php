@@ -9,6 +9,7 @@ use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use ContinuousPipe\Authenticator\WhiteList\WhiteList;
+use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -71,9 +72,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
         try {
             return $this->securityUserRepository->findOneByUsername($username);
         } catch (UserNotFound $e) {
-            return $this->securityUserRepository->save(new SecurityUser(
-                new User($username)
-            ));
+            return $this->userProvider->createUserFromUsername($username);
         }
     }
 
@@ -106,6 +105,26 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @When a login with GitHub as :username with the token :token
+     */
+    public function aLoginWithGithubAsWithTheToken($username, $token)
+    {
+        try {
+            $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken($token)));
+        } catch (\Exception $e) {
+            $this->exception = $e;
+        }
+    }
+
+    /**
+     * @Then the user :username should exists
+     */
+    public function theUserShouldExists($username)
+    {
+        $this->userProvider->loadUserByUsername($username);
+    }
+
+    /**
      * @Then the authentication should be failed
      */
     public function theAuthenticationShouldBeFailed()
@@ -121,6 +140,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
     public function theAuthenticationShouldBeSuccessful()
     {
         if (null !== $this->exception) {
+            echo $this->exception->getMessage();
             throw new \RuntimeException('An exception was found');
         }
     }

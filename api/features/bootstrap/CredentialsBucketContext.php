@@ -75,6 +75,7 @@ class CredentialsBucketContext implements Context
     public function iHaveTheFollowingDockerRegistryCredentials($bucket, TableNode $table)
     {
         $this->iCreateANewDockerRegistryWithTheFollowingConfiguration($bucket, $table);
+        $this->assertResponseCodeIs($this->response, 201);
     }
 
     /**
@@ -83,6 +84,7 @@ class CredentialsBucketContext implements Context
     public function iHaveTheFollowingGithubTokensInTheBucket($bucket, TableNode $table)
     {
         $this->iCreateAGithubTokenWithTheFollowingConfigurationInTheBucket($bucket, $table);
+        $this->assertResponseCodeIs($this->response, 201);
     }
 
     /**

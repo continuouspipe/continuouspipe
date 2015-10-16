@@ -45,6 +45,13 @@
         <!-- Event listeners -->
         <service id="app.listener.before_team_creation.create_credentials_bucket"
                  class="ContinuousPipe\Authenticator\EventListener\BeforeTeamCreation\CreateCredentialsBucket">
+            <argument type="service" id="app.repository.credentials_bucket" />
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="app.listener.after_team_creation.copy_creator_credentials"
+                 class="ContinuousPipe\Authenticator\EventListener\AfterTeamCreation\CopyCreatorCredentials">
+            <argument type="service" id="app.repository.credentials_bucket" />
 
             <tag name="kernel.event_subscriber"/>
         </service>

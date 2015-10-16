@@ -24,6 +24,7 @@
             <argument type="service" id="app.repository.security_user" />
             <argument type="service" id="app.user_details.github" />
             <argument type="service" id="app.white_list" />
+            <argument type="service" id="app.repository.credentials_bucket" />
         </service>
         <service id="app.security.authentication_provider" class="ContinuousPipe\Authenticator\Security\AuthenticationProvider">
             <argument type="service" id="router" />

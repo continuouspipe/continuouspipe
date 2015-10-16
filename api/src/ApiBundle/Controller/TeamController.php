@@ -2,7 +2,7 @@
 
 namespace ApiBundle\Controller;
 
-use ContinuousPipe\Authenticator\Event\BeforeTeamCreation;
+use ContinuousPipe\Authenticator\Event\TeamCreationEvent;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -69,10 +69,12 @@ class TeamController
      */
     public function createAction(Team $team, User $user)
     {
-        $this->eventDispatcher->dispatch(BeforeTeamCreation::EVENT_NAME, new BeforeTeamCreation($team));
+        $this->eventDispatcher->dispatch(TeamCreationEvent::BEFORE_EVENT, new TeamCreationEvent($team, $user));
 
         $this->teamRepository->save($team);
         $this->teamMembershipRepository->save(new TeamMembership($team, $user, ['ADMIN']));
+
+        $this->eventDispatcher->dispatch(TeamCreationEvent::AFTER_EVENT, new TeamCreationEvent($team, $user));
 
         return $team;
     }
