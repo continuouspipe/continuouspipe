@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Repository;
 
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Rhumsaa\Uuid\Uuid;
 
 interface FlowRepository

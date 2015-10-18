@@ -5,7 +5,7 @@ namespace ContinuousPipe\Builder;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Psr\Log\LoggerInterface;
 
 class BuildRequestCreator

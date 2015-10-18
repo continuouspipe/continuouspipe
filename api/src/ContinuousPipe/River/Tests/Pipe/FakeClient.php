@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Tests\Pipe;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Rhumsaa\Uuid\Uuid;
 
 class FakeClient implements Client

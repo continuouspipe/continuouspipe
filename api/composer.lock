@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "57372045f99a74e6c337a57fc4e8fe8e",
-    "content-hash": "9c233b25f347012f3b019ce0ef6647c3",
+    "hash": "5e3265c04569ecf2a2c67c2c21e154e7",
+    "content-hash": "801ad49e8483cacb34c7887aa47ae71b",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -92,36 +92,39 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "0.3.0",
+            "version": "dev-team-managment",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "5dcfbdbe89606496d0a53473141563b5fdc8a693"
+                "reference": "b58c838bfb962bccfdae822bff7dc20f41f2d87d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/5dcfbdbe89606496d0a53473141563b5fdc8a693",
-                "reference": "5dcfbdbe89606496d0a53473141563b5fdc8a693",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/b58c838bfb962bccfdae822bff7dc20f41f2d87d",
+                "reference": "b58c838bfb962bccfdae822bff7dc20f41f2d87d",
                 "shasum": ""
             },
             "require": {
                 "doctrine/cache": "^1.4",
                 "guzzlehttp/guzzle": "~4.1",
                 "jms/serializer": "1.0.0",
-                "lexik/jwt-authentication-bundle": "~1.0"
+                "lexik/jwt-authentication-bundle": "~1.0",
+                "ramsey/uuid": "~2.8"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "^2.3"
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "ContinuousPipe\\User\\": "src/User/",
-                    "ContinuousPipe\\SecurityBundle\\": "src/SecurityBundle/"
+                "psr-0": {
+                    "ContinuousPipe\\": "src/"
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/master",
+                "source": "https://github.com/continuouspipe/security/tree/team-managment",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2015-10-05 13:30:31"
+            "time": "2015-10-18 15:22:24"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -4546,6 +4549,7 @@
     "stability-flags": {
         "csa/guzzle-bundle": 0,
         "sroze/log-stream": 20,
+        "continuous-pipe/security": 20,
         "simple-bus/rabbitmq-bundle-bridge": 20
     },
     "prefer-stable": false,

@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\GitHub;
 
 use Github\Client;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Github\HttpClient\HttpClientInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -13,6 +13,7 @@ class GitHubClientFactory
      * @var TokenStorageInterface
      */
     private $tokenStorage;
+
     /**
      * @var HttpClientInterface
      */

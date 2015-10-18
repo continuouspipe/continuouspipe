@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River;
 
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Rhumsaa\Uuid\Uuid;
 
 class FlowContext implements Context

@@ -6,7 +6,7 @@ use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\PullRequestDeploymentNotifier;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\View\TideRepository;
-use ContinuousPipe\User\UserRepository;
+use ContinuousPipe\Security\User\UserRepository;
 
 class DeploymentSuccessfulListener
 {
@@ -49,7 +49,7 @@ class DeploymentSuccessfulListener
     public function notify(DeploymentSuccessful $deploymentSuccessful)
     {
         $tide = $this->tideRepository->find($deploymentSuccessful->getTideUuid());
-        $user = $this->userRepository->findOneByEmail($tide->getUser()->getEmail());
+        $user = $this->userRepository->findOneByUsername($tide->getUser()->getUsername());
 
         $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($user, $tide->getCodeReference());
 

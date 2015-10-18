@@ -9,7 +9,7 @@ use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowReposito
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Doctrine\ORM\EntityManager;
 use LogStream\WrappedLog;
 use Rhumsaa\Uuid\Uuid;

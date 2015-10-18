@@ -6,7 +6,7 @@ use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\User\SecurityUser;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Message\ResponseInterface;

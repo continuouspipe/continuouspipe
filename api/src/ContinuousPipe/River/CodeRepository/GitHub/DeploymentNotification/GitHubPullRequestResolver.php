@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use GitHub\WebHook\Model\PullRequest;
 use JMS\Serializer\Serializer;
 

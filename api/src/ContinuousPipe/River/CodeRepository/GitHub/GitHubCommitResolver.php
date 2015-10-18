@@ -7,7 +7,7 @@ use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Exception\RequestException;
 
 class GitHubCommitResolver implements CommitResolver

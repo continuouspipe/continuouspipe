@@ -2,13 +2,14 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
+use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
+use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Security\User\User;
 use Rhumsaa\Uuid\Uuid;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\FlowContext as RiverFlowContext;
-use ContinuousPipe\User\User;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +19,6 @@ use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserTo
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use GitHub\WebHook\Model\Repository;
-use ContinuousPipe\User\Tests\Authenticator\InMemoryAuthenticatorClient;
 use Symfony\Component\Yaml\Yaml;
 
 class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
@@ -97,7 +97,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     public function iAmAuthenticated()
     {
         $token = new JWTUserToken(['ROLE_USER']);
-        $token->setUser(new \ContinuousPipe\User\SecurityUser(new \ContinuousPipe\User\User('samuel.roze@gmail.com')));
+        $token->setUser(new SecurityUser(new User('samuel.roze@gmail.com', Uuid::uuid1())));
         $this->tokenStorage->setToken($token);
     }
 
@@ -428,7 +428,7 @@ EOF;
     private function createFlowContextWithCodeRepository(CodeRepository $codeRepository, Uuid $uuid = null, array $configuration = [])
     {
         $this->flowUuid = (string) ($uuid ?: Uuid::uuid1());
-        $user = new User('samuel.roze@gmail.com');
+        $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
 
         $this->codeRepositoryRepository->add($codeRepository);
         $this->authenticatorClient->addUser($user);

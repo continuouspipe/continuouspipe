@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Tests\Pipe;
 
 use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 
 class TraceableClient implements Client
 {

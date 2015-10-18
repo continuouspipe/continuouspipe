@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Tests\Repository;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Rhumsaa\Uuid\Uuid;
 
 class InMemoryFlowRepository implements FlowRepository
@@ -20,7 +20,7 @@ class InMemoryFlowRepository implements FlowRepository
     {
         $this->flowsByUuid[(string) $flow->getUuid()] = $flow;
 
-        $username = $flow->getContext()->getUser()->getEmail();
+        $username = $flow->getContext()->getUser()->getUsername();
         if (!array_key_exists($username, $this->flowsByUser)) {
             $this->flowsByUser[$username] = [];
         }
@@ -34,7 +34,7 @@ class InMemoryFlowRepository implements FlowRepository
      */
     public function findByUser(User $user)
     {
-        $username = $user->getEmail();
+        $username = $user->getUsername();
         if (!array_key_exists($username, $this->flowsByUser)) {
             return [];
         }

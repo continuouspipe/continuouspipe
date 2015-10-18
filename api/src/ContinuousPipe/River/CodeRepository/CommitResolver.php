@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\River\CodeRepository;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 
 interface CommitResolver
 {

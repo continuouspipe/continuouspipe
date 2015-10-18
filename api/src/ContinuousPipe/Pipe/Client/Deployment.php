@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Pipe\Client;
 
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use JMS\Serializer\Annotation as JMS;
 use Rhumsaa\Uuid\Uuid;
 

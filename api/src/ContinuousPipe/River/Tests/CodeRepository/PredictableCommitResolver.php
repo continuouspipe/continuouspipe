@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Tests\CodeRepository;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 
 class PredictableCommitResolver implements CommitResolver
 {

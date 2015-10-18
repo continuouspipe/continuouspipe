@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 
 interface FileSystemResolver
 {

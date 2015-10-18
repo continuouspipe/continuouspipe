@@ -6,8 +6,8 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
-use ContinuousPipe\User\User;
-use ContinuousPipe\User\UserRepository;
+use ContinuousPipe\Security\User\User;
+use ContinuousPipe\Security\User\UserRepository;
 use Doctrine\ORM\EntityManager;
 use Rhumsaa\Uuid\Uuid;
 
@@ -47,7 +47,7 @@ class DoctrineFlowRepository implements FlowRepository
         } catch (FlowNotFound $e) {
             $dto = new FlowDto();
             $dto->uuid = $flow->getUuid();
-            $dto->userUsername = $flowContext->getUser()->getEmail();
+            $dto->userUsername = $flowContext->getUser()->getUsername();
         }
 
         $dto->context = $flowContext;
@@ -64,7 +64,7 @@ class DoctrineFlowRepository implements FlowRepository
     public function findByUser(User $user)
     {
         $flowDtos = $this->getEntityRepository()->findBy([
-            'userUsername' => $user->getEmail(),
+            'userUsername' => $user->getUsername(),
         ]);
 
         return array_map(function (FlowDto $dto) {

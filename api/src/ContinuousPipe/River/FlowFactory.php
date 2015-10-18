@@ -5,7 +5,7 @@ namespace ContinuousPipe\River;
 use ContinuousPipe\River\Flow\Request\FlowCreationRequest;
 use ContinuousPipe\River\Flow\Request\FlowUpdateRequest;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
-use ContinuousPipe\User\Security\UserContext;
+use ContinuousPipe\Security\Authenticator\UserContext;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\Yaml\Yaml;
 
