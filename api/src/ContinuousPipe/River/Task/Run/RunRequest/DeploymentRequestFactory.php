@@ -52,7 +52,8 @@ class DeploymentRequestFactory
             new DeploymentRequest\Notification(
                 $this->getNotificationUrl($context),
                 $context->getTaskLog()->getId()
-            )
+            ),
+            $context->getTeam()->getBucketUuid()
         );
     }
 

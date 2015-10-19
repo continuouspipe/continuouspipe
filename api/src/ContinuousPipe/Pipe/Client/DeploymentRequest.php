@@ -6,6 +6,7 @@ use ContinuousPipe\Pipe\Client\DeploymentRequest\Notification;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Specification;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use JMS\Serializer\Annotation as JMS;
+use Rhumsaa\Uuid\Uuid;
 
 class DeploymentRequest
 {
@@ -31,15 +32,25 @@ class DeploymentRequest
     private $notification;
 
     /**
+     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     * @JMS\SerializedName("credentialsBucket")
+     *
+     * @var Uuid
+     */
+    private $credentialsBucket;
+
+    /**
      * @param Target        $target
      * @param Specification $specification
      * @param Notification  $notification
+     * @param Uuid          $credentialsBucket
      */
-    public function __construct(Target $target, Specification $specification, Notification $notification)
+    public function __construct(Target $target, Specification $specification, Notification $notification, Uuid $credentialsBucket)
     {
         $this->target = $target;
         $this->specification = $specification;
         $this->notification = $notification;
+        $this->credentialsBucket = $credentialsBucket;
     }
 
     /**
@@ -64,5 +75,13 @@ class DeploymentRequest
     public function getNotification()
     {
         return $this->notification;
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getCredentialsBucket()
+    {
+        return $this->credentialsBucket;
     }
 }

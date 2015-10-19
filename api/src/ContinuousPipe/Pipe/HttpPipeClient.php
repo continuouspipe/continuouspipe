@@ -5,7 +5,7 @@ namespace ContinuousPipe\Pipe;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
-use ContinuousPipe\User\SecurityUser;
+use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
