@@ -99,6 +99,7 @@ lexik_jwt_authentication:
 
 continuous_pipe_security:
     authenticator_url: %authenticator_url%
+    api_key: %authenticator_api_key%
     cache: true
 
 fos_rest:

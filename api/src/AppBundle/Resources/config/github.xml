@@ -48,6 +48,7 @@
         <service id="river.github.client_factory" class="ContinuousPipe\River\GitHub\GitHubClientFactory">
             <argument type="service" id="security.token_storage" />
             <argument type="service" id="river.github.http_client" />
+            <argument type="service" id="authenticator.bucket_repository" />
         </service>
 
         <service id="river.github.repository_address_descriptor" class="ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor" />

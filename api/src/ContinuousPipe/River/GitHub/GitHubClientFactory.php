@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\GitHub;
 
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use Github\Client;
 use ContinuousPipe\Security\User\User;
 use Github\HttpClient\HttpClientInterface;
@@ -20,12 +21,20 @@ class GitHubClientFactory
     private $githubHttpClient;
 
     /**
-     * @param TokenStorageInterface $tokenStorage
+     * @var BucketRepository
      */
-    public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient)
+    private $bucketRepository;
+
+    /**
+     * @param TokenStorageInterface $tokenStorage
+     * @param HttpClientInterface $githubHttpClient
+     * @param BucketRepository $bucketRepository
+     */
+    public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient, BucketRepository $bucketRepository)
     {
         $this->tokenStorage = $tokenStorage;
         $this->githubHttpClient = $githubHttpClient;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -38,15 +47,18 @@ class GitHubClientFactory
     public function createClientForUser(User $user)
     {
         $client = new Client($this->githubHttpClient);
+        $bucket = $this->bucketRepository->find($user->getBucketUuid());
+        $gitHubTokens = $bucket->getGitHubTokens();
 
-        if (null === ($userCredentials = $user->getGitHubCredentials())) {
+        if (0 === $gitHubTokens->count()) {
             throw new UserCredentialsNotFound(sprintf(
                 'No GitHub credentials found for user "%s"',
-                $user->getEmail()
+                $user->getUsername()
             ));
         }
 
-        $client->authenticate($userCredentials->getAccessToken(), null, Client::AUTH_HTTP_TOKEN);
+        $token = $gitHubTokens->first()->getAccessToken();
+        $client->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
 
         return $client;
     }
