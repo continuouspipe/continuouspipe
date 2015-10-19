@@ -5,7 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="api.system.controller.user" class="ApiBundle\Controller\System\UserController" />
+        <service id="api.controller.user" class="ApiBundle\Controller\UserController" />
         <service id="api.controller.credentials_bucket" class="ApiBundle\Controller\CredentialsBucketController">
             <argument type="service" id="app.repository.credentials_bucket" />
             <argument type="service" id="validator" />
@@ -39,6 +39,11 @@
                  class="ContinuousPipe\Security\Voter\BucketPermissionVoter"
                  public="false">
             <argument type="service" id="app.repository.team_membership" />
+            <tag name="security.voter" />
+        </service>
+        <service id="security.access.user_voter"
+                 class="ContinuousPipe\Security\Voter\UserPermissionVoter"
+                 public="false">
             <tag name="security.voter" />
         </service>
 

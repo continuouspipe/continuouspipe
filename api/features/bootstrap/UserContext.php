@@ -6,6 +6,9 @@ use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\GitHubToken;
 use Rhumsaa\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class UserContext implements Context
 {
@@ -17,15 +20,25 @@ class UserContext implements Context
      * @var BucketRepository
      */
     private $bucketRepository;
+    /**
+     * @var KernelInterface
+     */
+    private $kernel;
+    /**
+     * @var Response|null
+     */
+    private $response;
 
     /**
      * @param SecurityUserRepository $securityUserRepository
      * @param BucketRepository $bucketRepository
+     * @param KernelInterface $kernel
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, BucketRepository $bucketRepository)
+    public function __construct(SecurityUserRepository $securityUserRepository, BucketRepository $bucketRepository, KernelInterface $kernel)
     {
         $this->securityUserRepository = $securityUserRepository;
         $this->bucketRepository = $bucketRepository;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -44,6 +57,15 @@ class UserContext implements Context
         $this->securityUserRepository->save($securityUser);
     }
 
+
+    /**
+     * @When I request the details of user :username
+     */
+    public function iRequestTheDetailsOfUser($username)
+    {
+        $this->response = $this->kernel->handle(Request::create(sprintf('/api/user/%s', $username), 'GET'));
+    }
+
     /**
      * @Then the bucket of the user :username should contain the GitHub token :token
      */
@@ -57,6 +79,33 @@ class UserContext implements Context
 
         if (0 == count($matchingTokens)) {
             throw new \RuntimeException('No matching token found');
+        }
+    }
+
+    /**
+     * @Then I should receive the details
+     */
+    public function iShouldReceiveTheDetails()
+    {
+        if ($this->response->getStatusCode() != 200) {
+            echo $this->response->getContent();
+            throw new \RuntimeException(sprintf(
+                'Expected status code 200, got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
+     * @Then I should be told that I don't have the authorization to access this user
+     */
+    public function iShouldBeToldThatIDonTHaveTheAuthorizationToAccessThisUser()
+    {
+        if ($this->response->getStatusCode() != 403) {
+            throw new \RuntimeException(sprintf(
+                'Expected status code 403, got %d',
+                $this->response->getStatusCode()
+            ));
         }
     }
 }
