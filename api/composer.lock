@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5e3265c04569ecf2a2c67c2c21e154e7",
-    "content-hash": "801ad49e8483cacb34c7887aa47ae71b",
+    "hash": "f875b2b5c7865e57d18fb506d99f5a7d",
+    "content-hash": "8537bbfc6c3b5f3caa70c3165c8c12e1",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -92,16 +92,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "dev-team-managment",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "beb28882c279427580c6afe3e5c111590cb0c97a"
+                "reference": "23d0778d06ff7771741fea2e7552df3584825b1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/beb28882c279427580c6afe3e5c111590cb0c97a",
-                "reference": "beb28882c279427580c6afe3e5c111590cb0c97a",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/23d0778d06ff7771741fea2e7552df3584825b1b",
+                "reference": "23d0778d06ff7771741fea2e7552df3584825b1b",
                 "shasum": ""
             },
             "require": {
@@ -121,10 +121,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/team-managment",
+                "source": "https://github.com/continuouspipe/security/tree/1.0.1",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2015-10-19 17:03:29"
+            "time": "2015-10-19 18:07:07"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -4549,7 +4549,6 @@
     "stability-flags": {
         "csa/guzzle-bundle": 0,
         "sroze/log-stream": 20,
-        "continuous-pipe/security": 20,
         "simple-bus/rabbitmq-bundle-bridge": 20
     },
     "prefer-stable": false,
