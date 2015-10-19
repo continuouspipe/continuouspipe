@@ -20,7 +20,8 @@ angular
         'ncy-angular-breadcrumb',
         'angular-jwt',
         'dndLists',
-        'ui.ace'
+        'ui.ace',
+        'angular-md5'
     ])
     .config(function($urlRouterProvider, $breadcrumbProvider, $locationProvider) {
         $urlRouterProvider.otherwise('/flows');

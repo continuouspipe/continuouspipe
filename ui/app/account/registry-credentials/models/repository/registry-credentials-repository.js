@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('RegistryCredentialsRepository', function($resource, ACCOUNT_API_URL) {
-        this.resource = $resource(ACCOUNT_API_URL+'/docker-registries/:serverAddress');
+    .service('RegistryCredentialsRepository', function($resource, AUTHENTICATOR_API_URL) {
+        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/docker-registries/:serverAddress');
 
         this.findAll = function() {
             return this.resource.query().$promise;

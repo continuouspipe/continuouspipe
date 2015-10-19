@@ -1,0 +1,25 @@
+<div class="container">
+<div class="block-header">
+    <form name="teamForm" novalidate>
+        <div class="row m-t-10">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header ch-alt">
+                        <h2>Team description</h2>
+                    </div>
+
+                    <div class="card-body card-padding">
+                        <div class="form-group fg-line" ng-class="{'has-error': teamForm.slug.$touched && teamForm.slug.$invalid}">
+                            <label for="slugInput">Name</label>
+                            <input type="text" name="slug" ng-model="team.slug" class="form-control input-sm" id="slugInput" ng-pattern="/^[a-z0-9-]{8,25}$/" required>
+                            <small class="help-block" ng-show="teamForm.slug.$invalid">This field is required and must match the pattern <code>[a-z0-9-]{8,25}</code></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" ng-click="create(team)" class="btn btn-primary btn-sm m-t-10 waves-effect waves-float" ng-disabled="teamForm.$invalid || isLoading">Create</button>
+    </form>
+</div>
+</div>
