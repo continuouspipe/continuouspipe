@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
@@ -110,30 +111,6 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
-     * @When I send a flow creation request with the UUID :uuid
-     */
-    public function iSendAFlowCreationRequestWithTheUuid($uuid)
-    {
-        $this->codeRepositoryRepository->add(new CodeRepository\GitHub\GitHubCodeRepository(
-            new Repository('foo', 'bar', false, '1234')
-        ));
-
-        $creationRequest = <<<EOF
-{
-   "repository": "1234",
-   "uuid": "$uuid"
-}
-EOF;
-
-        $this->response = $this->kernel->handle(Request::create('/flows', 'POST', [], [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ], $creationRequest));
-
-        $flowView = json_decode($this->response->getContent(), true);
-        $this->flowUuid = $flowView['uuid'];
-    }
-
-    /**
      * @Then the flow UUID should be :uuid
      */
     public function theFlowUuidShouldBe($uuid)
@@ -148,26 +125,30 @@ EOF;
     }
 
     /**
-     * @When I send a flow creation request
+     * @Given the GitHub repository :id exists
      */
-    public function iSendAFlowCreationRequest()
+    public function theGitHubRepositoryExists($id)
     {
         $this->codeRepositoryRepository->add(new CodeRepository\GitHub\GitHubCodeRepository(
-            new Repository('foo', 'bar', false, '1234')
+            new Repository('foo', 'bar', false, $id)
         ));
+    }
 
-        $creationRequest = <<<EOF
-{
-   "repository": "1234"
-}
-EOF;
+    /**
+     * @When I send a flow creation request with the following parameters:
+     */
+    public function iSendAFlowCreationRequestWithTheFollowingParameters(TableNode $parameters)
+    {
+        $creationRequest = json_encode($parameters->getHash()[0]);
 
         $this->response = $this->kernel->handle(Request::create('/flows', 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
         ], $creationRequest));
 
         $flowView = json_decode($this->response->getContent(), true);
-        $this->flowUuid = $flowView['uuid'];
+        if (array_key_exists('uuid', $flowView)) {
+            $this->flowUuid = $flowView['uuid'];
+        }
     }
 
     /**
@@ -204,12 +185,7 @@ EOF;
      */
     public function iShouldSeeTheFlow($uuid)
     {
-        if ($this->response->getStatusCode() != 200) {
-            throw new \RuntimeException(sprintf(
-                'The status code 200 was expected, found %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCode(200);
 
         $flows = json_decode($this->response->getContent(), true);
         if (!is_array($flows)) {
@@ -230,12 +206,7 @@ EOF;
      */
     public function iShouldSeeTheFlowSLastTide()
     {
-        if ($this->response->getStatusCode() != 200) {
-            throw new \RuntimeException(sprintf(
-                'The status code 200 was expected, found %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCode(200);
 
         $flows = json_decode($this->response->getContent(), true);
         if (!is_array($flows)) {
@@ -253,15 +224,11 @@ EOF;
 
     /**
      * @Then the flow is not saved
+     * @Then I should be told that my flow creation request is invalid
      */
     public function theFlowIsNotSaved()
     {
-        if ($this->response->getStatusCode() !== 400) {
-            throw new \RuntimeException(sprintf(
-                'Expected a response code 400 but got %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCode(400);
     }
 
     /**
@@ -269,12 +236,7 @@ EOF;
      */
     public function theFlowIsSuccessfullySaved()
     {
-        if ($this->response->getStatusCode() !== 200) {
-            throw new \RuntimeException(sprintf(
-                'Expected a response code 200 but got %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCode(200);
     }
 
     /**
@@ -336,13 +298,7 @@ EOF;
         $url = sprintf('/flows/%s/environments', (string) $this->flowUuid);
         $this->response = $this->kernel->handle(Request::create($url, 'GET'));
 
-        if ($this->response->getStatusCode() != 200) {
-            echo $this->response->getContent();
-            throw new \RuntimeException(sprintf(
-                'Expected response code 200, but got %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCode(200);
     }
 
     /**
@@ -459,5 +415,20 @@ EOF;
         return $this->createFlowContextWithCodeRepository(new CodeRepository\GitHub\GitHubCodeRepository(
             new Repository('foo', 'bar')
         ), $uuid, $configuration);
+    }
+
+    /**
+     * @param int $code
+     */
+    private function assertResponseCode($code)
+    {
+        if ($this->response->getStatusCode() != $code) {
+            echo $this->response->getContent();
+            throw new \RuntimeException(sprintf(
+                'Expected response code %d, but got %d',
+                $code,
+                $this->response->getStatusCode()
+            ));
+        }
     }
 }

@@ -21,6 +21,13 @@ class FlowCreationRequest extends FlowUpdateRequest
     private $uuid;
 
     /**
+     * @JMS\Type("string")
+     *
+     * @var string
+     */
+    private $team;
+
+    /**
      * @return string
      */
     public function getRepository()
@@ -34,5 +41,13 @@ class FlowCreationRequest extends FlowUpdateRequest
     public function getUuid()
     {
         return $this->uuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTeam()
+    {
+        return $this->team;
     }
 }

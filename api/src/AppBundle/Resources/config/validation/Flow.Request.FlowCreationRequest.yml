@@ -1,0 +1,6 @@
+ContinuousPipe\River\Flow\Request\FlowCreationRequest:
+    properties:
+        repository:
+            - NotBlank: ~
+        team:
+            - NotBlank: ~
