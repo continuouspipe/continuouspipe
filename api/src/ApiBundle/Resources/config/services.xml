@@ -72,5 +72,8 @@
 
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="app.listener.jwt_token_created.add_user_email" class="ContinuousPipe\Authenticator\EventListener\JWTTokenCreated\AddUserEmailInToken">
+            <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_jwt_created" method="onJWTCreated" />
+        </service>
     </services>
 </container>
