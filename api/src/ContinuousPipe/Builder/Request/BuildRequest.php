@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Logging;
 use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Repository;
+use Rhumsaa\Uuid\Uuid;
 
 class BuildRequest
 {
@@ -34,6 +35,11 @@ class BuildRequest
      * @var Context
      */
     private $context;
+
+    /**
+     * @var Uuid
+     */
+    private $credentialsBucket;
 
     /**
      * @var array
@@ -104,5 +110,17 @@ class BuildRequest
     public function getEnvironment()
     {
         return $this->environment ?: [];
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getCredentialsBucket()
+    {
+        if (is_string($this->credentialsBucket)) {
+            $this->credentialsBucket = Uuid::fromString($this->credentialsBucket);
+        }
+
+        return $this->credentialsBucket;
     }
 }

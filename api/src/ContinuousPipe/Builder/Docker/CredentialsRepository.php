@@ -4,8 +4,8 @@ namespace ContinuousPipe\Builder\Docker;
 
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
-use ContinuousPipe\User\Authenticator\CredentialsNotFound;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
+use Rhumsaa\Uuid\Uuid;
 
 interface CredentialsRepository
 {
@@ -13,11 +13,11 @@ interface CredentialsRepository
      * Return registry credentials for the given image.
      *
      * @param Image $image
-     * @param User  $user
+     * @param Uuid  $credentialsBucketUuid
      *
      * @throws CredentialsNotFound
      *
      * @return RegistryCredentials
      */
-    public function findByImage(Image $image, User $user);
+    public function findByImage(Image $image, Uuid $credentialsBucketUuid);
 }

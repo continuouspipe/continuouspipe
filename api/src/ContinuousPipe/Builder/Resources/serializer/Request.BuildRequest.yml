@@ -10,5 +10,8 @@ ContinuousPipe\Builder\Request\BuildRequest:
             type: ContinuousPipe\Builder\Logging
         context:
             type: ContinuousPipe\Builder\Context
+        credentialsBucket:
+            type: string
+            serialized_name: credentialsBucket
         environment:
             type: array<string, string>

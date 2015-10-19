@@ -5,8 +5,10 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
-use ContinuousPipe\User\DockerRegistryCredentials;
-use ContinuousPipe\User\Tests\Authenticator\InMemoryAuthenticatorClient;
+use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
+use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Security\User\User;
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,7 +62,7 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     public function iAmAuthenticated()
     {
         $token = new JWTUserToken(['ROLE_USER']);
-        $token->setUser(new \ContinuousPipe\User\SecurityUser(new \ContinuousPipe\User\User('samuel')));
+        $token->setUser(new SecurityUser(new User('samuel', Uuid::uuid1())));
 
         $this->tokenStorage->setToken($token);
     }
@@ -141,6 +143,7 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     "address": "fixtures://$repository",
     "branch": "master"
   },
+  "credentialsBucket": "00000000-0000-0000-0000-000000000000",
   "environment": $environmentVariablesJson
 }
 EOF;

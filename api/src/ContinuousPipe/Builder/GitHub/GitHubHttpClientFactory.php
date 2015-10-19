@@ -2,7 +2,8 @@
 
 namespace ContinuousPipe\Builder\GitHub;
 
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
+use ContinuousPipe\Security\Credentials\Bucket;
 use GuzzleHttp\Client;
 
 class GitHubHttpClientFactory
@@ -21,14 +22,23 @@ class GitHubHttpClientFactory
     }
 
     /**
-     * @param User $user
+     * @param Bucket $bucket
      *
      * @return Client
+     *
+     * @throws CredentialsNotFound
      */
-    public function createForUser(User $user)
+    public function createFromBucket(Bucket $bucket)
     {
-        $token = $user->getGitHubCredentials()->getAccessToken();
+        $tokens = $bucket->getGitHubTokens();
+        if (0 === $tokens->count()) {
+            throw new CredentialsNotFound(sprintf(
+                'No GitHub token found in bucket "%s"',
+                $bucket->getUuid()
+            ));
+        }
 
+        $token = $tokens->first()->getAccessToken();
         $this->httpClient->setDefaultOption('auth', [$token, 'x-oauth-basic']);
 
         return $this->httpClient;

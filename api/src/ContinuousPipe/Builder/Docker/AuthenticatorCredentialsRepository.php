@@ -4,39 +4,51 @@ namespace ContinuousPipe\Builder\Docker;
 
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
-use ContinuousPipe\User\Authenticator\AuthenticatorClient;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
+use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\Credentials\DockerRegistry;
+use Rhumsaa\Uuid\Uuid;
 
 class AuthenticatorCredentialsRepository implements CredentialsRepository
 {
     /**
-     * @var AuthenticatorClient
-     */
-    private $authenticatorClient;
-    /**
      * @var RegistryServerResolver
      */
     private $registryServerResolver;
+    /**
+     * @var BucketRepository
+     */
+    private $bucketRepository;
 
     /**
-     * @param AuthenticatorClient    $authenticatorClient
      * @param RegistryServerResolver $registryServerResolver
+     * @param BucketRepository       $bucketRepository
      */
-    public function __construct(AuthenticatorClient $authenticatorClient, RegistryServerResolver $registryServerResolver)
+    public function __construct(RegistryServerResolver $registryServerResolver, BucketRepository $bucketRepository)
     {
-        $this->authenticatorClient = $authenticatorClient;
         $this->registryServerResolver = $registryServerResolver;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findByImage(Image $image, User $user)
+    public function findByImage(Image $image, Uuid $credentialsBucketUuid)
     {
         $server = $this->registryServerResolver->getServerName($image);
+        $bucket = $this->bucketRepository->find($credentialsBucketUuid);
 
-        $dockerRegistryCredentials = $this->authenticatorClient->getDockerCredentialsByUserEmailAndServer($user->getEmail(), $server);
+        $matchingCredentials = $bucket->getDockerRegistries()->filter(function (DockerRegistry $dockerRegistry) use ($server) {
+            return $dockerRegistry->getServerAddress() == $server;
+        });
 
-        return RegistryCredentials::fromDockerRegistryCredentials($dockerRegistryCredentials);
+        if (0 === $matchingCredentials->count()) {
+            throw new CredentialsNotFound(sprintf(
+                'No Docker registry credentials found for server "%s"',
+                $server
+            ));
+        }
+
+        return RegistryCredentials::fromDockerRegistryCredentials($matchingCredentials->first());
     }
 }

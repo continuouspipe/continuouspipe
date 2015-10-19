@@ -10,7 +10,7 @@ use ContinuousPipe\Builder\Builder;
 use ContinuousPipe\Builder\BuildException;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\IsolatedCommands\CommandExtractor;
-use ContinuousPipe\User\Authenticator\CredentialsNotFound;
+use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -66,7 +66,7 @@ class DockerBuilder implements Builder
         $request = $build->getRequest();
 
         try {
-            $archive = $this->archiveBuilder->getArchive($request, $build->getUser(), $logger);
+            $archive = $this->archiveBuilder->getArchive($request, $logger);
         } catch (ArchiveCreationException $e) {
             throw new BuildException(sprintf('Unable to create archive: %s', $e->getMessage()), $e->getCode(), $e);
         }
@@ -110,9 +110,9 @@ class DockerBuilder implements Builder
         $targetImage = $request->getImage();
 
         try {
-            $credentials = $this->credentialsRepository->findByImage($targetImage, $build->getUser());
+            $credentials = $this->credentialsRepository->findByImage($targetImage, $request->getCredentialsBucket());
         } catch (CredentialsNotFound $e) {
-            throw new BuildException('Credentials not found.', $e->getCode(), $e);
+            throw new BuildException(sprintf('Credentials not found: %s', $e->getMessage()), $e->getCode(), $e);
         }
 
         try {

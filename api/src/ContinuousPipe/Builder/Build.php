@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Rhumsaa\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
@@ -29,7 +29,7 @@ class Build implements \JsonSerializable
     private $request;
 
     /**
-     * @JMS\Type("ContinuousPipe\User\User")
+     * @JMS\Type("ContinuousPipe\Security\User\User")
      *
      * @var User
      */
