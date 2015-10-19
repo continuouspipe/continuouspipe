@@ -2,19 +2,20 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\PrivateImages;
 
-use ContinuousPipe\User\DockerRegistryCredentials;
+use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\DockerRegistry;
 
 class DockerCfgFileGenerator
 {
     /**
-     * @param DockerRegistryCredentials[] $credentials
+     * @param Bucket $bucket
      *
      * @return string
      */
-    public function generate(array $credentials)
+    public function generate(Bucket $bucket)
     {
         $config = [];
-        foreach ($credentials as $credential) {
+        foreach ($bucket->getDockerRegistries() as $credential) {
             $serverAddress = $this->getServerAddress($credential);
             $config[$serverAddress] = [
                 'auth' => base64_encode(sprintf(
@@ -32,11 +33,11 @@ class DockerCfgFileGenerator
     /**
      * Get the server address for that docker registry credentials.
      *
-     * @param DockerRegistryCredentials $credentials
+     * @param DockerRegistry $credentials
      *
      * @return string
      */
-    private function getServerAddress(DockerRegistryCredentials $credentials)
+    private function getServerAddress(DockerRegistry $credentials)
     {
         $serverAddress = $credentials->getServerAddress();
         if ('docker.io' == $serverAddress) {

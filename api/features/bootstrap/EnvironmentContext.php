@@ -8,7 +8,9 @@ use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient;
 use ContinuousPipe\Pipe\Tests\Notification\TraceableNotifier;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
+use ContinuousPipe\Security\User\User;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,6 +66,10 @@ class EnvironmentContext implements Context
      * @var FakeEnvironmentClient
      */
     private $fakeEnvironmentClient;
+    /**
+     * @var InMemoryAuthenticatorClient
+     */
+    private $inMemoryAuthenticatorClient;
 
     /**
      * @param Kernel $kernel
@@ -71,14 +77,16 @@ class EnvironmentContext implements Context
      * @param DeploymentRepository $deploymentRepository
      * @param MessageBus $eventBus
      * @param FakeEnvironmentClient $fakeEnvironmentClient
+     * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
      */
-    public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus, FakeEnvironmentClient $fakeEnvironmentClient)
+    public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus, FakeEnvironmentClient $fakeEnvironmentClient, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient)
     {
         $this->kernel = $kernel;
         $this->eventStore = $eventStore;
         $this->deploymentRepository = $deploymentRepository;
         $this->eventBus = $eventBus;
         $this->fakeEnvironmentClient = $fakeEnvironmentClient;
+        $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
     }
 
     /**
@@ -155,6 +163,9 @@ class EnvironmentContext implements Context
      */
     public function sendDeploymentRequest($providerName, $environmentName, $template = 'simple-app')
     {
+        $bucket = new Bucket(Uuid::uuid1());
+        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+
         $simpleAppComposeContents = json_decode(file_get_contents(__DIR__.'/../fixtures/'.$template.'.json'), true);
         $contents = json_encode([
             'target' => [
@@ -166,7 +177,8 @@ class EnvironmentContext implements Context
             ],
             'notification' => [
                 'httpCallbackUrl' => 'http://example.com'
-            ]
+            ],
+            'credentialsBucket' => (string) $bucket->getUuid()
         ]);
 
         $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
@@ -194,11 +206,12 @@ class EnvironmentContext implements Context
                 new DeploymentRequest(
                     new DeploymentRequest\Target(),
                     new DeploymentRequest\Specification(),
+                    Uuid::uuid1(),
                     new DeploymentRequest\Notification(
                         'http://foo/bar'
                     )
                 ),
-                new User('sroze@inviqa.com')
+                new User('sroze@inviqa.com', Uuid::uuid1())
             )
         );
 

@@ -72,8 +72,8 @@
         <!-- Listeners -->
         <service id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" class="ContinuousPipe\Adapter\Kubernetes\PrivateImages\DockerCfgFileGenerator" />
         <service id="pipe.adapter.kubernetes.private_images.secret_factory" class="ContinuousPipe\Adapter\Kubernetes\PrivateImages\SecretFactory">
-            <argument type="service" id="security.authenticator.client" />
             <argument type="service" id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" />
+            <argument type="service" id="authenticator.bucket_repository" />
         </service>
         <service id="pipe.adapter.kubernetes.listener.add_private_registry_credentials" class="ContinuousPipe\Adapter\Kubernetes\Listener\NamespaceCreated\AddPrivateRegistryCredentials">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />

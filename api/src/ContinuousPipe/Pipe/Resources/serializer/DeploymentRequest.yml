@@ -6,3 +6,6 @@ ContinuousPipe\Pipe\DeploymentRequest:
             type: ContinuousPipe\Pipe\DeploymentRequest\Specification
         notification:
             type: ContinuousPipe\Pipe\DeploymentRequest\Notification
+        credentialsBucket:
+            type: string
+            serialized_name: credentialsBucket

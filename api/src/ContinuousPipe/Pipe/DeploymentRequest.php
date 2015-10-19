@@ -5,6 +5,7 @@ namespace ContinuousPipe\Pipe;
 use ContinuousPipe\Pipe\DeploymentRequest\Notification;
 use ContinuousPipe\Pipe\DeploymentRequest\Specification;
 use ContinuousPipe\Pipe\DeploymentRequest\Target;
+use Rhumsaa\Uuid\Uuid;
 
 class DeploymentRequest
 {
@@ -24,15 +25,22 @@ class DeploymentRequest
     private $notification;
 
     /**
+     * @var Uuid
+     */
+    private $credentialsBucket;
+
+    /**
      * @param Target        $target
      * @param Specification $specification
+     * @param Uuid          $credentialsBucket
      * @param Notification  $notification
      */
-    public function __construct(Target $target, Specification $specification, Notification $notification = null)
+    public function __construct(Target $target, Specification $specification, Uuid $credentialsBucket, Notification $notification = null)
     {
         $this->target = $target;
         $this->specification = $specification;
         $this->notification = $notification;
+        $this->credentialsBucket = $credentialsBucket;
     }
 
     /**
@@ -57,5 +65,17 @@ class DeploymentRequest
     public function getNotification()
     {
         return $this->notification;
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getCredentialsBucket()
+    {
+        if (is_string($this->credentialsBucket)) {
+            $this->credentialsBucket = Uuid::fromString($this->credentialsBucket);
+        }
+
+        return $this->credentialsBucket;
     }
 }
