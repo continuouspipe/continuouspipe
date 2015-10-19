@@ -16,6 +16,18 @@
             <argument type="service" id="event_dispatcher" />
         </service>
 
+        <!-- Authentication -->
+        <service id="api.api_key_repository" class="ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository">
+            <argument>%api_keys%</argument>
+        </service>
+        <service id="api.system_user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\SystemUserProvider">
+            <argument type="service" id="app.security.user_provider" />
+            <argument type="service" id="api.api_key_repository" />
+        </service>
+        <service id="api.api_key_authenticator"
+                 class="ContinuousPipe\Authenticator\Security\ApiKeyAuthenticator"
+                 public="false" />
+
         <!-- Param Converter -->
         <service id="request.param_converter.team" class="ContinuousPipe\Security\Request\ParamConverter\TeamParamConverter">
             <argument type="service" id="app.repository.team" />

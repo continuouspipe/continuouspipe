@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
+use ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
@@ -38,19 +39,25 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @var SecurityUserRepository
      */
     private $securityUserRepository;
+    /**
+     * @var InMemoryApiKeyRepository
+     */
+    private $apiKeyRepository;
 
     /**
      * @param UserProvider $userProvider
      * @param WhiteList $whiteList
      * @param TokenStorageInterface $tokenStorage
      * @param SecurityUserRepository $securityUserRepository
+     * @param InMemoryApiKeyRepository $apiKeyRepository
      */
-    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository)
+    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository, InMemoryApiKeyRepository $apiKeyRepository)
     {
         $this->userProvider = $userProvider;
         $this->whiteList = $whiteList;
         $this->tokenStorage = $tokenStorage;
         $this->securityUserRepository = $securityUserRepository;
+        $this->apiKeyRepository = $apiKeyRepository;
     }
 
     /**
@@ -90,6 +97,14 @@ class SecurityContext implements Context, SnippetAcceptingContext
     public function theUserIsInTheWhiteList($username)
     {
         $this->whiteList->add($username);
+    }
+
+    /**
+     * @Given the is the api key :key
+     */
+    public function theIsTheApiKey($key)
+    {
+        $this->apiKeyRepository->add($key);
     }
 
     /**

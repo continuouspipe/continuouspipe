@@ -67,6 +67,23 @@ class UserContext implements Context
     }
 
     /**
+     * @When I request the details of user :username with the api key :key
+     */
+    public function iRequestTheDetailsOfUserWithTheApiKey($username, $key)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/user/%s', $username),
+            'GET',
+            [],
+            [],
+            [],
+            [
+                'HTTP_X_API_KEY' => $key
+            ]
+        ));
+    }
+
+    /**
      * @Then the bucket of the user :username should contain the GitHub token :token
      */
     public function theBucketOfTheUserShouldContainTheGithubToken($username, $token)
@@ -104,6 +121,19 @@ class UserContext implements Context
         if ($this->response->getStatusCode() != 403) {
             throw new \RuntimeException(sprintf(
                 'Expected status code 403, got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
+     * @Then I should be told that I am not identified
+     */
+    public function iShouldBeToldThatIAmNotIdentified()
+    {
+        if ($this->response->getStatusCode() != 401) {
+            throw new \RuntimeException(sprintf(
+                'Expected status code 401, got %d',
                 $this->response->getStatusCode()
             ));
         }
