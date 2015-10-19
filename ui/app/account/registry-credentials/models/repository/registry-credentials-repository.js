@@ -1,18 +1,22 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('RegistryCredentialsRepository', function($resource, AUTHENTICATOR_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/docker-registries/:serverAddress');
+    .service('RegistryCredentialsRepository', function($resource, $teamContext, AUTHENTICATOR_API_URL) {
+        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/bucket/:bucket/docker-registries/:serverAddress');
+
+        var getBucketUuid = function() {
+            return $teamContext.getCurrent().bucket_uuid;
+        };
 
         this.findAll = function() {
-            return this.resource.query().$promise;
+            return this.resource.query({bucket: getBucketUuid()}).$promise;
         };
 
         this.remove = function(credentials) {
-            return this.resource.delete({serverAddress: credentials.serverAddress}).$promise;
+            return this.resource.delete({bucket: getBucketUuid(), serverAddress: credentials.serverAddress}).$promise;
         };
 
         this.create = function(credentials) {
-            return this.resource.save(credentials).$promise;
+            return this.resource.save({bucket: getBucketUuid()}, credentials).$promise;
         };
     });
