@@ -26,6 +26,7 @@
         <service id="river.flow_factory" class="ContinuousPipe\River\FlowFactory">
             <argument type="service" id="security.user_context" />
             <argument type="service" id="repository_river.code_repository_repository" />
+            <argument type="service" id="authenticator.team_repository" />
         </service>
 
         <!-- Event subscribers -->

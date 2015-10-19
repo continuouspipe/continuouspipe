@@ -5,6 +5,7 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
+use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
@@ -45,11 +46,6 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     private $kernel;
 
     /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
      * @var InMemoryCodeRepositoryRepository
      */
     private $codeRepositoryRepository;
@@ -82,24 +78,13 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @param InMemoryAuthenticatorClient $authenticatorClient
      * @param FakeClient $pipeClient
      */
-    public function __construct(Kernel $kernel, TokenStorageInterface $tokenStorage, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient, FakeClient $pipeClient)
+    public function __construct(Kernel $kernel, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient, FakeClient $pipeClient)
     {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
-        $this->tokenStorage = $tokenStorage;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
         $this->authenticatorClient = $authenticatorClient;
         $this->pipeClient = $pipeClient;
-    }
-
-    /**
-     * @Given I am authenticated
-     */
-    public function iAmAuthenticated()
-    {
-        $token = new JWTUserToken(['ROLE_USER']);
-        $token->setUser(new SecurityUser(new User('samuel.roze@gmail.com', Uuid::uuid1())));
-        $this->tokenStorage->setToken($token);
     }
 
     /**
@@ -385,12 +370,14 @@ EOF;
     {
         $this->flowUuid = (string) ($uuid ?: Uuid::uuid1());
         $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
+        $team = new Team('samuel', Uuid::uuid1());
 
         $this->codeRepositoryRepository->add($codeRepository);
         $this->authenticatorClient->addUser($user);
 
         return RiverFlowContext::createFlow(
             Uuid::fromString($this->flowUuid),
+            $team,
             $user,
             $codeRepository,
             $configuration

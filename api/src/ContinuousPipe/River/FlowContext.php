@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Rhumsaa\Uuid\Uuid;
 
@@ -9,6 +10,7 @@ class FlowContext implements Context
 {
     const CODE_REPOSITORY_KEY = 'codeRepository';
     const USER_KEY = 'user';
+    const TEAM_KEY = 'team';
     const FLOW_UUID_KEY = 'flowUuid';
     const CONFIGURATION_KEY = 'configuration';
 
@@ -26,18 +28,19 @@ class FlowContext implements Context
     }
 
     /**
-     * @param Uuid           $flowUuid
-     * @param User           $user
+     * @param Uuid $flowUuid
+     * @param Team $team
+     * @param User $user
      * @param CodeRepository $codeRepository
-     * @param array          $configuration
-     *
+     * @param array $configuration
      * @return FlowContext
      */
-    public static function createFlow(Uuid $flowUuid, User $user, CodeRepository $codeRepository, array $configuration)
+    public static function createFlow(Uuid $flowUuid, Team $team, User $user, CodeRepository $codeRepository, array $configuration)
     {
         $context = new ArrayContext();
         $context->set(self::FLOW_UUID_KEY, $flowUuid);
         $context->set(self::USER_KEY, $user);
+        $context->set(self::TEAM_KEY, $team);
         $context->set(self::CODE_REPOSITORY_KEY, $codeRepository);
         $context->set(self::CONFIGURATION_KEY, json_encode($configuration));
 
@@ -58,6 +61,14 @@ class FlowContext implements Context
     public function getUser()
     {
         return $this->context->get(self::USER_KEY);
+    }
+
+    /**
+     * @return Team
+     */
+    public function getTeam()
+    {
+        return $this->context->get(self::TEAM_KEY);
     }
 
     /**

@@ -26,6 +26,7 @@ Feature:
 
   Scenario: If the creation request is valid, the flow should be created
     Given the GitHub repository "1234" exists
+    And the team "foo" exists
     When I send a flow creation request with the following parameters:
     | repository | team |
     | 1234       | foo  |
@@ -33,6 +34,7 @@ Feature:
 
   Scenario: I can force the UUID of a flow
     Given the GitHub repository "1234" exists
+    And the team "foo" exists
     When I send a flow creation request with the following parameters:
       | repository | team | uuid                                 |
       | 1234       | foo  | 00000000-0000-0000-0000-000000000000 |
