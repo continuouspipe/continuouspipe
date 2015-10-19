@@ -41,6 +41,15 @@ class CredentialsBucketController
     }
 
     /**
+     * @Route("", methods={"GET"})
+     * @View
+     */
+    public function getAction(Bucket $bucket)
+    {
+        return $bucket;
+    }
+
+    /**
      * @Route("/docker-registries", methods={"GET"})
      * @View
      */

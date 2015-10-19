@@ -126,6 +126,17 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @When I ask the details of the bucket :bucket
+     */
+    public function iAskTheDetailsOfTheBucket($bucket)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s', $bucket),
+            'GET'
+        ));
+    }
+
+    /**
      * @When I create a GitHub token with the following configuration in the bucket :bucket:
      */
     public function iCreateAGithubTokenWithTheFollowingConfigurationInTheBucket($bucket, TableNode $table)

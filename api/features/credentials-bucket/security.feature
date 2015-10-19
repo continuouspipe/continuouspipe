@@ -10,7 +10,7 @@ Feature:
 
   Scenario: If I am not part of the team that owe the bucket I'm forbidden to access to it
     Given the bucket of the team "foo" is the "00000000-0000-0000-0000-000000000000"
-    When I ask the list of the docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000"
+    When I ask the details of the bucket "00000000-0000-0000-0000-000000000000"
     Then I should be told that I don't have the authorization for this bucket
 
   @smoke
