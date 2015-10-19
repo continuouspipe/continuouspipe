@@ -29,7 +29,7 @@ class Build implements \JsonSerializable
     private $request;
 
     /**
-     * @JMS\Type("ContinuousPipe\User\User")
+     * @JMS\Type("ContinuousPipe\Security\User\User")
      *
      * @var User
      */
