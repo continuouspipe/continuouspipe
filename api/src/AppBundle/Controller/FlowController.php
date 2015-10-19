@@ -8,7 +8,7 @@ use ContinuousPipe\River\View\Flow as FlowView;
 use ContinuousPipe\River\FlowFactory;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View\TideRepository;
-use ContinuousPipe\Security\User\User;
+use ContinuousPipe\Security\Team\Team;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use SimpleBus\Message\Bus\MessageBus;
@@ -46,10 +46,10 @@ class FlowController
     private $validator;
 
     /**
-     * @param FlowRepository $flowRepository
-     * @param FlowFactory $flowFactory
-     * @param MessageBus $eventBus
-     * @param TideRepository $tideRepository
+     * @param FlowRepository     $flowRepository
+     * @param FlowFactory        $flowFactory
+     * @param MessageBus         $eventBus
+     * @param TideRepository     $tideRepository
      * @param ValidatorInterface $validator
      */
     public function __construct(FlowRepository $flowRepository, FlowFactory $flowFactory, MessageBus $eventBus, TideRepository $tideRepository, ValidatorInterface $validator)
@@ -85,17 +85,17 @@ class FlowController
     /**
      * Create a new flow from a repository.
      *
-     * @Route("/flows", methods={"GET"})
-     * @ParamConverter("user", converter="user")
+     * @Route("/teams/{slug}/flows", methods={"GET"})
+     * @ParamConverter("team", converter="team", options={"slug"="slug"})
      * @View
      */
-    public function listAction(User $user)
+    public function listAction(Team $team)
     {
         return array_map(function (Flow $flow) {
             $lastTides = $this->tideRepository->findLastByFlow($flow, 1);
 
             return FlowView::fromFlowAndTides($flow, $lastTides);
-        }, $this->flowRepository->findByUser($user));
+        }, $this->flowRepository->findByTeam($team));
     }
 
     /**

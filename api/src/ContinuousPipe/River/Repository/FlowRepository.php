@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Repository;
 
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\Security\User\User;
+use ContinuousPipe\Security\Team\Team;
 use Rhumsaa\Uuid\Uuid;
 
 interface FlowRepository
@@ -18,13 +18,13 @@ interface FlowRepository
     public function save(Flow $flow);
 
     /**
-     * Find flows by user.
+     * Find flows by team.
      *
-     * @param User $user
+     * @param Team $team
      *
      * @return Flow[]
      */
-    public function findByUser(User $user);
+    public function findByTeam(Team $team);
 
     /**
      * Delete the flow.

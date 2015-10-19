@@ -5,7 +5,6 @@ namespace ContinuousPipe\Builder;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
-use ContinuousPipe\Security\User\User;
 use Psr\Log\LoggerInterface;
 
 class BuildRequestCreator
@@ -25,14 +24,13 @@ class BuildRequestCreator
 
     /**
      * @param CodeReference          $codeReference
-     * @param User                   $user
      * @param BuildTaskConfiguration $configuration
      *
      * @return Request\BuildRequest[]
      *
      * @throws BuilderException
      */
-    public function createBuildRequests(CodeReference $codeReference, User $user, BuildTaskConfiguration $configuration)
+    public function createBuildRequests(CodeReference $codeReference, BuildTaskConfiguration $configuration)
     {
         $this->logger->info('Creating build requests', [
             'codeReference' => $codeReference,

@@ -6,7 +6,7 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
-use ContinuousPipe\Security\User\User;
+use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\UserRepository;
 use Doctrine\ORM\EntityManager;
 use Rhumsaa\Uuid\Uuid;
@@ -48,6 +48,7 @@ class DoctrineFlowRepository implements FlowRepository
             $dto = new FlowDto();
             $dto->uuid = $flow->getUuid();
             $dto->userUsername = $flowContext->getUser()->getUsername();
+            $dto->teamSlug = $flowContext->getTeam()->getSlug();
         }
 
         $dto->context = $flowContext;
@@ -61,10 +62,10 @@ class DoctrineFlowRepository implements FlowRepository
     /**
      * {@inheritdoc}
      */
-    public function findByUser(User $user)
+    public function findByTeam(Team $team)
     {
         $flowDtos = $this->getEntityRepository()->findBy([
-            'userUsername' => $user->getUsername(),
+            'teamSlug' => $team->getSlug(),
         ]);
 
         return array_map(function (FlowDto $dto) {

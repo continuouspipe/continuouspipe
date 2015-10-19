@@ -28,11 +28,12 @@ class FlowContext implements Context
     }
 
     /**
-     * @param Uuid $flowUuid
-     * @param Team $team
-     * @param User $user
+     * @param Uuid           $flowUuid
+     * @param Team           $team
+     * @param User           $user
      * @param CodeRepository $codeRepository
-     * @param array $configuration
+     * @param array          $configuration
+     *
      * @return FlowContext
      */
     public static function createFlow(Uuid $flowUuid, Team $team, User $user, CodeRepository $codeRepository, array $configuration)

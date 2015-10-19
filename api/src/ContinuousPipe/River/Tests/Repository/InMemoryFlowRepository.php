@@ -5,13 +5,13 @@ namespace ContinuousPipe\River\Tests\Repository;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
-use ContinuousPipe\Security\User\User;
+use ContinuousPipe\Security\Team\Team;
 use Rhumsaa\Uuid\Uuid;
 
 class InMemoryFlowRepository implements FlowRepository
 {
     private $flowsByUuid = [];
-    private $flowsByUser = [];
+    private $flowsByTeam = [];
 
     /**
      * {@inheritdoc}
@@ -20,11 +20,11 @@ class InMemoryFlowRepository implements FlowRepository
     {
         $this->flowsByUuid[(string) $flow->getUuid()] = $flow;
 
-        $username = $flow->getContext()->getUser()->getUsername();
-        if (!array_key_exists($username, $this->flowsByUser)) {
-            $this->flowsByUser[$username] = [];
+        $teamSlug = $flow->getContext()->getTeam()->getSlug();
+        if (!array_key_exists($teamSlug, $this->flowsByTeam)) {
+            $this->flowsByTeam[$teamSlug] = [];
         }
-        $this->flowsByUser[$username][] = $flow;
+        $this->flowsByTeam[$teamSlug][] = $flow;
 
         return $flow;
     }
@@ -32,14 +32,14 @@ class InMemoryFlowRepository implements FlowRepository
     /**
      * {@inheritdoc}
      */
-    public function findByUser(User $user)
+    public function findByTeam(Team $team)
     {
-        $username = $user->getUsername();
-        if (!array_key_exists($username, $this->flowsByUser)) {
+        $teamSlug = $team->getSlug();
+        if (!array_key_exists($teamSlug, $this->flowsByTeam)) {
             return [];
         }
 
-        return $this->flowsByUser[$username];
+        return $this->flowsByTeam[$teamSlug];
     }
 
     /**

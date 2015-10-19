@@ -28,9 +28,9 @@ class FlowFactory
     private $teamRepository;
 
     /**
-     * @param UserContext $userContext
+     * @param UserContext              $userContext
      * @param CodeRepositoryRepository $codeRepositoryRepository
-     * @param TeamRepository $teamRepository
+     * @param TeamRepository           $teamRepository
      */
     public function __construct(UserContext $userContext, CodeRepositoryRepository $codeRepositoryRepository, TeamRepository $teamRepository)
     {

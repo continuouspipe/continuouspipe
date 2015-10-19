@@ -6,6 +6,7 @@ use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
 use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
@@ -69,22 +70,27 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var string|null
      */
     private $lastConfiguration;
+    /**
+     * @var TeamRepository
+     */
+    private $teamRepository;
 
     /**
      * @param Kernel $kernel
-     * @param TokenStorageInterface $tokenStorage
      * @param FlowRepository $flowRepository
      * @param InMemoryCodeRepositoryRepository $codeRepositoryRepository
      * @param InMemoryAuthenticatorClient $authenticatorClient
      * @param FakeClient $pipeClient
+     * @param TeamRepository $teamRepository
      */
-    public function __construct(Kernel $kernel, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient, FakeClient $pipeClient)
+    public function __construct(Kernel $kernel, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient, FakeClient $pipeClient, TeamRepository $teamRepository)
     {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
         $this->authenticatorClient = $authenticatorClient;
         $this->pipeClient = $pipeClient;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -162,7 +168,15 @@ EOF;
      */
     public function iRetrieveTheListOfTheFlows()
     {
-        $this->response = $this->kernel->handle(Request::create('/flows', 'GET'));
+        $this->response = $this->kernel->handle(Request::create('/teams/samuel/flows', 'GET'));
+    }
+
+    /**
+     * @When I retrieve the list of the flows of the team :teamSlug
+     */
+    public function iRetrieveTheListOfTheFlowsOfTheTeam($teamSlug)
+    {
+        $this->response = $this->kernel->handle(Request::create(sprintf('/teams/%s/flows', $teamSlug), 'GET'));
     }
 
     /**
@@ -258,6 +272,26 @@ EOF;
     }
 
     /**
+     * @Given I have a flow in the team :teamSlug
+     */
+    public function iHaveAFlowInTheTeam($teamSlug)
+    {
+        $team = $this->teamRepository->find($teamSlug);
+
+        $this->createFlow(Uuid::uuid1(), [], $team);
+    }
+
+    /**
+     * @Given I have a flow with UUID :uuid in the team :teamSlug
+     */
+    public function iHaveAFlowWithUuidInTheTeam($uuid, $teamSlug)
+    {
+        $team = $this->teamRepository->find($teamSlug);
+
+        $this->createFlow(Uuid::fromString($uuid), [], $team);
+    }
+
+    /**
      * @Given I have a flow with the following configuration:
      */
     public function iHaveAFlowWithTheFollowingConfiguration(PyStringNode $string)
@@ -346,13 +380,12 @@ EOF;
      * @param array $configuration
      * @return Flow
      */
-    public function createFlow(Uuid $uuid = null, array $configuration = [])
+    public function createFlow(Uuid $uuid = null, array $configuration = [], Team $team = null)
     {
-        $context = $this->createFlowContext($uuid, $configuration);
+        $context = $this->createFlowContext($uuid, $configuration, $team);
 
         $flow = new Flow($context);
         $this->flowRepository->save($flow);
-
 
         $this->currentFlow = $flow;
 
@@ -366,11 +399,11 @@ EOF;
      * @param array $configuration
      * @return RiverFlowContext
      */
-    private function createFlowContextWithCodeRepository(CodeRepository $codeRepository, Uuid $uuid = null, array $configuration = [])
+    private function createFlowContextWithCodeRepository(CodeRepository $codeRepository, Uuid $uuid = null, array $configuration = [], Team $team = null)
     {
         $this->flowUuid = (string) ($uuid ?: Uuid::uuid1());
         $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
-        $team = new Team('samuel', Uuid::uuid1());
+        $team = $team ?: new Team('samuel', Uuid::uuid1());
 
         $this->codeRepositoryRepository->add($codeRepository);
         $this->authenticatorClient->addUser($user);
@@ -397,11 +430,11 @@ EOF;
      * @param array $configuration
      * @return RiverFlowContext
      */
-    private function createFlowContext(Uuid $uuid = null, array $configuration = [])
+    private function createFlowContext(Uuid $uuid = null, array $configuration = [], Team $team = null)
     {
         return $this->createFlowContextWithCodeRepository(new CodeRepository\GitHub\GitHubCodeRepository(
             new Repository('foo', 'bar')
-        ), $uuid, $configuration);
+        ), $uuid, $configuration, $team);
     }
 
     /**

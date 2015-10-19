@@ -27,8 +27,8 @@ class GitHubClientFactory
 
     /**
      * @param TokenStorageInterface $tokenStorage
-     * @param HttpClientInterface $githubHttpClient
-     * @param BucketRepository $bucketRepository
+     * @param HttpClientInterface   $githubHttpClient
+     * @param BucketRepository      $bucketRepository
      */
     public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient, BucketRepository $bucketRepository)
     {
