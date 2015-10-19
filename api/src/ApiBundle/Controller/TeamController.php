@@ -2,7 +2,7 @@
 
 namespace ApiBundle\Controller;
 
-use ContinuousPipe\Authenticator\Event\TeamCreationEvent;
+use ContinuousPipe\Authenticator\Team\TeamCreator;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -12,7 +12,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route(service="api.controller.team")
@@ -30,20 +29,20 @@ class TeamController
     private $teamMembershipRepository;
 
     /**
-     * @var EventDispatcherInterface
+     * @var TeamCreator
      */
-    private $eventDispatcher;
+    private $teamCreator;
 
     /**
      * @param TeamRepository           $teamRepository
      * @param TeamMembershipRepository $teamMembershipRepository
-     * @param EventDispatcherInterface $eventDispatcher
+     * @param TeamCreator              $teamCreator
      */
-    public function __construct(TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository, EventDispatcherInterface $eventDispatcher)
+    public function __construct(TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository, TeamCreator $teamCreator)
     {
         $this->teamRepository = $teamRepository;
         $this->teamMembershipRepository = $teamMembershipRepository;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->teamCreator = $teamCreator;
     }
 
     /**
@@ -69,14 +68,7 @@ class TeamController
      */
     public function createAction(Team $team, User $user)
     {
-        $this->eventDispatcher->dispatch(TeamCreationEvent::BEFORE_EVENT, new TeamCreationEvent($team, $user));
-
-        $this->teamRepository->save($team);
-        $this->teamMembershipRepository->save(new TeamMembership($team, $user, ['ADMIN']));
-
-        $this->eventDispatcher->dispatch(TeamCreationEvent::AFTER_EVENT, new TeamCreationEvent($team, $user));
-
-        return $team;
+        return $this->teamCreator->create($team, $user);
     }
 
     /**

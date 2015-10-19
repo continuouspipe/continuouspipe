@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Authenticator\EventListener\JWTTokenCreated;
 
 use ContinuousPipe\Security\User\SecurityUser;
-use ContinuousPipe\Security\User\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 
 class AddUserEmailInToken

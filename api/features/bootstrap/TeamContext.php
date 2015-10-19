@@ -237,6 +237,30 @@ class TeamContext implements Context
     }
 
     /**
+     * @Then the team :slug should exists
+     */
+    public function theTeamShouldExists($slug)
+    {
+        $this->teamRepository->find($slug);
+    }
+
+    /**
+     * @Then the user :username should be in the team :slug
+     */
+    public function theUserShouldBeInTheTeam($username, $slug)
+    {
+        $team = $this->teamRepository->find($slug);
+        $memberships = $this->teamMembershipRepository->findByTeam($team);
+        $matchingMemberships = $memberships->filter(function(TeamMembership $membership) use ($username) {
+            return $membership->getUser()->getUsername() == $username;
+        });
+
+        if (0 == $matchingMemberships->count()) {
+            throw new \RuntimeException('Found no matching memberships');
+        }
+    }
+
+    /**
      * @param Response $response
      * @param int $statusCode
      */

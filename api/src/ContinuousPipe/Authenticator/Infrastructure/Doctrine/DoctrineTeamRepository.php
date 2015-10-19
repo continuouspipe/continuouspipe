@@ -37,15 +37,17 @@ class DoctrineTeamRepository implements TeamRepository
     {
         $this->entityManager->persist($team);
         $this->entityManager->flush();
+
+        return $team;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function exists(Team $team)
+    public function exists($slug)
     {
         try {
-            $this->find($team->getSlug());
+            $this->find($slug);
 
             return true;
         } catch (TeamNotFound $e) {

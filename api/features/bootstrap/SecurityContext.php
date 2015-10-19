@@ -132,6 +132,18 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @When a user login with GitHub as :username
+     */
+    public function aUserLoginWithGithubAs($username)
+    {
+        try {
+            $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken('1234567890')));
+        } catch (\Exception $e) {
+            $this->exception = $e;
+        }
+    }
+
+    /**
      * @Then the user :username should exists
      */
     public function theUserShouldExists($username)
