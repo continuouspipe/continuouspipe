@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
+use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\User\User;
 use GitHub\WebHook\Model\PullRequest;
 use JMS\Serializer\Serializer;
@@ -34,9 +35,9 @@ class GitHubPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(User $user, CodeReference $codeReference)
+    public function findPullRequestWithHeadReference(CodeReference $codeReference, Bucket $credentialsBucket)
     {
-        $client = $this->gitHubClientFactory->createClientForUser($user);
+        $client = $this->gitHubClientFactory->createClientFromBucket($credentialsBucket);
         $gitHubRepository = $this->getGitHubRepository($codeReference);
 
         $rawPullRequests = $client->pullRequests()->all(

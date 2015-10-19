@@ -125,6 +125,7 @@ class DoctrineTideRepository implements TideRepository
             \ContinuousPipe\River\View\Flow::fromFlow($flow),
             $wrappedTide->getCodeReference(),
             new WrappedLog($wrappedTide->getLogId()),
+            $wrappedTide->getTeam(),
             $wrappedTide->getUser(),
             $wrappedTide->getConfiguration() ?: [],
             $wrappedTide->getCreationDate()

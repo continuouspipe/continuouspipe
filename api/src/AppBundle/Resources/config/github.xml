@@ -72,7 +72,7 @@
             <argument type="service" id="river.github.pull_request_resolver" />
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.github.pull_request_deployment_notifier" />
-            <argument type="service" id="security.user_repository" />
+            <argument type="service" id="authenticator.bucket_repository" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful"/>
         </service>

@@ -8,6 +8,7 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Yaml;
@@ -47,7 +48,7 @@ class ConfigurationFactory implements TideConfigurationFactory
     public function getConfiguration(Flow $flow, CodeReference $codeReference)
     {
         $flowContext = $flow->getContext();
-        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flowContext->getUser());
+        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flowContext->getTeam());
 
         $configs = [
             $flowContext->getConfiguration(),

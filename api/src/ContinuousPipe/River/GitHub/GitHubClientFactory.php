@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\GitHub;
 
+use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use Github\Client;
 use ContinuousPipe\Security\User\User;
@@ -46,14 +47,25 @@ class GitHubClientFactory
      */
     public function createClientForUser(User $user)
     {
-        $client = new Client($this->githubHttpClient);
         $bucket = $this->bucketRepository->find($user->getBucketUuid());
-        $gitHubTokens = $bucket->getGitHubTokens();
+
+        return $this->createClientFromBucket($bucket);
+    }
+
+    /**
+     * @param Bucket $credentialsBucket
+     * @return Client
+     * @throws UserCredentialsNotFound
+     */
+    public function createClientFromBucket(Bucket $credentialsBucket)
+    {
+        $client = new Client($this->githubHttpClient);
+        $gitHubTokens = $credentialsBucket->getGitHubTokens();
 
         if (0 === $gitHubTokens->count()) {
             throw new UserCredentialsNotFound(sprintf(
-                'No GitHub credentials found for user "%s"',
-                $user->getUsername()
+                'No GitHub credentials found in bucket "%s"',
+                $credentialsBucket->getUuid()
             ));
         }
 

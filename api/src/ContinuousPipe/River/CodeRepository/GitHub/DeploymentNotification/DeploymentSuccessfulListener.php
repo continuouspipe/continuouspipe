@@ -6,6 +6,7 @@ use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\PullRequestDeploymentNotifier;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\User\UserRepository;
 
 class DeploymentSuccessfulListener
@@ -25,22 +26,22 @@ class DeploymentSuccessfulListener
      */
     private $pullRequestDeploymentNotifier;
     /**
-     * @var UserRepository
+     * @var BucketRepository
      */
-    private $userRepository;
+    private $bucketRepository;
 
     /**
-     * @param PullRequestResolver           $pullRequestResolver
-     * @param TideRepository                $tideRepository
+     * @param PullRequestResolver $pullRequestResolver
+     * @param TideRepository $tideRepository
      * @param PullRequestDeploymentNotifier $pullRequestDeploymentNotifier
-     * @param UserRepository                $userRepository
+     * @param BucketRepository $bucketRepository
      */
-    public function __construct(PullRequestResolver $pullRequestResolver, TideRepository $tideRepository, PullRequestDeploymentNotifier $pullRequestDeploymentNotifier, UserRepository $userRepository)
+    public function __construct(PullRequestResolver $pullRequestResolver, TideRepository $tideRepository, PullRequestDeploymentNotifier $pullRequestDeploymentNotifier, BucketRepository $bucketRepository)
     {
         $this->pullRequestResolver = $pullRequestResolver;
         $this->tideRepository = $tideRepository;
         $this->pullRequestDeploymentNotifier = $pullRequestDeploymentNotifier;
-        $this->userRepository = $userRepository;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -49,9 +50,9 @@ class DeploymentSuccessfulListener
     public function notify(DeploymentSuccessful $deploymentSuccessful)
     {
         $tide = $this->tideRepository->find($deploymentSuccessful->getTideUuid());
-        $user = $this->userRepository->findOneByUsername($tide->getUser()->getUsername());
+        $bucket = $this->bucketRepository->find($tide->getTeam()->getBucketUuid());
 
-        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($user, $tide->getCodeReference());
+        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($tide->getCodeReference(), $bucket);
 
         foreach ($pullRequests as $pullRequest) {
             $codeRepository = $tide->getCodeReference()->getRepository();

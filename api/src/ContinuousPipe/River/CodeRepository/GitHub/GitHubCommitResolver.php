@@ -7,6 +7,7 @@ use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
+use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Exception\RequestException;
 
@@ -35,10 +36,10 @@ class GitHubCommitResolver implements CommitResolver
     /**
      * {@inheritdoc}
      */
-    public function getHeadCommitOfBranch(CodeRepository $repository, User $user, $branch)
+    public function getHeadCommitOfBranch(Bucket $credentialsBucket, CodeRepository $repository, $branch)
     {
         try {
-            $client = $this->clientFactory->createClientForUser($user);
+            $client = $this->clientFactory->createClientFromBucket($credentialsBucket);
         } catch (UserCredentialsNotFound $e) {
             throw new CommitResolverException('Unable to find GitHub credentials', $e->getCode(), $e);
         }

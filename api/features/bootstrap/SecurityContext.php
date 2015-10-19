@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
@@ -47,6 +48,12 @@ class SecurityContext implements Context
      */
     public function theTeamExists($slug)
     {
-        $this->inMemoryAuthenticatorClient->addTeam(new Team($slug));
+        $bucket = new Bucket(Uuid::uuid1());
+        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+
+        $team = new Team($slug, $bucket->getUuid());
+        $this->inMemoryAuthenticatorClient->addTeam($team);
+
+        return $team;
     }
 }

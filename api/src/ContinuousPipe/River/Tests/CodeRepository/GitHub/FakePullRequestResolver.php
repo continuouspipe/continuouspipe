@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Tests\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\PullRequestResolver;
+use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\User\User;
 
 class FakePullRequestResolver implements PullRequestResolver
@@ -13,7 +14,7 @@ class FakePullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(User $user, CodeReference $codeReference)
+    public function findPullRequestWithHeadReference(CodeReference $codeReference, Bucket $credentialsBucket)
     {
         return $this->resolution;
     }

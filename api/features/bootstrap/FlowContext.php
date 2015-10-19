@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
@@ -26,6 +27,11 @@ use Symfony\Component\Yaml\Yaml;
 
 class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
+    /**
+     * @var \SecurityContext
+     */
+    private $securityContext;
+
     /**
      * @var string
      */
@@ -91,6 +97,14 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         $this->authenticatorClient = $authenticatorClient;
         $this->pipeClient = $pipeClient;
         $this->teamRepository = $teamRepository;
+    }
+
+    /**
+     * @BeforeScenario
+     */
+    public function gatherContexts(BeforeScenarioScope $scope)
+    {
+        $this->securityContext = $scope->getEnvironment()->getContext('SecurityContext');
     }
 
     /**
@@ -403,7 +417,7 @@ EOF;
     {
         $this->flowUuid = (string) ($uuid ?: Uuid::uuid1());
         $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
-        $team = $team ?: new Team('samuel', Uuid::uuid1());
+        $team = $team ?: $this->securityContext->theTeamExists('samuel');
 
         $this->codeRepositoryRepository->add($codeRepository);
         $this->authenticatorClient->addUser($user);
