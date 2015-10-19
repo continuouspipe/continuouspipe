@@ -6,7 +6,7 @@ use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
 use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Pipe\DeploymentRequest;
-use ContinuousPipe\User\Security\UserContext;
+use ContinuousPipe\Security\Authenticator\UserContext;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

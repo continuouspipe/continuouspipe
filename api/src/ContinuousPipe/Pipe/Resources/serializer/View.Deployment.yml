@@ -7,7 +7,7 @@ ContinuousPipe\Pipe\View\Deployment:
         request:
             type: ContinuousPipe\Pipe\DeploymentRequest
         user:
-            type: ContinuousPipe\User\User
+            type: ContinuousPipe\Security\User\User
         publicEndpoints:
             type: array<ContinuousPipe\Pipe\Environment\PublicEndpoint>
         componentStatuses:

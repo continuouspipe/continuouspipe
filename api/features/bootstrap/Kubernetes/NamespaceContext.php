@@ -15,7 +15,9 @@ use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Tests\MessageBus\TraceableMessageBus;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
+use ContinuousPipe\Security\User\User;
 use Kubernetes\Client\Exception\NamespaceNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\LocalObjectReference;
@@ -23,6 +25,7 @@ use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Model\ServiceAccount;
 use LogStream\LoggerFactory;
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 
 class NamespaceContext implements Context, SnippetAcceptingContext
@@ -60,21 +63,27 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      * @var LoggerFactory
      */
     private $loggerFactory;
+    /**
+     * @var InMemoryAuthenticatorClient
+     */
+    private $inMemoryAuthenticatorClient;
 
     /**
-     * @param TraceableNamespaceRepository      $namespaceRepository
-     * @param TraceableMessageBus               $eventBus
-     * @param TraceableSecretRepository         $secretRepository
+     * @param TraceableNamespaceRepository $namespaceRepository
+     * @param TraceableMessageBus $eventBus
+     * @param TraceableSecretRepository $secretRepository
      * @param TraceableServiceAccountRepository $serviceAccountRepository
-     * @param LoggerFactory                     $loggerFactory
+     * @param LoggerFactory $loggerFactory
+     * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
      */
-    public function __construct(TraceableNamespaceRepository $namespaceRepository, TraceableMessageBus $eventBus, TraceableSecretRepository $secretRepository, TraceableServiceAccountRepository $serviceAccountRepository, LoggerFactory $loggerFactory)
+    public function __construct(TraceableNamespaceRepository $namespaceRepository, TraceableMessageBus $eventBus, TraceableSecretRepository $secretRepository, TraceableServiceAccountRepository $serviceAccountRepository, LoggerFactory $loggerFactory, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient)
     {
         $this->namespaceRepository = $namespaceRepository;
         $this->eventBus = $eventBus;
         $this->secretRepository = $secretRepository;
         $this->serviceAccountRepository = $serviceAccountRepository;
         $this->loggerFactory = $loggerFactory;
+        $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
     }
 
     /**
@@ -172,15 +181,19 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      */
     public function aNamespaceIsCreated()
     {
+        $bucket = new Bucket(Uuid::uuid1());
+        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+
         $this->eventBus->handle(new NamespaceCreated(
             new KubernetesNamespace(new ObjectMetadata('foo')),
             new DeploymentContext(
                 Deployment::fromRequest(
                     new DeploymentRequest(
                         new DeploymentRequest\Target(),
-                        new DeploymentRequest\Specification()
+                        new DeploymentRequest\Specification(),
+                        $bucket->getUuid()
                     ),
-                    new User('samuel')
+                    new User('samuel', Uuid::uuid1())
                 ),
                 $this->providerContext->iHaveAValidKubernetesProvider(),
                 $this->loggerFactory->create()->getLog(),

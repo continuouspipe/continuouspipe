@@ -4,8 +4,8 @@ namespace ContinuousPipe\Adapter\Kubernetes\PrivateImages;
 
 use Cocur\Slugify\Slugify;
 use ContinuousPipe\Pipe\DeploymentContext;
-use ContinuousPipe\User\Authenticator\AuthenticatorClient;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\User\User;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Secret;
 
@@ -14,23 +14,23 @@ class SecretFactory
     const SECRET_PREFIX = 'cp-dock-registry-';
 
     /**
-     * @var AuthenticatorClient
-     */
-    private $authenticatorClient;
-
-    /**
      * @var DockerCfgFileGenerator
      */
     private $dockerCfgFileGenerator;
 
     /**
-     * @param AuthenticatorClient    $authenticatorClient
-     * @param DockerCfgFileGenerator $dockerCfgFileGenerator
+     * @var BucketRepository
      */
-    public function __construct(AuthenticatorClient $authenticatorClient, DockerCfgFileGenerator $dockerCfgFileGenerator)
+    private $bucketRepository;
+
+    /**
+     * @param DockerCfgFileGenerator $dockerCfgFileGenerator
+     * @param BucketRepository       $bucketRepository
+     */
+    public function __construct(DockerCfgFileGenerator $dockerCfgFileGenerator, BucketRepository $bucketRepository)
     {
-        $this->authenticatorClient = $authenticatorClient;
         $this->dockerCfgFileGenerator = $dockerCfgFileGenerator;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -40,13 +40,14 @@ class SecretFactory
      */
     public function createDockerRegistrySecret(DeploymentContext $deploymentContext)
     {
-        $user = $deploymentContext->getDeployment()->getUser();
-        $credentials = $this->authenticatorClient->getDockerCredentialsByUserEmail($user->getEmail());
-        $dockerCfgFileContents = $this->dockerCfgFileGenerator->generate($credentials);
+        $credentialsBucketUuid = $deploymentContext->getDeployment()->getRequest()->getCredentialsBucket();
+        $bucket = $this->bucketRepository->find($credentialsBucketUuid);
+
+        $dockerCfgFileContents = $this->dockerCfgFileGenerator->generate($bucket);
 
         return new Secret(
             new ObjectMetadata(
-                $this->getSecretName($user)
+                $this->getSecretName($deploymentContext->getDeployment()->getUser())
             ),
             [
                 '.dockercfg' => base64_encode($dockerCfgFileContents),

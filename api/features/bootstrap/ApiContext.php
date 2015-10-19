@@ -1,11 +1,12 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
+use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Security\User\User;
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
-use ContinuousPipe\User\SecurityUser;
-use ContinuousPipe\User\User;
-use ContinuousPipe\User\Tests\Authenticator\InMemoryAuthenticatorClient;
 
 class ApiContext implements Context
 {
@@ -34,7 +35,7 @@ class ApiContext implements Context
      */
     public function iAmAuthenticated()
     {
-        $user = new User('samuel');
+        $user = new User('samuel', Uuid::uuid1());
         $this->authenticatorClient->addUser($user);
 
         $token = new JWTUserToken(['ROLE_USER']);

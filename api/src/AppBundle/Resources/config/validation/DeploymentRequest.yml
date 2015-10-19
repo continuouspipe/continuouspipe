@@ -6,3 +6,5 @@ ContinuousPipe\Pipe\DeploymentRequest:
         specification:
             - Valid: ~
             - NotNull: ~
+        credentialsBucket:
+            - NotBlank: ~
