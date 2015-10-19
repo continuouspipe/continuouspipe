@@ -8,7 +8,10 @@ Feature:
 
   @integration
   Scenario:
-    Given I have docker registry credentials
+    Given there is the bucket "00000000-0000-0000-0000-000000000000"
+    And the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
+      | username | password | serverAddress | email                 |
+      | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
     When I send a build request for the fixture repository "private-dependencies" with the following environment:
     | name               | value |
     | MY_PRIVATE_ENVIRON | foo   |

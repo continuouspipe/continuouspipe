@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Builder;
 
-use ContinuousPipe\User\DockerRegistryCredentials;
+use ContinuousPipe\Security\Credentials\DockerRegistry;
 
 class RegistryCredentials
 {
@@ -25,11 +25,11 @@ class RegistryCredentials
     }
 
     /**
-     * @param DockerRegistryCredentials $dockerRegistryCredentials
+     * @param DockerRegistry $dockerRegistryCredentials
      *
      * @return RegistryCredentials
      */
-    public static function fromDockerRegistryCredentials(DockerRegistryCredentials $dockerRegistryCredentials)
+    public static function fromDockerRegistryCredentials(DockerRegistry $dockerRegistryCredentials)
     {
         return self::fromAuthenticationString(base64_encode(json_encode([
             'username' => $dockerRegistryCredentials->getUsername(),

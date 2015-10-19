@@ -7,7 +7,11 @@ Feature:
     Given I am authenticated
 
   Scenario:
-    Given I have docker registry credentials
+    Given there is the bucket "00000000-0000-0000-0000-000000000000"
+    And the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
+    | username | password | serverAddress | email                 |
+    | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
+
     When I send the following build request:
     """
     {
@@ -18,7 +22,8 @@ Feature:
       "repository": {
         "address": "fixtures://php-example",
         "branch": "747850e8c821a443a7b5cee28a48581069049739"
-      }
+      },
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
     }
     """
     Then the build should be successful
@@ -26,6 +31,7 @@ Feature:
     And the image "sroze/php-example:continuous" should be pushed
 
   Scenario: The build should fail without Docker Registry credentials
+    Given there is the bucket "00000000-0000-0000-0000-000000000000"
     When I send the following build request:
     """
     {
@@ -36,7 +42,8 @@ Feature:
       "repository": {
         "address": "fixtures://php-example",
         "branch": "747850e8c821a443a7b5cee28a48581069049739"
-      }
+      },
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
     }
     """
     Then the build should be errored

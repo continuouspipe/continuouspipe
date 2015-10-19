@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Builder\Docker;
 
 use ContinuousPipe\Builder\Image;
-use ContinuousPipe\User\DockerRegistryCredentials;
 
 class AuthenticatorRegistryServerResolver implements RegistryServerResolver
 {

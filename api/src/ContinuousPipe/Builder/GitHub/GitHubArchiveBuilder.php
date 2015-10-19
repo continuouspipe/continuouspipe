@@ -2,9 +2,11 @@
 
 namespace ContinuousPipe\Builder\GitHub;
 
+use ContinuousPipe\Builder\Archive\ArchiveCreationException;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use LogStream\Logger;
 use LogStream\Node\Text;
 
@@ -19,23 +21,35 @@ class GitHubArchiveBuilder implements ArchiveBuilder
      * @var RemoteArchiveLocator
      */
     private $remoteArchiveLocator;
+    /**
+     * @var BucketRepository
+     */
+    private $bucketRepository;
 
     /**
      * @param RemoteArchiveLocator    $remoteArchiveLocator
      * @param GitHubHttpClientFactory $gitHubHttpClientFactory
+     * @param BucketRepository        $bucketRepository
      */
-    public function __construct(RemoteArchiveLocator $remoteArchiveLocator, GitHubHttpClientFactory $gitHubHttpClientFactory)
+    public function __construct(RemoteArchiveLocator $remoteArchiveLocator, GitHubHttpClientFactory $gitHubHttpClientFactory, BucketRepository $bucketRepository)
     {
         $this->gitHubHttpClientFactory = $gitHubHttpClientFactory;
         $this->remoteArchiveLocator = $remoteArchiveLocator;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getArchive(BuildRequest $buildRequest, User $user, Logger $logger)
+    public function getArchive(BuildRequest $buildRequest, Logger $logger)
     {
-        $httpClient = $this->gitHubHttpClientFactory->createForUser($user);
+        $bucket = $this->bucketRepository->find($buildRequest->getCredentialsBucket());
+        try {
+            $httpClient = $this->gitHubHttpClientFactory->createFromBucket($bucket);
+        } catch (CredentialsNotFound $e) {
+            throw new ArchiveCreationException($e->getMessage(), $e->getCode(), $e);
+        }
+
         $archiveUrl = $this->remoteArchiveLocator->getArchiveUrl($buildRequest->getRepository());
 
         $logger->append(new Text(sprintf('Will download code from archive: %s', $archiveUrl)));

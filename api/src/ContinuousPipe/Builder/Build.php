@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Rhumsaa\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 

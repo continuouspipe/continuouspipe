@@ -6,7 +6,6 @@ use ContinuousPipe\Builder\Archive\ArchiveCreationException;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Tests\Archive\FileSystemArchive;
-use ContinuousPipe\User\User;
 use LogStream\Logger;
 
 class FixturesArchiveBuilder implements ArchiveBuilder
@@ -29,7 +28,7 @@ class FixturesArchiveBuilder implements ArchiveBuilder
     /**
      * {@inheritdoc}
      */
-    public function getArchive(BuildRequest $buildRequest, User $user, Logger $logger)
+    public function getArchive(BuildRequest $buildRequest, Logger $logger)
     {
         $repositoryAddress = $buildRequest->getRepository()->getAddress();
         if (strpos($repositoryAddress, self::ADDRESS_PREFIX) === false) {
@@ -45,7 +44,7 @@ class FixturesArchiveBuilder implements ArchiveBuilder
         if (!file_exists($fixturesDirectoryPath) || !is_dir($fixturesDirectoryPath)) {
             throw new ArchiveCreationException(sprintf(
                 'The directory "%s" do not exists',
-                $fixturesDirectoryPath
+                $fixturesDirectory
             ));
         }
 

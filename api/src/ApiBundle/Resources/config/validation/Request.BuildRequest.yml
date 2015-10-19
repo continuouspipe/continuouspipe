@@ -1,0 +1,8 @@
+ContinuousPipe\Builder\Request\BuildRequest:
+    properties:
+        repository:
+            - NotNull: ~
+        image:
+            - NotNull: ~
+        credentialsBucket:
+            - NotBlank: ~
