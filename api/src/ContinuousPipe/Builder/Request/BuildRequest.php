@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Logging;
 use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Repository;
+use Rhumsaa\Uuid\Uuid;
 
 class BuildRequest
 {
@@ -41,14 +42,20 @@ class BuildRequest
     private $environment;
 
     /**
+     * @var Uuid
+     */
+    private $credentialsBucket;
+
+    /**
      * @param Repository   $repository
      * @param Image        $image
      * @param Context      $context
      * @param Notification $notification
      * @param Logging      $logging
      * @param array        $environment
+     * @param Uuid         $credentialsBucket
      */
-    public function __construct(Repository $repository, Image $image, Context $context = null, Notification $notification = null, Logging $logging = null, array $environment = [])
+    public function __construct(Repository $repository, Image $image, Context $context = null, Notification $notification = null, Logging $logging = null, array $environment = [], Uuid $credentialsBucket = null)
     {
         $this->repository = $repository;
         $this->image = $image;
@@ -56,6 +63,7 @@ class BuildRequest
         $this->logging = $logging;
         $this->context = $context;
         $this->environment = $environment;
+        $this->credentialsBucket = $credentialsBucket;
     }
 
     /**
@@ -104,5 +112,17 @@ class BuildRequest
     public function getEnvironment()
     {
         return $this->environment ?: [];
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getCredentialsBucket()
+    {
+        if (is_string($this->credentialsBucket)) {
+            $this->credentialsBucket = Uuid::fromString($this->credentialsBucket);
+        }
+
+        return $this->credentialsBucket;
     }
 }

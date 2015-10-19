@@ -56,13 +56,13 @@ class TideFactory
     private $bucketRepository;
 
     /**
-     * @param LoggerFactory $loggerFactory
-     * @param TaskFactoryRegistry $taskFactoryRegistry
-     * @param FlowRepository $flowRepository
+     * @param LoggerFactory            $loggerFactory
+     * @param TaskFactoryRegistry      $taskFactoryRegistry
+     * @param FlowRepository           $flowRepository
      * @param TideConfigurationFactory $configurationFactory
-     * @param CommitResolver $commitResolver
-     * @param TaskRunner $taskRunner
-     * @param BucketRepository $bucketRepository
+     * @param CommitResolver           $commitResolver
+     * @param TaskRunner               $taskRunner
+     * @param BucketRepository         $bucketRepository
      */
     public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory, CommitResolver $commitResolver, TaskRunner $taskRunner, BucketRepository $bucketRepository)
     {

@@ -77,14 +77,15 @@ class Tide
     /**
      * Create a new tide representation.
      *
-     * @param Uuid $uuid
-     * @param Flow $flow
+     * @param Uuid          $uuid
+     * @param Flow          $flow
      * @param CodeReference $codeReference
-     * @param Log $log
-     * @param Team $team
-     * @param User $user
-     * @param array $configuration
-     * @param \DateTime $creationDate
+     * @param Log           $log
+     * @param Team          $team
+     * @param User          $user
+     * @param array         $configuration
+     * @param \DateTime     $creationDate
+     *
      * @return Tide
      */
     public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate = null)

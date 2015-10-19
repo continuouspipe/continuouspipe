@@ -7,7 +7,6 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Team\Team;
-use ContinuousPipe\Security\User\User;
 
 class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
 {
@@ -26,9 +25,9 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
     private $bucketRepository;
 
     /**
-     * @param GitHubClientFactory $gitHubClientFactory
+     * @param GitHubClientFactory                        $gitHubClientFactory
      * @param CodeRepository\RepositoryAddressDescriptor $repositoryAddressDescriptor
-     * @param BucketRepository $bucketRepository
+     * @param BucketRepository                           $bucketRepository
      */
     public function __construct(GitHubClientFactory $gitHubClientFactory, CodeRepository\RepositoryAddressDescriptor $repositoryAddressDescriptor, BucketRepository $bucketRepository)
     {

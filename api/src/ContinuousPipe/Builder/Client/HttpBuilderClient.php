@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Builder\Client;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\User\SecurityUser;
+use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client;
 use JMS\Serializer\SerializerInterface;

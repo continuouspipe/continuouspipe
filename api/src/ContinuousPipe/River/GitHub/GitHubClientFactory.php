@@ -54,7 +54,9 @@ class GitHubClientFactory
 
     /**
      * @param Bucket $credentialsBucket
+     *
      * @return Client
+     *
      * @throws UserCredentialsNotFound
      */
     public function createClientFromBucket(Bucket $credentialsBucket)

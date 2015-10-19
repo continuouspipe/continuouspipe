@@ -6,7 +6,6 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
-use ContinuousPipe\Security\User\User;
 use GitHub\WebHook\Model\PullRequest;
 use JMS\Serializer\Serializer;
 

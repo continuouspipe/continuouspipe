@@ -31,8 +31,8 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
 
     /**
      * @param GitHubClientFactory $gitHubClientFactory
-     * @param BucketRepository $bucketRepository
-     * @param string $uiBaseUrl
+     * @param BucketRepository    $bucketRepository
+     * @param string              $uiBaseUrl
      */
     public function __construct(GitHubClientFactory $gitHubClientFactory, BucketRepository $bucketRepository, $uiBaseUrl)
     {

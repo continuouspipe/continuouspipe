@@ -7,7 +7,6 @@ use ContinuousPipe\River\CodeRepository\GitHub\PullRequestDeploymentNotifier;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\Security\Credentials\BucketRepository;
-use ContinuousPipe\Security\User\UserRepository;
 
 class DeploymentSuccessfulListener
 {
@@ -31,10 +30,10 @@ class DeploymentSuccessfulListener
     private $bucketRepository;
 
     /**
-     * @param PullRequestResolver $pullRequestResolver
-     * @param TideRepository $tideRepository
+     * @param PullRequestResolver           $pullRequestResolver
+     * @param TideRepository                $tideRepository
      * @param PullRequestDeploymentNotifier $pullRequestDeploymentNotifier
-     * @param BucketRepository $bucketRepository
+     * @param BucketRepository              $bucketRepository
      */
     public function __construct(PullRequestResolver $pullRequestResolver, TideRepository $tideRepository, PullRequestDeploymentNotifier $pullRequestDeploymentNotifier, BucketRepository $bucketRepository)
     {

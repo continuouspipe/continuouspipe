@@ -86,7 +86,8 @@ class BuildImageHandler
             $buildRequest->getContext(),
             Notification::withHttp(HttpNotification::fromAddress($address)),
             Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLogId)),
-            $buildRequest->getEnvironment()
+            $buildRequest->getEnvironment(),
+            $buildRequest->getCredentialsBucket()
         );
 
         return $buildRequest;

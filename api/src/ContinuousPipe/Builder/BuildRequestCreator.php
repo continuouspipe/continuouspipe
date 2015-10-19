@@ -6,6 +6,7 @@ use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
 use Psr\Log\LoggerInterface;
+use Rhumsaa\Uuid\Uuid;
 
 class BuildRequestCreator
 {
@@ -25,12 +26,11 @@ class BuildRequestCreator
     /**
      * @param CodeReference          $codeReference
      * @param BuildTaskConfiguration $configuration
+     * @param Uuid                   $credentialsBucketUuid
      *
      * @return Request\BuildRequest[]
-     *
-     * @throws BuilderException
      */
-    public function createBuildRequests(CodeReference $codeReference, BuildTaskConfiguration $configuration)
+    public function createBuildRequests(CodeReference $codeReference, BuildTaskConfiguration $configuration, Uuid $credentialsBucketUuid)
     {
         $this->logger->info('Creating build requests', [
             'codeReference' => $codeReference,
@@ -49,7 +49,8 @@ class BuildRequestCreator
                     $service->getBuildDirectory()
                 ),
                 null, null,
-                $configuration->getEnvironment()
+                $configuration->getEnvironment(),
+                $credentialsBucketUuid
             );
         }
 

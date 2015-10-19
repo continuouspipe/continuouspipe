@@ -96,12 +96,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "3909260c80ea499869c89774e6550cd9155dc594"
+                "reference": "beb28882c279427580c6afe3e5c111590cb0c97a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/3909260c80ea499869c89774e6550cd9155dc594",
-                "reference": "3909260c80ea499869c89774e6550cd9155dc594",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/beb28882c279427580c6afe3e5c111590cb0c97a",
+                "reference": "beb28882c279427580c6afe3e5c111590cb0c97a",
                 "shasum": ""
             },
             "require": {
@@ -124,7 +124,7 @@
                 "source": "https://github.com/continuouspipe/security/tree/team-managment",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2015-10-19 15:47:43"
+            "time": "2015-10-19 17:03:29"
         },
         {
             "name": "csa/guzzle-bundle",

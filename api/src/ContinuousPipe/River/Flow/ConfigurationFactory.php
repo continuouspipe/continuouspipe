@@ -8,7 +8,6 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
-use ContinuousPipe\Security\Credentials\BucketRepository;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Yaml;
