@@ -8,7 +8,7 @@
         <id name="user" association-key="true" />
         <id name="team" association-key="true" />
 
-        <many-to-one field="user" target-entity="ContinuousPipe\Security\User\User" inversed-by="teamMemberships">
+        <many-to-one field="user" target-entity="ContinuousPipe\Security\User\User">
             <join-column name="user_id" referenced-column-name="username" />
         </many-to-one>
         <many-to-one field="team" target-entity="ContinuousPipe\Security\Team\Team" inversed-by="memberships">

@@ -6,7 +6,7 @@
 
     <entity name="ContinuousPipe\Security\Team\Team">
         <id name="slug" type="string" />
-        <one-to-many field="memberships" target-entity="ContinuousPipe\Security\Team\Team" mapped-by="team" />
+        <one-to-many field="memberships" target-entity="ContinuousPipe\Security\Team\TeamMembership" mapped-by="team" />
         <field name="bucketUuid" type="string" />
     </entity>
 

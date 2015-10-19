@@ -65,7 +65,7 @@ class DoctrineTeamRepository implements TeamRepository
         }
 
         throw new TeamNotFound(sprintf(
-            'Team "%s" is not found'.
+            'Team "%s" is not found',
             $slug
         ));
     }
