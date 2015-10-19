@@ -3,10 +3,14 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
-use ContinuousPipe\Authenticator\Tests\InMemoryWhiteList;
+use ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository;
+use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
-use ContinuousPipe\User\SecurityUser;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Security\User\User;
+use ContinuousPipe\Authenticator\WhiteList\WhiteList;
+use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -18,7 +22,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
     private $userProvider;
 
     /**
-     * @var InMemoryWhiteList
+     * @var WhiteList
      */
     private $whiteList;
 
@@ -31,17 +35,29 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @var \Exception|null
      */
     private $exception = null;
+    /**
+     * @var SecurityUserRepository
+     */
+    private $securityUserRepository;
+    /**
+     * @var InMemoryApiKeyRepository
+     */
+    private $apiKeyRepository;
 
     /**
      * @param UserProvider $userProvider
-     * @param InMemoryWhiteList $whiteList
+     * @param WhiteList $whiteList
      * @param TokenStorageInterface $tokenStorage
+     * @param SecurityUserRepository $securityUserRepository
+     * @param InMemoryApiKeyRepository $apiKeyRepository
      */
-    public function __construct(UserProvider $userProvider, InMemoryWhiteList $whiteList, TokenStorageInterface $tokenStorage)
+    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository, InMemoryApiKeyRepository $apiKeyRepository)
     {
         $this->userProvider = $userProvider;
         $this->whiteList = $whiteList;
         $this->tokenStorage = $tokenStorage;
+        $this->securityUserRepository = $securityUserRepository;
+        $this->apiKeyRepository = $apiKeyRepository;
     }
 
     /**
@@ -50,9 +66,21 @@ class SecurityContext implements Context, SnippetAcceptingContext
     public function iAmAuthenticatedAsUser($username)
     {
         $token = new JWTUserToken(['ROLE_USER']);
-        $token->setUser(new SecurityUser(new User($username)));
+        $token->setUser($this->thereIsAUser($username));
 
         $this->tokenStorage->setToken($token);
+    }
+
+    /**
+     * @Given there is a user :username
+     */
+    public function thereIsAUser($username)
+    {
+        try {
+            return $this->securityUserRepository->findOneByUsername($username);
+        } catch (UserNotFound $e) {
+            return $this->userProvider->createUserFromUsername($username);
+        }
     }
 
     /**
@@ -72,6 +100,14 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Given there is the api key :key
+     */
+    public function thereIsTheApiKey($key)
+    {
+        $this->apiKeyRepository->add($key);
+    }
+
+    /**
      * @When the user :username try to authenticate himself with GitHub
      */
     public function theUserTryToAuthenticateHimselfWithGithub($username)
@@ -81,6 +117,38 @@ class SecurityContext implements Context, SnippetAcceptingContext
         } catch (\Exception $e) {
             $this->exception = $e;
         }
+    }
+
+    /**
+     * @When a login with GitHub as :username with the token :token
+     */
+    public function aLoginWithGithubAsWithTheToken($username, $token)
+    {
+        try {
+            $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken($token)));
+        } catch (\Exception $e) {
+            $this->exception = $e;
+        }
+    }
+
+    /**
+     * @When a user login with GitHub as :username
+     */
+    public function aUserLoginWithGithubAs($username)
+    {
+        try {
+            $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken('1234567890')));
+        } catch (\Exception $e) {
+            $this->exception = $e;
+        }
+    }
+
+    /**
+     * @Then the user :username should exists
+     */
+    public function theUserShouldExists($username)
+    {
+        $this->userProvider->loadUserByUsername($username);
     }
 
     /**
@@ -99,6 +167,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
     public function theAuthenticationShouldBeSuccessful()
     {
         if (null !== $this->exception) {
+            echo $this->exception->getMessage();
             throw new \RuntimeException('An exception was found');
         }
     }

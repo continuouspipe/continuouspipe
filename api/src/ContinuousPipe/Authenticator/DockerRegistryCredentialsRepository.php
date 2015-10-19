@@ -2,8 +2,7 @@
 
 namespace ContinuousPipe\Authenticator;
 
-use ContinuousPipe\User\DockerRegistryCredentials;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 
 interface DockerRegistryCredentialsRepository
 {

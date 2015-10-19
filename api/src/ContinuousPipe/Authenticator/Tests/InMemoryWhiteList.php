@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Tests;
 
-use ContinuousPipe\User\WhiteList;
+use ContinuousPipe\Authenticator\WhiteList\WhiteList;
 
 class InMemoryWhiteList implements WhiteList
 {
@@ -20,7 +20,7 @@ class InMemoryWhiteList implements WhiteList
     }
 
     /**
-     * @param string $username
+     * {@inheritdoc}
      */
     public function add($username)
     {
@@ -28,7 +28,7 @@ class InMemoryWhiteList implements WhiteList
     }
 
     /**
-     * @param string $username
+     * {@inheritdoc}
      */
     public function remove($username)
     {

@@ -2,10 +2,11 @@
 
 namespace ApiBundle\Controller;
 
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * @Route(service="api.controller.user")
@@ -13,12 +14,13 @@ use FOS\RestBundle\Controller\Annotations\View;
 class UserController
 {
     /**
-     * @Route("/user/{email}", methods={"GET"})
-     * @ParamConverter("user", converter="user", options={"byEmail"="email"})
+     * @Route("/user/{username}", methods={"GET"})
+     * @ParamConverter("userObject", converter="user", options={"byUsername"="username"})
+     * @Security("is_granted('VIEW', userObject)")
      * @View
      */
-    public function getByEmailAction(User $user)
+    public function getByUsernameAction(User $userObject)
     {
-        return $user;
+        return $userObject;
     }
 }

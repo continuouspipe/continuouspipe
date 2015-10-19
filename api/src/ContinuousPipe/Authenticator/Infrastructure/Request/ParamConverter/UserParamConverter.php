@@ -3,10 +3,12 @@
 namespace ContinuousPipe\Authenticator\Infrastructure\Request\ParamConverter;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
-use ContinuousPipe\User\SecurityUser;
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
+use ContinuousPipe\Security\User\SecurityUser;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserParamConverter implements ParamConverterInterface
@@ -36,15 +38,22 @@ class UserParamConverter implements ParamConverterInterface
     public function apply(Request $request, ParamConverter $configuration)
     {
         $options = $configuration->getOptions();
-        if (array_key_exists('byEmail', $options)) {
-            $email = $request->get($options['byEmail']);
-            $securityUser = $this->securityUserRepository->findOneByEmail($email);
-        } elseif (null !== ($token = $this->tokenStorage->getToken())) {
+        if (array_key_exists('byUsername', $options)) {
+            $username = $request->get($options['byUsername']);
+            try {
+                $securityUser = $this->securityUserRepository->findOneByUsername($username);
+            } catch (UserNotFound $e) {
+                throw new NotFoundHttpException($e->getMessage());
+            }
+        } elseif (array_key_exists('fromSecurityContext', $options)) {
+            if (null === ($token = $this->tokenStorage->getToken())) {
+                throw new \RuntimeException('No user found in context');
+            }
             if (!(($securityUser = $token->getUser()) instanceof SecurityUser)) {
                 throw new \RuntimeException('No logged-in user');
             }
         } else {
-            throw new \RuntimeException('No user found in context');
+            throw new \RuntimeException('Unknown user param converter strategy');
         }
 
         $user = $securityUser->getUser();

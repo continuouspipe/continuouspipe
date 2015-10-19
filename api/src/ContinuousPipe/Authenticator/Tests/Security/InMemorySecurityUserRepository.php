@@ -4,7 +4,7 @@ namespace ContinuousPipe\Authenticator\Tests\Security;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
-use ContinuousPipe\User\SecurityUser;
+use ContinuousPipe\Security\User\SecurityUser;
 
 class InMemorySecurityUserRepository implements SecurityUserRepository
 {
@@ -16,16 +16,16 @@ class InMemorySecurityUserRepository implements SecurityUserRepository
     /**
      * {@inheritdoc}
      */
-    public function findOneByEmail($email)
+    public function findOneByUsername($username)
     {
-        if (!array_key_exists($email, $this->users)) {
+        if (!array_key_exists($username, $this->users)) {
             throw new UserNotFound(sprintf(
-                'user with email "%s" not found',
-                $email
+                'User "%s" not found',
+                $username
             ));
         }
 
-        return $this->users[$email];
+        return $this->users[$username];
     }
 
     /**
@@ -33,6 +33,8 @@ class InMemorySecurityUserRepository implements SecurityUserRepository
      */
     public function save(SecurityUser $user)
     {
-        $this->users[$user->getUser()->getEmail()] = $user;
+        $this->users[$user->getUser()->getUsername()] = $user;
+
+        return $user;
     }
 }

@@ -4,15 +4,21 @@ namespace ContinuousPipe\Authenticator\Security\Authentication;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
-use ContinuousPipe\User\WhiteList;
+use ContinuousPipe\Authenticator\Team\TeamCreator;
+use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\Credentials\GitHubToken;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Team\TeamMembershipRepository;
+use ContinuousPipe\Security\Team\TeamRepository;
+use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Security\User\User;
+use ContinuousPipe\Authenticator\WhiteList\WhiteList;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
-use ContinuousPipe\User\EmailNotFoundException;
-use ContinuousPipe\User\GitHubCredentials;
-use ContinuousPipe\User\SecurityUser;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Authenticator\GitHub\EmailNotFoundException;
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -34,15 +40,42 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     private $whiteList;
 
     /**
-     * @param SecurityUserRepository $securityUserRepository
-     * @param UserDetails            $userDetails
-     * @param WhiteList              $whiteList
+     * @var BucketRepository
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList)
+    private $bucketRepository;
+
+    /**
+     * @var TeamMembershipRepository
+     */
+    private $teamMembershipRepository;
+
+    /**
+     * @var TeamRepository
+     */
+    private $teamRepository;
+    /**
+     * @var TeamCreator
+     */
+    private $teamCreator;
+
+    /**
+     * @param SecurityUserRepository   $securityUserRepository
+     * @param UserDetails              $userDetails
+     * @param WhiteList                $whiteList
+     * @param BucketRepository         $bucketRepository
+     * @param TeamMembershipRepository $teamMembershipRepository
+     * @param TeamRepository           $teamRepository
+     * @param TeamCreator              $teamCreator
+     */
+    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, TeamCreator $teamCreator)
     {
         $this->securityUserRepository = $securityUserRepository;
         $this->userDetails = $userDetails;
         $this->whiteList = $whiteList;
+        $this->bucketRepository = $bucketRepository;
+        $this->teamMembershipRepository = $teamMembershipRepository;
+        $this->teamRepository = $teamRepository;
+        $this->teamCreator = $teamCreator;
     }
 
     /**
@@ -51,28 +84,41 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
         $gitHubResponse = $response->getResponse();
-        $gitHubLogin = $gitHubResponse['login'];
-        if (!$this->whiteList->contains($gitHubLogin)) {
+        $username = $gitHubResponse['login'];
+        if (!$this->whiteList->contains($username)) {
             throw new InsufficientAuthenticationException(sprintf(
                 'User "%s" is not in the white list, yet? :)',
-                $gitHubLogin
+                $username
             ));
         }
 
-        $email = $this->getEmail($response);
-
         try {
-            $securityUser = $this->securityUserRepository->findOneByEmail($email);
+            $securityUser = $this->securityUserRepository->findOneByUsername($username);
         } catch (UserNotFound $e) {
-            $securityUser = $this->createUserFromEmail($email);
+            $securityUser = $this->createUserFromUsername($username);
         }
 
-        $securityUser->getUser()->setGitHubCredentials(new GitHubCredentials(
-            $gitHubLogin,
-            $response->getAccessToken(),
-            $response->getRefreshToken()
-        ));
+        // Get the user email if possible
+        $user = $securityUser->getUser();
+        if (null === $user->getEmail()) {
+            try {
+                $user->setEmail($this->getEmail($response));
+            } catch (EmailNotFoundException $e) {
+            }
+        }
 
+        // Update its GitHub token if needed
+        $bucket = $this->bucketRepository->find($user->getBucketUuid());
+        $this->updateUserGitHubTokenInBucket($bucket, $user, $response);
+        $this->bucketRepository->save($bucket);
+
+        // Check that the user is part of a team and creates one if not
+        $memberships = $this->teamMembershipRepository->findByUser($user);
+        if (0 === $memberships->count()) {
+            $this->createUserTeam($user);
+        }
+
+        // Save the user
         $this->securityUserRepository->save($securityUser);
 
         return $securityUser;
@@ -89,21 +135,25 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
             return $email;
         }
 
-        try {
-            return $this->userDetails->getEmailAddress($response->getAccessToken());
-        } catch (EmailNotFoundException $e) {
-            throw new UnsupportedUserException('User must have an email');
-        }
+        return $this->userDetails->getEmailAddress($response->getAccessToken());
     }
 
     /**
-     * @param string $email
+     * @param string $username
      *
      * @return SecurityUser
      */
-    private function createUserFromEmail($email)
+    public function createUserFromUsername($username)
     {
-        return new SecurityUser(new User($email));
+        // Create user's bucket
+        $bucketUuid = Uuid::uuid1();
+        $this->bucketRepository->save(new Bucket($bucketUuid));
+
+        // Create the user
+        $user = new SecurityUser(new User($username, $bucketUuid));
+        $this->securityUserRepository->save($user);
+
+        return $user;
     }
 
     /**
@@ -111,7 +161,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     public function loadUserByUsername($username)
     {
-        return $this->securityUserRepository->findOneByEmail($username);
+        return $this->securityUserRepository->findOneByUsername($username);
     }
 
     /**
@@ -128,5 +178,57 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     public function supportsClass($class)
     {
         return $class == SecurityUser::class;
+    }
+
+    /**
+     * @param Bucket                $bucket
+     * @param User                  $user
+     * @param UserResponseInterface $response
+     */
+    private function updateUserGitHubTokenInBucket(Bucket $bucket, User $user, UserResponseInterface $response)
+    {
+        $tokens = $bucket->getGitHubTokens();
+        $matchingTokens = $tokens->filter(function (GitHubToken $token) use ($user) {
+            return $token->getLogin() == $user->getUsername();
+        });
+
+        if ($matchingTokens->count() > 0) {
+            $matchingTokens->first()->setAccessToken($response->getAccessToken());
+        } else {
+            $tokens->add(new GitHubToken($user->getUsername(), $response->getAccessToken()));
+        }
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return Team
+     */
+    private function createUserTeam(User $user)
+    {
+        $team = new Team($this->createTeamName($user->getUsername()));
+        $team = $this->teamCreator->create($team, $user);
+
+        return $team;
+    }
+
+    /**
+     * @param string $teamName
+     *
+     * @return string
+     */
+    private function createTeamName($teamName)
+    {
+        $tries = 0;
+
+        do {
+            $generatedTeamName = $teamName;
+
+            if ($tries > 0) {
+                $generatedTeamName .= '-'.($tries + 1);
+            }
+        } while ($this->teamRepository->exists($generatedTeamName) && (++$tries < 100));
+
+        return $generatedTeamName;
     }
 }

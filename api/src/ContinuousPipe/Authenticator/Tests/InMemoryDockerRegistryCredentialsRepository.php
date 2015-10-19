@@ -4,8 +4,7 @@ namespace ContinuousPipe\Authenticator\Tests;
 
 use ContinuousPipe\Authenticator\CredentialsNotFound;
 use ContinuousPipe\Authenticator\DockerRegistryCredentialsRepository;
-use ContinuousPipe\User\DockerRegistryCredentials;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 
 class InMemoryDockerRegistryCredentialsRepository implements DockerRegistryCredentialsRepository
 {

@@ -7,6 +7,10 @@
     <services>
         <service id="app.white_list" class="ContinuousPipe\Authenticator\Tests\InMemoryWhiteList"/>
         <service id="app.repository.security_user" class="ContinuousPipe\Authenticator\Tests\Security\InMemorySecurityUserRepository"/>
-        <service id="app.repository.docker_registry_credentials" class="ContinuousPipe\Authenticator\Tests\InMemoryDockerRegistryCredentialsRepository" />
+        <service id="app.repository.credentials_bucket" class="ContinuousPipe\Security\Tests\Credentials\InMemoryBucketRepository" />
+        <service id="app.repository.team_membership" class="ContinuousPipe\Security\Tests\Team\InMemoryTeamMembershipRepository" />
+        <service id="app.repository.team" class="ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository">
+            <argument type="service" id="app.repository.team_membership" />
+        </service>
     </services>
 </container>

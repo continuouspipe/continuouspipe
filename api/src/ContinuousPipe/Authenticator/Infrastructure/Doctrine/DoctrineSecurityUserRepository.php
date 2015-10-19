@@ -4,8 +4,8 @@ namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
+use ContinuousPipe\Security\User\SecurityUser;
 use Doctrine\ORM\EntityManager;
-use ContinuousPipe\User\SecurityUser;
 
 class DoctrineSecurityUserRepository implements SecurityUserRepository
 {
@@ -22,16 +22,16 @@ class DoctrineSecurityUserRepository implements SecurityUserRepository
     /**
      * {@inheritdoc.
      */
-    public function findOneByEmail($email)
+    public function findOneByUsername($username)
     {
         $user = $this->entityManager->getRepository(SecurityUser::class)->findOneBy([
-            'username' => $email,
+            'username' => $username,
         ]);
 
         if (null === $user) {
             throw new UserNotFound(sprintf(
-                'User with email "%s" is not found',
-                $email
+                'User "%s" is not found',
+                $username
             ));
         }
 
@@ -43,7 +43,9 @@ class DoctrineSecurityUserRepository implements SecurityUserRepository
      */
     public function save(SecurityUser $user)
     {
-        $this->entityManager->persist($user);
-        $this->entityManager->flush($user);
+        $this->entityManager->merge($user);
+        $this->entityManager->flush();
+
+        return $user;
     }
 }

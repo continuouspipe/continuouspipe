@@ -11,13 +11,23 @@
         <service id="app.repository.security_user" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineSecurityUserRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
-        <service id="app.repository.docker_registry_credentials" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineDockerRegistryCredentialsRepository">
+        <service id="app.repository.team_membership" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineTeamMembershipRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+        <service id="app.repository.credentials_bucket" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineCredentialsBucketRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+        <service id="app.repository.team" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineTeamRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
         <service id="app.security.user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\UserProvider">
             <argument type="service" id="app.repository.security_user" />
             <argument type="service" id="app.user_details.github" />
             <argument type="service" id="app.white_list" />
+            <argument type="service" id="app.repository.credentials_bucket" />
+            <argument type="service" id="app.repository.team_membership" />
+            <argument type="service" id="app.repository.team" />
+            <argument type="service" id="app.team_creator" />
         </service>
         <service id="app.security.authentication_provider" class="ContinuousPipe\Authenticator\Security\AuthenticationProvider">
             <argument type="service" id="router" />
@@ -38,17 +48,9 @@
         <service id="app.controller.logged_in" class="AppBundle\Controller\LoggedInController">
             <argument type="service" id="app.security.authentication_provider" />
         </service>
-        <service id="app.controller.account" class="AppBundle\Controller\AccountController">
-            <argument type="service" id="app.repository.docker_registry_credentials" />
-        </service>
-        <service id="app.controller.docker_registry_credentials" class="AppBundle\Controller\DockerRegistryCredentialsController">
-            <argument type="service" id="app.repository.docker_registry_credentials" />
-            <argument type="service" id="form.factory" />
-            <argument type="service" id="router" />
-        </service>
 
         <service id="guzzle.client" class="GuzzleHttp\Client" />
-        <service id="app.user_details.github" class="ContinuousPipe\User\GitHubUserDetails">
+        <service id="app.user_details.github" class="ContinuousPipe\Authenticator\GitHub\GitHubUserDetails">
             <argument type="service" id="guzzle.client" />
         </service>
     </services>
