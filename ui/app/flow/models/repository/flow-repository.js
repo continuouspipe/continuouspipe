@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('FlowRepository', function($resource, RIVER_API_URL) {
+    .service('FlowRepository', function($resource, $teamContext, RIVER_API_URL) {
         this.resource = $resource(RIVER_API_URL+'/flows/:uuid', {identifier: '@id'}, {
             update: {
                 method: 'PUT'
@@ -9,7 +9,7 @@ angular.module('continuousPipeRiver')
         });
 
         this.findAll = function() {
-            return this.resource.query().$promise;
+            return $resource(RIVER_API_URL+'/teams/:team/flows').query({team: $teamContext.getCurrent().slug}).$promise;
         };
 
         this.find = function(uuid) {
@@ -27,8 +27,9 @@ angular.module('continuousPipeRiver')
         };
 
         this.createFromRepository = function(repository) {
-            return $resource(RIVER_API_URL+'/flows', {identifier: '@id'}).save({
-                repository: repository.repository.id
+            return $resource(RIVER_API_URL+'/flows').save({
+                repository: repository.repository.id,
+                team: $teamContext.getCurrent().slug
             }).$promise;
         };
     });
