@@ -3,7 +3,8 @@
 namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
 use LogStream\Log;
 use Rhumsaa\Uuid\Uuid;
 
@@ -33,6 +34,11 @@ class Tide
      * @var User
      */
     private $user;
+
+    /**
+     * @var Team
+     */
+    private $team;
 
     /**
      * @var string
@@ -75,13 +81,14 @@ class Tide
      * @param Flow          $flow
      * @param CodeReference $codeReference
      * @param Log           $log
+     * @param Team          $team
      * @param User          $user
      * @param array         $configuration
      * @param \DateTime     $creationDate
      *
      * @return Tide
      */
-    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $log, User $user, array $configuration, \DateTime $creationDate = null)
+    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate = null)
     {
         $tide = new self();
         $tide->uuid = $uuid;
@@ -89,6 +96,7 @@ class Tide
         $tide->codeReference = $codeReference;
         $tide->logId = $log->getId();
         $tide->creationDate = $creationDate ?: new \DateTime();
+        $tide->team = $team;
         $tide->user = $user;
         $tide->configuration = $configuration;
 
@@ -189,6 +197,14 @@ class Tide
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * @return Team
+     */
+    public function getTeam()
+    {
+        return $this->team;
     }
 
     /**

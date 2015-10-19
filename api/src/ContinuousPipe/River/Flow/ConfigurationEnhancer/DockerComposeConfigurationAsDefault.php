@@ -40,7 +40,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
      */
     public function enhance(Flow $flow, CodeReference $codeReference, array $configs)
     {
-        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flow->getContext()->getUser());
+        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flow->getContext()->getTeam());
         $dockerComposeComponents = [];
 
         try {

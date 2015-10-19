@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Runner;
 
 use ContinuousPipe\User\SecurityUser;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\ResponseInterface;

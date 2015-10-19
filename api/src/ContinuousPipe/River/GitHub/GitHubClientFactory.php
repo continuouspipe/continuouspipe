@@ -2,8 +2,10 @@
 
 namespace ContinuousPipe\River\GitHub;
 
+use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use Github\Client;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Github\HttpClient\HttpClientInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -13,18 +15,27 @@ class GitHubClientFactory
      * @var TokenStorageInterface
      */
     private $tokenStorage;
+
     /**
      * @var HttpClientInterface
      */
     private $githubHttpClient;
 
     /**
-     * @param TokenStorageInterface $tokenStorage
+     * @var BucketRepository
      */
-    public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient)
+    private $bucketRepository;
+
+    /**
+     * @param TokenStorageInterface $tokenStorage
+     * @param HttpClientInterface   $githubHttpClient
+     * @param BucketRepository      $bucketRepository
+     */
+    public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient, BucketRepository $bucketRepository)
     {
         $this->tokenStorage = $tokenStorage;
         $this->githubHttpClient = $githubHttpClient;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -36,16 +47,32 @@ class GitHubClientFactory
      */
     public function createClientForUser(User $user)
     {
-        $client = new Client($this->githubHttpClient);
+        $bucket = $this->bucketRepository->find($user->getBucketUuid());
 
-        if (null === ($userCredentials = $user->getGitHubCredentials())) {
+        return $this->createClientFromBucket($bucket);
+    }
+
+    /**
+     * @param Bucket $credentialsBucket
+     *
+     * @return Client
+     *
+     * @throws UserCredentialsNotFound
+     */
+    public function createClientFromBucket(Bucket $credentialsBucket)
+    {
+        $client = new Client($this->githubHttpClient);
+        $gitHubTokens = $credentialsBucket->getGitHubTokens();
+
+        if (0 === $gitHubTokens->count()) {
             throw new UserCredentialsNotFound(sprintf(
-                'No GitHub credentials found for user "%s"',
-                $user->getEmail()
+                'No GitHub credentials found in bucket "%s"',
+                $credentialsBucket->getUuid()
             ));
         }
 
-        $client->authenticate($userCredentials->getAccessToken(), null, Client::AUTH_HTTP_TOKEN);
+        $token = $gitHubTokens->first()->getAccessToken();
+        $client->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
 
         return $client;
     }

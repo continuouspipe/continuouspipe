@@ -3,17 +3,17 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Credentials\Bucket;
 
 interface PullRequestResolver
 {
     /**
      * Get the pull request which have this head commit.
      *
-     * @param User          $user
      * @param CodeReference $codeReference
+     * @param Bucket        $credentialsBucket
      *
      * @return \GitHub\WebHook\Model\PullRequest[]
      */
-    public function findPullRequestWithHeadReference(User $user, CodeReference $codeReference);
+    public function findPullRequestWithHeadReference(CodeReference $codeReference, Bucket $credentialsBucket);
 }

@@ -8,11 +8,12 @@ use ContinuousPipe\River\View\Flow as FlowView;
 use ContinuousPipe\River\FlowFactory;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View\TideRepository;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Team\Team;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use SimpleBus\Message\Bus\MessageBus;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route(service="app.controller.flow")
@@ -40,17 +41,24 @@ class FlowController
     private $tideRepository;
 
     /**
-     * @param FlowRepository $flowRepository
-     * @param FlowFactory    $flowFactory
-     * @param MessageBus     $eventBus
-     * @param TideRepository $tideRepository
+     * @var ValidatorInterface
      */
-    public function __construct(FlowRepository $flowRepository, FlowFactory $flowFactory, MessageBus $eventBus, TideRepository $tideRepository)
+    private $validator;
+
+    /**
+     * @param FlowRepository     $flowRepository
+     * @param FlowFactory        $flowFactory
+     * @param MessageBus         $eventBus
+     * @param TideRepository     $tideRepository
+     * @param ValidatorInterface $validator
+     */
+    public function __construct(FlowRepository $flowRepository, FlowFactory $flowFactory, MessageBus $eventBus, TideRepository $tideRepository, ValidatorInterface $validator)
     {
         $this->flowRepository = $flowRepository;
         $this->eventBus = $eventBus;
         $this->flowFactory = $flowFactory;
         $this->tideRepository = $tideRepository;
+        $this->validator = $validator;
     }
 
     /**
@@ -62,6 +70,11 @@ class FlowController
      */
     public function fromRepositoryAction(Flow\Request\FlowCreationRequest $creationRequest)
     {
+        $errors = $this->validator->validate($creationRequest);
+        if ($errors->count() > 0) {
+            return \FOS\RestBundle\View\View::create($errors->get(0), 400);
+        }
+
         $flow = $this->flowFactory->fromCreationRequest($creationRequest);
         $this->eventBus->handle(new BeforeFlowSave($flow));
         $flow = $this->flowRepository->save($flow);
@@ -72,17 +85,17 @@ class FlowController
     /**
      * Create a new flow from a repository.
      *
-     * @Route("/flows", methods={"GET"})
-     * @ParamConverter("user", converter="user")
+     * @Route("/teams/{slug}/flows", methods={"GET"})
+     * @ParamConverter("team", converter="team", options={"slug"="slug"})
      * @View
      */
-    public function listAction(User $user)
+    public function listAction(Team $team)
     {
         return array_map(function (Flow $flow) {
             $lastTides = $this->tideRepository->findLastByFlow($flow, 1);
 
             return FlowView::fromFlowAndTides($flow, $lastTides);
-        }, $this->flowRepository->findByUser($user));
+        }, $this->flowRepository->findByTeam($team));
     }
 
     /**

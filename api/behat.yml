@@ -2,6 +2,9 @@ default:
     suites:
         application:
             contexts:
+                - SecurityContext:
+                    - @security.token_storage
+                    - @security.authenticator.client
                 - TideContext:
                     - @command_bus
                     - @event_bus
@@ -24,11 +27,11 @@ default:
                     - @river.pipe_client
                 - FlowContext:
                     - @kernel
-                    - @security.token_storage
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
                     - @security.authenticator.client
                     - @river.pipe_client.fake
+                    - @authenticator.team_repository
                 - Task\BuildContext:
                     - @river.event_store
                     - @event_bus
@@ -66,13 +69,16 @@ smoke:
     suites:
         application:
             contexts:
+                - SecurityContext:
+                    - @security.token_storage
+                    - @security.authenticator.client
                 - FlowContext:
                     - @kernel
-                    - @security.token_storage
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
                     - @security.authenticator.client
                     - @river.pipe_client.fake
+                    - @authenticator.team_repository
                 - TideContext:
                     - @command_bus
                     - @event_bus

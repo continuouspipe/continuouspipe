@@ -5,7 +5,7 @@ namespace ContinuousPipe\Pipe;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\View\Flow;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 
 interface Client
 {

@@ -40,6 +40,8 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
             'tideUuid' => $context->getTideUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
+        $bucketUuid = $context->getTeam()->getBucketUuid();
+
         return new DeploymentRequest(
             new DeploymentRequest\Target(
                 $this->getEnvironmentName($context),
@@ -51,7 +53,8 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
             new DeploymentRequest\Notification(
                 $callbackUrl,
                 $context->getTaskLog()->getId()
-            )
+            ),
+            $bucketUuid
         );
     }
 

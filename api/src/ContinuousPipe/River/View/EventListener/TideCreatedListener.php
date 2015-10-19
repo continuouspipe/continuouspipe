@@ -37,7 +37,16 @@ class TideCreatedListener
         $tideContext = $event->getTideContext();
         $flow = $this->flowRepository->find($tideContext->getFlowUuid());
 
-        $view = Tide::create($event->getTideUuid(), Flow::fromFlow($flow), $tideContext->getCodeReference(), $tideContext->getLog(), $tideContext->getUser(), $tideContext->getConfiguration());
+        $view = Tide::create(
+            $event->getTideUuid(),
+            Flow::fromFlow($flow),
+            $tideContext->getCodeReference(),
+            $tideContext->getLog(),
+            $tideContext->getTeam(),
+            $tideContext->getUser(),
+            $tideContext->getConfiguration()
+        );
+
         $view->setStatus(Tide::STATUS_PENDING);
 
         $this->tideRepository->save($view);

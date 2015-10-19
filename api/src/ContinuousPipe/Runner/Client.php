@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Runner;
 
 use ContinuousPipe\Runner\Client\RunRequest;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use Rhumsaa\Uuid\Uuid;
 
 interface Client

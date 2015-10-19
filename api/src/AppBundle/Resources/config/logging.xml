@@ -7,6 +7,7 @@
     <services>
         <service id="river.code_status_updater" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeStatusUpdater">
             <argument type="service" id="river.github.client_factory" />
+            <argument type="service" id="authenticator.bucket_repository" />
             <argument>%river_ui_url%</argument>
         </service>
 

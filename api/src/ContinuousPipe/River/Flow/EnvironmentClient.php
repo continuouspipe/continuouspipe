@@ -9,7 +9,7 @@ use ContinuousPipe\River\Pipe\ProviderNameResolver;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\TideRepository;
-use ContinuousPipe\User\Security\UserContext;
+use ContinuousPipe\Security\Authenticator\UserContext;
 
 class EnvironmentClient
 {

@@ -47,7 +47,7 @@ class ConfigurationFactory implements TideConfigurationFactory
     public function getConfiguration(Flow $flow, CodeReference $codeReference)
     {
         $flowContext = $flow->getContext();
-        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flowContext->getUser());
+        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flowContext->getTeam());
 
         $configs = [
             $flowContext->getConfiguration(),

@@ -3,18 +3,16 @@
 namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\River\CodeRepository;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\Credentials\Bucket;
 
 interface CommitResolver
 {
     /**
+     * @param Bucket         $credentialsBucket
      * @param CodeRepository $repository
-     * @param User           $user
      * @param string         $branch
      *
      * @return string
-     *
-     * @throws CommitResolverException
      */
-    public function getHeadCommitOfBranch(CodeRepository $repository, User $user, $branch);
+    public function getHeadCommitOfBranch(Bucket $credentialsBucket, CodeRepository $repository, $branch);
 }

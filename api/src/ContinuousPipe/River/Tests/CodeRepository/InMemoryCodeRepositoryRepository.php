@@ -33,7 +33,10 @@ class InMemoryCodeRepositoryRepository implements CodeRepositoryRepository
     public function findByIdentifier($identifier)
     {
         if (!array_key_exists($identifier, $this->codeRepositories)) {
-            throw new CodeRepository\CodeRepositoryNotFound();
+            throw new CodeRepository\CodeRepositoryNotFound(sprintf(
+                'Repository "%s" not found',
+                $identifier
+            ));
         }
 
         return $this->codeRepositories[$identifier];

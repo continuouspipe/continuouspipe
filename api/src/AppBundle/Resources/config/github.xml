@@ -48,6 +48,7 @@
         <service id="river.github.client_factory" class="ContinuousPipe\River\GitHub\GitHubClientFactory">
             <argument type="service" id="security.token_storage" />
             <argument type="service" id="river.github.http_client" />
+            <argument type="service" id="authenticator.bucket_repository" />
         </service>
 
         <service id="river.github.repository_address_descriptor" class="ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor" />
@@ -71,7 +72,7 @@
             <argument type="service" id="river.github.pull_request_resolver" />
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.github.pull_request_deployment_notifier" />
-            <argument type="service" id="security.user_repository" />
+            <argument type="service" id="authenticator.bucket_repository" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful"/>
         </service>

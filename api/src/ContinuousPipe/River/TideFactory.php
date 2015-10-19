@@ -14,6 +14,7 @@ use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Tide\Request\TideCreationRequest;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Rhumsaa\Uuid\Uuid;
@@ -49,6 +50,10 @@ class TideFactory
      * @var TaskRunner
      */
     private $taskRunner;
+    /**
+     * @var BucketRepository
+     */
+    private $bucketRepository;
 
     /**
      * @param LoggerFactory            $loggerFactory
@@ -57,8 +62,9 @@ class TideFactory
      * @param TideConfigurationFactory $configurationFactory
      * @param CommitResolver           $commitResolver
      * @param TaskRunner               $taskRunner
+     * @param BucketRepository         $bucketRepository
      */
-    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory, CommitResolver $commitResolver, TaskRunner $taskRunner)
+    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory, CommitResolver $commitResolver, TaskRunner $taskRunner, BucketRepository $bucketRepository)
     {
         $this->loggerFactory = $loggerFactory;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
@@ -66,6 +72,7 @@ class TideFactory
         $this->configurationFactory = $configurationFactory;
         $this->commitResolver = $commitResolver;
         $this->taskRunner = $taskRunner;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -81,7 +88,8 @@ class TideFactory
         $context = $flow->getContext();
         $repository = $context->getCodeRepository();
         if (null == ($sha1 = $creationRequest->getSha1())) {
-            $sha1 = $this->commitResolver->getHeadCommitOfBranch($repository, $context->getUser(), $creationRequest->getBranch());
+            $bucket = $this->bucketRepository->find($context->getTeam()->getBucketUuid());
+            $sha1 = $this->commitResolver->getHeadCommitOfBranch($bucket, $repository, $creationRequest->getBranch());
         }
 
         return $this->createFromCodeReference($flow, new CodeReference(

@@ -12,3 +12,6 @@ ContinuousPipe\Builder\Request\BuildRequest:
             type: ContinuousPipe\Builder\Context
         environment:
             type: array<string, string>
+        credentialsBucket:
+            type: string
+            serialized_name: credentialsBucket

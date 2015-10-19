@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Builder\Client;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 
 interface BuilderClient
 {

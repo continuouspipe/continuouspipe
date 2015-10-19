@@ -32,4 +32,11 @@ class FlowDto
      * @var string
      */
     public $userUsername;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     *
+     * @var string
+     */
+    public $teamSlug;
 }

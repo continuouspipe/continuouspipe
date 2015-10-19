@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Pipe\Client;
 
-use ContinuousPipe\User\User;
+use ContinuousPipe\Security\User\User;
 use JMS\Serializer\Annotation as JMS;
 use Rhumsaa\Uuid\Uuid;
 
@@ -35,7 +35,7 @@ class Deployment
     private $request;
 
     /**
-     * @JMS\Type("ContinuousPipe\User\User")
+     * @JMS\Type("ContinuousPipe\Security\User\User")
      *
      * @var User
      */

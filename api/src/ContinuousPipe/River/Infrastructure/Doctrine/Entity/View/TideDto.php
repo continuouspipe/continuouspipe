@@ -28,13 +28,6 @@ class TideDto
     private $tide;
 
     /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $userEmail;
-
-    /**
      * @ORM\ManyToOne(targetEntity="ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto")
      * @ORM\JoinColumn(name="flow_uuid", referencedColumnName="uuid", onDelete="CASCADE")
      *
@@ -54,7 +47,6 @@ class TideDto
     {
         $dto = new self();
         $dto->uuid = $tide->getUuid();
-        $dto->userEmail = $flowDto->userUsername;
         $dto->flow = $flowDto;
         $dto->merge($tide);
 
@@ -99,22 +91,6 @@ class TideDto
     public function setTide($tide)
     {
         $this->tide = $tide;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserEmail()
-    {
-        return $this->userEmail;
-    }
-
-    /**
-     * @param string $userEmail
-     */
-    public function setUserEmail($userEmail)
-    {
-        $this->userEmail = $userEmail;
     }
 
     /**

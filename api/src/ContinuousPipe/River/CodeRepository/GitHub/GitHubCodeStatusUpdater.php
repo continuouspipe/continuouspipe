@@ -6,6 +6,7 @@ use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideContext;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 
 class GitHubCodeStatusUpdater implements CodeStatusUpdater
 {
@@ -24,13 +25,20 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     private $uiBaseUrl;
 
     /**
+     * @var BucketRepository
+     */
+    private $bucketRepository;
+
+    /**
      * @param GitHubClientFactory $gitHubClientFactory
+     * @param BucketRepository    $bucketRepository
      * @param string              $uiBaseUrl
      */
-    public function __construct(GitHubClientFactory $gitHubClientFactory, $uiBaseUrl)
+    public function __construct(GitHubClientFactory $gitHubClientFactory, BucketRepository $bucketRepository, $uiBaseUrl)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->uiBaseUrl = $uiBaseUrl;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -64,7 +72,9 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     private function updateCodeStatus(Tide $tide, $state)
     {
         $tideContext = $tide->getContext();
-        $client = $this->gitHubClientFactory->createClientForUser($tideContext->getUser());
+
+        $bucket = $this->bucketRepository->find($tideContext->getTeam()->getBucketUuid());
+        $client = $this->gitHubClientFactory->createClientFromBucket($bucket);
         $repository = $tideContext->getCodeRepository();
 
         if (!$repository instanceof GitHubCodeRepository) {

@@ -9,7 +9,6 @@ use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowReposito
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
-use ContinuousPipe\User\User;
 use Doctrine\ORM\EntityManager;
 use LogStream\WrappedLog;
 use Rhumsaa\Uuid\Uuid;
@@ -126,7 +125,8 @@ class DoctrineTideRepository implements TideRepository
             \ContinuousPipe\River\View\Flow::fromFlow($flow),
             $wrappedTide->getCodeReference(),
             new WrappedLog($wrappedTide->getLogId()),
-            new User($tideDto->getUserEmail()),
+            $wrappedTide->getTeam(),
+            $wrappedTide->getUser(),
             $wrappedTide->getConfiguration() ?: [],
             $wrappedTide->getCreationDate()
         );
