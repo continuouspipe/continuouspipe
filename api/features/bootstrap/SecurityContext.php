@@ -100,9 +100,9 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Given the is the api key :key
+     * @Given there is the api key :key
      */
-    public function theIsTheApiKey($key)
+    public function thereIsTheApiKey($key)
     {
         $this->apiKeyRepository->add($key);
     }

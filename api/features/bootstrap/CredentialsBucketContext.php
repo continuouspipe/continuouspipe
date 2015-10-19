@@ -152,6 +152,23 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @When I ask the list of the GitHub tokens in the bucket :bucket with the API key :key
+     */
+    public function iAskTheListOfTheGithubTokensInTheBucketWithTheApiKey($bucket, $key)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/github-tokens', $bucket),
+            'GET',
+            [],
+            [],
+            [],
+            [
+                'HTTP_X_API_KEY' => $key
+            ]
+        ));
+    }
+
+    /**
      * @Then the list should contain the access token :token
      */
     public function theListShouldContainTheAccessToken($token)
