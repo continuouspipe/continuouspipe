@@ -26,6 +26,14 @@ Feature:
     When I add the user "bar" in the team "foo"
     Then I should be told that I don't have the authorization
 
+  Scenario: I can add a user with a set of given permissions
+    Given there is a team "foo"
+    And the user "samuel" is administrator of the team "foo"
+    And there is a user "bar"
+    When I add the user "bar" in the team "foo" with the "ADMIN" permissions
+    Then the user should be added to the team
+    And the user "bar" should be administrator of the team "foo"
+
   @smoke
   Scenario: As an administrator, I can remove a user from the team
     Given there is a team "foo"

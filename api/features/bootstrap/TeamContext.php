@@ -151,6 +151,20 @@ class TeamContext implements Context
         $this->response = $this->kernel->handle(Request::create($url, 'PUT'));
     }
 
+
+    /**
+     * @When I add the user :username in the team :teamSlug with the :permissions permissions
+     */
+    public function iAddTheUserInTheTeamWithThePermissions($username, $teamSlug, $permissions)
+    {
+        $permissions = explode(',', $permissions);
+
+        $url = sprintf('/api/teams/%s/users/%s', $teamSlug, $username);
+        $this->response = $this->kernel->handle(Request::create($url, 'PUT', [], [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'permissions' => $permissions
+        ])));
+    }
+
     /**
      * @When I remove the user :username in the team :teamSlug
      */

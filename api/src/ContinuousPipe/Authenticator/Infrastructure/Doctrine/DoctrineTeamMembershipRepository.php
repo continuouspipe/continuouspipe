@@ -64,7 +64,7 @@ class DoctrineTeamMembershipRepository implements TeamMembershipRepository
     {
         $memberships = $this->getRepository()->findBy([
             'user' => $membership->getUser(),
-            'team' => $membership->getTeam()
+            'team' => $membership->getTeam(),
         ]);
 
         foreach ($memberships as $membership) {

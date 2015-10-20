@@ -12,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route(service="api.controller.team")
@@ -88,9 +89,15 @@ class TeamController
      * @Security("is_granted('ADMIN', team)")
      * @View
      */
-    public function addUserAction(Team $team, User $user)
+    public function addUserAction(Request $request, Team $team, User $user)
     {
-        $this->teamMembershipRepository->save(new TeamMembership($team, $user));
+        $memberShipRequest = json_decode($request->getContent(), true);
+
+        $this->teamMembershipRepository->save(new TeamMembership(
+            $team,
+            $user,
+            is_array($memberShipRequest) && array_key_exists('permissions', $memberShipRequest) ? $memberShipRequest['permissions'] : []
+        ));
     }
 
     /**
