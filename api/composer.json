@@ -31,7 +31,8 @@
         "simple-bus/rabbitmq-bundle-bridge": "dev-proper-consumer-return",
         "simple-bus/jms-serializer-bundle-bridge": "^2.0",
         "knplabs/github-api": "^1.5",
-        "symfony/expression-language": "^2.7"
+        "symfony/expression-language": "^2.7",
+        "cocur/slugify": "^1.4"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

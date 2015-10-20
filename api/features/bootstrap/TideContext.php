@@ -358,7 +358,10 @@ EOF;
         });
 
         if (count($matchingEvents) == 0) {
-            throw new \RuntimeException('No matching build started events found');
+            throw new \RuntimeException(sprintf(
+                'No built request for tag "%s" found',
+                $tag
+            ));
         }
     }
 
@@ -521,6 +524,28 @@ EOF;
                         'providerName' => 'fake/foo'
                     ]
                 ]
+            ]
+        ]);
+
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'continuous-pipe.yml' => $continuousPipeFile
+        ]);
+
+        $this->createTide($branch);
+        $this->startTide();
+    }
+
+    /**
+     * @When a tide is started for the branch :branch with a build task
+     */
+    public function aTideIsStartedForTheBranchWithABuildTask($branch)
+    {
+        $this->flowContext->iHaveAFlow();
+        $continuousPipeFile = Yaml::dump([
+            'tasks' => [
+                [
+                    'build' => []
+                ],
             ]
         ]);
 
