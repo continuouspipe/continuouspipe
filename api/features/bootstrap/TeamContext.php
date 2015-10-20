@@ -152,6 +152,15 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I remove the user :username in the team :teamSlug
+     */
+    public function iRemoveTheUserInTheTeam($username, $teamSlug)
+    {
+        $url = sprintf('/api/teams/%s/users/%s', $teamSlug, $username);
+        $this->response = $this->kernel->handle(Request::create($url, 'DELETE'));
+    }
+
+    /**
      * @Then I can see the user :username in the team :teamSlug
      */
     public function iCanSeeTheUserInTheTeam($username, $teamSlug)
@@ -195,9 +204,33 @@ class TeamContext implements Context
     }
 
     /**
+     * @Then the user :username shouldn't be in the team :slug
+     */
+    public function theUserShouldnTBeInTheTeam($username, $slug)
+    {
+        $team = $this->teamRepository->find($slug);
+        $teamMemberships = $this->teamMembershipRepository->findByTeam($team);
+        $matchingMemberships = $teamMemberships->filter(function(TeamMembership $membership) use ($username) {
+            return $membership->getUser()->getUsername() == $username;
+        });
+
+        if (0 !== $matchingMemberships->count()) {
+            throw new \RuntimeException('User found in teams');
+        }
+    }
+
+    /**
      * @Then the user should be added to the team
      */
     public function theUserShouldBeAddedToTheTeam()
+    {
+        $this->assertResponseCodeIs($this->response, 204);
+    }
+
+    /**
+     * @Then the user should be deleted from the team
+     */
+    public function theUserShouldBeDeletedFromTheTeam()
     {
         $this->assertResponseCodeIs($this->response, 204);
     }

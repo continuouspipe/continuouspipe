@@ -26,6 +26,16 @@ Feature:
     When I add the user "bar" in the team "foo"
     Then I should be told that I don't have the authorization
 
+  @smoke
+  Scenario: As an administrator, I can remove a user from the team
+    Given there is a team "foo"
+    And the user "samuel" is administrator of the team "foo"
+    And there is a user "bar"
+    And the user "bar" is in the team "foo"
+    When I remove the user "bar" in the team "foo"
+    Then the user should be deleted from the team
+    Then the user "bar" shouldn't be in the team "foo"
+
   Scenario: Each team should have a credentials bucket
     When I create a team "new"
     Then the team "new" should have a credentials bucket

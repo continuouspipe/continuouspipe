@@ -92,4 +92,16 @@ class TeamController
     {
         $this->teamMembershipRepository->save(new TeamMembership($team, $user));
     }
+
+    /**
+     * @Route("/teams/{slug}/users/{username}", methods={"DELETE"})
+     * @ParamConverter("user", converter="user", options={"byUsername"="username"})
+     * @ParamConverter("team", converter="team")
+     * @Security("is_granted('ADMIN', team)")
+     * @View
+     */
+    public function deleteUserAction(Team $team, User $user)
+    {
+        $this->teamMembershipRepository->remove(new TeamMembership($team, $user));
+    }
 }

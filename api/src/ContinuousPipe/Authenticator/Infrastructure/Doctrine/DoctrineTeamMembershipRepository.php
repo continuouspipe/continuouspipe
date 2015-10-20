@@ -58,6 +58,23 @@ class DoctrineTeamMembershipRepository implements TeamMembershipRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function remove(TeamMembership $membership)
+    {
+        $memberships = $this->getRepository()->findBy([
+            'user' => $membership->getUser(),
+            'team' => $membership->getTeam()
+        ]);
+
+        foreach ($memberships as $membership) {
+            $this->entityManager->remove($membership);
+        }
+
+        $this->entityManager->flush();
+    }
+
+    /**
      * @return \Doctrine\ORM\EntityRepository
      */
     private function getRepository()
