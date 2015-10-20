@@ -46,6 +46,18 @@ header {
                 }
             }
 
+            .team-dropdown {
+                > li {
+                    position: relative;
+
+                    a.settings-button {
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                    }
+                }
+            }
+
             li {
                 vertical-align: top;
 

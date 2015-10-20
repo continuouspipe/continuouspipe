@@ -32,8 +32,11 @@
                 <a data-toggle="dropdown" class="tm-task dropdown-with-text header-link" href="">
                     {{ currentTeam.slug }}
                 </a>
-                <ul class="dropdown-menu dm-icon pull-right">
-                    <li ng-repeat="team in teams"><a ui-sref="teams.switch({team: team.slug})">{{ team.slug }}</a></li>
+                <ul class="dropdown-menu dm-icon pull-right team-dropdown">
+                    <li ng-repeat="team in teams">
+                        <a ui-sref="teams.switch({team: team.slug})">{{ team.slug }}</a>
+                        <a ui-sref="teams.users({slug: team.slug})" class="settings-button"><i class="md md-settings"></i></a>
+                    </li>
                     <li class="separator"></li>
                     <li>
                         <a ui-sref="teams.create"><i class="md md-group-add"></i> Create a team</a>

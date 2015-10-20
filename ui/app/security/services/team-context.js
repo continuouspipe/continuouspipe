@@ -10,7 +10,7 @@ angular.module('continuousPipeRiver')
         };
 
         this.getCurrent = function() {
-            if (null === this.currentTeamSlug) {
+            if (null === this.currentTeamSlug || !(this.currentTeamSlug in this.teams)) {
                 this.currentTeamSlug = Object.keys(this.teams)[0];
             }
 

@@ -31,5 +31,22 @@ angular.module('continuousPipeRiver')
                     label: 'Create'
                 }
             })
+            .state('teams.users', {
+                url: '/:slug/users',
+                resolve: {
+                    team: function($stateParams, TeamRepository) {
+                        return TeamRepository.find($stateParams.slug);
+                    }
+                },
+                views: {
+                    '@layout': {
+                        templateUrl: 'security/views/team/users.html',
+                        controller: 'TeamUsersController'
+                    }
+                },
+                ncyBreadcrumb: {
+                    label: 'Users'
+                }
+            })
         ;
     });

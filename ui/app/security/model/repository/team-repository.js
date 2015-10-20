@@ -8,6 +8,10 @@ angular.module('continuousPipeRiver')
             return this.resource.query().$promise
         };
 
+        this.find = function(slug) {
+            return this.resource.get({slug: slug}).$promise
+        };
+
         this.create = function(team) {
             return this.resource.save(team).$promise;
         };
