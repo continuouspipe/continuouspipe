@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\River\CodeReference;
 use Rhumsaa\Uuid\Uuid;
@@ -18,7 +19,9 @@ class EnvironmentNamingStrategy
      */
     public function getName(Uuid $flowUuid, CodeReference $codeReference)
     {
-        return sprintf('%s-%s', (string) $flowUuid, $codeReference->getBranch());
+        $branch = (new Slugify())->slugify($codeReference->getBranch());
+
+        return sprintf('%s-%s', (string) $flowUuid, $branch);
     }
 
     /**

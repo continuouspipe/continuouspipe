@@ -536,6 +536,31 @@ EOF;
     }
 
     /**
+     * @When a tide is started for the branch :branch with a deploy task
+     */
+    public function aTideIsStartedForTheBranchWithADeployTask($branch)
+    {
+        $this->flowContext->iHaveAFlow();
+        $continuousPipeFile = Yaml::dump([
+            'tasks' => [
+                [
+                    'deploy' => [
+                        'providerName' => 'fake/foo',
+                        'services' => []
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'continuous-pipe.yml' => $continuousPipeFile
+        ]);
+
+        $this->createTide($branch);
+        $this->startTide();
+    }
+
+    /**
      * @When a tide is started for the branch :branch with a build task
      */
     public function aTideIsStartedForTheBranchWithABuildTask($branch)

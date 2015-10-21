@@ -15,6 +15,7 @@ use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use SimpleBus\Message\Bus\MessageBus;
@@ -272,6 +273,23 @@ class DeployContext implements Context
     }
 
     /**
+     * @Then the name of the deployed environment should be :expectedName
+     */
+    public function theNameOfTheDeployedEnvironmentShouldBe($expectedName)
+    {
+        $namingStrategy = new EnvironmentNamingStrategy();
+        $foundName = $namingStrategy->getName($this->flowContext->getCurrentUuid(), $this->getDeployTask()->getContext()->getCodeReference());
+
+        if ($foundName != $expectedName) {
+            throw new \RuntimeException(sprintf(
+                'Found name "%s" while expecting "%s"',
+                $foundName,
+                $expectedName
+            ));
+        }
+    }
+
+    /**
      * @param string $componentName
      * @return Component
      */
@@ -309,7 +327,7 @@ class DeployContext implements Context
         /** @var Task[] $deployTasks */
         $deployTasks = $this->tideTasksContext->getTasksOfType(DeployTask::class);
         if (count($deployTasks) == 0) {
-            throw new \RuntimeException('No build task found');
+            throw new \RuntimeException('No deploy task found');
         }
 
         return current($deployTasks);
