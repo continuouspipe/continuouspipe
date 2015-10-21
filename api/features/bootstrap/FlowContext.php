@@ -112,7 +112,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      */
     public function getCurrentUuid()
     {
-        return $this->flowUuid;
+        return is_string($this->flowUuid) ? Uuid::fromString($this->flowUuid) : $this->flowUuid;
     }
 
     /**

@@ -175,10 +175,6 @@ class TasksContext implements Context
         $tasks = $this->getCurrentTide()->getTasks()->getTasks();
 
         return array_values(array_filter($tasks, function (Task $task) use ($taskType) {
-            if ($task instanceof ContextualizedTask) {
-                $task = $task->getTask();
-            }
-
             return get_class($task) == $taskType || is_subclass_of($task, $taskType);
         }));
     }

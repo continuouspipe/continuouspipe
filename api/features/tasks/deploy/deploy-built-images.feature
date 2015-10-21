@@ -6,11 +6,6 @@ Feature:
   Scenario:
     Given there is 1 application images in the repository
     When a tide is started for the branch "my-feature" with a build and deploy task
-    Then the image tag "my-feature" should be built
-
-  Scenario:
-    Given there is 1 application images in the repository
-    When a tide is started for the branch "my-feature" with a build and deploy task
     And all the image builds are successful
     Then the deployed image tag should be "my-feature"
 

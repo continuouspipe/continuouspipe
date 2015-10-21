@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Flow\ConfigurationEnhancer;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Flow\ConfigurationEnhancer;
@@ -10,6 +11,11 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 class AddDefaultBuildTag implements ConfigurationEnhancer
 {
     use ConfigurationEnhancer\Helper\TaskLocator;
+
+    /**
+     * @var string
+     */
+    const DOCKER_TAG_REGEX = '[a-z0-9]+(?:[._-][a-z0-9]+)*';
 
     /**
      * {@inheritdoc}
@@ -47,7 +53,7 @@ class AddDefaultBuildTag implements ConfigurationEnhancer
                 // If there's no image name with tag name, then add one
                 $tags = $this->getValuesAtPath($configs, $imageTagPath);
                 if (count($tags) == 0) {
-                    $propertyAccessor->setValue($enhancedConfig, $imageTagPath, $codeReference->getBranch());
+                    $propertyAccessor->setValue($enhancedConfig, $imageTagPath, $this->getDefaultImageTag($codeReference));
                 }
             }
         }
@@ -55,5 +61,20 @@ class AddDefaultBuildTag implements ConfigurationEnhancer
         array_unshift($configs, $enhancedConfig);
 
         return $configs;
+    }
+
+    /**
+     * @param CodeReference $codeReference
+     *
+     * @return string
+     */
+    private function getDefaultImageTag(CodeReference $codeReference)
+    {
+        $tag = $codeReference->getBranch();
+        if ($tag && !preg_match('#^'.self::DOCKER_TAG_REGEX.'$#', $tag)) {
+            $tag = (new Slugify())->slugify($tag);
+        }
+
+        return $tag;
     }
 }
