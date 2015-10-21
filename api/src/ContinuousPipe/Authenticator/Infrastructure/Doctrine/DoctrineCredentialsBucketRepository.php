@@ -33,7 +33,8 @@ class DoctrineCredentialsBucketRepository implements BucketRepository
         }
 
         throw new BucketNotFound(sprintf(
-            'Bucket with UUID %s is not found'
+            'Bucket with UUID %s is not found',
+            $uuid
         ));
     }
 
