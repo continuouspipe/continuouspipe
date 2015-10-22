@@ -2,12 +2,15 @@
 
 namespace ContinuousPipe\Pipe\Handler;
 
+use ContinuousPipe\Adapter\AdapterNotFound;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
+use ContinuousPipe\Adapter\ProviderNotFound;
 use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\AdapterProviderRepository;
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
+use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\DeploymentStarted;
 use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
 use LogStream\Node\Text;
@@ -81,7 +84,17 @@ class StartDeploymentHandler
         )));
 
         list($type, $name) = explode('/', $target->getProviderName());
-        $provider = $this->providerRepository->findByTypeAndIdentifier($type, $name);
+
+        try {
+            $provider = $this->providerRepository->findByTypeAndIdentifier($type, $name);
+        } catch (ProviderNotFound $e) {
+            $logger->append(new Text($e->getMessage()));
+
+            $this->eventBus->handle(new DeploymentFailed($deployment->getUuid()));
+
+            return;
+        }
+
         $deploymentContext = new DeploymentContext($deployment, $provider, $logger->getLog(), $environment);
         $this->eventBus->handle(new DeploymentStarted($deploymentContext));
     }

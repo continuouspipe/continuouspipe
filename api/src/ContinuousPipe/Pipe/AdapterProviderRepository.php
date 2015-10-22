@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Pipe;
 
+use ContinuousPipe\Adapter\AdapterNotFound;
 use ContinuousPipe\Adapter\AdapterRegistry;
 use ContinuousPipe\Adapter\Provider;
 use ContinuousPipe\Adapter\ProviderNotFound;
@@ -47,12 +48,15 @@ class AdapterProviderRepository
      *
      * @return Provider
      *
-     * @throws \ContinuousPipe\Adapter\AdapterNotFound
      * @throws ProviderNotFound
      */
     public function findByTypeAndIdentifier($type, $identifier)
     {
-        return $this->adapterRegistry->getByType($type)->getRepository()->find($identifier);
+        try {
+            return $this->adapterRegistry->getByType($type)->getRepository()->find($identifier);
+        } catch (AdapterNotFound $e) {
+            throw new ProviderNotFound($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
