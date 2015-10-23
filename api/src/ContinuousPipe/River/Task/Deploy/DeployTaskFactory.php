@@ -72,6 +72,7 @@ class DeployTaskFactory implements TaskFactory
                     ->useAttributeAsKey('name')
                     ->prototype('array')
                         ->addDefaultsIfNotSet()
+                        ->canBeEnabled()
                         ->children()
                             ->arrayNode('specification')
                                 ->isRequired()
@@ -157,6 +158,10 @@ class DeployTaskFactory implements TaskFactory
         $services = [];
 
         foreach ($servicesConfiguration as $name => $configuration) {
+            if ($configuration['enabled'] === false) {
+                continue;
+            }
+            
             $services[] = $this->componentFactory->createFromConfiguration($name, $configuration);
         }
 

@@ -273,6 +273,34 @@ class DeployContext implements Context
     }
 
     /**
+     * @Then the component :componentName should be deployed
+     */
+    public function theComponentShouldBeDeployed($componentName)
+    {
+        $this->getDeployedComponent($componentName);
+    }
+
+    /**
+     * @Then the component :componentName should not be deployed
+     */
+    public function theComponentShouldNotBeDeployed($componentName)
+    {
+        try {
+            $this->getDeployedComponent($componentName);
+            $found = true;
+        } catch (\RuntimeException $e) {
+            $found = false;
+        }
+
+        if ($found) {
+            throw new \RuntimeException(sprintf(
+                'Component "%s" found',
+                $componentName
+            ));
+        }
+    }
+
+    /**
      * @Then the name of the deployed environment should be :expectedName
      */
     public function theNameOfTheDeployedEnvironmentShouldBe($expectedName)
