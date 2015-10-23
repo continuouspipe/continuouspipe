@@ -118,5 +118,12 @@
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
         </service>
+
+        <service id="pipe.adapter.kubernetes.rollback_deployment_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\RollbackDeploymentHandler">
+            <argument type="service" id="pipe.event_store" />
+            <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
+
+            <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\RollbackDeploymentCommand" />
+        </service>
     </services>
 </container>

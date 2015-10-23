@@ -39,7 +39,7 @@ class DeploymentContext
      * @param Log             $log
      * @param Environment     $environment
      */
-    public function __construct(View\Deployment $deployment, Provider $provider, Log $log, Environment $environment)
+    public function __construct(View\Deployment $deployment, Provider $provider = null, Log $log = null, Environment $environment = null)
     {
         $this->deployment = $deployment;
         $this->log = $log;

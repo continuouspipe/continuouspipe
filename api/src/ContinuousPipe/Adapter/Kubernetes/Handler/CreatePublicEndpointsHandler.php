@@ -94,7 +94,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
             $logger->append(new Text('Error: '.$e->getMessage()));
             $logger->failure();
 
-            $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
+            $this->eventBus->handle(new DeploymentFailed($context));
         }
     }
 

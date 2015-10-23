@@ -48,6 +48,31 @@ class ReplicationControllerContext implements Context
     }
 
     /**
+     * @Then the replication controller :name should be deleted
+     */
+    public function theReplicationControllerShouldBeDeleted($name)
+    {
+        $this->getReplicationControllerByName($name, $this->replicationControllerRepository->getDeletedReplicationControllers());
+    }
+
+    /**
+     * @Then the replication controller :name should not be deleted
+     */
+    public function theReplicationControllerShouldNotBeDeleted($name)
+    {
+        try {
+            $this->getReplicationControllerByName($name, $this->replicationControllerRepository->getDeletedReplicationControllers());
+            $found = true;
+        } catch (\RuntimeException $e) {
+            $found = false;
+        }
+
+        if ($found) {
+            throw new \RuntimeException('Replication controller found in the list of deleted');
+        }
+    }
+
+    /**
      * @Given I have an existing replication controller :name
      */
     public function iHaveAnExistingReplicationController($name)
@@ -247,7 +272,7 @@ class ReplicationControllerContext implements Context
     {
         $matchingRCs = $this->getReplicationControllersByName($name, $collection);
         if (count($matchingRCs) == 0) {
-            throw new \RuntimeException(sprintf('Replication controller "%s" should be updated, not found in traces', $name));
+            throw new \RuntimeException(sprintf('Replication controller "%s" not found in traces', $name));
         }
 
         return current($matchingRCs);

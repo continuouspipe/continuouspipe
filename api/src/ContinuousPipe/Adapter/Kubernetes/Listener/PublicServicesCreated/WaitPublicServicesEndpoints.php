@@ -70,7 +70,7 @@ class WaitPublicServicesEndpoints
         } catch (EndpointNotFound $e) {
             $logger->failure();
 
-            $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
+            $this->eventBus->handle(new DeploymentFailed($context));
         }
     }
 

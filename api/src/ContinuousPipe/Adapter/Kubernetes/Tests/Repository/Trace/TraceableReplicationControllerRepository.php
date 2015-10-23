@@ -18,6 +18,11 @@ class TraceableReplicationControllerRepository implements ReplicationControllerR
     private $createdReplicationControllers = [];
 
     /**
+     * @var ReplicationController[]
+     */
+    private $deletedReplicationControllers = [];
+
+    /**
      * @var ReplicationControllerRepository
      */
     private $repository;
@@ -67,7 +72,9 @@ class TraceableReplicationControllerRepository implements ReplicationControllerR
      */
     public function delete(ReplicationController $replicationController)
     {
-        return $this->repository->delete($replicationController);
+        $this->repository->delete($replicationController);
+
+        $this->deletedReplicationControllers[] = $replicationController;
     }
 
     /**
@@ -108,5 +115,13 @@ class TraceableReplicationControllerRepository implements ReplicationControllerR
     public function getCreatedReplicationControllers()
     {
         return $this->createdReplicationControllers;
+    }
+
+    /**
+     * @return \Kubernetes\Client\Model\ReplicationController[]
+     */
+    public function getDeletedReplicationControllers()
+    {
+        return $this->deletedReplicationControllers;
     }
 }

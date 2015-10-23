@@ -9,5 +9,8 @@
         <service id="log_stream.logger_factory" class="LogStream\Tests\InMemory\InMemoryLoggerFactory">
             <argument type="service" id="log_stream.event_store.in_memory" />
         </service>
+        <service id="log_stream.display_logger_factory" class="LogStream\Tests\Debug\DisplayLoggerFactory" decorates="log_stream.logger_factory">
+            <argument type="service" id="log_stream.display_logger_factory.inner" />
+        </service>
     </services>
 </container>

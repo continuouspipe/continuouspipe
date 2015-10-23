@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\Pipe\Handler;
 
-use ContinuousPipe\Adapter\AdapterNotFound;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\ProviderNotFound;
 use ContinuousPipe\Adapter\ProviderRepository;
@@ -90,7 +89,9 @@ class StartDeploymentHandler
         } catch (ProviderNotFound $e) {
             $logger->append(new Text($e->getMessage()));
 
-            $this->eventBus->handle(new DeploymentFailed($deployment->getUuid()));
+            $this->eventBus->handle(new DeploymentFailed(
+                new DeploymentContext($deployment, null, $logger->getLog(), $environment)
+            ));
 
             return;
         }
