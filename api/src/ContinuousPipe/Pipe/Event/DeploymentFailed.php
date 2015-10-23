@@ -2,21 +2,29 @@
 
 namespace ContinuousPipe\Pipe\Event;
 
-use Rhumsaa\Uuid\Uuid;
+use ContinuousPipe\Pipe\DeploymentContext;
 
 class DeploymentFailed implements DeploymentEvent
 {
     /**
-     * @var Uuid
+     * @var DeploymentContext
      */
-    private $deploymentUuid;
+    private $deploymentContext;
 
     /**
-     * @param Uuid $deploymentUuid
+     * @param DeploymentContext $deploymentContext
      */
-    public function __construct(Uuid $deploymentUuid)
+    public function __construct(DeploymentContext $deploymentContext)
     {
-        $this->deploymentUuid = $deploymentUuid;
+        $this->deploymentContext = $deploymentContext;
+    }
+
+    /**
+     * @return DeploymentContext
+     */
+    public function getDeploymentContext()
+    {
+        return $this->deploymentContext;
     }
 
     /**
@@ -24,6 +32,6 @@ class DeploymentFailed implements DeploymentEvent
      */
     public function getDeploymentUuid()
     {
-        return $this->deploymentUuid;
+        return $this->getDeploymentContext()->getDeployment()->getUuid();
     }
 }

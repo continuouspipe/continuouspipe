@@ -97,7 +97,7 @@ class CreateComponentsHandler implements DeploymentHandler
             $logger = $this->loggerFactory->from($context->getLog());
             $logger->append(new Text($e->getMessage()));
 
-            $this->eventBus->handle(new DeploymentFailed($context->getDeployment()->getUuid()));
+            $this->eventBus->handle(new DeploymentFailed($context));
         }
     }
 

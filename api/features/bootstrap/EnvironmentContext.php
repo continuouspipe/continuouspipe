@@ -1,11 +1,17 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Adapter\Kubernetes\Cluster;
+use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
 use ContinuousPipe\Model\Environment;
+use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\DeploymentRequest;
+use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
+use ContinuousPipe\Pipe\Event\DeploymentStarted;
 use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient;
+use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
 use ContinuousPipe\Pipe\Tests\Notification\TraceableNotifier;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
@@ -70,6 +76,11 @@ class EnvironmentContext implements Context
      * @var InMemoryAuthenticatorClient
      */
     private $inMemoryAuthenticatorClient;
+
+    /**
+     * @var array|null
+     */
+    private $lastDeployment;
 
     /**
      * @param Kernel $kernel
@@ -192,12 +203,33 @@ class EnvironmentContext implements Context
         }
 
         $deployment = json_decode($this->response->getContent(), true);
+        $this->lastDeployment = $deployment;
         $this->lastDeploymentUuid = Uuid::fromString($deployment['uuid']);
         $this->deploymentEnvironmentName = $environmentName;
     }
 
     /**
+     * @When the deployment is failed
+     */
+    public function theDeploymentIsFailed()
+    {
+        $lastEvents = $this->eventStore->findByDeploymentUuid($this->lastDeploymentUuid);
+        $deploymentStartedEvents = array_filter($lastEvents, function(DeploymentEvent $event) {
+            return $event instanceof DeploymentStarted;
+        });
+
+        if (0 === count($deploymentStartedEvents)) {
+            throw new \RuntimeException('Deployment not even started');
+        }
+
+        /** @var DeploymentStarted $deploymentStartedEvent */
+        $deploymentStartedEvent = $deploymentStartedEvents[0];
+        $this->eventBus->handle(new DeploymentFailed($deploymentStartedEvent->getDeploymentContext()));
+    }
+
+    /**
      * @Given I have a running deployment
+     * @Given a deployment is started
      */
     public function iHaveARunningDeployment()
     {
@@ -215,6 +247,15 @@ class EnvironmentContext implements Context
             )
         );
 
+        $this->eventStore->add(new DeploymentStarted(
+            new DeploymentContext(
+                $deployment,
+                new FakeProvider('foo'),
+                null,
+                new Environment('', '')
+            )
+        ));
+
         $this->lastDeploymentUuid = $deployment->getUuid();
     }
 
@@ -224,14 +265,6 @@ class EnvironmentContext implements Context
     public function theDeploymentIsSuccessful()
     {
         $this->eventBus->handle(new DeploymentSuccessful($this->lastDeploymentUuid));
-    }
-
-    /**
-     * @When the deployment is failed
-     */
-    public function theDeploymentIsFailed()
-    {
-        $this->eventBus->handle(new DeploymentFailed($this->lastDeploymentUuid));
     }
 
     /**

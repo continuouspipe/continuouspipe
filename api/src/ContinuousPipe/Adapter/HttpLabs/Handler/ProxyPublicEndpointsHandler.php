@@ -74,7 +74,7 @@ class ProxyPublicEndpointsHandler
         } catch (EndpointCouldNotBeProxied $e) {
             $logger->append(new Text('Error: '.$e->getMessage()));
             $logger->failure();
-            $this->eventBus->handle(new DeploymentFailed($command->getContext()->getDeployment()->getUuid()));
+            $this->eventBus->handle(new DeploymentFailed($command->getContext()));
             throw $e;
         }
 

@@ -122,7 +122,7 @@ class Deployment
      */
     public function getComponentStatuses()
     {
-        return $this->componentStatuses;
+        return $this->componentStatuses ?: [];
     }
 
     /**
