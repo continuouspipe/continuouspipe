@@ -11,6 +11,7 @@ class VolumeTransformer
         Component\Volume\EmptyDirectory::class => ['setter' => 'setEmptyDir', 'converter' => 'emptyDirConverter'],
         Component\Volume\NFS::class => ['setter' => 'setNfs', 'converter' => 'nfsConverter'],
         Component\Volume\HostPath::class => ['setter' => 'setHostPath', 'converter' => 'hostPathConverter'],
+        Component\Volume\Persistent::class => ['setter' => 'setPersistentVolumeClaim', 'converter' => 'persistentVolumeClaimConverter'],
     ];
 
     /**
@@ -55,5 +56,10 @@ class VolumeTransformer
     private function hostPathConverter(Component\Volume\HostPath $hostPath)
     {
         return new Volume\HostPathVolumeSource($hostPath->getPath());
+    }
+
+    private function persistentVolumeClaimConverter(Component\Volume\Persistent $persistent)
+    {
+        return new Volume\PersistentVolumeClaimSource($persistent->getName());
     }
 }

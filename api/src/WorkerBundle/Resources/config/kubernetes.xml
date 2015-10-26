@@ -90,6 +90,13 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated" />
         </service>
 
+        <!-- Synchronous event listeners -->
+        <service id="pipe.adapter.kubernetes.listener.before_creating_component.create_persistent_volume_claim" class="ContinuousPipe\Adapter\Kubernetes\Listener\BeforeCreatingComponent\CreatePersistentVolumeClaim">
+            <argument type="service" id="log_stream.logger_factory" />
+
+            <tag name="kernel.event_subscriber" />
+        </service>
+
         <!-- Handlers -->
         <service id="pipe.adapter.kubernetes.prepare_environment_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\PrepareEnvironmentHandler">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
@@ -115,6 +122,7 @@
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="kubernetes.public_endpoint.public_service_voter" />
             <argument type="service" id="pipe.adapter.kubernetes.component.attacher" />
+            <argument type="service" id="event_dispatcher" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
         </service>
