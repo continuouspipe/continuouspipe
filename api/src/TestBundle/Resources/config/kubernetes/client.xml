@@ -12,6 +12,7 @@
         <service id="pipe.adapter.kubernetes.in_memory.replication_controller_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryReplicationControllerRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.secret_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemorySecretRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.service_account_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryServiceAccountRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.persistent_volume_claim_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryPersistentVolumeClaimRepository" />
 
         <service id="pipe.adapter.kubernetes.traceable.namespace_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.namespace_repository" />
@@ -31,6 +32,9 @@
         <service id="pipe.adapter.kubernetes.traceable.pod_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePodRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.pod_repository" />
         </service>
+        <service id="pipe.adapter.kubernetes.traceable.persistent_volume_claim_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePersistentVolumeClaimRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.persistent_volume_claim_repository" />
+        </service>
 
         <service id="pipe.adapter.kubernetes.namespace_client" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedRepositoriesNamespaceClient">
             <argument type="service" id="pipe.adapter.kubernetes.traceable.pod_repository" />
@@ -38,6 +42,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.traceable.replication_controller_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.traceable.secret_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.traceable.service_account_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.persistent_volume_claim_repository" />
         </service>
 
         <service id="pipe.adapter.kubernetes.adapter" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedRepositoriesAdapter">
