@@ -3,9 +3,9 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
-use ContinuousPipe\Adapter\Kubernetes\Component\ComponentAttacher;
 use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
 use ContinuousPipe\Adapter\Kubernetes\Component\ComponentException;
+use ContinuousPipe\Adapter\Kubernetes\Event\AfterCreatingComponent;
 use ContinuousPipe\Adapter\Kubernetes\Event\BeforeCreatingComponent;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
@@ -60,11 +60,6 @@ class CreateComponentsHandler implements DeploymentHandler
     private $publicServiceVoter;
 
     /**
-     * @var ComponentAttacher
-     */
-    private $attacher;
-
-    /**
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
@@ -75,17 +70,15 @@ class CreateComponentsHandler implements DeploymentHandler
      * @param MessageBus               $eventBus
      * @param LoggerFactory            $loggerFactory
      * @param PublicServiceVoter       $publicServiceVoter
-     * @param ComponentAttacher        $attacher
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(ComponentTransformer $componentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, PublicServiceVoter $publicServiceVoter, ComponentAttacher $attacher, EventDispatcherInterface $eventDispatcher)
+    public function __construct(ComponentTransformer $componentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, PublicServiceVoter $publicServiceVoter, EventDispatcherInterface $eventDispatcher)
     {
         $this->componentTransformer = $componentTransformer;
         $this->clientFactory = $clientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
         $this->publicServiceVoter = $publicServiceVoter;
-        $this->attacher = $attacher;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -135,9 +128,9 @@ class CreateComponentsHandler implements DeploymentHandler
                 $status = $this->createComponent($client, $logger, $component);
                 $componentStatus[$component->getName()] = $this->createComponentStatus($status);
 
-                if ($this->haveToAttach($component)) {
-                    $this->attacher->attach($context, $status);
-                }
+                $this->eventDispatcher->dispatch(AfterCreatingComponent::NAME, new AfterCreatingComponent(
+                    $client, $context, $component, $status
+                ));
             } catch (ClientError $e) {
                 throw new ComponentException(sprintf(
                     'An error appeared while creating the component "%s": %s',
@@ -272,22 +265,6 @@ class CreateComponentsHandler implements DeploymentHandler
         $type = substr($objectClass, strrpos($objectClass, '/'));
 
         return sprintf('%s "%s"', $type, $object->getMetadata()->getName());
-    }
-
-    /**
-     * Returns true if the component have to be attached.
-     *
-     * @param Component $component
-     *
-     * @return bool
-     */
-    private function haveToAttach(Component $component)
-    {
-        if ($deploymentStrategy = $component->getDeploymentStrategy()) {
-            return $deploymentStrategy->isAttached();
-        }
-
-        return false;
     }
 
     /**
