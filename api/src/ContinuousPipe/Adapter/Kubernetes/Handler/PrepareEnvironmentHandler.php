@@ -9,8 +9,10 @@ use ContinuousPipe\Adapter\Kubernetes\KubernetesDeploymentContext;
 use ContinuousPipe\Adapter\Kubernetes\Naming\NamingStrategy;
 use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
+use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
+use Kubernetes\Client\Exception\ClientError;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -57,6 +59,29 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     public function handle(PrepareEnvironmentCommand $command)
     {
         $context = $command->getContext();
+
+        try {
+            $namespace = $this->createNamespaceIfNotExists($context);
+        } catch (ClientError $e) {
+            $logger = $this->loggerFactory->from($context->getLog());
+            $logger->append(new Text($e->getMessage()));
+
+            $this->eventBus->handle(new DeploymentFailed($context));
+
+            return;
+        }
+
+        $context->add(KubernetesDeploymentContext::NAMESPACE_KEY, $namespace);
+        $this->eventBus->handle(new EnvironmentPrepared($context));
+    }
+
+    /**
+     * @param DeploymentContext $context
+     *
+     * @return \Kubernetes\Client\Model\KubernetesNamespace
+     */
+    private function createNamespaceIfNotExists(DeploymentContext $context)
+    {
         $logger = $this->loggerFactory->from($context->getLog());
         $environment = $context->getEnvironment();
 
@@ -74,9 +99,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
             $logger->append(new Text(sprintf('Reusing existing namespace "%s"', $namespaceName)));
         }
 
-        $context->add(KubernetesDeploymentContext::NAMESPACE_KEY, $namespace);
-
-        $this->eventBus->handle(new EnvironmentPrepared($context));
+        return $namespace;
     }
 
     /**
