@@ -6,6 +6,19 @@ tasks:
     - deploy:
           providerName: kubernetes/cp-cluster
           services:
+              database:
+                  specification:
+                      environment_variables:
+                          - name: PGDATA
+                            value: /var/lib/postgresql/data/pgdata
+                      volumes:
+                          - type: persistent
+                            name: database-volume
+                            capacity: 5Gi
+                      volume_mounts:
+                          - name: database-volume
+                            mount_path: /var/lib/postgresql/data
+
               api:
                   specification:
                       environment_variables:
