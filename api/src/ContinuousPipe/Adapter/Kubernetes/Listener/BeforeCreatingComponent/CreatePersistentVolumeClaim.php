@@ -81,7 +81,7 @@ class CreatePersistentVolumeClaim implements EventSubscriberInterface
             $created = $persistentVolumeClaimRepository->create(new PersistentVolumeClaim(
                 new ObjectMetadata($persistentVolume->getName()),
                 new PersistentVolumeClaimSpecification(
-                    [PersistentVolumeClaimSpecification::ACCESS_MODE_READ_WRITE_MANY],
+                    [PersistentVolumeClaimSpecification::ACCESS_MODE_READ_WRITE_ONCE],
                     new ResourceRequirements(new ResourceRequirementsRequests(
                         $persistentVolume->getCapacity()
                     ))
