@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Filter;
 
 use ContinuousPipe\River\Filter\View\CodeReferenceView;
+use ContinuousPipe\River\Filter\View\TaskListView;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tide;
 
@@ -32,14 +33,14 @@ class ContextFactory
      */
     private function createTasksView(array $tasks)
     {
-        $view = [];
+        $view = new TaskListView();
 
         foreach ($tasks as $task) {
             $taskId = $task->getContext()->getTaskId();
-            $view[$taskId] = $task->getExposedContext();
+
+            $view->add($taskId, $task->getExposedContext());
         }
 
-        // Transforms the view from array to object
-        return json_decode(json_encode($view));
+        return $view;
     }
 }

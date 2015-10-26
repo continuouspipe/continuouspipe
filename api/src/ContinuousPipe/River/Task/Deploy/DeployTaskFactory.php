@@ -161,7 +161,7 @@ class DeployTaskFactory implements TaskFactory
             if ($configuration['enabled'] === false) {
                 continue;
             }
-            
+
             $services[] = $this->componentFactory->createFromConfiguration($name, $configuration);
         }
 

@@ -103,3 +103,44 @@ Feature:
     When the service mysql was not created
     And the deployment succeed
     Then the tide should be successful
+
+  Scenario: The tide should fail in an expression refer to a non-existing service of a deploy task
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        deployment:
+            deploy:
+                providerName: foo
+                services:
+                    mysql:
+                        specification:
+                            source:
+                                image: mysql
+        fixtures:
+            run:
+                providerName: foo
+                image: busybox
+                commands:
+                    - foo
+            filter:
+                expression: tasks.deployment.services.bar.created
+    """
+    When a tide is started
+    And the deployment succeed
+    Then the tide should be failed
+
+  Scenario: The tide should fail in an expression refer to a non-existing task
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        fixtures:
+            run:
+                providerName: foo
+                image: busybox
+                commands:
+                    - foo
+            filter:
+                expression: tasks.deployment.services.mysql.created
+    """
+    When a tide is started
+    Then the tide should be failed

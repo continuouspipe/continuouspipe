@@ -101,7 +101,9 @@ class FilterDecorator implements TaskRunner
                 'The expression provided ("%s") is not valid: %s',
                 $expression,
                 $e->getMessage()
-            ));
+            ), $e->getCode(), $e);
+        } catch (\InvalidArgumentException $e) {
+            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
         }
 
         if (!is_bool($evaluated)) {
