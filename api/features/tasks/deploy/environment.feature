@@ -34,3 +34,26 @@ Feature:
     And the component "two" should be deployed as accessible from outside
     And the component "two" should be deployed with the image "mine"
     And the component "two" should be deployed with a TCP port 80 named "twohttp" opened
+
+  Scenario: I can use persistent volumes
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                providerName: foo
+                services:
+                    image0:
+                        specification:
+                            volumes:
+                                - type: persistent
+                                  name: api-volume
+                                  capacity: 5Gi
+                            volume_mounts:
+                                - name: api-volume
+                                  mount_path: /var/lib/app
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the component "image0" should have a persistent volume mounted at "/var/lib/app"

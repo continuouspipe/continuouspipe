@@ -111,6 +111,7 @@ class DeployTaskFactory implements TaskFactory
                                                 ->scalarNode('type')->isRequired()->end()
                                                 ->scalarNode('name')->isRequired()->end()
                                                 ->scalarNode('path')->end()
+                                                ->scalarNode('capacity')->end()
                                             ->end()
                                         ->end()
                                     ->end()

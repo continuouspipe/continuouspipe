@@ -273,6 +273,31 @@ class DeployContext implements Context
     }
 
     /**
+     * @Then the component :componentName should have a persistent volume mounted at :mountPath
+     */
+    public function theComponentShouldHaveAPersistentVolumeMountedAt($componentName, $mountPath)
+    {
+        $component = $this->getDeployedComponent($componentName);
+        $volumeMounts = $component->getSpecification()->getVolumeMounts();
+        $matchingVolumeMounts = array_filter($volumeMounts, function(Component\VolumeMount $volumeMount) use ($mountPath) {
+            return $volumeMount->getMountPath() == $mountPath;
+        });
+
+        if (0 == count($matchingVolumeMounts)) {
+            throw new \RuntimeException(sprintf('No volume mount on path "%s"', $mountPath));
+        }
+
+        $volumeName = $matchingVolumeMounts[0]->getName();
+        $matchingVolumes = array_filter($component->getSpecification()->getVolumes(), function(Component\Volume $volume) use ($volumeName) {
+            return $volume->getName() == $volumeName;
+        });
+
+        if (0 === count($matchingVolumes)) {
+            throw new \RuntimeException(sprintf('No volume named "%s" found', $volumeName));
+        }
+    }
+
+    /**
      * @Then the component :componentName should be deployed
      */
     public function theComponentShouldBeDeployed($componentName)
