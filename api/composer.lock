@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1617911baa17522d92cdb3eac9eaef20",
-    "content-hash": "550760f6dbfffea2849f09a57fb5345d",
+    "hash": "62b46d78315bfd82d305717089ef49c8",
+    "content-hash": "54d60a6eb722400ea9125b7e9d5b00c6",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -125,21 +125,21 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
-                "reference": "455786dadaa3de91a235024c8242888aab8f3581"
+                "reference": "b6b851ce443e278576bfee6c47806df98933bd58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/455786dadaa3de91a235024c8242888aab8f3581",
-                "reference": "455786dadaa3de91a235024c8242888aab8f3581",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/b6b851ce443e278576bfee6c47806df98933bd58",
+                "reference": "b6b851ce443e278576bfee6c47806df98933bd58",
                 "shasum": ""
             },
             "require-dev": {
                 "jms/serializer": "^1.0",
-                "phpunit/phpunit": "^5.0"
+                "phpunit/phpunit": "~4.0"
             },
             "type": "library",
             "autoload": {
@@ -148,10 +148,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/model/tree/master",
+                "source": "https://github.com/continuouspipe/model/tree/1.0.1",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2015-10-08 08:28:37"
+            "time": "2015-10-26 10:04:14"
         },
         {
             "name": "continuous-pipe/security",
