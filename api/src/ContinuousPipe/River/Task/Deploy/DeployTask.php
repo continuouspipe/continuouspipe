@@ -8,6 +8,7 @@ use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use ContinuousPipe\River\Task\Deploy\ExposedContext\ServiceList;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\TaskQueued;
 use LogStream\LoggerFactory;
@@ -133,15 +134,16 @@ class DeployTask extends EventDrivenTask
 
         $componentStatuses = $deploymentSuccessfulEvents[0]->getDeployment()->getComponentStatuses();
         $services = array_map(function (ComponentStatus $status) {
-            return [
+            return json_decode(json_encode([
                 'created' => $status->isCreated(),
                 'updated' => $status->isUpdated(),
                 'deleted' => $status->isDeleted(),
-            ];
+            ]));
         }, $componentStatuses);
 
-        return [
-            'services' => $services,
-        ];
+        $view = new \stdClass();
+        $view->services = new ServiceList($services);
+
+        return $view;
     }
 }
