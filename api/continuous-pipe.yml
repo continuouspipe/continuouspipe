@@ -55,3 +55,4 @@ tasks:
               from_service: api
           commands:
               - php app/console doctrine:migrations:migrate --no-interaction
+              - php app/console rabbitmq:setup-fabric --no-interaction
