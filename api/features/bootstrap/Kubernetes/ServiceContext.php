@@ -59,6 +59,26 @@ class ServiceContext implements Context
     }
 
     /**
+     * @Given the service :name will be created with the public DNS address :address
+     */
+    public function theServiceWillBeCreatedWithThePublicDnsAddress($name, $address)
+    {
+        $this->hookableServiceRepository->addFindOneByNameHooks(function(Service $service) use ($name, $address) {
+            if ($service->getMetadata()->getName() == $name) {
+                $service = new Service(
+                    $service->getMetadata(),
+                    $service->getSpecification(),
+                    new ServiceStatus(new LoadBalancerStatus([
+                        new LoadBalancerIngress(null, $address)
+                    ]))
+                );
+            }
+
+            return $service;
+        });
+    }
+
+    /**
      * @Given I have a service :name with the selector :selector
      */
     public function iHaveAServiceWithTheSelector($name, $selector)

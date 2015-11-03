@@ -130,13 +130,16 @@ class LoopServiceWaiter implements ServiceWaiter
             throw new EndpointNotFound('No ingress found');
         }
 
-        $ingress = current($ingresses);
-        $ip = $ingress->getIp();
+        foreach ($ingresses as $ingress) {
+            if ($hostname = $ingress->getHostname()) {
+                return new PublicEndpoint($serviceName, $hostname);
+            }
 
-        if (empty($ip)) {
-            throw new EndpointNotFound('Empty IP found');
+            if ($ip = $ingress->getIp()) {
+                return new PublicEndpoint($serviceName, $ip);
+            }
         }
 
-        return new PublicEndpoint($serviceName, $ip);
+        throw new EndpointNotFound('No hostname or IP address found in ingresses');
     }
 }
