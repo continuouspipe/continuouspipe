@@ -14,6 +14,10 @@
         <service id="pipe.adapter.kubernetes.in_memory.service_account_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryServiceAccountRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.persistent_volume_claim_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryPersistentVolumeClaimRepository" />
 
+        <service id="pipe.adapter.kubernetes.hookable.service_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_repository" />
+        </service>
+
         <service id="pipe.adapter.kubernetes.traceable.namespace_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.namespace_repository" />
         </service>
@@ -27,7 +31,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_account_repository" />
         </service>
         <service id="pipe.adapter.kubernetes.traceable.service_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceRepository">
-            <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.service_repository" />
         </service>
         <service id="pipe.adapter.kubernetes.traceable.pod_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePodRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.pod_repository" />
@@ -56,8 +60,5 @@
         <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client" />
         </service>
-
-        <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWaiter" />
-
     </services>
 </container>
