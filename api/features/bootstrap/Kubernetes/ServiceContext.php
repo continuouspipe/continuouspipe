@@ -129,7 +129,7 @@ class ServiceContext implements Context
 
 
     /**
-     * @Given the service :name have the public endpoint :address
+     * @Given the service :name have the public IP :address
      */
     public function theServiceHaveThePublicEndpoint($name, $address)
     {
@@ -140,6 +140,22 @@ class ServiceContext implements Context
             $service->getSpecification(),
             new ServiceStatus(new LoadBalancerStatus([
                 new LoadBalancerIngress($address)
+            ]))
+        ));
+    }
+
+    /**
+     * @Given the service :name have the public hostname :hostname
+     */
+    public function theServiceHaveThePublicHostname($name, $hostname)
+    {
+        $service = $this->serviceRepository->findOneByName($name);
+
+        $this->serviceRepository->update(new Service(
+            $service->getMetadata(),
+            $service->getSpecification(),
+            new ServiceStatus(new LoadBalancerStatus([
+                new LoadBalancerIngress(null, $hostname)
             ]))
         ));
     }
