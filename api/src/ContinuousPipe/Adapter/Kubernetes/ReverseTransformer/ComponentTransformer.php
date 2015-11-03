@@ -6,12 +6,15 @@ use ContinuousPipe\Model\Component;
 use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\ContainerStatus;
+use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Model\ServiceSpecification;
 use Kubernetes\Client\NamespaceClient;
 use Symfony\Component\PropertyAccess\Exception\ExceptionInterface;
+use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyPath;
 
 class ComponentTransformer
 {
@@ -112,16 +115,35 @@ class ComponentTransformer
             $service = $namespaceClient->getServiceRepository()->findOneByName(
                 $replicationController->getMetadata()->getName()
             );
-
-            $accessor = PropertyAccess::createPropertyAccessor();
-            $ip = $accessor->getValue($service, 'status.loadBalancer.ingresses[0].ip');
-
-            return [$ip];
-        } catch (ExceptionInterface $e) {
         } catch (ServiceNotFound $e) {
+            return [];
         }
 
-        return [];
+        $accessor = PropertyAccess::createPropertyAccessor();
+        $publicEndpoints = [];
+
+        try {
+            $ingressesPath = 'status.loadBalancer.ingresses';
+
+            /** @var LoadBalancerIngress[] $ingresses */
+            $ingresses = $accessor->getValue($service, $ingressesPath);
+            if (!is_array($ingresses)) {
+                throw new UnexpectedTypeException($ingresses, new PropertyPath($ingressesPath), 0);
+            }
+
+            foreach ($ingresses as $ingress) {
+                if ($hostname = $ingress->getHostname()) {
+                    $publicEndpoints[] = $hostname;
+                }
+
+                if ($ip = $ingress->getIp()) {
+                    $publicEndpoints[] = $ip;
+                }
+            }
+        } catch (ExceptionInterface $e) {
+        }
+
+        return $publicEndpoints;
     }
 
     /**

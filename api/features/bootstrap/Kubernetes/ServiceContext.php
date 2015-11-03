@@ -4,6 +4,7 @@ namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWaiter;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceRepository;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use Kubernetes\Client\Exception\ServiceNotFound;
@@ -18,31 +19,63 @@ use Kubernetes\Client\Repository\ServiceRepository;
 class ServiceContext implements Context
 {
     /**
-     * @var PredictableServiceWaiter
-     */
-    private $serviceWaiter;
-
-    /**
      * @var TraceableServiceRepository
      */
     private $serviceRepository;
 
     /**
-     * @param PredictableServiceWaiter $serviceWaiter
+     * @var HookableServiceRepository
+     */
+    private $hookableServiceRepository;
+
+    /**
+     * @param HookableServiceRepository $hookableServiceRepository
      * @param TraceableServiceRepository $serviceRepository
      */
-    public function __construct(PredictableServiceWaiter $serviceWaiter, TraceableServiceRepository $serviceRepository)
+    public function __construct(HookableServiceRepository $hookableServiceRepository, TraceableServiceRepository $serviceRepository)
     {
-        $this->serviceWaiter = $serviceWaiter;
         $this->serviceRepository = $serviceRepository;
+        $this->hookableServiceRepository = $hookableServiceRepository;
     }
 
     /**
-     * @Given the service :name will be created with the public endpoint :address
+     * @Given the service :name will be created with the public IP :address
      */
     public function theServiceWillBeCreatedWithThePublicEndpoint($name, $address)
     {
-        $this->serviceWaiter->add(new PublicEndpoint($name, $address));
+        $this->hookableServiceRepository->addFindOneByNameHooks(function(Service $service) use ($name, $address) {
+            if ($service->getMetadata()->getName() == $name) {
+                $service = new Service(
+                    $service->getMetadata(),
+                    $service->getSpecification(),
+                    new ServiceStatus(new LoadBalancerStatus([
+                        new LoadBalancerIngress($address)
+                    ]))
+                );
+            }
+
+            return $service;
+        });
+    }
+
+    /**
+     * @Given the service :name will be created with the public DNS address :address
+     */
+    public function theServiceWillBeCreatedWithThePublicDnsAddress($name, $address)
+    {
+        $this->hookableServiceRepository->addFindOneByNameHooks(function(Service $service) use ($name, $address) {
+            if ($service->getMetadata()->getName() == $name) {
+                $service = new Service(
+                    $service->getMetadata(),
+                    $service->getSpecification(),
+                    new ServiceStatus(new LoadBalancerStatus([
+                        new LoadBalancerIngress(null, $address)
+                    ]))
+                );
+            }
+
+            return $service;
+        });
     }
 
     /**
@@ -129,7 +162,7 @@ class ServiceContext implements Context
 
 
     /**
-     * @Given the service :name have the public endpoint :address
+     * @Given the service :name have the public IP :address
      */
     public function theServiceHaveThePublicEndpoint($name, $address)
     {
@@ -140,6 +173,22 @@ class ServiceContext implements Context
             $service->getSpecification(),
             new ServiceStatus(new LoadBalancerStatus([
                 new LoadBalancerIngress($address)
+            ]))
+        ));
+    }
+
+    /**
+     * @Given the service :name have the public hostname :hostname
+     */
+    public function theServiceHaveThePublicHostname($name, $hostname)
+    {
+        $service = $this->serviceRepository->findOneByName($name);
+
+        $this->serviceRepository->update(new Service(
+            $service->getMetadata(),
+            $service->getSpecification(),
+            new ServiceStatus(new LoadBalancerStatus([
+                new LoadBalancerIngress(null, $hostname)
             ]))
         ));
     }

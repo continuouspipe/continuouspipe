@@ -31,8 +31,14 @@ Feature:
     When I request the environment list of the Kubernetes provider
     Then the status of the component "app" should be "healthy"
 
-  Scenario:
+  Scenario: The IP of the service should be in the status
     Given I have the application "simple-app" deployed
-    And the service "app" have the public endpoint "1.2.3.4"
+    And the service "app" have the public IP "1.2.3.4"
     When I request the environment list of the Kubernetes provider
     Then the status of the component "app" should contain the public endpoint "1.2.3.4"
+
+  Scenario: The hostname of the service should be in the status
+    Given I have the application "simple-app" deployed
+    And the service "app" have the public hostname "foo.bar.dns"
+    When I request the environment list of the Kubernetes provider
+    Then the status of the component "app" should contain the public endpoint "foo.bar.dns"

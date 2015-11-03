@@ -9,8 +9,8 @@ Feature:
 
   @smoke
   Scenario:
-    Given the service "api" will be created with the public endpoint "1.2.3.4"
-    And the service "ui" will be created with the public endpoint "5.6.7.8"
+    Given the service "api" will be created with the public IP "1.2.3.4"
+    And the service "ui" will be created with the public IP "5.6.7.8"
     When I send a deployment request from application template "two-public-components"
     Then the replication controller "api" should be created with the following environment variables:
       | name                        | value   |
@@ -20,18 +20,27 @@ Feature:
       | name    | value   |
       | API_URL | 1.2.3.4 |
 
-  Scenario:
-    Given the service "api" will be created with the public endpoint "1.2.3.4"
-    And the service "ui" will be created with the public endpoint "5.6.7.8"
+  Scenario: The public endpoint should be the HTTPLabs ones if the components are proxied
+    Given the service "api" will be created with the public IP "1.2.3.4"
+    And the service "ui" will be created with the public IP "5.6.7.8"
     When I send a deployment request from application template "two-proxied-components"
     Then the replication controller "api" should be created with the following environment variables:
       | name                        | value                          |
       | SERVICE_API_PUBLIC_ENDPOINT | badger-carrot-5678.httplabs.io |
       | SERVICE_UI_PUBLIC_ENDPOINT  | monkey-potato-5678.httplabs.io |
 
+  Scenario: The public endpoint should be the DNS addresses if the load balancer have DNS addresses
+    Given the service "api" will be created with the public DNS address "api.my-custom-dns"
+    And the service "ui" will be created with the public DNS address "1234.foo.ui.docker"
+    When I send a deployment request from application template "two-public-components"
+    Then the replication controller "api" should be created with the following environment variables:
+      | name                        | value              |
+      | SERVICE_API_PUBLIC_ENDPOINT | api.my-custom-dns  |
+      | SERVICE_UI_PUBLIC_ENDPOINT  | 1234.foo.ui.docker |
+
   Scenario: The public services should not be updated if the selector are the same
     Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app"
-    And the service "app" will be created with the public endpoint "1.2.3.4"
+    And the service "app" will be created with the public IP "1.2.3.4"
     When I send a deployment request from application template "simple-app-public"
     Then the service "app" should not be updated
     And the service "app" should not be deleted
@@ -39,7 +48,7 @@ Feature:
 
   Scenario: The public services should be deleted and then created if selectors are different
     Given I have a service "app" with the selector "component-identifier=app"
-    And the service "app" will be created with the public endpoint "1.2.3.4"
+    And the service "app" will be created with the public IP "1.2.3.4"
     When I send a deployment request from application template "simple-app-public"
     Then the service "app" should not be updated
     And the service "app" should be deleted
