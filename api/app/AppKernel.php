@@ -35,13 +35,13 @@ class AppKernel extends Kernel
         $bundles[] = new SimpleBus\AsynchronousBundle\SimpleBusAsynchronousBundle();
         $bundles[] = new SimpleBus\RabbitMQBundleBridge\SimpleBusRabbitMQBundleBridgeBundle();
         $bundles[] = new SimpleBus\JMSSerializerBundleBridge\SimpleBusJMSSerializerBundleBridgeBundle();
+        $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
+        $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+        $bundles[] = new Csa\Bundle\GuzzleBundle\CsaGuzzleBundle();
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'smoke_test'))) {
-            $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
-            $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
-            $bundles[] = new Csa\Bundle\GuzzleBundle\CsaGuzzleBundle();
         }
 
         return $bundles;

@@ -43,7 +43,3 @@ monolog:
 
 assetic:
     use_controller: true
-
-csa_guzzle:
-    profiler: %kernel.debug%
-    logger: true

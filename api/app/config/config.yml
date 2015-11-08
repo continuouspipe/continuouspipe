@@ -176,3 +176,7 @@ simple_bus_rabbit_mq_bundle_bridge:
 simple_bus_asynchronous:
     commands:
         logging: ~
+
+csa_guzzle:
+    profiler: true
+    logger: true
