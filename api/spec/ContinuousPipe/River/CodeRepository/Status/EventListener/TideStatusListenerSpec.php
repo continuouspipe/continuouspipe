@@ -8,14 +8,15 @@ use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
+use LogStream\LoggerFactory;
 use PhpSpec\ObjectBehavior;
 use Rhumsaa\Uuid\Uuid;
 
 class TideStatusListenerSpec extends ObjectBehavior
 {
-    public function let(TideRepository $tideRepository, CodeStatusUpdater $codeStatusUpdater)
+    public function let(TideRepository $tideRepository, CodeStatusUpdater $codeStatusUpdater, LoggerFactory $loggerFactory)
     {
-        $this->beConstructedWith($tideRepository, $codeStatusUpdater);
+        $this->beConstructedWith($tideRepository, $codeStatusUpdater, $loggerFactory);
     }
 
     public function it_updates_the_code_repository_status_when_tide_is_created(TideRepository $tideRepository, Tide $tide, CodeStatusUpdater $codeStatusUpdater, TideCreated $tideCreatedEvent)
