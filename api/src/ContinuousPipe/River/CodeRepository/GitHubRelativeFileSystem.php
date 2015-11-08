@@ -40,12 +40,16 @@ class GitHubRelativeFileSystem implements RelativeFileSystem
      */
     public function exists($filePath)
     {
-        return $this->client->repo()->contents()->exists(
-            $this->repositoryDescription->getUsername(),
-            $this->repositoryDescription->getRepository(),
-            $filePath,
-            $this->reference
-        );
+        try {
+            return $this->client->repo()->contents()->exists(
+                $this->repositoryDescription->getUsername(),
+                $this->repositoryDescription->getRepository(),
+                $filePath,
+                $this->reference
+            );
+        } catch (RequestException $e) {
+            return false;
+        }
     }
 
     /**
