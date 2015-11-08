@@ -25,5 +25,27 @@ angular.module('continuousPipeRiver')
                     label: 'Create'
                 }
             })
+            .state('github-tokens', {
+                parent: 'layout',
+                url: '/github-tokens',
+                templateUrl: 'account/github-tokens/views/list.html',
+                controller: 'GitHubTokensListController',
+                ncyBreadcrumb: {
+                    label: 'GitHub tokens'
+                },
+                aside: false
+            })
+            .state('github-tokens.create', {
+                url: '/create',
+                views: {
+                    '@layout': {
+                        templateUrl: 'account/github-tokens/views/create.html',
+                        controller: 'GitHubTokensCreateController'
+                    }
+                },
+                ncyBreadcrumb: {
+                    label: 'Create'
+                }
+            })
         ;
     });
