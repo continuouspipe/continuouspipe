@@ -180,6 +180,34 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @When I delete the GitHub token of :login from the bucket :bucket
+     */
+    public function iDeleteTheGithubTokenOfFromTheBucket($login, $bucket)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/github-tokens/%s', $bucket, $login),
+            'DELETE'
+        ));
+    }
+
+    /**
+     * @Then the list should not contain the access token :accessToken
+     */
+    public function theListShouldNotContainTheAccessToken($accessToken)
+    {
+        try {
+            $this->theListShouldContainTheAccessToken($accessToken);
+            $found = true;
+        } catch (\RuntimeException $e) {
+            $found = false;
+        }
+
+        if ($found) {
+            throw new \RuntimeException('Found token');
+        }
+    }
+
+    /**
      * @Then the list should contain the access token :token
      */
     public function theListShouldContainTheAccessToken($token)

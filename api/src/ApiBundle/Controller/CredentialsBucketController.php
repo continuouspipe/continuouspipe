@@ -120,4 +120,22 @@ class CredentialsBucketController
 
         return $token;
     }
+
+    /**
+     * @Route("/github-tokens/{login}", methods={"DELETE"})
+     * @View
+     */
+    public function deleteGitHubTokenAction(Bucket $bucket, $login)
+    {
+        $tokens = $bucket->getGitHubTokens();
+        $matchingTokens = $tokens->filter(function (GitHubToken $token) use ($login) {
+            return $token->getLogin() == $login;
+        });
+
+        foreach ($matchingTokens as $token) {
+            $tokens->removeElement($token);
+        }
+
+        $this->bucketRepository->save($bucket);
+    }
 }
