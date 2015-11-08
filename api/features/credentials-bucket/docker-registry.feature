@@ -7,7 +7,6 @@ Feature:
     Given I am authenticated as user "samuel"
     And the user "samuel" have access to the bucket "00000000-0000-0000-0000-000000000000"
 
-  @smoke
   Scenario: I can create new Docker Registry credentials
     When I create a new docker registry with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
       | serverAddress | username | password | email                 |
@@ -20,6 +19,7 @@ Feature:
       | docker.io     | foo      | bar      |
     Then I should receive a bad request error
 
+  @smoke
   Scenario: I can list the Docker Registry credentials of a bucket
     Given I have the following docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000":
       | serverAddress | username | password | email                 |

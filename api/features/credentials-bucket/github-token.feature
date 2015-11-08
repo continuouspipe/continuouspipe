@@ -7,7 +7,6 @@ Feature:
     Given I am authenticated as user "samuel"
     And the user "samuel" have access to the bucket "00000000-0000-0000-0000-000000000000"
 
-  @smoke
   Scenario: I can create new GitHub tokens
     When I create a GitHub token with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
       | login | accessToken                              |
@@ -20,6 +19,7 @@ Feature:
       | sroze |
     Then I should receive a bad request error
 
+  @smoke
   Scenario: I can list the Docker Registry credentials of a bucket
     Given I have the following GitHub tokens in the bucket "00000000-0000-0000-0000-000000000000":
       | login | accessToken                              |

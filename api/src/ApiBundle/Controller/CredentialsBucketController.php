@@ -4,6 +4,7 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Credentials\GitHubToken;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -134,6 +135,52 @@ class CredentialsBucketController
 
         foreach ($matchingTokens as $token) {
             $tokens->removeElement($token);
+        }
+
+        $this->bucketRepository->save($bucket);
+    }
+
+    /**
+     * @Route("/clusters", methods={"GET"})
+     * @View
+     */
+    public function listClustersAction(Bucket $bucket)
+    {
+        return $bucket->getClusters();
+    }
+
+    /**
+     * @Route("/clusters", methods={"POST"})
+     * @ParamConverter("cluster", converter="fos_rest.request_body")
+     * @View(statusCode=201)
+     */
+    public function createClusterAction(Bucket $bucket, Cluster $cluster)
+    {
+        $violations = $this->validator->validate($cluster);
+        if (count($violations) > 0) {
+            return FOSRestView::create($violations, 400);
+        }
+
+        $bucket->getClusters()->add($cluster);
+
+        $this->bucketRepository->save($bucket);
+
+        return $cluster;
+    }
+
+    /**
+     * @Route("/clusters/{identifier}", methods={"DELETE"})
+     * @View
+     */
+    public function deleteClusterAction(Bucket $bucket, $identifier)
+    {
+        $clusters = $bucket->getClusters();
+        $matchingClusters = $clusters->filter(function (Cluster $cluster) use ($identifier) {
+            return $cluster->getIdentifier() == $identifier;
+        });
+
+        foreach ($matchingClusters as $cluster) {
+            $clusters->removeElement($cluster);
         }
 
         $this->bucketRepository->save($bucket);

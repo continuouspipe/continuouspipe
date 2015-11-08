@@ -88,6 +88,15 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @Given I have the following clusters in the bucket :bucket:
+     */
+    public function iHaveTheFollowingClustersInTheBucket($bucket, TableNode $table)
+    {
+        $this->iCreateAClusterWithTheFollowingConfigurationInTheBucket($bucket, $table);
+        $this->assertResponseCodeIs($this->response, 201);
+    }
+
+    /**
      * @When I create a new docker registry with the following configuration in the bucket :bucket:
      */
     public function iCreateANewDockerRegistryWithTheFollowingConfiguration($bucket, TableNode $table)
@@ -188,6 +197,87 @@ class CredentialsBucketContext implements Context
             sprintf('/api/bucket/%s/github-tokens/%s', $bucket, $login),
             'DELETE'
         ));
+    }
+
+    /**
+     * @When I create a cluster with the following configuration in the bucket :bucket:
+     */
+    public function iCreateAClusterWithTheFollowingConfigurationInTheBucket($bucket, TableNode $table)
+    {
+        $content = json_encode($table->getHash()[0]);
+
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/clusters', $bucket),
+            'POST', [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $content
+        ));
+    }
+
+    /**
+     * @When I ask the list of the clusters in the bucket :bucket
+     */
+    public function iAskTheListOfTheClustersInTheBucket($bucket)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/clusters', $bucket),
+            'GET'
+        ));
+    }
+
+    /**
+     * @When I delete the cluster :identifier from the bucket :bucket
+     */
+    public function iDeleteTheClusterFromTheBucket($identifier, $bucket)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/clusters/%s', $bucket, $identifier),
+            'DELETE'
+        ));
+    }
+
+    /**
+     * @When the list should not contain the cluster :identifier
+     */
+    public function theListShouldNotContainTheCluster($identifier)
+    {
+        try {
+            $this->theListShouldContainTheCluster($identifier);
+            $found = true;
+        } catch (\Exception $e) {
+            $found = false;
+        }
+
+        if ($found) {
+            throw new \Exception('The cluster was found');
+        }
+    }
+
+    /**
+     * @Then the list should contain the cluster :identifier
+     */
+    public function theListShouldContainTheCluster($identifier)
+    {
+        $decoded = json_decode($this->response->getContent(), true);
+        if (!is_array($decoded)) {
+            throw new \RuntimeException('Expected to get an array in the JSON response');
+        }
+
+        $matchingClusters = array_filter($decoded, function(array $row) use ($identifier) {
+            return $row['identifier'] == $identifier;
+        });
+
+        if (0 == count($matchingClusters)) {
+            throw new \RuntimeException('No matching cluster found');
+        }
+    }
+
+    /**
+     * @Then the new cluster should have been saved successfully
+     */
+    public function theNewClusterShouldHaveBeenSavedSuccessfully()
+    {
+        $this->assertResponseCodeIs($this->response, 201);
     }
 
     /**
