@@ -27,7 +27,7 @@ tasks:
                           - name: LOGSTREAM_URL
                             value: http://logstream.continuouspipe.io
                           - name: BUILDER_URL
-                            value: http://builder.continuouspipe.io
+                            value: ${BUILDER_URL}
                           - name: PIPE_URL
                             value: http://pipe.continuouspipe.io
                           - name: RIVER_UI_URL
@@ -43,7 +43,7 @@ tasks:
                           - name: LOGSTREAM_URL
                             value: http://logstream.continuouspipe.io
                           - name: BUILDER_URL
-                            value: http://builder.continuouspipe.io
+                            value: ${BUILDER_URL}
                           - name: PIPE_URL
                             value: http://pipe.continuouspipe.io
                           - name: RIVER_URL
