@@ -11,6 +11,7 @@ use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\EventBus\EventStore;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Pipe\View\ComponentStatus;
+use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Exception\ReplicationControllerNotFound;
 use Kubernetes\Client\Exception\ServiceNotFound;
 use Rhumsaa\Uuid\Uuid;
@@ -77,7 +78,7 @@ class RollbackDeploymentHandler implements DeploymentHandler
      */
     public function supports(DeploymentContext $context)
     {
-        return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
+        return $context->getCluster() instanceof Kubernetes;
     }
 
     /**
