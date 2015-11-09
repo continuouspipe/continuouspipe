@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Client;
 
-use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
+use ContinuousPipe\Security\Credentials\Cluster;
 use JMS\Serializer\Serializer;
 use Kubernetes\Client\Adapter\Http\AuthenticationMiddleware;
 use Kubernetes\Client\Adapter\Http\GuzzleHttpClient;
@@ -34,21 +34,20 @@ class HttpClientFactory implements KubernetesClientFactory
     }
 
     /**
-     * @param KubernetesProvider $provider
+     * @param Cluster\Kubernetes $cluster
      *
      * @return Client
      */
-    public function getByProvider(KubernetesProvider $provider)
+    public function getByCluster(Cluster\Kubernetes $cluster)
     {
-        $cluster = $provider->getCluster();
         $httpClient = new GuzzleHttpClient(
             $this->guzzleClient,
             $cluster->getAddress(),
             $cluster->getVersion()
         );
 
-        if (null !== ($user = $provider->getUser())) {
-            $httpClient = new AuthenticationMiddleware($httpClient, $user->getUsername(), $user->getPassword());
+        if (null !== $cluster->getUsername()) {
+            $httpClient = new AuthenticationMiddleware($httpClient, $cluster->getUsername(), $cluster->getPassword());
         }
 
         return new Client(

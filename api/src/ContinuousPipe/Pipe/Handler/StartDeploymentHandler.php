@@ -3,10 +3,7 @@
 namespace ContinuousPipe\Pipe\Handler;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
-use ContinuousPipe\Adapter\ProviderNotFound;
-use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\Model\Environment;
-use ContinuousPipe\Pipe\AdapterProviderRepository;
 use ContinuousPipe\Pipe\Cluster\ClusterNotFound;
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
@@ -43,17 +40,17 @@ class StartDeploymentHandler
     private $bucketRepository;
 
     /**
-     * @param BucketRepository $bucketRepository
+     * @param BucketRepository         $bucketRepository
      * @param EnvironmentClientFactory $environmentClientFactory
-     * @param MessageBus $eventBus
-     * @param DeploymentLoggerFactory $loggerFactory
+     * @param MessageBus               $eventBus
+     * @param DeploymentLoggerFactory  $loggerFactory
      */
     public function __construct(BucketRepository $bucketRepository, EnvironmentClientFactory $environmentClientFactory, MessageBus $eventBus, DeploymentLoggerFactory $loggerFactory)
     {
+        $this->bucketRepository = $bucketRepository;
         $this->environmentClientFactory = $environmentClientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
-        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -71,9 +68,9 @@ class StartDeploymentHandler
         $specification = $request->getSpecification();
 
         $logger->append(new Text(sprintf(
-            'Deploying to the environment "%s" to provider "%s"',
+            'Deploying to the environment "%s" to cluster "%s"',
             $target->getEnvironmentName(),
-            $target->getProviderName()
+            $target->getClusterIdentifier()
         )));
 
         $environment = new Environment(
@@ -104,9 +101,11 @@ class StartDeploymentHandler
     }
 
     /**
-     * @param Uuid $bucketUuid
+     * @param Uuid   $bucketUuid
      * @param string $clusterIdentifier
+     *
      * @return Cluster
+     *
      * @throws ClusterNotFound
      */
     private function getCluster(Uuid $bucketUuid, $clusterIdentifier)
@@ -117,7 +116,7 @@ class StartDeploymentHandler
             throw new ClusterNotFound('The credentials bucket is not found', $e->getCode(), $e);
         }
 
-        $matchingClusters = $bucket->getClusters()->filter(function(Cluster $cluster) use ($clusterIdentifier) {
+        $matchingClusters = $bucket->getClusters()->filter(function (Cluster $cluster) use ($clusterIdentifier) {
             return $cluster->getIdentifier() == $clusterIdentifier;
         });
 

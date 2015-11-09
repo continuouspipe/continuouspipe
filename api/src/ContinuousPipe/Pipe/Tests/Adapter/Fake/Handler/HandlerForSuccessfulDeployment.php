@@ -11,7 +11,7 @@ use ContinuousPipe\Pipe\Event\ComponentsCreated;
 use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
 use ContinuousPipe\Pipe\Event\PublicEndpointsReady;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
-use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeAdapter;
+use ContinuousPipe\Pipe\Tests\Cluster\TestCluster;
 use SimpleBus\Message\Bus\MessageBus;
 
 class HandlerForSuccessfulDeployment implements DeploymentHandler
@@ -48,6 +48,6 @@ class HandlerForSuccessfulDeployment implements DeploymentHandler
      */
     public function supports(DeploymentContext $context)
     {
-        return $context->getProvider()->getAdapterType() == FakeAdapter::TYPE;
+        return $context->getCluster() instanceof TestCluster;
     }
 }

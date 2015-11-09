@@ -36,7 +36,7 @@ class DeploymentContext
 
     /**
      * @param View\Deployment $deployment
-     * @param Cluster $cluster
+     * @param Cluster         $cluster
      * @param Log             $log
      * @param Environment     $environment
      */

@@ -27,7 +27,7 @@ class DeploymentClientFactory
      */
     public function get(DeploymentContext $context)
     {
-        $client = $this->kubernetesClientFactory->getByProvider($context->getProvider());
+        $client = $this->kubernetesClientFactory->getByCluster($context->getCluster());
 
         if (!$context->has(KubernetesDeploymentContext::NAMESPACE_KEY)) {
             throw new \RuntimeException('Expecting the namespace object to be in the deployment context');

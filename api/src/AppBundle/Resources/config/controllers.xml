@@ -5,21 +5,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="pipe.controllers.create_provider" class="AppBundle\Controller\CreateProviderController">
-            <argument type="service" id="pipe.adapter_registry" />
-            <argument type="service" id="jms_serializer" />
-        </service>
-
-        <service id="pipe.controllers.get_provider" class="AppBundle\Controller\GetProviderController">
-            <argument type="service" id="pipe.provider_repository" />
-        </service>
-
-        <service id="pipe.controllers.delete_provider" class="AppBundle\Controller\DeleteProviderController">
-            <argument type="service" id="pipe.provider_repository" />
-        </service>
-
         <service id="pipe.controllers.environment" class="AppBundle\Controller\EnvironmentController">
-            <argument type="service" id="pipe.provider_repository" />
+            <argument type="service" id="authenticator.bucket_repository" />
             <argument type="service" id="pipe.chain_environment_client_factory" />
         </service>
 
@@ -28,6 +15,13 @@
             <argument type="service" id="pipe.view.deployment_repository" />
             <argument type="service" id="security.user_context" />
             <argument type="service" id="command_bus" />
+        </service>
+
+        <!-- Param Converters -->
+        <service id="app.request.param_converter.team" class="ContinuousPipe\Security\Request\ParamConverter\TeamParamConverter">
+            <argument type="service" id="authenticator.team_repository" />
+
+            <tag name="request.param_converter" converter="team" />
         </service>
     </services>
 </container>

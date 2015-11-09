@@ -60,7 +60,7 @@ class DeploymentController extends Controller
      *
      * @Route("/deployments", methods={"POST"})
      * @ParamConverter("deploymentRequest", converter="fos_rest.request_body")
-     * @View
+     * @View(statusCode=201)
      */
     public function createAction(DeploymentRequest $deploymentRequest)
     {

@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Tests;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
-use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
+use ContinuousPipe\Security\Credentials\Cluster;
 use Kubernetes\Client\Client;
 
 class InjectedClientFactory implements KubernetesClientFactory
@@ -22,9 +22,11 @@ class InjectedClientFactory implements KubernetesClientFactory
     }
 
     /**
-     * {@inheritdoc}
+     * @param Cluster\Kubernetes $cluster
+     *
+     * @return Client
      */
-    public function getByProvider(KubernetesProvider $provider)
+    public function getByCluster(Cluster\Kubernetes $cluster)
     {
         return $this->client;
     }

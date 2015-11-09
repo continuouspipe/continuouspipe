@@ -4,7 +4,6 @@ namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
-use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
 use ContinuousPipe\Adapter\Kubernetes\Service\CreatedService;
 use ContinuousPipe\Adapter\Kubernetes\Service\FoundService;

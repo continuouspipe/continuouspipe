@@ -4,7 +4,6 @@ namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
-use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesDeploymentContext;
 use ContinuousPipe\Adapter\Kubernetes\Naming\NamingStrategy;
 use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
@@ -86,7 +85,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
         $logger = $this->loggerFactory->from($context->getLog());
         $environment = $context->getEnvironment();
 
-        $namespaceRepository = $this->kubernetesClientFactory->getByProvider($context->getProvider())->getNamespaceRepository();
+        $namespaceRepository = $this->kubernetesClientFactory->getByCluster($context->getCluster())->getNamespaceRepository();
         $namespace = $this->namingStrategy->getEnvironmentNamespace($environment);
         $namespaceName = $namespace->getMetadata()->getName();
 

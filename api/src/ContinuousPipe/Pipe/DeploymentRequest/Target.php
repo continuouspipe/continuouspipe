@@ -28,16 +28,6 @@ class Target
 
     /**
      * @return string
-     *
-     * @deprecated
-     */
-    public function getProviderName()
-    {
-        throw new \RuntimeException('DEPRECATED');
-    }
-
-    /**
-     * @return string
      */
     public function getClusterIdentifier()
     {

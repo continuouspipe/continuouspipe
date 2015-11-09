@@ -5,7 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="pipe.adapter.fake.repository" class="ContinuousPipe\Pipe\Tests\InMemoryProviderRepository" />
         <service id="pipe.adapter.fake.client" class="ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient">
             <argument type="service" id="event_bus" />
         </service>
@@ -13,7 +12,6 @@
             <argument type="service" id="pipe.adapter.fake.client" />
         </service>
         <service id="pipe.adapter.fake" class="ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeAdapter">
-            <argument type="service" id="pipe.adapter.fake.repository" />
             <argument type="service" id="pipe.adapter.fake.client_factory" />
 
             <tag name="pipe.adapter" />

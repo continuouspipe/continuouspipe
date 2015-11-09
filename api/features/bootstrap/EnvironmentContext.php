@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Adapter\Kubernetes\Cluster;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
 use ContinuousPipe\Model\Environment;
@@ -12,6 +13,7 @@ use ContinuousPipe\Pipe\Event\DeploymentStarted;
 use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
+use ContinuousPipe\Pipe\Tests\Cluster\TestCluster;
 use ContinuousPipe\Pipe\Tests\Notification\TraceableNotifier;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
@@ -28,11 +30,6 @@ use Rhumsaa\Uuid\Uuid;
 
 class EnvironmentContext implements Context
 {
-    /**
-     * @var ProviderContext
-     */
-    private $providerContext;
-
     /**
      * @var Kernel
      */
@@ -78,11 +75,6 @@ class EnvironmentContext implements Context
     private $inMemoryAuthenticatorClient;
 
     /**
-     * @var array|null
-     */
-    private $lastDeployment;
-
-    /**
      * @param Kernel $kernel
      * @param EventStore $eventStore
      * @param DeploymentRepository $deploymentRepository
@@ -101,70 +93,25 @@ class EnvironmentContext implements Context
     }
 
     /**
-     * @BeforeScenario
+     * @When I request the environment list of the cluster :cluster of the team :team
      */
-    public function gatherContexts(BeforeScenarioScope $scope)
+    public function iRequestTheEnvironmentListOfTheCluster($cluster, $team)
     {
-        $this->providerContext = $scope->getEnvironment()->getContext('ProviderContext');
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/teams/%s/clusters/%s/environments', $team, $cluster),
+            'GET'
+        ));
     }
 
     /**
-     * @When I send a valid deployment request
+     * @When I delete the environment named :environment of the cluster :cluster of the team :team
      */
-    public function iSendAValidDeploymentRequest()
+    public function iDeleteTheEnvironmentNamedOfTheClusterOfTheTeam($environment, $cluster, $team)
     {
-        $this->providerContext->iHaveAFakeProviderNamed('foo');
-        $this->sendDeploymentRequest('fake/foo', 'foo');
-    }
-
-    /**
-     * @Then the environment should be created or updated
-     */
-    public function theEnvironmentShouldBeCreatedOrUpdated()
-    {
-        $events = $this->eventStore->findByDeploymentUuid(
-            $this->lastDeploymentUuid
-        );
-
-        if (0 === count($events)) {
-            throw new \RuntimeException('Expected to have at least one event for this deployment, found 0');
-        }
-    }
-
-    /**
-     * @Then the deployment should be successful
-     */
-    public function theDeploymentShouldBeSuccessful()
-    {
-        $events = $this->eventStore->findByDeploymentUuid(
-            $this->lastDeploymentUuid
-        );
-
-        $deploymentSuccessfulEvents = array_filter($events, function ($event) {
-            return $event instanceof DeploymentSuccessful;
-        });
-
-        if (count($deploymentSuccessfulEvents) == 0) {
-            throw new \RuntimeException('No event successful deployment found');
-        }
-    }
-
-    /**
-     * @Then the deployment should be failed
-     */
-    public function theDeploymentShouldBeFailed()
-    {
-        $events = $this->eventStore->findByDeploymentUuid(
-            $this->lastDeploymentUuid
-        );
-
-        $deploymentFailedEvents = array_filter($events, function ($event) {
-            return $event instanceof DeploymentFailed;
-        });
-
-        if (count($deploymentFailedEvents) == 0) {
-            throw new \RuntimeException('No event failed deployment found');
-        }
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/teams/%s/clusters/%s/environments/%s', $team, $cluster, $environment),
+            'DELETE'
+        ));
     }
 
     /**
@@ -209,65 +156,6 @@ class EnvironmentContext implements Context
     }
 
     /**
-     * @When the deployment is failed
-     */
-    public function theDeploymentIsFailed()
-    {
-        $lastEvents = $this->eventStore->findByDeploymentUuid($this->lastDeploymentUuid);
-        $deploymentStartedEvents = array_filter($lastEvents, function(DeploymentEvent $event) {
-            return $event instanceof DeploymentStarted;
-        });
-
-        if (0 === count($deploymentStartedEvents)) {
-            throw new \RuntimeException('Deployment not even started');
-        }
-
-        /** @var DeploymentStarted $deploymentStartedEvent */
-        $deploymentStartedEvent = $deploymentStartedEvents[0];
-        $this->eventBus->handle(new DeploymentFailed($deploymentStartedEvent->getDeploymentContext()));
-    }
-
-    /**
-     * @Given I have a running deployment
-     * @Given a deployment is started
-     */
-    public function iHaveARunningDeployment()
-    {
-        $deployment = $this->deploymentRepository->save(
-            Deployment::fromRequest(
-                new DeploymentRequest(
-                    new DeploymentRequest\Target(),
-                    new DeploymentRequest\Specification(),
-                    Uuid::uuid1(),
-                    new DeploymentRequest\Notification(
-                        'http://foo/bar'
-                    )
-                ),
-                new User('sroze@inviqa.com', Uuid::uuid1())
-            )
-        );
-
-        $this->eventStore->add(new DeploymentStarted(
-            new DeploymentContext(
-                $deployment,
-                new FakeProvider('foo'),
-                null,
-                new Environment('', '')
-            )
-        ));
-
-        $this->lastDeploymentUuid = $deployment->getUuid();
-    }
-
-    /**
-     * @When the deployment is successful
-     */
-    public function theDeploymentIsSuccessful()
-    {
-        $this->eventBus->handle(new DeploymentSuccessful($this->lastDeploymentUuid));
-    }
-
-    /**
      * @When I send a deployment request without a given target
      */
     public function iSendADeploymentRequestWithoutAGivenTarget()
@@ -289,6 +177,7 @@ class EnvironmentContext implements Context
     public function theValidationShouldFail()
     {
         if ($this->response->getStatusCode() !== 400) {
+            echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
                 'Expected the response to be 400, but got %d',
                 $this->response->getStatusCode()
@@ -379,48 +268,36 @@ class EnvironmentContext implements Context
     }
 
     /**
-     * @param string $identifier
-     *
-     * @return array
-     */
-    private function getEnvironmentFromListResponse($identifier = null)
-    {
-        $identifier = $identifier ?: $this->deploymentEnvironmentName;
-        $response = $this->providerContext->getLastResponseJson();
-        if (!is_array($response)) {
-            throw new \RuntimeException('Expecting an array, got something else');
-        }
-
-        $matchingEnvironments = array_filter($response, function($environment) use ($identifier) {
-            return $environment['identifier'] == $identifier;
-        });
-
-        if (0 == count($matchingEnvironments)) {
-            throw new \RuntimeException(sprintf(
-                'No environment named "%s" found',
-                $identifier
-            ));
-        }
-
-        return current($matchingEnvironments);
-    }
-
-    /**
      * @param string $name
      * @return array
      */
     private function getComponentFromListResponse($name)
     {
-        $environment = $this->getEnvironmentFromListResponse();
-        $components = $environment['components'];
-        $matchingComponents = array_filter($components, function($component) use ($name) {
-            return $component['name'] == $name;
-        });
+        if ($this->response->getStatusCode() !== 200) {
+            echo $this->response->getContent();
 
-        if (0 == count($matchingComponents)) {
-            throw new \RuntimeException(sprintf('No component named "%s" found in the environment', $name));
+            throw new \RuntimeException(sprintf(
+                'Expected response code 200, got %d',
+                $this->response->getStatusCode()
+            ));
         }
 
-        return current($matchingComponents);
+        $environments = json_decode($this->response->getContent(), true);
+        if (!is_array($environments)) {
+            throw new \RuntimeException('Expecting an array, got something else');
+        }
+
+        foreach ($environments as $environment) {
+            $components = $environment['components'];
+            $matchingComponents = array_filter($components, function ($component) use ($name) {
+                return $component['name'] == $name;
+            });
+
+            if (0 < count($matchingComponents)) {
+                return current($matchingComponents);
+            }
+        }
+
+        throw new \RuntimeException(sprintf('No component named "%s" found in the environment', $name));
     }
 }

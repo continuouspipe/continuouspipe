@@ -2,10 +2,11 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes;
 
+use ContinuousPipe\Adapter\ClusterNotSupported;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
-use ContinuousPipe\Adapter\Provider;
+use ContinuousPipe\Security\Credentials\Cluster;
 
 class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 {
@@ -32,14 +33,14 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
     /**
      * {@inheritdoc}
      */
-    public function getByProvider(Provider $provider)
+    public function getByCluster(Cluster $cluster)
     {
-        if (!$provider instanceof KubernetesProvider) {
-            throw new \RuntimeException('Not supported provider');
+        if (!$cluster instanceof Cluster\Kubernetes) {
+            throw new ClusterNotSupported('Only Kubernetes clusters supported');
         }
 
         return new KubernetesEnvironmentClient(
-            $this->clientFactory->getByProvider($provider),
+            $this->clientFactory->getByCluster($cluster),
             $this->namespaceInspector
         );
     }

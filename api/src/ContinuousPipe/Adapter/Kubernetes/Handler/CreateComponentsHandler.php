@@ -7,7 +7,6 @@ use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
 use ContinuousPipe\Adapter\Kubernetes\Component\ComponentException;
 use ContinuousPipe\Adapter\Kubernetes\Event\AfterCreatingComponent;
 use ContinuousPipe\Adapter\Kubernetes\Event\BeforeCreatingComponent;
-use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
 use ContinuousPipe\Model\Component;
