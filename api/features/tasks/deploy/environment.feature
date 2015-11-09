@@ -12,7 +12,7 @@ Feature:
                   two:
                       image: mine
         - deploy:
-              providerName: foo
+              cluster: foo
               services:
                   one:
                       specification:
@@ -42,7 +42,7 @@ Feature:
     tasks:
         deployment:
             deploy:
-                providerName: foo
+                cluster: foo
                 services:
                     image0:
                         specification:

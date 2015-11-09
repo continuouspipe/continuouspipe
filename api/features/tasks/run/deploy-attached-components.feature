@@ -9,7 +9,7 @@ Feature:
     tasks:
         testing:
             run:
-                providerName: foo
+                cluster: foo
                 commands:
                     - echo testing
                     - sleep 10

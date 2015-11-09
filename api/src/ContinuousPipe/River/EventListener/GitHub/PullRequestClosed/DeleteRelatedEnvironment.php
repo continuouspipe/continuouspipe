@@ -4,8 +4,8 @@ namespace ContinuousPipe\River\EventListener\GitHub\PullRequestClosed;
 
 use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
-use ContinuousPipe\River\Pipe\ProviderNameNotFound;
-use ContinuousPipe\River\Pipe\ProviderNameResolver;
+use ContinuousPipe\River\Pipe\ClusterIdentifierNotFound;
+use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
@@ -29,9 +29,9 @@ class DeleteRelatedEnvironment
     private $environmentNamingStrategy;
 
     /**
-     * @var ProviderNameResolver
+     * @var ClusterIdentifierResolver
      */
-    private $providerNameResolver;
+    private $clusterIdentifierResolver;
 
     /**
      * @var LoggerInterface
@@ -42,15 +42,15 @@ class DeleteRelatedEnvironment
      * @param Client                    $client
      * @param TideRepository            $tideRepository
      * @param EnvironmentNamingStrategy $environmentNamingStrategy
-     * @param ProviderNameResolver      $providerNameResolver
+     * @param ClusterIdentifierResolver $clusterIdentifierResolver
      * @param LoggerInterface           $systemLogger
      */
-    public function __construct(Client $client, TideRepository $tideRepository, EnvironmentNamingStrategy $environmentNamingStrategy, ProviderNameResolver $providerNameResolver, LoggerInterface $systemLogger)
+    public function __construct(Client $client, TideRepository $tideRepository, EnvironmentNamingStrategy $environmentNamingStrategy, ClusterIdentifierResolver $clusterIdentifierResolver, LoggerInterface $systemLogger)
     {
         $this->client = $client;
         $this->tideRepository = $tideRepository;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
-        $this->providerNameResolver = $providerNameResolver;
+        $this->clusterIdentifierResolver = $clusterIdentifierResolver;
         $this->systemLogger = $systemLogger;
     }
 
@@ -64,7 +64,7 @@ class DeleteRelatedEnvironment
         foreach ($tides as $tide) {
             try {
                 $target = $this->getTideTarget($tide);
-            } catch (ProviderNameNotFound $e) {
+            } catch (ClusterIdentifierNotFound $e) {
                 $this->systemLogger->error('Unable to resolve tide target provider', [
                     'exception' => $e,
                     'tide' => $tide,
@@ -73,7 +73,7 @@ class DeleteRelatedEnvironment
                 continue;
             }
 
-            $this->client->deleteEnvironment($target, $tide->getUser());
+            $this->client->deleteEnvironment($target, $tide->getTeam(), $tide->getUser());
         }
     }
 
@@ -89,7 +89,7 @@ class DeleteRelatedEnvironment
                 $tide->getFlow()->getUuid(),
                 $tide->getCodeReference()
             ),
-            $this->providerNameResolver->getProviderName($tide)
+            $this->clusterIdentifierResolver->getClusterIdentifier($tide)
         );
     }
 }

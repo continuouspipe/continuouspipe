@@ -7,8 +7,6 @@ use ContinuousPipe\River\Task\TaskContext;
 
 class DeployContext extends TaskContext
 {
-    const PROVIDER_NAME_KEY = 'providerName';
-
     /**
      * @param Context $parent
      *
@@ -19,13 +17,5 @@ class DeployContext extends TaskContext
         $context = new self($parent);
 
         return $context;
-    }
-
-    /**
-     * @return string
-     */
-    public function getProviderName()
-    {
-        return $this->get(self::PROVIDER_NAME_KEY);
     }
 }

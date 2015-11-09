@@ -5,6 +5,7 @@ namespace ContinuousPipe\Pipe;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client as GuzzleClient;
@@ -68,38 +69,40 @@ class HttpPipeClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function deleteEnvironment(DeploymentRequest\Target $target, User $user)
+    public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser)
     {
         $url = sprintf(
-            $this->baseUrl.'/providers/%s/environments/%s',
-            $target->getProviderName(),
+            $this->baseUrl.'/teams/%s/clusters/%s/environments/%s',
+            $team->getSlug(),
+            $target->getClusterIdentifier(),
             $target->getEnvironmentName()
         );
 
         $this->client->delete($url, [
-            'headers' => $this->getRequestHeaders($user),
+            'headers' => $this->getRequestHeaders($authenticatedUser),
         ]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEnvironments($providerName, User $user)
+    public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
     {
         $url = sprintf(
-            $this->baseUrl.'/providers/%s/environments',
-            $providerName
+            $this->baseUrl.'/teams/%s/clusters/%s/environments',
+            $team->getSlug(),
+            $clusterIdentifier
         );
 
         try {
             $response = $this->client->get($url, [
-                'headers' => $this->getRequestHeaders($user),
+                'headers' => $this->getRequestHeaders($authenticatedUser),
             ]);
         } catch (ClientException $e) {
             if ($e->getResponse()->getStatusCode() == 404) {
-                throw new ProviderNotFound(sprintf(
-                    'Provider named "%s" is not found',
-                    $providerName
+                throw new ClusterNotFound(sprintf(
+                    'Cluster named "%s" is not found',
+                    $clusterIdentifier
                 ));
             }
 

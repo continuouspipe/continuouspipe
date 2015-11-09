@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Tests\Pipe;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Rhumsaa\Uuid\Uuid;
 
@@ -30,14 +31,14 @@ class FakeClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function deleteEnvironment(DeploymentRequest\Target $target, User $user)
+    public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEnvironments($providerName, User $user)
+    public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
     {
         return $this->environments;
     }

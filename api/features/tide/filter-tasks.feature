@@ -21,14 +21,14 @@ Feature:
     """
     tasks:
         - run:
-              providerName: foo
+              cluster: foo
               image: busybox
               commands:
                   - foo
           filter:
               expression: codeReference.branch == 'master'
         - deploy:
-              providerName: foo
+              cluster: foo
               services: []
     """
     When a tide is started for the branch "feature"
@@ -39,14 +39,14 @@ Feature:
     """
     tasks:
         - run:
-              providerName: foo
+              cluster: foo
               image: busybox
               commands:
                   - foo
           filter:
               expression: codeReference.branch == 'master'
         - deploy:
-              providerName: foo
+              cluster: foo
               services: []
     """
     When a tide is started for the branch "master"
@@ -58,7 +58,7 @@ Feature:
     tasks:
         deployment:
             deploy:
-                providerName: foo
+                cluster: foo
                 services:
                     mysql:
                         specification:
@@ -66,7 +66,7 @@ Feature:
                                 image: mysql
         fixtures:
             run:
-                providerName: foo
+                cluster: foo
                 image: busybox
                 commands:
                     - foo
@@ -84,7 +84,7 @@ Feature:
     tasks:
         deployment:
             deploy:
-                providerName: foo
+                cluster: foo
                 services:
                     mysql:
                         specification:
@@ -92,7 +92,7 @@ Feature:
                                 image: mysql
         fixtures:
             run:
-                providerName: foo
+                cluster: foo
                 image: busybox
                 commands:
                     - foo
@@ -110,7 +110,7 @@ Feature:
     tasks:
         deployment:
             deploy:
-                providerName: foo
+                cluster: foo
                 services:
                     mysql:
                         specification:
@@ -118,7 +118,7 @@ Feature:
                                 image: mysql
         fixtures:
             run:
-                providerName: foo
+                cluster: foo
                 image: busybox
                 commands:
                     - foo
@@ -135,7 +135,7 @@ Feature:
     tasks:
         fixtures:
             run:
-                providerName: foo
+                cluster: foo
                 image: busybox
                 commands:
                     - foo

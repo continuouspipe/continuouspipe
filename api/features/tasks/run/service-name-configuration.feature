@@ -19,7 +19,7 @@ Feature:
 
         migrations:
             run:
-                providerName: foo
+                cluster: foo
                 image:
                     from_service: foobar
                 commands:
@@ -48,7 +48,7 @@ Feature:
 
         fixtures:
             run:
-                providerName: foo
+                cluster: foo
                 image:
                     from_service: foobar
                 commands:
@@ -56,7 +56,7 @@ Feature:
 
         migrations:
             run:
-                providerName: foo
+                cluster: foo
                 image:
                     from_service: foobar
                 commands:
@@ -92,7 +92,7 @@ Feature:
 
         fixtures:
             run:
-                providerName: foo
+                cluster: foo
                 image:
                     from_service: foobar
                 commands:
@@ -100,7 +100,7 @@ Feature:
 
         migrations:
             run:
-                providerName: foo
+                cluster: foo
                 image:
                     from_service: sam
                 commands:

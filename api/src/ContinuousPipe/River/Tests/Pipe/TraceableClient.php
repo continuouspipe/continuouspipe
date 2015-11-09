@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Tests\Pipe;
 
 use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 
 class TraceableClient implements Client
@@ -52,18 +53,18 @@ class TraceableClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function deleteEnvironment(DeploymentRequest\Target $target, User $user)
+    public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser)
     {
-        $this->client->deleteEnvironment($target, $user);
+        $this->client->deleteEnvironment($target, $team, $authenticatedUser);
         $this->deletions[] = $target;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEnvironments($providerName, User $user)
+    public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
     {
-        return $this->client->getEnvironments($providerName, $user);
+        return $this->client->getEnvironments($clusterIdentifier, $team, $authenticatedUser);
     }
 
     /**

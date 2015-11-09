@@ -53,7 +53,7 @@ class RunTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->scalarNode('providerName')->isRequired()->end()
+                ->scalarNode('cluster')->isRequired()->end()
                 ->arrayNode('image')
                     ->isRequired()
                     ->beforeNormalization()
@@ -92,7 +92,7 @@ class RunTaskFactory implements TaskFactory
     private function createConfiguration(array $configuration)
     {
         return new RunTaskConfiguration(
-            $configuration['providerName'],
+            $configuration['cluster'],
             $configuration['image']['name'],
             $configuration['commands'],
             $this->resolveEnvironment($configuration)

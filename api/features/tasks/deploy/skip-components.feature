@@ -9,7 +9,7 @@ Feature:
     """
     tasks:
         - deploy:
-              providerName: foo
+              cluster: foo
               services:
                   image1: false
     """

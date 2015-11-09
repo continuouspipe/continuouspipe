@@ -9,12 +9,12 @@ Feature:
     tasks:
         deploy:
             deploy:
-                providerName: foo
+                cluster: foo
                 services: []
 
         testing:
             run:
-                providerName: foo
+                cluster: foo
                 commands:
                     - echo foo
                 image: busybox
@@ -37,12 +37,12 @@ Feature:
     tasks:
         deploy:
             deploy:
-                providerName: foo
+                cluster: foo
                 services: []
 
         testing:
             run:
-                providerName: foo
+                cluster: foo
                 commands:
                     - echo foo
                 image: busybox

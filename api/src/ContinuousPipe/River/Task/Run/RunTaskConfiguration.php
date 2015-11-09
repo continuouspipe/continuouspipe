@@ -11,7 +11,7 @@ class RunTaskConfiguration
      *
      * @var string
      */
-    private $providerName;
+    private $clusterIdentifier;
 
     /**
      * @JMS\Type("string")
@@ -35,14 +35,14 @@ class RunTaskConfiguration
     private $environment;
 
     /**
-     * @param string $providerName
+     * @param string $clusterIdentifier
      * @param string $image
      * @param array  $commands
      * @param array  $environment
      */
-    public function __construct($providerName, $image, array $commands, array $environment)
+    public function __construct($clusterIdentifier, $image, array $commands, array $environment)
     {
-        $this->providerName = $providerName;
+        $this->clusterIdentifier = $clusterIdentifier;
         $this->image = $image;
         $this->commands = $commands;
         $this->environment = $environment;
@@ -51,9 +51,9 @@ class RunTaskConfiguration
     /**
      * @return string
      */
-    public function getProviderName()
+    public function getClusterIdentifier()
     {
-        return $this->providerName;
+        return $this->clusterIdentifier;
     }
 
     /**

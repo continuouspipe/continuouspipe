@@ -50,7 +50,7 @@ class DeployTaskFactory implements TaskFactory
             $this->loggerFactory,
             DeployContext::createDeployContext($taskContext),
             new DeployTaskConfiguration(
-                $configuration['providerName'],
+                $configuration['cluster'],
                 $this->generateServices($configuration['services'])
             )
         );
@@ -66,7 +66,7 @@ class DeployTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->scalarNode(DeployContext::PROVIDER_NAME_KEY)->isRequired()->end()
+                ->scalarNode('cluster')->isRequired()->end()
                 ->arrayNode('services')
                     ->isRequired()
                     ->useAttributeAsKey('name')

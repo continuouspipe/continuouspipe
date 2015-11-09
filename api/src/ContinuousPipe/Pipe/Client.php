@@ -5,6 +5,7 @@ namespace ContinuousPipe\Pipe;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 
 interface Client
@@ -19,19 +20,21 @@ interface Client
 
     /**
      * @param DeploymentRequest\Target $target
-     * @param User                     $user
+     * @param Team                     $team
+     * @param User                     $authenticatedUser
      */
-    public function deleteEnvironment(DeploymentRequest\Target $target, User $user);
+    public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser);
 
     /**
      * List environments for that given flow.
      *
-     * @param string $providerName
-     * @param User   $user
+     * @param string $clusterIdentifier
+     * @param Team   $team
+     * @param User   $authenticatedUser
      *
-     * @throws ProviderNotFound
+     * @throws ClusterNotFound
      *
      * @return \ContinuousPipe\Model\Environment[]
      */
-    public function getEnvironments($providerName, User $user);
+    public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser);
 }

@@ -165,7 +165,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
 tasks:
     - build: ~
     - deploy:
-        providerName: foo
+        cluster: foo
 EOF;
 
         $url = sprintf('/flows/%s', $this->flowUuid);
@@ -332,6 +332,7 @@ EOF;
         $this->response = $this->kernel->handle(Request::create($url, 'GET'));
 
         $this->assertResponseCode(200);
+        echo $this->response->getContent();
     }
 
     /**
