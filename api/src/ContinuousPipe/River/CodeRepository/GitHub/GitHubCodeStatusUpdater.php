@@ -70,8 +70,9 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     }
 
     /**
-     * @param Tide $tide
+     * @param Tide   $tide
      * @param string $state
+     *
      * @throws CodeStatusException
      * @throws \ContinuousPipe\River\GitHub\UserCredentialsNotFound
      * @throws \Github\Exception\MissingArgumentException

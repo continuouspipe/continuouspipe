@@ -6,20 +6,20 @@ use ContinuousPipe\River\Flow\Task;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\View\Tide;
 
-class ProviderNameResolver
+class ClusterIdentifierResolver
 {
     /**
      * @param Tide $tide
      *
-     * @throws ProviderNameNotFound
+     * @throws ClusterIdentifierNotFound
      *
      * @return string
      */
-    public function getProviderName(Tide $tide)
+    public function getClusterIdentifier(Tide $tide)
     {
         $tideConfiguration = $tide->getConfiguration();
         if (!array_key_exists('tasks', $tideConfiguration)) {
-            throw new ProviderNameNotFound('No task configuration found');
+            throw new ClusterIdentifierNotFound('No task configuration found');
         }
 
         $tasks = $tideConfiguration['tasks'];
@@ -28,14 +28,14 @@ class ProviderNameResolver
         });
 
         if (count($deployTasks) == 0) {
-            throw new ProviderNameNotFound('No deploy task found in tide');
+            throw new ClusterIdentifierNotFound('No deploy task found in tide');
         }
 
         $deployTask = current($deployTasks)[DeployTask::NAME];
-        if (!array_key_exists('providerName', $deployTask)) {
-            throw new ProviderNameNotFound('No provider name found in deploy task configuration');
+        if (!array_key_exists('cluster', $deployTask)) {
+            throw new ClusterIdentifierNotFound('No cluster identifier found in deploy task configuration');
         }
 
-        return $deployTask['providerName'];
+        return $deployTask['cluster'];
     }
 }

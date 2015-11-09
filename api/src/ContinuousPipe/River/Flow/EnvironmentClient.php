@@ -4,8 +4,8 @@ namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\River\Pipe\ProviderNameNotFound;
-use ContinuousPipe\River\Pipe\ProviderNameResolver;
+use ContinuousPipe\River\Pipe\ClusterIdentifierNotFound;
+use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\TideRepository;
@@ -19,9 +19,9 @@ class EnvironmentClient
     private $pipeClient;
 
     /**
-     * @var ProviderNameResolver
+     * @var ClusterIdentifierResolver
      */
-    private $providerNameResolver;
+    private $clusterIdentifierResolver;
 
     /**
      * @var UserContext
@@ -40,15 +40,15 @@ class EnvironmentClient
 
     /**
      * @param Client                    $pipeClient
-     * @param ProviderNameResolver      $providerNameResolver
+     * @param ClusterIdentifierResolver $clusterIdentifierResolver
      * @param UserContext               $userContext
      * @param EnvironmentNamingStrategy $environmentNamingStrategy
      * @param TideRepository            $tideRepository
      */
-    public function __construct(Client $pipeClient, ProviderNameResolver $providerNameResolver, UserContext $userContext, EnvironmentNamingStrategy $environmentNamingStrategy, TideRepository $tideRepository)
+    public function __construct(Client $pipeClient, ClusterIdentifierResolver $clusterIdentifierResolver, UserContext $userContext, EnvironmentNamingStrategy $environmentNamingStrategy, TideRepository $tideRepository)
     {
         $this->pipeClient = $pipeClient;
-        $this->providerNameResolver = $providerNameResolver;
+        $this->clusterIdentifierResolver = $clusterIdentifierResolver;
         $this->userContext = $userContext;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
         $this->tideRepository = $tideRepository;
@@ -64,10 +64,10 @@ class EnvironmentClient
     public function findByFlow(Flow $flow)
     {
         $environments = [];
-        foreach ($this->findProviderNames($flow) as $providerName) {
+        foreach ($this->findClusterIdentifiers($flow) as $clusterIdentifier) {
             $environments = array_merge(
                 $environments,
-                $this->pipeClient->getEnvironments($providerName, $this->userContext->getCurrent())
+                $this->pipeClient->getEnvironments($clusterIdentifier, $flow->getContext()->getTeam(), $this->userContext->getCurrent())
             );
         }
 
@@ -83,18 +83,18 @@ class EnvironmentClient
      *
      * @return array
      */
-    private function findProviderNames(Flow $flow)
+    private function findClusterIdentifiers(Flow $flow)
     {
         $tides = $this->tideRepository->findByFlow($flow);
-        $providerNames = [];
+        $clusterIdentifiers = [];
 
         foreach ($tides as $tide) {
             try {
-                $providerNames[] = $this->providerNameResolver->getProviderName($tide);
-            } catch (ProviderNameNotFound $e) {
+                $clusterIdentifiers[] = $this->clusterIdentifierResolver->getClusterIdentifier($tide);
+            } catch (ClusterIdentifierNotFound $e) {
             }
         }
 
-        return array_unique($providerNames);
+        return array_unique($clusterIdentifiers);
     }
 }

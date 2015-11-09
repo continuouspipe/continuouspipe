@@ -12,7 +12,7 @@ class DeployTaskConfiguration
      *
      * @var string
      */
-    private $providerName;
+    private $clusterIdentifier;
 
     /**
      * @JMS\Type("array<string, ContinuousPipe\Model\Component>")
@@ -22,21 +22,21 @@ class DeployTaskConfiguration
     private $services;
 
     /**
-     * @param string      $providerName
+     * @param string      $clusterIdentifier
      * @param Component[] $services
      */
-    public function __construct($providerName, array $services)
+    public function __construct($clusterIdentifier, array $services)
     {
-        $this->providerName = $providerName;
+        $this->clusterIdentifier = $clusterIdentifier;
         $this->services = $services;
     }
 
     /**
      * @return string
      */
-    public function getProviderName()
+    public function getClusterIdentifier()
     {
-        return $this->providerName;
+        return $this->clusterIdentifier;
     }
 
     /**

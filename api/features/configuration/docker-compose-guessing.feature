@@ -78,7 +78,7 @@ Feature:
     tasks:
         kube:
             deploy:
-                providerName: foo
+                cluster: foo
     """
     And I have a "docker-compose.yml" file in my repository that contains:
     """
@@ -124,7 +124,7 @@ Feature:
     tasks:
         kube:
             deploy:
-                providerName: foo
+                cluster: foo
     """
     And I have a "docker-compose.yml" file in my repository that contains:
     """
@@ -140,7 +140,7 @@ Feature:
     tasks:
         kube:
             deploy:
-                providerName: foo
+                cluster: foo
                 services:
                     container:
                         specification:
@@ -157,7 +157,7 @@ Feature:
     tasks:
         kube:
             deploy:
-                providerName: foo
+                cluster: foo
                 services:
                     container:
                         specification:
@@ -181,7 +181,7 @@ Feature:
     tasks:
         kube:
             deploy:
-                providerName: foo
+                cluster: foo
                 services:
                     container:
                         specification:
@@ -200,7 +200,7 @@ Feature:
     tasks:
         kube:
             deploy:
-                providerName: foo
+                cluster: foo
     """
     And I have a "docker-compose.yml" file in my repository that contains:
     """
@@ -229,7 +229,7 @@ Feature:
     tasks:
         kube:
             deploy:
-                providerName: foo
+                cluster: foo
     """
     And I have a "docker-compose.yml" file in my repository that contains:
     """
@@ -265,7 +265,7 @@ Feature:
     tasks:
         kube:
             deploy:
-                providerName: foo
+                cluster: foo
     """
     And I have a "docker-compose.yml" file in my repository that contains:
     """
@@ -312,7 +312,7 @@ Feature:
 
         deploy:
             deploy:
-                providerName: kubernetes/cp-cluster
+                cluster: kubernetes/cp-cluster
 
         installation:
             run:

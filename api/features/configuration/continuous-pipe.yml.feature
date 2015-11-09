@@ -29,7 +29,7 @@ Feature:
     tasks:
         kubernetes:
             deploy:
-                providerName: foo/bar
+                cluster: foo/bar
                 services: []
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:
@@ -48,7 +48,7 @@ Feature:
 
         kubernetes:
             deploy:
-                providerName: foo/bar
+                cluster: foo/bar
     """
 
   Scenario: The configuration in the repository file is more important
@@ -57,14 +57,14 @@ Feature:
     tasks:
         named:
             deploy:
-                providerName: foo/bar
+                cluster: foo/bar
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
         named:
             deploy:
-                providerName: bar/baz
+                cluster: bar/baz
                 services: []
     """
     When a tide is created
@@ -73,7 +73,7 @@ Feature:
     tasks:
         named:
             deploy:
-                providerName: bar/baz
+                cluster: bar/baz
     """
 
   Scenario: The configuration can be fully configured on the CP's side
@@ -99,7 +99,7 @@ Feature:
     tasks:
         named:
             deploy:
-                providerName: ${FOO}
+                cluster: ${FOO}
                 services: []
     """
     When a tide is created
@@ -108,7 +108,7 @@ Feature:
     tasks:
         named:
             deploy:
-                providerName: BAR
+                cluster: BAR
     """
 
   Scenario: The configuration is not valid if many task configuration are in the same task
@@ -116,7 +116,7 @@ Feature:
     """
     tasks:
         - deploy:
-              providerName: foo
+              cluster: foo
               services: []
           build:
               services: []

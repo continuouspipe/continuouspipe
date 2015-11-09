@@ -2,6 +2,6 @@
 
 namespace ContinuousPipe\Pipe;
 
-class ProviderNotFound extends \Exception
+class ClusterNotFound extends \Exception
 {
 }

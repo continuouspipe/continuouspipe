@@ -45,7 +45,7 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
         return new DeploymentRequest(
             new DeploymentRequest\Target(
                 $this->getEnvironmentName($context),
-                $configuration->getProviderName()
+                $configuration->getClusterIdentifier()
             ),
             new DeploymentRequest\Specification(
                 $configuration->getComponents()

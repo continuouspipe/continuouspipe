@@ -141,7 +141,7 @@ class TideContext implements Context
         $continuousPipeFile = <<<EOF
 tasks:
     - deploy:
-          providerName: fake/provider
+          cluster: fake/provider
           services: []
 EOF;
 
@@ -424,7 +424,7 @@ EOF;
         $continuousPipeFile = <<<EOF
 tasks:
     - deploy:
-          providerName: fake/provider
+          cluster: fake/provider
 EOF;
 
         $this->fakeFileSystemResolver->prepareFileSystem([
@@ -476,7 +476,7 @@ EOF;
             ],
             'deploy' => [
                 'deploy' => [
-                    'providerName' => 'fake/foo'
+                    'cluster' => 'fake/foo'
                 ]
             ]
         ]);
@@ -521,7 +521,7 @@ EOF;
                 ],
                 [
                     'deploy' => [
-                        'providerName' => 'fake/foo'
+                        'cluster' => 'fake/foo'
                     ]
                 ]
             ]
@@ -545,7 +545,7 @@ EOF;
             'tasks' => [
                 [
                     'deploy' => [
-                        'providerName' => 'fake/foo',
+                        'cluster' => 'fake/foo',
                         'services' => []
                     ]
                 ]
@@ -613,7 +613,7 @@ EOF;
             'tasks' => [
                 [
                     'deploy' => [
-                        'providerName' => 'fake/foo',
+                        'cluster' => 'fake/foo',
                         'services' => []
                     ]
                 ]
@@ -635,7 +635,7 @@ EOF;
         $this->aTideIsStartedWithTasks([
             [
                 'deploy' => [
-                    'providerName' => 'fake/foo',
+                    'cluster' => 'fake/foo',
                     'services' => [
                         'image0' => [
                             'specification' => [

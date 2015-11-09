@@ -83,7 +83,7 @@ class RunContext implements Context
                 'run' => [
                     'commands' => ['bin/behat'],
                     'image' => ['from_service' => 'image0'],
-                    'providerName' => 'foo'
+                    'cluster' => 'foo'
                 ]
             ]
         ]);
@@ -99,7 +99,7 @@ class RunContext implements Context
                 'run' => [
                     'commands' => ['bin/behat'],
                     'image' => 'sroze/behat',
-                    'providerName' => 'foo'
+                    'cluster' => 'foo'
                 ]
             ]
         ]);
@@ -286,8 +286,12 @@ class RunContext implements Context
      */
     private function getDeployedComponentNamed($name)
     {
-        $request = $this->traceablePipeClient->getRequests()[0];
-        $matchingComponents = array_filter($request->getSpecification()->getComponents(), function(Component $component) use ($name) {
+        $requests = $this->traceablePipeClient->getRequests();
+        if (count($requests) == 0) {
+            throw new \RuntimeException('No pipe request found');
+        }
+
+        $matchingComponents = array_filter($requests[0]->getSpecification()->getComponents(), function(Component $component) use ($name) {
             return $component->getName() == $name;
         });
 

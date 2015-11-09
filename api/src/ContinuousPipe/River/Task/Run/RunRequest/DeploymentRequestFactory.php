@@ -44,7 +44,7 @@ class DeploymentRequestFactory
         return new DeploymentRequest(
             new DeploymentRequest\Target(
                 $this->getEnvironmentName($context),
-                $configuration->getProviderName()
+                $configuration->getClusterIdentifier()
             ),
             new DeploymentRequest\Specification([
                 $this->createComponent($context->getTaskId(), $configuration),

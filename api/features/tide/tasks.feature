@@ -37,10 +37,10 @@ Feature:
     Given I tide is started with the following configurations:
       | name   | configuration                                                    |
       | build  | {"services": []}                                                 |
-      | run    | {"providerName": "foo", "image": "foo", "commands": ["bin/foo"]} |
-      | deploy | {"providerName": "foo", "services": []}                          |
-      | run    | {"providerName": "foo", "image": "bar", "commands": ["bin/bar"]} |
-      | deploy | {"providerName": "bar", "services": []}                          |
+      | run    | {"cluster": "foo", "image": "foo", "commands": ["bin/foo"]} |
+      | deploy | {"cluster": "foo", "services": []}                          |
+      | run    | {"cluster": "foo", "image": "bar", "commands": ["bin/bar"]} |
+      | deploy | {"cluster": "bar", "services": []}                          |
     When the build task succeed
     And the run succeed
     And the deploy task succeed

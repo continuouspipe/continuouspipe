@@ -7,7 +7,7 @@
     <services>
         <service id="river.flow.environment_client" class="ContinuousPipe\River\Flow\EnvironmentClient">
             <argument type="service" id="river.pipe_client" />
-            <argument type="service" id="river.pipe.provider_name_resolver" />
+            <argument type="service" id="river.pipe.cluster_identifier_resolver" />
             <argument type="service" id="security.user_context" />
             <argument type="service" id="river.task.deploy.naming.environment_strategy" />
             <argument type="service" id="river.view.tide_repository" />

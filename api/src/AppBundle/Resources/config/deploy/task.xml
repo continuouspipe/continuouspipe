@@ -22,7 +22,7 @@
             <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
             <argument>%pipe_base_url%</argument>
         </service>
-        <service id="river.pipe.provider_name_resolver" class="ContinuousPipe\River\Pipe\ProviderNameResolver" />
+        <service id="river.pipe.cluster_identifier_resolver" class="ContinuousPipe\River\Pipe\ClusterIdentifierResolver" />
 
         <service id="river.task.deploy.naming.environment_strategy" class="ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy" />
         <service id="river.task.deploy.deployment_request_factory" class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\FlattenDeploymentRequestFactory">

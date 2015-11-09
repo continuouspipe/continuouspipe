@@ -16,20 +16,20 @@ class Target
 
     /**
      * @JMS\Type("string")
-     * @JMS\SerializedName("providerName")
+     * @JMS\SerializedName("clusterIdentifier")
      *
      * @var string
      */
-    private $providerName;
+    private $clusterIdentifier;
 
     /**
      * @param string $environmentName
-     * @param string $providerName
+     * @param string $clusterIdentifier
      */
-    public function __construct($environmentName, $providerName)
+    public function __construct($environmentName, $clusterIdentifier)
     {
         $this->environmentName = $environmentName;
-        $this->providerName = $providerName;
+        $this->clusterIdentifier = $clusterIdentifier;
     }
 
     /**
@@ -43,8 +43,8 @@ class Target
     /**
      * @return string
      */
-    public function getProviderName()
+    public function getClusterIdentifier()
     {
-        return $this->providerName;
+        return $this->clusterIdentifier;
     }
 }
