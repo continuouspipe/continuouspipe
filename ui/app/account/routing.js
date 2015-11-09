@@ -47,5 +47,27 @@ angular.module('continuousPipeRiver')
                     label: 'Create'
                 }
             })
+            .state('clusters', {
+                parent: 'layout',
+                url: '/clusters',
+                templateUrl: 'account/clusters/views/list.html',
+                controller: 'ClustersListController',
+                ncyBreadcrumb: {
+                    label: 'Clusters'
+                },
+                aside: false
+            })
+            .state('clusters.create', {
+                url: '/create',
+                views: {
+                    '@layout': {
+                        templateUrl: 'account/clusters/views/create.html',
+                        controller: 'ClustersCreateController'
+                    }
+                },
+                ncyBreadcrumb: {
+                    label: 'Create'
+                }
+            })
         ;
     });

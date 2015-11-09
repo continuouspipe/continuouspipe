@@ -1,0 +1,45 @@
+<div class="container">
+    <div class="block-header">
+        <h2>Clusters</h2>
+
+        <ul class="actions">
+            <li>
+                <a ui-sref="clusters.create">
+                    <i class="md md-add"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <remote-resource resource-name="clusters">
+            <div class="text-center p20" ng-show="clusters.length === 0">No cluster entry found. <a ui-sref="clusters.create">Creates one !</a></div>
+            <table class="table table-inner table-vmiddle" ng-show="clusters.length">
+                <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Identifier</th>
+                    <th>Address</th>
+                    <th>Credentials</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="cluster in clusters">
+                    <td>{{ cluster.type }}</td>
+                    <td>{{ cluster.identifier }}</td>
+                    <td>{{ cluster.address }} <small>{{ cluster.version }}</small></td>
+                    <td>User <small>{{ cluster.username }}</small></td>
+                    <td>
+                        <ul class="actions">
+                            <li>
+                                <a ng-click="deleteCluster(cluster)"><i class="md md-delete"></i></a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </remote-resource>
+    </div>
+</div>
