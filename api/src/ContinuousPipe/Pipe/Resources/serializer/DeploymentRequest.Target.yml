@@ -3,6 +3,6 @@ ContinuousPipe\Pipe\DeploymentRequest\Target:
         environmentName:
             type: string
             serialized_name: environmentName
-        providerName:
+        clusterIdentifier:
             type: string
-            serialized_name: providerName
+            serialized_name: clusterIdentifier

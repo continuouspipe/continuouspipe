@@ -3,8 +3,9 @@
 namespace ContinuousPipe\Pipe;
 
 use ContinuousPipe\Adapter\AdapterRegistry;
+use ContinuousPipe\Adapter\ClusterNotSupported;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
-use ContinuousPipe\Adapter\Provider;
+use ContinuousPipe\Security\Credentials\Cluster;
 
 class ChainEnvironmentClientFactory implements EnvironmentClientFactory
 {
@@ -22,14 +23,21 @@ class ChainEnvironmentClientFactory implements EnvironmentClientFactory
     }
 
     /**
-     * @param Provider $provider
-     *
-     * @return EnvironmentClientFactory
+     * {@inheritdoc}
      */
-    public function getByProvider(Provider $provider)
+    public function getByCluster(Cluster $cluster)
     {
-        $adapter = $this->adapterRegistry->getByType($provider->getAdapterType());
+        foreach ($this->adapterRegistry->getAdapters() as $adapter) {
+            try {
+                return $adapter->getEnvironmentClientFactory()->getByCluster($cluster);
+            } catch (ClusterNotSupported $e) {
+                continue;
+            }
+        }
 
-        return $adapter->getEnvironmentClientFactory()->getByProvider($provider);
+        throw new ClusterNotSupported(sprintf(
+            'Cluster of type %s is not supported',
+            get_class($cluster)
+        ));
     }
 }

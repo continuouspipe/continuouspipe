@@ -3,11 +3,14 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
-use ContinuousPipe\Adapter\ProviderRepository;
-use ContinuousPipe\Pipe\AdapterProviderRepository;
+use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\Credentials\Cluster;
+use ContinuousPipe\Security\Team\Team;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @Route(service="pipe.controllers.environment")
@@ -15,57 +18,67 @@ use FOS\RestBundle\Controller\Annotations\View;
 class EnvironmentController extends Controller
 {
     /**
-     * @var AdapterProviderRepository
-     */
-    private $providerRepository;
-
-    /**
      * @var EnvironmentClientFactory
      */
     private $environmentClientFactory;
 
     /**
-     * @param AdapterProviderRepository $providerRepository
-     * @param EnvironmentClientFactory  $environmentClientFactory
+     * @var BucketRepository
      */
-    public function __construct(AdapterProviderRepository $providerRepository, EnvironmentClientFactory $environmentClientFactory)
+    private $bucketRepository;
+
+    /**
+     * @param BucketRepository         $bucketRepository
+     * @param EnvironmentClientFactory $environmentClientFactory
+     */
+    public function __construct(BucketRepository $bucketRepository, EnvironmentClientFactory $environmentClientFactory)
     {
-        $this->providerRepository = $providerRepository;
+        $this->bucketRepository = $bucketRepository;
         $this->environmentClientFactory = $environmentClientFactory;
     }
 
     /**
-     * @Route("/providers/{type}/{identifier}/environments", methods={"GET"})
+     * @Route("/teams/{teamSlug}/clusters/{clusterIdentifier}/environments", methods={"GET"})
+     * @ParamConverter("team", converter="team", options={"slug"="teamSlug"})
      * @View
      */
-    public function listAction($type, $identifier)
+    public function listAction(Team $team, $clusterIdentifier)
     {
-        return $this->getEnvironmentClient($type, $identifier)->findAll();
+        $cluster = $this->getCluster($team, $clusterIdentifier);
+
+        return $this->environmentClientFactory->getByCluster($cluster)->findAll();
     }
 
     /**
-     * @Route("/providers/{type}/{identifier}/environments/{environmentIdentifier}", methods={"DELETE"})
+     * @Route("/teams/{teamSlug}/clusters/{clusterIdentifier}/environments/{environmentIdentifier}", methods={"DELETE"})
+     * @ParamConverter("team", converter="team", options={"slug"="teamSlug"})
      * @View
      */
-    public function deleteAction($type, $identifier, $environmentIdentifier)
+    public function deleteAction(Team $team, $clusterIdentifier, $environmentIdentifier)
     {
-        $client = $this->getEnvironmentClient($type, $identifier);
+        $client = $this->environmentClientFactory->getByCluster($this->getCluster($team, $clusterIdentifier));
 
         $environment = $client->find($environmentIdentifier);
         $client->delete($environment);
     }
 
     /**
-     * @param string $type
-     * @param string $identifier
+     * @param Team   $team
+     * @param string $clusterIdentifier
      *
-     * @return \ContinuousPipe\Adapter\EnvironmentClient
+     * @return Cluster
      */
-    private function getEnvironmentClient($type, $identifier)
+    private function getCluster(Team $team, $clusterIdentifier)
     {
-        $provider = $this->providerRepository->findByTypeAndIdentifier($type, $identifier);
-        $environmentClient = $this->environmentClientFactory->getByProvider($provider);
+        $bucket = $this->bucketRepository->find($team->getBucketUuid());
+        $matchingClusters = $bucket->getClusters()->filter(function (Cluster $cluster) use ($clusterIdentifier) {
+            return $cluster->getIdentifier() == $clusterIdentifier;
+        });
 
-        return $environmentClient;
+        if ($matchingClusters->count() == 0) {
+            throw new NotFoundHttpException('Cluster is not found');
+        }
+
+        return $matchingClusters->first();
     }
 }

@@ -7,10 +7,6 @@
     <services>
         <service id="pipe.adapter_registry" class="ContinuousPipe\Adapter\AdapterRegistry" />
 
-        <service id="pipe.provider_repository" class="ContinuousPipe\Pipe\AdapterProviderRepository">
-            <argument type="service" id="pipe.adapter_registry" />
-        </service>
-
         <service id="pipe.chain_environment_client_factory" class="ContinuousPipe\Pipe\ChainEnvironmentClientFactory">
             <argument type="service" id="pipe.adapter_registry" />
         </service>

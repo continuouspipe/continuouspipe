@@ -2,8 +2,10 @@
 
 namespace ContinuousPipe\Pipe\Tests\Adapter\Fake;
 
+use ContinuousPipe\Adapter\ClusterNotSupported;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
-use ContinuousPipe\Adapter\Provider;
+use ContinuousPipe\Pipe\Tests\Cluster\TestCluster;
+use ContinuousPipe\Security\Credentials\Cluster;
 
 class FakeClientFactory implements EnvironmentClientFactory
 {
@@ -23,8 +25,12 @@ class FakeClientFactory implements EnvironmentClientFactory
     /**
      * {@inheritdoc}
      */
-    public function getByProvider(Provider $provider)
+    public function getByCluster(Cluster $cluster)
     {
+        if (!$cluster instanceof TestCluster) {
+            throw new ClusterNotSupported('Only test clusters are supported here');
+        }
+
         return $this->fakeEnvironmentClient;
     }
 }

@@ -33,7 +33,6 @@ class TestExtension extends Extension
         // Add in-memory stubs if not in smoke tests case
         if ($environment != 'smoke_test') {
             $loader->load('in-memory/deployment.xml');
-            $loader->load('kubernetes/in-memory/adapter.xml');
         }
     }
 }

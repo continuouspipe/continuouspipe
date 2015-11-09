@@ -51,7 +51,7 @@ class AddPrivateRegistryCredentials
         try {
             $secret = $this->secretFactory->createDockerRegistrySecret($deploymentContext);
 
-            $client = $this->kubernetesClientFactory->getByProvider($deploymentContext->getProvider());
+            $client = $this->kubernetesClientFactory->getByCluster($deploymentContext->getCluster());
             $namespaceClient = $client->getNamespaceClient($event->getNamespace());
 
             $secret = $namespaceClient->getSecretRepository()->create($secret);

@@ -12,11 +12,11 @@ class Target
     private $environmentName;
 
     /**
-     * Name of the provider.
+     * Identifier of the cluster.
      *
      * @var string
      */
-    private $providerName;
+    private $clusterIdentifier;
 
     /**
      * @return string
@@ -29,8 +29,8 @@ class Target
     /**
      * @return string
      */
-    public function getProviderName()
+    public function getClusterIdentifier()
     {
-        return $this->providerName;
+        return $this->clusterIdentifier;
     }
 }

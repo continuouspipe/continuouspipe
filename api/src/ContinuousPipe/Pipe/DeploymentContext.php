@@ -4,6 +4,7 @@ namespace ContinuousPipe\Pipe;
 
 use ContinuousPipe\Adapter\Provider;
 use ContinuousPipe\Model\Environment;
+use ContinuousPipe\Security\Credentials\Cluster;
 use LogStream\Log;
 
 class DeploymentContext
@@ -19,14 +20,14 @@ class DeploymentContext
     private $log;
 
     /**
-     * @var Provider
-     */
-    private $provider;
-
-    /**
      * @var Environment
      */
     private $environment;
+
+    /**
+     * @var Cluster
+     */
+    private $cluster;
 
     /**
      * @var array
@@ -35,16 +36,16 @@ class DeploymentContext
 
     /**
      * @param View\Deployment $deployment
-     * @param Provider        $provider
+     * @param Cluster         $cluster
      * @param Log             $log
      * @param Environment     $environment
      */
-    public function __construct(View\Deployment $deployment, Provider $provider = null, Log $log = null, Environment $environment = null)
+    public function __construct(View\Deployment $deployment, Cluster $cluster = null, Log $log = null, Environment $environment = null)
     {
         $this->deployment = $deployment;
         $this->log = $log;
-        $this->provider = $provider;
         $this->environment = $environment;
+        $this->cluster = $cluster;
     }
 
     /**
@@ -65,10 +66,20 @@ class DeploymentContext
 
     /**
      * @return Provider
+     *
+     * @deprecated
      */
     public function getProvider()
     {
         return $this->provider;
+    }
+
+    /**
+     * @return Cluster
+     */
+    public function getCluster()
+    {
+        return $this->cluster;
     }
 
     /**

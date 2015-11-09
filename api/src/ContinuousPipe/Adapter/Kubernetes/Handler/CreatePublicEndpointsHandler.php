@@ -4,7 +4,6 @@ namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
-use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
 use ContinuousPipe\Adapter\Kubernetes\Service\CreatedService;
 use ContinuousPipe\Adapter\Kubernetes\Service\FoundService;
@@ -14,6 +13,7 @@ use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
+use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Service;
@@ -152,7 +152,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
      */
     public function supports(DeploymentContext $context)
     {
-        return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
+        return $context->getCluster() instanceof Kubernetes;
     }
 
     /**

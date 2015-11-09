@@ -5,6 +5,7 @@ namespace Kubernetes;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
 use ContinuousPipe\Adapter\Kubernetes\PrivateImages\SecretFactory;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository;
@@ -34,11 +35,6 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      * @var \EnvironmentContext
      */
     private $environmentContext;
-
-    /**
-     * @var \Kubernetes\ProviderContext
-     */
-    private $providerContext;
 
     /**
      * @var TraceableNamespaceRepository
@@ -92,24 +88,6 @@ class NamespaceContext implements Context, SnippetAcceptingContext
     public function gatherContexts(BeforeScenarioScope $scope)
     {
         $this->environmentContext = $scope->getEnvironment()->getContext('EnvironmentContext');
-        $this->providerContext = $scope->getEnvironment()->getContext('Kubernetes\ProviderContext');
-    }
-
-    /**
-     * @When I send a deployment request for a non-existing environment
-     */
-    public function iSendADeploymentRequestForANonExistingEnvironment()
-    {
-        $this->environmentContext->sendDeploymentRequest('kubernetes/'.ProviderContext::DEFAULT_PROVIDER_NAME, 'non-existing');
-    }
-
-    /**
-     * @When I send a deployment request from application template :template
-     */
-    public function iSendADeploymentRequestFromApplicationTemplate($template)
-    {
-        $this->iHaveANamespace('existing');
-        $this->environmentContext->sendDeploymentRequest('kubernetes/'.ProviderContext::DEFAULT_PROVIDER_NAME, 'existing', $template);
     }
 
     /**
@@ -140,14 +118,6 @@ class NamespaceContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @When I send a deployment request for the environment :environmentName
-     */
-    public function iSendADeploymentRequestForTheEnvironment($environmentName)
-    {
-        $this->environmentContext->sendDeploymentRequest('kubernetes/'.ProviderContext::DEFAULT_PROVIDER_NAME, $environmentName);
-    }
-
-    /**
      * @Then it should reuse this namespace
      */
     public function itShouldReuseThisNamespace()
@@ -174,32 +144,6 @@ class NamespaceContext implements Context, SnippetAcceptingContext
         if (count($namespaceCreatedEvents) == 0) {
             throw new \RuntimeException('Expected to found a namespace created event, found 0');
         }
-    }
-
-    /**
-     * @When a namespace is created
-     */
-    public function aNamespaceIsCreated()
-    {
-        $bucket = new Bucket(Uuid::uuid1());
-        $this->inMemoryAuthenticatorClient->addBucket($bucket);
-
-        $this->eventBus->handle(new NamespaceCreated(
-            new KubernetesNamespace(new ObjectMetadata('foo')),
-            new DeploymentContext(
-                Deployment::fromRequest(
-                    new DeploymentRequest(
-                        new DeploymentRequest\Target(),
-                        new DeploymentRequest\Specification(),
-                        $bucket->getUuid()
-                    ),
-                    new User('samuel', Uuid::uuid1())
-                ),
-                $this->providerContext->iHaveAValidKubernetesProvider(),
-                $this->loggerFactory->create()->getLog(),
-                new Environment('foo', 'bar')
-            )
-        ));
     }
 
     /**
@@ -276,13 +220,5 @@ class NamespaceContext implements Context, SnippetAcceptingContext
                 $name
             ));
         }
-    }
-
-    /**
-     * @When I delete the environment named :name of the Kubernetes provider
-     */
-    public function iDeleteTheEnvironmentNamedOfTheKubernetesProvider($name)
-    {
-        $this->environmentContext->iDeleteTheEnvironmentNamedOfProvider($name, ProviderContext::DEFAULT_PROVIDER_NAME, 'kubernetes');
     }
 }

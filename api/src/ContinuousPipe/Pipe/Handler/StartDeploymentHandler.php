@@ -3,25 +3,22 @@
 namespace ContinuousPipe\Pipe\Handler;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
-use ContinuousPipe\Adapter\ProviderNotFound;
-use ContinuousPipe\Adapter\ProviderRepository;
 use ContinuousPipe\Model\Environment;
-use ContinuousPipe\Pipe\AdapterProviderRepository;
+use ContinuousPipe\Pipe\Cluster\ClusterNotFound;
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\DeploymentStarted;
 use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
+use ContinuousPipe\Security\Credentials\BucketNotFound;
+use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\Credentials\Cluster;
 use LogStream\Node\Text;
+use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class StartDeploymentHandler
 {
-    /**
-     * @var AdapterProviderRepository
-     */
-    private $providerRepository;
-
     /**
      * @var EnvironmentClientFactory
      */
@@ -38,14 +35,19 @@ class StartDeploymentHandler
     private $loggerFactory;
 
     /**
-     * @param AdapterProviderRepository $providerRepository
-     * @param EnvironmentClientFactory  $environmentClientFactory
-     * @param MessageBus                $eventBus
-     * @param DeploymentLoggerFactory   $loggerFactory
+     * @var BucketRepository
      */
-    public function __construct(AdapterProviderRepository $providerRepository, EnvironmentClientFactory $environmentClientFactory, MessageBus $eventBus, DeploymentLoggerFactory $loggerFactory)
+    private $bucketRepository;
+
+    /**
+     * @param BucketRepository         $bucketRepository
+     * @param EnvironmentClientFactory $environmentClientFactory
+     * @param MessageBus               $eventBus
+     * @param DeploymentLoggerFactory  $loggerFactory
+     */
+    public function __construct(BucketRepository $bucketRepository, EnvironmentClientFactory $environmentClientFactory, MessageBus $eventBus, DeploymentLoggerFactory $loggerFactory)
     {
-        $this->providerRepository = $providerRepository;
+        $this->bucketRepository = $bucketRepository;
         $this->environmentClientFactory = $environmentClientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
@@ -66,9 +68,9 @@ class StartDeploymentHandler
         $specification = $request->getSpecification();
 
         $logger->append(new Text(sprintf(
-            'Deploying to the environment "%s" to provider "%s"',
+            'Deploying to the environment "%s" to cluster "%s"',
             $target->getEnvironmentName(),
-            $target->getProviderName()
+            $target->getClusterIdentifier()
         )));
 
         $environment = new Environment(
@@ -82,11 +84,9 @@ class StartDeploymentHandler
             count($environment->getComponents())
         )));
 
-        list($type, $name) = explode('/', $target->getProviderName());
-
         try {
-            $provider = $this->providerRepository->findByTypeAndIdentifier($type, $name);
-        } catch (ProviderNotFound $e) {
+            $cluster = $this->getCluster($request->getCredentialsBucket(), $target->getClusterIdentifier());
+        } catch (ClusterNotFound $e) {
             $logger->append(new Text($e->getMessage()));
 
             $this->eventBus->handle(new DeploymentFailed(
@@ -96,7 +96,34 @@ class StartDeploymentHandler
             return;
         }
 
-        $deploymentContext = new DeploymentContext($deployment, $provider, $logger->getLog(), $environment);
+        $deploymentContext = new DeploymentContext($deployment, $cluster, $logger->getLog(), $environment);
         $this->eventBus->handle(new DeploymentStarted($deploymentContext));
+    }
+
+    /**
+     * @param Uuid   $bucketUuid
+     * @param string $clusterIdentifier
+     *
+     * @return Cluster
+     *
+     * @throws ClusterNotFound
+     */
+    private function getCluster(Uuid $bucketUuid, $clusterIdentifier)
+    {
+        try {
+            $bucket = $this->bucketRepository->find($bucketUuid);
+        } catch (BucketNotFound $e) {
+            throw new ClusterNotFound('The credentials bucket is not found', $e->getCode(), $e);
+        }
+
+        $matchingClusters = $bucket->getClusters()->filter(function (Cluster $cluster) use ($clusterIdentifier) {
+            return $cluster->getIdentifier() == $clusterIdentifier;
+        });
+
+        if (0 === $matchingClusters->count()) {
+            throw new ClusterNotFound('Cluster not found in bucket');
+        }
+
+        return $matchingClusters->first();
     }
 }

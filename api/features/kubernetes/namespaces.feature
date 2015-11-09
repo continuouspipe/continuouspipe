@@ -4,26 +4,34 @@ Feature:
   Each environment have to run in isolated namespaces
 
   Background:
-    Given I have a valid Kubernetes provider
-    And I am authenticated
+    Given I am authenticated
+    And the bucket of the team "my-team" is the bucket "00000000-0000-0000-0000-000000000000"
+    And there is a cluster in the bucket "00000000-0000-0000-0000-000000000000" with the following configuration:
+      | identifier | type       | address         | version | username | password |
+      | my-cluster | kubernetes | https://1.2.3.4 | v1      | username | password |
+    And I am building a deployment request
+    And the target environment name is "my-environment"
+    And the target cluster identifier is "my-cluster"
+    And the credentials bucket is "00000000-0000-0000-0000-000000000000"
+    And the specification come from the template "simple-app"
 
   @smoke
   Scenario:
-    When I send a deployment request for a non-existing environment
+    When I send the built deployment request
     Then it should create a new namespace
     And it should dispatch the namespace created event
 
   Scenario:
-    Given I have a namespace "foo"
-    When I send a deployment request for the environment "foo"
+    Given I have a namespace "my-environment"
+    When I send the built deployment request
     Then it should reuse this namespace
 
   Scenario:
-    When a namespace is created
+    When I send the built deployment request
     Then a docker registry secret should be created
     And the service account should be updated with a docker registry pull secret
 
   Scenario:
     Given I have a namespace "foo"
-    When I delete the environment named "foo" of the Kubernetes provider
+    When I delete the environment named "foo" of the cluster "my-cluster" of the team "my-team"
     Then the namespace "foo" should be deleted

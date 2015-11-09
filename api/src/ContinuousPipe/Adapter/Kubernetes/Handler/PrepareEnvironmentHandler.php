@@ -4,7 +4,6 @@ namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
-use ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesDeploymentContext;
 use ContinuousPipe\Adapter\Kubernetes\Naming\NamingStrategy;
 use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
@@ -12,6 +11,7 @@ use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
+use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Exception\ClientError;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -22,7 +22,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     /**
      * @var KubernetesClientFactory
      */
-    private $clientFactory;
+    private $kubernetesClientFactory;
 
     /**
      * @var MessageBus
@@ -40,14 +40,14 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     private $namingStrategy;
 
     /**
-     * @param KubernetesClientFactory $clientFactory
+     * @param KubernetesClientFactory $kubernetesClientFactory
      * @param MessageBus              $eventBus
      * @param LoggerFactory           $loggerFactory
      * @param NamingStrategy          $namingStrategy
      */
-    public function __construct(KubernetesClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, NamingStrategy $namingStrategy)
+    public function __construct(KubernetesClientFactory $kubernetesClientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, NamingStrategy $namingStrategy)
     {
-        $this->clientFactory = $clientFactory;
+        $this->kubernetesClientFactory = $kubernetesClientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
         $this->namingStrategy = $namingStrategy;
@@ -85,7 +85,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
         $logger = $this->loggerFactory->from($context->getLog());
         $environment = $context->getEnvironment();
 
-        $namespaceRepository = $this->clientFactory->getByProvider($context->getProvider())->getNamespaceRepository();
+        $namespaceRepository = $this->kubernetesClientFactory->getByCluster($context->getCluster())->getNamespaceRepository();
         $namespace = $this->namingStrategy->getEnvironmentNamespace($environment);
         $namespaceName = $namespace->getMetadata()->getName();
 
@@ -107,6 +107,6 @@ class PrepareEnvironmentHandler implements DeploymentHandler
      */
     public function supports(DeploymentContext $context)
     {
-        return $context->getProvider()->getAdapterType() == KubernetesAdapter::TYPE;
+        return $context->getCluster() instanceof Kubernetes;
     }
 }

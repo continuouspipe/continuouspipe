@@ -2,15 +2,15 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Client;
 
-use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
+use ContinuousPipe\Security\Credentials\Cluster;
 use Kubernetes\Client\Client;
 
 interface KubernetesClientFactory
 {
     /**
-     * @param KubernetesProvider $provider
+     * @param Cluster\Kubernetes $cluster
      *
      * @return Client
      */
-    public function getByProvider(KubernetesProvider $provider);
+    public function getByCluster(Cluster\Kubernetes $cluster);
 }
