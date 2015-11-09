@@ -1,6 +1,8 @@
 <p><strong>run</strong><br />Run commands on the given container or service.</p>
 
 <form>
+    <cluster-selector context="task.context"></cluster-selector>
+
     <div class="form-group fg-line">
         <label for="serviceNameImput">Docker compose service</label>
         <input type="text" ng-model="task.context.service" class="form-control input-sm" id="serviceNameImput" placeholder="Service name...">
