@@ -9,6 +9,7 @@ use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\RunTask;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use JMS\Serializer\Serializer;
@@ -122,13 +123,45 @@ class RunContext implements Context
      */
     public function theRunFailed()
     {
-        if (null === ($deployment = $this->traceablePipeClient->getLastDeployment())) {
+        $deployments = $this->traceablePipeClient->getDeployments();
+        if (0 === count($deployments)) {
             throw new \RuntimeException('No deployment found');
         }
 
+        $deployment = $deployments[0];
         $this->sendRunnerNotification(
             new Deployment($deployment->getUuid(), $deployment->getRequest(), Deployment::STATUS_FAILURE)
         );
+    }
+
+    /**
+     * @When the first run succeed
+     */
+    public function theFirstRunSucceed()
+    {
+        $deployments = $this->traceablePipeClient->getDeployments();
+        if (0 === count($deployments)) {
+            throw new \RuntimeException('No deployment found');
+        }
+
+        /** @var RunTask $task */
+        $task = $this->tideTasksContext->getTasksOfType(RunTask::class)[0];
+        $this->sendRunTaskNotification($task, $deployments[0]->getRequest(), Deployment::STATUS_SUCCESS);
+    }
+
+    /**
+     * @When the second run task succeed
+     */
+    public function theSecondRunTaskSucceed()
+    {
+        $deployments = $this->traceablePipeClient->getDeployments();
+        if (1 >= count($deployments)) {
+            throw new \RuntimeException('1 or 0 deployment found, expected at least 2');
+        }
+
+        /** @var RunTask $task */
+        $task = $this->tideTasksContext->getTasksOfType(RunTask::class)[1];
+        $this->sendRunTaskNotification($task, $deployments[1]->getRequest(), Deployment::STATUS_SUCCESS);
     }
 
     /**
@@ -156,10 +189,12 @@ class RunContext implements Context
      */
     public function theRunSucceed()
     {
-        if (null === ($deployment = $this->traceablePipeClient->getLastDeployment())) {
+        $deployments = $this->traceablePipeClient->getDeployments();
+        if (0 === count($deployments)) {
             throw new \RuntimeException('No deployment found');
         }
 
+        $deployment = $deployments[0];
         $this->sendRunnerNotification(
             new Deployment($deployment->getUuid(), $deployment->getRequest(), Deployment::STATUS_SUCCESS)
         );
@@ -303,5 +338,29 @@ class RunContext implements Context
         }
 
         return current($matchingComponents);
+    }
+
+    /**
+     * @param RunTask $task
+     * @param DeploymentRequest $deploymentRequest
+     * @param string $status
+     */
+    private function sendRunTaskNotification(RunTask $task, DeploymentRequest $deploymentRequest, $status)
+    {
+        $events = $this->tideTasksContext->getTaskEvents($task);
+        $runStartedEvents = array_values(array_filter($events->getEvents(), function($event) {
+            return $event instanceof RunStarted;
+        }));
+
+        if (0 === count($runStartedEvents)) {
+            throw new \RuntimeException('No run started events');
+        }
+
+        /** @var RunStarted $runStartedEvent */
+        $runStartedEvent = $runStartedEvents[0];
+
+        $this->sendRunnerNotification(
+            new Deployment($runStartedEvent->getRunUuid(), $deploymentRequest, $status)
+        );
     }
 }

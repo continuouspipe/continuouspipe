@@ -5,11 +5,14 @@ namespace Tide;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\ContextualizedTask;
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Build\BuildTask;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
+use ContinuousPipe\River\Task\EventDrivenTask;
+use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\RunTask;
 use ContinuousPipe\River\Task\Task;
 use SimpleBus\Message\Bus\MessageBus;
@@ -106,6 +109,22 @@ class TasksContext implements Context
     }
 
     /**
+     * @Then the second deploy task should be running
+     */
+    public function theSecondDeployTaskShouldBeRunning()
+    {
+        $task = $this->getTasksOfType(DeployTask::class)[1];
+        if (!$task->isRunning()) {
+            throw new \RuntimeException(sprintf(
+                'The second deploy task is not running (successful=%b failed=%b pending=%b)',
+                $task->isSuccessful(),
+                $task->isFailed(),
+                $task->isPending()
+            ));
+        }
+    }
+
+    /**
      * @Then the run task should be running
      */
     public function theRunTaskShouldBeRunning()
@@ -189,5 +208,19 @@ class TasksContext implements Context
         }
 
         return $this->tideRepository->find($uuid);
+    }
+
+    /**
+     * @param EventDrivenTask $task
+     *
+     * @return EventCollection
+     */
+    public function getTaskEvents(EventDrivenTask $task)
+    {
+        $reflection = new \ReflectionObject($task);
+        $property = $reflection->getProperty('events');
+        $property->setAccessible(true);
+
+        return $property->getValue($task);
     }
 }

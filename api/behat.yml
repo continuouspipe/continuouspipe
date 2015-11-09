@@ -41,6 +41,8 @@ default:
                     - @event_bus
                     - @river.pipe_client
                     - @river.task.deploy.naming.environment_strategy
+                    - @kernel
+                    - @jms_serializer
                 - Task\RunContext:
                     - @kernel
                     - @river.pipe_client

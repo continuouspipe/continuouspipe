@@ -9,6 +9,7 @@ use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Extension\ReverseProxy\ReverseProxyExtension;
 use ContinuousPipe\Pipe\Client\ComponentStatus;
 use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
@@ -19,7 +20,10 @@ use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
+use JMS\Serializer\Serializer;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Kernel;
 
 class DeployContext implements Context
 {
@@ -62,19 +66,31 @@ class DeployContext implements Context
      * @var Deployment|null
      */
     private $deployment;
+    /**
+     * @var Kernel
+     */
+    private $kernel;
+    /**
+     * @var Serializer
+     */
+    private $serializer;
 
     /**
      * @param EventStore $eventStore
      * @param MessageBus $eventBus
      * @param TraceableClient $traceablePipeClient
      * @param EnvironmentNamingStrategy $environmentNamingStrategy
+     * @param Kernel $kernel
+     * @param Serializer $serializer
      */
-    public function __construct(EventStore $eventStore, MessageBus $eventBus, TraceableClient $traceablePipeClient, EnvironmentNamingStrategy $environmentNamingStrategy)
+    public function __construct(EventStore $eventStore, MessageBus $eventBus, TraceableClient $traceablePipeClient, EnvironmentNamingStrategy $environmentNamingStrategy, Kernel $kernel, Serializer $serializer)
     {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
         $this->traceablePipeClient = $traceablePipeClient;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
+        $this->kernel = $kernel;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -88,11 +104,45 @@ class DeployContext implements Context
     }
 
     /**
+     * @Given the service :name was created with the public address :address
+     */
+    public function theServiceWasCreatedWithThePublicAddress($name, $address)
+    {
+        $this->deployment = $this->getDeployment();
+        $componentStatuses = $this->deployment->getComponentStatuses() ?: [];
+        $componentStatuses[$name] = new ComponentStatus(true, false, false);
+        $publicEndpoints = $this->deployment->getPublicEndpoints() ?: [];
+
+        if ($address !== null) {
+            $publicEndpoints[] = new PublicEndpoint($name, $address);
+        }
+
+        $this->deployment = new Deployment(
+            $this->deployment->getUuid(),
+            $this->deployment->getRequest(),
+            $this->deployment->getStatus(),
+            $publicEndpoints,
+            $componentStatuses
+        );
+    }
+
+    /**
      * @When a deploy task is started
      */
     public function aDeployTaskIsStarted()
     {
         $this->tideContext->aTideIsStartedWithADeployTask();
+    }
+
+    /**
+     * @When the deployment failed
+     */
+    public function theDeploymentFailed()
+    {
+        $this->eventBus->handle(new DeploymentFailed(
+            $this->tideContext->getCurrentTideUuid(),
+            $this->getDeploymentStartedEvent()->getDeployment()
+        ));
     }
 
     /**
@@ -110,27 +160,6 @@ class DeployContext implements Context
                 'Expected 1 deployment started event, found %d.',
                 count($deploymentStartedEvents)
             ));
-        }
-    }
-
-    /**
-     * @When the deployment failed
-     */
-    public function theDeploymentFailed()
-    {
-        $this->eventBus->handle(new DeploymentFailed(
-            $this->tideContext->getCurrentTideUuid(),
-            $this->getDeploymentStartedEvent()->getDeployment()
-        ));
-    }
-
-    /**
-     * @Then the deploy task should be failed
-     */
-    public function theTaskShouldBeFailed()
-    {
-        if (!$this->getDeployTask()->isFailed()) {
-            throw new \RuntimeException('Expected the task to be failed');
         }
     }
 
@@ -161,29 +190,6 @@ class DeployContext implements Context
     }
 
     /**
-     * @Given the service :name was created with the public address :address
-     */
-    public function theServiceWasCreatedWithThePublicAddress($name, $address)
-    {
-        $this->deployment = $this->getDeployment();
-        $componentStatuses = $this->deployment->getComponentStatuses() ?: [];
-        $componentStatuses[$name] = new ComponentStatus(true, false, false);
-        $publicEndpoints = $this->deployment->getPublicEndpoints() ?: [];
-
-        if ($address !== null) {
-            $publicEndpoints[] = new PublicEndpoint($name, $address);
-        }
-
-        $this->deployment = new Deployment(
-            $this->deployment->getUuid(),
-            $this->deployment->getRequest(),
-            $this->deployment->getStatus(),
-            $publicEndpoints,
-            $componentStatuses
-        );
-    }
-
-    /**
      * @When the deployment succeed
      */
     public function theDeploymentSucceed()
@@ -200,6 +206,31 @@ class DeployContext implements Context
     public function theDeployTaskSucceed()
     {
         $this->theDeploymentSucceed();
+    }
+
+    /**
+     * @When the first deploy succeed
+     */
+    public function theFirstDeploySucceed()
+    {
+        $deployments = $this->traceablePipeClient->getDeployments();
+        if (0 === count($deployments)) {
+            throw new \RuntimeException('No deployment found');
+        }
+
+        /** @var DeployTask $task */
+        $task = $this->tideTasksContext->getTasksOfType(DeployTask::class)[0];
+        $this->sendDeployTaskNotification($task, Deployment::STATUS_SUCCESS);
+    }
+
+    /**
+     * @Then the deploy task should be failed
+     */
+    public function theTaskShouldBeFailed()
+    {
+        if (!$this->getDeployTask()->isFailed()) {
+            throw new \RuntimeException('Expected the task to be failed');
+        }
     }
 
     /**
@@ -474,5 +505,58 @@ class DeployContext implements Context
         }
 
         return $this->deployment;
+    }
+
+    /**
+     * @param DeployTask $task
+     * @param $status
+     */
+    private function sendDeployTaskNotification(DeployTask $task, $status)
+    {
+        $events = $this->tideTasksContext->getTaskEvents($task);
+        $deploymentStartedEvents = array_values(array_filter($events->getEvents(), function($event) {
+            return $event instanceof DeploymentStarted;
+        }));
+
+        if (0 === count($deploymentStartedEvents)) {
+            throw new \RuntimeException('No deploy started events');
+        }
+
+        /** @var DeploymentStarted $deploymentStartedEvent */
+        $deploymentStartedEvent = $deploymentStartedEvents[0];
+
+        $this->sendRunnerNotification(
+            new Deployment(
+                $deploymentStartedEvent->getDeployment()->getUuid(),
+                $deploymentStartedEvent->getDeployment()->getRequest(),
+                $status
+            )
+        );
+    }
+
+    /**
+     * @param Deployment $deployment
+     */
+    private function sendRunnerNotification(Deployment $deployment)
+    {
+        $response = $this->kernel->handle(Request::create(
+            sprintf('/pipe/notification/tide/%s', (string)$this->tideContext->getCurrentTideUuid()),
+            'POST',
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json'
+            ],
+            $this->serializer->serialize($deployment, 'json')
+        ));
+
+        if (!in_array($response->getStatusCode(), [200, 204])) {
+            echo $response->getContent();
+            throw new \RuntimeException(sprintf(
+                'Expected status code 200 but got %d',
+                $response->getStatusCode()
+            ));
+        }
     }
 }
