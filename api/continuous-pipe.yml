@@ -4,7 +4,7 @@ tasks:
               - name: GITHUB_TOKEN
                 value: ${GITHUB_TOKEN}
     - deploy:
-          providerName: kubernetes/cp-cluster
+          cluster: gke
           services:
               database:
                   specification:
@@ -50,7 +50,7 @@ tasks:
                             value: ${SERVICE_API_PUBLIC_ENDPOINT}
 
     - run:
-          providerName: kubernetes/cp-cluster
+          cluster: gke
           image:
               from_service: api
           commands:
