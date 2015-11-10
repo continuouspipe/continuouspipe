@@ -8,17 +8,26 @@ use Rhumsaa\Uuid\Uuid;
 
 class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
 {
+    const DEFAULT_MAX_LENGTH = 63;
+
     /**
      * @var EnvironmentNamingStrategy
      */
     private $namingStrategy;
 
     /**
-     * @param EnvironmentNamingStrategy $namingStrategy
+     * @var int
      */
-    public function __construct(EnvironmentNamingStrategy $namingStrategy)
+    private $maxLength;
+
+    /**
+     * @param EnvironmentNamingStrategy $namingStrategy
+     * @param int                       $maxLength
+     */
+    public function __construct(EnvironmentNamingStrategy $namingStrategy, $maxLength = self::DEFAULT_MAX_LENGTH)
     {
         $this->namingStrategy = $namingStrategy;
+        $this->maxLength = $maxLength;
     }
 
     /**
@@ -27,17 +36,19 @@ class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
     public function getName(Uuid $flowUuid, CodeReference $codeReference)
     {
         $name = $this->namingStrategy->getName($flowUuid, $codeReference);
-
-        if (strlen($name) > 63) {
-            // Already 37 chars
-            $name = ((string) $flowUuid).'-';
-            $branchIdentifier = $codeReference->getBranch();
-
-            $name .= substr($branchIdentifier, 0, 63 - strlen($name) - 11).'-';
-            $name .= substr(md5($branchIdentifier), 0, 63 - strlen($name));
+        if (strlen($name) <= $this->maxLength) {
+            return $name;
         }
 
-        return $name;
+        $flowUuidLength = strlen((string) $flowUuid);
+        $strippedName = substr($name, 0, $flowUuidLength + 1);
+        $branchIdentifier = substr($name, strlen($strippedName));
+
+        $hashLength = 10;
+        $strippedName .= substr($branchIdentifier, 0, $this->maxLength - strlen($strippedName) - $hashLength - 1).'-';
+        $strippedName .= substr(md5($branchIdentifier), 0, $hashLength);
+
+        return $strippedName;
     }
 
     /**
