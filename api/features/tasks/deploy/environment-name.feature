@@ -12,3 +12,9 @@ Feature:
     Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
     When a tide is started for the branch "feature/123-foo-bar" with a deploy task
     Then the name of the deployed environment should be "00000000-0000-0000-0000-000000000000-feature-123-foo-bar"
+
+  Scenario: If the branch name is too long for the DNS name, it should strip the name
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    When a tide is started for the branch "feature/123-foo-bar-my-branch-name-has-a-long-name" with a deploy task
+    Then the name of the deployed environment should not be "00000000-0000-0000-0000-000000000000-feature-123-foo-bar-my-branch-name-has-a-long-name"
+    And the name of the deployed environment should be less or equals than 63 characters long

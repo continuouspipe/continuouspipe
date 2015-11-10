@@ -24,7 +24,11 @@
         </service>
         <service id="river.pipe.cluster_identifier_resolver" class="ContinuousPipe\River\Pipe\ClusterIdentifierResolver" />
 
-        <service id="river.task.deploy.naming.environment_strategy" class="ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy" />
+        <service id="river.task.deploy.naming.flow_and_branch_strategy" class="ContinuousPipe\River\Task\Deploy\Naming\FlowUuidAndBranchNameStrategy" />
+        <service id="river.task.deploy.naming.environment_strategy" class="ContinuousPipe\River\Task\Deploy\Naming\LimitedLengthNamingStrategy">
+            <argument type="service" id="river.task.deploy.naming.flow_and_branch_strategy" />
+        </service>
+
         <service id="river.task.deploy.deployment_request_factory" class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\FlattenDeploymentRequestFactory">
             <argument type="service" id="router" />
             <argument type="service" id="river.task.deploy.naming.environment_strategy" />
