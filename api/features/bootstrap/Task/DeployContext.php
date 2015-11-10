@@ -53,6 +53,11 @@ class DeployContext implements Context
     private $traceablePipeClient;
 
     /**
+     * @var EnvironmentNamingStrategy
+     */
+    private $environmentNamingStrategy;
+
+    /**
      * @var Deployment|null
      */
     private $deployment;
@@ -61,12 +66,14 @@ class DeployContext implements Context
      * @param EventStore $eventStore
      * @param MessageBus $eventBus
      * @param TraceableClient $traceablePipeClient
+     * @param EnvironmentNamingStrategy $environmentNamingStrategy
      */
-    public function __construct(EventStore $eventStore, MessageBus $eventBus, TraceableClient $traceablePipeClient)
+    public function __construct(EventStore $eventStore, MessageBus $eventBus, TraceableClient $traceablePipeClient, EnvironmentNamingStrategy $environmentNamingStrategy)
     {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
         $this->traceablePipeClient = $traceablePipeClient;
+        $this->environmentNamingStrategy = $environmentNamingStrategy;
     }
 
     /**
@@ -330,14 +337,44 @@ class DeployContext implements Context
      */
     public function theNameOfTheDeployedEnvironmentShouldBe($expectedName)
     {
-        $namingStrategy = new EnvironmentNamingStrategy();
-        $foundName = $namingStrategy->getName($this->flowContext->getCurrentUuid(), $this->getDeployTask()->getContext()->getCodeReference());
+        $foundName = $this->environmentNamingStrategy->getName($this->flowContext->getCurrentUuid(), $this->getDeployTask()->getContext()->getCodeReference());
 
         if ($foundName != $expectedName) {
             throw new \RuntimeException(sprintf(
                 'Found name "%s" while expecting "%s"',
                 $foundName,
                 $expectedName
+            ));
+        }
+    }
+
+    /**
+     * @Then the name of the deployed environment should not be :name
+     */
+    public function theNameOfTheDeployedEnvironmentShouldNotBe($name)
+    {
+        $foundName = $this->environmentNamingStrategy->getName($this->flowContext->getCurrentUuid(), $this->getDeployTask()->getContext()->getCodeReference());
+
+        if ($foundName == $name) {
+            throw new \RuntimeException(sprintf(
+                'Found name "%s" while expecting not to be that',
+                $foundName
+            ));
+        }
+    }
+
+    /**
+     * @Then the name of the deployed environment should be less or equals than :characters characters long
+     */
+    public function theNameOfTheDeployedEnvironmentShouldBeLessOrEqualsThanCharactersLong($characters)
+    {
+        $foundName = $this->environmentNamingStrategy->getName($this->flowContext->getCurrentUuid(), $this->getDeployTask()->getContext()->getCodeReference());
+
+        if (strlen($foundName) > $characters) {
+            throw new \RuntimeException(sprintf(
+                'Expected the name to be less then %d characters, but found %d',
+                $characters,
+                strlen($foundName)
             ));
         }
     }

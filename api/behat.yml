@@ -39,6 +39,7 @@ default:
                     - @river.event_store
                     - @event_bus
                     - @river.pipe_client
+                    - @river.task.deploy.naming.environment_strategy
                 - Task\RunContext:
                     - @kernel
                     - @river.pipe_client
