@@ -30,5 +30,11 @@
             <argument type="service" id="logger" />
             <argument type="service" id="builder.docker.client.output_handler" />
         </service>
+
+        <service id="builder.docker.client.retry_decorator"
+                 class="ContinuousPipe\Builder\Docker\Retry\RetryClientDecorator"
+                 decorates="builder.docker.client">
+            <argument type="service" id="builder.docker.client.retry_decorator.inner" />
+        </service>
     </services>
 </container>

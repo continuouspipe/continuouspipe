@@ -5,10 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="builder.docker.client.build_only" class="ContinuousPipe\Builder\Tests\Docker\BuildOnlyClient" decorates="builder.docker.client">
-            <argument type="service" id="builder.docker.client.build_only.inner" />
-        </service>
-
         <service id="builder.docker.client.traceable" class="ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient" decorates="builder.docker.client">
             <argument type="service" id="builder.docker.client.traceable.inner" />
         </service>

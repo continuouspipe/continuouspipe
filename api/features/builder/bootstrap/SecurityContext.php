@@ -5,7 +5,11 @@ use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
+use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Security\User\User;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Rhumsaa\Uuid\Uuid;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class SecurityContext implements Context
 {
@@ -15,11 +19,29 @@ class SecurityContext implements Context
     private $inMemoryAuthenticatorClient;
 
     /**
-     * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
+     * @var TokenStorageInterface
      */
-    public function __construct(InMemoryAuthenticatorClient $inMemoryAuthenticatorClient)
+    private $tokenStorage;
+
+    /**
+     * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
+     * @param TokenStorageInterface $tokenStorage
+     */
+    public function __construct(InMemoryAuthenticatorClient $inMemoryAuthenticatorClient, TokenStorageInterface $tokenStorage)
     {
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
+        $this->tokenStorage = $tokenStorage;
+    }
+
+    /**
+     * @Given I am authenticated
+     */
+    public function iAmAuthenticated()
+    {
+        $token = new JWTUserToken(['ROLE_USER']);
+        $token->setUser(new SecurityUser(new User('samuel', Uuid::uuid1())));
+
+        $this->tokenStorage->setToken($token);
     }
 
     /**
