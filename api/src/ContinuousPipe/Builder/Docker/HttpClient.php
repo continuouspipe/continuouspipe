@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Builder\Docker;
 
+use ContinuousPipe\Builder\Docker\HttpClient\OutputHandler;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Image;
@@ -33,15 +34,22 @@ class HttpClient implements Client
     private $logger;
 
     /**
+     * @var OutputHandler
+     */
+    private $outputHandler;
+
+    /**
      * @param Docker             $docker
      * @param DockerfileResolver $dockerfileResolver
      * @param LoggerInterface    $logger
+     * @param OutputHandler      $outputHandler
      */
-    public function __construct(Docker $docker, DockerfileResolver $dockerfileResolver, LoggerInterface $logger)
+    public function __construct(Docker $docker, DockerfileResolver $dockerfileResolver, LoggerInterface $logger, OutputHandler $outputHandler)
     {
         $this->docker = $docker;
         $this->dockerfileResolver = $dockerfileResolver;
         $this->logger = $logger;
+        $this->outputHandler = $outputHandler;
     }
 
     /**
@@ -236,23 +244,7 @@ EOF;
     private function getOutputCallback(Logger $logger)
     {
         return function ($output) use ($logger) {
-            if (is_array($output)) {
-                if (array_key_exists('error', $output)) {
-                    if (!is_string($output['error'])) {
-                        $output['error'] = 'Stringified error: '.print_r($output, true);
-                    }
-
-                    throw new DockerException($output['error']);
-                } elseif (array_key_exists('stream', $output)) {
-                    $output = $output['stream'];
-                } elseif (array_key_exists('status', $output)) {
-                    $output = $output['status'];
-                }
-            }
-
-            if (null !== $output && !is_string($output)) {
-                $output = 'Unknown ('.gettype($output).')';
-            }
+            $output = $this->outputHandler->handle($output);
 
             if (!empty($output)) {
                 $logger->append(new Text($output));

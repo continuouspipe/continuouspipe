@@ -3,11 +3,16 @@
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Builder\Build;
+use ContinuousPipe\Builder\Builder;
 use ContinuousPipe\Builder\Image;
+use ContinuousPipe\Builder\Repository;
+use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
+use LogStream\EmptyLogger;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
@@ -21,11 +26,6 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var Kernel
      */
     private $kernel;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
 
     /**
      * @var TraceableDockerClient
@@ -45,26 +45,13 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     /**
      * @param Kernel $kernel
      * @param TraceableDockerClient $traceableDockerClient
-     * @param TokenStorageInterface $tokenStorage
      * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
      */
-    public function __construct(Kernel $kernel, TraceableDockerClient $traceableDockerClient, TokenStorageInterface $tokenStorage, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient)
+    public function __construct(Kernel $kernel, TraceableDockerClient $traceableDockerClient, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient)
     {
         $this->kernel = $kernel;
-        $this->tokenStorage = $tokenStorage;
         $this->traceableDockerClient = $traceableDockerClient;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
-    }
-
-    /**
-     * @Given I am authenticated
-     */
-    public function iAmAuthenticated()
-    {
-        $token = new JWTUserToken(['ROLE_USER']);
-        $token->setUser(new SecurityUser(new User('samuel', Uuid::uuid1())));
-
-        $this->tokenStorage->setToken($token);
     }
 
     /**
@@ -182,14 +169,6 @@ EOF;
     }
 
     /**
-     * @Given I have docker registry credentials
-     */
-    public function iHaveDockerRegistryCredentials()
-    {
-        $this->inMemoryAuthenticatorClient->addDockerCredentials('samuel', new DockerRegistryCredentials('samuel', 'samuel', 'samuel', 'docker.io'));
-    }
-
-    /**
      * @Then the build should be errored
      */
     public function theBuildShouldBeErrored()
@@ -214,7 +193,7 @@ EOF;
     {
         $found = [];
         $matchingRuns = array_filter($this->traceableDockerClient->getRuns(), function(array $run) use ($command, $image, &$found) {
-            /** @var Image $image */
+            /** @var Image $foundImage */
             $foundImage = $run['image'];
             $containerImageName = $foundImage->getName().':'.$foundImage->getTag();
 

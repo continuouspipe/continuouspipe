@@ -5,6 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="builder.docker.client" class="ContinuousPipe\Builder\Tests\Docker\EmptyDockerClient" />
+        <service id="builder.docker.client.callback" class="ContinuousPipe\Builder\Tests\Docker\CallbackDockerClient" />
+        <service id="builder.docker.client" alias="builder.docker.client.callback" />
     </services>
 </container>

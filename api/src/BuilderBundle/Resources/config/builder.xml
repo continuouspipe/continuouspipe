@@ -19,33 +19,6 @@
             <argument type="service" id="builder.dockerfile_command_extractor" />
         </service>
 
-        <service id="docker.client" class="Docker\Http\DockerClient">
-            <argument type="collection"/>
-            <argument>%docker_entrypoint%</argument>
-            <argument>null</argument>
-            <argument>false</argument>
-
-            <tag name="csa_guzzle.client" />
-        </service>
-        <service id="docker" class="Docker\Docker">
-            <argument type="service" id="docker.client"/>
-        </service>
-
-        <service id="builder.docker.client" class="ContinuousPipe\Builder\Docker\HttpClient">
-            <argument type="service" id="docker" />
-            <argument type="service" id="builder.docker_file_resolver" />
-            <argument type="service" id="logger" />
-        </service>
-        <service id="builder.github.repository_address_descriptor" class="ContinuousPipe\Builder\GitHub\RepositoryAddressDescriptor" />
-        <service id="builder.github.http_client" class="GuzzleHttp\Client">
-            <tag name="csa_guzzle.client" />
-        </service>
-        <service id="builder.github.http_client_factory" class="ContinuousPipe\Builder\GitHub\GitHubHttpClientFactory">
-            <argument type="service" id="builder.github.http_client" />
-        </service>
-        <service id="builder.github.remote_archive_locator" class="ContinuousPipe\Builder\GitHub\RemoteArchiveLocator">
-            <argument type="service" id="builder.github.repository_address_descriptor" />
-        </service>
         <service id="builder.archive_builder" class="ContinuousPipe\Builder\GitHub\GitHubArchiveBuilder">
             <argument type="service" id="builder.github.remote_archive_locator" />
             <argument type="service" id="builder.github.http_client_factory" />
