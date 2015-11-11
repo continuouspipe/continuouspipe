@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="builder.github.repository_address_descriptor" class="ContinuousPipe\Builder\GitHub\RepositoryAddressDescriptor" />
+        <service id="builder.github.http_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="builder.github.http_client_factory" class="ContinuousPipe\Builder\GitHub\GitHubHttpClientFactory">
+            <argument type="service" id="builder.github.http_client" />
+        </service>
+        <service id="builder.github.remote_archive_locator" class="ContinuousPipe\Builder\GitHub\RemoteArchiveLocator">
+            <argument type="service" id="builder.github.repository_address_descriptor" />
+        </service>
+    </services>
+</container>

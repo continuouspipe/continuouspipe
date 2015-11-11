@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="docker.client" class="Docker\Http\DockerClient">
+            <argument type="collection"/>
+            <argument>%docker_entrypoint%</argument>
+            <argument>null</argument>
+            <argument>false</argument>
+
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="docker" class="Docker\Docker">
+            <argument type="service" id="docker.client"/>
+        </service>
+
+        <service id="builder.docker.client.output_handler" class="ContinuousPipe\Builder\Docker\HttpClient\RawOutputHandler" />
+        <service id="builder.docker.client.output_handler.exception_resolver"
+                 class="ContinuousPipe\Builder\Docker\HttpClient\ExceptionResolverHandler"
+                 decorates="builder.docker.client.output_handler">
+            <argument type="service" id="builder.docker.client.output_handler.exception_resolver.inner" />
+        </service>
+
+        <service id="builder.docker.client" class="ContinuousPipe\Builder\Docker\HttpClient">
+            <argument type="service" id="docker" />
+            <argument type="service" id="builder.docker_file_resolver" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="builder.docker.client.output_handler" />
+        </service>
+    </services>
+</container>
