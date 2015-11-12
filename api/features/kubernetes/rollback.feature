@@ -11,6 +11,7 @@ Feature:
     And the target environment name is "my-environment"
     And the target cluster identifier is "my-cluster"
     And the credentials bucket is "00000000-0000-0000-0000-000000000000"
+    And the pods of the replication controllers will be created successfully and running
 
   Scenario: The created component are deleted if the deployment fail
     Given the specification come from the template "simple-app"

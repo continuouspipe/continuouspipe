@@ -9,6 +9,7 @@ use ContinuousPipe\Pipe\Command\ProxyPublicEndpointsCommand;
 use ContinuousPipe\Pipe\Command\RollbackDeploymentCommand;
 use ContinuousPipe\Pipe\Command\WaitComponentsCommand;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
+use ContinuousPipe\Pipe\Event\ComponentsReady;
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\DeploymentStarted;
@@ -55,6 +56,7 @@ class DeploymentSaga
      */
     public function notify(DeploymentEvent $event)
     {
+        var_dump('saga', get_class($event));
         if ($event instanceof DeploymentStarted) {
             $this->commandBus->handle(new PrepareEnvironmentCommand($event->getDeploymentContext()));
         } elseif ($event instanceof EnvironmentPrepared) {
@@ -67,7 +69,7 @@ class DeploymentSaga
             $this->commandBus->handle(new RollbackDeploymentCommand($event->getDeploymentContext()));
         } elseif ($event instanceof ComponentsCreated) {
             $this->commandBus->handle(new WaitComponentsCommand($event->getDeploymentContext(), $event->getComponentStatuses()));
-        } else {
+        } elseif ($event instanceof ComponentsReady) {
             $this->eventBus->handle(new DeploymentSuccessful($event->getDeploymentUuid()));
         }
     }

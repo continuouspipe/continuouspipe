@@ -156,6 +156,8 @@ class ComponentTransformer
         return array_filter($pods, function (Pod $pod) {
             if (null === ($status = $pod->getStatus())) {
                 return false;
+            } elseif (count($status->getContainerStatuses()) === 0) {
+                return false;
             }
 
             return array_reduce($status->getContainerStatuses(), function ($ready, ContainerStatus $containerStatus) {

@@ -52,6 +52,7 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsReady" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsFinalised" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\ComponentsCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\ComponentsReady" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentFailed" />
         </service>
     </services>

@@ -14,6 +14,7 @@ Feature:
     And the credentials bucket is "00000000-0000-0000-0000-000000000000"
     And the specification come from the template "simple-app"
     And the notification callback address is "http://example.com"
+    And the pods of the replication controllers will be created successfully and running
 
   @smoke
   Scenario: The status of the deployed components should be sent in the notification

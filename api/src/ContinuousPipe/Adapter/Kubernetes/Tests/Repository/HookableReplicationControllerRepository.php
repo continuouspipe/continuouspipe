@@ -18,6 +18,11 @@ class HookableReplicationControllerRepository implements ReplicationControllerRe
     private $createdHooks = [];
 
     /**
+     * @var callable[]
+     */
+    private $updatedHooks = [];
+
+    /**
      * @param ReplicationControllerRepository $repository
      */
     public function __construct(ReplicationControllerRepository $repository)
@@ -52,7 +57,13 @@ class HookableReplicationControllerRepository implements ReplicationControllerRe
      */
     public function update(ReplicationController $replicationController)
     {
-        return $this->repository->update($replicationController);
+        $updated = $this->repository->update($replicationController);
+
+        foreach ($this->updatedHooks as $hook) {
+            $updated = $hook($updated);
+        }
+
+        return $updated;
     }
 
     /**
@@ -93,5 +104,13 @@ class HookableReplicationControllerRepository implements ReplicationControllerRe
     public function addCreatedHook(callable $hook)
     {
         $this->createdHooks[] = $hook;
+    }
+
+    /**
+     * @param callable $hook
+     */
+    public function addUpdatedHook(callable $hook)
+    {
+        $this->updatedHooks[] = $hook;
     }
 }

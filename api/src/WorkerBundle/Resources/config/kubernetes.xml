@@ -137,6 +137,9 @@
         <service id="pipe.adapter.kubernetes.wait_components_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\WaitComponentsHandler">
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="event_bus" />
+            <argument type="service" id="log_stream.logger_factory" />
+            <argument>%pipe.wait_component_interval%</argument>
+            <argument>%pipe.wait_component_timeout%</argument>
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\WaitComponentsCommand" />
         </service>

@@ -4,6 +4,7 @@ namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookablePodRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryPodRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePodRepository;
 use Kubernetes\Client\Model\Pod;
@@ -20,15 +21,21 @@ class PodContext implements Context
      * @var InMemoryPodRepository
      */
     private $inMemoryPodRepository;
+    /**
+     * @var HookablePodRepository
+     */
+    private $hookablePodRepository;
 
     /**
      * @param TraceablePodRepository $podRepository
      * @param InMemoryPodRepository $inMemoryPodRepository
+     * @param HookablePodRepository $hookablePodRepository
      */
-    public function __construct(TraceablePodRepository $podRepository, InMemoryPodRepository $inMemoryPodRepository)
+    public function __construct(TraceablePodRepository $podRepository, InMemoryPodRepository $inMemoryPodRepository, HookablePodRepository $hookablePodRepository)
     {
         $this->podRepository = $podRepository;
         $this->inMemoryPodRepository = $inMemoryPodRepository;
+        $this->hookablePodRepository = $hookablePodRepository;
     }
 
     /**
@@ -57,6 +64,16 @@ class PodContext implements Context
      */
     public function thePodWillRunSuccessfully($podName)
     {
+        $this->hookablePodRepository->addCreatedHook(function(Pod $pod) {
+            return $this->inMemoryPodRepository->update(new Pod($pod->getMetadata(), $pod->getSpecification(), new PodStatus(
+                PodStatus::PHASE_SUCCEEDED,
+                null,
+                null,
+                [],
+                []
+            )));
+        });
+
         $this->inMemoryPodRepository->setAttachCallback(function(Pod $pod, callable $callable) use ($podName, &$calls) {
             if ($pod->getMetadata()->getName() != $podName) {
                 return $pod;

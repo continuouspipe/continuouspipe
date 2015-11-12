@@ -19,6 +19,11 @@ class HookablePodRepository implements PodRepository
     private $foundByReplicationControllerHooks = [];
 
     /**
+     * @var callable[]
+     */
+    private $createdHooks = [];
+
+    /**
      * @param PodRepository $repository
      */
     public function __construct(PodRepository $repository)
@@ -47,7 +52,13 @@ class HookablePodRepository implements PodRepository
      */
     public function create(Pod $pod)
     {
-        return $this->repository->create($pod);
+        $created = $this->repository->create($pod);
+
+        foreach ($this->createdHooks as $hook) {
+            $created = $hook($created);
+        }
+
+        return $created;
     }
 
     /**
@@ -110,5 +121,13 @@ class HookablePodRepository implements PodRepository
     public function addFoundByReplicationControllerHook(callable $hook)
     {
         $this->foundByReplicationControllerHooks[] = $hook;
+    }
+
+    /**
+     * @param callable $hook
+     */
+    public function addCreatedHook(callable $hook)
+    {
+        $this->createdHooks[] = $hook;
     }
 }

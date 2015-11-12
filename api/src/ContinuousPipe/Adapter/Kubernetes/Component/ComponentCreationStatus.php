@@ -29,8 +29,6 @@ class ComponentCreationStatus extends ComponentStatus
      */
     public function __construct(array $created = [], array $updated = [], array $deleted = [])
     {
-        parent::__construct(count($created) > 0, count($updated) > 0, count($deleted) > 0);
-
         $this->created = $created;
         $this->updated = $updated;
         $this->deleted = $deleted;
@@ -82,5 +80,29 @@ class ComponentCreationStatus extends ComponentStatus
     public function getDeleted()
     {
         return $this->deleted;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCreated()
+    {
+        return count($this->created) > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUpdated()
+    {
+        return count($this->updated) > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeleted()
+    {
+        return count($this->deleted) > 0;
     }
 }

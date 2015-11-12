@@ -15,6 +15,6 @@ Feature:
 
   Scenario:
     Given the specification come from the template "overwrite-command"
+    And the pods of the replication controller "mysql" will be running after creation
     When I send the built deployment request
-    And pods are running for the replication controller "mysql"
     Then the component "mysql" should be deployed with the command "echo hello"

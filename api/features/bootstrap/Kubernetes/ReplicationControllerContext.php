@@ -4,6 +4,7 @@ namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryPodRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableReplicationControllerRepository;
 use Kubernetes\Client\Exception\ReplicationControllerNotFound;
 use Kubernetes\Client\Model\ContainerStatus;
@@ -14,7 +15,9 @@ use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodSpecification;
 use Kubernetes\Client\Model\PodStatus;
 use Kubernetes\Client\Model\PodStatusCondition;
+use Kubernetes\Client\Model\PodTemplateSpecification;
 use Kubernetes\Client\Model\ReplicationController;
+use Kubernetes\Client\Model\ReplicationControllerSpecification;
 use Kubernetes\Client\Repository\PodRepository;
 
 class ReplicationControllerContext implements Context
@@ -30,12 +33,19 @@ class ReplicationControllerContext implements Context
     private $podRepository;
 
     /**
+     * @var InMemoryPodRepository
+     */
+    private $inMemoryPodRepository;
+
+    /**
      * @param TraceableReplicationControllerRepository $replicationControllerRepository
+     * @param InMemoryPodRepository $inMemoryPodRepository
      * @param PodRepository $podRepository
      */
-    public function __construct(TraceableReplicationControllerRepository $replicationControllerRepository, PodRepository $podRepository)
+    public function __construct(TraceableReplicationControllerRepository $replicationControllerRepository, InMemoryPodRepository $inMemoryPodRepository, PodRepository $podRepository)
     {
         $this->replicationControllerRepository = $replicationControllerRepository;
+        $this->inMemoryPodRepository = $inMemoryPodRepository;
         $this->podRepository = $podRepository;
     }
 
@@ -80,7 +90,15 @@ class ReplicationControllerContext implements Context
         try {
             $this->replicationControllerRepository->findOneByName($name);
         } catch (ReplicationControllerNotFound $e) {
-            $this->replicationControllerRepository->create(new ReplicationController(new ObjectMetadata($name)));
+            $this->replicationControllerRepository->create(new ReplicationController(
+                new ObjectMetadata($name),
+                new ReplicationControllerSpecification(1, [],
+                    new PodTemplateSpecification(
+                        new ObjectMetadata($name),
+                        new PodSpecification([], [])
+                    )
+                )
+            ));
         }
     }
 
@@ -174,24 +192,23 @@ class ReplicationControllerContext implements Context
      */
     public function podsAreRunningForTheReplicationController($name)
     {
+        $this->podsAreNotRunningForTheReplicationController($name);
+
         $replicationController = $this->replicationControllerRepository->findOneByName($name);
-        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
 
-        if (0 == count($pods)) {
-            $selector = $replicationController->getSpecification()->getSelector();
-            $counts = $replicationController->getSpecification()->getReplicas();
+        $selector = $replicationController->getSpecification()->getSelector();
+        $counts = $replicationController->getSpecification()->getReplicas();
 
-            for ($i = 0; $i < $counts; $i++) {
-                $this->podRepository->create(new Pod(
-                    new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
-                    $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification(),
-                    new PodStatus('Ready', '10.240.162.87', '10.132.1.47', [
-                        new PodStatusCondition('Ready', true)
-                    ], [
-                        new ContainerStatus($name, 1, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, true)
-                    ])
-                ));
-            }
+        for ($i = 0; $i < $counts; $i++) {
+            $this->inMemoryPodRepository->create(new Pod(
+                new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
+                $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification(),
+                new PodStatus(PodStatus::PHASE_RUNNING, '10.240.162.87', '10.132.1.47', [
+                    new PodStatusCondition('Ready', true)
+                ], [
+                    new ContainerStatus($name, 1, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, true)
+                ])
+            ));
         }
     }
 
@@ -200,24 +217,22 @@ class ReplicationControllerContext implements Context
      */
     public function podsAreRunningButNotReadyForTheReplicationController($name)
     {
+        $this->podsAreNotRunningForTheReplicationController($name);
+
         $replicationController = $this->replicationControllerRepository->findOneByName($name);
-        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
+        $selector = $replicationController->getSpecification()->getSelector();
+        $counts = $replicationController->getSpecification()->getReplicas();
 
-        if (0 == count($pods)) {
-            $selector = $replicationController->getSpecification()->getSelector();
-            $counts = $replicationController->getSpecification()->getReplicas();
-
-            for ($i = 0; $i < $counts; $i++) {
-                $this->podRepository->create(new Pod(
-                    new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
-                    $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification(),
-                    new PodStatus(PodStatus::PHASE_RUNNING, '10.240.162.87', '10.132.1.47', [
-                        new PodStatusCondition('Ready', false)
-                    ], [
-                        new ContainerStatus($name, 13, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, false)
-                    ])
-                ));
-            }
+        for ($i = 0; $i < $counts; $i++) {
+            $this->inMemoryPodRepository->create(new Pod(
+                new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
+                $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification(),
+                new PodStatus(PodStatus::PHASE_RUNNING, '10.240.162.87', '10.132.1.47', [
+                    new PodStatusCondition('Ready', false)
+                ], [
+                    new ContainerStatus($name, 13, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, false)
+                ])
+            ));
         }
     }
 
@@ -226,20 +241,18 @@ class ReplicationControllerContext implements Context
      */
     public function podsArePendingForTheReplicationController($name)
     {
+        $this->podsAreNotRunningForTheReplicationController($name);
+
         $replicationController = $this->replicationControllerRepository->findOneByName($name);
-        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
+        $selector = $replicationController->getSpecification()->getSelector();
+        $counts = $replicationController->getSpecification()->getReplicas();
 
-        if (0 == count($pods)) {
-            $selector = $replicationController->getSpecification()->getSelector();
-            $counts = $replicationController->getSpecification()->getReplicas();
-
-            for ($i = 0; $i < $counts; $i++) {
-                $this->podRepository->create(new Pod(
-                    new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
-                    $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification(),
-                    new PodStatus(PodStatus::PHASE_PENDING, '1.2.3.4', null, [], [])
-                ));
-            }
+        for ($i = 0; $i < $counts; $i++) {
+            $this->inMemoryPodRepository->create(new Pod(
+                new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
+                $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification(),
+                new PodStatus(PodStatus::PHASE_PENDING, '1.2.3.4', null, [], [])
+            ));
         }
     }
 

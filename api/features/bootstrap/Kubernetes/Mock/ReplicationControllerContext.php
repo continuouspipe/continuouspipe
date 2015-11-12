@@ -49,6 +49,23 @@ class ReplicationControllerContext implements Context
     }
 
     /**
+     * @Given the pods of the replication controllers will be created successfully and running
+     */
+    public function thePodsOfTheReplicationControllersWillBeCreatedSuccessfullyAndRunning()
+    {
+        $hook = function(ReplicationController $replicationController) {
+            $name = $replicationController->getMetadata()->getName();
+
+            $this->replicationControllerContext->podsAreRunningForTheReplicationController($name);
+
+            return $replicationController;
+        };
+
+        $this->hookableReplicationControllerRepository->addCreatedHook($hook);
+        $this->hookableReplicationControllerRepository->addUpdatedHook($hook);
+    }
+
+    /**
      * @Given the pods of the replication controller :name will be pending after creation
      */
     public function thePodsOfTheReplicationControllerWillBePendingAfterCreation($name)

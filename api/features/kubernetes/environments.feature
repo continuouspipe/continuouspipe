@@ -15,6 +15,7 @@ Feature:
     And the target cluster identifier is "my-cluster"
     And the credentials bucket is "00000000-0000-0000-0000-000000000000"
     And the specification come from the template "simple-app"
+    And the pods of the replication controllers will be created successfully and running
     When I send the built deployment request
     Then the deployment should be successful
 
