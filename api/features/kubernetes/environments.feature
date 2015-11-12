@@ -34,6 +34,11 @@ Feature:
     Then the status of the component "app" should be "unhealthy"
 
   Scenario:
+    Given pods are pending for the replication controller "app"
+    When I request the environment list of the cluster "my-cluster" of the team "my-team"
+    Then the status of the component "app" should be "unhealthy"
+
+  Scenario:
     Given pods are running for the replication controller "app"
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should be "healthy"

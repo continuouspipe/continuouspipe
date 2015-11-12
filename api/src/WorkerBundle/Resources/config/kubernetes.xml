@@ -133,5 +133,12 @@
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\RollbackDeploymentCommand" />
         </service>
+
+        <service id="pipe.adapter.kubernetes.wait_components_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\WaitComponentsHandler">
+            <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\WaitComponentsCommand" />
+        </service>
     </services>
 </container>

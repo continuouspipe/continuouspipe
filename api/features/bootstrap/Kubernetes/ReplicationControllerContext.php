@@ -211,13 +211,56 @@ class ReplicationControllerContext implements Context
                 $this->podRepository->create(new Pod(
                     new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
                     $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification(),
-                    new PodStatus('Ready', '10.240.162.87', '10.132.1.47', [
+                    new PodStatus(PodStatus::PHASE_RUNNING, '10.240.162.87', '10.132.1.47', [
                         new PodStatusCondition('Ready', false)
                     ], [
                         new ContainerStatus($name, 13, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, false)
                     ])
                 ));
             }
+        }
+    }
+
+    /**
+     * @Given pods are pending for the replication controller :name
+     */
+    public function podsArePendingForTheReplicationController($name)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($name);
+        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
+
+        if (0 == count($pods)) {
+            $selector = $replicationController->getSpecification()->getSelector();
+            $counts = $replicationController->getSpecification()->getReplicas();
+
+            for ($i = 0; $i < $counts; $i++) {
+                $this->podRepository->create(new Pod(
+                    new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
+                    $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification(),
+                    new PodStatus(PodStatus::PHASE_PENDING, '1.2.3.4', null, [], [])
+                ));
+            }
+        }
+    }
+
+    /**
+     * @Then at least one pod of the replication controller :name should be running
+     */
+    public function atLeastOnePodOfTheReplicationControllerShouldBeRunning($name)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($name);
+        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
+
+        if (0 === count($pods)) {
+            throw new \RuntimeException('No pod found');
+        }
+
+        $runningPods = array_filter($pods, function(Pod $pod) {
+            return $pod->getStatus()->getPhase() == PodStatus::PHASE_RUNNING;
+        });
+
+        if (0 === count($runningPods)) {
+            throw new \RuntimeException('No running pod found');
         }
     }
 

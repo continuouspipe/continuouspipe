@@ -6,11 +6,11 @@ use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointNotFound;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\ServiceWaiter;
 use ContinuousPipe\Adapter\Kubernetes\Service\CreatedService;
+use ContinuousPipe\Adapter\Kubernetes\Service\Service;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\PublicEndpointsCreated;
 use ContinuousPipe\Pipe\Event\PublicEndpointsReady;
-use Kubernetes\Client\Model\Service;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -62,7 +62,7 @@ class WaitPublicServicesEndpoints
             $endpoints = $this->waitEndpoints($context, $event->getServices(), $logger->getLog());
             $logger->success();
 
-            if ($this->hasNewlyCreatedEndpoints($event->getServices())) {
+            if ($this->hasNewServices($event->getServices())) {
                 $this->eventBus->handle(new PublicEndpointsCreated($context, $endpoints));
             }
 
@@ -91,12 +91,19 @@ class WaitPublicServicesEndpoints
         return $endpoints;
     }
 
-    private function hasNewlyCreatedEndpoints(array $services)
+    /**
+     * Returns true if one on these services were just created.
+     *
+     * @param Service[] $services
+     *
+     * @return bool
+     */
+    private function hasNewServices(array $services)
     {
         return array_reduce(
             $services,
-            function ($hasNewEndpoints, $service) {
-                return $service instanceof CreatedService ?: $hasNewEndpoints;
+            function ($hasNewServices, $service) {
+                return $service instanceof CreatedService ?: $hasNewServices;
             },
             false
         );

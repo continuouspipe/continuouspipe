@@ -17,12 +17,18 @@
         <service id="pipe.adapter.kubernetes.hookable.service_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_repository" />
         </service>
+        <service id="pipe.adapter.kubernetes.hookable.replication_controller_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableReplicationControllerRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.replication_controller_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.hookable.pod_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookablePodRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.pod_repository" />
+        </service>
 
         <service id="pipe.adapter.kubernetes.traceable.namespace_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.namespace_repository" />
         </service>
         <service id="pipe.adapter.kubernetes.traceable.replication_controller_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableReplicationControllerRepository">
-            <argument type="service" id="pipe.adapter.kubernetes.in_memory.replication_controller_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.replication_controller_repository" />
         </service>
         <service id="pipe.adapter.kubernetes.traceable.secret_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableSecretRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.secret_repository" />
@@ -34,7 +40,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.hookable.service_repository" />
         </service>
         <service id="pipe.adapter.kubernetes.traceable.pod_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePodRepository">
-            <argument type="service" id="pipe.adapter.kubernetes.in_memory.pod_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.pod_repository" />
         </service>
         <service id="pipe.adapter.kubernetes.traceable.persistent_volume_claim_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePersistentVolumeClaimRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.persistent_volume_claim_repository" />

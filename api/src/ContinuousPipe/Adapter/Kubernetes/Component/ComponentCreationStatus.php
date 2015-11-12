@@ -2,9 +2,10 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Component;
 
+use ContinuousPipe\Pipe\View\ComponentStatus;
 use Kubernetes\Client\Model\KubernetesObject;
 
-class ComponentCreationStatus
+class ComponentCreationStatus extends ComponentStatus
 {
     /**
      * @var \Kubernetes\Client\Model\KubernetesObject[]
@@ -28,6 +29,8 @@ class ComponentCreationStatus
      */
     public function __construct(array $created = [], array $updated = [], array $deleted = [])
     {
+        parent::__construct(count($created) > 0, count($updated) > 0, count($deleted) > 0);
+
         $this->created = $created;
         $this->updated = $updated;
         $this->deleted = $deleted;
