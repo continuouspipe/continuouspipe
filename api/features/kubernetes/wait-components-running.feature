@@ -17,6 +17,7 @@ Feature:
     Given the specification come from the template "simple-app"
     And the pods of the replication controller "app" will be pending after creation
     And the pods of the replication controller "app" will become running later
+    And the pods of the replication controller "mysql" will be running after creation
     When I send the built deployment request
     Then the deployment request should be successfully created
     And at least one pod of the replication controller "app" should be running

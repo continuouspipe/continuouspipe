@@ -9,6 +9,7 @@ use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\ComponentsReady;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
+use ContinuousPipe\Pipe\Promise\PromiseBuilder;
 use ContinuousPipe\Pipe\View\ComponentStatus;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Model\KubernetesObject;
@@ -22,6 +23,16 @@ use React;
 class WaitComponentsHandler implements DeploymentHandler
 {
     /**
+     * The internal to check to components.
+     */
+    const DEFAULT_COMPONENT_CHECK_INTERVAL = 2.5;
+
+    /**
+     * Half an hour timeout for a component to be ready.
+     */
+    const DEFAULT_COMPONENT_TIMEOUT = 1800;
+
+    /**
      * @var DeploymentClientFactory
      */
     private $clientFactory;
@@ -32,13 +43,27 @@ class WaitComponentsHandler implements DeploymentHandler
     private $eventBus;
 
     /**
+     * @var float
+     */
+    private $checkInternal;
+
+    /**
+     * @var int
+     */
+    private $timeout;
+
+    /**
      * @param DeploymentClientFactory $clientFactory
      * @param MessageBus              $eventBus
+     * @param float                   $checkInternal
+     * @param int                     $timeout
      */
-    public function __construct(DeploymentClientFactory $clientFactory, MessageBus $eventBus)
+    public function __construct(DeploymentClientFactory $clientFactory, MessageBus $eventBus, $checkInternal = self::DEFAULT_COMPONENT_CHECK_INTERVAL, $timeout = self::DEFAULT_COMPONENT_TIMEOUT)
     {
         $this->clientFactory = $clientFactory;
         $this->eventBus = $eventBus;
+        $this->checkInternal = $checkInternal;
+        $this->timeout = $timeout;
     }
 
     /**
@@ -79,23 +104,19 @@ class WaitComponentsHandler implements DeploymentHandler
      */
     private function waitPodRunning(React\EventLoop\LoopInterface $loop, NamespaceClient $client, Pod $pod)
     {
-        $deferred = new React\Promise\Deferred();
+        $podName = $pod->getMetadata()->getName();
 
-        // Each, 1 second, get the pod status
-        $loop->addPeriodicTimer(1.0, function (React\EventLoop\Timer\Timer $timer) use (&$i, $deferred, $client, $pod) {
-            $pod = $client->getPodRepository()->findOneByName($pod->getMetadata()->getName());
-            $deferred->notify($pod);
+        return (new PromiseBuilder($loop))
+            ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $podName) {
+                $pod = $client->getPodRepository()->findOneByName($podName);
 
-            if ($pod->getStatus()->getPhase() == PodStatus::PHASE_RUNNING) {
-                $timer->cancel();
-                $deferred->resolve($pod);
-            } elseif (++$i >= 66) {
-                $timer->cancel();
-                $deferred->reject($pod);
-            }
-        });
-
-        return $deferred->promise();
+                if ($pod->getStatus()->getPhase() == PodStatus::PHASE_RUNNING) {
+                    $deferred->resolve($pod);
+                }
+            })
+            ->withTimeout($this->timeout)
+            ->getPromise()
+        ;
     }
 
     /**
@@ -106,27 +127,21 @@ class WaitComponentsHandler implements DeploymentHandler
      */
     private function waitOneReplicationControllerPodRunning(React\EventLoop\LoopInterface $loop, NamespaceClient $client, ReplicationController $replicationController)
     {
-        $deferred = new React\Promise\Deferred();
+        return (new PromiseBuilder($loop))
+            ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $replicationController) {
+                $pods = $client->getPodRepository()->findByReplicationController($replicationController);
 
-        // Each, 1 second, get the pod status
-        $loop->addPeriodicTimer(1.0, function (React\EventLoop\Timer\Timer $timer) use (&$i, $deferred, $client, $replicationController) {
-            $pods = $client->getPodRepository()->findByReplicationController($replicationController);
-            $deferred->notify($pods);
+                $runningPods = array_filter($pods->getPods(), function (Pod $pod) {
+                    return $pod->getStatus()->getPhase() == PodStatus::PHASE_RUNNING;
+                });
 
-            $runningPods = array_filter($pods->getPods(), function (Pod $pod) {
-                return $pod->getStatus()->getPhase() == PodStatus::PHASE_RUNNING;
-            });
-
-            if (count($runningPods) > 0) {
-                $deferred->notify($pods);
-                $timer->cancel();
-            } elseif (++$i >= 10) {
-                $timer->cancel();
-                $deferred->reject($pods);
-            }
-        });
-
-        return $deferred->promise();
+                if (count($runningPods) > 0) {
+                    $deferred->resolve($pods);
+                }
+            })
+            ->withTimeout($this->timeout)
+            ->getPromise()
+        ;
     }
 
     /**

@@ -65,6 +65,22 @@ class ReplicationControllerContext implements Context
     }
 
     /**
+     * @Given the pods of the replication controller :name will be running after creation
+     */
+    public function thePodsOfTheReplicationControllerWillBeRunningAfterCreation($name)
+    {
+        $this->hookableReplicationControllerRepository->addCreatedHook(function(ReplicationController $replicationController) use ($name) {
+            if ($replicationController->getMetadata()->getName() != $name) {
+                return $replicationController;
+            }
+
+            $this->replicationControllerContext->podsAreRunningForTheReplicationController($name);
+
+            return $replicationController;
+        });
+    }
+
+    /**
      * @Given the pods of the replication controller :name will become running later
      */
     public function thePodsOfTheReplicationControllerWillBecomeRunningLater($name)
