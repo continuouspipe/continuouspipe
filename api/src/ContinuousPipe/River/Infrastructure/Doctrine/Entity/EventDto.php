@@ -38,4 +38,11 @@ class EventDto
      * @var string
      */
     public $serializedEvent;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=false)
+     *
+     * @var \DateTime
+     */
+    public $eventDatetime;
 }

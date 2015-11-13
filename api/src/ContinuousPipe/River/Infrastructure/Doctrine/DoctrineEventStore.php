@@ -34,6 +34,7 @@ class DoctrineEventStore implements EventStore
         $dto->tideUuid = $event->getTideUuid();
         $dto->eventClass = get_class($event);
         $dto->serializedEvent = base64_encode(serialize($event));
+        $dto->eventDatetime = $this->getCurrentMicroDateTime();
 
         $this->entityManager->persist($dto);
         $this->entityManager->flush();
@@ -46,6 +47,8 @@ class DoctrineEventStore implements EventStore
     {
         $dtoCollection = $this->getEntityRepository()->findBy([
             'tideUuid' => (string) $uuid,
+        ], [
+            'eventDatetime' => 'ASC',
         ]);
 
         $events = [];
@@ -62,5 +65,16 @@ class DoctrineEventStore implements EventStore
     private function getEntityRepository()
     {
         return $this->entityManager->getRepository(self::DTO_CLASS);
+    }
+
+    /**
+     * @return \DateTime
+     */
+    private function getCurrentMicroDateTime()
+    {
+        $time = microtime(true);
+        $microSeconds = sprintf('%06d', ($time - floor($time)) * 1000000);
+
+        return new \DateTime(date('Y-m-d H:i:s.'.$microSeconds, $time));
     }
 }
