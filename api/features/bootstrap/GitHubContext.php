@@ -1,7 +1,9 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\Event\TideCreated;
+use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestDeploymentNotifier;
@@ -51,6 +53,10 @@ class GitHubContext implements Context
      * @var TraceableClient
      */
     private $traceableClient;
+    /**
+     * @var EventStore
+     */
+    private $eventStore;
 
     /**
      * @param Kernel $kernel
@@ -58,14 +64,16 @@ class GitHubContext implements Context
      * @param FakePullRequestDeploymentNotifier $fakePullRequestDeploymentNotifier
      * @param FakePullRequestResolver $fakePullRequestResolver
      * @param TraceableClient $traceableClient
+     * @param EventStore $eventStore
      */
-    public function __construct(Kernel $kernel, FakeCodeStatusUpdater $fakeCodeStatusUpdater, FakePullRequestDeploymentNotifier $fakePullRequestDeploymentNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient)
+    public function __construct(Kernel $kernel, FakeCodeStatusUpdater $fakeCodeStatusUpdater, FakePullRequestDeploymentNotifier $fakePullRequestDeploymentNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore)
     {
         $this->fakeCodeStatusUpdater = $fakeCodeStatusUpdater;
         $this->kernel = $kernel;
         $this->fakePullRequestDeploymentNotifier = $fakePullRequestDeploymentNotifier;
         $this->fakePullRequestResolver = $fakePullRequestResolver;
         $this->traceableClient = $traceableClient;
+        $this->eventStore = $eventStore;
     }
 
     /**
@@ -173,6 +181,22 @@ class GitHubContext implements Context
         if (count($notifications) == 0) {
             throw new \LogicException('Expected at least 1 notification, found 0');
         }
+    }
+
+    /**
+     * @Given a comment identified :commentId was already added
+     */
+    public function aCommentIdentifiedWasAlreadyAdded($commentId)
+    {
+        $this->eventStore->add(new CommentedTideFeedback($this->tideContext->getCurrentTideUuid(), $commentId));
+    }
+
+    /**
+     * @Then the comment :commentId should have been deleted
+     */
+    public function theCommentShouldHaveBeenDeleted($commentId)
+    {
+        throw new \RuntimeException('Unable to know...');
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
+use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\GitHub\GitHubClientFactory;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use GitHub\WebHook\Model\PullRequest;
@@ -16,11 +18,18 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
     private $gitHubClientFactory;
 
     /**
-     * @param GitHubClientFactory $gitHubClientFactory
+     * @var EventStore
      */
-    public function __construct(GitHubClientFactory $gitHubClientFactory)
+    private $eventStore;
+
+    /**
+     * @param GitHubClientFactory $gitHubClientFactory
+     * @param EventStore $eventStore
+     */
+    public function __construct(GitHubClientFactory $gitHubClientFactory, EventStore $eventStore)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
+        $this->eventStore = $eventStore;
     }
 
     /**
@@ -32,7 +41,7 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
         $contents = $this->getCommentContents($deployment);
 
         $client = $this->gitHubClientFactory->createClientForUser($deployment->getUser());
-        $client->issues()->comments()->create(
+        $comment = $client->issues()->comments()->create(
             $repository->getOwner()->getLogin(),
             $repository->getName(),
             $pullRequest->getNumber(),
@@ -40,6 +49,8 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
                 'body' => $contents,
             ]
         );
+
+        $this->eventStore->add(new CommentedTideFeedback($deploymentSuccessful->getTideUuid(), $comment['id']));
     }
 
     /**

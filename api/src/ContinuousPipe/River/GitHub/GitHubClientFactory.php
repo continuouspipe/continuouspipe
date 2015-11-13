@@ -86,12 +86,4 @@ class GitHubClientFactory
 
         return $this->createClientForUser($securityUser->getUser());
     }
-
-    /**
-     * @return Client
-     */
-    public function createAnonymous()
-    {
-        return new Client($this->githubHttpClient);
-    }
 }
