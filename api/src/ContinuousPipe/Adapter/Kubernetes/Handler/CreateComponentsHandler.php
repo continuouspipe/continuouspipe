@@ -16,7 +16,6 @@ use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
-use ContinuousPipe\Pipe\View\ComponentStatus;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Model\KubernetesObject;
@@ -126,7 +125,7 @@ class CreateComponentsHandler implements DeploymentHandler
                 ));
 
                 $status = $this->createComponent($client, $logger, $component);
-                $componentStatus[$component->getName()] = $this->createComponentStatus($status);
+                $componentStatus[$component->getName()] = $status;
 
                 $this->eventDispatcher->dispatch(AfterCreatingComponent::NAME, new AfterCreatingComponent(
                     $client, $context, $component, $status
@@ -273,19 +272,5 @@ class CreateComponentsHandler implements DeploymentHandler
     public function supports(DeploymentContext $context)
     {
         return $context->getCluster() instanceof Kubernetes;
-    }
-
-    /**
-     * @param ComponentCreationStatus $status
-     *
-     * @return ComponentStatus
-     */
-    private function createComponentStatus(ComponentCreationStatus $status)
-    {
-        return new ComponentStatus(
-            count($status->getCreated()) > 0,
-            count($status->getUpdated()) > 0,
-            count($status->getDeleted()) > 0
-        );
     }
 }

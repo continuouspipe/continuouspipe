@@ -12,6 +12,7 @@ Feature:
     And there is a cluster in the bucket "00000000-0000-0000-0000-000000000000" with the following configuration:
       | identifier | type       | address         | version | username | password |
       | my-cluster | kubernetes | https://1.2.3.4 | v1      | username | password |
+    And the pods of the replication controllers will be created successfully and running
 
   @smoke
   Scenario:

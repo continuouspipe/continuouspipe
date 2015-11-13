@@ -15,6 +15,7 @@ Feature:
     And the target cluster identifier is "my-cluster"
     And the credentials bucket is "00000000-0000-0000-0000-000000000000"
     And the specification come from the template "simple-app"
+    And the pods of the replication controllers will be created successfully and running
     When I send the built deployment request
     Then the deployment should be successful
 
@@ -30,6 +31,11 @@ Feature:
 
   Scenario:
     Given pods are running but not ready for the replication controller "app"
+    When I request the environment list of the cluster "my-cluster" of the team "my-team"
+    Then the status of the component "app" should be "unhealthy"
+
+  Scenario:
+    Given pods are pending for the replication controller "app"
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should be "unhealthy"
 

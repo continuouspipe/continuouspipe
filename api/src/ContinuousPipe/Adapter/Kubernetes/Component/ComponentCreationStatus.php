@@ -2,9 +2,10 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Component;
 
+use ContinuousPipe\Pipe\View\ComponentStatus;
 use Kubernetes\Client\Model\KubernetesObject;
 
-class ComponentCreationStatus
+class ComponentCreationStatus extends ComponentStatus
 {
     /**
      * @var \Kubernetes\Client\Model\KubernetesObject[]
@@ -79,5 +80,29 @@ class ComponentCreationStatus
     public function getDeleted()
     {
         return $this->deleted;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCreated()
+    {
+        return count($this->created) > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUpdated()
+    {
+        return count($this->updated) > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeleted()
+    {
+        return count($this->deleted) > 0;
     }
 }
