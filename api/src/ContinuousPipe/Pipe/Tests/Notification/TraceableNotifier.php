@@ -17,7 +17,6 @@ class TraceableNotifier implements Notifier
      */
     public function notify($address, Deployment $deployment)
     {
-        var_dump('notify', $deployment);
         $this->notifications[] = [
             'address' => $address,
             'deployment' => $deployment,

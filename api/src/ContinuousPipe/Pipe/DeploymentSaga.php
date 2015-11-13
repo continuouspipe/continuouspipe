@@ -56,7 +56,6 @@ class DeploymentSaga
      */
     public function notify(DeploymentEvent $event)
     {
-        var_dump('saga', get_class($event));
         if ($event instanceof DeploymentStarted) {
             $this->commandBus->handle(new PrepareEnvironmentCommand($event->getDeploymentContext()));
         } elseif ($event instanceof EnvironmentPrepared) {
