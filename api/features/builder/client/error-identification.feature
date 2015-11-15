@@ -6,6 +6,10 @@ Feature:
     When the Docker daemon returns the error "Head https://registry-1.docker.io/v2/inviqasession/graze-mysql/blobs/sha256:4280dc1f38b4454b2c13ecc2164e020f3e57f0bb6f2611ed2b9c2bef16d60cef: EOF"
     Then the identified error should be a daemon network error
 
+  Scenario: Registry is not responding properly again
+    When the Docker daemon returns the error "Head https://registry-1.docker.io/v2/inviqasession/graze/blobs/sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4: dial tcp 54.152.156.80:443: i/o timeout"
+    Then the identified error should be a daemon network error
+
   Scenario: Infrastructure network problem
     When the Docker daemon returns the error "use of closed network connection"
     Then the identified error should be a daemon network error
