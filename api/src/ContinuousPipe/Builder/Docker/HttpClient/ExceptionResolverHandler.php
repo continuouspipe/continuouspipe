@@ -38,7 +38,7 @@ class ExceptionResolverHandler implements OutputHandler
     public function handle($output)
     {
         try {
-            $this->outputHandler->handle($output);
+            return $this->outputHandler->handle($output);
         } catch (DockerException $e) {
             $message = trim($e->getMessage());
 
