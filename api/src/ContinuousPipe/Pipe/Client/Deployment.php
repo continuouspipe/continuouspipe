@@ -112,14 +112,6 @@ class Deployment
     }
 
     /**
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
      * @return PublicEndpoint[]
      */
     public function getPublicEndpoints()

@@ -3,14 +3,10 @@
 namespace ContinuousPipe\River\Repository;
 
 use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\Security\User\User;
 
 interface CodeRepositoryRepository
 {
-    /**
-     * @return CodeRepository[]
-     */
-    public function findByCurrentUser();
-
     /**
      * @param string $organisation
      *
@@ -26,4 +22,11 @@ interface CodeRepositoryRepository
      * @return CodeRepository
      */
     public function findByIdentifier($identifier);
+
+    /**
+     * @param User $user
+     *
+     * @return CodeRepository[]
+     */
+    public function findByUser(User $user);
 }

@@ -49,6 +49,16 @@ class PullRequest
     private $base;
 
     /**
+     * @param int $id
+     * @param int $number
+     */
+    public function __construct($id, $number)
+    {
+        $this->id = $id;
+        $this->number = $number;
+    }
+
+    /**
      * @return string
      */
     public function getId()

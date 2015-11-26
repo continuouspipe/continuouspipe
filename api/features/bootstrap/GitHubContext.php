@@ -1,7 +1,10 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\Event\TideCreated;
+use ContinuousPipe\River\EventBus\EventStore;
+use ContinuousPipe\River\Tests\CodeRepository\GitHub\TestHttpClient;
 use ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestDeploymentNotifier;
@@ -34,11 +37,6 @@ class GitHubContext implements Context
     private $fakeCodeStatusUpdater;
 
     /**
-     * @var FakePullRequestDeploymentNotifier
-     */
-    private $fakePullRequestDeploymentNotifier;
-
-    /**
      * @var FakePullRequestResolver
      */
     private $fakePullRequestResolver;
@@ -51,21 +49,31 @@ class GitHubContext implements Context
      * @var TraceableClient
      */
     private $traceableClient;
+    /**
+     * @var EventStore
+     */
+    private $eventStore;
+    /**
+     * @var TestHttpClient
+     */
+    private $gitHubHttpClient;
 
     /**
      * @param Kernel $kernel
      * @param FakeCodeStatusUpdater $fakeCodeStatusUpdater
-     * @param FakePullRequestDeploymentNotifier $fakePullRequestDeploymentNotifier
      * @param FakePullRequestResolver $fakePullRequestResolver
      * @param TraceableClient $traceableClient
+     * @param EventStore $eventStore
+     * @param TestHttpClient $gitHubHttpClient
      */
-    public function __construct(Kernel $kernel, FakeCodeStatusUpdater $fakeCodeStatusUpdater, FakePullRequestDeploymentNotifier $fakePullRequestDeploymentNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient)
+    public function __construct(Kernel $kernel, FakeCodeStatusUpdater $fakeCodeStatusUpdater, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore, TestHttpClient $gitHubHttpClient)
     {
         $this->fakeCodeStatusUpdater = $fakeCodeStatusUpdater;
         $this->kernel = $kernel;
-        $this->fakePullRequestDeploymentNotifier = $fakePullRequestDeploymentNotifier;
         $this->fakePullRequestResolver = $fakePullRequestResolver;
         $this->traceableClient = $traceableClient;
+        $this->eventStore = $eventStore;
+        $this->gitHubHttpClient = $gitHubHttpClient;
     }
 
     /**
@@ -159,7 +167,7 @@ class GitHubContext implements Context
     public function aPullRequestContainsTheTideRelatedCommit()
     {
         $this->fakePullRequestResolver->willResolve([
-            new \GitHub\WebHook\Model\PullRequest(),
+            new \GitHub\WebHook\Model\PullRequest(1, 1),
         ]);
     }
 
@@ -168,9 +176,35 @@ class GitHubContext implements Context
      */
     public function theAddressesOfTheEnvironmentShouldBeCommentedOnThePullRequest()
     {
-        $notifications = $this->fakePullRequestDeploymentNotifier->getNotifications();
+        $requests = $this->gitHubHttpClient->getRequests();
+        $matchingRequests = array_filter($requests, function(array $request) {
+            return $request['method'] == 'POST' && preg_match('#repos/([a-z0-9-]+)/([a-z0-9-]+)/issues/\d+/comments#i', $request['path']);
+        });
 
-        if (count($notifications) == 0) {
+        if (count($matchingRequests) == 0) {
+            throw new \LogicException('Expected at least 1 notification, found 0');
+        }
+    }
+
+    /**
+     * @Given a comment identified :commentId was already added
+     */
+    public function aCommentIdentifiedWasAlreadyAdded($commentId)
+    {
+        $this->eventStore->add(new CommentedTideFeedback($this->tideContext->getCurrentTideUuid(), $commentId));
+    }
+
+    /**
+     * @Then the comment :commentId should have been deleted
+     */
+    public function theCommentShouldHaveBeenDeleted($commentId)
+    {
+        $requests = $this->gitHubHttpClient->getRequests();
+        $matchingRequests = array_filter($requests, function(array $request) use ($commentId) {
+            return $request['method'] == 'DELETE' && preg_match('#repos/([a-z0-9-]+)/([a-z0-9-]+)/issues/comments/'.$commentId.'#i', $request['path']);
+        });
+
+        if (count($matchingRequests) == 0) {
             throw new \LogicException('Expected at least 1 notification, found 0');
         }
     }

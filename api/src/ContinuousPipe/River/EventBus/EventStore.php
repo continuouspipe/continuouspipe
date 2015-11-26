@@ -18,4 +18,12 @@ interface EventStore
      * @return TideEvent[]
      */
     public function findByTideUuid(Uuid $uuid);
+
+    /**
+     * @param Uuid   $uuid
+     * @param string $className
+     *
+     * @return TideEvent[]
+     */
+    public function findByTideUuidAndType(Uuid $uuid, $className);
 }

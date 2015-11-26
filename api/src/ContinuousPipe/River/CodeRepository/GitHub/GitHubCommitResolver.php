@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
-use ContinuousPipe\River\GitHub\GitHubClientFactory;
+use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\Security\Credentials\Bucket;
 use GuzzleHttp\Exception\RequestException;
@@ -13,7 +13,7 @@ use GuzzleHttp\Exception\RequestException;
 class GitHubCommitResolver implements CommitResolver
 {
     /**
-     * @var GitHubClientFactory
+     * @var ClientFactory
      */
     private $clientFactory;
 
@@ -23,10 +23,10 @@ class GitHubCommitResolver implements CommitResolver
     private $addressDescriptor;
 
     /**
-     * @param GitHubClientFactory                        $clientFactory
+     * @param ClientFactory                              $clientFactory
      * @param CodeRepository\RepositoryAddressDescriptor $addressDescriptor
      */
-    public function __construct(GitHubClientFactory $clientFactory, CodeRepository\RepositoryAddressDescriptor $addressDescriptor)
+    public function __construct(ClientFactory $clientFactory, CodeRepository\RepositoryAddressDescriptor $addressDescriptor)
     {
         $this->clientFactory = $clientFactory;
         $this->addressDescriptor = $addressDescriptor;

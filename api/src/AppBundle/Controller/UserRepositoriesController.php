@@ -3,7 +3,9 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
+use ContinuousPipe\Security\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
@@ -26,11 +28,12 @@ class UserRepositoriesController
 
     /**
      * @Route("/user-repositories")
+     * @ParamConverter("user", converter="user")
      * @View
      */
-    public function listAction()
+    public function listAction(User $user)
     {
-        return $this->codeRepositoryRepository->findByCurrentUser();
+        return $this->codeRepositoryRepository->findByUser($user);
     }
 
     /**

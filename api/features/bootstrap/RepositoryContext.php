@@ -42,7 +42,7 @@ class RepositoryContext implements Context
     {
         foreach ($repositories->getHash() as $repository) {
             $this->codeRepositoryRepository->add(new GitHubCodeRepository(
-                new Repository($repository['repository'], 'url', false, $repository['repository'])
+                new Repository(new \GitHub\WebHook\Model\User('foo'), $repository['repository'], 'url', false, $repository['repository'])
             ));
         }
     }
@@ -54,7 +54,7 @@ class RepositoryContext implements Context
     {
         foreach ($repositories->getHash() as $repository) {
             $this->codeRepositoryRepository->addForOrganisation(new GitHubCodeRepository(
-                new Repository($repository['repository'], 'bar', false, $repository['repository'])
+                new Repository(new \GitHub\WebHook\Model\User('foo'), $repository['repository'], 'bar', false, $repository['repository'])
             ), $repository['organisation']);
         }
     }

@@ -3,8 +3,9 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeRepository\CodeRepositoryNotFound;
-use ContinuousPipe\River\GitHub\GitHubClientFactory;
+use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
+use ContinuousPipe\Security\User\User;
 use Github\HttpClient\Message\ResponseMediator;
 use Github\ResultPager;
 use GitHub\WebHook\Model\Repository;
@@ -14,7 +15,7 @@ use JMS\Serializer\SerializerInterface;
 class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
 {
     /**
-     * @var GitHubClientFactory
+     * @var ClientFactory
      */
     private $gitHubClientFactory;
 
@@ -24,10 +25,10 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
     private $serializer;
 
     /**
-     * @param GitHubClientFactory $gitHubClientFactory
+     * @param ClientFactory       $gitHubClientFactory
      * @param SerializerInterface $serializer
      */
-    public function __construct(GitHubClientFactory $gitHubClientFactory, SerializerInterface $serializer)
+    public function __construct(ClientFactory $gitHubClientFactory, SerializerInterface $serializer)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->serializer = $serializer;
@@ -36,9 +37,9 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
     /**
      * {@inheritdoc}
      */
-    public function findByCurrentUser()
+    public function findByUser(User $user)
     {
-        $client = $this->gitHubClientFactory->createClientForCurrentUser();
+        $client = $this->gitHubClientFactory->createClientForUser($user);
         $currentUserApi = $client->currentUser();
 
         $paginator = new ResultPager($client);

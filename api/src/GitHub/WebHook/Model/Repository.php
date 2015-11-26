@@ -47,8 +47,9 @@ class Repository
      * @param bool   $private
      * @param string $id
      */
-    public function __construct($name, $url, $private = false, $id = null)
+    public function __construct(User $owner, $name, $url, $private = false, $id = null)
     {
+        $this->owner = $owner;
         $this->name = $name;
         $this->url = $url;
         $this->private = $private;

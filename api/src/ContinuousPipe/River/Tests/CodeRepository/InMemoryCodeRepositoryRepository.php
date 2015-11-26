@@ -4,20 +4,13 @@ namespace ContinuousPipe\River\Tests\CodeRepository;
 
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
+use ContinuousPipe\Security\User\User;
 
 class InMemoryCodeRepositoryRepository implements CodeRepositoryRepository
 {
     private $codeRepositories = [];
 
     private $organisationCodeRepositories = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findByCurrentUser()
-    {
-        return $this->codeRepositories;
-    }
 
     /**
      * {@inheritdoc}
@@ -40,6 +33,14 @@ class InMemoryCodeRepositoryRepository implements CodeRepositoryRepository
         }
 
         return $this->codeRepositories[$identifier];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByUser(User $user)
+    {
+        return $this->codeRepositories;
     }
 
     /**

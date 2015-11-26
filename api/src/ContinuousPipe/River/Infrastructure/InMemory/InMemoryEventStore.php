@@ -38,4 +38,14 @@ class InMemoryEventStore implements EventStore
 
         return $this->eventsByTideUuid[$uuid];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByTideUuidAndType(Uuid $uuid, $className)
+    {
+        return array_values(array_filter($this->findByTideUuid($uuid), function ($event) use ($className) {
+            return get_class($event) == $className;
+        }));
+    }
 }

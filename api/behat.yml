@@ -22,9 +22,10 @@ default:
                 - GitHubContext:
                     - @kernel
                     - @river.code_status_updater
-                    - @river.github.pull_request_deployment_notifier
                     - @river.github.pull_request_resolver
                     - @river.pipe_client
+                    - @river.event_store
+                    - @river.github.http_client
                 - FlowContext:
                     - @kernel
                     - @river.repository.flow
@@ -92,9 +93,10 @@ smoke:
                 - GitHubContext:
                     - @kernel
                     - @river.code_status_updater
-                    - @river.github.pull_request_deployment_notifier
                     - @river.github.pull_request_resolver
                     - @river.pipe_client
+                    - @river.event_store
+                    - @river.github.http_client
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - Tide\TasksContext:
