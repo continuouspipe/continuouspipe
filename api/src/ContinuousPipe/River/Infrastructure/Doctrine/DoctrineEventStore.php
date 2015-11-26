@@ -51,6 +51,31 @@ class DoctrineEventStore implements EventStore
             'eventDatetime' => 'ASC',
         ]);
 
+        return $this->getEventsFromDtoCollection($dtoCollection);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByTideUuidAndType(Uuid $uuid, $className)
+    {
+        $dtoCollection = $this->getEntityRepository()->findBy([
+            'tideUuid' => (string) $uuid,
+            'eventClass' => $className,
+        ], [
+            'eventDatetime' => 'ASC',
+        ]);
+
+        return $this->getEventsFromDtoCollection($dtoCollection);
+    }
+
+    /**
+     * @param array $dtoCollection
+     *
+     * @return TideEvent[]
+     */
+    private function getEventsFromDtoCollection(array $dtoCollection)
+    {
         $events = [];
         foreach ($dtoCollection as $dto) {
             $events[] = unserialize(base64_decode($dto->serializedEvent));

@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\GitHub\GitHubClientFactory;
+use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use GitHub\WebHook\Model\PullRequest;
@@ -12,7 +12,7 @@ use JMS\Serializer\Serializer;
 class GitHubPullRequestResolver implements PullRequestResolver
 {
     /**
-     * @var GitHubClientFactory
+     * @var ClientFactory
      */
     private $gitHubClientFactory;
 
@@ -22,10 +22,10 @@ class GitHubPullRequestResolver implements PullRequestResolver
     private $serializer;
 
     /**
-     * @param GitHubClientFactory $gitHubClientFactory
-     * @param Serializer          $serializer
+     * @param ClientFactory $gitHubClientFactory
+     * @param Serializer    $serializer
      */
-    public function __construct(GitHubClientFactory $gitHubClientFactory, Serializer $serializer)
+    public function __construct(ClientFactory $gitHubClientFactory, Serializer $serializer)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->serializer = $serializer;

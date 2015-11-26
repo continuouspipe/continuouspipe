@@ -5,15 +5,16 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\EventBus\EventStore;
-use ContinuousPipe\River\GitHub\GitHubClientFactory;
+use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use ContinuousPipe\River\View\TideRepository;
 use GitHub\WebHook\Model\PullRequest;
 use GitHub\WebHook\Model\Repository;
 
 class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotifier
 {
     /**
-     * @var GitHubClientFactory
+     * @var ClientFactory
      */
     private $gitHubClientFactory;
 
@@ -23,13 +24,20 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
     private $eventStore;
 
     /**
-     * @param GitHubClientFactory $gitHubClientFactory
-     * @param EventStore $eventStore
+     * @var TideRepository
      */
-    public function __construct(GitHubClientFactory $gitHubClientFactory, EventStore $eventStore)
+    private $tideRepository;
+
+    /**
+     * @param ClientFactory  $gitHubClientFactory
+     * @param EventStore     $eventStore
+     * @param TideRepository $tideRepository
+     */
+    public function __construct(ClientFactory $gitHubClientFactory, EventStore $eventStore, TideRepository $tideRepository)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->eventStore = $eventStore;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -39,8 +47,26 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
     {
         $deployment = $deploymentSuccessful->getDeployment();
         $contents = $this->getCommentContents($deployment);
+        $tide = $this->tideRepository->find($deploymentSuccessful->getTideUuid());
 
-        $client = $this->gitHubClientFactory->createClientForUser($deployment->getUser());
+        $client = $this->gitHubClientFactory->createClientForUser($tide->getUser());
+
+        // Remove previous comments
+        $commentEvents = $this->eventStore->findByTideUuidAndType($tide->getUuid(), CommentedTideFeedback::class);
+        foreach ($commentEvents as $event) {
+            /* @var CommentedTideFeedback $event */
+            try {
+                $client->issues()->comments()->remove(
+                    $repository->getOwner()->getLogin(),
+                    $repository->getName(),
+                    $event->getCommentId()
+                );
+            } catch (\Exception $e) {
+                // Might be handled better but as this is not really mandatory...
+            }
+        }
+
+        // Create the new comment
         $comment = $client->issues()->comments()->create(
             $repository->getOwner()->getLogin(),
             $repository->getName(),

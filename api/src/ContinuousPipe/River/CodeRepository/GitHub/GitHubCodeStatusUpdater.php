@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeRepository\CodeStatusException;
 use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
-use ContinuousPipe\River\GitHub\GitHubClientFactory;
+use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideContext;
@@ -19,7 +19,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     const STATE_FAILURE = 'failure';
 
     /**
-     * @var GitHubClientFactory
+     * @var ClientFactory
      */
     private $gitHubClientFactory;
 
@@ -34,11 +34,11 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     private $bucketRepository;
 
     /**
-     * @param GitHubClientFactory $gitHubClientFactory
-     * @param BucketRepository    $bucketRepository
-     * @param string              $uiBaseUrl
+     * @param ClientFactory    $gitHubClientFactory
+     * @param BucketRepository $bucketRepository
+     * @param string           $uiBaseUrl
      */
-    public function __construct(GitHubClientFactory $gitHubClientFactory, BucketRepository $bucketRepository, $uiBaseUrl)
+    public function __construct(ClientFactory $gitHubClientFactory, BucketRepository $bucketRepository, $uiBaseUrl)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->uiBaseUrl = $uiBaseUrl;

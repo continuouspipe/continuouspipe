@@ -21,6 +21,16 @@ class User
     private $name;
 
     /**
+     * @param string $login
+     * @param string $name
+     */
+    public function __construct($login, $name = null)
+    {
+        $this->login = $login;
+        $this->name = $name;
+    }
+
+    /**
      * @return string
      */
     public function getLogin()

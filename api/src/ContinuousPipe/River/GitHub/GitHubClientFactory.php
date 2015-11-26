@@ -3,13 +3,14 @@
 namespace ContinuousPipe\River\GitHub;
 
 use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use Github\Client;
 use ContinuousPipe\Security\User\User;
 use Github\HttpClient\HttpClientInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class GitHubClientFactory
+class GitHubClientFactory implements ClientFactory
 {
     /**
      * @var TokenStorageInterface
@@ -39,25 +40,21 @@ class GitHubClientFactory
     }
 
     /**
-     * @param User $user
-     *
-     * @return Client
-     *
-     * @throws UserCredentialsNotFound
+     * {@inheritdoc}
      */
     public function createClientForUser(User $user)
     {
-        $bucket = $this->bucketRepository->find($user->getBucketUuid());
+        try {
+            $bucket = $this->bucketRepository->find($user->getBucketUuid());
+        } catch (BucketNotFound $e) {
+            throw new UserCredentialsNotFound($e->getMessage(), $e->getCode(), $e);
+        }
 
         return $this->createClientFromBucket($bucket);
     }
 
     /**
-     * @param Bucket $credentialsBucket
-     *
-     * @return Client
-     *
-     * @throws UserCredentialsNotFound
+     * {@inheritdoc}
      */
     public function createClientFromBucket(Bucket $credentialsBucket)
     {
@@ -78,7 +75,7 @@ class GitHubClientFactory
     }
 
     /**
-     * @return Client
+     * {@inheritdoc}
      */
     public function createClientForCurrentUser()
     {

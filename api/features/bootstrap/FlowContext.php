@@ -135,7 +135,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     public function theGitHubRepositoryExists($id)
     {
         $this->codeRepositoryRepository->add(new CodeRepository\GitHub\GitHubCodeRepository(
-            new Repository('foo', 'bar', false, $id)
+            new Repository(new \GitHub\WebHook\Model\User('foo'), 'foo', 'bar', false, $id)
         ));
     }
 
@@ -448,7 +448,7 @@ EOF;
     private function createFlowContext(Uuid $uuid = null, array $configuration = [], Team $team = null)
     {
         return $this->createFlowContextWithCodeRepository(new CodeRepository\GitHub\GitHubCodeRepository(
-            new Repository('foo', 'bar')
+            new Repository(new \GitHub\WebHook\Model\User('foo'), 'foo', 'bar')
         ), $uuid, $configuration, $team);
     }
 

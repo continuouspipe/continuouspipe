@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeRepository\OrganisationRepository;
-use ContinuousPipe\River\GitHub\GitHubClientFactory;
+use ContinuousPipe\River\GitHub\ClientFactory;
 use Github\ResultPager;
 use GitHub\WebHook\Model\Organisation;
 use JMS\Serializer\SerializerInterface;
@@ -11,7 +11,7 @@ use JMS\Serializer\SerializerInterface;
 class GitHubOrganisationRepository implements OrganisationRepository
 {
     /**
-     * @var GitHubClientFactory
+     * @var ClientFactory
      */
     private $gitHubClientFactory;
 
@@ -21,10 +21,10 @@ class GitHubOrganisationRepository implements OrganisationRepository
     private $serializer;
 
     /**
-     * @param GitHubClientFactory $gitHubClientFactory
+     * @param ClientFactory       $gitHubClientFactory
      * @param SerializerInterface $serializer
      */
-    public function __construct(GitHubClientFactory $gitHubClientFactory, SerializerInterface $serializer)
+    public function __construct(ClientFactory $gitHubClientFactory, SerializerInterface $serializer)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->serializer = $serializer;

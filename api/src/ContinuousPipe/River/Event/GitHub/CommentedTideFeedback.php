@@ -19,7 +19,7 @@ class CommentedTideFeedback implements TideEvent
 
     /**
      * @param Uuid $tideUuid
-     * @param int $commentId
+     * @param int  $commentId
      */
     public function __construct(Uuid $tideUuid, $commentId)
     {
