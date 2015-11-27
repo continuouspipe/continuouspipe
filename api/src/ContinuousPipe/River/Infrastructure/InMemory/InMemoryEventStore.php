@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Infrastructure\InMemory;
 
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Event\TideEventWithMetadata;
 use ContinuousPipe\River\EventBus\EventStore;
 use Rhumsaa\Uuid\Uuid;
 
@@ -23,7 +24,7 @@ class InMemoryEventStore implements EventStore
             $this->eventsByTideUuid[$uuid] = [];
         }
 
-        $this->eventsByTideUuid[$uuid][] = $event;
+        $this->eventsByTideUuid[$uuid][] = new TideEventWithMetadata($event, new \DateTime());
     }
 
     /**
@@ -36,7 +37,9 @@ class InMemoryEventStore implements EventStore
             return [];
         }
 
-        return $this->eventsByTideUuid[$uuid];
+        return array_map(function (TideEventWithMetadata $eventWithMetadata) {
+            return $eventWithMetadata->getTideEvent();
+        }, $this->eventsByTideUuid[$uuid]);
     }
 
     /**
@@ -45,6 +48,23 @@ class InMemoryEventStore implements EventStore
     public function findByTideUuidAndType(Uuid $uuid, $className)
     {
         return array_values(array_filter($this->findByTideUuid($uuid), function ($event) use ($className) {
+            return get_class($event) == $className;
+        }));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByTideUuidAndTypeWithMetadata(Uuid $uuid, $className)
+    {
+        $uuid = (string) $uuid;
+        if (!array_key_exists($uuid, $this->eventsByTideUuid)) {
+            return [];
+        }
+
+        return array_values(array_filter($this->eventsByTideUuid[$uuid], function (TideEventWithMetadata $eventWithMetadata) use ($className) {
+            $event = $eventWithMetadata->getTideEvent();
+
             return get_class($event) == $className;
         }));
     }

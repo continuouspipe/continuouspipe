@@ -56,6 +56,8 @@ default:
                     - @river.tide_configuration_factory
                 - TideSummaryContext:
                     - @kernel
+                - AnalyticsContext:
+                    - @river.keen.client.traceable
 
     extensions:
         Behat\Symfony2Extension:

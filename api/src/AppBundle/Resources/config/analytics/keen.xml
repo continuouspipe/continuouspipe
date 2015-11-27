@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.keen.client_factory" class="ContinuousPipe\River\Analytics\Keen\Client\KeenClientFactory">
+            <argument type="service" id="logger" />
+            <argument>%keen_project_id%</argument>
+            <argument>%keen_write_key%</argument>
+        </service>
+
+        <service id="river.keen.client" class="ContinuousPipe\River\Analytics\Keen\Client\KeenClient">
+            <factory service="river.keen.client_factory" method="create" />
+        </service>
+
+        <service id="river.analytics.keen.listener.tide_report" class="ContinuousPipe\River\Analytics\Keen\TideReportListener">
+            <argument type="service" id="river.keen.client" />
+            <argument type="service" id="river.event_store" />
+            <argument type="service" id="logger" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
+        </service>
+
+        <!-- Tasks listeners -->
+        <service id="river.analytics.keen.listener.build_task" class="ContinuousPipe\River\Analytics\Keen\TaskListener\BuildTaskListener">
+            <argument type="service" id="river.keen.client" />
+            <argument type="service" id="river.event_store" />
+            <argument type="service" id="logger" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\BuildSuccessful"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\BuildFailed"/>
+        </service>
+
+        <service id="river.analytics.keen.listener.deploy_task" class="ContinuousPipe\River\Analytics\Keen\TaskListener\DeployTaskListener">
+            <argument type="service" id="river.keen.client" />
+            <argument type="service" id="river.event_store" />
+            <argument type="service" id="logger" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful"/>
+        </service>
+    </services>
+</container>

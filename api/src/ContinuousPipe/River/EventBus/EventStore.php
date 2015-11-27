@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\EventBus;
 
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Event\TideEventWithMetadata;
 use Rhumsaa\Uuid\Uuid;
 
 interface EventStore
@@ -26,4 +27,12 @@ interface EventStore
      * @return TideEvent[]
      */
     public function findByTideUuidAndType(Uuid $uuid, $className);
+
+    /**
+     * @param Uuid   $uuid
+     * @param string $className
+     *
+     * @return TideEventWithMetadata[]
+     */
+    public function findByTideUuidAndTypeWithMetadata(Uuid $uuid, $className);
 }

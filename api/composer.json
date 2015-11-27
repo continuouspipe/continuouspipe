@@ -32,7 +32,8 @@
         "simple-bus/jms-serializer-bundle-bridge": "^2.0",
         "knplabs/github-api": "^1.5",
         "symfony/expression-language": "^2.7",
-        "cocur/slugify": "^1.4"
+        "cocur/slugify": "^1.4",
+        "keen-io/keen-io": "~2.5"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

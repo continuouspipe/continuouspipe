@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Infrastructure\Doctrine;
 
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Event\TideEventWithMetadata;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\EventDto;
 use Doctrine\ORM\EntityManager;
@@ -67,6 +68,26 @@ class DoctrineEventStore implements EventStore
         ]);
 
         return $this->getEventsFromDtoCollection($dtoCollection);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByTideUuidAndTypeWithMetadata(Uuid $uuid, $className)
+    {
+        $dtoCollection = $this->getEntityRepository()->findBy([
+            'tideUuid' => (string) $uuid,
+            'eventClass' => $className,
+        ], [
+            'eventDatetime' => 'ASC',
+        ]);
+
+        return array_map(function (EventDto $dto) {
+            return new TideEventWithMetadata(
+                unserialize(base64_decode($dto->serializedEvent)),
+                $dto->eventDatetime
+            );
+        }, $dtoCollection);
     }
 
     /**
