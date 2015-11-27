@@ -10,7 +10,7 @@ RUN requirements="libpq-dev zlib1g-dev libicu-dev libmcrypt-dev git" \
     && docker-php-ext-install opcache \
     && docker-php-ext-install bcmath \
     && docker-php-ext-install mcrypt \
-    && pecl install apcu-beta && echo extension=apcu.so > /usr/local/etc/php/conf.d/apcu.ini \
+    && pecl install apcu-4.0.8 && echo extension=apcu.so > /usr/local/etc/php/conf.d/apcu.ini \
     && apt-get purge --auto-remove -y
 
 # Apache configuration
