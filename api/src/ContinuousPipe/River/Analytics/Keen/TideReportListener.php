@@ -68,8 +68,8 @@ class TideReportListener
         $tideCreatedEvent = $tideCreatedEvents[0];
         $context = $tideCreatedEvent->getTideContext();
 
-        $createdAt = $this->getFirstEventDateTime($event->getTideUuid(), TideCreated::class) ?: new \DateTime('2000-01-01 00:00:00');
-        $startedAt = $this->getFirstEventDateTime($event->getTideUuid(), TideStarted::class) ?: new \DateTime('2000-01-01 00:00:00');
+        $createdAt = $this->getFirstEventDateTime($event->getTideUuid(), TideCreated::class) ?: new \DateTime();
+        $startedAt = $this->getFirstEventDateTime($event->getTideUuid(), TideStarted::class) ?: new \DateTime();
         $failedAt = $this->getFirstEventDateTime($event->getTideUuid(), TideFailed::class);
         $succeedAt = $this->getFirstEventDateTime($event->getTideUuid(), TideSuccessful::class);
         $finishedAt = $succeedAt ?: $failedAt ?: new \DateTime();
