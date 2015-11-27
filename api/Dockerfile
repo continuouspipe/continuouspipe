@@ -1,7 +1,7 @@
 FROM php:5.6-apache
 
 # PHP extension
-RUN requirements="libpq-dev zlib1g-dev libicu-dev git" \
+RUN requirements="libpq-dev zlib1g-dev libicu-dev libmcrypt-dev git" \
     && apt-get update && apt-get install -y $requirements && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install pdo_pgsql \
     && docker-php-ext-install mbstring \
@@ -9,6 +9,7 @@ RUN requirements="libpq-dev zlib1g-dev libicu-dev git" \
     && docker-php-ext-install zip \
     && docker-php-ext-install opcache \
     && docker-php-ext-install bcmath \
+    && docker-php-ext-install mcrypt \
     && pecl install apcu-beta && echo extension=apcu.so > /usr/local/etc/php/conf.d/apcu.ini \
     && apt-get purge --auto-remove -y
 
