@@ -34,6 +34,10 @@ tasks:
                             value: http://ui.continuouspipe.io
                           - name: RIVER_URL
                             value: ${SERVICE_API_PUBLIC_ENDPOINT}
+                          - name: KEEN_PROJECT_ID
+                            value: ${KEEN_PROJECT_ID}
+                          - name: KEEN_WRITE_KEY
+                            value: ${KEEN_WRITE_KEY}
 
               worker:
                   specification:
@@ -48,6 +52,10 @@ tasks:
                             value: http://pipe.continuouspipe.io
                           - name: RIVER_URL
                             value: ${SERVICE_API_PUBLIC_ENDPOINT}
+                          - name: KEEN_PROJECT_ID
+                            value: ${KEEN_PROJECT_ID}
+                          - name: KEEN_WRITE_KEY
+                            value: ${KEEN_WRITE_KEY}
 
     - run:
           cluster: gke
