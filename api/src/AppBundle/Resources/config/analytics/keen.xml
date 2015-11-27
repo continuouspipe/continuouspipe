@@ -23,5 +23,15 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
         </service>
+
+        <!-- Tasks listeners -->
+        <service id="river.analytics.keen.listener.build_task" class="ContinuousPipe\River\Analytics\Keen\TaskListener\BuildTaskListener">
+            <argument type="service" id="river.keen.client" />
+            <argument type="service" id="river.event_store" />
+            <argument type="service" id="logger" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\BuildSuccessful"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\BuildFailed"/>
+        </service>
     </services>
 </container>

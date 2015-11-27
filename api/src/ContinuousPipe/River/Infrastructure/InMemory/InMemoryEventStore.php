@@ -62,7 +62,9 @@ class InMemoryEventStore implements EventStore
             return [];
         }
 
-        return array_values(array_filter($this->eventsByTideUuid[$uuid], function ($event) use ($className) {
+        return array_values(array_filter($this->eventsByTideUuid[$uuid], function (TideEventWithMetadata $eventWithMetadata) use ($className) {
+            $event = $eventWithMetadata->getTideEvent();
+
             return get_class($event) == $className;
         }));
     }
