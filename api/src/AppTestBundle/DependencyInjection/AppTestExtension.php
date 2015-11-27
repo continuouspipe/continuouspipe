@@ -28,5 +28,6 @@ class AppTestExtension extends Extension
         $loader->load('integration/logstream.xml');
         $loader->load('integration/pipe.xml');
         $loader->load('integration/runner.xml');
+        $loader->load('integration/keen.xml');
     }
 }
