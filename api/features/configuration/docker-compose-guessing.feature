@@ -322,3 +322,35 @@ Feature:
     And I have a flow
     When a tide is started for the branch "configuration"
     Then the tide should be failed
+
+  Scenario: It loads the command
+
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        kube:
+            deploy:
+                cluster: foo
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        image: foo/bar
+        command: /app/run.sh
+        expose:
+            - 80
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        kube:
+            deploy:
+                services:
+                    api:
+                        specification:
+                            source:
+                                image: foo/bar
+                            command:
+                                - /app/run.sh
+    """

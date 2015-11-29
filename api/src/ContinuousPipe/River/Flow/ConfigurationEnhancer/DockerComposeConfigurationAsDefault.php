@@ -129,6 +129,10 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                     ];
                 }
 
+                if ($command = $component->getCommand()) {
+                    $configuration['specification']['command'] = [$command];
+                }
+
                 foreach ($component->getEnvironmentVariables() as $name => $value) {
                     $configuration['specification']['environment_variables'][] = [
                         'name' => $name,

@@ -105,6 +105,14 @@ class DockerComposeComponent
     }
 
     /**
+     * @return string|null
+     */
+    public function getCommand()
+    {
+        return array_key_exists('command', $this->parsed) ? $this->parsed['command'] : null;
+    }
+
+    /**
      * @return array
      */
     public function getExposedPorts()
