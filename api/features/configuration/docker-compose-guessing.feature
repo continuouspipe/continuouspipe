@@ -324,7 +324,6 @@ Feature:
     Then the tide should be failed
 
   Scenario: It loads the command
-
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -353,4 +352,42 @@ Feature:
                                 image: foo/bar
                             command:
                                 - /app/run.sh
+    """
+
+  Scenario: It do not adds the other image to build
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    service1:
+                        image: sroze/my-image
+
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    service1:
+        build: .
+    service2:
+        build: .
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    service1:
+                        image: sroze/my-image
+    """
+    And the generated configuration should not contain:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    service2:
+                        image: sroze/my-image
     """
