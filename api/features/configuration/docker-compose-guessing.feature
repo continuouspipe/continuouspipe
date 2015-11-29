@@ -391,3 +391,60 @@ Feature:
                     service2:
                         image: sroze/my-image
     """
+
+  Scenario: It can build only one image but deploy it on two services
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    service1:
+                        image: sroze/my-image
+        kube:
+            deploy:
+                cluster: foo
+                services:
+                    service2:
+                        specification:
+                            source:
+                                image: sroze/my-image
+                    service1:
+                        specification:
+                            source:
+                                image: sroze/my-image
+
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    service1:
+        build: .
+        command: /app/api.sh
+    service2:
+        build: .
+        command: /app/worker.sh
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    service1:
+                        image: sroze/my-image
+        kube:
+            deploy:
+                cluster: foo
+                services:
+                    service2:
+                        specification:
+                            source:
+                                image: sroze/my-image
+                            command: [ /app/worker.sh ]
+                    service1:
+                        specification:
+                            source:
+                                image: sroze/my-image
+                            command: [ /app/api.sh ]
+    """
