@@ -37,12 +37,6 @@ class GetImageNameFromBuiltServices implements ConfigurationEnhancer
 
         foreach ($paths as $path) {
             $values = $this->getValuesAtPath($configs, $path);
-            $imageNameConfigurations = $this->getConfigurations($values, $this->configuration['namePath']);
-
-            if (0 !== count($imageNameConfigurations)) {
-                continue;
-            }
-
             $fromServiceConfigurations = array_values($this->getConfigurations($values, $this->configuration['servicePath']));
             if (count($fromServiceConfigurations) === 0) {
                 continue;

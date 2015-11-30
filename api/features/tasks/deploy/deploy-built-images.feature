@@ -118,3 +118,62 @@ Feature:
                                 image: foo/bar
                                 tag: my-feature
     """
+
+  Scenario:
+    Given I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        build: .
+        labels:
+            com.continuouspipe.image-name: foo/bar
+    worker:
+        build: .
+        labels:
+            com.continuouspipe.image-name: inviqasession/cp-builder
+    """
+    And I have a flow with the following configuration:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api: ~
+
+        deploy:
+            deploy:
+                cluster: foo
+                services:
+                    api: ~
+                    worker:
+                        specification:
+                            source:
+                                from_service: api
+                            environment_variables:
+                                - name: FOO
+                                  value: BAR
+    """
+    When a tide is started for the branch "my-feature"
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        image: foo/bar
+                        tag: my-feature
+        deploy:
+            deploy:
+                cluster: foo
+                services:
+                    api:
+                        specification:
+                            source:
+                                image: foo/bar
+                                tag: my-feature
+                    worker:
+                        specification:
+                            source:
+                                image: foo/bar
+                                tag: my-feature
+    """
