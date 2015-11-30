@@ -322,3 +322,129 @@ Feature:
     And I have a flow
     When a tide is started for the branch "configuration"
     Then the tide should be failed
+
+  Scenario: It loads the command
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        kube:
+            deploy:
+                cluster: foo
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        image: foo/bar
+        command: /app/run.sh
+        expose:
+            - 80
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        kube:
+            deploy:
+                services:
+                    api:
+                        specification:
+                            source:
+                                image: foo/bar
+                            command:
+                                - /app/run.sh
+    """
+
+  Scenario: It do not adds the other image to build
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    service1:
+                        image: sroze/my-image
+
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    service1:
+        build: .
+    service2:
+        build: .
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    service1:
+                        image: sroze/my-image
+    """
+    And the generated configuration should not contain:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    service2:
+                        image: sroze/my-image
+    """
+
+  Scenario: It can build only one image but deploy it on two services
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    service1:
+                        image: sroze/my-image
+        kube:
+            deploy:
+                cluster: foo
+                services:
+                    service2:
+                        specification:
+                            source:
+                                image: sroze/my-image
+                    service1:
+                        specification:
+                            source:
+                                image: sroze/my-image
+
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    service1:
+        build: .
+        command: /app/api.sh
+    service2:
+        build: .
+        command: /app/worker.sh
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    service1:
+                        image: sroze/my-image
+        kube:
+            deploy:
+                cluster: foo
+                services:
+                    service2:
+                        specification:
+                            source:
+                                image: sroze/my-image
+                            command: [ /app/worker.sh ]
+                    service1:
+                        specification:
+                            source:
+                                image: sroze/my-image
+                            command: [ /app/api.sh ]
+    """

@@ -55,6 +55,19 @@ class TideConfigurationContext implements Context
     }
 
     /**
+     * @When the configuration of the tide is generated for the branch :branch
+     */
+    public function theConfigurationOfTheTideIsGeneratedForTheBranch($branch)
+    {
+        $flow = $this->flowContext->createFlow();
+        $this->configuration = $this->tideConfigurationFactory->getConfiguration($flow, new CodeReference(
+            $flow->getContext()->getCodeRepository(),
+            'sha1',
+            $branch
+        ));
+    }
+
+    /**
      * @Then the generated configuration should contain at least:
      */
     public function theGeneratedConfigurationShouldContainAtLeast(PyStringNode $string)

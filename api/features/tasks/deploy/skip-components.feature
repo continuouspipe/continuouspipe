@@ -11,7 +11,7 @@ Feature:
         - deploy:
               cluster: foo
               services:
-                  image1: false
+                  image0: ~
     """
     When a tide is started
     Then the component "image0" should be deployed
