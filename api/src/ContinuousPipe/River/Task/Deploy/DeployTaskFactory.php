@@ -84,6 +84,7 @@ class DeployTaskFactory implements TaskFactory
                                             ->scalarNode('image')->isRequired()->end()
                                             ->scalarNode('tag')->defaultNull()->end()
                                             ->scalarNode('repository')->end()
+                                            ->scalarNode('from_service')->end()
                                         ->end()
                                     ->end()
                                     ->arrayNode('accessibility')

@@ -67,7 +67,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
             // If a configuration already exists, then only enhance the defined services
             $existingConfigurations = $this->getValuesAtPath($configs, $servicesPath);
             if (!empty($existingConfigurations)) {
-                $existingServices = array_reduce($existingConfigurations, function(array $services, array $config) {
+                $existingServices = array_reduce($existingConfigurations, function (array $services, array $config) {
                     return array_merge($services, array_keys($config));
                 }, []);
 
@@ -76,7 +76,6 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                         unset($servicesConfiguration[$serviceName]);
                     }
                 }
-
             }
 
             $propertyAccessor->setValue($enhancedConfig, $servicesPath, $servicesConfiguration);
