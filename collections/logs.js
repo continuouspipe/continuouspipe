@@ -49,3 +49,29 @@ Logs.attachSchema(new SimpleSchema({
         optional: true
     }
 }));
+
+LogRepository = {
+    insert: function(log) {
+        var id = Logs.insert(log, {autoConvert: false});
+
+        return Logs.findOne(id);
+    },
+    update: function(objectIdentifier, log) {
+         var existingObject = Logs.findOne({_id: objectIdentifier});
+
+        if (!log._id) {
+            log._id = objectIdentifier;
+        }
+
+        // Get the different between the 2 objects
+        var diff = jsDiff2Mongo(existingObject, log),
+            patch = diff[1];
+
+        // We want to apply and differential PUT, so remove the fields missing on the body
+        delete patch.$unset;
+
+        return Logs.update(objectIdentifier, patch, {
+            autoConvert: false
+        });
+    }
+};
