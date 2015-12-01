@@ -21,6 +21,25 @@ module.exports = function() {
         }
     });
 
+    this.Given(/^I have a text log containing "([^"]*)" as child of "([^"]*)" that have the identifier "([^"]*)"$/, function (contents, parent, id, callback) {
+        if (this.server.call('log.find', id).status != 404) {
+            this.server.call('log.remove', id);
+        }
+
+        var inserted = this.server.call('log.insert', {
+            _id: id,
+            type: 'text',
+            parent: parent,
+            contents: contents
+        });
+
+        if (inserted._id == id) {
+            callback();
+        } else {
+            callback(new Error('The insert log do not match the expectations'));
+        }
+    });
+
     this.When(/^I send the following message through the WebSocket:$/, function (string, callback) {
         var ws = new WebSocket('ws://localhost:8080');
 
@@ -37,12 +56,26 @@ module.exports = function() {
                 callback(new Error('Error message received: '+message.status));
             }
         });
+
+        ws.on('error', function(error) {
+            callback(new Error(error));
+        });
     });
 
     this.Then(/^I should see "([^"]*)" under the log "([^"]*)"$/, function (message, logId, callback) {
-        var children = this.server.call('log.children', logId);
+        callback(CanISeeUnderTheLog(this.server, message, logId));
+    });
+
+    this.Then(/^I should not see "([^"]*)" under the log "([^"]*)"$/, function (message, logId, callback) {
+        callback(
+            CanISeeUnderTheLog(this.server, message, logId) ? undefined : new Error('I can see '+message+' under the log')
+        );
+    });
+
+    var CanISeeUnderTheLog = function(server, message, logId) {
+        var children = server.call('log.children', logId);
         if (children.length == 0) {
-            callback(new Error('No children for log '+logId));
+            return new Error('No children for log '+logId);
         }
 
         var matchingChildren = children.filter(function(log) {
@@ -50,9 +83,9 @@ module.exports = function() {
         });
 
         if (matchingChildren.length == 0) {
-            callback(new Error('No matching children found'));
-        } else {
-            callback();
+            return new Error('No matching children found');
         }
-    });
+
+        return undefined;
+    };
 };

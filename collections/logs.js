@@ -61,6 +61,9 @@ LogRepository = {
     },
     update: function(objectIdentifier, log) {
         var existingObject = Logs.findOne({_id: objectIdentifier});
+        if (!existingObject) {
+            throw new Error('Log #'+objectIdentifier+' do not exists');
+        }
 
         if (!log._id) {
             log._id = objectIdentifier;
