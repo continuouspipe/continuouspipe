@@ -1,5 +1,4 @@
-var WebSocketServer = Meteor.npmRequire('ws').Server,
-    server = new WebSocketServer({ port: 8080 });
+var WebSocketServer = Meteor.npmRequire('ws').Server;
 
 var ConnectionHandler = function(connection)
 {
@@ -9,9 +8,9 @@ var ConnectionHandler = function(connection)
      */
     this.handle = function()
     {
-        connection.on('message', function(message) {
+        connection.on('message', Meteor.bindEnvironment(function(message) {
             this.receive(JSON.parse(message));
-        }.bind(this));
+        }.bind(this)));
     };
 
     /**
@@ -48,6 +47,10 @@ var ConnectionHandler = function(connection)
     };
 };
 
-server.on('connection', function(connection) {
-    (new ConnectionHandler(connection)).handle();
+Meteor.startup(function () {
+    console.log('Starting WS server', 'isServer=', Meteor.isServer, 'isClient=', Meteor.isClient);
+    var server = new WebSocketServer({port: 8080});
+    server.on('connection', Meteor.bindEnvironment(function (connection) {
+        new ConnectionHandler(connection).handle();
+    }));
 });
