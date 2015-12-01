@@ -11,6 +11,7 @@ app:
     expose:
         - 80
         - 43130
+        - 8080
 
 mongodb:
     image: mongo
