@@ -4,7 +4,6 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-platform
 insecure
 fourseven:scss
 urigo:angular
@@ -14,3 +13,20 @@ nimble:restivus
 aldeed:collection2
 vjau:jsdiff2mongo
 meteorhacks:npm
+
+
+npm-container
+standard-minifiers
+meteor-base
+mobile-experience
+mongo
+blaze-html-templates
+session
+jquery
+tracker
+logging
+reload
+random
+ejson
+spacebars
+check
