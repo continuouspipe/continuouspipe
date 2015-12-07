@@ -1,4 +1,4 @@
 tasks:
     - build: ~
     - deploy:
-          providerName: kubernetes/cp-cluster
+          cluster: gke
