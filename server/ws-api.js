@@ -9,6 +9,10 @@ var ConnectionHandler = function(connection)
     this.handle = function()
     {
         connection.on('message', Meteor.bindEnvironment(function(message) {
+            if (process.env.ENVIRONMENT == 'debug') {
+                console.log('WS received', message);
+            }
+
             this.receive(JSON.parse(message));
         }.bind(this)));
     };
@@ -20,7 +24,13 @@ var ConnectionHandler = function(connection)
      */
     this.send = function(message)
     {
-        connection.send(JSON.stringify(message));
+        var json = JSON.stringify(message);
+
+        if (process.env.ENVIRONMENT == 'debug') {
+            console.log('WS sent', json);
+        }
+
+        connection.send(json);
     };
 
     /**
@@ -51,6 +61,10 @@ Meteor.startup(function () {
     console.log('Starting WS server', 'isServer=', Meteor.isServer, 'isClient=', Meteor.isClient);
     var server = new WebSocketServer({port: 8080});
     server.on('connection', Meteor.bindEnvironment(function (connection) {
+        if (process.env.ENVIRONMENT == 'debug') {
+            console.log('Received a new connection', connection);
+        }
+
         new ConnectionHandler(connection).handle();
     }));
 });

@@ -28,3 +28,7 @@ docker-compose up
 ```
 
 **Note:** you won't be able to update code in realtime. If you want to rebuild the image, just run `docker-compose build app`.
+
+## Debugging
+
+If you want debugging messages in the logs, you can set the `ENVIRONMENT` environment variable to `debug`.
