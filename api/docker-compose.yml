@@ -1,5 +1,6 @@
 api:
   build: .
+  command: /app/docker/apache.sh
   volumes:
     - .:/app
   links:
@@ -21,14 +22,14 @@ api:
 
 worker:
   build: .
-  dockerfile: Dockerfile-worker
+  command: /app/docker/worker.sh
   volumes:
     - .:/app
   links:
     - database
     - rabbitmq
   labels:
-    com.continuouspipe.image-name: inviqasession/cp-river-worker
+    com.continuouspipe.image-name: inviqasession/cp-river
   expose:
     - 80
   environment:

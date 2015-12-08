@@ -3,9 +3,15 @@ tasks:
           environment:
               - name: GITHUB_TOKEN
                 value: ${GITHUB_TOKEN}
+
+          # Build only the API component
+          services:
+              api: ~
+
     - deploy:
           cluster: gke
           services:
+              rabbitmq: ~
               database:
                   specification:
                       environment_variables:
@@ -41,6 +47,8 @@ tasks:
 
               worker:
                   specification:
+                      source:
+                          from_service: api
                       environment_variables:
                           - name: AUTHENTICATOR_URL
                             value: http://authenticator.continuouspipe.io
