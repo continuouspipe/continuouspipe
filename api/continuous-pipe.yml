@@ -31,7 +31,7 @@ tasks:
                           - name: AUTHENTICATOR_URL
                             value: http://authenticator.continuouspipe.io
                           - name: LOGSTREAM_URL
-                            value: http://logstream.continuouspipe.io
+                            value: ws://logstream.continuouspipe.io:8080
                           - name: BUILDER_URL
                             value: ${BUILDER_URL}
                           - name: PIPE_URL
@@ -53,7 +53,7 @@ tasks:
                           - name: AUTHENTICATOR_URL
                             value: http://authenticator.continuouspipe.io
                           - name: LOGSTREAM_URL
-                            value: http://logstream.continuouspipe.io
+                            value: ws://logstream.continuouspipe.io:8080
                           - name: BUILDER_URL
                             value: ${BUILDER_URL}
                           - name: PIPE_URL

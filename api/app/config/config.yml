@@ -141,6 +141,7 @@ command_bus:
 
 log_stream:
     url: %logstream_url%
+    websocket: true
 
 old_sound_rabbit_mq:
     connections:
