@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "72d13a30ba885666d811a0aeabbf3775",
-    "content-hash": "9393a75cf4f2791a4b75857ec58f472b",
+    "hash": "3eea1a05f097d4d9d70736373c49c445",
+    "content-hash": "338feb0f3a010856e68eb9c686c98ad0",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3321,25 +3321,31 @@
         },
         {
             "name": "sroze/log-stream",
-            "version": "dev-master",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroze/logstream-client.git",
-                "reference": "fe89f8920b5bb0ca3a6f15f6d1ce9a6614575333"
+                "reference": "8445533e555f2bb07111aeb97f76e8ced69503ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/logstream-client/zipball/fe89f8920b5bb0ca3a6f15f6d1ce9a6614575333",
-                "reference": "fe89f8920b5bb0ca3a6f15f6d1ce9a6614575333",
+                "url": "https://api.github.com/repos/sroze/logstream-client/zipball/8445533e555f2bb07111aeb97f76e8ced69503ed",
+                "reference": "8445533e555f2bb07111aeb97f76e8ced69503ed",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "~4.0",
                 "predis/predis": "~1.0",
-                "symfony/serializer": "~2.7"
+                "symfony/serializer": "~2.7",
+                "textalk/websocket": "^1.2"
             },
             "require-dev": {
-                "phpspec/phpspec": "2.3.x@dev"
+                "behat/behat": "^3.0",
+                "phpspec/phpspec": "2.3.x@dev",
+                "symfony/http-kernel": "^3.0"
+            },
+            "suggest": {
+                "sroze/fault-tolerance": "To handle fault tolerant LogStream"
             },
             "type": "library",
             "autoload": {
@@ -3347,11 +3353,8 @@
                     "LogStream\\": "src/"
                 }
             },
-            "support": {
-                "source": "https://github.com/continuouspipe/logstream-client/tree/master",
-                "issues": "https://github.com/continuouspipe/logstream-client/issues"
-            },
-            "time": "2015-09-23 12:47:35"
+            "notification-url": "https://packagist.org/downloads/",
+            "time": "2015-12-07 13:54:37"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -3713,6 +3716,45 @@
                 "framework"
             ],
             "time": "2015-09-25 11:16:52"
+        },
+        {
+            "name": "textalk/websocket",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Textalk/websocket-php.git",
+                "reference": "bfa18bb6bf523680c7803f6b04694fbbf2f67bbf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Textalk/websocket-php/zipball/bfa18bb6bf523680c7803f6b04694fbbf2f67bbf",
+                "reference": "bfa18bb6bf523680c7803f6b04694fbbf2f67bbf",
+                "shasum": ""
+            },
+            "require-dev": {
+                "cboden/ratchet": "0.3.*",
+                "phpunit/phpunit": "4.1.*",
+                "phpunit/phpunit-selenium": "1.3.3",
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WebSocket\\": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fredrik Liljegren",
+                    "email": "fredrik.liljegren@textalk.se"
+                }
+            ],
+            "description": "WebSocket client and server",
+            "time": "2015-10-09 07:32:42"
         },
         {
             "name": "twig/twig",
@@ -4667,7 +4709,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 0,
-        "sroze/log-stream": 20,
         "simple-bus/rabbitmq-bundle-bridge": 20
     },
     "prefer-stable": false,

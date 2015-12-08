@@ -25,7 +25,7 @@
         "nelmio/cors-bundle": "^1.4",
         "doctrine/doctrine-migrations-bundle": "^1.0",
         "raven/raven": "^0.12.1",
-        "sroze/log-stream": "*@dev",
+        "sroze/log-stream": "~0.1.1",
         "continuous-pipe/model": "~1.0.1",
         "continuous-pipe/security": "~1.0.1",
         "simple-bus/rabbitmq-bundle-bridge": "dev-proper-consumer-return",
@@ -87,10 +87,6 @@
         }]
     },
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/sroze/logstream-client"
-        },
         {
             "type": "vcs",
             "url": "https://github.com/continuouspipe/security"

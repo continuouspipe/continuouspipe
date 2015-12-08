@@ -1,7 +1,7 @@
 FROM php:5.6-apache
 
 # PHP extension
-RUN requirements="libpq-dev zlib1g-dev libicu-dev libmcrypt-dev git" \
+RUN requirements="libpq-dev zlib1g-dev libicu-dev libmcrypt-dev git wget" \
     && apt-get update && apt-get install -y $requirements && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install pdo_pgsql \
     && docker-php-ext-install mbstring \
@@ -13,11 +13,16 @@ RUN requirements="libpq-dev zlib1g-dev libicu-dev libmcrypt-dev git" \
     && pecl install apcu-4.0.8 && echo extension=apcu.so > /usr/local/etc/php/conf.d/apcu.ini \
     && apt-get purge --auto-remove -y
 
-# Apache configuration
+# Install rabbitmq-cli-consumer
+RUN wget https://github.com/ricbra/rabbitmq-cli-consumer/releases/download/1.1.0/rabbitmq-cli-consumer-linux-amd64.tar.gz \
+    && tar -xzf rabbitmq-cli-consumer-linux-amd64.tar.gz \
+    && mv rabbitmq-cli-consumer /usr/bin/rabbitmq-cli-consumer \
+    && chmod +x /usr/bin/rabbitmq-cli-consumer \
+    && rm -rf rabbitmq-cli-consumer-linux-amd64.tar.gz
+
+# Apache & PHP configuration
 RUN a2enmod rewrite
 ADD docker/apache-vhost.conf /etc/apache2/sites-enabled/default.conf
-
-# PHP confiugration
 ADD docker/php.ini /usr/local/etc/php/php.ini
 
 # Install composer
@@ -32,14 +37,6 @@ WORKDIR /app
 RUN ((rm -rf app/cache/* && rm -rf app/logs/*) || true) \
     && chown www-data . app/cache app/logs
 
-# Set image endpoint
-RUN chmod +x /app/docker/run.sh
-CMD ["/app/docker/run.sh"]
-
-# Copy installer
-ADD docker/install-dependencies.sh /install-dependencies.sh
-RUN chmod +x /install-dependencies.sh
-
 # Run installation with private credentials
 #~continuous-pipe:inject-environment~#
-RUN /install-dependencies.sh
+RUN /app/docker/install-dependencies.sh

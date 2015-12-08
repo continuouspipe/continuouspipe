@@ -22,6 +22,7 @@ class AppKernel extends Kernel
             new Nelmio\CorsBundle\NelmioCorsBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new LogStream\LogStreamBundle(),
+            new WorkerBundle\WorkerBundle(),
             new AppBundle\AppBundle(),
         );
 

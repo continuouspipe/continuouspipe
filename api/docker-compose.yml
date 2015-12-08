@@ -1,5 +1,6 @@
 api:
   build: .
+  command: /app/docker/apache.sh
   volumes:
     - .:/app
   links:
@@ -11,7 +12,7 @@ api:
     - AUTHENTICATOR_URL=authenticator_app.docker
     - BUILDER_URL=builder_api.docker/app_dev.php
     - PIPE_URL=pipe_api.docker/app_dev.php
-    - LOGSTREAM_URL=logstream.docker
+    - LOGSTREAM_URL=ws://logstream.docker:8080
     - RIVER_URL=river_api.docker/app_dev.php
   labels:
     com.continuouspipe.image-name: inviqasession/cp-river
@@ -21,14 +22,14 @@ api:
 
 worker:
   build: .
-  dockerfile: Dockerfile-worker
+  command: /app/docker/worker.sh
   volumes:
     - .:/app
   links:
     - database
     - rabbitmq
   labels:
-    com.continuouspipe.image-name: inviqasession/cp-river-worker
+    com.continuouspipe.image-name: inviqasession/cp-river
   expose:
     - 80
   environment:
@@ -36,7 +37,7 @@ worker:
     - AUTHENTICATOR_URL=authenticator_app.docker
     - BUILDER_URL=builder_api.docker/app_dev.php
     - PIPE_URL=pipe_api.docker/app_dev.php
-    - LOGSTREAM_URL=logstream.docker
+    - LOGSTREAM_URL=ws://logstream.docker:8080
     - RIVER_URL=river_api.docker/app_dev.php
 
 database:
