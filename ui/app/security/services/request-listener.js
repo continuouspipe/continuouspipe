@@ -13,6 +13,8 @@ angular.module('continuousPipeRiver')
                 'responseError': function(response) {
                     if (response.status == 401) {
                         $authenticationProvider.handleAuthentication();
+
+                        return response;
                     }
 
                     return $q.reject(response);
