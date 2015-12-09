@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\EventBus\EventStore;
@@ -101,6 +102,97 @@ class GitHubContext implements Context
                 $status
             ));
         }
+    }
+
+    /**
+     * @When the commit :sha is pushed to the branch :branch
+     */
+    public function theCommitIsPushedToTheBranch($sha, $branch)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/push-master.json'), true);
+        $contents['ref'] = 'refs/heads/'.$branch;
+        $contents['after'] = $sha;
+        $contents['head_commit']['id'] = $sha;
+
+        $this->sendWebHook('push', json_encode($contents));
+    }
+
+    /**
+     * @When the pull request #:number is opened
+     */
+    public function thePullRequestIsOpened($number)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents['number'] = $number;
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
+     * @When the pull request #:number is opened with head :branch and the commit :sha
+     */
+    public function thePullRequestIsOpenedWithHeadAndTheCommit($number, $branch, $sha)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents['number'] = $number;
+        $contents['pull_request']['head']['ref'] = $branch;
+        $contents['pull_request']['head']['sha'] = $sha;
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
+     * @When the pull request #:number is synchronized with head :branch and the commit :sha
+     */
+    public function thePullRequestIsSynchronizedWithHeadAndTheCommit($number, $branch, $sha)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents['action'] = 'synchronize';
+        $contents['number'] = $number;
+        $contents['pull_request']['head']['ref'] = $branch;
+        $contents['pull_request']['head']['sha'] = $sha;
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
+     * @When the pull request #:number is synchronized
+     */
+    public function thePullRequestIsSynchronized($number)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents['number'] = $number;
+        $contents['action'] = 'synchronize';
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
+     * @When the pull request #:number is labeled
+     */
+    public function thePullRequestIsLabeled($number)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents['number'] = $number;
+        $contents['action'] = 'labeled';
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
+     * @Given the pull request #:number have the label :label
+     */
+    public function thePullRequestHaveTheTag($number, $label)
+    {
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod, $headers) use ($number, $label) {
+            if ($httpMethod == 'GET' && preg_match('#/issues/'.$number.'/labels$#', $path)) {
+                return new \Guzzle\Http\Message\Response(
+                    200,
+                    [],
+                    '[{"url": "'.$path.'/'.urlencode($label).'","name": "'.$label.'","color": "f29513"}]'
+                );
+            }
+        });
     }
 
     /**

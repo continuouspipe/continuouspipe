@@ -8,7 +8,7 @@ use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
-use ContinuousPipe\River\Task\Deploy\ExposedContext\ServiceList;
+use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\TaskQueued;
 use LogStream\LoggerFactory;
@@ -142,7 +142,7 @@ class DeployTask extends EventDrivenTask
         }, $componentStatuses);
 
         $view = new \stdClass();
-        $view->services = new ServiceList($services);
+        $view->services = new ArrayObject($services);
 
         return $view;
     }
