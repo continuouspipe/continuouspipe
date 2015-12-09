@@ -109,6 +109,7 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\CodePushed"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestOpened"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestSynchronized"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestLabeled"/>
         </service>
     </services>
 </container>

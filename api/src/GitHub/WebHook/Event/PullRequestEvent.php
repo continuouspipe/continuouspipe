@@ -13,6 +13,11 @@ class PullRequestEvent implements Event
     const ACTION_OPENED = 'opened';
     const ACTION_CLOSED = 'closed';
     const ACTION_SYNCHRONIZED = 'synchronize';
+    const ACTION_ASSIGNED = 'assigned';
+    const ACTION_UNASSIGNED = 'unassigned';
+    const ACTION_LABELED = 'labeled';
+    const ACTION_UNLABELED = 'unlabeled';
+    const ACTION_REOPENED = 'reopened';
 
     /**
      * @var string

@@ -127,13 +127,25 @@ class GitHubContext implements Context
     }
 
     /**
-     * @When the pull request #:arg1 is synchronized
+     * @When the pull request #:number is synchronized
      */
     public function thePullRequestIsSynchronized($number)
     {
         $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
         $contents['number'] = $number;
         $contents['action'] = 'synchronize';
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
+     * @When the pull request #:number is labeled
+     */
+    public function thePullRequestIsLabeled($number)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents['number'] = $number;
+        $contents['action'] = 'labeled';
 
         $this->sendWebHook('pull_request', json_encode($contents));
     }

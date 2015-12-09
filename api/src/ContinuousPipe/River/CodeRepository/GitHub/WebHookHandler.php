@@ -95,6 +95,8 @@ class WebHookHandler
             $this->eventBus->handle(new PullRequestClosed($flow, $codeReference, $event));
         } elseif ($event->getAction() == PullRequestEvent::ACTION_SYNCHRONIZED) {
             $this->eventBus->handle(new PullRequestSynchronized($flow, $codeReference, $event));
+        } elseif ($event->getAction() == PullRequestEvent::ACTION_LABELED) {
+            $this->eventBus->handle(new PullRequestSynchronized($flow, $codeReference, $event));
         }
     }
 
