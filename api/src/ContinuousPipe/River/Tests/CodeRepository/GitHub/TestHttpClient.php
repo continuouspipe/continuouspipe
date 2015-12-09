@@ -12,6 +12,11 @@ class TestHttpClient implements HttpClientInterface
     private $requests = [];
 
     /**
+     * @var callable[]
+     */
+    private $hooks = [];
+
+    /**
      * {@inheritDoc}
      */
     public function get($path, array $parameters = array(), array $headers = array())
@@ -62,6 +67,12 @@ class TestHttpClient implements HttpClientInterface
             'body' => $body,
         ];
 
+        foreach ($this->hooks as $hook) {
+            if ($response = $hook($path, $body, $httpMethod, $headers)) {
+                return $response;
+            }
+        }
+
         return new \Guzzle\Http\Message\Response(
             200,
             [],
@@ -96,5 +107,13 @@ class TestHttpClient implements HttpClientInterface
     public function getRequests()
     {
         return $this->requests;
+    }
+
+    /**
+     * @param callable $hook
+     */
+    public function addHook(callable $hook)
+    {
+        $this->hooks[] = $hook;
     }
 }

@@ -12,6 +12,7 @@ class PullRequestEvent implements Event
 {
     const ACTION_OPENED = 'opened';
     const ACTION_CLOSED = 'closed';
+    const ACTION_SYNCHRONIZED = 'synchronize';
 
     /**
      * @var string

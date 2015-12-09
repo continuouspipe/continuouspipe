@@ -2,6 +2,6 @@
 
 namespace ContinuousPipe\River\Event\GitHub;
 
-class PullRequestClosed extends PullRequestEvent
+class PullRequestSynchronized extends PullRequestEvent
 {
 }

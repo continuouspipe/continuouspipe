@@ -5,14 +5,14 @@ namespace ContinuousPipe\River\Event\GitHub;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
 use ContinuousPipe\River\Flow;
-use GitHub\WebHook\Event\PushEvent;
+use GitHub\WebHook\Event\PullRequestEvent as GitHubPullRequestEvent;
 
-class CodePushed implements CodeRepositoryEvent
+abstract class PullRequestEvent implements CodeRepositoryEvent
 {
     /**
-     * @var PushEvent
+     * @var GitHubPullRequestEvent
      */
-    private $gitHubEvent;
+    private $event;
 
     /**
      * @var CodeReference
@@ -25,23 +25,23 @@ class CodePushed implements CodeRepositoryEvent
     private $flow;
 
     /**
-     * @param Flow          $flow
-     * @param PushEvent     $gitHubEvent
-     * @param CodeReference $codeReference
+     * @param Flow                   $flow
+     * @param CodeReference          $codeReference
+     * @param GitHubPullRequestEvent $event
      */
-    public function __construct(Flow $flow, PushEvent $gitHubEvent, CodeReference $codeReference)
+    public function __construct(Flow $flow, CodeReference $codeReference, GitHubPullRequestEvent $event)
     {
-        $this->gitHubEvent = $gitHubEvent;
-        $this->codeReference = $codeReference;
         $this->flow = $flow;
+        $this->codeReference = $codeReference;
+        $this->event = $event;
     }
 
     /**
-     * @return PushEvent
+     * @return GitHubPullRequestEvent
      */
-    public function getGitHubEvent()
+    public function getEvent()
     {
-        return $this->gitHubEvent;
+        return $this->event;
     }
 
     /**

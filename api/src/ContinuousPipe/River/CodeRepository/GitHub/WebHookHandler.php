@@ -5,9 +5,9 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 use ContinuousPipe\River\Event\GitHub\CodePushed;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
 use ContinuousPipe\River\Event\GitHub\PullRequestOpened;
+use ContinuousPipe\River\Event\GitHub\PullRequestSynchronized;
 use ContinuousPipe\River\Event\GitHub\StatusUpdated;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\TideFactory;
 use ContinuousPipe\River\View;
 use GitHub\WebHook\Event\PullRequestEvent;
 use GitHub\WebHook\Event\PushEvent;
@@ -17,11 +17,6 @@ use SimpleBus\Message\Bus\MessageBus;
 
 class WebHookHandler
 {
-    /**
-     * @var TideFactory
-     */
-    private $tideFactory;
-
     /**
      * @var CodeReferenceResolver
      */
@@ -38,18 +33,15 @@ class WebHookHandler
     private $tideViewRepository;
 
     /**
-     * @param TideFactory           $tideFactory
      * @param CodeReferenceResolver $codeReferenceResolver
      * @param MessageBus            $eventBus
      * @param View\TideRepository   $tideViewRepository
      */
     public function __construct(
-        TideFactory $tideFactory,
         CodeReferenceResolver $codeReferenceResolver,
         MessageBus $eventBus,
         View\TideRepository $tideViewRepository
     ) {
-        $this->tideFactory = $tideFactory;
         $this->codeReferenceResolver = $codeReferenceResolver;
         $this->eventBus = $eventBus;
         $this->tideViewRepository = $tideViewRepository;
@@ -65,11 +57,9 @@ class WebHookHandler
     {
         $event = $gitHubRequest->getEvent();
         if ($event instanceof PushEvent) {
-            if ($tide = $this->handlePushEvent($flow, $event)) {
-                return $tide;
-            }
+            $this->handlePushEvent($flow, $event);
         } elseif ($event instanceof PullRequestEvent) {
-            $this->handlePullRequestEvent($event);
+            $this->handlePullRequestEvent($flow, $event);
         } elseif ($event instanceof StatusEvent) {
             $this->handleStatusEvent($event);
         }
@@ -88,27 +78,23 @@ class WebHookHandler
     private function handlePushEvent(Flow $flow, PushEvent $event)
     {
         $codeReference = $this->codeReferenceResolver->fromPushEvent($event);
-        $tide = $this->tideFactory->createFromCodeReference($flow, $codeReference);
-        $tide->apply(new CodePushed($tide->getUuid(), $event));
-
-        foreach ($tide->popNewEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
-
-        return $this->tideViewRepository->find($tide->getUuid());
+        $this->eventBus->handle(new CodePushed($flow, $event, $codeReference));
     }
 
     /**
+     * @param Flow             $flow
      * @param PullRequestEvent $event
      */
-    private function handlePullRequestEvent(PullRequestEvent $event)
+    private function handlePullRequestEvent(Flow $flow, PullRequestEvent $event)
     {
         $codeReference = $this->codeReferenceResolver->fromPullRequestEvent($event);
 
         if ($event->getAction() == PullRequestEvent::ACTION_OPENED) {
-            $this->eventBus->handle(new PullRequestOpened($event, $codeReference));
+            $this->eventBus->handle(new PullRequestOpened($flow, $codeReference, $event));
         } elseif ($event->getAction() == PullRequestEvent::ACTION_CLOSED) {
-            $this->eventBus->handle(new PullRequestClosed($event, $codeReference));
+            $this->eventBus->handle(new PullRequestClosed($flow, $codeReference, $event));
+        } elseif ($event->getAction() == PullRequestEvent::ACTION_SYNCHRONIZED) {
+            $this->eventBus->handle(new PullRequestSynchronized($flow, $codeReference, $event));
         }
     }
 

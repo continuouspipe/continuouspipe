@@ -313,6 +313,25 @@ EOF;
     }
 
     /**
+     * @Then the tide should not be created
+     */
+    public function theTideShouldNotBeCreated()
+    {
+        try {
+            $numberOfTideStartedEvents = count($this->getEventsOfType(TideCreated::class));
+        } catch (\RuntimeException $e) {
+            // We do not need to do anything as that means that the script had no way to find a tide :)
+            echo $e->getMessage();
+
+            return;
+        }
+
+        if ($numberOfTideStartedEvents > 0) {
+            throw new \RuntimeException('Tide started event found');
+        }
+    }
+
+    /**
      * @param string $status
      *
      * @throws \RuntimeException
@@ -801,7 +820,13 @@ EOF;
     public function getEventsOfType($eventType)
     {
         if (null === $this->tideUuid) {
-            throw new \RuntimeException('Found not tide UUID');
+            $tides = $this->viewTideRepository->findLastByFlow($this->flowContext->getCurrentFlow(), 1);
+
+            if (count($tides) == 0) {
+                throw new \RuntimeException('Found not tide UUID, and no tide in flow');
+            }
+
+            $this->tideUuid = $tides[0]->getUuid();
         }
 
         $events = $this->eventStore->findByTideUuid($this->tideUuid);
