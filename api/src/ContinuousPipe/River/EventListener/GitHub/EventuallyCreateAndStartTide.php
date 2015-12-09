@@ -7,6 +7,7 @@ use ContinuousPipe\River\Event\GitHub\PullRequestEvent;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
+use ContinuousPipe\River\Tide\StartVoter\TideStartVoter;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideFactory;
 use LogStream\LoggerFactory;
@@ -42,19 +43,26 @@ class EventuallyCreateAndStartTide
     private $loggerFactory;
 
     /**
+     * @var TideStartVoter
+     */
+    private $tideStartVoter;
+
+    /**
      * @param TideFactory     $tideFactory
      * @param MessageBus      $eventBus
      * @param ClientFactory   $gitHubClientFactory
      * @param LoggerInterface $logger
      * @param LoggerFactory   $loggerFactory
+     * @param TideStartVoter  $tideStartVoter
      */
-    public function __construct(TideFactory $tideFactory, MessageBus $eventBus, ClientFactory $gitHubClientFactory, LoggerInterface $logger, LoggerFactory $loggerFactory)
+    public function __construct(TideFactory $tideFactory, MessageBus $eventBus, ClientFactory $gitHubClientFactory, LoggerInterface $logger, LoggerFactory $loggerFactory, TideStartVoter $tideStartVoter)
     {
         $this->tideFactory = $tideFactory;
         $this->eventBus = $eventBus;
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->logger = $logger;
         $this->loggerFactory = $loggerFactory;
+        $this->tideStartVoter = $tideStartVoter;
     }
 
     /**
@@ -69,7 +77,8 @@ class EventuallyCreateAndStartTide
 
         try {
             $context = $this->createContextFromEvent($event);
-            if (!$tide->shouldBeCreated($event, $context)) {
+
+            if (!$this->tideStartVoter->vote($tide, $context)) {
                 return;
             }
         } catch (TideConfigurationException $e) {
@@ -85,7 +94,7 @@ class EventuallyCreateAndStartTide
     /**
      * @param CodeRepositoryEvent $event
      *
-     * @return mixed
+     * @return ArrayObject
      */
     private function createContextFromEvent(CodeRepositoryEvent $event)
     {

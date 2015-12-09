@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
-use ContinuousPipe\River\Event\GitHub\CodePushed;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
@@ -15,8 +14,6 @@ use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Task\TaskRunnerException;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use Rhumsaa\Uuid\Uuid;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 class Tide
 {
@@ -259,18 +256,5 @@ class Tide
      */
     public function shouldBeCreated(CodeRepositoryEvent $event, ArrayObject $context)
     {
-        $configuration = $this->getContext()->getConfiguration();
-        if (!array_key_exists('filter', $configuration)) {
-            return $event instanceof CodePushed;
-        }
-
-        $language = new ExpressionLanguage();
-        try {
-            return $language->evaluate($configuration['filter'], $context->asArray());
-        } catch (SyntaxError $e) {
-            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
-        } catch (\InvalidArgumentException $e) {
-            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
-        }
     }
 }
