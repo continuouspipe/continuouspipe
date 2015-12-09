@@ -115,9 +115,13 @@
 
         <!-- Tide start voters -->
         <service id="river.tide.start_voter.filter_configuration" class="ContinuousPipe\River\Tide\StartVoter\FilterConfigurationVoter" />
+        <service id="river.tide.start_voter.tide_already_created" class="ContinuousPipe\River\Tide\StartVoter\TideAlreadyCreatedVoter">
+            <argument type="service" id="river.view.tide_repository" />
+        </service>
         <service id="river.tide.start_voter" class="ContinuousPipe\River\Tide\StartVoter\UnanimousVoter">
             <argument type="collection">
                 <argument type="service" id="river.tide.start_voter.filter_configuration" />
+                <argument type="service" id="river.tide.start_voter.tide_already_created" />
             </argument>
         </service>
     </services>

@@ -313,6 +313,23 @@ EOF;
     }
 
     /**
+     * @Then only :count tide should be created
+     */
+    public function onlyTideShouldBeCreated($count)
+    {
+        $tides = $this->viewTideRepository->findByFlow($this->flowContext->getCurrentFlow());
+        $numberOfTideStarted = count($tides);
+
+        if ($count != $numberOfTideStarted) {
+            throw new \RuntimeException(sprintf(
+                '%d tide started events found, expected %d',
+                $numberOfTideStarted,
+                $count
+            ));
+        }
+    }
+
+    /**
      * @Then the tide should not be created
      */
     public function theTideShouldNotBeCreated()

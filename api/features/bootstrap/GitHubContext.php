@@ -110,7 +110,9 @@ class GitHubContext implements Context
     public function theCommitIsPushedToTheBranch($sha, $branch)
     {
         $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/push-master.json'), true);
-        $contents['ref'] = 'refs/heads/master';
+        $contents['ref'] = 'refs/heads/'.$branch;
+        $contents['after'] = $sha;
+        $contents['head_commit']['id'] = $sha;
 
         $this->sendWebHook('push', json_encode($contents));
     }
@@ -122,6 +124,33 @@ class GitHubContext implements Context
     {
         $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
         $contents['number'] = $number;
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
+     * @When the pull request #:number is opened with head :branch and the commit :sha
+     */
+    public function thePullRequestIsOpenedWithHeadAndTheCommit($number, $branch, $sha)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents['number'] = $number;
+        $contents['pull_request']['head']['ref'] = $branch;
+        $contents['pull_request']['head']['sha'] = $sha;
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
+     * @When the pull request #:number is synchronized with head :branch and the commit :sha
+     */
+    public function thePullRequestIsSynchronizedWithHeadAndTheCommit($number, $branch, $sha)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents['action'] = 'synchronize';
+        $contents['number'] = $number;
+        $contents['pull_request']['head']['ref'] = $branch;
+        $contents['pull_request']['head']['sha'] = $sha;
 
         $this->sendWebHook('pull_request', json_encode($contents));
     }
