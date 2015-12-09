@@ -5,6 +5,10 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="log_stream.operation_runner" class="FaultTolerance\OperationRunner\RetryOperationRunner">
+            <factory class="ContinuousPipe\Builder\Logging\LogStream\OperationRunnerFactory" method="create" />
+        </service>
+
         <service id="builder.docker.logged_client"
                  class="ContinuousPipe\Builder\Logging\Docker\LoggedDockerClient"
                  decorates="builder.docker.client">
