@@ -14,7 +14,7 @@ Feature:
     When a tide is started with a deploy task
     Then the deployed environment name should be prefixed by the flow identifier
 
-  Scenario: Using image from private registry
+  Scenario: Using image from private registry configured in the docker-compose file
     Given I have a "docker-compose.yml" file in my repository that contains:
     """
     app:

@@ -113,20 +113,26 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
                 $configuration = [
                     'build_directory' => $component->getBuildDirectory(),
                     'docker_file_path' => $component->getDockerfilePath(),
-                    'image' => $imageName,
                 ];
+
+                if (!empty($imageName)) {
+                    $configuration['image'] = $imageName;
+                }
             } elseif ($taskType == 'deploy') {
                 $configuration = [
                     'specification' => [
-                        'source' => [
-                            'image' => $imageName,
-                        ],
                         'ports' => [],
                         'environment_variables' => [],
                         'volumes' => [],
                         'volume_mounts' => [],
                     ],
                 ];
+
+                if (!empty($imageName)) {
+                    $configuration['specification']['source'] = [
+                        'image' => $imageName,
+                    ];
+                }
 
                 if ($updatePolicy = $component->getUpdatePolicy()) {
                     $configuration['locked'] = $updatePolicy == 'lock';

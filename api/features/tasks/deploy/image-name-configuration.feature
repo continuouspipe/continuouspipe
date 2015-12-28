@@ -207,3 +207,47 @@ Feature:
                                 image: grc.io/foo/bar
                                 tag: my-feature
     """
+
+  Scenario: The image name is configured in the build
+    Given I have a "docker-compose.yml" file in my repository that contains:
+    """
+    app:
+        build: .
+        volumes:
+            - ./:/app
+        expose:
+            - 80
+    """
+    And I have a flow with the following configuration:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    app:
+                        image: docker.io/inviqasession/cp-website
+
+        deploy:
+            deploy:
+                cluster: fra-01
+    """
+    When a tide is started for the branch "master"
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    app:
+                        image: docker.io/inviqasession/cp-website
+                        tag: master
+        deploy:
+            deploy:
+                cluster: fra-01
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: docker.io/inviqasession/cp-website
+                                tag: master
+    """
