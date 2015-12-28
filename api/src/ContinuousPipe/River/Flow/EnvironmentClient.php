@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
+use ContinuousPipe\Pipe\ClusterNotFound;
 use ContinuousPipe\River\Pipe\ClusterIdentifierNotFound;
 use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
@@ -65,10 +66,13 @@ class EnvironmentClient
     {
         $environments = [];
         foreach ($this->findClusterIdentifiers($flow) as $clusterIdentifier) {
-            $environments = array_merge(
-                $environments,
-                $this->pipeClient->getEnvironments($clusterIdentifier, $flow->getContext()->getTeam(), $this->userContext->getCurrent())
-            );
+            try {
+                $clusterEnvironments = $this->pipeClient->getEnvironments($clusterIdentifier, $flow->getContext()->getTeam(), $this->userContext->getCurrent());
+            } catch (ClusterNotFound $e) {
+                $clusterEnvironments = [];
+            }
+
+            $environments = array_merge($environments, $clusterEnvironments);
         }
 
         $matchingEnvironments = array_filter($environments, function (Environment $environment) use ($flow) {
