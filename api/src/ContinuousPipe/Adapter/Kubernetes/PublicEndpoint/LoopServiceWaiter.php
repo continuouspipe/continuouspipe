@@ -104,6 +104,7 @@ class LoopServiceWaiter implements ServiceWaiter
                 $logger->append(new Text($e->getMessage()));
             }
 
+            // FIXME Replace with Tolerance's `Waiter`
             sleep(self::LOOP_WAIT);
         } while (++$attempts < self::LOOP_MAX_RETRY);
 
