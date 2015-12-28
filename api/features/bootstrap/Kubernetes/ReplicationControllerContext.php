@@ -306,6 +306,66 @@ class ReplicationControllerContext implements Context
     }
 
     /**
+     * @Then the image name of the deployed component :componentName should be :imageName
+     */
+    public function theImageNameOfTheDeployedComponentShouldBe($componentName, $imageName)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($componentName);
+        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
+
+        if (0 == count($pods)) {
+            throw new \RuntimeException('No pods found');
+        }
+
+        foreach ($pods as $pod) {
+            $container = $pod->getSpecification()->getContainers()[0];
+            list($foundName) = explode(':', $container->getImage());
+
+            if ($foundName != $imageName) {
+                throw new \RuntimeException(sprintf(
+                    'Found image "%s" but expected "%s"',
+                    $foundName,
+                    $imageName
+                ));
+            }
+        }
+    }
+
+    /**
+     * @Then the image tag of the deployed component :componentName should be :tag
+     */
+    public function theImageTagOfTheDeployedComponentShouldBe($componentName, $tag)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($componentName);
+        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
+
+        if (0 == count($pods)) {
+            throw new \RuntimeException('No pods found');
+        }
+
+        foreach ($pods as $pod) {
+            $container = $pod->getSpecification()->getContainers()[0];
+            $splitImageName = explode(':', $container->getImage());
+
+            if (1 === count($splitImageName)) {
+                throw new \RuntimeException(sprintf(
+                    'Found no tag for image "%s"',
+                    $splitImageName
+                ));
+            }
+
+            $foundTag = $splitImageName[1];
+            if ($foundTag != $tag) {
+                throw new \RuntimeException(sprintf(
+                    'Found tag "%s" but expected "%s"',
+                    $foundTag,
+                    $tag
+                ));
+            }
+        }
+    }
+
+    /**
      * @param string $name
      * @param array  $collection
      *
