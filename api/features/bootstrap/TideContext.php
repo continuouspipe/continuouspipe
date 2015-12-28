@@ -402,28 +402,34 @@ EOF;
     }
 
     /**
-     * @Then the deployed image tag should be :tag
+     * @Then the deployed image named :name should should be tagged :tag
      */
-    public function theDeployedImageTagShouldBe($tag)
+    public function theDeployedImageTagShouldBe($name, $tag)
     {
         $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
-
-        $componentImage = 'image0:'.$tag;
-        $builtImages = array_map(function (DeploymentStarted $event) {
+        $matchingDeployments = array_map(function (DeploymentStarted $event) use ($name, $tag) {
             $components = $event->getDeployment()->getRequest()->getSpecification()->getComponents();
             $component = $components[0];
             $source = $component->getSpecification()->getSource();
 
-            return $source ? $source->getImage().':'.$source->getTag() : null;
+            return $source->getImage() == $name && $source->getTag() == $tag;
         }, $deploymentStartedEvents);
 
-        if (!in_array($componentImage, $builtImages)) {
+        if (0 === count($matchingDeployments)) {
             throw new \RuntimeException(sprintf(
-                'Image "%s" not found. Found %s',
-                $componentImage,
-                implode(', ', $builtImages)
+                'Image "%s" tagged "%s" not found.',
+                $name,
+                $tag
             ));
         }
+    }
+
+    /**
+     * @Then the deployed image name should be :name
+     */
+    public function theDeployedImageNameShouldBe($name)
+    {
+
     }
 
     /**
