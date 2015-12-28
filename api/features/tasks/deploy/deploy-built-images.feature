@@ -61,7 +61,6 @@ Feature:
                                 tag: my-feature
     """
 
-
   Scenario: I can explicitly defines the source of a component from the built
     Given I have a "docker-compose.yml" file in my repository that contains:
     """
@@ -119,7 +118,7 @@ Feature:
                                 tag: my-feature
     """
 
-  Scenario:
+  Scenario: Image name with `from_service` should not impact other services
     Given I have a "docker-compose.yml" file in my repository that contains:
     """
     api:
@@ -138,7 +137,6 @@ Feature:
             build:
                 services:
                     api: ~
-
         deploy:
             deploy:
                 cluster: foo
@@ -175,5 +173,48 @@ Feature:
                         specification:
                             source:
                                 image: foo/bar
+                                tag: my-feature
+    """
+
+  Scenario: It creates the configuration with the full qualified name of the image
+    Given I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        build: .
+        labels:
+            com.continuouspipe.image-name: grc.io/foo/bar
+    """
+    And I have a flow with the following configuration:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api: ~
+
+        deploy:
+            deploy:
+                cluster: foo
+                services:
+                    api: ~
+    """
+    When a tide is started for the branch "my-feature"
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        image: grc.io/foo/bar
+                        tag: my-feature
+        deploy:
+            deploy:
+                cluster: foo
+                services:
+                    api:
+                        specification:
+                            source:
+                                image: grc.io/foo/bar
                                 tag: my-feature
     """
