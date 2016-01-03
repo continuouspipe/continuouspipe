@@ -2,11 +2,13 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Transformer;
 
+use ContinuousPipe\Adapter\Kubernetes\Event\Transformation\ServiceTransformation;
 use ContinuousPipe\Adapter\Kubernetes\Naming\NamingStrategy;
 use ContinuousPipe\Model\Component;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServicePort;
 use Kubernetes\Client\Model\ServiceSpecification;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ServiceTransformer
 {
@@ -16,11 +18,18 @@ class ServiceTransformer
     private $namingStrategy;
 
     /**
-     * @param NamingStrategy $namingStrategy
+     * @var EventDispatcherInterface
      */
-    public function __construct(NamingStrategy $namingStrategy)
+    private $eventDispatcher;
+
+    /**
+     * @param NamingStrategy           $namingStrategy
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function __construct(NamingStrategy $namingStrategy, EventDispatcherInterface $eventDispatcher)
     {
         $this->namingStrategy = $namingStrategy;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -45,6 +54,9 @@ class ServiceTransformer
         $serviceSpecification = new ServiceSpecification($objectMetadata->getLabelsAsAssociativeArray(), $ports, $type);
         $service = new Service($objectMetadata, $serviceSpecification);
 
-        return $service;
+        $event = new ServiceTransformation($component, $service);
+        $this->eventDispatcher->dispatch(ServiceTransformation::POST_SERVICE_TRANSFORMATION, $event);
+
+        return $event->getService();
     }
 }

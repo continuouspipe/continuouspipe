@@ -14,6 +14,7 @@
         </service>
         <service id="kubernetes.transformer.service" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ServiceTransformer">
             <argument type="service" id="kubernetes.naming_strategy.identifier" />
+            <argument type="service" id="event_dispatcher" />
         </service>
         <service id="kubernetes.transformer.replication_controller_factory" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ReplicationControllerFactory" />
         <service id="kubernetes.transformer.component" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer">
@@ -95,6 +96,9 @@
         <service id="pipe.adapter.kubernetes.listener.after_creating_component.attach_component" class="ContinuousPipe\Adapter\Kubernetes\Listener\AfterCreatingComponent\AttachComponent">
             <argument type="service" id="pipe.adapter.kubernetes.component.attacher" />
 
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="pipe.adapter.kubernetes.listener.post_service_transformation.adds_reverse_proxy_annotations" class="ContinuousPipe\Adapter\Kubernetes\Listener\PostServiceTransformation\AddsReverseProxyAnnotation">
             <tag name="kernel.event_subscriber" />
         </service>
 

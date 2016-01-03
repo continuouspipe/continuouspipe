@@ -16,9 +16,10 @@ Feature:
 
   Scenario: I can uses an image name including the registry name
     Given the specification come from the template "public-container-with-reverse-proxy-configuration"
+    And the service "app" will be created with the public IP "1.2.3.4"
     And the pods of the replication controller "app" will be running after creation
     When I send the built deployment request
     Then the service "app" should be created
     And the service "app" should contain the following annotations:
-      | name                   | value                                              |
-      | kubernetesReverseProxy | {"hosts": [{"host": "example.com", "port": "80"}]} |
+      | name                   | value                                          |
+      | kubernetesReverseProxy | {"hosts":[{"host":"example.com","port":"80"}]} |

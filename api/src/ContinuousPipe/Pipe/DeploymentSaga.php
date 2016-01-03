@@ -5,7 +5,6 @@ namespace ContinuousPipe\Pipe;
 use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
 use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
-use ContinuousPipe\Pipe\Command\ProxyPublicEndpointsCommand;
 use ContinuousPipe\Pipe\Command\RollbackDeploymentCommand;
 use ContinuousPipe\Pipe\Command\WaitComponentsCommand;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
