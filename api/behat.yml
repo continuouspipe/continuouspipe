@@ -21,7 +21,7 @@ default:
                     - @log_stream.event_store.in_memory
                 - GitHubContext:
                     - @kernel
-                    - @river.code_status_updater
+                    - @river.fake.code_status_updater
                     - @river.github.pull_request_resolver
                     - @river.pipe_client
                     - @river.event_store
@@ -94,7 +94,7 @@ smoke:
                     - @river.commit_resolver
                 - GitHubContext:
                     - @kernel
-                    - @river.code_status_updater
+                    - @river.fake.code_status_updater
                     - @river.github.pull_request_resolver
                     - @river.pipe_client
                     - @river.event_store

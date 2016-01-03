@@ -33,6 +33,7 @@ class Configuration implements ConfigurationInterface
                 ->append(self::getEnvironmentVariablesNode())
                 ->append($this->getTasksNode())
                 ->scalarNode('filter')->end()
+                ->booleanNode('silent')->defaultFalse()->end()
             ->end()
         ;
 
