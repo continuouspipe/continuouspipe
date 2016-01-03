@@ -24,10 +24,6 @@
       ]
     },
     "extensions": [
-      {
-        "name": "com.continuouspipe.visibility",
-        "configuration": "public"
-      }
     ],
     "labels": {
       "com.continuouspipe.visibility": "public"
@@ -60,10 +56,6 @@
       ]
     },
     "extensions": [
-      {
-        "name": "com.continuouspipe.visibility",
-        "configuration": "public"
-      }
     ],
     "labels": {
       "com.continuouspipe.visibility": "public"

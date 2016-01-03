@@ -78,14 +78,6 @@ class DeploymentSaga
      */
     private function handlePublicEndpointsCreated(PublicEndpointsReady $event)
     {
-        if ($event->hasEndpointsToProxy()) {
-            $this->commandBus->handle(
-                new ProxyPublicEndpointsCommand($event->getDeploymentContext(), $event->getEndpoints())
-            );
-
-            return;
-        }
-
         $this->eventBus->handle(
             new PublicEndpointsFinalised($event->getDeploymentContext(), $event->getEndpoints())
         );
