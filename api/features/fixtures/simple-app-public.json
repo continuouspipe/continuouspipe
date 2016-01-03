@@ -27,12 +27,6 @@
       "volume_mounts": [
       ]
     },
-    "extensions": [
-      {
-        "name": "com.continuouspipe.visibility",
-        "configuration": "public"
-      }
-    ],
     "labels": {
       "com.continuouspipe.visibility": "public"
     },
@@ -67,10 +61,6 @@
       ]
     },
     "extensions": [
-      {
-        "name": "com.continuouspipe.update",
-        "configuration": "lock"
-      }
     ],
     "labels": {
       "com.continuouspipe.update": "lock"

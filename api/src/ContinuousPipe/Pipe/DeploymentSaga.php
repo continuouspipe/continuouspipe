@@ -5,7 +5,6 @@ namespace ContinuousPipe\Pipe;
 use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
 use ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand;
-use ContinuousPipe\Pipe\Command\ProxyPublicEndpointsCommand;
 use ContinuousPipe\Pipe\Command\RollbackDeploymentCommand;
 use ContinuousPipe\Pipe\Command\WaitComponentsCommand;
 use ContinuousPipe\Pipe\Event\ComponentsCreated;
@@ -78,14 +77,6 @@ class DeploymentSaga
      */
     private function handlePublicEndpointsCreated(PublicEndpointsReady $event)
     {
-        if ($event->hasEndpointsToProxy()) {
-            $this->commandBus->handle(
-                new ProxyPublicEndpointsCommand($event->getDeploymentContext(), $event->getEndpoints())
-            );
-
-            return;
-        }
-
         $this->eventBus->handle(
             new PublicEndpointsFinalised($event->getDeploymentContext(), $event->getEndpoints())
         );

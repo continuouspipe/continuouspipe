@@ -50,11 +50,4 @@ class PublicEndpointsReady implements DeploymentEvent
     {
         return $this->endpoints;
     }
-
-    public function hasEndpointsToProxy()
-    {
-        return $this->deploymentContext->getEnvironment()->hasComponentWithExtension(
-            'com.continuouspipe.http-labs'
-        );
-    }
 }

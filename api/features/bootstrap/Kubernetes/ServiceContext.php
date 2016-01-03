@@ -3,6 +3,7 @@
 namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWaiter;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceRepository;
@@ -191,6 +192,33 @@ class ServiceContext implements Context
                 new LoadBalancerIngress(null, $hostname)
             ]))
         ));
+    }
+
+    /**
+     * @Then the service :name should contain the following annotations:
+     */
+    public function theServiceShouldContainTheFollowingAnnotations($name, TableNode $table)
+    {
+        $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $name);
+        $annotations = $service->getMetadata()->getAnnotationsAsAssociativeArray();
+
+        foreach ($table->getHash() as $row) {
+            if (!array_key_exists($row['name'], $annotations)) {
+                throw new \RuntimeException(sprintf(
+                    'Expected to find annotation "%s" but not found',
+                    $row['name']
+                ));
+            }
+
+            $foundValue = $annotations[$row['name']];
+            if ($foundValue != $row['value']) {
+                throw new \RuntimeException(sprintf(
+                    'Found value %s for annotation "%s"',
+                    $foundValue,
+                    $row['name']
+                ));
+            }
+        }
     }
 
     /**

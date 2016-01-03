@@ -28,16 +28,6 @@ Feature:
       | name    | value   |
       | API_URL | 1.2.3.4 |
 
-  Scenario: The public endpoint should be the HTTPLabs ones if the components are proxied
-    Given the service "api" will be created with the public IP "1.2.3.4"
-    And the service "ui" will be created with the public IP "5.6.7.8"
-    When the specification come from the template "two-proxied-components"
-    And I send the built deployment request
-    Then the replication controller "api" should be created with the following environment variables:
-      | name                        | value                          |
-      | SERVICE_API_PUBLIC_ENDPOINT | badger-carrot-5678.httplabs.io |
-      | SERVICE_UI_PUBLIC_ENDPOINT  | monkey-potato-5678.httplabs.io |
-
   Scenario: The public endpoint should be the DNS addresses if the load balancer have DNS addresses
     Given the service "api" will be created with the public DNS address "api.my-custom-dns"
     And the service "ui" will be created with the public DNS address "1234.foo.ui.docker"
