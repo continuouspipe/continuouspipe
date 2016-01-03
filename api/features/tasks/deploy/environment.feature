@@ -3,7 +3,7 @@ Feature:
   As a developer
   I want to be able to configure the deployed services and this services successfully transformed to pipe components
 
-  Scenario:
+  Scenario: I can manually create services
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -57,3 +57,28 @@ Feature:
     When a tide is started
     Then the component "image0" should be deployed
     And the component "image0" should have a persistent volume mounted at "/var/lib/app"
+
+  Scenario: I can use the reverse-proxy extension
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        - deploy:
+              cluster: foo
+              services:
+                  one:
+                      specification:
+                          source:
+                              image: mysql
+                          accessibility:
+                              from_external: true
+                          ports:
+                              - identifier: twohttp
+                                port: 80
+                      extensions:
+                          reverse_proxy:
+                              domain_names:
+                                  - example.com
+    """
+    When a tide is started
+    Then the component "one" should be deployed
+    And the component "one" should be deployed with the reverse proxy extension and contains the domain name "example.com"

@@ -6,6 +6,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Model\Component;
+use ContinuousPipe\Model\Extension\ReverseProxy\ReverseProxyExtension;
 use ContinuousPipe\Pipe\Client\ComponentStatus;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
@@ -310,6 +311,26 @@ class DeployContext implements Context
     public function theComponentShouldBeDeployed($componentName)
     {
         $this->getDeployedComponent($componentName);
+    }
+
+    /**
+     * @Then the component :componentName should be deployed with the reverse proxy extension and contains the domain name :domainName
+     */
+    public function theComponentShouldBeDeployedWithTheReverseProxyExtensionAndContainsTheDomainName($componentName, $domainName)
+    {
+        $component = $this->getDeployedComponent($componentName);
+        /** @var $extension ReverseProxyExtension */
+        if (null === ($extension = $component->getExtension('reverse_proxy'))) {
+            throw new \RuntimeException('Extension "reverse_proxy" not found');
+        }
+
+        if (!in_array($domainName, $extension->getDomainNames())) {
+            throw new \RuntimeException(sprintf(
+                'Domain name not found, but found %d (%s)',
+                count($extension->getDomainNames()),
+                implode(', ', $extension->getDomainNames())
+            ));
+        }
     }
 
     /**
