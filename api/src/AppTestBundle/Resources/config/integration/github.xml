@@ -9,7 +9,10 @@
         <service id="repository_river.organisation_repository" class="ContinuousPipe\River\Tests\CodeRepository\InMemoryOrganisationRepository" />
         <service id="repository_river.github.webhook_manager" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakeWebHookManager" />
         <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver" />
-        <service id="river.code_status_updater" class="ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater" />
+
+        <service id="river.fake.code_status_updater" class="ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater" />
+        <service id="river.code_status_updater" alias="river.fake.code_status_updater" />
+
         <service id="river.commit_resolver" class="ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver" />
 
         <service id="river.github.http_client" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\TestHttpClient" />

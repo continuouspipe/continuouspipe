@@ -105,6 +105,18 @@ class GitHubContext implements Context
     }
 
     /**
+     * @Then the GitHub commit status should not be set
+     */
+    public function theGitHubCommitStatusShouldNotBeSet()
+    {
+        if ($this->fakeCodeStatusUpdater->hasStatusForTideUuid(
+            $this->tideContext->getCurrentTideUuid()
+        )) {
+            throw new \RuntimeException('Expected no status for tide');
+        }
+    }
+
+    /**
      * @When the commit :sha is pushed to the branch :branch
      */
     public function theCommitIsPushedToTheBranch($sha, $branch)
@@ -274,7 +286,25 @@ class GitHubContext implements Context
         });
 
         if (count($matchingRequests) == 0) {
-            throw new \LogicException('Expected at least 1 notification, found 0');
+            throw new \RuntimeException('Expected at least 1 notification, found 0');
+        }
+    }
+
+    /**
+     * @Then the addresses of the environment should not be commented on the pull-request
+     */
+    public function theAddressesOfTheEnvironmentShouldNotBeCommentedOnThePullRequest()
+    {
+        $requests = $this->gitHubHttpClient->getRequests();
+        $matchingRequests = array_filter($requests, function(array $request) {
+            return $request['method'] == 'POST' && preg_match('#repos/([a-z0-9-]+)/([a-z0-9-]+)/issues/\d+/comments#i', $request['path']);
+        });
+
+        if (count($matchingRequests) != 0) {
+            throw new \RuntimeException(sprintf(
+                'Expected at 0 comment, found %d',
+                count($matchingRequests)
+            ));
         }
     }
 

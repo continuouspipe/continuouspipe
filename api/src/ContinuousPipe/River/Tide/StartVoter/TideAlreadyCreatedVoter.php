@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Tide\StartVoter;
 
 use ContinuousPipe\River\Tide;
-use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\View\TideRepository;
 
 class TideAlreadyCreatedVoter implements TideStartVoter

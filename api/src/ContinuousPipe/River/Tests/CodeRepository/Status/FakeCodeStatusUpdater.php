@@ -43,4 +43,14 @@ class FakeCodeStatusUpdater implements CodeStatusUpdater
     {
         return $this->statuses[(string) $uuid];
     }
+
+    /**
+     * @param Uuid $uuid
+     *
+     * @return bool
+     */
+    public function hasStatusForTideUuid(Uuid $uuid)
+    {
+        return array_key_exists((string) $uuid, $this->statuses);
+    }
 }
