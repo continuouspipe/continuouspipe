@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Deploy\Configuration;
 
 use ContinuousPipe\Model\Component;
+use ContinuousPipe\Model\Extension;
 use JMS\Serializer\Serializer;
 
 class ComponentFactory
@@ -28,18 +29,58 @@ class ComponentFactory
      */
     public function createFromConfiguration($name, array $configuration)
     {
-        $jsonEncodedSpecification = json_encode($configuration['specification']);
-        $specification = $this->serializer->deserialize($jsonEncodedSpecification, Component\Specification::class, 'json');
-
         $component = new Component(
             $name,
             $name,
-            $specification,
-            [],
+            $this->getSpecification($configuration),
+            $this->getExtensions($configuration),
             [],
             $configuration['locked']
         );
 
         return $component;
+    }
+
+    /**
+     * Get component specification from the configuration.
+     *
+     * @param array $configuration
+     *
+     * @return Component\Specification
+     */
+    private function getSpecification(array $configuration)
+    {
+        $jsonEncodedSpecification = json_encode($configuration['specification']);
+
+        return $this->serializer->deserialize($jsonEncodedSpecification, Component\Specification::class, 'json');
+    }
+
+    /**
+     * Returns the deserialized extension objects.
+     *
+     * @param array $configuration
+     *
+     * @return Extension[]
+     */
+    private function getExtensions(array $configuration)
+    {
+        if (!array_key_exists('extensions', $configuration)) {
+            return [];
+        }
+
+        $normalizedExtensions = [];
+        foreach ($configuration['extensions'] as $name => $extension) {
+            $extension['name'] = $name;
+
+            $normalizedExtensions[] = $extension;
+        }
+
+        $jsonEncodedExtensions = json_encode($normalizedExtensions);
+
+        return $this->serializer->deserialize(
+            $jsonEncodedExtensions,
+            sprintf('array<%s>', Extension::class),
+            'json'
+        );
     }
 }

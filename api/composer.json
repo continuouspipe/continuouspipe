@@ -26,7 +26,7 @@
         "doctrine/doctrine-migrations-bundle": "^1.0",
         "raven/raven": "^0.12.1",
         "sroze/log-stream": "~0.1.1",
-        "continuous-pipe/model": "~1.0.1",
+        "continuous-pipe/model": "~2.0.0",
         "continuous-pipe/security": "~1.0.1",
         "simple-bus/rabbitmq-bundle-bridge": "dev-proper-consumer-return",
         "simple-bus/jms-serializer-bundle-bridge": "^2.0",

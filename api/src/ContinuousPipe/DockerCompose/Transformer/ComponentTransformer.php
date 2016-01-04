@@ -61,17 +61,9 @@ class ComponentTransformer
             ));
         }
 
-        $extensions = array_map(
-            function ($name, $configuration) {
-                return new Component\Extension($name, $configuration);
-            },
-            array_keys($labels),
-            $labels
-        );
-
         $source = new Component\Source($image);
         $specification = new Component\Specification($source, $accessibility, $scalability, $portMappings, $environmentVariables, $volumes, $volumeMounts);
-        $component = new Component($identifier, $identifier, $specification, $extensions, $labels, $locked);
+        $component = new Component($identifier, $identifier, $specification, [], $labels, $locked);
 
         return $component;
     }
