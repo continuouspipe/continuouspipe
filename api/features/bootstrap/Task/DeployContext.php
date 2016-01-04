@@ -224,6 +224,21 @@ class DeployContext implements Context
     }
 
     /**
+     * @When the second deploy succeed
+     */
+    public function theSecondDeploySucceed()
+    {
+        $deployments = $this->traceablePipeClient->getDeployments();
+        if (1 >= count($deployments)) {
+            throw new \RuntimeException('Found 0 or 1 deployment, expected at least 2');
+        }
+
+        /** @var DeployTask $task */
+        $task = $this->tideTasksContext->getTasksOfType(DeployTask::class)[1];
+        $this->sendDeployTaskNotification($task, Deployment::STATUS_SUCCESS);
+    }
+
+    /**
      * @Then the deploy task should be failed
      */
     public function theTaskShouldBeFailed()
@@ -442,7 +457,7 @@ class DeployContext implements Context
             throw new \RuntimeException('No deployment request found');
         }
 
-        $deploymentRequest = current($deploymentRequests);
+        $deploymentRequest = array_pop($deploymentRequests);
         $components = $deploymentRequest->getSpecification()->getComponents();
         $matchingComponents = array_filter($components, function(Component $component) use ($componentName) {
             return $component->getName() == $componentName;
