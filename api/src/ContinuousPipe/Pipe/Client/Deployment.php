@@ -116,7 +116,7 @@ class Deployment
      */
     public function getPublicEndpoints()
     {
-        return $this->publicEndpoints;
+        return $this->publicEndpoints ?: [];
     }
 
     /**
@@ -124,6 +124,6 @@ class Deployment
      */
     public function getComponentStatuses()
     {
-        return $this->componentStatuses;
+        return $this->componentStatuses ?: [];
     }
 }
