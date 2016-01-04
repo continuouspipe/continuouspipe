@@ -87,12 +87,20 @@ class ReplicationControllerContext implements Context
      */
     public function iHaveAnExistingReplicationController($name)
     {
+        $this->iHaveAnExistingReplicationControllerWithReplicas($name, 1);
+    }
+
+    /**
+     * @Given I have an existing replication controller :name with :replicas replicas
+     */
+    public function iHaveAnExistingReplicationControllerWithReplicas($name, $replicas)
+    {
         try {
             $this->replicationControllerRepository->findOneByName($name);
         } catch (ReplicationControllerNotFound $e) {
             $this->replicationControllerRepository->create(new ReplicationController(
                 new ObjectMetadata($name),
-                new ReplicationControllerSpecification(1, [],
+                new ReplicationControllerSpecification($replicas, [],
                     new PodTemplateSpecification(
                         new ObjectMetadata($name),
                         new PodSpecification([], [])
@@ -362,6 +370,23 @@ class ReplicationControllerContext implements Context
                     $tag
                 ));
             }
+        }
+    }
+
+    /**
+     * @Then :count pods of the replication controller :name should be running
+     */
+    public function podsOfTheReplicationControllerShouldBeRunning($count, $name)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($name);
+        $pods = $this->podRepository->findByReplicationController($replicationController)->getPods();
+
+        if ($count != count($pods)) {
+            throw new \RuntimeException(sprintf(
+                'Expected to find %d running pods, but found %d',
+                $count,
+                count($pods)
+            ));
         }
     }
 
