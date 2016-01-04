@@ -30,9 +30,9 @@ class DeployBuiltImagesByDefault implements ConfigurationEnhancer
             return $type == 'deploy';
         }));
 
-        $deployedServiceNames = $this->getServiceNames($configs, $deployPaths);
-
         foreach ($deployPaths as $path) {
+            $deployedServiceNames = $this->getServiceNames($configs, [$path]);
+
             foreach ($deployedServiceNames as $serviceName) {
                 // Get the image tag values
                 $imageTagPath = $path.'[services]['.$serviceName.'][specification][source][tag]';
