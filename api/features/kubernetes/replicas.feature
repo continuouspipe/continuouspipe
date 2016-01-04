@@ -101,6 +101,48 @@ Feature:
     Then the replication controller "app" should be updated
     And 6 pods of the replication controller "app" should be running
 
+  Scenario: The default number of replicas is 1
+    When I send a deployment request with the following components specification:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "accessibility": {
+            "from_cluster": true,
+            "from_external": false
+          },
+          "scalability": {
+            "enabled": true
+          },
+          "port_mappings": [
+          ],
+          "environment_variables": [
+            {
+              "name": "MYSQL_PASSWORD",
+              "value": "root"
+            }
+          ],
+          "volumes": [
+          ],
+          "volume_mounts": [
+          ]
+        },
+        "extensions": [
+        ],
+        "labels": [
+        ],
+        "locked": false
+      }
+    ]
+    """
+    Then the replication controller "app" should be created
+    And 1 pods of the replication controller "app" should be running
+
   Scenario: It should not updates the number of replicas if not set in request
     Given I have an existing replication controller "app" with 2 replicas
     When I send a deployment request with the following components specification:

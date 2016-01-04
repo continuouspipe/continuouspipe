@@ -215,6 +215,12 @@ class CreateComponentsHandler implements DeploymentHandler
             $objectRepository->update($object);
             $status->addUpdated($object);
         } else {
+            if ($object instanceof ReplicationController) {
+                if ($object->getSpecification()->getReplicas() <= 0) {
+                    $object->getSpecification()->setReplicas(1);
+                }
+            }
+            
             $logger->append(new Text('Creating '.$this->getObjectTypeAndName($object)));
             $objectRepository->create($object);
             $status->addCreated($object);
