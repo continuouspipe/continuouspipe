@@ -18,6 +18,7 @@ use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Exception\ClientError;
+use Kubernetes\Client\Exception\ObjectNotFound;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
@@ -183,23 +184,36 @@ class CreateComponentsHandler implements DeploymentHandler
         $objectRepository = $this->getObjectRepository($client, $object);
         $objectName = $object->getMetadata()->getName();
 
-        if ($objectRepository->exists($objectName)) {
+        try {
+            $existingObject = $objectRepository->findOneByName($objectName);
+        } catch (ObjectNotFound $e) {
+            $existingObject = null;
+        }
+
+        if ($existingObject !== null) {
             if ($component->isLocked()) {
                 $logger->append(new Text('NOT updated '.$this->getObjectTypeAndName($object).' because it is locked'));
 
                 return;
             }
 
+            if ($object instanceof ReplicationController) {
+                // Has an extremely simple RC-update feature, we can delete matching RC's pods
+                // Wait the "real" rolling-update feature
+                // @link https://github.com/sroze/continuouspipe/issues/54
+                $this->deleteReplicationControllerPods($client, $status, $object);
+
+                // Keeps the number of replicas of the RC
+                if ($object->getSpecification()->getReplicas() <= 0) {
+                    $object->getSpecification()->setReplicas(
+                        $existingObject->getSpecification()->getReplicas()
+                    );
+                }
+            }
+
             $logger->append(new Text('Updating '.$this->getObjectTypeAndName($object)));
             $objectRepository->update($object);
             $status->addUpdated($object);
-
-            // Has an extremely simple RC-update feature, we can delete matching RC's pods
-            // Wait the "real" rolling-update feature
-            // @link https://github.com/sroze/continuouspipe/issues/54
-            if ($object instanceof ReplicationController) {
-                $this->deleteReplicationControllerPods($client, $status, $object);
-            }
         } else {
             $logger->append(new Text('Creating '.$this->getObjectTypeAndName($object)));
             $objectRepository->create($object);

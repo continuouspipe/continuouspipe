@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
@@ -160,6 +161,18 @@ class DeploymentContext implements Context
         ));
 
         self::$deploymentUuid = $deployment->getUuid();
+    }
+
+    /**
+     * @When I send a deployment request with the following components specification:
+     */
+    public function iSendADeploymentRequestWithTheFollowingComponentsSpecification(PyStringNode $string)
+    {
+        $this->deploymentRequest['specification'] = [
+            'components' => \GuzzleHttp\json_decode($string->getRaw(), true),
+        ];
+
+        $this->iSendTheBuiltDeploymentRequest();
     }
 
     /**
