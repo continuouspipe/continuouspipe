@@ -219,12 +219,57 @@ class RunContext implements Context
     /**
      * @Then the component :name should be deployed as not scaling
      */
-    public function thePodShouldBeDeployedAsNotRestartingAfterTermination($name)
+    public function theComponentShouldBeDeployedAsNotScaling($name)
     {
         $component = $this->getDeployedComponentNamed($name);
 
         if ($component->getSpecification()->getScalability()->isEnabled()) {
             throw new \RuntimeException('Component is deployed as scaling');
+        }
+    }
+
+    /**
+     * @Then the component :name should be deployed as scaling
+     */
+    public function theComponentShouldBeDeployedAsScaling($name)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+
+        if (!$component->getSpecification()->getScalability()->isEnabled()) {
+            throw new \RuntimeException('Component is deployed as non-scaling');
+        }
+    }
+
+    /**
+     * @Then the component :name should be deployed with an unknown number of replicas
+     */
+    public function theComponentShouldBeDeployedWithAnUnknownNumberOfReplicas($name)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $replicas = $component->getSpecification()->getScalability()->getNumberOfReplicas();
+
+        if (null !== $replicas) {
+            throw new \RuntimeException(sprintf(
+                'Expected the number of replicas to be null but found %d',
+                $replicas
+            ));
+        }
+    }
+
+    /**
+     * @Then the component :name should be deployed with :replicas replicas
+     */
+    public function theComponentShouldBeDeployedWithReplicas($name, $replicas)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $foundReplicas = $component->getSpecification()->getScalability()->getNumberOfReplicas();
+
+        if ($foundReplicas != $replicas) {
+            throw new \RuntimeException(sprintf(
+                'Expected the number of replicas to be %d but found %d',
+                $replicas,
+                $foundReplicas
+            ));
         }
     }
 
