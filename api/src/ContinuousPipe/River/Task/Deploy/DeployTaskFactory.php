@@ -98,7 +98,7 @@ class DeployTaskFactory implements TaskFactory
                                         ->addDefaultsIfNotSet()
                                         ->children()
                                             ->booleanNode('enabled')->defaultTrue()->end()
-                                            ->integerNode('number_of_replicas')->defaultValue(1)->end()
+                                            ->integerNode('number_of_replicas')->defaultNull()->end()
                                         ->end()
                                     ->end()
                                     ->arrayNode('runtime_policy')
