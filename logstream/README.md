@@ -32,3 +32,11 @@ docker-compose up
 ## Debugging
 
 If you want debugging messages in the logs, you can set the `ENVIRONMENT` environment variable to `debug`.
+
+## Run tests
+
+1. Start the application with `meteor`
+2. In the `tests/cucumber` directory, run:
+   ```
+   node_modules/chimp/bin/chimp --ddp=http://localhost:3000 --browser=phantomjs
+   ```
