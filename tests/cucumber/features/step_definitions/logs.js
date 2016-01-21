@@ -68,7 +68,7 @@ module.exports = function() {
             headers: {'content-type' : 'application/json'},
             url: 'http://localhost:3000'+path,
             body: body
-        }, function(error, response, body){
+        }, function(error){
             if (error) {
                 callback(error);
             }

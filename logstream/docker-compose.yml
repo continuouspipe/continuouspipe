@@ -3,6 +3,7 @@ app:
     environment:
         ROOT_URL: http://an-unknown-address.docker
         MONGO_URL: mongodb://mongodb:27017/logstream
+        PORT: 80
     links:
         - mongodb
     labels:
