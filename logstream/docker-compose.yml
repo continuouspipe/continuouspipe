@@ -6,9 +6,6 @@ frontend:
         PORT: 80
     links:
         - mongodb
-    labels:
-        com.continuouspipe.image-name: sroze/logstream-frontend
-        com.continuouspipe.visibility: public
     expose:
         - 80
         - 43130
@@ -23,13 +20,8 @@ api:
     environment:
         MONGO_URL: mongodb://mongodb:27017/logstream
         PORT: 443
-    labels:
-        com.continuouspipe.image-name: sroze/logstream-api
-        com.continuouspipe.visibility: public
 
 mongodb:
     image: mongo
-    labels:
-        com.continuouspipe.update: lock
     expose:
         - 27017

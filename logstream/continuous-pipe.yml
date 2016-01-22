@@ -1,4 +1,24 @@
 tasks:
-    - build: ~
-    - deploy:
-          cluster: gke
+    images:
+        build:
+            services:
+                frontend:
+                    image: docker.io/sroze/logstream-frontend
+                api:
+                    image: docker.io/sroze/logstream-api
+
+    deploy:
+        deploy:
+            cluster: gke
+            services:
+                frontend:
+                    specification:
+                        accessibility:
+                            from_external: true
+                api:
+                    specification:
+                        accessibility:
+                            from_external: true
+
+                mongodb:
+                    locked: true
