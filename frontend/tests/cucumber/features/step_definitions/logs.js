@@ -1,6 +1,7 @@
 
 module.exports = function() {
-    var WebSocket = require('ws');
+    var WebSocket = require('ws'),
+        request = require('request');
 
     this.Given(/^I have an empty log "([^"]*)"$/, function (logId, callback) {
         var search = this.server.call('log.find', logId);
@@ -59,6 +60,20 @@ module.exports = function() {
 
         ws.on('error', function(error) {
             callback(new Error(error));
+        });
+    });
+
+    this.When(/^I send a ([A-Z]+) request to "([^"]*)" containing:$/, function (method, path, body, callback) {
+        request[method.toLowerCase()]({
+            headers: {'content-type' : 'application/json'},
+            url: 'http://localhost:3000'+path,
+            body: body
+        }, function(error){
+            if (error) {
+                callback(error);
+            }
+
+            callback();
         });
     });
 

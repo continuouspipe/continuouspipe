@@ -1,17 +1,31 @@
-app:
-    build: .
+frontend:
+    build: frontend
     environment:
         ROOT_URL: http://an-unknown-address.docker
         MONGO_URL: mongodb://mongodb:27017/logstream
+        PORT: 80
     links:
         - mongodb
     labels:
-        com.continuouspipe.image-name: sroze/cp-logstream
+        com.continuouspipe.image-name: sroze/logstream-frontend
         com.continuouspipe.visibility: public
     expose:
         - 80
         - 43130
         - 8080
+
+api:
+    build: api
+    links:
+        - mongodb
+    expose:
+        - 443
+    environment:
+        MONGO_URL: mongodb://mongodb:27017/logstream
+        PORT: 443
+    labels:
+        com.continuouspipe.image-name: sroze/logstream-api
+        com.continuouspipe.visibility: public
 
 mongodb:
     image: mongo
