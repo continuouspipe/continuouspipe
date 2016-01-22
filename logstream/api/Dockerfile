@@ -9,6 +9,6 @@ RUN npm install
 # Bundle app source
 COPY . /app
 
-EXPOSE 80
+EXPOSE 443
 
 CMD ["node", "/app/main.js"]

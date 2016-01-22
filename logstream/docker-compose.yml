@@ -19,9 +19,10 @@ api:
     links:
         - mongodb
     expose:
-        - 80
+        - 443
     environment:
         MONGO_URL: mongodb://mongodb:27017/logstream
+        PORT: 443
     labels:
         com.continuouspipe.image-name: sroze/logstream-api
         com.continuouspipe.visibility: public

@@ -16,7 +16,7 @@ MongoClient.connect(mongoUrl, function(error, db) {
     console.log("Connected correctly to MongoDB.");
 
     // Start the HTTP server
-    var port = process.env.PORT || 80;
+    var port = process.env.PORT || 443;
     console.log('Start HTTP server at port '+port);
     var options = {
         key: fs.readFileSync('keys/server.key'),
