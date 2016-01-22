@@ -11,17 +11,21 @@ var HttpHandlerFactory = function(LogsCollection) {
         });
     };
 
-    var createLog = function(request, response) {
+    var getRequestJson = function(request, response, callback) {
         getRequestBody(request, function(body) {
             try {
-                var log = JSON.parse(body);
+                var json = JSON.parse(body);
+
+                callback(json);
             } catch (e) {
                 response.writeHead(400);
                 response.end('Invalid JSON');
-
-                return;
             }
+        });
+    };
 
+    var createLog = function(request, response) {
+        getRequestJson(request, response, function(log) {
             LogsCollection.insert(log, function(error) {
                 if (null !== error) {
                     response.writeHead(500);
@@ -34,23 +38,39 @@ var HttpHandlerFactory = function(LogsCollection) {
         });
     };
 
+    var patchLog = function(request, response) {
+        getRequestJson(request, response, function(patch) {
+            return LogsCollection.update(request.logId, patch, function (error) {
+                if (error !== null) {
+                    response.writeHead(500);
+                    response.end('Unable to update the log');
+
+                    return;
+                }
+
+                LogsCollection.find(request.logId, function(error, log) {
+                    if (error !== null) {
+                        response.writeHead(500);
+                        response.end('Unable to find updated log');
+                    } else {
+                        response.writeHead(200);
+                        response.end(JSON.stringify(log));
+                    }
+                });
+            })
+        });
+    };
+
     return function(request, response) {
-        console.log(request.url, request.method);
         if (request.url == '/v1/logs' && request.method == 'POST') {
             return createLog(request, response);
         }
 
         var matches = request.url.match(/\/v1\/logs\/([^\/]+)/);
-        if (matches !== null) {
-            return LogsCollection.find(matches[1], function(error, log) {
-                if (error !== null) {
-                    response.writeHead(404);
-                    response.end('Not found');
-                } else {
-                    response.writeHead(200);
-                    response.end(JSON.stringify(log));
-                }
-            });
+        if (matches !== null && request.method == 'PATCH') {
+            request.logId = matches[1];
+
+            return patchLog(request, response);
         }
 
         response.writeHead(404);

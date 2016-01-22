@@ -14,6 +14,18 @@ var LogsCollection = function(db) {
             callback(error, log);
         });
     };
+
+    this.update = function(id, updatedProperties, callback) {
+        return collection.updateOne({_id: ObjectId(id)}, {
+            $set: updatedProperties
+        }, function(error, result) {
+            if (error === null && result.result.nModified != 1) {
+                callback(new Error(result.result.nModified+' updated logs instead of 1'));
+            } else {
+                callback(error, result);
+            }
+        });
+    };
 };
 
 module.exports = LogsCollection;
