@@ -1,0 +1,12 @@
+{
+  "name": "logstream-api",
+  "private": true,
+  "version": "0.0.1",
+  "description": "API of LogStream",
+  "author": "Samuel ROZE <samuel.roze@gmail.com>",
+  "dependencies": {
+    "express": "^4.13.3",
+    "http2": "^3.3.2",
+    "mongodb": "^2.1.4"
+  }
+}
