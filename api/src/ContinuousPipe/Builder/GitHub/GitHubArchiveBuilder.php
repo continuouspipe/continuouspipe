@@ -52,7 +52,7 @@ class GitHubArchiveBuilder implements ArchiveBuilder
 
         $archiveUrl = $this->remoteArchiveLocator->getArchiveUrl($buildRequest->getRepository());
 
-        $logger->append(new Text(sprintf('Will download code from archive: %s', $archiveUrl)));
+        $logger->child(new Text(sprintf('Will download code from archive: %s', $archiveUrl)));
 
         $packer = new ArchivePacker($httpClient);
 

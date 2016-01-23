@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\BuildRepository;
 use ContinuousPipe\Builder\Command\BuildImageCommand;
 use ContinuousPipe\Builder\Command\StartBuildCommand;
 use ContinuousPipe\Builder\Logging\BuildLoggerFactory;
+use LogStream\Log;
 use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -53,8 +54,7 @@ class StartBuildHandler
     {
         $build = $command->getBuild();
 
-        $logger = $this->loggerFactory->forBuild($build);
-        $logger->start();
+        $logger = $this->loggerFactory->forBuild($build)->updateStatus(Log::RUNNING);
 
         $build->updateStatus(Build::STATUS_RUNNING);
         $build = $this->buildRepository->save($build);
