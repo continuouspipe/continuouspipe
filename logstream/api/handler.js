@@ -15,12 +15,14 @@ var HttpHandlerFactory = function(LogsCollection) {
         getRequestBody(request, function(body) {
             try {
                 var json = JSON.parse(body);
-
-                callback(json);
             } catch (e) {
                 response.writeHead(400);
                 response.end('Invalid JSON');
+
+                return;
             }
+
+            callback(json);
         });
     };
 

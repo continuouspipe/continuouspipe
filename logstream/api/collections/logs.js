@@ -4,6 +4,9 @@ var LogsCollection = function(db) {
     var collection = db.collection('logs');
 
     this.insert = function(log, callback) {
+        log.createdAt = new Date();
+        log.updatedAt = new Date();
+
         collection.insertOne(log, {w: 1}, function(error) {
             callback(error);
         });
@@ -16,6 +19,8 @@ var LogsCollection = function(db) {
     };
 
     this.update = function(id, updatedProperties, callback) {
+        updatedProperties.updatedAt = new Date();
+
         return collection.updateOne({_id: ObjectId(id)}, {
             $set: updatedProperties
         }, function(error, result) {
