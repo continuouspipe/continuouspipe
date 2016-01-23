@@ -47,14 +47,14 @@ class DeploymentStatusListener
         $logger = $this->loggerFactory->create($deployment);
 
         if (null === ($notification = $deployment->getRequest()->getNotification())) {
-            $logger->append(new Text('No notification configuration'));
+            $logger->child(new Text('No notification configuration'));
 
             return;
         }
 
         $httpCallbackUrl = $notification->getHttpCallbackUrl();
         if (empty($httpCallbackUrl)) {
-            $logger->append(new Text('Empty HTTP notification URL'));
+            $logger->child(new Text('Empty HTTP notification URL'));
 
             return;
         }
@@ -62,7 +62,7 @@ class DeploymentStatusListener
         try {
             $this->notifier->notify($httpCallbackUrl, $deployment);
         } catch (NotificationException $e) {
-            $logger->append(new Text(sprintf('Error while sending notification to "%s": %s', $httpCallbackUrl, $e->getMessage())));
+            $logger->child(new Text(sprintf('Error while sending notification to "%s": %s', $httpCallbackUrl, $e->getMessage())));
         }
     }
 }

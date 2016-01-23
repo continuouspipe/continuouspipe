@@ -97,7 +97,7 @@ class CreateComponentsHandler implements DeploymentHandler
             $this->eventBus->handle(new ComponentsCreated($context, $componentStatus));
         } catch (ComponentException $e) {
             $logger = $this->loggerFactory->from($context->getLog());
-            $logger->append(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()));
 
             $this->eventBus->handle(new DeploymentFailed($context));
         }
@@ -159,7 +159,7 @@ class CreateComponentsHandler implements DeploymentHandler
 
         foreach ($objects as $object) {
             if ($this->publicServiceVoter->isAPublicService($object)) {
-                $logger->append(new Text('Ignoring the public service '.$this->getObjectTypeAndName($object)));
+                $logger->child(new Text('Ignoring the public service '.$this->getObjectTypeAndName($object)));
 
                 continue;
             }
@@ -192,7 +192,7 @@ class CreateComponentsHandler implements DeploymentHandler
 
         if ($existingObject !== null) {
             if ($component->isLocked()) {
-                $logger->append(new Text('NOT updated '.$this->getObjectTypeAndName($object).' because it is locked'));
+                $logger->child(new Text('NOT updated '.$this->getObjectTypeAndName($object).' because it is locked'));
 
                 return;
             }
@@ -211,7 +211,7 @@ class CreateComponentsHandler implements DeploymentHandler
                 }
             }
 
-            $logger->append(new Text('Updating '.$this->getObjectTypeAndName($object)));
+            $logger->child(new Text('Updating '.$this->getObjectTypeAndName($object)));
             $objectRepository->update($object);
             $status->addUpdated($object);
         } else {
@@ -221,7 +221,7 @@ class CreateComponentsHandler implements DeploymentHandler
                 }
             }
             
-            $logger->append(new Text('Creating '.$this->getObjectTypeAndName($object)));
+            $logger->child(new Text('Creating '.$this->getObjectTypeAndName($object)));
             $objectRepository->create($object);
             $status->addCreated($object);
         }

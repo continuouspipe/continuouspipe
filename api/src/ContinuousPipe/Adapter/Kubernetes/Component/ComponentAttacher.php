@@ -7,6 +7,7 @@ use ContinuousPipe\Pipe\DeploymentContext;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodStatus;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Raw;
 use LogStream\Node\Text;
@@ -58,37 +59,33 @@ class ComponentAttacher
         $logger = $this->loggerFactory->from($context->getLog());
 
         foreach ($createdPods as $pod) {
-            $log = $logger->append(new Text(sprintf(
+            $podLogger = $logger->child(new Text(sprintf(
                 'Waiting component "%s"',
                 $pod->getMetadata()->getName()
-            )));
+            )))->updateStatus(Log::RUNNING);
 
-            $podLogger = $this->loggerFactory->from($log);
-            $podLogger->start();
-
-            $rawLog = $podLogger->append(new Raw());
-            $rawLogger = $this->loggerFactory->from($rawLog);
+            $rawLogger = $podLogger->child(new Raw());
 
             try {
                 $pod = $podRepository->attach($pod, function ($output) use ($rawLogger) {
-                    $rawLogger->append(new Text($output));
+                    $rawLogger->child(new Text($output));
                 });
 
                 if ($pod->getStatus()->getPhase() == PodStatus::PHASE_SUCCEEDED) {
-                    $rawLogger->success();
+                    $rawLogger->updateStatus(Log::SUCCESS);
                 } else {
-                    $rawLogger->failure();
+                    $rawLogger->updateStatus(Log::FAILURE);
 
                     throw new ComponentException('Did not end successfully');
                 }
             } catch (Exception $e) {
-                $podLogger->append(new Text($e->getMessage()));
-                $podLogger->failure();
+                $podLogger->child(new Text($e->getMessage()));
+                $podLogger->updateStatus(Log::FAILURE);
             } finally {
                 $podRepository->delete($pod);
             }
 
-            $podLogger->success();
+            $podLogger->updateStatus(Log::SUCCESS);
         }
     }
 }

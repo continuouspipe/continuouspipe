@@ -60,22 +60,21 @@ class LoopServiceWaiter implements ServiceWaiter
     public function waitService(DeploymentContext $context, Service $service, Log $log)
     {
         $serviceName = $service->getService()->getMetadata()->getName();
-        $log = $this->loggerFactory->from($log)->append(new Text('Waiting public endpoint of service '.$serviceName));
-        $logger = $this->loggerFactory->from($log);
+        $logger = $this->loggerFactory->from($log)->child(new Text('Waiting public endpoint of service '.$serviceName));
         $client = $this->clientFactory->get($context);
 
         try {
-            $logger->start();
+            $logger->updateStatus(Log::RUNNING);
 
             $endpoint = $this->waitServicePublicEndpoint($client, $service, $logger);
 
-            $logger->append(
+            $logger->child(
                 new Text(sprintf('Found public endpoint "%s": %s', $endpoint->getName(), $endpoint->getAddress()))
             );
-            $logger->success();
+            $logger->updateStatus(Log::SUCCESS);
         } catch (EndpointNotFound $e) {
-            $logger->append(new Text($e->getMessage()));
-            $logger->failure();
+            $logger->child(new Text($e->getMessage()));
+            $logger->updateStatus(Log::FAILURE);
 
             throw new EndpointNotFound($e->getMessage(), $e->getCode(), $e);
         }
@@ -101,7 +100,7 @@ class LoopServiceWaiter implements ServiceWaiter
             try {
                 return $this->getServicePublicEndpoint($namespaceClient, $serviceName);
             } catch (EndpointNotFound $e) {
-                $logger->append(new Text($e->getMessage()));
+                $logger->child(new Text($e->getMessage()));
             }
 
             // FIXME Replace with Tolerance's `Waiter`

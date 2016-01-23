@@ -18,6 +18,7 @@ use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Repository\ServiceRepository;
+use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -80,19 +81,18 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
         $services = $this->getPublicServices($context->getEnvironment());
         $serviceRepository = $this->clientFactory->get($context)->getServiceRepository();
 
-        $log = $this->loggerFactory->from($context->getLog())->append(new Text('Create services for public endpoints'));
-        $logger = $this->loggerFactory->from($log);
-        $logger->start();
+        $logger = $this->loggerFactory->from($context->getLog())->child(new Text('Create services for public endpoints'));
+        $logger->updateStatus(Log::RUNNING);
 
         try {
             $createdServices = $this->createServices($serviceRepository, $services, $logger);
 
-            $logger->success();
+            $logger->updateStatus(Log::SUCCESS);
 
             $this->eventBus->handle(new PublicServicesCreated($context, $createdServices));
         } catch (ClientError $e) {
-            $logger->append(new Text('Error: '.$e->getMessage()));
-            $logger->failure();
+            $logger->child(new Text('Error: '.$e->getMessage()));
+            $logger->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed($context));
         }
@@ -119,11 +119,11 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
                 }
 
                 $serviceRepository->delete($service);
-                $logger->append(new Text(sprintf('Deleted service "%s"', $serviceName)));
+                $logger->child(new Text(sprintf('Deleted service "%s"', $serviceName)));
             }
 
             $publicServices[] = new CreatedService($serviceRepository->create($service));
-            $logger->append(new Text(sprintf('Created service "%s"', $serviceName)));
+            $logger->child(new Text(sprintf('Created service "%s"', $serviceName)));
         }
 
         return $publicServices;

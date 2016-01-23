@@ -18,6 +18,7 @@ use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodStatus;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\NamespaceClient;
+use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -117,7 +118,7 @@ class WaitComponentsHandler implements DeploymentHandler
     {
         $podName = $pod->getMetadata()->getName();
 
-        $log = $logger->append(new Text(sprintf('Waiting pod "%s" to be running', $podName)));
+        $log = $logger->child(new Text(sprintf('Waiting pod "%s" to be running', $podName)));
         $logger = $this->loggerFactory->from($log);
 
         return (new PromiseBuilder($loop))
@@ -135,10 +136,10 @@ class WaitComponentsHandler implements DeploymentHandler
             ->withTimeout($this->timeout)
             ->getPromise()
             ->then(function () use ($logger) {
-                $logger->success();
+                $logger->updateStatus(Log::SUCCESS);
             }, function (\Exception $e) use ($logger) {
-                $logger->failure();
-                $logger->append(new Text($e->getMessage()));
+                $logger->updateStatus(Log::FAILURE);
+                $logger->child(new Text($e->getMessage()));
 
                 throw $e;
             })
@@ -153,8 +154,7 @@ class WaitComponentsHandler implements DeploymentHandler
      */
     private function waitOneReplicationControllerPodRunning(React\EventLoop\LoopInterface $loop, NamespaceClient $client, Logger $logger, ReplicationController $replicationController)
     {
-        $log = $logger->append(new Text(sprintf('Waiting at least one pod of RC "%s" to be running', $replicationController->getMetadata()->getName())));
-        $logger = $this->loggerFactory->from($log);
+        $logger = $logger->child(new Text(sprintf('Waiting at least one pod of RC "%s" to be running', $replicationController->getMetadata()->getName())));
 
         return (new PromiseBuilder($loop))
             ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $replicationController) {
@@ -171,10 +171,10 @@ class WaitComponentsHandler implements DeploymentHandler
             ->withTimeout($this->timeout)
             ->getPromise()
             ->then(function () use ($logger) {
-                $logger->success();
+                $logger->updateStatus(Log::SUCCESS);
             }, function (\Exception $e) use ($logger, $replicationController) {
-                $logger->failure();
-                $logger->append(new Text($e->getMessage()));
+                $logger->updateStatus(Log::FAILURE);
+                $logger->child(new Text($e->getMessage()));
 
                 throw $e;
             })

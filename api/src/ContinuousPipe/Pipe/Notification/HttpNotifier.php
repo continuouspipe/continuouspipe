@@ -45,12 +45,12 @@ class HttpNotifier implements Notifier
     {
         $logger = $this->loggerFactory->create($deployment);
         if (empty($address)) {
-            $logger->append(new Text('Empty callback, not sending HTTP notification'));
+            $logger->child(new Text('Empty callback, not sending HTTP notification'));
 
             return;
         }
 
-        $logger->append(new Text(sprintf(
+        $logger->child(new Text(sprintf(
             'Sending HTTP notification back "%s"',
             $address
         )));
