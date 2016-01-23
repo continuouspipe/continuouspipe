@@ -1,73 +1,76 @@
 tasks:
-    - build:
-          environment:
-              - name: GITHUB_TOKEN
-                value: ${GITHUB_TOKEN}
+    images:
+        build:
+            environment:
+                - name: GITHUB_TOKEN
+                  value: ${GITHUB_TOKEN}
 
-          # Build only the API component
-          services:
-              api: ~
+            services:
+                api:
+                    image: docker.io/inviqasession/cp-authenticator
 
-    - deploy:
-          cluster: gke
-          services:
-              rabbitmq: ~
-              database:
-                  specification:
-                      environment_variables:
-                          - name: PGDATA
-                            value: /var/lib/postgresql/data/pgdata
-                      volumes:
-                          - type: persistent
-                            name: database-volume
-                            capacity: 5Gi
-                      volume_mounts:
-                          - name: database-volume
-                            mount_path: /var/lib/postgresql/data
+    production:
+        deploy:
+            cluster: gke
+            services:
+                rabbitmq: ~
+                database:
+                    specification:
+                        environment_variables:
+                            - name: PGDATA
+                              value: /var/lib/postgresql/data/pgdata
+                        volumes:
+                            - type: persistent
+                              name: database-volume
+                              capacity: 5Gi
+                        volume_mounts:
+                            - name: database-volume
+                              mount_path: /var/lib/postgresql/data
 
-              api:
-                  specification:
-                      environment_variables:
-                          - name: AUTHENTICATOR_URL
-                            value: http://authenticator.continuouspipe.io
-                          - name: LOGSTREAM_URL
-                            value: ws://logstream.continuouspipe.io:8080
-                          - name: BUILDER_URL
-                            value: ${BUILDER_URL}
-                          - name: PIPE_URL
-                            value: http://pipe.continuouspipe.io
-                          - name: RIVER_UI_URL
-                            value: http://ui.continuouspipe.io
-                          - name: RIVER_URL
-                            value: ${SERVICE_API_PUBLIC_ENDPOINT}
-                          - name: KEEN_PROJECT_ID
-                            value: ${KEEN_PROJECT_ID}
-                          - name: KEEN_WRITE_KEY
-                            value: ${KEEN_WRITE_KEY}
+                api:
+                    specification:
+                        environment_variables:
+                            - name: AUTHENTICATOR_URL
+                              value: http://authenticator.continuouspipe.io
+                            - name: LOGSTREAM_URL
+                              value: https://api.logstream.continuouspipe.io
+                            - name: BUILDER_URL
+                              value: ${BUILDER_URL}
+                            - name: PIPE_URL
+                              value: http://pipe.continuouspipe.io
+                            - name: RIVER_UI_URL
+                              value: http://ui.continuouspipe.io
+                            - name: RIVER_URL
+                              value: ${SERVICE_API_PUBLIC_ENDPOINT}
+                            - name: KEEN_PROJECT_ID
+                              value: ${KEEN_PROJECT_ID}
+                            - name: KEEN_WRITE_KEY
+                              value: ${KEEN_WRITE_KEY}
 
-              worker:
-                  specification:
-                      source:
-                          from_service: api
-                      environment_variables:
-                          - name: AUTHENTICATOR_URL
-                            value: http://authenticator.continuouspipe.io
-                          - name: LOGSTREAM_URL
-                            value: ws://logstream.continuouspipe.io:8080
-                          - name: BUILDER_URL
-                            value: ${BUILDER_URL}
-                          - name: PIPE_URL
-                            value: http://pipe.continuouspipe.io
-                          - name: RIVER_URL
-                            value: ${SERVICE_API_PUBLIC_ENDPOINT}
-                          - name: KEEN_PROJECT_ID
-                            value: ${KEEN_PROJECT_ID}
-                          - name: KEEN_WRITE_KEY
-                            value: ${KEEN_WRITE_KEY}
+                worker:
+                    specification:
+                        source:
+                            from_service: api
+                        environment_variables:
+                            - name: AUTHENTICATOR_URL
+                              value: http://authenticator.continuouspipe.io
+                            - name: LOGSTREAM_URL
+                              value: https://api.logstream.continuouspipe.io
+                            - name: BUILDER_URL
+                              value: ${BUILDER_URL}
+                            - name: PIPE_URL
+                              value: http://pipe.continuouspipe.io
+                            - name: RIVER_URL
+                              value: ${SERVICE_API_PUBLIC_ENDPOINT}
+                            - name: KEEN_PROJECT_ID
+                              value: ${KEEN_PROJECT_ID}
+                            - name: KEEN_WRITE_KEY
+                              value: ${KEEN_WRITE_KEY}
 
-    - run:
-          cluster: gke
-          image:
-              from_service: api
-          commands:
-              - php app/console doctrine:migrations:migrate --no-interaction
+    migrations:
+        run:
+            cluster: gke
+            image:
+                from_service: api
+            commands:
+                - php app/console doctrine:migrations:migrate --no-interaction
