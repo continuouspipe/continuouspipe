@@ -50,11 +50,11 @@ class WaitTask extends EventDrivenTask
     {
         $status = $this->configuration->getStatus();
         $logger = $this->loggerFactory->from($this->context->getLog());
-        $log = $logger->append(new Text(sprintf(
+        $log = $logger->child(new Text(sprintf(
             'Waiting status "%s" to be "%s"',
             $status->getContext(),
             $status->getState()
-        )));
+        )))->getLog();
 
         $this->newEvents[] = new WaitStarted(
             $this->context->getTideUuid(),

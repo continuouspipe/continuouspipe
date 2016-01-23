@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Task\Deploy\Listener\Logging;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentEvent;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 
 class DeploymentListener
@@ -28,9 +29,9 @@ class DeploymentListener
     public function notify(DeploymentEvent $event)
     {
         if ($event instanceof DeploymentFailed) {
-            $this->getLogger($event)->failure();
+            $this->getLogger($event)->updateStatus(Log::FAILURE);
         } elseif ($event instanceof DeploymentSuccessful) {
-            $this->getLogger($event)->success();
+            $this->getLogger($event)->updateStatus(Log::SUCCESS);
         }
     }
 

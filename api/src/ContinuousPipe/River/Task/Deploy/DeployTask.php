@@ -66,7 +66,7 @@ class DeployTask extends EventDrivenTask
     public function start()
     {
         $logger = $this->loggerFactory->from($this->context->getLog());
-        $log = $logger->append(new Text('Deploying environment'));
+        $log = $logger->child(new Text('Deploying environment'))->getLog();
 
         $this->context->setTaskLog($log);
         $this->newEvents[] = TaskQueued::fromContext($this->context);

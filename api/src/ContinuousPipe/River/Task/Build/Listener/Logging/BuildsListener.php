@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Task\Build\Listener\Logging;
 
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 
 class BuildsListener
@@ -24,9 +25,9 @@ class BuildsListener
     public function notify($event)
     {
         if ($event instanceof ImageBuildsFailed) {
-            $this->loggerFactory->from($event->getLog())->failure();
+            $this->loggerFactory->from($event->getLog())->updateStatus(Log::FAILURE);
         } elseif ($event instanceof ImageBuildsSuccessful) {
-            $this->loggerFactory->from($event->getLog())->success();
+            $this->loggerFactory->from($event->getLog())->updateStatus(Log::SUCCESS);
         }
     }
 }

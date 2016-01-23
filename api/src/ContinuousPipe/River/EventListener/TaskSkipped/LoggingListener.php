@@ -29,7 +29,7 @@ class LoggingListener
         $context = $event->getTaskContext();
         $logger = $this->loggerFactory->from($context->getLog());
 
-        $logger->append(new Text(sprintf(
+        $logger->child(new Text(sprintf(
             'Skipping task "%s" based on filters',
             $context->getTaskId()
         )));

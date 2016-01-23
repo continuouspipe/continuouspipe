@@ -2,20 +2,21 @@
 
 use Behat\Behat\Context\Context;
 use LogStream\Tests\InMemory\InMemoryLogStore;
+use LogStream\Tests\InMemoryLogClient;
 
 class LoggingContext implements Context
 {
     /**
-     * @var InMemoryLogStore
+     * @var InMemoryLogClient
      */
-    private $logStore;
+    private $inMemoryLogClient;
 
     /**
-     * @param InMemoryLogStore $logStore
+     * @param InMemoryLogClient $inMemoryLogClient
      */
-    public function __construct(InMemoryLogStore $logStore)
+    public function __construct(InMemoryLogClient $inMemoryLogClient)
     {
-        $this->logStore = $logStore;
+        $this->inMemoryLogClient = $inMemoryLogClient;
     }
 
     /**
@@ -23,7 +24,7 @@ class LoggingContext implements Context
      */
     public function aLogShouldBeCreated($contents)
     {
-        $this->findLogByContents($contents, $this->logStore->findAll());
+        $this->findLogByContents($contents, $this->findAllLogs());
     }
 
     /**
@@ -33,8 +34,9 @@ class LoggingContext implements Context
     {
         $this->aLogShouldBeCreated($parentContents);
 
-        $parentLog = $this->findLogByContents($parentContents, $this->logStore->findAll());
-        $this->findLogByContents($contents, $this->logStore->findAllByParent($parentLog));
+        $parentLog = $this->findLogByContents($parentContents, $this->findAllLogs());
+        $children = $this->findAllLogsByParent($parentLog);
+        $this->findLogByContents($contents, $children);
     }
 
     /**
@@ -42,11 +44,11 @@ class LoggingContext implements Context
      */
     public function theLogShouldBeSuccessful($contents)
     {
-        $log = $this->findLogByContents($contents, $this->logStore->findAll());
-        if ($log->getStatus() != 'success') {
+        $log = $this->findLogByContents($contents, $this->findAllLogs());
+        if ($log['status'] != 'success') {
             throw new \RuntimeException(sprintf(
                 'Got status "%s" but expected "success"',
-                $log->getStatus()
+                $log['status']
             ));
         }
     }
@@ -56,37 +58,33 @@ class LoggingContext implements Context
      */
     public function theLogShouldBeFailed($contents)
     {
-        $log = $this->findLogByContents($contents, $this->logStore->findAll());
-        if ($log->getStatus() != 'failure') {
+        $log = $this->findLogByContents($contents, $this->findAllLogs());
+        if ($log['status'] != 'failure') {
             throw new \RuntimeException(sprintf(
                 'Got status "%s" but expected "faillure"',
-                $log->getStatus()
+                $log['status']
             ));
         }
     }
 
     /**
      * @param string           $contents
-     * @param \LogStream\Log[] $logCollection
+     * @param array $logCollection
      *
-     * @return \LogStream\Log[]
+     * @return array
      */
     private function findLogsByContents($contents, $logCollection)
     {
-        return array_filter($logCollection, function (\LogStream\Log $log) use ($contents) {
-            if ($log instanceof \LogStream\WrappedLog) {
-                $log = $log->getNode();
-            }
-
-            return $log instanceof \LogStream\Node\Text && $log->getText() == $contents;
-        });
+        return array_values(array_filter($logCollection, function (array $log) use ($contents) {
+            return array_key_exists('contents', $log) && $log['contents'] == $contents;
+        }));
     }
 
     /**
      * @param string           $contents
-     * @param \LogStream\Log[] $logCollection
+     * @param array  $logCollection
      *
-     * @return \LogStream\Log
+     * @return array
      */
     private function findLogByContents($contents, $logCollection)
     {
@@ -95,6 +93,26 @@ class LoggingContext implements Context
             throw new \RuntimeException('No matching log found');
         }
 
-        return current($matchingLogs);
+        return $matchingLogs[0];
+    }
+
+    /**
+     * @return array
+     */
+    private function findAllLogs()
+    {
+        return $this->inMemoryLogClient->getLogs();
+    }
+
+    /**
+     * @param string $parent
+     *
+     * @return array
+     */
+    private function findAllLogsByParent(array $parent)
+    {
+        return array_values(array_filter($this->findAllLogs(), function(array $log) use ($parent) {
+            return array_key_exists('parent', $log) && $log['parent'] == $parent['_id'];
+        }));
     }
 }

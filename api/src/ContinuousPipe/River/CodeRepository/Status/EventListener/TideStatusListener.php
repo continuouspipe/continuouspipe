@@ -53,7 +53,7 @@ class TideStatusListener
             $this->updateTideStatus($event, $tide);
         } catch (CodeStatusException $e) {
             $logger = $this->loggerFactory->from($tide->getContext()->getLog());
-            $logger->append(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()));
         }
     }
 

@@ -18,7 +18,7 @@ default:
                     - @event_bus
                     - @river.repository.tide
                 - LoggingContext:
-                    - @log_stream.event_store.in_memory
+                    - @log_stream.client
                 - GitHubContext:
                     - @kernel
                     - @river.fake.code_status_updater

@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Task\Build\Listener\Logging;
 use ContinuousPipe\River\Task\Build\Event\BuildEvent;
 use ContinuousPipe\River\Task\Build\Event\BuildFailed;
 use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 
 class BuildListener
@@ -35,9 +36,9 @@ class BuildListener
         $logger = $this->loggerFactory->fromId($logIdentifier);
 
         if ($event instanceof BuildSuccessful) {
-            $logger->success();
+            $logger->updateStatus(Log::SUCCESS);
         } elseif ($event instanceof BuildFailed) {
-            $logger->failure();
+            $logger->updateStatus(Log::FAILURE);
         }
     }
 }
