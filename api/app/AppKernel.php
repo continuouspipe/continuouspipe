@@ -21,6 +21,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new Nelmio\CorsBundle\NelmioCorsBundle(),
             new FOS\RestBundle\FOSRestBundle(),
+            new Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\ToleranceBundle(),
             new LogStream\LogStreamBundle(),
             new WorkerBundle\WorkerBundle(),
             new AppBundle\AppBundle(),

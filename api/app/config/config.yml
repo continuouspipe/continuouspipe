@@ -143,6 +143,9 @@ log_stream:
     url: %logstream_url%
     strict_ssl: false
 
+tolerance:
+    request_identifier: ~
+
 old_sound_rabbit_mq:
     connections:
         default:
