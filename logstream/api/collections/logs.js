@@ -4,6 +4,10 @@ var LogsCollection = function(db) {
     var collection = db.collection('logs');
 
     this.insert = function(log, callback) {
+        if (!log._id) {
+            log._id = (new ObjectId()).toHexString();
+        }
+
         log.createdAt = new Date();
         log.updatedAt = new Date();
 
@@ -13,7 +17,7 @@ var LogsCollection = function(db) {
     };
 
     this.find = function(id, callback) {
-        return collection.findOne({_id: ObjectId(id)}, function(error, log) {
+        return collection.findOne({_id: id}, function(error, log) {
             callback(error, log);
         });
     };
@@ -21,7 +25,7 @@ var LogsCollection = function(db) {
     this.update = function(id, updatedProperties, callback) {
         updatedProperties.updatedAt = new Date();
 
-        return collection.updateOne({_id: ObjectId(id)}, {
+        return collection.updateOne({_id: id}, {
             $set: updatedProperties
         }, function(error, result) {
             if (error === null && result.result.nModified != 1) {
