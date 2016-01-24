@@ -10,7 +10,7 @@ use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use Doctrine\ORM\EntityManager;
-use LogStream\WrappedLog;
+use LogStream\Tree\TreeLog;
 use Rhumsaa\Uuid\Uuid;
 
 class DoctrineTideRepository implements TideRepository
@@ -124,7 +124,7 @@ class DoctrineTideRepository implements TideRepository
             Uuid::fromString($tideDto->getUuid()),
             \ContinuousPipe\River\View\Flow::fromFlow($flow),
             $wrappedTide->getCodeReference(),
-            new WrappedLog($wrappedTide->getLogId()),
+            TreeLog::fromId($wrappedTide->getLogId()),
             $wrappedTide->getTeam(),
             $wrappedTide->getUser(),
             $wrappedTide->getConfiguration() ?: [],
