@@ -19,7 +19,9 @@ tasks:
         deploy:
             cluster: gke
             services:
-                rabbitmq: ~
+                rabbitmq:
+                    locked: true
+
                 api:
                     specification:
                         accessibility:
