@@ -25,11 +25,6 @@ Feature:
     And I should see the component "mysql"
 
   Scenario:
-    Given pods are not running for the replication controller "app"
-    When I request the environment list of the cluster "my-cluster" of the team "my-team"
-    Then the status of the component "app" should be "unhealthy"
-
-  Scenario:
     Given pods are running but not ready for the replication controller "app"
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should be "unhealthy"
