@@ -11,6 +11,7 @@ use ContinuousPipe\Builder\BuildException;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\IsolatedCommands\CommandExtractor;
 use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
+use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -141,18 +142,16 @@ class DockerBuilder implements Builder
             return $image;
         }
 
-        $log = $logger->append(new Text('Running extra build commands'));
-        $logger = $this->loggerFactory->from($log);
-        $logger->start();
+        $logger = $logger->child(new Text('Running extra build commands'))->updateStatus(Log::RUNNING);
 
         try {
             foreach ($commands as $command) {
                 $image = $this->dockerClient->runAndCommit($image, $logger, $command);
             }
 
-            $logger->success();
+            $logger->updateStatus(Log::SUCCESS);
         } catch (DockerException $e) {
-            $logger->failure();
+            $logger->updateStatus(Log::FAILURE);
 
             throw $e;
         }

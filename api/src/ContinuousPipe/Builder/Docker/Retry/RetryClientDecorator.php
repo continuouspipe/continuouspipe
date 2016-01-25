@@ -72,7 +72,7 @@ class RetryClientDecorator implements Client
             }
 
             $retryIn = self::DELAY_BETWEEN_RETRIES * ($attempts + 1);
-            $logger->append(new Text(sprintf(
+            $logger->child(new Text(sprintf(
                 'Detected infrastructure error, retrying in %s seconds',
                 $retryIn
             )));

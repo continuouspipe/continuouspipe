@@ -31,7 +31,7 @@ class LoggedDockerBuilder implements Builder
         try {
             $this->builder->build($build, $logger);
         } catch (BuildException $e) {
-            $logger->append(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()));
 
             throw $e;
         }
@@ -45,7 +45,7 @@ class LoggedDockerBuilder implements Builder
         try {
             $this->builder->push($build, $logger);
         } catch (BuildException $e) {
-            $logger->append(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()));
 
             throw $e;
         }

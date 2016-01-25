@@ -8,6 +8,7 @@ use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
+use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Raw;
@@ -40,18 +41,14 @@ class LoggedDockerClient implements Client
      */
     public function build(Archive $archive, BuildRequest $request, Logger $logger)
     {
-        $log = $logger->append(new Text('Start Docker build'));
-        $buildLogger = $this->loggerFactory->from($log);
-        $buildLogger->start();
-
-        $raw = $buildLogger->append(new Raw());
-        $rawBuildLogger = $this->loggerFactory->from($raw);
+        $logger = $logger->child(new Text('Start Docker build'))->updateStatus(Log::RUNNING);
 
         try {
-            $image = $this->client->build($archive, $request, $rawBuildLogger);
-            $buildLogger->success();
+            $image = $this->client->build($archive, $request, $logger->child(new Raw()));
+
+            $logger->updateStatus(Log::SUCCESS);
         } catch (DockerException $e) {
-            $buildLogger->failure();
+            $logger->updateStatus(Log::FAILURE);
 
             throw $e;
         }
@@ -64,20 +61,15 @@ class LoggedDockerClient implements Client
      */
     public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
     {
-        $log = $logger->append(new Text('Pushing Docker image'));
-        $pushLogger = $this->loggerFactory->from($log);
-        $pushLogger->start();
-
-        $raw = $pushLogger->append(new Raw());
-        $rawPushLogger = $this->loggerFactory->from($raw);
+        $logger = $logger->child(new Text('Pushing Docker image'))->updateStatus(Log::RUNNING);
 
         try {
-            $this->client->push($image, $credentials, $rawPushLogger);
+            $this->client->push($image, $credentials, $logger->child(new Raw()));
 
-            $pushLogger->success();
+            $logger->updateStatus(Log::SUCCESS);
         } catch (DockerException $e) {
-            $pushLogger->append(new Text($e->getMessage()));
-            $pushLogger->failure();
+            $logger->child(new Text($e->getMessage()));
+            $logger->updateStatus(Log::FAILURE);
 
             throw $e;
         }
@@ -88,20 +80,15 @@ class LoggedDockerClient implements Client
      */
     public function runAndCommit(Image $image, Logger $logger, $command)
     {
-        $log = $logger->append(new Text(sprintf('Running "%s"', $command)));
-        $pushLogger = $this->loggerFactory->from($log);
-        $pushLogger->start();
-
-        $raw = $pushLogger->append(new Raw());
-        $rawPushLogger = $this->loggerFactory->from($raw);
+        $logger = $logger->child(new Text(sprintf('Running "%s"', $command)))->updateStatus(Log::RUNNING);
 
         try {
-            $image = $this->client->runAndCommit($image, $rawPushLogger, $command);
+            $image = $this->client->runAndCommit($image, $logger->child(new Raw()), $command);
 
-            $pushLogger->success();
+            $logger->updateStatus(Log::SUCCESS);
         } catch (DockerException $e) {
-            $pushLogger->append(new Text($e->getMessage()));
-            $pushLogger->failure();
+            $logger->child(new Text($e->getMessage()));
+            $logger->updateStatus(Log::FAILURE);
 
             throw $e;
         }

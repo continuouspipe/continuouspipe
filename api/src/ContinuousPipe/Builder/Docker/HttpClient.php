@@ -247,7 +247,7 @@ EOF;
             $output = $this->outputHandler->handle($output);
 
             if (!empty($output)) {
-                $logger->append(new Text($output));
+                $logger->child(new Text($output));
             }
         };
     }
