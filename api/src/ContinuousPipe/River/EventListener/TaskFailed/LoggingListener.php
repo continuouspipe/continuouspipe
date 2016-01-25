@@ -29,7 +29,7 @@ class LoggingListener
         $context = $event->getTask()->getContext();
         $logger = $this->loggerFactory->from($context->getLog());
 
-        $logger->append(new Text(sprintf(
+        $logger->child(new Text(sprintf(
             'Unable to start task "%s": %s',
             $context->getTaskId(),
             $event->getException()->getMessage()

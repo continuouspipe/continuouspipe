@@ -1,59 +1,52 @@
 api:
-  build: .
-  command: /app/docker/apache.sh
-  volumes:
-    - .:/app
-  links:
-    - database
-    - rabbitmq
-  environment:
-    - SENTRY_DSN=http://0cd6915cf66c44feb0a0fc00137147ac:b2e09cf0a35641fb901e667734e979b1@tsuru.cluster.sroze.io:82/5
-    - RIVER_UI_URL=http://ui_ui.docker
-    - AUTHENTICATOR_URL=authenticator_app.docker
-    - BUILDER_URL=builder_api.docker/app_dev.php
-    - PIPE_URL=pipe_api.docker/app_dev.php
-    - LOGSTREAM_URL=ws://logstream.docker:8080
-    - RIVER_URL=river_api.docker/app_dev.php
-  labels:
-    com.continuouspipe.image-name: inviqasession/cp-river
-    com.continuouspipe.visibility: public
-  expose:
-    - 80
+    build: .
+    command: /app/docker/apache.sh
+    volumes:
+        - .:/app
+    links:
+        - database
+        - rabbitmq
+    environment:
+        - SENTRY_DSN=http://88f4608cec7f48cfbea4113626266785:ad54b9d69c984fc69e3933a961f434c2@sentry.tools.sroze.io/9
+        - RIVER_UI_URL=http://ui_ui.docker
+        - AUTHENTICATOR_URL=authenticator_app.docker
+        - BUILDER_URL=builder_api.docker/app_dev.php
+        - PIPE_URL=pipe_api.docker/app_dev.php
+        - LOGSTREAM_URL=https://logstream-api.docker
+        - RIVER_URL=river_api.docker/app_dev.php
+    expose:
+        - 80
 
 worker:
-  build: .
-  command: /app/docker/worker.sh
-  volumes:
-    - .:/app
-  links:
-    - database
-    - rabbitmq
-  labels:
-    com.continuouspipe.image-name: inviqasession/cp-river
-  expose:
-    - 80
-  environment:
-    - SENTRY_DSN=http://0cd6915cf66c44feb0a0fc00137147ac:b2e09cf0a35641fb901e667734e979b1@tsuru.cluster.sroze.io:82/5
-    - AUTHENTICATOR_URL=authenticator_app.docker
-    - BUILDER_URL=builder_api.docker/app_dev.php
-    - PIPE_URL=pipe_api.docker/app_dev.php
-    - LOGSTREAM_URL=ws://logstream.docker:8080
-    - RIVER_URL=river_api.docker/app_dev.php
+    build: .
+    command: /app/docker/worker.sh
+    volumes:
+        - .:/app
+    links:
+        - database
+        - rabbitmq
+    expose:
+        - 80
+    environment:
+        - SENTRY_DSN=http://88f4608cec7f48cfbea4113626266785:ad54b9d69c984fc69e3933a961f434c2@sentry.tools.sroze.io/9
+        - AUTHENTICATOR_URL=authenticator_app.docker
+        - BUILDER_URL=builder_api.docker/app_dev.php
+        - PIPE_URL=pipe_api.docker/app_dev.php
+        - LOGSTREAM_URL=https://logstream-api.docker
+        - RIVER_URL=river_api.docker/app_dev.php
 
 database:
-  image: postgres
-  environment:
-    POSTGRES_USER: river
-    POSTGRES_PASSWORD: river
-  labels:
-    com.continuouspipe.update: lock
-  expose:
-    - 5432
+    image: mariadb
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: river
+        MYSQL_USER: river
+        MYSQL_PASSWORD: river
+    expose:
+        - 3306
 
 rabbitmq:
-  image: rabbitmq:3-management
-  labels:
-    com.continuouspipe.update: lock
-  expose:
-    - 15672
-    - 5672
+    image: rabbitmq:3-management
+    expose:
+        - 15672
+        - 5672

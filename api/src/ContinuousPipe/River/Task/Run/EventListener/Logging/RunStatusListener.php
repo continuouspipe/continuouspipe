@@ -6,6 +6,7 @@ use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\Run\Event\RunFailed;
 use ContinuousPipe\River\Task\Run\Event\RunSuccessful;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 
 class RunStatusListener
@@ -29,9 +30,9 @@ class RunStatusListener
     public function notify(TideEvent $event)
     {
         if ($event instanceof RunFailed) {
-            $this->getLogger($event->getDeployment())->failure();
+            $this->getLogger($event->getDeployment())->updateStatus(Log::FAILURE);
         } elseif ($event instanceof RunSuccessful) {
-            $this->getLogger($event->getDeployment())->success();
+            $this->getLogger($event->getDeployment())->updateStatus(Log::SUCCESS);
         }
     }
 

@@ -10,6 +10,7 @@ use ContinuousPipe\River\Task\Build\Command\BuildImagesCommand;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -58,8 +59,7 @@ class BuildImagesHandler
      */
     public function handle(BuildImagesCommand $command)
     {
-        $logger = $this->loggerFactory->fromId($command->getLogId());
-        $logger->start();
+        $logger = $this->loggerFactory->fromId($command->getLogId())->updateStatus(Log::RUNNING);
 
         $tideUuid = $command->getTideUuid();
         $tide = $this->tideRepository->find($tideUuid);
@@ -72,7 +72,7 @@ class BuildImagesHandler
                 $tideContext->getTeam()->getBucketUuid()
             );
         } catch (BuilderException $e) {
-            $logger->append(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()));
             $this->eventBus->handle(new ImageBuildsFailed($tideUuid, $logger->getLog()));
 
             return;
@@ -81,12 +81,12 @@ class BuildImagesHandler
         $this->eventBus->handle(new ImageBuildsStarted($tideUuid, $buildRequests, $logger->getLog()));
 
         if (empty($buildRequests)) {
-            $logger->append(new Text('Found no image to build'));
+            $logger->child(new Text('Found no image to build'));
             $this->eventBus->handle(new ImageBuildsSuccessful($tideUuid, $logger->getLog()));
         }
 
         foreach ($buildRequests as $buildRequest) {
-            $log = $logger->append(new Text(sprintf('Building image \'%s\'', $buildRequest->getImage()->getName())));
+            $log = $logger->child(new Text(sprintf('Building image \'%s\'', $buildRequest->getImage()->getName())))->getLog();
 
             $command = new BuildImageCommand($tideUuid, $buildRequest, $log->getId());
             $this->commandBus->handle($command);

@@ -119,7 +119,7 @@ class TideFactory
             $configuration = [];
 
             $logger = $this->loggerFactory->from($log);
-            $logger->append(new Text(sprintf(
+            $logger->child(new Text(sprintf(
                 'Unable to create tide task list: %s',
                 $e->getMessage()
             )));

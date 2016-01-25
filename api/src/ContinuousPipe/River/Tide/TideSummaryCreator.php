@@ -10,6 +10,7 @@ use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tide\Summary\CurrentTask;
 use ContinuousPipe\River\Tide\Summary\DeployedService;
 use ContinuousPipe\River\View\Tide;
+use LogStream\Node\Text;
 
 class TideSummaryCreator
 {
@@ -125,10 +126,10 @@ class TideSummaryCreator
     private function getTaskLog(Task $task)
     {
         if ($taskLog = $task->getContext()->getTaskLog()) {
-            $serialized = $taskLog->jsonSerialize();
+            $node = $taskLog->getNode();
 
-            if (array_key_exists('contents', $serialized)) {
-                return $serialized['contents'];
+            if ($node instanceof Text) {
+                return $node->getText();
             }
         }
 

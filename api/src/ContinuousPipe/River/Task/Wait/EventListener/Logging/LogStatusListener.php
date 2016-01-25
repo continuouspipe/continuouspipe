@@ -6,6 +6,7 @@ use ContinuousPipe\River\Task\Wait\Event\WaitEvent;
 use ContinuousPipe\River\Task\Wait\Event\WaitFailed;
 use ContinuousPipe\River\Task\Wait\Event\WaitStarted;
 use ContinuousPipe\River\Task\Wait\Event\WaitSuccessful;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 
 class LogStatusListener
@@ -41,11 +42,11 @@ class LogStatusListener
 
         $logger = $this->loggerFactory->from($log);
         if ($event instanceof WaitStarted) {
-            $logger->start();
+            $logger->updateStatus(Log::RUNNING);
         } elseif ($event instanceof WaitFailed) {
-            $logger->failure();
+            $logger->updateStatus(Log::FAILURE);
         } elseif ($event instanceof WaitSuccessful) {
-            $logger->success();
+            $logger->updateStatus(Log::SUCCESS);
         }
     }
 }

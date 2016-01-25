@@ -1,25 +1,30 @@
-image: sroze/drone-symfony
-env:
-    - COMPOSER_HOME=/tmp/composer
-    - DATABASE_PASSWORD=''
-    - DATABASE_HOST=127.0.0.1
-    - DATABASE_USER=postgres
-script:
-    - composer self-update
+build:
+    image: docker.io/sroze/php-stack
+    environment:
+        - DATABASE_HOST=127.0.0.1
 
-    # Install dependencies
-    - composer config -g github-oauth.github.com d5e0f6092daa83a33bcb439bfa88ecb87dc4c691
-    - composer install
+    commands:
+        - composer config -g github-oauth.github.com d5e0f6092daa83a33bcb439bfa88ecb87dc4c691
+        - composer install
 
-    # Run tests
-    - bin/phpspec run
-    - bin/behat -f progress
+        # Domain tests
+        - bin/phpspec run
+        - bin/behat -fprogress
 
-    # Run smoke tests
-    - psql -U $DATABASE_USER -h $DATABASE_HOST -c 'create database river;'
-    - app/console doctrine:migrations:migrate --no-interaction
-    - bin/behat -f progress --profile=smoke
-services:
-    - postgres
+        # Smoke tests
+        - app/console doctrine:migrations:migrate --no-interaction
+        - bin/behat -f progress --profile=smoke
+
 cache:
-    - /tmp/composer
+    mount:
+        - vendor
+
+compose:
+    database:
+        image: mariadb
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=river
+            - MYSQL_USER=river
+            - MYSQL_PASSWORD=river
+

@@ -83,7 +83,7 @@ class EventuallyCreateAndStartTide
             }
         } catch (TideConfigurationException $e) {
             $logger = $this->loggerFactory->from($tide->getContext()->getLog());
-            $logger->append(new Text('Tide filter error: '.$e->getMessage()));
+            $logger->child(new Text('Tide filter error: '.$e->getMessage()));
         }
 
         foreach ($tide->popNewEvents() as $event) {

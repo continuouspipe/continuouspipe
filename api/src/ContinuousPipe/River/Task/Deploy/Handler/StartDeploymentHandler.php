@@ -64,7 +64,7 @@ class StartDeploymentHandler
             $this->eventBus->handle(new DeploymentFailed($command->getTideUuid(), $failedDeployment, $deployContext->getTaskId()));
 
             $logger = $this->loggerFactory->from($deployContext->getTaskLog());
-            $logger->append(new Text(sprintf(
+            $logger->child(new Text(sprintf(
                 'PANIC (%s): %s',
                 get_class($e),
                 $e->getMessage()
