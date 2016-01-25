@@ -13,7 +13,7 @@ tasks:
 
             services:
                 api:
-                    image: docker.io/inviqasession/cp-authenticator
+                    image: docker.io/inviqasession/cp-river
 
     production:
         deploy:
@@ -22,6 +22,9 @@ tasks:
                 rabbitmq: ~
                 api:
                     specification:
+                        accessibility:
+                            from_external: true
+
                         environment_variables:
                             - name: AUTHENTICATOR_URL
                               value: http://authenticator.continuouspipe.io
@@ -44,6 +47,8 @@ tasks:
 
                 worker:
                     specification:
+                        accessibility:
+                            from_cluster: false
                         source:
                             from_service: api
                         environment_variables:
