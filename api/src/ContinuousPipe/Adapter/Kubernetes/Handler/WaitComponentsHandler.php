@@ -118,8 +118,7 @@ class WaitComponentsHandler implements DeploymentHandler
     {
         $podName = $pod->getMetadata()->getName();
 
-        $log = $logger->child(new Text(sprintf('Waiting pod "%s" to be running', $podName)));
-        $logger = $this->loggerFactory->from($log);
+        $logger = $logger->child(new Text(sprintf('Waiting pod "%s" to be running', $podName)));
 
         return (new PromiseBuilder($loop))
             ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $podName) {
