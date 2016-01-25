@@ -44,6 +44,12 @@ tasks:
                               value: ${KEEN_WRITE_KEY}
                             - name: SENTRY_DSN
                               value: http://a28df8b25bdb4b8eb1b335849fa7daad:9401ad376e8b4c54b0a1138bb8093b2c@sentry.tools.sroze.io/10
+                            - name: DATABASE_HOST
+                              value: 104.155.7.25
+                            - name: DATABASE_USER
+                              value: river
+                            - name: DATABASE_PASSWORD
+                              value: 138xHEqgD93lk
 
                 worker:
                     specification:
@@ -68,6 +74,12 @@ tasks:
                               value: ${KEEN_WRITE_KEY}
                             - name: SENTRY_DSN
                               value: http://a28df8b25bdb4b8eb1b335849fa7daad:9401ad376e8b4c54b0a1138bb8093b2c@sentry.tools.sroze.io/10
+                            - name: DATABASE_HOST
+                              value: 104.155.7.25
+                            - name: DATABASE_USER
+                              value: river
+                            - name: DATABASE_PASSWORD
+                              value: 138xHEqgD93lk
         filter:
             expression: codeReference.branch == 'master'
 
