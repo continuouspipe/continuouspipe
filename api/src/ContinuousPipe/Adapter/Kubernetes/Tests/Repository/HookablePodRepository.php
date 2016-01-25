@@ -24,6 +24,11 @@ class HookablePodRepository implements PodRepository
     private $createdHooks = [];
 
     /**
+     * @var callable[]
+     */
+    private $deletedHooks = [];
+
+    /**
      * @param PodRepository $repository
      */
     public function __construct(PodRepository $repository)
@@ -90,7 +95,13 @@ class HookablePodRepository implements PodRepository
      */
     public function delete(Pod $pod)
     {
-        return $this->repository->delete($pod);
+        $deleted = $this->repository->delete($pod);
+
+        foreach ($this->deletedHooks as $hook) {
+            $deleted = $hook($pod);
+        }
+
+        return $deleted;
     }
 
     /**
@@ -129,5 +140,13 @@ class HookablePodRepository implements PodRepository
     public function addCreatedHook(callable $hook)
     {
         $this->createdHooks[] = $hook;
+    }
+
+    /**
+     * @param callable $hook
+     */
+    public function addDeletedHook(callable $hook)
+    {
+        $this->deletedHooks[] = $hook;
     }
 }

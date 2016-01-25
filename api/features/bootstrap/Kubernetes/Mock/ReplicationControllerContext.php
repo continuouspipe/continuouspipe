@@ -12,6 +12,7 @@ use Kubernetes\Client\Model\PodList;
 use Kubernetes\Client\Model\PodStatus;
 use Kubernetes\Client\Model\PodStatusCondition;
 use Kubernetes\Client\Model\ReplicationController;
+use Kubernetes\Client\Exception\ReplicationControllerNotFound;
 
 class ReplicationControllerContext implements Context
 {
@@ -63,6 +64,19 @@ class ReplicationControllerContext implements Context
 
         $this->hookableReplicationControllerRepository->addCreatedHook($hook);
         $this->hookableReplicationControllerRepository->addUpdatedHook($hook);
+
+        $this->hookablePodRepository->addDeletedHook(function(Pod $pod) {
+            $labels = $pod->getMetadata()->getLabelsAsAssociativeArray();
+
+            try {
+                $replicationController = $this->hookableReplicationControllerRepository->findOneByLabels($labels);
+                $this->hookablePodRepository->create($pod);
+            } catch (ReplicationControllerNotFound $e) {
+                // If no replication controller is matching, then don't mind...
+            }
+
+            return $pod;
+        });
     }
 
     /**

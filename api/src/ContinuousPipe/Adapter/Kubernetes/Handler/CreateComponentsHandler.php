@@ -198,11 +198,6 @@ class CreateComponentsHandler implements DeploymentHandler
             }
 
             if ($object instanceof ReplicationController) {
-                // Has an extremely simple RC-update feature, we can delete matching RC's pods
-                // Wait the "real" rolling-update feature
-                // @link https://github.com/sroze/continuouspipe/issues/54
-                $this->deleteReplicationControllerPods($client, $status, $object);
-
                 // Keeps the number of replicas of the RC
                 if ($object->getSpecification()->getReplicas() <= 0) {
                     $object->getSpecification()->setReplicas(
@@ -214,6 +209,13 @@ class CreateComponentsHandler implements DeploymentHandler
             $logger->child(new Text('Updating '.$this->getObjectTypeAndName($object)));
             $objectRepository->update($object);
             $status->addUpdated($object);
+
+            if ($object instanceof ReplicationController) {
+                // Has an extremely simple RC-update feature, we can delete matching RC's pods
+                // Wait the "real" rolling-update feature
+                // @link https://github.com/sroze/continuouspipe/issues/54
+                $this->deleteReplicationControllerPods($client, $status, $object);
+            }
         } else {
             if ($object instanceof ReplicationController) {
                 if ($object->getSpecification()->getReplicas() <= 0) {
