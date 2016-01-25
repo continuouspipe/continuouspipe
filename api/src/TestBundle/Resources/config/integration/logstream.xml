@@ -5,12 +5,12 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="log_stream.event_store.in_memory" class="LogStream\Tests\InMemory\InMemoryLogStore" />
-        <service id="log_stream.logger_factory" class="LogStream\Tests\InMemory\InMemoryLoggerFactory">
-            <argument type="service" id="log_stream.event_store.in_memory" />
+        <service id="log_stream.client" class="LogStream\Tests\InMemoryLogClient">
+            <argument type="service" id="log_stream.tree.log_normalizer" />
         </service>
         <service id="log_stream.display_logger_factory" class="LogStream\Tests\Debug\DisplayLoggerFactory" decorates="log_stream.logger_factory">
             <argument type="service" id="log_stream.display_logger_factory.inner" />
+            <argument type="service" id="log_stream.tree.log_normalizer" />
         </service>
     </services>
 </container>

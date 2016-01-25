@@ -71,10 +71,10 @@ class AddPrivateRegistryCredentials
                     $imagePullSecrets
                 ));
 
-                $logger->append(new Text('Added the Docker Registry credentials in the environment'));
+                $logger->child(new Text('Added the Docker Registry credentials in the environment'));
             }
         } catch (\Exception $e) {
-            $logger->append(new Text('WARNING - Unable to add namespace credentials: '.$e->getMessage().' ('.get_class($e).')'));
+            $logger->child(new Text('WARNING - Unable to add namespace credentials: '.$e->getMessage().' ('.get_class($e).')'));
 
             throw $e;
         }

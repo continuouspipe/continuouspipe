@@ -73,7 +73,7 @@ class CreatePersistentVolumeClaim implements EventSubscriberInterface
 
         try {
             $persistentVolumeClaimRepository->findOneByName($persistentVolume->getName());
-            $logger->append(new Text(sprintf(
+            $logger->child(new Text(sprintf(
                 'Reusing existing persistent volume claim "%s"',
                 $persistentVolume->getName()
             )));
@@ -88,7 +88,7 @@ class CreatePersistentVolumeClaim implements EventSubscriberInterface
                 )
             ));
 
-            $logger->append(new Text(sprintf(
+            $logger->child(new Text(sprintf(
                 'Created persistent volume claim "%s"',
                 $created->getMetadata()->getName()
             )));

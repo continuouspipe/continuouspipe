@@ -64,7 +64,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
             $namespace = $this->createNamespaceIfNotExists($context);
         } catch (ClientError $e) {
             $logger = $this->loggerFactory->from($context->getLog());
-            $logger->append(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()));
 
             $this->eventBus->handle(new DeploymentFailed($context));
 
@@ -91,12 +91,12 @@ class PrepareEnvironmentHandler implements DeploymentHandler
 
         if (!$namespaceRepository->exists($namespaceName)) {
             $namespace = $namespaceRepository->create($namespace);
-            $logger->append(new Text(sprintf('Created new namespace "%s"', $namespaceName)));
+            $logger->child(new Text(sprintf('Created new namespace "%s"', $namespaceName)));
 
             $this->eventBus->handle(new NamespaceCreated($namespace, $context));
         } else {
             $namespace = $namespaceRepository->findOneByName($namespaceName);
-            $logger->append(new Text(sprintf('Reusing existing namespace "%s"', $namespaceName)));
+            $logger->child(new Text(sprintf('Reusing existing namespace "%s"', $namespaceName)));
         }
 
         return $namespace;

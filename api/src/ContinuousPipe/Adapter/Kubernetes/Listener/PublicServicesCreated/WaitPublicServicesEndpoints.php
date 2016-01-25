@@ -52,15 +52,13 @@ class WaitPublicServicesEndpoints
     {
         $context = $event->getContext();
 
-        $log = $this->loggerFactory->from($context->getLog())->append(
+        $logger = $this->loggerFactory->from($context->getLog())->child(
             new Text('Waiting public endpoints to be created')
-        );
-        $logger = $this->loggerFactory->from($log);
-        $logger->start();
+        )->updateStatus(Log::RUNNING);
 
         try {
             $endpoints = $this->waitEndpoints($context, $event->getServices(), $logger->getLog());
-            $logger->success();
+            $logger->updateStatus(Log::SUCCESS);
 
             if ($this->hasNewServices($event->getServices())) {
                 $this->eventBus->handle(new PublicEndpointsCreated($context, $endpoints));
@@ -68,7 +66,7 @@ class WaitPublicServicesEndpoints
 
             $this->eventBus->handle(new PublicEndpointsReady($context, $endpoints));
         } catch (EndpointNotFound $e) {
-            $logger->failure();
+            $logger->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed($context));
         }

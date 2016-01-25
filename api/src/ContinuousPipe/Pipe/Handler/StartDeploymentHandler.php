@@ -13,6 +13,7 @@ use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
+use LogStream\Log;
 use LogStream\Node\Text;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
@@ -61,13 +62,13 @@ class StartDeploymentHandler
         $deployment = $command->getDeployment();
 
         $logger = $this->loggerFactory->create($deployment);
-        $logger->start();
+        $logger->updateStatus(Log::RUNNING);
 
         $request = $deployment->getRequest();
         $target = $request->getTarget();
         $specification = $request->getSpecification();
 
-        $logger->append(new Text(sprintf(
+        $logger->child(new Text(sprintf(
             'Deploying to the environment "%s" to cluster "%s"',
             $target->getEnvironmentName(),
             $target->getClusterIdentifier()
@@ -79,7 +80,7 @@ class StartDeploymentHandler
             $specification->getComponents()
         );
 
-        $logger->append(new Text(sprintf(
+        $logger->child(new Text(sprintf(
             'Found %d components in `docker-compose.yml` file.',
             count($environment->getComponents())
         )));
@@ -87,7 +88,7 @@ class StartDeploymentHandler
         try {
             $cluster = $this->getCluster($request->getCredentialsBucket(), $target->getClusterIdentifier());
         } catch (ClusterNotFound $e) {
-            $logger->append(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()));
 
             $this->eventBus->handle(new DeploymentFailed(
                 new DeploymentContext($deployment, null, $logger->getLog(), $environment)
