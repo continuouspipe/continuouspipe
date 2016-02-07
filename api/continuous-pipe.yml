@@ -92,6 +92,13 @@ tasks:
                 from_service: api
             commands:
                 - php app/console doctrine:migrations:migrate --no-interaction
+            environment:
+                - name: DATABASE_HOST
+                  value: 104.155.7.25
+                - name: DATABASE_USER
+                  value: river
+                - name: DATABASE_PASSWORD
+                  value: 138xHEqgD93lk
 
         filter:
             expression: codeReference.branch == 'master'
