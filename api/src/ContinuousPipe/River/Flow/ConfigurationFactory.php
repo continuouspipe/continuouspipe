@@ -10,6 +10,7 @@ use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Yaml\Exception\ExceptionInterface as YamlException;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationFactory implements TideConfigurationFactory
@@ -55,7 +56,11 @@ class ConfigurationFactory implements TideConfigurationFactory
 
         // Read configuration from YML
         if ($fileSystem->exists(self::FILENAME)) {
-            $configs[] = Yaml::parse($fileSystem->getContents(self::FILENAME));
+            try {
+                $configs[] = Yaml::parse($fileSystem->getContents(self::FILENAME));
+            } catch (YamlException $e) {
+                throw new TideConfigurationException(sprintf('Unable to read YAML configuration: %s', $e->getMessage()), $e->getCode(), $e);
+            }
         }
 
         // Enhance configuration
