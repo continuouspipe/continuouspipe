@@ -123,3 +123,13 @@ Feature:
     """
     When a tide is started
     Then the tide should be failed
+
+  Scenario: The YAML file is not valid
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        foo: 1234
+            bar: baz
+    """
+    When a tide is started
+    Then the tide should be failed
