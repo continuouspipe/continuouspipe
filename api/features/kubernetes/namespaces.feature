@@ -16,23 +16,24 @@ Feature:
     And the specification come from the template "simple-app"
     And the pods of the replication controllers will be created successfully and running
 
-  @smoke
-  Scenario:
-    When I send the built deployment request
-    Then it should create a new namespace
-    And it should dispatch the namespace created event
-
-  Scenario:
+  Scenario: Reuse existing namespace
     Given I have a namespace "my-environment"
     When I send the built deployment request
-    Then it should reuse this namespace
+    Then it should not create any namespace
 
-  Scenario:
+  Scenario: Delete an environment should delete the namespace
+    Given I have a namespace "foo"
+    When I delete the environment named "foo" of the cluster "my-cluster" of the team "my-team"
+    Then the namespace "foo" should be deleted
+
+  Scenario: Update namespace' service account after creating namespace
     When I send the built deployment request
     Then a docker registry secret should be created
     And the service account should be updated with a docker registry pull secret
 
-  Scenario:
-    Given I have a namespace "foo"
-    When I delete the environment named "foo" of the cluster "my-cluster" of the team "my-team"
-    Then the namespace "foo" should be deleted
+  Scenario: Update service account if secret not found
+    Given I have a namespace "my-environment"
+    And the service account "default" to not contain any docker registry pull secret
+    When I send the built deployment request
+    Then a docker registry secret should be created
+    And the service account should be updated with a docker registry pull secret

@@ -20,6 +20,7 @@ use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\User;
 use Kubernetes\Client\Exception\NamespaceNotFound;
+use Kubernetes\Client\Exception\ServiceAccountNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\LocalObjectReference;
 use Kubernetes\Client\Model\ObjectMetadata;
@@ -118,9 +119,31 @@ class NamespaceContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Then it should reuse this namespace
+     * @Given the service account :name to not contain any docker registry pull secret
      */
-    public function itShouldReuseThisNamespace()
+    public function theServiceAccountToNotContainAnyDockerRegistryPullSecret($name)
+    {
+        try {
+            $serviceAccount = $this->serviceAccountRepository->findByName($name);
+
+            $this->serviceAccountRepository->update(new ServiceAccount(
+                $serviceAccount->getMetadata(),
+                $serviceAccount->getSecrets(),
+                []
+            ));
+        } catch (ServiceAccountNotFound $e) {
+            $this->serviceAccountRepository->create(new ServiceAccount(
+                new ObjectMetadata($name),
+                [],
+                []
+            ));
+        }
+    }
+
+    /**
+     * @Then it should not create any namespace
+     */
+    public function itShouldNotCreateAnyNamespace()
     {
         $numberOfCreatedNamespaces = count($this->namespaceRepository->getCreated());
 

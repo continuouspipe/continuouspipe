@@ -85,17 +85,17 @@ class InMemoryReplicationControllerRepository implements ReplicationControllerRe
      */
     public function findByLabels(array $labels)
     {
-        return array_filter($this->replicationControllers, function(ReplicationController $replicationController) use ($labels) {
+        return array_filter($this->replicationControllers, function (ReplicationController $replicationController) use ($labels) {
             return $this->isMatchingLabels($replicationController, $labels);
         });
     }
 
     /**
      * Return true is the replication controller labels' are matching.
-     * 
+     *
      * @param ReplicationController $replicationController
      * @param array                 $labels
-     * 
+     *
      * @return bool
      */
     private function isMatchingLabels(ReplicationController $replicationController, array $labels)
@@ -105,7 +105,7 @@ class InMemoryReplicationControllerRepository implements ReplicationControllerRe
         foreach ($labels as $key => $value) {
             if (!array_key_exists($key, $replicationControllerLabels)) {
                 return false;
-            } else if ($replicationControllerLabels[$key] != $labels[$key]) {
+            } elseif ($replicationControllerLabels[$key] != $labels[$key]) {
                 return false;
             }
         }
