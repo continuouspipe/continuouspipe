@@ -222,7 +222,7 @@ class CreateComponentsHandler implements DeploymentHandler
                     $object->getSpecification()->setReplicas(1);
                 }
             }
-            
+
             $logger->child(new Text('Creating '.$this->getObjectTypeAndName($object)));
             $objectRepository->create($object);
             $status->addCreated($object);

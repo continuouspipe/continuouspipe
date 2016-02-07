@@ -11,6 +11,7 @@ use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
+use Tolerance\Waiter\Waiter;
 
 class LoopServiceWaiter implements ServiceWaiter
 {
@@ -39,13 +40,20 @@ class LoopServiceWaiter implements ServiceWaiter
     private $loggerFactory;
 
     /**
+     * @var Waiter
+     */
+    private $waiter;
+
+    /**
      * @param DeploymentClientFactory $clientFactory
      * @param LoggerFactory           $loggerFactory
+     * @param Waiter                  $waiter
      */
-    public function __construct(DeploymentClientFactory $clientFactory, LoggerFactory $loggerFactory)
+    public function __construct(DeploymentClientFactory $clientFactory, LoggerFactory $loggerFactory, Waiter $waiter)
     {
         $this->clientFactory = $clientFactory;
         $this->loggerFactory = $loggerFactory;
+        $this->waiter = $waiter;
     }
 
     /**
@@ -103,8 +111,7 @@ class LoopServiceWaiter implements ServiceWaiter
                 $logger->child(new Text($e->getMessage()));
             }
 
-            // FIXME Replace with Tolerance's `Waiter`
-            sleep(self::LOOP_WAIT);
+            $this->waiter->wait(self::LOOP_WAIT);
         } while (++$attempts < self::LOOP_MAX_RETRY);
 
         throw new EndpointNotFound('Attempted too many times.');

@@ -42,4 +42,14 @@ class InMemorySecretRepository implements SecretRepository
     {
         return array_key_exists($name, $this->secrets);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(Secret $secret)
+    {
+        $this->secrets[$secret->getMetadata()->getName()] = $secret;
+
+        return $secret;
+    }
 }

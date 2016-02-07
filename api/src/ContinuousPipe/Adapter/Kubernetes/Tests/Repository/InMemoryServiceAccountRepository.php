@@ -60,4 +60,22 @@ class InMemoryServiceAccountRepository implements ServiceAccountRepository
 
         return $serviceAccount;
     }
+
+    /**
+     * Delete the given service account.
+     *
+     * @param ServiceAccount $serviceAccount
+     *
+     * @throws ServiceAccountNotFound
+     */
+    public function delete(ServiceAccount $serviceAccount)
+    {
+        $name = $serviceAccount->getMetadata()->getName();
+
+        if (!array_key_exists($name, $this->serviceAccounts)) {
+            throw new ServiceAccountNotFound();
+        }
+
+        unset($this->serviceAccounts[$name]);
+    }
 }

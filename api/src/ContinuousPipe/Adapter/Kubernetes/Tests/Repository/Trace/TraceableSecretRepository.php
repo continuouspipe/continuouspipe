@@ -13,6 +13,11 @@ class TraceableSecretRepository implements SecretRepository
     private $created = [];
 
     /**
+     * @var Secret[]
+     */
+    private $updated = [];
+
+    /**
      * @var SecretRepository
      */
     private $repository;
@@ -38,14 +43,6 @@ class TraceableSecretRepository implements SecretRepository
     }
 
     /**
-     * @return \Kubernetes\Client\Model\Secret[]
-     */
-    public function getCreated()
-    {
-        return $this->created;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function findOneByName($name)
@@ -59,5 +56,33 @@ class TraceableSecretRepository implements SecretRepository
     public function exists($name)
     {
         return $this->repository->exists($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(Secret $secret)
+    {
+        $updated = $this->repository->update($secret);
+
+        $this->updated[] = $updated;
+
+        return $updated;
+    }
+
+    /**
+     * @return \Kubernetes\Client\Model\Secret[]
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @return \Kubernetes\Client\Model\Secret[]
+     */
+    public function getUpdated()
+    {
+        return $this->updated;
     }
 }

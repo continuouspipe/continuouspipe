@@ -60,6 +60,7 @@
         <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\LoopServiceWaiter">
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="tolerance.waiter" />
         </service>
         <service id="pipe.adapter.kubernetes.component.attacher" class="ContinuousPipe\Adapter\Kubernetes\Component\ComponentAttacher">
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
@@ -71,13 +72,6 @@
         <service id="pipe.adapter.kubernetes.private_images.secret_factory" class="ContinuousPipe\Adapter\Kubernetes\PrivateImages\SecretFactory">
             <argument type="service" id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" />
             <argument type="service" id="authenticator.bucket_repository" />
-        </service>
-        <service id="pipe.adapter.kubernetes.listener.add_private_registry_credentials" class="ContinuousPipe\Adapter\Kubernetes\Listener\NamespaceCreated\AddPrivateRegistryCredentials">
-            <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
-            <argument type="service" id="pipe.adapter.kubernetes.private_images.secret_factory" />
-            <argument type="service" id="log_stream.logger_factory" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated" />
         </service>
         <service id="pipe.adapter.kubernetes.listener.wait_public_services" class="ContinuousPipe\Adapter\Kubernetes\Listener\PublicServicesCreated\WaitPublicServicesEndpoints">
             <argument type="service" id="event_bus" />
@@ -108,6 +102,8 @@
             <argument type="service" id="event_bus" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="kubernetes.naming_strategy.identifier" />
+            <argument type="service" id="pipe.adapter.kubernetes.private_images.secret_factory" />
+            <argument type="service" id="tolerance.waiter" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
         </service>
