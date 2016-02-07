@@ -2,6 +2,7 @@ build:
     image: docker.io/sroze/php-stack
     environment:
         - DATABASE_HOST=127.0.0.1
+        - COMPOSER_HOME=/drone/composer-cache
 
     commands:
         - composer config -g github-oauth.github.com d5e0f6092daa83a33bcb439bfa88ecb87dc4c691
@@ -17,7 +18,7 @@ build:
 
 cache:
     mount:
-        - vendor
+        - /drone/composer-cache
 
 compose:
     database:
