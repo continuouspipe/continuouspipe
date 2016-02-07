@@ -37,3 +37,8 @@ Feature:
     When I send the built deployment request
     Then a docker registry secret should be created
     And the service account should be updated with a docker registry pull secret
+
+  Scenario: Wait namespace's service account to be created
+    Given the default service account won't be created at the same time than the namespace
+    When I send the built deployment request
+    Then the service account should be updated with a docker registry pull secret

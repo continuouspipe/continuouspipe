@@ -19,6 +19,7 @@ class TestExtension extends Extension
 
         // Add our fake adapter
         $loader->load('fake-adapter.xml');
+        $loader->load('tolerance.xml');
 
         // Updates the message bus to trace events
         $loader->load('message-bus.xml');

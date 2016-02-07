@@ -8,6 +8,8 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
 use ContinuousPipe\Adapter\Kubernetes\PrivateImages\SecretFactory;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceAccountRepository;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryServiceAccountRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableSecretRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceAccountRepository;
@@ -64,6 +66,14 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      * @var InMemoryAuthenticatorClient
      */
     private $inMemoryAuthenticatorClient;
+    /**
+     * @var InMemoryServiceAccountRepository
+     */
+    private $inMemoryServiceAccountRepository;
+    /**
+     * @var HookableServiceAccountRepository
+     */
+    private $hookableServiceAccountRepository;
 
     /**
      * @param TraceableNamespaceRepository $namespaceRepository
@@ -72,8 +82,19 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      * @param TraceableServiceAccountRepository $serviceAccountRepository
      * @param LoggerFactory $loggerFactory
      * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
+     * @param InMemoryServiceAccountRepository $inMemoryServiceAccountRepository
+     * @param HookableServiceAccountRepository $hookableServiceAccountRepository
      */
-    public function __construct(TraceableNamespaceRepository $namespaceRepository, TraceableMessageBus $eventBus, TraceableSecretRepository $secretRepository, TraceableServiceAccountRepository $serviceAccountRepository, LoggerFactory $loggerFactory, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient)
+    public function __construct(
+        TraceableNamespaceRepository $namespaceRepository,
+        TraceableMessageBus $eventBus,
+        TraceableSecretRepository $secretRepository,
+        TraceableServiceAccountRepository $serviceAccountRepository,
+        LoggerFactory $loggerFactory,
+        InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
+        InMemoryServiceAccountRepository $inMemoryServiceAccountRepository,
+        HookableServiceAccountRepository $hookableServiceAccountRepository
+    )
     {
         $this->namespaceRepository = $namespaceRepository;
         $this->eventBus = $eventBus;
@@ -81,6 +102,8 @@ class NamespaceContext implements Context, SnippetAcceptingContext
         $this->serviceAccountRepository = $serviceAccountRepository;
         $this->loggerFactory = $loggerFactory;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
+        $this->inMemoryServiceAccountRepository = $inMemoryServiceAccountRepository;
+        $this->hookableServiceAccountRepository = $hookableServiceAccountRepository;
     }
 
     /**
@@ -138,6 +161,21 @@ class NamespaceContext implements Context, SnippetAcceptingContext
                 []
             ));
         }
+    }
+
+    /**
+     * @Given the default service account won't be created at the same time than the namespace
+     */
+    public function theDefaultServiceAccountWonTBeCreatedAtTheSameTimeThanTheNamespace()
+    {
+        $calls = 0;
+        $this->hookableServiceAccountRepository->addFindByNameHook(function(ServiceAccount $serviceAccount) use (&$calls) {
+            if ($calls++ < 2) {
+                throw new ServiceAccountNotFound('Service account not found');
+            }
+
+            return $serviceAccount;
+        });
     }
 
     /**

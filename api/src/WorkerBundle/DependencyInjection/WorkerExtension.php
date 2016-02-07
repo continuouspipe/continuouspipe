@@ -25,5 +25,6 @@ class WorkerExtension extends Extension
         $loader->load('deployment.xml');
         $loader->load('kubernetes.xml');
         $loader->load('notification.xml');
+        $loader->load('tolerance.xml');
     }
 }

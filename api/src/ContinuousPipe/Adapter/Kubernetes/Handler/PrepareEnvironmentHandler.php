@@ -14,7 +14,6 @@ use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Client;
-use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Exception\SecretNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\LocalObjectReference;
@@ -24,6 +23,12 @@ use Kubernetes\Client\NamespaceClient;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
+use Tolerance\Operation\Callback;
+use Tolerance\Operation\Runner\CallbackOperationRunner;
+use Tolerance\Operation\Runner\RetryOperationRunner;
+use Tolerance\Waiter\CountLimited;
+use Tolerance\Waiter\Linear;
+use Tolerance\Waiter\Waiter;
 
 class PrepareEnvironmentHandler implements DeploymentHandler
 {
@@ -53,19 +58,26 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     private $secretFactory;
 
     /**
+     * @var Waiter
+     */
+    private $waiter;
+
+    /**
      * @param KubernetesClientFactory $kubernetesClientFactory
      * @param MessageBus              $eventBus
      * @param LoggerFactory           $loggerFactory
      * @param NamingStrategy          $namingStrategy
      * @param SecretFactory           $secretFactory
+     * @param Waiter                  $waiter
      */
-    public function __construct(KubernetesClientFactory $kubernetesClientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, NamingStrategy $namingStrategy, SecretFactory $secretFactory)
+    public function __construct(KubernetesClientFactory $kubernetesClientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, NamingStrategy $namingStrategy, SecretFactory $secretFactory, Waiter $waiter)
     {
         $this->kubernetesClientFactory = $kubernetesClientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
         $this->namingStrategy = $namingStrategy;
         $this->secretFactory = $secretFactory;
+        $this->waiter = $waiter;
     }
 
     /**
@@ -79,7 +91,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
         try {
             $namespace = $this->createNamespaceIfNotExists($client, $context);
             $this->createOrUpdateNamespaceCredentials($client, $context, $namespace);
-        } catch (ClientError $e) {
+        } catch (\Exception $e) {
             $logger = $this->loggerFactory->from($context->getLog());
             $logger->child(new Text($e->getMessage()));
 
@@ -131,20 +143,28 @@ class PrepareEnvironmentHandler implements DeploymentHandler
         $secret = $this->createOrUpdateSecret($namespaceClient, $context);
 
         $serviceAccountRepository = $namespaceClient->getServiceAccountRepository();
-        $defaultServiceAccount = $serviceAccountRepository->findByName('default');
 
-        if (!$this->alreadyHaveSecret($defaultServiceAccount, $secret)) {
-            $imagePullSecrets = $defaultServiceAccount->getImagePullSecrets();
-            $imagePullSecrets[] = new LocalObjectReference(
-                $secret->getMetadata()->getName()
-            );
+        $runner = new RetryOperationRunner(
+            new CallbackOperationRunner(),
+            new CountLimited(new Linear($this->waiter, 1), 10)
+        );
 
-            $serviceAccountRepository->update(new ServiceAccount(
-                $defaultServiceAccount->getMetadata(),
-                $defaultServiceAccount->getSecrets(),
-                $imagePullSecrets
-            ));
-        }
+        $runner->run(new Callback(function () use ($serviceAccountRepository, $secret) {
+            $defaultServiceAccount = $serviceAccountRepository->findByName('default');
+
+            if (!$this->alreadyHaveSecret($defaultServiceAccount, $secret)) {
+                $imagePullSecrets = $defaultServiceAccount->getImagePullSecrets();
+                $imagePullSecrets[] = new LocalObjectReference(
+                    $secret->getMetadata()->getName()
+                );
+
+                $serviceAccountRepository->update(new ServiceAccount(
+                    $defaultServiceAccount->getMetadata(),
+                    $defaultServiceAccount->getSecrets(),
+                    $imagePullSecrets
+                ));
+            }
+        }));
     }
 
     /**
