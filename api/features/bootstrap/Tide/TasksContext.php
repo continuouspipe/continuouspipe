@@ -67,7 +67,12 @@ class TasksContext implements Context
      */
     public function theDeployTaskShouldNotBeStarted()
     {
-        if ($this->getTasksOfType(DeployTask::class)[0]->isRunning()) {
+        $deployTasks = $this->getTasksOfType(DeployTask::class);
+        if (count($deployTasks) === 0) {
+            throw new \RuntimeException('Did not found any deploy task');
+        }
+
+        if ($deployTasks[0]->isRunning()) {
             throw new \RuntimeException('The deploy task is running');
         }
     }
@@ -77,7 +82,12 @@ class TasksContext implements Context
      */
     public function theDeployTaskShouldBeStarted()
     {
-        if (!$this->getTasksOfType(DeployTask::class)[0]->isRunning()) {
+        $deployTasks = $this->getTasksOfType(DeployTask::class);
+        if (count($deployTasks) === 0) {
+            throw new \RuntimeException('Did not found any deploy task');
+        }
+
+        if (!$deployTasks[0]->isRunning()) {
             throw new \RuntimeException('The deploy task is not running');
         }
     }

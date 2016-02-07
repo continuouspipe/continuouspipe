@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River;
 
-use ContinuousPipe\River\Event\CodeRepositoryEvent;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
@@ -12,7 +11,6 @@ use ContinuousPipe\River\Task\TaskFailed;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Task\TaskRunnerException;
-use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use Rhumsaa\Uuid\Uuid;
 
 class Tide
@@ -242,19 +240,5 @@ class Tide
     public function pushNewEvent(TideEvent $event)
     {
         $this->newEvents[] = $event;
-    }
-
-    /**
-     * Returns true if the tide should be created.
-     *
-     * @param CodeRepositoryEvent $event
-     * @param ArrayObject         $context
-     *
-     * @throws TideConfigurationException
-     *
-     * @return bool
-     */
-    public function shouldBeCreated(CodeRepositoryEvent $event, ArrayObject $context)
-    {
     }
 }

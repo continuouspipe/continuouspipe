@@ -78,7 +78,9 @@ class FilterDecorator implements TaskRunner
             return false;
         }
 
-        return !$this->testFilter($configuration['filter'], $this->contextFactory->create($tide));
+        $context = $this->contextFactory->create($tide);
+
+        return !$this->testFilter($configuration['filter'], $context->asArray());
     }
 
     /**

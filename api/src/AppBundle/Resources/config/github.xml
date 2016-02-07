@@ -103,8 +103,7 @@
         <service id="river.listener.github.eventually_create_and_start_tide" class="ContinuousPipe\River\EventListener\GitHub\EventuallyCreateAndStartTide">
             <argument type="service" id="river.tide_factory" />
             <argument type="service" id="event_bus" />
-            <argument type="service" id="river.github.client_factory" />
-            <argument type="service" id="logger" />
+            <argument type="service" id="river.task_filter.context_factory" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.tide.start_voter" />
 

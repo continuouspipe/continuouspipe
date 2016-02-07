@@ -4,6 +4,7 @@ namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
+use ContinuousPipe\River\Event\CodeRepositoryEvent;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
@@ -100,12 +101,13 @@ class TideFactory
     }
 
     /**
-     * @param Flow          $flow
-     * @param CodeReference $codeReference
+     * @param Flow                $flow
+     * @param CodeReference       $codeReference
+     * @param CodeRepositoryEvent $codeRepositoryEvent
      *
      * @return Tide
      */
-    public function createFromCodeReference(Flow $flow, CodeReference $codeReference)
+    public function createFromCodeReference(Flow $flow, CodeReference $codeReference, CodeRepositoryEvent $codeRepositoryEvent = null)
     {
         $log = $this->loggerFactory->create()->getLog();
         $tideUuid = Uuid::uuid1();
@@ -132,7 +134,8 @@ class TideFactory
             $tideUuid,
             $codeReference,
             $log,
-            $configuration
+            $configuration,
+            $codeRepositoryEvent
         );
 
         $taskList = $this->createTideTaskList($tideContext);
