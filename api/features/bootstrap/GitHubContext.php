@@ -87,6 +87,22 @@ class GitHubContext implements Context
     }
 
     /**
+     * @Given the created GitHub comment will have the ID :id
+     */
+    public function theCreatedGithubCommentWillHaveTheId($id)
+    {
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod) use ($id) {
+            if ('POST' === $httpMethod && preg_match('#issues/([0-9]+)/comments$#', $path)) {
+                return new \Guzzle\Http\Message\Response(
+                    200,
+                    ['Content-Type' => 'application/json'],
+                    json_encode(['id' => $id])
+                );
+            }
+        });
+    }
+
+    /**
      * @Then the GitHub commit status should be :status
      */
     public function theGitHubCommitStatusShouldBe($status)
