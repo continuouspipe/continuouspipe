@@ -37,7 +37,7 @@ class CodeReferenceResolver
 
         return $this->create(
             $event->getRepository(),
-            $headReference->getReference(),
+            $headReference->getLabel(),
             $headReference->getSha1()
         );
     }

@@ -164,7 +164,23 @@ class GitHubContext implements Context
         $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
         $contents['number'] = $number;
         $contents['pull_request']['head']['ref'] = $branch;
+        $contents['pull_request']['head']['label'] = $branch;
         $contents['pull_request']['head']['sha'] = $sha;
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
+     * @When the pull request #:number is opened with head :reference from another repository labelled :repositoryLabel
+     */
+    public function thePullRequestIsOpenedWithHeadFromAnotherRepositoryLabelled($number, $reference, $repositoryLabel)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+
+        $contents['number'] = $number;
+        $contents['pull_request']['head']['ref'] = $reference;
+        $contents['pull_request']['head']['sha'] = sha1($reference);
+        $contents['pull_request']['head']['label'] = $repositoryLabel.':'.$reference;
 
         $this->sendWebHook('pull_request', json_encode($contents));
     }
@@ -178,6 +194,7 @@ class GitHubContext implements Context
         $contents['action'] = 'synchronize';
         $contents['number'] = $number;
         $contents['pull_request']['head']['ref'] = $branch;
+        $contents['pull_request']['head']['label'] = $branch;
         $contents['pull_request']['head']['sha'] = $sha;
 
         $this->sendWebHook('pull_request', json_encode($contents));

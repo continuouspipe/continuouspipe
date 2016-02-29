@@ -402,9 +402,14 @@ EOF;
         });
 
         if (count($matchingEvents) == 0) {
+            $foundTags = array_map(function (BuildStarted $event) {
+                return $event->getBuild()->getRequest()->getImage()->getTag();
+            }, $buildStartedEvents);
+
             throw new \RuntimeException(sprintf(
-                'No built request for tag "%s" found',
-                $tag
+                'No built request for tag "%s" found but found %s',
+                $tag,
+                implode(', ', $foundTags)
             ));
         }
     }
