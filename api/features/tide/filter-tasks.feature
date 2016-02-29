@@ -26,7 +26,7 @@ Feature:
               commands:
                   - foo
           filter:
-              expression: codeReference.branch == 'master'
+              expression: code_reference.branch == 'master'
         - deploy:
               cluster: foo
               services: []
@@ -44,7 +44,7 @@ Feature:
               commands:
                   - foo
           filter:
-              expression: codeReference.branch == 'master'
+              expression: code_reference.branch == 'master'
         - deploy:
               cluster: foo
               services: []
@@ -144,3 +144,78 @@ Feature:
     """
     When a tide is started
     Then the tide should be failed
+
+  Scenario: Filtering on pull request without pull-request
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        images:
+            build:
+                services: []
+
+        environment:
+            deploy:
+                cluster: foo
+                services:
+                    mysql:
+                        specification:
+                            source:
+                                image: mysql
+
+            filter:
+                expression: "code_reference.branch == 'master' or 'Ready for QA' in pull_request.labels"
+    """
+    When a tide is started for the branch "master"
+    Then the build task succeed
+    And the deploy task should be started
+
+  Scenario: Filtering on pull request without pull-request
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        images:
+            build:
+                services: []
+
+        environment:
+            deploy:
+                cluster: foo
+                services:
+                    mysql:
+                        specification:
+                            source:
+                                image: mysql
+
+            filter:
+                expression: "'Ready for QA' in pull_request.labels"
+    """
+    When a tide is started for the branch "master"
+    Then the build task succeed
+    And the deploy task should not be started
+
+  Scenario: Filtering on pull request without pull-request
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        images:
+            build:
+                services: []
+
+        environment:
+            deploy:
+                cluster: foo
+                services:
+                    mysql:
+                        specification:
+                            source:
+                                image: mysql
+
+            filter:
+                expression: "'Ready for QA' in pull_request.labels"
+    """
+    And the pull request #1 have the label "Ready for QA"
+    When the pull request #1 is labeled
+    And the tide starts
+    Then the tide should be created
+    And the build task succeed
+    And the deploy task should be started

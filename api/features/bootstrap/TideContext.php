@@ -165,6 +165,14 @@ EOF;
     }
 
     /**
+     * @When the tide starts
+     */
+    public function startTide()
+    {
+        $this->commandBus->handle(new StartTideCommand($this->getTideUuid()));
+    }
+
+    /**
      * @When the tide failed
      */
     public function theTideFailed()
@@ -843,13 +851,7 @@ EOF;
     public function getEventsOfType($eventType)
     {
         if (null === $this->tideUuid) {
-            $tides = $this->viewTideRepository->findLastByFlow($this->flowContext->getCurrentFlow(), 1);
-
-            if (count($tides) == 0) {
-                throw new \RuntimeException('Found not tide UUID, and no tide in flow');
-            }
-
-            $this->tideUuid = $tides[0]->getUuid();
+            $this->tideUuid = $this->getTideUuid();
         }
 
         $events = $this->eventStore->findByTideUuid($this->tideUuid);
@@ -880,8 +882,18 @@ EOF;
         $this->tideUuid = $tide->getContext()->getTideUuid();
     }
 
-    private function startTide()
+    private function getTideUuid()
     {
-        $this->commandBus->handle(new StartTideCommand($this->tideUuid));
+        if (null === $this->tideUuid) {
+            $tides = $this->viewTideRepository->findLastByFlow($this->flowContext->getCurrentFlow(), 1);
+
+            if (count($tides) == 0) {
+                throw new \RuntimeException('Found not tide UUID, and no tide in flow');
+            }
+
+            $this->tideUuid = $tides[0]->getUuid();
+        }
+
+        return $this->tideUuid;
     }
 }
