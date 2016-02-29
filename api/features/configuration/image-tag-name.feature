@@ -13,3 +13,13 @@ Feature:
     When a tide is started for the branch "feature/my-foo" with a build task
     Then the image tag "feature-my-foo" should be built
 
+  Scenario: The name of the tag should come from the reference of the pull-request
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        - build: ~
+    """
+    And there is 1 application images in the repository
+    When the pull request #1 is opened with head "feature/dc-labels" from another repository labelled "sroze"
+    And the tide starts
+    Then the image tag "sroze-feature-dc-labels" should be built
