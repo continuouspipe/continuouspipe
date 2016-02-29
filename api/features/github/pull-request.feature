@@ -3,6 +3,9 @@ Feature:
   As a developer
   I want to have the environment addresses commented on my pull-requests
 
+  Background:
+    Given the created GitHub comment will have the ID 1
+
   Scenario: The addresses are commented when the deployment is successful
     Given there is 1 application images in the repository
     And a tide is started with a deploy task
