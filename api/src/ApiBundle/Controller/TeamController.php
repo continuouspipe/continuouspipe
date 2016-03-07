@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Controller;
 
+use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use ContinuousPipe\Authenticator\Team\TeamCreator;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
@@ -12,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -51,8 +53,14 @@ class TeamController
      * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
      * @View
      */
-    public function listAction(User $user)
+    public function listAction($user)
     {
+        if ($user instanceof SystemUser) {
+            return $this->teamRepository->findAll();
+        } elseif (!$user instanceof User) {
+            return new JsonResponse(['message' => 'Forbbiden access'], 403);
+        }
+
         $memberships = $this->teamMembershipRepository->findByUser($user);
         $teams = $memberships->map(function (TeamMembership $membership) {
             return $membership->getTeam();

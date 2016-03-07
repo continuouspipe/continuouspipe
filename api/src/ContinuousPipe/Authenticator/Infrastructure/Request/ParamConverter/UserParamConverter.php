@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserParamConverter implements ParamConverterInterface
 {
@@ -41,7 +42,7 @@ class UserParamConverter implements ParamConverterInterface
         if (array_key_exists('byUsername', $options)) {
             $username = $request->get($options['byUsername']);
             try {
-                $securityUser = $this->securityUserRepository->findOneByUsername($username);
+                $user = $this->securityUserRepository->findOneByUsername($username);
             } catch (UserNotFound $e) {
                 throw new NotFoundHttpException($e->getMessage());
             }
@@ -49,14 +50,17 @@ class UserParamConverter implements ParamConverterInterface
             if (null === ($token = $this->tokenStorage->getToken())) {
                 throw new \RuntimeException('No user found in context');
             }
-            if (!(($securityUser = $token->getUser()) instanceof SecurityUser)) {
+            if (!(($user = $token->getUser()) instanceof UserInterface)) {
                 throw new \RuntimeException('No logged-in user');
             }
         } else {
             throw new \RuntimeException('Unknown user param converter strategy');
         }
 
-        $user = $securityUser->getUser();
+        if ($user instanceof SecurityUser) {
+            $user = $user->getUser();
+        }
+
         $request->attributes->set($configuration->getName(), $user);
     }
 
