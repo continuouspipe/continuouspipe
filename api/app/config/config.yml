@@ -112,7 +112,7 @@ fos_rest:
 
     format_listener:
         rules:
-            - { path: '^/_profiler', priorities: ['html'] }
+            - { path: '^/(_profiler|admin)', priorities: ['html'] }
             - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
 
     exception:
@@ -176,5 +176,5 @@ simple_bus_asynchronous:
         logging: ~
 
 csa_guzzle:
-    profiler: true
+    profiler: %kernel.debug%
     logger: true

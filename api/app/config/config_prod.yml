@@ -4,18 +4,12 @@ imports:
 framework:
     validation:
         cache: validator.mapping.cache.apc
-    profiler:
-        enabled: true
-        only_exceptions: false
 
 doctrine:
     orm:
         metadata_cache_driver: apc
         result_cache_driver: apc
         query_cache_driver: apc
-
-web_profiler:
-    toolbar: false
 
 monolog:
     handlers:

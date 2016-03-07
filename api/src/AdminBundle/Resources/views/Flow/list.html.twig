@@ -1,0 +1,26 @@
+{% extends "@Admin/layout.html.twig" %}
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="{{ path('admin_teams') }}">Teams</a></li>
+    <li class="active">{{ team.slug }}</li>
+    <li class="active">Flows</li>
+</ol>
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>UUID</th>
+            <th>Code Repository</th>
+            <th>Creator</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for flow in flows %}
+        <tr>
+            <td>{{ flow.uuid }}</td>
+            <td>{{ flow.context.codeRepository.address }}</td>
+            <td>{{ flow.context.user.username }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

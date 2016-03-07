@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="admin.controller.team" class="AdminBundle\Controller\TeamController">
+            <argument type="service" id="authenticator.team_repository" />
+        </service>
+
+        <service id="admin.controller.flow" class="AdminBundle\Controller\FlowController">
+            <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="river.repository.flow" />
+        </service>
+    </services>
+</container>

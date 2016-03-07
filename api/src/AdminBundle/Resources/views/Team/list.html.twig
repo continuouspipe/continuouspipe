@@ -1,0 +1,22 @@
+{% extends "@Admin/layout.html.twig" %}
+{% block content %}
+<ol class="breadcrumb">
+    <li class="active">Teams</li>
+</ol>
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Users</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for team in teams %}
+        <tr>
+            <td><a href="{{ path('admin_flows', {'team': team.slug}) }}">{{ team.slug }}</a></td>
+            <td>{{ team.memberships.count() }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
