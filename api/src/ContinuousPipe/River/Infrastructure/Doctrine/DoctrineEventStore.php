@@ -91,6 +91,25 @@ class DoctrineEventStore implements EventStore
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function findByTideUuidWithMetadata(Uuid $uuid)
+    {
+        $dtoCollection = $this->getEntityRepository()->findBy([
+            'tideUuid' => (string) $uuid,
+        ], [
+            'eventDatetime' => 'ASC',
+        ]);
+
+        return array_map(function (EventDto $dto) {
+            return new TideEventWithMetadata(
+                unserialize(base64_decode($dto->serializedEvent)),
+                $dto->eventDatetime
+            );
+        }, $dtoCollection);
+    }
+
+    /**
      * @param array $dtoCollection
      *
      * @return TideEvent[]

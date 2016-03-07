@@ -9,6 +9,7 @@ use ContinuousPipe\River\Task\TaskRunnerException;
 use ContinuousPipe\River\Task\TaskSkipped;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideConfigurationException;
+use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
@@ -31,15 +32,22 @@ class FilterDecorator implements TaskRunner
     private $eventBus;
 
     /**
-     * @param TaskRunner     $taskRunner
-     * @param ContextFactory $contextFactory
-     * @param MessageBus     $eventBus
+     * @var LoggerInterface
      */
-    public function __construct(TaskRunner $taskRunner, ContextFactory $contextFactory, MessageBus $eventBus)
+    private $logger;
+
+    /**
+     * @param TaskRunner $taskRunner
+     * @param ContextFactory $contextFactory
+     * @param MessageBus $eventBus
+     * @param LoggerInterface $logger
+     */
+    public function __construct(TaskRunner $taskRunner, ContextFactory $contextFactory, MessageBus $eventBus, LoggerInterface $logger)
     {
         $this->taskRunner = $taskRunner;
         $this->contextFactory = $contextFactory;
         $this->eventBus = $eventBus;
+        $this->logger = $logger;
     }
 
     /**
@@ -54,6 +62,10 @@ class FilterDecorator implements TaskRunner
         try {
             $shouldBeSkipped = $this->shouldSkipTask($taskConfiguration, $tide);
         } catch (TideConfigurationException $e) {
+            $this->logger->error('Task configuration exception', [
+                'exception' => $e,
+            ]);
+
             throw new TaskRunnerException($e->getMessage(), $e->getCode(), $e, $task);
         }
 

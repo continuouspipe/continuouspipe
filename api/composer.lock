@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "dd8cce6fb780b084f2bdc8e70ebb971a",
-    "content-hash": "6e68ac5931843b178b89592e33535a05",
+    "hash": "ece48147f28da3b02c19ca5efd4f634f",
+    "content-hash": "e9dfa494079c3a34985159b4967d5a38",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -155,16 +155,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "1.0.1",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "23d0778d06ff7771741fea2e7552df3584825b1b"
+                "reference": "da641906860e21f740b26b73ec75ff2ddeaa778b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/23d0778d06ff7771741fea2e7552df3584825b1b",
-                "reference": "23d0778d06ff7771741fea2e7552df3584825b1b",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/da641906860e21f740b26b73ec75ff2ddeaa778b",
+                "reference": "da641906860e21f740b26b73ec75ff2ddeaa778b",
                 "shasum": ""
             },
             "require": {
@@ -184,10 +184,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/1.0.1",
+                "source": "https://github.com/continuouspipe/security/tree/1.3.0",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2015-10-19 18:07:07"
+            "time": "2016-03-07 12:51:25"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -3525,12 +3525,12 @@
             "version": "0.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/sroze/Tolerance.git",
+                "url": "https://github.com/Tolerance/Tolerance.git",
                 "reference": "e70998a6d79d047a74c4c2c1df1e6cd7b90ebdd2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/Tolerance/zipball/e70998a6d79d047a74c4c2c1df1e6cd7b90ebdd2",
+                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/e70998a6d79d047a74c4c2c1df1e6cd7b90ebdd2",
                 "reference": "e70998a6d79d047a74c4c2c1df1e6cd7b90ebdd2",
                 "shasum": ""
             },
@@ -4452,12 +4452,12 @@
             "version": "v2.6.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/videlalvaro/php-amqplib.git",
+                "url": "https://github.com/php-amqplib/php-amqplib.git",
                 "reference": "8a6e89ad46130eb365b7f57d313f2a795f5e3269"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/videlalvaro/php-amqplib/zipball/8a6e89ad46130eb365b7f57d313f2a795f5e3269",
+                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/8a6e89ad46130eb365b7f57d313f2a795f5e3269",
                 "reference": "8a6e89ad46130eb365b7f57d313f2a795f5e3269",
                 "shasum": ""
             },

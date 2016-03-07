@@ -15,23 +15,23 @@ class TaskFailed implements TideEvent
     /**
      * @var Task
      */
-    private $task;
+    private $taskContext;
 
     /**
-     * @var \Exception
+     * @var string
      */
-    private $exception;
+    private $message;
 
     /**
      * @param Uuid       $tideUuid
-     * @param Task       $task
-     * @param \Exception $exception
+     * @param TaskContext $taskContext
+     * @param string $message
      */
-    public function __construct(Uuid $tideUuid, Task $task, \Exception $exception)
+    public function __construct(Uuid $tideUuid, TaskContext $taskContext, $message)
     {
         $this->tideUuid = $tideUuid;
-        $this->task = $task;
-        $this->exception = $exception;
+        $this->taskContext = $taskContext;
+        $this->message = $message;
     }
 
     /**
@@ -43,18 +43,18 @@ class TaskFailed implements TideEvent
     }
 
     /**
-     * @return Task
+     * @return TaskContext
      */
-    public function getTask()
+    public function getTaskContext()
     {
-        return $this->task;
+        return $this->taskContext;
     }
 
     /**
-     * @return \Exception
+     * @return string
      */
-    public function getException()
+    public function getMessage()
     {
-        return $this->exception;
+        return $this->message;
     }
 }

@@ -10,7 +10,7 @@ use Rhumsaa\Uuid\Uuid;
 class InMemoryEventStore implements EventStore
 {
     /**
-     * @var array
+     * @var TideEventWithMetadata[][]
      */
     private $eventsByTideUuid = [];
 
@@ -67,5 +67,18 @@ class InMemoryEventStore implements EventStore
 
             return get_class($event) == $className;
         }));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByTideUuidWithMetadata(Uuid $uuid)
+    {
+        $uuid = (string) $uuid;
+        if (!array_key_exists($uuid, $this->eventsByTideUuid)) {
+            return [];
+        }
+
+        return $this->eventsByTideUuid[$uuid];
     }
 }
