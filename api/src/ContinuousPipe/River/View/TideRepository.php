@@ -41,7 +41,7 @@ interface TideRepository
      *
      * @return Tide[]
      */
-    public function findByFlowUuidAndBranch(Uuid $flowUuid, $branch);
+    public function findRunningByFlowUuidAndBranch(Uuid $flowUuid, $branch);
 
     /**
      * Save the tide representation.

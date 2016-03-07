@@ -2,12 +2,12 @@
 
 namespace ContinuousPipe\River\Tests\Queue;
 
-use ContinuousPipe\River\Queue\DelayedMessageProducer;
+use ContinuousPipe\River\CommandBus\DelayedCommandBus;
 
-class TracedDelayedMessageProducer implements DelayedMessageProducer
+class TracedDelayedCommandBus implements DelayedCommandBus
 {
     /**
-     * @var DelayedMessageProducer
+     * @var DelayedCommandBus
      */
     private $decoratedProducer;
 
@@ -17,9 +17,9 @@ class TracedDelayedMessageProducer implements DelayedMessageProducer
     private $messages = [];
 
     /**
-     * @param DelayedMessageProducer $decoratedProducer
+     * @param DelayedCommandBus $decoratedProducer
      */
-    public function __construct(DelayedMessageProducer $decoratedProducer)
+    public function __construct(DelayedCommandBus $decoratedProducer)
     {
         $this->decoratedProducer = $decoratedProducer;
     }
@@ -27,11 +27,11 @@ class TracedDelayedMessageProducer implements DelayedMessageProducer
     /**
      * {@inheritdoc}
      */
-    public function queue($message, $delay)
+    public function publish($message, $delay)
     {
         $this->messages[] = $message;
 
-        return $this->decoratedProducer->queue($message, $delay);
+        return $this->decoratedProducer->publish($message, $delay);
     }
 
     /**

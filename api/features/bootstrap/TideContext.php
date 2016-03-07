@@ -12,7 +12,7 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
-use ContinuousPipe\River\Tests\Queue\TracedDelayedMessageProducer;
+use ContinuousPipe\River\Tests\Queue\TracedDelayedCommandBus;
 use ContinuousPipe\River\View\Tide;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
@@ -91,7 +91,7 @@ class TideContext implements Context
      */
     private $commitResolver;
     /**
-     * @var TracedDelayedMessageProducer
+     * @var TracedDelayedCommandBus
      */
     private $tracedDelayedMessageProducer;
 
@@ -104,9 +104,9 @@ class TideContext implements Context
      * @param TideRepository $viewTideRepository
      * @param Kernel $kernel
      * @param PredictableCommitResolver $commitResolver
-     * @param TracedDelayedMessageProducer $tracedDelayedMessageProducer
+     * @param TracedDelayedCommandBus $tracedDelayedMessageProducer
      */
-    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository, Kernel $kernel, PredictableCommitResolver $commitResolver, TracedDelayedMessageProducer $tracedDelayedMessageProducer)
+    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository, Kernel $kernel, PredictableCommitResolver $commitResolver, TracedDelayedCommandBus $tracedDelayedMessageProducer)
     {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
