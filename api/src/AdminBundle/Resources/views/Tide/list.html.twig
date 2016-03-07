@@ -20,7 +20,7 @@
     {% for tide in tides %}
         <tr>
             <td><a href="{{ path('admin_tide', {'team': team.slug, 'flow': flow.uuid, 'uuid': tide.uuid}) }}">{{ tide.uuid }}</a></td>
-            <td>{{ tide.codeReference.branch }} ({{ tide.codeReference.commitSha }}</td>
+            <td>{{ tide.codeReference.branch }} ({{ tide.codeReference.commitSha }})</td>
             <td>{{ tide.creationDate | date }}</td>
             <td>{{ tide.status }}</td>
         </tr>

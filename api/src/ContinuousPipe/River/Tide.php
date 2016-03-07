@@ -182,7 +182,7 @@ class Tide
             try {
                 $this->nextTask();
             } catch (TaskRunnerException $e) {
-                $this->newEvents[] = new TaskFailed($event->getTideUuid(), $e->getTask(), $e);
+                $this->newEvents[] = new TaskFailed($event->getTideUuid(), $e->getTask()->getContext(), $e->getMessage());
                 $this->newEvents[] = new TideFailed($event->getTideUuid());
             }
         }
