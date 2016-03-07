@@ -69,4 +69,12 @@ class DoctrineTeamRepository implements TeamRepository
             $slug
         ));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findAll()
+    {
+        return $this->getRepository()->findAll();
+    }
 }

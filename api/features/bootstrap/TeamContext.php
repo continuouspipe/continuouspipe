@@ -124,11 +124,35 @@ class TeamContext implements Context
     }
 
     /**
-     * @Then I should see the team :slug in my teams list
+     * @When I request the list of teams
      */
-    public function iShouldSeeTheTeamInMyTeamsList($slug)
+    public function iRequestTheListOfTeams()
     {
         $this->response = $this->kernel->handle(Request::create('/api/teams', 'GET'));
+    }
+
+    /**
+     * @When I request the list of teams with the API key :key
+     */
+    public function iRequestTheListOfTeamsWithTheApiKey($key)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams',
+            'GET',
+            [],
+            [],
+            [],
+            [
+                'HTTP_X_API_KEY' => $key
+            ]
+        ));
+    }
+
+    /**
+     * @Then I should see the team :slug in the team list
+     */
+    public function iShouldSeeTheTeamInTheTeamList($slug)
+    {
         $this->assertResponseCodeIs($this->response, 200);
         $list = json_decode($this->response->getContent(), true);
         $matchingTeam = array_filter($list, function(array $team) use ($slug) {
@@ -138,6 +162,25 @@ class TeamContext implements Context
         if (0 == count($matchingTeam)) {
             throw new \RuntimeException(sprintf(
                 'Found 0 team matching in my teams list'
+            ));
+        }
+    }
+
+    /**
+     * @Then I should not see the team :slug in the team list
+     */
+    public function iShouldNotSeeTheTeamInTheTeamList($slug)
+    {
+        $this->assertResponseCodeIs($this->response, 200);
+        $list = json_decode($this->response->getContent(), true);
+        $matchingTeam = array_filter($list, function(array $team) use ($slug) {
+            return $team['slug'] == $slug;
+        });
+
+        if (0 !== count($matchingTeam)) {
+            throw new \RuntimeException(sprintf(
+                'Found %d team matching in my teams list, while expecting 0',
+                count($matchingTeam)
             ));
         }
     }

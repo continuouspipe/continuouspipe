@@ -9,7 +9,8 @@ Feature:
   @smoke
   Scenario: I can create a team
     When I create a team "continuous-pipe"
-    Then I should see the team "continuous-pipe" in my teams list
+    And I request the list of teams
+    Then I should see the team "continuous-pipe" in the team list
     And the user "samuel" should be administrator of the team "continuous-pipe"
 
   Scenario: I can add a user to a team if I am administrator
@@ -47,3 +48,4 @@ Feature:
   Scenario: Each team should have a credentials bucket
     When I create a team "new"
     Then the team "new" should have a credentials bucket
+
