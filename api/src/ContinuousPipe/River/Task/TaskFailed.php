@@ -23,9 +23,9 @@ class TaskFailed implements TideEvent
     private $message;
 
     /**
-     * @param Uuid       $tideUuid
+     * @param Uuid        $tideUuid
      * @param TaskContext $taskContext
-     * @param string $message
+     * @param string      $message
      */
     public function __construct(Uuid $tideUuid, TaskContext $taskContext, $message)
     {

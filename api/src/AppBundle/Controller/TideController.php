@@ -71,7 +71,7 @@ class TideController
      */
     public function findByFlowAction(Flow $flow)
     {
-        return $this->tideRepository->findByFlow($flow);
+        return $this->tideRepository->findByFlowUuid($flow->getUuid());
     }
 
     /**

@@ -4,10 +4,9 @@ namespace ContinuousPipe\River\Handler;
 
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\Event\TideStarted;
-use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\Queue\DelayedMessageProducer;
 use ContinuousPipe\River\Tide;
-use LogStream\LoggerFactory;
-use LogStream\Node\Text;
+use ContinuousPipe\River\View\TideRepository;
 use SimpleBus\Message\Bus\MessageBus;
 
 class StartTideHandler
@@ -16,25 +15,34 @@ class StartTideHandler
      * @var MessageBus
      */
     private $eventBus;
-    /**
-     * @var LoggerFactory
-     */
-    private $loggerFactory;
+
     /**
      * @var TideRepository
      */
     private $tideRepository;
 
     /**
-     * @param MessageBus     $eventBus
-     * @param TideRepository $tideRepository
-     * @param LoggerFactory  $loggerFactory
+     * @var Tide\Concurrency\TideConcurrencyManager
      */
-    public function __construct(MessageBus $eventBus, TideRepository $tideRepository, LoggerFactory $loggerFactory)
+    private $concurrencyManager;
+
+    /**
+     * @var DelayedMessageProducer
+     */
+    private $delayedMessageProducer;
+
+    /**
+     * @param MessageBus                              $eventBus
+     * @param TideRepository                          $tideRepository
+     * @param Tide\Concurrency\TideConcurrencyManager $concurrencyManager
+     * @param DelayedMessageProducer                  $delayedMessageProducer
+     */
+    public function __construct(MessageBus $eventBus, TideRepository $tideRepository, Tide\Concurrency\TideConcurrencyManager $concurrencyManager, DelayedMessageProducer $delayedMessageProducer)
     {
         $this->eventBus = $eventBus;
-        $this->loggerFactory = $loggerFactory;
         $this->tideRepository = $tideRepository;
+        $this->concurrencyManager = $concurrencyManager;
+        $this->delayedMessageProducer = $delayedMessageProducer;
     }
 
     /**
@@ -44,9 +52,10 @@ class StartTideHandler
     {
         $tide = $this->tideRepository->find($command->getTideUuid());
 
-        $logger = $this->loggerFactory->from($tide->getContext()->getLog());
-        $logger->child(new Text('Starting Tide'));
-
-        $this->eventBus->handle(new TideStarted($command->getTideUuid()));
+        if ($this->concurrencyManager->shouldTideStart($tide)) {
+            $this->eventBus->handle(new TideStarted($command->getTideUuid()));
+        } else {
+            $this->delayedMessageProducer->queue($command, 60 * 1000);
+        }
     }
 }

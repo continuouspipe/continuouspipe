@@ -21,7 +21,7 @@ interface EventStore
     public function findByTideUuid(Uuid $uuid);
 
     /**
-     * @param Uuid   $uuid
+     * @param Uuid $uuid
      *
      * @return TideEventWithMetadata[]
      */

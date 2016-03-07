@@ -4,7 +4,6 @@ namespace AdminBundle\Controller;
 
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Team\Team;
-use ContinuousPipe\Security\Team\TeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

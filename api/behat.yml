@@ -14,6 +14,7 @@ default:
                     - @river.view.tide_repository
                     - @kernel
                     - @river.commit_resolver
+                    - @river.queue.delayed_message_producer.traced
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -94,6 +95,7 @@ smoke:
                     - @river.view.tide_repository
                     - @kernel
                     - @river.commit_resolver
+                    - @river.queue.delayed_message_producer.traced
                 - GitHubContext:
                     - @kernel
                     - @river.fake.code_status_updater

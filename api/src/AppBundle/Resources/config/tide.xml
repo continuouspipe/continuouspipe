@@ -118,6 +118,10 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
         </service>
 
+        <service id="river.tide.concurrency_manager" class="ContinuousPipe\River\Tide\Concurrency\ViewRepositoryBasedConcurrencyManager">
+            <argument type="service" id="river.view.tide_repository" />
+        </service>
+
         <!-- Tide start voters -->
         <service id="river.tide.start_voter.filter_configuration" class="ContinuousPipe\River\Tide\StartVoter\FilterConfigurationVoter" />
         <service id="river.tide.start_voter.tide_already_created" class="ContinuousPipe\River\Tide\StartVoter\TideAlreadyCreatedVoter">

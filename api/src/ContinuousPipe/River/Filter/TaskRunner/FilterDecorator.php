@@ -37,9 +37,9 @@ class FilterDecorator implements TaskRunner
     private $logger;
 
     /**
-     * @param TaskRunner $taskRunner
-     * @param ContextFactory $contextFactory
-     * @param MessageBus $eventBus
+     * @param TaskRunner      $taskRunner
+     * @param ContextFactory  $contextFactory
+     * @param MessageBus      $eventBus
      * @param LoggerInterface $logger
      */
     public function __construct(TaskRunner $taskRunner, ContextFactory $contextFactory, MessageBus $eventBus, LoggerInterface $logger)

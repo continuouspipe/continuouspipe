@@ -8,8 +8,9 @@
         <!-- Command handlers -->
         <service id="river.handler.start_tide" class="ContinuousPipe\River\Handler\StartTideHandler">
             <argument type="service" id="simple_bus.event_bus" />
-            <argument type="service" id="river.repository.tide" />
-            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.tide.concurrency_manager" />
+            <argument type="service" id="river.queue.delayed_message_producer" />
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Command\StartTideCommand" />
         </service>

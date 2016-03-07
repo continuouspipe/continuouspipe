@@ -28,4 +28,3 @@ compose:
             - MYSQL_DATABASE=river
             - MYSQL_USER=river
             - MYSQL_PASSWORD=river
-

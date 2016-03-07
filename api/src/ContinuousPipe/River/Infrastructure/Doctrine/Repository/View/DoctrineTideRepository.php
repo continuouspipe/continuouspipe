@@ -21,6 +21,7 @@ class DoctrineTideRepository implements TideRepository
      * @var EntityManager
      */
     private $entityManager;
+
     /**
      * @var DoctrineFlowRepository
      */
@@ -39,10 +40,10 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByFlow(Flow $flow)
+    public function findByFlowUuid(Uuid $uuid)
     {
         $dtos = $this->getEntityRepository()->findBy([
-            'flow' => (string) $flow->getUuid(),
+            'flow' => (string) $uuid,
         ], [
             'tide.creationDate' => 'DESC',
         ]);
@@ -106,6 +107,21 @@ class DoctrineTideRepository implements TideRepository
     public function find(Uuid $uuid)
     {
         return $this->dtoToTide($this->findDto($uuid));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByFlowUuidAndBranch(Uuid $flowUuid, $branch)
+    {
+        $dtos = $this->getEntityRepository()->findBy([
+            'flow' => (string) $flowUuid,
+            'tide.codeReference.branch' => $branch,
+        ]);
+
+        return array_map(function (TideDto $dto) {
+            return $this->dtoToTide($dto);
+        }, $dtos);
     }
 
     /**

@@ -10,13 +10,13 @@ use Rhumsaa\Uuid\Uuid;
 interface TideRepository
 {
     /**
-     * Find tides related to this flow.
+     * Find tides related to this flow UUID.
      *
-     * @param Flow $flow
+     * @param Uuid $uuid
      *
      * @return Tide[]
      */
-    public function findByFlow(Flow $flow);
+    public function findByFlowUuid(Uuid $uuid);
 
     /**
      * Find last `$limit` tides of this flow.
@@ -34,6 +34,14 @@ interface TideRepository
      * @return Tide[]
      */
     public function findByCodeReference(CodeReference $codeReference);
+
+    /**
+     * @param Uuid   $flowUuid
+     * @param string $branch
+     *
+     * @return Tide[]
+     */
+    public function findByFlowUuidAndBranch(Uuid $flowUuid, $branch);
 
     /**
      * Save the tide representation.

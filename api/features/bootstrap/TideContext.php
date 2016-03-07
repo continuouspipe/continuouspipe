@@ -12,6 +12,8 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
+use ContinuousPipe\River\Tests\Queue\TracedDelayedMessageProducer;
+use ContinuousPipe\River\View\Tide;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
@@ -88,6 +90,10 @@ class TideContext implements Context
      * @var PredictableCommitResolver
      */
     private $commitResolver;
+    /**
+     * @var TracedDelayedMessageProducer
+     */
+    private $tracedDelayedMessageProducer;
 
     /**
      * @param MessageBus $commandBus
@@ -98,8 +104,9 @@ class TideContext implements Context
      * @param TideRepository $viewTideRepository
      * @param Kernel $kernel
      * @param PredictableCommitResolver $commitResolver
+     * @param TracedDelayedMessageProducer $tracedDelayedMessageProducer
      */
-    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository, Kernel $kernel, PredictableCommitResolver $commitResolver)
+    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository, Kernel $kernel, PredictableCommitResolver $commitResolver, TracedDelayedMessageProducer $tracedDelayedMessageProducer)
     {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
@@ -109,6 +116,7 @@ class TideContext implements Context
         $this->viewTideRepository = $viewTideRepository;
         $this->kernel = $kernel;
         $this->commitResolver = $commitResolver;
+        $this->tracedDelayedMessageProducer = $tracedDelayedMessageProducer;
     }
 
     /**
@@ -170,6 +178,16 @@ EOF;
     public function startTide()
     {
         $this->commandBus->handle(new StartTideCommand($this->getTideUuid()));
+    }
+
+    /**
+     * @When the tide for commit :sha1 is tentatively started
+     */
+    public function theTideForCommitIsTentativelyStarted($sha1)
+    {
+        $tide = $this->getTideBySha1($sha1);
+
+        $this->commandBus->handle(new StartTideCommand($tide->getUuid()));
     }
 
     /**
@@ -325,7 +343,8 @@ EOF;
      */
     public function onlyTideShouldBeCreated($count)
     {
-        $tides = $this->viewTideRepository->findByFlow($this->flowContext->getCurrentFlow());
+        $flow = $this->flowContext->getCurrentFlow();
+        $tides = $this->viewTideRepository->findByFlowUuid($flow->getUuid());
         $numberOfTideStarted = count($tides);
 
         if ($count != $numberOfTideStarted) {
@@ -830,6 +849,78 @@ EOF;
         ], json_encode([
             'sha1' => $sha1
         ])));
+    }
+
+    /**
+     * @Then the tide for the commit :sha1 should be started
+     */
+    public function theTideForTheCommitShouldBeStarted($sha1)
+    {
+        $tideStatus = $this->getTideBySha1($sha1)->getStatus();
+
+        if ($tideStatus != Tide::STATUS_RUNNING) {
+            throw new \RuntimeException(sprintf(
+                'Expected status to be running but found "%s"',
+                $tideStatus
+            ));
+        }
+    }
+
+    /**
+     * @Then the tide for the commit :sha1 should not be started
+     */
+    public function theTideForTheCommitShouldNotBeStarted($sha1)
+    {
+        $tideStatus = $this->getTideBySha1($sha1)->getStatus();
+
+        if ($tideStatus == Tide::STATUS_RUNNING) {
+            throw new \RuntimeException(sprintf(
+                'Expected status not to be running but found "%s"',
+                $tideStatus
+            ));
+        }
+    }
+
+    /**
+     * @Then the start of the tide for the commit :sha1 should be delayed
+     */
+    public function theStartOfTheTideForTheCommitShouldBeDelayed($sha1)
+    {
+        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $matchingMessages = array_filter($messages, function($message) use ($sha1) {
+            if (!$message instanceof StartTideCommand) {
+                return false;
+            }
+
+            $tide = $this->viewTideRepository->find($message->getTideUuid());
+
+            return $tide->getCodeReference()->getCommitSha() == $sha1;
+        });
+
+        if (count($matchingMessages) == 0) {
+            throw new \RuntimeException('No delayed message found');
+        }
+    }
+
+    /**
+     * @param string $sha1
+     *
+     * @return Tide
+     */
+    private function getTideBySha1($sha1)
+    {
+        $codeRepository = $this->flowContext->getCurrentFlow()->getContext()->getCodeRepository();
+        $tides = $this->viewTideRepository->findByCodeReference(new CodeReference($codeRepository, $sha1));
+
+        if (count($tides) != 1) {
+            throw new \RuntimeException(sprintf(
+                'Expected 1 tide but found %d for the commit %s',
+                count($tides),
+                $sha1
+            ));
+        }
+
+        return current($tides);
     }
 
     /**
