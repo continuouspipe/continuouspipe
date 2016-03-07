@@ -16,7 +16,7 @@
     <tbody>
     {% for flow in flows %}
         <tr>
-            <td>{{ flow.uuid }}</td>
+            <td><a href="{{ path('admin_tides', {'team': team.slug, 'flow': flow.uuid}) }}">{{ flow.uuid }}</a></td>
             <td>{{ flow.context.codeRepository.address }}</td>
             <td>{{ flow.context.user.username }}</td>
         </tr>
