@@ -89,7 +89,7 @@ class EnvironmentClient
      */
     private function findClusterIdentifiers(Flow $flow)
     {
-        $tides = $this->tideRepository->findByFlow($flow);
+        $tides = $this->tideRepository->findByFlowUuid($flow->getUuid());
         $clusterIdentifiers = [];
 
         foreach ($tides as $tide) {

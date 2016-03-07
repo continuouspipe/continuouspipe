@@ -17,7 +17,7 @@ class TestHttpClient implements HttpClientInterface
     private $hooks = [];
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function get($path, array $parameters = array(), array $headers = array())
     {
@@ -25,7 +25,7 @@ class TestHttpClient implements HttpClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function post($path, $body = null, array $headers = array())
     {
@@ -33,7 +33,7 @@ class TestHttpClient implements HttpClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function patch($path, $body = null, array $headers = array())
     {
@@ -41,7 +41,7 @@ class TestHttpClient implements HttpClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($path, $body = null, array $headers = array())
     {
@@ -49,7 +49,7 @@ class TestHttpClient implements HttpClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function put($path, $body, array $headers = array())
     {

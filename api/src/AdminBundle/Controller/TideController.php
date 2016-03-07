@@ -3,11 +3,9 @@
 namespace AdminBundle\Controller;
 
 use ContinuousPipe\River\EventBus\EventStore;
-use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\Security\Team\Team;
-use ContinuousPipe\Security\Team\TeamRepository;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -36,8 +34,8 @@ class TideController
 
     /**
      * @param TideRepository $tideRepository
-     * @param EventStore $eventStore
-     * @param string $logStreamUrl
+     * @param EventStore     $eventStore
+     * @param string         $logStreamUrl
      */
     public function __construct(TideRepository $tideRepository, EventStore $eventStore, $logStreamUrl)
     {
@@ -57,7 +55,7 @@ class TideController
         return [
             'team' => $team,
             'flow' => $flow,
-            'tides' => $this->tideRepository->findByFlow($flow),
+            'tides' => $this->tideRepository->findByFlowUuid($flow->getUuid()),
         ];
     }
 

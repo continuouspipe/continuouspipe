@@ -18,19 +18,6 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByFlow(Flow $flow)
-    {
-        $uuid = (string) $flow->getUuid();
-        if (!array_key_exists($uuid, $this->tideByFlow)) {
-            return [];
-        }
-
-        return array_values($this->tideByFlow[$uuid]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function save(Tide $tide)
     {
         $tideUuid = (string) $tide->getUuid();
@@ -84,9 +71,33 @@ class InMemoryTideRepository implements TideRepository
      */
     public function findLastByFlow(Flow $flow, $limit)
     {
-        $tides = $this->findByFlow($flow);
+        $tides = $this->findByFlowUuid($flow->getUuid());
         $offset = max(0, count($tides) - $limit);
 
         return array_slice($tides, $offset, $limit);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByFlowUuidAndBranch(Uuid $flowUuid, $branch)
+    {
+        return array_values(array_filter($this->findByFlowUuid($flowUuid), function (Tide $tide) use ($branch) {
+            return $tide->getCodeReference()->getBranch() == $branch;
+        }));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByFlowUuid(Uuid $uuid)
+    {
+        $uuid = (string) $uuid;
+
+        if (!array_key_exists($uuid, $this->tideByFlow)) {
+            return [];
+        }
+
+        return array_values($this->tideByFlow[$uuid]);
     }
 }
