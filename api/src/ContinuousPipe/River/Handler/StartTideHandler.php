@@ -55,7 +55,7 @@ class StartTideHandler
         if ($this->concurrencyManager->shouldTideStart($tide)) {
             $this->eventBus->handle(new TideStarted($command->getTideUuid()));
         } else {
-            $this->delayedMessageProducer->queue($command, 60);
+            $this->delayedMessageProducer->queue($command, 60 * 1000);
         }
     }
 }
