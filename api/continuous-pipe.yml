@@ -83,7 +83,7 @@ tasks:
                             - name: DATABASE_PASSWORD
                               value: 138xHEqgD93lk
         filter:
-            expression: codeReference.branch == 'master'
+            expression: code_reference.branch == 'master'
 
     migrations:
         run:
@@ -101,4 +101,5 @@ tasks:
                   value: 138xHEqgD93lk
 
         filter:
-            expression: codeReference.branch == 'master'
+            expression: code_reference.branch == 'master'
+
