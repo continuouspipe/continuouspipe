@@ -8,6 +8,7 @@ use ContinuousPipe\Security\Credentials\BucketRepository;
 use Github\Client;
 use ContinuousPipe\Security\User\User;
 use Github\HttpClient\HttpClientInterface;
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GitHubClientFactory implements ClientFactory
@@ -44,8 +45,16 @@ class GitHubClientFactory implements ClientFactory
      */
     public function createClientForUser(User $user)
     {
+        return $this->createClientFromBucketUuid($user->getBucketUuid());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createClientFromBucketUuid(Uuid $uuid)
+    {
         try {
-            $bucket = $this->bucketRepository->find($user->getBucketUuid());
+            $bucket = $this->bucketRepository->find($uuid);
         } catch (BucketNotFound $e) {
             throw new UserCredentialsNotFound($e->getMessage(), $e->getCode(), $e);
         }

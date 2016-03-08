@@ -7,6 +7,7 @@ use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\User\User;
 use Github\Client;
 use Github\HttpClient\HttpClientInterface;
+use Rhumsaa\Uuid\Uuid;
 
 class TestClientFactory implements ClientFactory
 {
@@ -35,6 +36,14 @@ class TestClientFactory implements ClientFactory
      * {@inheritdoc}
      */
     public function createClientFromBucket(Bucket $credentialsBucket)
+    {
+        return $this->createClientFromBucketUuid($credentialsBucket->getUuid());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createClientFromBucketUuid(Uuid $bucketUuid)
     {
         return new Client($this->httpClient);
     }

@@ -2,6 +2,6 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
-class CodeStatusException extends NotificationException
+class NotificationException extends \Exception
 {
 }

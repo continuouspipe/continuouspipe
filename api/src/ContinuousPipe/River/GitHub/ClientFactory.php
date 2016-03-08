@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\GitHub;
 use ContinuousPipe\Security\Credentials\Bucket;
 use Github\Client;
 use ContinuousPipe\Security\User\User;
+use Rhumsaa\Uuid\Uuid;
 
 interface ClientFactory
 {
@@ -23,8 +24,19 @@ interface ClientFactory
      * @return Client
      *
      * @throws UserCredentialsNotFound
+     *
+     * @deprecated Uses `createClientFromBucketUuid` instead.
      */
     public function createClientFromBucket(Bucket $credentialsBucket);
+
+    /**
+     * @param Uuid $bucketUuid
+     *
+     * @return Client
+     *
+     * @throws UserCredentialsNotFound
+     */
+    public function createClientFromBucketUuid(Uuid $bucketUuid);
 
     /**
      * @return Client
