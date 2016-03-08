@@ -104,13 +104,14 @@ class TideFactory
      * @param Flow                $flow
      * @param CodeReference       $codeReference
      * @param CodeRepositoryEvent $codeRepositoryEvent
+     * @param Uuid                $tideUuid
      *
      * @return Tide
      */
-    public function createFromCodeReference(Flow $flow, CodeReference $codeReference, CodeRepositoryEvent $codeRepositoryEvent = null)
+    public function createFromCodeReference(Flow $flow, CodeReference $codeReference, CodeRepositoryEvent $codeRepositoryEvent = null, Uuid $tideUuid = null)
     {
         $log = $this->loggerFactory->create()->getLog();
-        $tideUuid = Uuid::uuid1();
+        $tideUuid = $tideUuid ?: Uuid::uuid1();
         $extraEvents = [];
 
         try {

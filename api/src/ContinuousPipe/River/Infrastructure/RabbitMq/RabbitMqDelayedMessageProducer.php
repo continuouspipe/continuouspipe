@@ -9,7 +9,7 @@ use SimpleBus\Asynchronous\Properties\AdditionalPropertiesResolver;
 use SimpleBus\Asynchronous\Routing\RoutingKeyResolver;
 use SimpleBus\Serialization\Envelope\Serializer\MessageInEnvelopSerializer;
 
-class RabbitMqDelayedCommandBus implements DelayedCommandBus
+class RabbitMqDelayedMessageProducer implements DelayedCommandBus
 {
     /**
      * @var MessageInEnvelopSerializer

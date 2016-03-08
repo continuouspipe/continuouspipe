@@ -32,10 +32,10 @@ class StartTideHandler
     private $delayedMessageProducer;
 
     /**
-     * @param MessageBus                              $eventBus
-     * @param TideRepository                          $tideRepository
-     * @param Tide\Concurrency\TideConcurrencyManager $concurrencyManager
-     * @param \ContinuousPipe\River\CommandBus\DelayedCommandBus                  $delayedMessageProducer
+     * @param MessageBus                                         $eventBus
+     * @param TideRepository                                     $tideRepository
+     * @param Tide\Concurrency\TideConcurrencyManager            $concurrencyManager
+     * @param \ContinuousPipe\River\CommandBus\DelayedCommandBus $delayedMessageProducer
      */
     public function __construct(MessageBus $eventBus, TideRepository $tideRepository, Tide\Concurrency\TideConcurrencyManager $concurrencyManager, DelayedCommandBus $delayedMessageProducer)
     {

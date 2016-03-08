@@ -5,12 +5,12 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.queue.delayed_message_producer.rabbit_mq" class="ContinuousPipe\River\Infrastructure\RabbitMq\RabbitMqDelayedMessageProducer">
+        <service id="river.queue.delayed_command_bus.rabbit_mq" class="ContinuousPipe\River\Infrastructure\RabbitMq\RabbitMqDelayedMessageProducer">
             <argument type="service" id="simple_bus.asynchronous.message_serializer" />
             <argument type="service" id="simple_bus.rabbit_mq_bundle_bridge.routing.routing_key_resolver" />
             <argument type="service" id="simple_bus.rabbit_mq_bundle_bridge.delegating_additional_properties_resolver" />
             <argument type="service" id="old_sound_rabbit_mq.connection.default" />
         </service>
-        <service id="river.queue.delayed_message_producer" alias="river.queue.delayed_message_producer.rabbit_mq" />
+        <service id="river.queue.delayed_command_bus" alias="river.queue.delayed_command_bus.rabbit_mq" />
     </services>
 </container>

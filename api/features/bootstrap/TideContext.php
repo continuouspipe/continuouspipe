@@ -11,9 +11,16 @@ use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideCreated;
+use ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand;
+use ContinuousPipe\River\Recover\TimedOutTides\TimedOutTideRepository;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
 use ContinuousPipe\River\Tests\Queue\TracedDelayedCommandBus;
+use ContinuousPipe\River\Tests\Recover\TimedOutTides\InMemoryTimedOutTideRepository;
 use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\Security\Team\Team;
+use LogStream\Node\Container;
+use LogStream\Node\Text;
+use LogStream\Tree\TreeLog;
 use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
@@ -903,6 +910,51 @@ EOF;
     }
 
     /**
+     * @Given the tide :uuid is running and timed out
+     */
+    public function theTideIsRunningAndTimedOut($uuid)
+    {
+        $tideUuid = Uuid::fromString($uuid);
+        $this->createTide('master', null, $tideUuid);
+
+        $tide = $this->viewTideRepository->find($tideUuid);
+        $tide->setStartDate((new \DateTime())->sub(new \DateInterval('P1D')));
+        $tide->setStatus(Tide::STATUS_RUNNING);
+
+        $this->viewTideRepository->save($tide);
+    }
+
+    /**
+     * @Then the tide :uuid should be failed
+     */
+    public function theTideShouldWithUuidBeFailed($uuid)
+    {
+        $tide = $this->viewTideRepository->find(Uuid::fromString($uuid));
+
+        if ($tide->getStatus() != Tide::STATUS_FAILURE) {
+            throw new \RuntimeException(sprintf(
+                'Expected the tide to be failed but found "%s"',
+                $tide->getStatus()
+            ));
+        }
+    }
+
+    /**
+     * @Then the spot timed out tides command should be scheduled
+     */
+    public function theSpotTimedOutTidesCommandShouldBeScheduled()
+    {
+        $delayedCommands = $this->tracedDelayedMessageProducer->getMessages();
+        $matchingCommands = array_filter($delayedCommands, function($command) {
+            return $command instanceof SpotTimedOutTidesCommand;
+        });
+
+        if (count($matchingCommands) == 0) {
+            throw new \RuntimeException('No SpotTimedOutTidesCommand found');
+        }
+    }
+
+    /**
      * @param string $sha1
      *
      * @return Tide
@@ -957,25 +1009,39 @@ EOF;
         }));
     }
 
-    private function createTide($branch = 'master', $sha = null)
+    private function createTide($branch = 'master', $sha = null, Uuid $uuid = null)
     {
-        $flow = $this->flowContext->getCurrentFlow();
-        $sha = $sha ?: sha1($branch);
-
-        $tide = $this->tideFactory->createFromCodeReference(
-            $flow,
-            new CodeReference(
-                $flow->getContext()->getCodeRepository(),
-                $sha,
-                $branch
-            )
-        );
+        $tide = $this->factoryTide($branch, $sha, $uuid);
 
         foreach ($tide->popNewEvents() as $event) {
             $this->eventBus->handle($event);
         }
 
         $this->tideUuid = $tide->getContext()->getTideUuid();
+    }
+
+    /**
+     * @param string $branch
+     * @param null $sha
+     * @param Uuid|null $uuid
+     *
+     * @return \ContinuousPipe\River\Tide
+     */
+    private function factoryTide($branch = 'master', $sha = null, Uuid $uuid = null)
+    {
+        $flow = $this->flowContext->getCurrentFlow();
+        $sha = $sha ?: sha1($branch);
+
+        return $this->tideFactory->createFromCodeReference(
+            $flow,
+            new CodeReference(
+                $flow->getContext()->getCodeRepository(),
+                $sha,
+                $branch
+            ),
+            null,
+            $uuid
+        );
     }
 
     private function getTideUuid()
