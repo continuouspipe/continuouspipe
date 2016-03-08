@@ -8,8 +8,6 @@ use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideContext;
-use ContinuousPipe\Security\Credentials\BucketNotFound;
-use ContinuousPipe\Security\Credentials\BucketRepository;
 use GuzzleHttp\Exception\RequestException;
 
 class GitHubCodeStatusUpdater implements CodeStatusUpdater
@@ -29,20 +27,13 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     private $uiBaseUrl;
 
     /**
-     * @var BucketRepository
+     * @param ClientFactory $gitHubClientFactory
+     * @param string        $uiBaseUrl
      */
-    private $bucketRepository;
-
-    /**
-     * @param ClientFactory    $gitHubClientFactory
-     * @param BucketRepository $bucketRepository
-     * @param string           $uiBaseUrl
-     */
-    public function __construct(ClientFactory $gitHubClientFactory, BucketRepository $bucketRepository, $uiBaseUrl)
+    public function __construct(ClientFactory $gitHubClientFactory, $uiBaseUrl)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->uiBaseUrl = $uiBaseUrl;
-        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -82,13 +73,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
         $tideContext = $tide->getContext();
 
         try {
-            $bucket = $this->bucketRepository->find($tideContext->getTeam()->getBucketUuid());
-        } catch (BucketNotFound $e) {
-            throw new CodeStatusException('Unable to update code status, the credentials bucket do not exists', $e->getCode(), $e);
-        }
-
-        try {
-            $client = $this->gitHubClientFactory->createClientFromBucket($bucket);
+            $client = $this->gitHubClientFactory->createClientFromBucketUuid($tideContext->getTeam()->getBucketUuid());
         } catch (UserCredentialsNotFound $e) {
             throw new CodeStatusException('Unable to update code status, no valid GitHub credentials in bucket', $e->getCode(), $e);
         }

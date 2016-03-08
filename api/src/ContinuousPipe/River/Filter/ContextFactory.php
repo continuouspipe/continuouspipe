@@ -100,7 +100,7 @@ class ContextFactory
     {
         $user = $tideContext->getUser();
         try {
-            $client = $this->gitHubClientFactory->createClientForUser($user);
+            $client = $this->gitHubClientFactory->createClientFromBucketUuid($tideContext->getTeam()->getBucketUuid());
         } catch (UserCredentialsNotFound $e) {
             $this->logger->warning('Unable to get pull-request labels, credentials not found', [
                 'exception' => $e,
