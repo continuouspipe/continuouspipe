@@ -46,14 +46,13 @@ class RabbitMqDelayedMessageProducer implements DelayedCommandBus
     }
 
     /**
-     * @param object $message
-     * @param int    $delay
+     * {@inheritdoc}
      */
-    public function queue($message, $delay)
+    public function publish($command, $delay)
     {
-        $serializedMessage = $this->messageSerializer->wrapAndSerialize($message);
-        $routingKey = $this->routingKeyResolver->resolveRoutingKeyFor($message);
-        $additionalProperties = $this->additionalPropertiesResolver->resolveAdditionalPropertiesFor($message);
+        $serializedMessage = $this->messageSerializer->wrapAndSerialize($command);
+        $routingKey = $this->routingKeyResolver->resolveRoutingKeyFor($command);
+        $additionalProperties = $this->additionalPropertiesResolver->resolveAdditionalPropertiesFor($command);
 
         $producer = new Producer($this->amqpConnection);
         $expiration = 1000 + floor(1.1 * $delay);
