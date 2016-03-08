@@ -2,14 +2,14 @@
 
 namespace ContinuousPipe\River\Infrastructure\RabbitMq;
 
-use ContinuousPipe\River\Queue\DelayedMessageProducer;
+use ContinuousPipe\River\CommandBus\DelayedCommandBus;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use PhpAmqpLib\Connection\AbstractConnection;
 use SimpleBus\Asynchronous\Properties\AdditionalPropertiesResolver;
 use SimpleBus\Asynchronous\Routing\RoutingKeyResolver;
 use SimpleBus\Serialization\Envelope\Serializer\MessageInEnvelopSerializer;
 
-class RabbitMqDelayedMessageProducer implements DelayedMessageProducer
+class RabbitMqDelayedMessageProducer implements DelayedCommandBus
 {
     /**
      * @var MessageInEnvelopSerializer

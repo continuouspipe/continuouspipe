@@ -2,16 +2,16 @@
 
 namespace ContinuousPipe\River\Tests\Queue;
 
-use ContinuousPipe\River\Queue\DelayedMessageProducer;
+use ContinuousPipe\River\CommandBus\DelayedCommandBus;
 
-class InMemoryDelayedMessageProducer implements DelayedMessageProducer
+class InMemoryDelayedCommandBus implements DelayedCommandBus
 {
     private $messages = [];
 
     /**
      * {@inheritdoc}
      */
-    public function queue($message, $delay)
+    public function publish($message, $delay)
     {
         $this->messages[] = $message;
     }
