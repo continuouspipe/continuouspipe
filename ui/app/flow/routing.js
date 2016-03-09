@@ -36,5 +36,16 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+
+            .state('flow.environments', {
+                url: '/environments',
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/environments/list.html',
+                        controller: 'FlowEnvironmentsController'
+                    }
+                },
+                aside: true
+            })
         ;
     });

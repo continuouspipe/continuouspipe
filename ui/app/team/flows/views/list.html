@@ -33,7 +33,7 @@
                 <tr ng-show="!flow.tides.length">
                     <td colspan="3">No tides found.</td>
                 </tr>
-                <tr ng-repeat="tide in flow.tides">
+                <tr ng-repeat="tide in flow.tides" ui-sref="tide.logs({uuid: flow.uuid, tideUuid: tide.uuid})">
                     <td>{{ tide.code_reference.branch }}</td>
                     <td>{{ tide.creation_date | date:'dd/MM/yyyy hh:mm:ss' }}</td>
                     <td>{{ tide.status }}</td>
