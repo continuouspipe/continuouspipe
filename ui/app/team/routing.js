@@ -104,31 +104,26 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
-
-            /*****/
-
-
             .state('github-tokens', {
-                parent: 'layout',
+                parent: 'team',
                 url: '/github-tokens',
-                templateUrl: 'account/github-tokens/views/list.html',
-                controller: 'GitHubTokensListController',
-                ncyBreadcrumb: {
-                    label: 'GitHub tokens'
+                views: {
+                    'content@': {
+                        templateUrl: 'team/github-tokens/views/list.html',
+                        controller: 'TeamGitHubTokensController'
+                    }
                 },
-                aside: false
+                aside: true
             })
             .state('github-tokens.create', {
                 url: '/create',
                 views: {
-                    '@layout': {
-                        templateUrl: 'account/github-tokens/views/create.html',
-                        controller: 'GitHubTokensCreateController'
+                    'content@': {
+                        templateUrl: 'team/github-tokens/views/create.html',
+                        controller: 'TeamCreateGitHubTokenController'
                     }
                 },
-                ncyBreadcrumb: {
-                    label: 'Create'
-                }
+                aside: true
             })
         ;
     });

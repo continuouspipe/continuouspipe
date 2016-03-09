@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('GitHubTokensCreateController', function($scope, $state, GitHubTokensRepository) {
+    .controller('TeamCreateGitHubTokenController', function($scope, $state, GitHubTokensRepository) {
         $scope.create = function(token) {
             $scope.isLoading = true;
             GitHubTokensRepository.create(token).then(function() {

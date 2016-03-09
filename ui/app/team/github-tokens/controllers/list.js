@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('GitHubTokensListController', function($scope, $remoteResource, GitHubTokensRepository) {
+    .controller('TeamGitHubTokensController', function($scope, $remoteResource, GitHubTokensRepository) {
         var controller = this;
 
         this.loadTokens = function() {

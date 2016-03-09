@@ -1,41 +1,32 @@
-<div class="container">
-    <div class="block-header">
-        <h2>GitHub tokens</h2>
-
-        <ul class="actions">
-            <li>
-                <a ui-sref="github-tokens.create">
-                    <i class="md md-add"></i>
-                </a>
-            </li>
-        </ul>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="tokens">{{ tokens.length }} tokens</span>
+            <span ng-hide="tokens">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Add" ui-sref="github-tokens.create">Add</md-button>
     </div>
-
-    <div class="row">
-        <remote-resource resource-name="tokens">
-            <div class="text-center p20" ng-show="tokens.length === 0">No token found. <a ui-sref="github-tokens.create">Creates one !</a></div>
-            <table class="table table-inner table-vmiddle" ng-show="tokens.length">
-                <thead>
-                <tr>
-                    <th>Login</th>
-                    <th>Token</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="token in tokens">
-                    <td>{{ token.login }}</td>
-                    <td>{{ token.accessToken }}</td>
-                    <td>
-                        <ul class="actions">
-                            <li>
-                                <a ng-click="deleteToken(token)"><i class="md md-delete"></i></a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </remote-resource>
-    </div>
-</div>
+</md-toolbar>
+<md-content flex id="content">
+    <remote-resource resource-name="tokens">
+        <table class="table hover">
+            <thead>
+            <tr>
+                <th>Login</th>
+                <th>Token</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="token in tokens">
+                <td>{{ token.login }}</td>
+                <td>{{ token.accessToken }}</td>
+                <td>
+                    <md-button ng-click="deleteToken(token)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>

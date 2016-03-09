@@ -1,32 +1,31 @@
-<div class="container">
-    <<div class="block-header">
-        <h2>Enter GitHub token details</h2>
-
-        <form name="tokenForm" novalidate>
-            <div class="row m-t-10">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header ch-alt">
-                            <h2>Token</h2>
-                        </div>
-
-                        <div class="card-body card-padding">
-                            <div class="form-group fg-line" ng-class="{'has-error': tokenForm.login.$touched && tokenForm.login.$invalid}">
-                                <label for="loginInput">GitHub login</label>
-                                <input type="text" name="login" ng-model="token.login" class="form-control input-sm" id="loginInput" required>
-                                <small class="help-block" ng-show="tokenForm.login.$invalid">This field is required</small>
-                            </div>
-                            <div class="form-group fg-line" ng-class="{'has-error': tokenForm.token.$touched && tokenForm.token.$invalid}">
-                                <label for="tokenInput">Token</label>
-                                <input type="password" name="token" ng-model="token.accessToken" class="form-control input-sm" id="tokenInput" required>
-                                <small class="help-block" ng-show="tokenForm.token.$invalid">This field is required</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" ng-click="create(token)" class="btn btn-primary btn-sm m-t-10 waves-effect waves-float" ng-disabled="tokenForm.$invalid || isLoading">Create</button>
-        </form>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Add a GitHub token</span>
+        </h2>
     </div>
-</div>
+</md-toolbar>
+<md-content flex id="content">
+    <form name="tokenForm">
+        <div class="form-container">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Username</label>
+                <input ng-model="token.login" required />
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Token</label>
+                <input ng-model="token.accessToken" required />
+            </md-input-container>
+        </div>
+    </form>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create" ng-disabled="tokenForm.$invalid || isLoading" ng-click="create(token)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
+            Create
+        </md-button>
+    </div>
+</md-toolbar>
+
