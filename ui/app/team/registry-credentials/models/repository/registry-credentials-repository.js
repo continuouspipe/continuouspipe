@@ -5,7 +5,7 @@ angular.module('continuousPipeRiver')
         this.resource = $resource(AUTHENTICATOR_API_URL+'/api/bucket/:bucket/docker-registries/:serverAddress');
 
         var getBucketUuid = function() {
-            return $teamContext.getCurrent().bucket_uuid;
+            return $teamContext.getCurrentTeam().bucket_uuid;
         };
 
         this.findAll = function() {

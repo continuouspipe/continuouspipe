@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('RegistryCredentialsCreateController', function($scope, $state, RegistryCredentialsRepository) {
+    .controller('TeamCreateRegistryCredentialsController', function($scope, $state, RegistryCredentialsRepository) {
         $scope.create = function(credentials) {
             $scope.isLoading = true;
             RegistryCredentialsRepository.create(credentials).then(function() {

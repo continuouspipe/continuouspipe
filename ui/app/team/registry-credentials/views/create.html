@@ -1,52 +1,46 @@
-<div class="container">
-    <<div class="block-header">
-        <h2>Enter credentials details</h2>
-
-        <form name="credentialsForm" novalidate>
-            <div class="row m-t-10">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header ch-alt">
-                            <h2>Registry <small>Address of the registry.</small></h2>
-                        </div>
-
-                        <div class="card-body card-padding">
-                            <div class="form-group fg-line" ng-class="{'has-error': credentialsForm.serverAddress.$touched && credentialsForm.serverAddress.$invalid}">
-                                <label for="serverAddressInput">Address</label>
-                                <input type="text" name="serverAddress" ng-model="credentials.serverAddress" class="form-control input-sm" id="serverAddressInput" required value="docker.io">
-                                <small class="help-block" ng-show="credentialsForm.serverAddress.$invalid">This field is required</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header ch-alt">
-                            <h2>Credentials <small>User credentials informations.</small></h2>
-                        </div>
-
-                        <div class="card-body card-padding">
-                            <div class="form-group fg-line" ng-class="{'has-error': credentialsForm.username.$touched && credentialsForm.username.$invalid}">
-                                <label for="userInput">Username</label>
-                                <input type="text" name="username" ng-model="credentials.username" class="form-control input-sm" id="userInput" required>
-                                <small class="help-block" ng-show="credentialsForm.username.$invalid">This field is required</small>
-                            </div>
-                            <div class="form-group fg-line" ng-class="{'has-error': credentialsForm.password.$touched && credentialsForm.password.$invalid}">
-                                <label for="passwordInput">Password</label>
-                                <input type="password" name="password" ng-model="credentials.password" class="form-control input-sm" id="passwordInput" required>
-                                <small class="help-block" ng-show="credentialsForm.password.$invalid">This field is required</small>
-                            </div>
-                            <div class="form-group fg-line" ng-class="{'has-error': credentialsForm.email.$touched && credentialsForm.email.$invalid}">
-                                <label for="emailInput">Email</label>
-                                <input type="email" name="email" ng-model="credentials.email" class="form-control input-sm" id="emailInput" required>
-                                <small class="help-block" ng-show="credentialsForm.email.$invalid">This field is required</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" ng-click="create(credentials)" class="btn btn-primary btn-sm m-t-10 waves-effect waves-float" ng-disabled="providerForm.$invalid || isLoading">Create</button>
-        </form>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Add a Docker Registry credential</span>
+        </h2>
     </div>
-</div>
+</md-toolbar>
+<md-content flex id="content">
+    <form name="credentialsForm">
+        <md-subheader class="md-primary">Registry</md-subheader>
+        <div class="form-container">
+            <md-radio-group ng-model="credentials.serverAddress">
+                <md-radio-button value="docker.io" class="md-primary">Docker Hub Registry</md-radio-button>
+                <md-radio-button value="">Custom registry</md-radio-button>
+            </md-radio-group>
+            <md-input-container class="md-block" flex-gt-xs ng-show="credentials.serverAddress != 'docker.io'">
+                <label>Registry address</label>
+                <input ng-model="credentials.serverAddress" required />
+            </md-input-container>
+        </div>
+        <md-subheader class="md-primary">Credentials</md-subheader>
+        <div class="form-container">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Username</label>
+                <input ng-model="credentials.username" required />
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Email</label>
+                <input ng-model="credentials.email" required />
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Password</label>
+                <input type="password" ng-model="credentials.password" required />
+            </md-input-container>
+        </div>
+    </form>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create" ng-disabled="credentialsForm.$invalid || isLoading" ng-click="create(credentials)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
+            Create
+        </md-button>
+    </div>
+</md-toolbar>

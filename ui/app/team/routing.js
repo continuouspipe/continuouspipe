@@ -83,31 +83,31 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
-
-            /****/
-
             .state('registry-credentials', {
-                parent: 'layout',
+                parent: 'team',
                 url: '/registry-credentials',
-                templateUrl: 'account/registry-credentials/views/list.html',
-                controller: 'RegistryCredentialsListController',
-                ncyBreadcrumb: {
-                    label: 'Docker Registry credentials'
+                views: {
+                    'content@': {
+                        templateUrl: 'team/registry-credentials/views/list.html',
+                        controller: 'TeamRegistryCredentialsController'
+                    }
                 },
-                aside: false
+                aside: true
             })
             .state('registry-credentials.create', {
                 url: '/create',
                 views: {
-                    '@layout': {
-                        templateUrl: 'account/registry-credentials/views/create.html',
-                        controller: 'RegistryCredentialsCreateController'
+                    'content@': {
+                        templateUrl: 'team/registry-credentials/views/create.html',
+                        controller: 'TeamCreateRegistryCredentialsController'
                     }
                 },
-                ncyBreadcrumb: {
-                    label: 'Create'
-                }
+                aside: true
             })
+
+            /*****/
+
+
             .state('github-tokens', {
                 parent: 'layout',
                 url: '/github-tokens',
