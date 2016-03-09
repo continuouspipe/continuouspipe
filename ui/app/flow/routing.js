@@ -3,30 +3,9 @@
 angular.module('continuousPipeRiver')
     .config(function($stateProvider) {
         $stateProvider
-            .state('flows', {
-                parent: 'layout',
-                url: '/flows',
-                templateUrl: 'flow/views/list.html',
-                controller: 'FlowListController',
-                ncyBreadcrumb: {
-                    label: 'Flows'
-                }
-            })
-            .state('flows.create', {
-                url: '/create',
-                views: {
-                    '@layout': {
-                        templateUrl: 'flow/views/create.html',
-                        controller: 'FlowCreateController'
-                    }
-                },
-                ncyBreadcrumb: {
-                    label: 'Create'
-                }
-            })
             .state('flow', {
                 abstract: true,
-                parent: 'flows',
+                parent: 'team',
                 url: '/:uuid',
                 resolve: {
                     flow: function($stateParams, FlowRepository) {
@@ -34,38 +13,26 @@ angular.module('continuousPipeRiver')
                     }
                 },
                 views: {
-                    'aside@layout': {
+                    'aside@': {
                         templateUrl: 'flow/views/layout/aside.html'
+                    },
+                    'title@': {
+                        template: '<a ui-sref="flows({team: team.slug})">{{ team.slug }}</a> / {{ flow.repository.repository.name }}',
+                        controller: function($scope, team, flow) {
+                            $scope.team = team;
+                            $scope.flow = flow;
+                        }
                     }
-                },
-                ncyBreadcrumb: {
-                    label: '#{{ flow.uuid }}'
                 },
                 aside: true
             })
-            .state('flow.overview', {
-                url: '',
+            .state('flow.tides', {
+                url: '/tides',
                 views: {
-                    '@layout': {
-                        templateUrl: 'flow/views/show.html',
-                        controller: 'FlowController'
+                    'content@': {
+                        templateUrl: 'flow/views/tides/list.html',
+                        controller: 'FlowTidesController'
                     }
-                },
-                ncyBreadcrumb: {
-                    label: 'Overview'
-                },
-                aside: true
-            })
-            .state('flow.configuration', {
-                url: '/configuration',
-                views: {
-                    '@layout': {
-                        templateUrl: 'flow/views/configuration.html',
-                        controller: 'FlowConfigurationController'
-                    }
-                },
-                ncyBreadcrumb: {
-                    label: 'Configuration'
                 },
                 aside: true
             })

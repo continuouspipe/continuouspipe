@@ -1,15 +1,15 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('FlowRepository', function($resource, $teamContext, RIVER_API_URL) {
+    .service('FlowRepository', function($resource, RIVER_API_URL) {
         this.resource = $resource(RIVER_API_URL+'/flows/:uuid', {identifier: '@id'}, {
             update: {
                 method: 'PUT'
             }
         });
 
-        this.findAll = function() {
-            return $resource(RIVER_API_URL+'/teams/:team/flows').query({team: $teamContext.getCurrent().slug}).$promise;
+        this.findByTeam = function(team) {
+            return $resource(RIVER_API_URL+'/teams/:team/flows').query({team: team.slug}).$promise;
         };
 
         this.find = function(uuid) {

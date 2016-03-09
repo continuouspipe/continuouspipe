@@ -2,6 +2,7 @@
 
 angular.module('continuousPipeRiver')
     .config(function($stateProvider) {
+        /***
         $stateProvider
             .state('teams', {
                 abstract: true,
@@ -49,4 +50,5 @@ angular.module('continuousPipeRiver')
                 }
             })
         ;
+         ***/
     });

@@ -1,8 +1,135 @@
+@import "fonts";
+
+$header-background: #232731;
+$logo-size: 40px;
+$header-height: 64px;
+
+table.table {
+    border-top: 1px solid #F3F4F8;
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+
+    td, th {
+        padding: 10px;
+        text-align: left;
+    }
+
+    thead {
+        background: #F6F8FA;
+    }
+
+    tr:nth-child(2) {
+        background: #FBFCFD;
+    }
+
+    &.hover {
+        tbody tr:hover {
+            background: #f4f4f4;
+            cursor: pointer;
+        }
+    }
+}
+
+body {
+    > md-toolbar {
+        background: $header-background !important;
+        height: 40px;
+
+        .md-button.logo {
+            width: $header-height;
+            height: $header-height;
+
+            md-icon {
+                padding-top: 5px;
+                font-size: $logo-size;
+                width: $logo-size;
+                height: $logo-size;
+            }
+        }
+
+        h2 {
+            font-size: 19px;
+            padding: 5px;
+
+            &.title {
+                a {
+                    color: #fff;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+
+    md-sidenav.sidebar {
+        background: #333844;
+        max-width: 250px;
+
+        md-menu-content {
+            background: none;
+            color: #ACB1B4;
+            padding-top: 0;
+
+            md-menu-item {
+                .selected {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+            }
+        }
+
+        .md-subheader {
+            background: none;
+            color: #fff;
+        }
+    }
+
+    md-content {
+        .form-container {
+            padding: 20px;
+        }
+
+        md-toolbar {
+            background: #52A6FF !important;
+            color: #fff !important;
+        }
+
+        .help-sidebar {
+            padding: 10px;
+            background: #ACB1B4;
+        }
+    }
+
+    button.md-button {
+        md-progress-circular {
+            float: left;
+        }
+    }
+
+    .card-grid {
+        padding: 20px;
+
+        md-card {
+            width: 400px;
+            box-shadow: none;
+            border: 1px solid #efefef;
+            float: left;
+            
+            md-card-header {
+                cursor: pointer;
+                background: #efefef;
+            }
+        }
+    }
+}
+
+/******************************/
+
 $loader-color: rgb(66, 133, 244);
 
 .bgm-alt {
     background-color: #f7f7f7;
 }
+
 
 header {
     .header-links {

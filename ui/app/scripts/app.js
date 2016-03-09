@@ -14,18 +14,18 @@ angular
         'ngAnimate',
         'ngMessages',
         'ngSanitize',
-        'ngTouch',
+        'angular-loading-bar',
         'ngResource',
         'ui.router',
+        'ngMaterial',
         'ncy-angular-breadcrumb',
         'angular-jwt',
-        'dndLists',
-        'ui.ace',
         'angular-md5',
-        'angular-google-analytics'
+        'angular-google-analytics',
+        'slugifier'
     ])
     .config(function($urlRouterProvider, $breadcrumbProvider, $locationProvider, AnalyticsProvider) {
-        $urlRouterProvider.otherwise('/flows');
+        $urlRouterProvider.otherwise('/');
         $locationProvider.html5Mode(true);
         $breadcrumbProvider.setOptions({
             includeAbstract: true

@@ -1,0 +1,25 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="teams">{{ teams.length }} team(s)</span>
+            <span ng-hide="teams">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create a team" ui-sref="create-team">Create a team</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content" class="card-grid">
+    <remote-resource resource-name="teams">
+        <md-card ng-repeat="team in teams">
+            <md-card-header ui-sref="flows({team: team.slug})">
+                <md-card-avatar>
+                    <md-icon class="md-avatar-icon"><i class="material-icons">transform</i></md-icon>
+                </md-card-avatar>
+                <md-card-header-text>
+                    <span class="md-title">{{ team.slug }}</span>
+                    <span class="md-subhead">{{ team.memberships.length }} user(s)</span>
+                </md-card-header-text>
+            </md-card-header>
+        </md-card>
+    </remote-resource>
+</md-content>

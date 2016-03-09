@@ -3,7 +3,7 @@
 angular.module('continuousPipeRiver')
     .service('$aside', function ($rootScope) {
         this.set = function(enabled) {
-            $rootScope.asideEnabled = enabled;
+            $rootScope.aside = enabled;
         };
     })
     .run(function($rootScope, $aside) {
