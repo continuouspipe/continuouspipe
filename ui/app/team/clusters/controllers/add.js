@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ClustersCreateController', function($scope, $state, ClusterRepository) {
+    .controller('TeamAddClusterController', function($scope, $state, ClusterRepository) {
         $scope.selectType = function(type) {
             $scope.cluster = {type: type};
         };

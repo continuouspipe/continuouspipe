@@ -1,0 +1,55 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Add a cluster</span>
+        </h2>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <form name="clusterForm">
+        <md-subheader class="md-primary">Cluster details</md-subheader>
+        <div class="form-container">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Cluster identifier</label>
+                <input ng-model="cluster.identifier" required />
+            </md-input-container>
+            <md-radio-group ng-model="cluster.type">
+                <md-radio-button value="kubernetes" class="md-primary">My own Kubernetes cluster</md-radio-button>
+                <md-radio-button value="hosted" disabled="disabled">Hosted cluster <small>Contact us for an early access.</small></md-radio-button>
+            </md-radio-group>
+        </div>
+        <md-subheader class="md-primary">Cluster address</md-subheader>
+        <div class="form-container">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Address</label>
+                <input ng-model="cluster.address" required />
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Version</label>
+                <md-select ng-model="cluster.version">
+                    <md-option>v1</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <md-subheader class="md-primary">Cluster credentials</md-subheader>
+        <div class="form-container">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Username</label>
+                <input ng-model="cluster.username" required />
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Password</label>
+                <input ng-model="cluster.password" required />
+            </md-input-container>
+        </div>
+    </form>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create" ng-disabled="clusterForm.$invalid || isLoading" ng-click="create(cluster)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
+            Create
+        </md-button>
+    </div>
+</md-toolbar>

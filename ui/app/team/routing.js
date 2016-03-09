@@ -20,6 +20,12 @@ angular.module('continuousPipeRiver')
                 views: {
                     aside: {
                         templateUrl: 'team/layout/views/aside.html'
+                    },
+                    'title': {
+                        controller: function($scope, team) {
+                            $scope.team = team;
+                        },
+                        template: '{{ team.slug }}'
                     }
                 }
             })
@@ -30,12 +36,49 @@ angular.module('continuousPipeRiver')
                     'content@': {
                         templateUrl: 'team/flows/views/list.html',
                         controller: 'FlowListController'
-                    },
-                    'title@': {
-                        controller: function($scope, team) {
-                            $scope.team = team;
-                        },
-                        template: '{{ team.slug }}'
+                    }
+                },
+                aside: true
+            })
+            .state('users', {
+                parent: 'team',
+                url: '/users',
+                views: {
+                    'content@': {
+                        templateUrl: 'team/users/views/list.html',
+                        controller: 'TeamUsersController'
+                    }
+                },
+                aside: true
+            })
+            .state('users.add', {
+                parent: 'team',
+                url: '/add',
+                views: {
+                    'content@': {
+                        templateUrl: 'team/users/views/add.html',
+                        controller: 'TeamAddUserController'
+                    }
+                },
+                aside: true
+            })
+            .state('clusters', {
+                parent: 'team',
+                url: '/clusters',
+                views: {
+                    'content@': {
+                        templateUrl: 'team/clusters/views/list.html',
+                        controller: 'TeamClustersController'
+                    }
+                },
+                aside: true
+            })
+            .state('clusters.add', {
+                url: '/add',
+                views: {
+                    'content@': {
+                        templateUrl: 'team/clusters/views/add.html',
+                        controller: 'TeamAddClusterController'
                     }
                 },
                 aside: true
@@ -81,28 +124,6 @@ angular.module('continuousPipeRiver')
                     '@layout': {
                         templateUrl: 'account/github-tokens/views/create.html',
                         controller: 'GitHubTokensCreateController'
-                    }
-                },
-                ncyBreadcrumb: {
-                    label: 'Create'
-                }
-            })
-            .state('clusters', {
-                parent: 'layout',
-                url: '/clusters',
-                templateUrl: 'account/clusters/views/list.html',
-                controller: 'ClustersListController',
-                ncyBreadcrumb: {
-                    label: 'Clusters'
-                },
-                aside: false
-            })
-            .state('clusters.create', {
-                url: '/create',
-                views: {
-                    '@layout': {
-                        templateUrl: 'account/clusters/views/create.html',
-                        controller: 'ClustersCreateController'
                     }
                 },
                 ncyBreadcrumb: {

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ClustersListController', function($scope, $remoteResource, ClusterRepository) {
+    .controller('TeamClustersController', function($scope, $remoteResource, ClusterRepository, team) {
         var controller = this;
 
         this.loadClusters = function() {
