@@ -5,6 +5,7 @@ angular.module('continuousPipeRiver')
         $stateProvider
             .state('team', {
                 url: '/team/:team',
+                parent: 'layout',
                 abstract: true,
                 resolve: {
                     team: function($stateParams, $teamContext, $q, TeamRepository) {
@@ -18,10 +19,10 @@ angular.module('continuousPipeRiver')
                     }
                 },
                 views: {
-                    aside: {
+                    'aside@': {
                         templateUrl: 'team/layout/views/aside.html'
                     },
-                    'title': {
+                    'title@layout': {
                         controller: function($scope, team) {
                             $scope.team = team;
                         },

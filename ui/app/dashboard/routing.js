@@ -5,12 +5,13 @@ angular.module('continuousPipeRiver')
         $stateProvider
             .state('teams', {
                 url: '/',
+                parent: 'layout',
                 views: {
-                    content: {
+                    'content@': {
                         templateUrl: 'dashboard/views/teams/list.html',
                         controller: 'TeamsController'
                     },
-                    title: {
+                    'title@layout': {
                         template: 'Teams'
                     }
                 }
@@ -18,11 +19,11 @@ angular.module('continuousPipeRiver')
             .state('create-team', {
                 url: '/create-team',
                 views: {
-                    content: {
+                    'content@': {
                         templateUrl: 'dashboard/views/teams/create.html',
                         controller: 'CreateTeamController'
                     },
-                    title: {
+                    'title@layout': {
                         template: 'Create a team'
                     }
                 }

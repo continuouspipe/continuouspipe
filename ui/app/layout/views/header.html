@@ -1,71 +1,20 @@
-<ul class="header-inner">
-    <li id="menu-trigger" data-trigger="#sidebar">
-        <div class="line-wrap">
-            <div class="line top"></div>
-            <div class="line center"></div>
-            <div class="line bottom"></div>
-        </div>
-    </li>
-
-    <li class="logo hidden-xs">
-        <a ui-sref="dashboard">ContinuousPipe</a>
-    </li>
-
-
-    <li class="header-links">
-        <ul class="top-menu">
-            <li ui-sref-active="active">
-                <a ui-sref="flows" class="header-link">Flows</a>
-            </li>
-            <li ui-sref-active="active">
-                <a ui-sref="clusters" class="header-link">Clusters</a>
-            </li>
-            <li ui-sref-active="active">
-                <a ui-sref="registry-credentials" class="header-link">Docker Registries</a>
-            </li>
-            <li ui-sref-active="active">
-                <a ui-sref="github-tokens" class="header-link">GitHub tokens</a>
-            </li>
-        </ul>
-    </li>
-
-    <li class="pull-right">
-        <ul class="top-menu">
-            <li class="dropdown">
-                <a data-toggle="dropdown" class="tm-task dropdown-with-text header-link" href="">
-                    {{ currentTeam.slug }}
-                </a>
-                <ul class="dropdown-menu dm-icon pull-right team-dropdown">
-                    <li ng-repeat="team in teams">
-                        <a ui-sref="teams.switch({team: team.slug})">{{ team.slug }}</a>
-                        <a ui-sref="teams.users({slug: team.slug})" class="settings-button"><i class="md md-settings"></i></a>
-                    </li>
-                    <li class="separator"></li>
-                    <li>
-                        <a ui-sref="teams.create"><i class="md md-group-add"></i> Create a team</a>
-                    </li>
-                </ul>
-            </li>
-            <li class="profile-picture">
-                <span class="picture">
-                    <img ng-src="http://www.gravatar.com/avatar/{{ user.email | gravatar }}" />
-                </span>
-            </li>
-            <li class="dropdown">
-                <a data-toggle="dropdown" class="tm-settings dropdown-user-account" href="">
-                </a>
-                <ul class="dropdown-menu dm-icon pull-right">
-                    <li>
-                        <a ng-href="{{ logoutUrl }}"><i class="md md-settings-power"></i> Logout</a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </li>
-</ul>
-
-<!-- Top Search Content -->
-<div id="top-search-wrap">
-    <input type="text">
-    <i id="top-search-close">&times;</i>
-</div>
+<md-button class="md-icon-button logo" aria-label="Dashboard" ui-sref="teams">
+    <md-icon class="cp-icon-logo"></md-icon>
+</md-button>
+<h2 class="title"><span ui-view="title"></span></h2>
+<span flex></span>
+<md-menu md-position-mode="target-right target">
+    <md-button aria-label="Account" class="md-icon-button account-button" ng-click="$mdOpenMenu($event)">
+        <img ng-src="http://www.gravatar.com/avatar/{{ user.email | gravatar }}" />
+    </md-button>
+    <md-menu-content width="4">
+        <md-menu-item>
+            <md-button ng-click="ctrl.announceClick($index)">
+                <div layout="row">
+                    <p flex>Option {{item}}</p>
+                    <md-icon md-menu-align-target></md-icon>
+                </div>
+            </md-button>
+        </md-menu-item>
+    </md-menu-content>
+</md-menu>

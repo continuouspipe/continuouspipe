@@ -13,7 +13,7 @@ angular.module('continuousPipeRiver')
                     }
                 },
                 views: {
-                    'title@': {
+                    'title@layout': {
                         template:
                             '<a ui-sref="flows({team: team.slug})">{{ team.slug }}</a> / '+
                             '<a ui-sref="flow.tides({uuid: flow.uuid})">{{ flow.repository.repository.name }}</a> / '+

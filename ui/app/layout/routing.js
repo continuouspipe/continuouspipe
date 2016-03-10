@@ -8,26 +8,13 @@ angular.module('continuousPipeRiver')
                 resolve: {
                     user: function($userContext) {
                         return $userContext.refreshUser();
-                    },
-                    teamContext: function($teamContext) {
-                        return $teamContext.refreshTeams();
                     }
                 },
                 views: {
-                    '': {
-                        templateUrl: 'layout/views/layout.html'
-                    },
-                    'header@layout': {
+                    header: {
                         templateUrl: 'layout/views/header.html',
                         controller: 'HeaderController'
-                    },
-                    'breadcrumb@layout': {
-                        templateUrl: 'layout/views/breadcrumb.html',
-                        controller: 'BreadcrumbController'
                     }
-                },
-                ncyBreadcrumb: {
-                    skip: true
                 }
             })
         ;

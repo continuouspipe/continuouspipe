@@ -48,6 +48,16 @@ body {
             }
         }
 
+        .account-button {
+            height: 50px;
+            width: 50px;
+
+            img {
+                border-radius: 50%;
+                max-width: 100%;
+            }
+        }
+
         h2 {
             font-size: 19px;
             padding: 5px;

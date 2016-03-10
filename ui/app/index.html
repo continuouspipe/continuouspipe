@@ -25,28 +25,7 @@
     your browser</a> to improve your experience.</p>
 <![endif]-->
 
-<md-toolbar layout="row">
-    <md-button class="md-icon-button logo" aria-label="Dashboard" ui-sref="teams">
-        <md-icon class="cp-icon-logo"></md-icon>
-    </md-button>
-    <h2 class="title"><span ui-view="title"></span></h2>
-    <span flex></span>
-    <md-menu md-position-mode="target-right target">
-        <md-button aria-label="Open demo menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
-            <i class="material-icons">account_circle</i>
-        </md-button>
-        <md-menu-content width="4">
-            <md-menu-item>
-                <md-button ng-click="ctrl.announceClick($index)">
-                    <div layout="row">
-                        <p flex>Option {{item}}</p>
-                        <md-icon md-menu-align-target md-svg-icon="call:portable-wifi-off" style="margin: auto 3px auto 0;"></md-icon>
-                    </div>
-                </md-button>
-            </md-menu-item>
-        </md-menu-content>
-    </md-menu>
-</md-toolbar>
+<md-toolbar layout="row" ui-view="header"></md-toolbar>
 
 <div flex layout="row">
     <md-sidenav md-is-open="aside" md-is-locked-open="aside" class="sidebar" ui-view="aside"></md-sidenav>
@@ -99,14 +78,10 @@
 <script src="dashboard/controllers/teams.js"></script>
 <script src="dashboard/routing.js"></script>
 
-<script src="layout/controllers/breadcrumb.js"></script>
 <script src="layout/controllers/header.js"></script>
 <script src="layout/directives/remote-resource.js"></script>
-<script src="layout/directives/form/float-input.js"></script>
-<script src="layout/directives/form/select-input.js"></script>
 <script src="layout/services/remote-resource.js"></script>
 <script src="layout/listeners/aside.js"></script>
-<script src="layout/listeners/breadcrumb.js"></script>
 <script src="layout/routing.js"></script>
 <script src="layout/config.js"></script>
 
@@ -119,7 +94,6 @@
 
 <script src="tide/routing.js"></script>
 <script src="tide/controllers/logs.js"></script>
-<script src="tide/controllers/create.js"></script>
 <script src="tide/directives/log-frame.js"></script>
 <script src="tide/models/repository/tide-repository.js"></script>
 <script src="tide/filters/httpify.js"></script>
