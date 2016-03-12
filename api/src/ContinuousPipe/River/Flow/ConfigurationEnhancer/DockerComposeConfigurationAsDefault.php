@@ -2,12 +2,10 @@
 
 namespace ContinuousPipe\River\Flow\ConfigurationEnhancer;
 
-use ContinuousPipe\DockerCompose\FileNotFound;
-use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\DockerCompose\ComponentsResolver;
 use ContinuousPipe\River\CodeRepository\DockerCompose\DockerComposeComponent;
 use ContinuousPipe\River\CodeRepository\DockerCompose\ResolveException;
-use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\River\Flow;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -16,23 +14,16 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
     use Flow\ConfigurationEnhancer\Helper\TaskLocator;
 
     /**
-     * @var ProjectParser
+     * @var ComponentsResolver
      */
-    private $projectParser;
+    private $componentsResolver;
 
     /**
-     * @var FileSystemResolver
+     * @param ComponentsResolver $componentsResolver
      */
-    private $fileSystemResolver;
-
-    /**
-     * @param FileSystemResolver $fileSystemResolver
-     * @param ProjectParser      $projectParser
-     */
-    public function __construct(FileSystemResolver $fileSystemResolver, ProjectParser $projectParser)
+    public function __construct(ComponentsResolver $componentsResolver)
     {
-        $this->projectParser = $projectParser;
-        $this->fileSystemResolver = $fileSystemResolver;
+        $this->componentsResolver = $componentsResolver;
     }
 
     /**
@@ -40,14 +31,9 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
      */
     public function enhance(Flow $flow, CodeReference $codeReference, array $configs)
     {
-        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flow->getContext()->getTeam());
-        $dockerComposeComponents = [];
-
         try {
-            foreach ($this->projectParser->parse($fileSystem, $codeReference->getBranch()) as $name => $raw) {
-                $dockerComposeComponents[] = DockerComposeComponent::fromParsed($name, $raw);
-            }
-        } catch (FileNotFound $e) {
+            $dockerComposeComponents = $this->componentsResolver->resolve($codeReference, $flow->getContext()->getTeam());
+        } catch (ResolveException $e) {
             return $configs;
         }
 
