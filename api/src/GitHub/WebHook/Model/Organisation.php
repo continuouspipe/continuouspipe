@@ -21,6 +21,13 @@ class Organisation
     private $reposUrl;
 
     /**
+     * @var string
+     *
+     * @JMS\Type("string")
+     */
+    private $avatarUrl;
+
+    /**
      * @param string $name
      * @param string $reposUrl
      */
@@ -44,5 +51,13 @@ class Organisation
     public function getReposUrl()
     {
         return $this->reposUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAvatarUrl()
+    {
+        return $this->avatarUrl;
     }
 }
