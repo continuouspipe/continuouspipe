@@ -21,6 +21,7 @@
             <argument type="service" id="app.repository.team" />
             <argument type="service" id="app.repository.team_membership" />
             <argument type="service" id="app.team_creator" />
+            <argument type="service" id="validator" />
         </service>
 
         <!-- Authentication -->
@@ -81,6 +82,13 @@
         </service>
         <service id="app.listener.jwt_token_created.add_user_email" class="ContinuousPipe\Authenticator\EventListener\JWTTokenCreated\AddUserEmailInToken">
             <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_jwt_created" method="onJWTCreated" />
+        </service>
+
+        <!-- Validation -->
+        <service id="app.validator.unique_team" class="ApiBundle\Validator\Constraints\UniqueTeamConstraintValidator">
+            <argument type="service" id="app.repository.team" />
+
+            <tag name="validator.constraint_validator" alias="unique_team" />
         </service>
     </services>
 </container>

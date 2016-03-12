@@ -119,8 +119,6 @@ class TeamContext implements Context
                 'slug' => $slug
             ])
         ));
-
-        $this->assertResponseCodeIs($this->response, 201);
     }
 
     /**
@@ -215,6 +213,38 @@ class TeamContext implements Context
     {
         $url = sprintf('/api/teams/%s/users/%s', $teamSlug, $username);
         $this->response = $this->kernel->handle(Request::create($url, 'DELETE'));
+    }
+
+    /**
+     * @Then the team should be successfully created
+     */
+    public function theTeamShouldBeSuccessfullyCreated()
+    {
+        $this->assertResponseCodeIs($this->response, 201);
+    }
+
+    /**
+     * @Then the team should not be created
+     */
+    public function theTeamShouldNotBeCreated()
+    {
+        $this->assertResponseCodeIs($this->response, 400);
+    }
+
+    /**
+     * @Then I should see that the team have an invalid stug
+     */
+    public function iShouldSeeThatTheTeamHaveAnInvalidStug()
+    {
+        $this->assertResponseMessageContains('slug');
+    }
+
+    /**
+     * @Then I should see that the team already exists
+     */
+    public function iShouldSeeThatTheTeamAlreadyExists()
+    {
+        $this->assertResponseMessageContains('already exists');
     }
 
     /**
@@ -362,6 +392,24 @@ class TeamContext implements Context
                 'Expected to get status code %d, got %d',
                 $statusCode,
                 $response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
+     * @param $expectedMessage
+     */
+    private function assertResponseMessageContains($expectedMessage)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if (!array_key_exists('message', $json)) {
+            throw new \RuntimeException('The message do not contain any message');
+        } else if (false === strpos($json['message'], $expectedMessage)) {
+            throw new \RuntimeException(sprintf(
+                'The message "%s" should contain "%s"',
+                $json['message'],
+                $expectedMessage
             ));
         }
     }

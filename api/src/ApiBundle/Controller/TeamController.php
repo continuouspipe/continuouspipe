@@ -15,6 +15,7 @@ use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route(service="api.controller.team")
@@ -37,15 +38,22 @@ class TeamController
     private $teamCreator;
 
     /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
+    /**
      * @param TeamRepository           $teamRepository
      * @param TeamMembershipRepository $teamMembershipRepository
      * @param TeamCreator              $teamCreator
+     * @param ValidatorInterface       $validator
      */
-    public function __construct(TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository, TeamCreator $teamCreator)
+    public function __construct(TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository, TeamCreator $teamCreator, ValidatorInterface $validator)
     {
         $this->teamRepository = $teamRepository;
         $this->teamMembershipRepository = $teamMembershipRepository;
         $this->teamCreator = $teamCreator;
+        $this->validator = $validator;
     }
 
     /**
@@ -77,6 +85,13 @@ class TeamController
      */
     public function createAction(Team $team, User $user)
     {
+        $errors = $this->validator->validate($team);
+        if ($errors->count() > 0) {
+            return new JsonResponse([
+                'message' => $errors->get(0)->getMessage(),
+            ], 400);
+        }
+
         return $this->teamCreator->create($team, $user);
     }
 

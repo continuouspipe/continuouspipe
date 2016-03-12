@@ -12,5 +12,5 @@ Feature:
     And I have the following GitHub tokens in the bucket "11111111-0000-0000-0000-000000000000":
     | login | accessToken |
     | sroze | e72e16c7e42f292c6912e7710c838347ae178b4a |
-    When I create a team "foo"
-    Then the bucket of the team "foo" should contain the GitHub token "e72e16c7e42f292c6912e7710c838347ae178b4a"
+    When I create a team "foobar"
+    Then the bucket of the team "foobar" should contain the GitHub token "e72e16c7e42f292c6912e7710c838347ae178b4a"

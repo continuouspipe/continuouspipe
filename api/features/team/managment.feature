@@ -46,6 +46,17 @@ Feature:
     Then the user "bar" shouldn't be in the team "foo"
 
   Scenario: Each team should have a credentials bucket
-    When I create a team "new"
-    Then the team "new" should have a credentials bucket
+    When I create a team "newly-created"
+    Then the team should be successfully created
+    And the team "newly-created" should have a credentials bucket
 
+  Scenario: I can't create a team with an invalid slug
+    When I create a team "continuous pipe"
+    Then the team should not be created
+    And I should see that the team have an invalid stug
+
+  Scenario: I can't create a team that already exists
+    Given there is a team "continuous-pipe"
+    When I create a team "continuous-pipe"
+    Then the team should not be created
+    And I should see that the team already exists
