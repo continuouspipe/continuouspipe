@@ -72,7 +72,9 @@ class TeamContext implements Context
      */
     public function thereIsATeam($slug)
     {
-        $this->teamRepository->save(new Team($slug, $slug, Uuid::uuid1()));
+        if (!$this->teamRepository->exists($slug)) {
+            $this->teamRepository->save(new Team($slug, $slug, Uuid::uuid1()));
+        }
     }
 
     /**
@@ -92,7 +94,10 @@ class TeamContext implements Context
     {
         $team = $this->teamRepository->find($slug);
         $user = $this->securityContext->thereIsAUser($username);
-        $this->teamMembershipRepository->save(new TeamMembership($team, $user->getUser()));
+
+        if (!$this->isUserInTeam($team, $username)) {
+            $this->teamMembershipRepository->save(new TeamMembership($team, $user->getUser()));
+        }
     }
 
     /**
@@ -319,12 +324,8 @@ class TeamContext implements Context
     public function theUserShouldnTBeInTheTeam($username, $slug)
     {
         $team = $this->teamRepository->find($slug);
-        $teamMemberships = $this->teamMembershipRepository->findByTeam($team);
-        $matchingMemberships = $teamMemberships->filter(function(TeamMembership $membership) use ($username) {
-            return $membership->getUser()->getUsername() == $username;
-        });
 
-        if (0 !== $matchingMemberships->count()) {
+        if ($this->isUserInTeam($team, $username)) {
             throw new \RuntimeException('User found in teams');
         }
     }
@@ -451,5 +452,21 @@ class TeamContext implements Context
         });
 
         return $matchingTeam;
+    }
+
+    /**
+     * @param Team $team
+     * @param string $username
+     *
+     * @return bool
+     */
+    private function isUserInTeam(Team $team, $username)
+    {
+        $teamMemberships = $this->teamMembershipRepository->findByTeam($team);
+        $matchingMemberships = $teamMemberships->filter(function (TeamMembership $membership) use ($username) {
+            return $membership->getUser()->getUsername() == $username;
+        });
+
+        return 0 !== $matchingMemberships->count();
     }
 }
