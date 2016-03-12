@@ -60,3 +60,10 @@ Feature:
     When I create a team "continuous-pipe"
     Then the team should not be created
     And I should see that the team already exists
+
+  @smoke
+  Scenario: I can give a name to a team
+    When I create a team "continuous-pipe" named "Continuous Pipe"
+    Then the team should be successfully created
+    And I request the list of teams
+    And I should see that the team "continuous-pipe" is named "Continuous Pipe"

@@ -206,7 +206,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     private function createUserTeam(User $user)
     {
-        $team = new Team($this->createTeamName($user->getUsername()));
+        $team = new Team($this->createTeamName($user->getUsername()), $user->getUsername());
         $team = $this->teamCreator->create($team, $user);
 
         return $team;

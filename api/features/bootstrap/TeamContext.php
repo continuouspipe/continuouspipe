@@ -72,7 +72,7 @@ class TeamContext implements Context
      */
     public function thereIsATeam($slug)
     {
-        $this->teamRepository->save(new Team($slug, Uuid::uuid1()));
+        $this->teamRepository->save(new Team($slug, $slug, Uuid::uuid1()));
     }
 
     /**
@@ -122,6 +122,23 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I create a team :slug named :name
+     */
+    public function iCreateATeamNamed($slug, $name)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams',
+            'POST',
+            [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'slug' => $slug,
+                'name' => $name,
+            ])
+        ));
+    }
+
+    /**
      * @When I request the list of teams
      */
     public function iRequestTheListOfTeams()
@@ -151,11 +168,7 @@ class TeamContext implements Context
      */
     public function iShouldSeeTheTeamInTheTeamList($slug)
     {
-        $this->assertResponseCodeIs($this->response, 200);
-        $list = json_decode($this->response->getContent(), true);
-        $matchingTeam = array_filter($list, function(array $team) use ($slug) {
-            return $team['slug'] == $slug;
-        });
+        $matchingTeam = $this->getTeamInList($slug);
 
         if (0 == count($matchingTeam)) {
             throw new \RuntimeException(sprintf(
@@ -169,11 +182,7 @@ class TeamContext implements Context
      */
     public function iShouldNotSeeTheTeamInTheTeamList($slug)
     {
-        $this->assertResponseCodeIs($this->response, 200);
-        $list = json_decode($this->response->getContent(), true);
-        $matchingTeam = array_filter($list, function(array $team) use ($slug) {
-            return $team['slug'] == $slug;
-        });
+        $matchingTeam = $this->getTeamInList($slug);
 
         if (0 !== count($matchingTeam)) {
             throw new \RuntimeException(sprintf(
@@ -213,6 +222,20 @@ class TeamContext implements Context
     {
         $url = sprintf('/api/teams/%s/users/%s', $teamSlug, $username);
         $this->response = $this->kernel->handle(Request::create($url, 'DELETE'));
+    }
+
+    /**
+     * @Then I should see that the team :slug is named :name
+     */
+    public function iShouldSeeThatTheTeamIsNamed($slug, $name)
+    {
+        $matchingTeams = $this->getTeamInList($slug);
+
+        if (count($matchingTeams) == 0) {
+            throw new \RuntimeException('Team not found in list');
+        } else if ($matchingTeams[0]['name'] != $name) {
+            throw new \RuntimeException('Team name is not matching');
+        }
     }
 
     /**
@@ -412,5 +435,21 @@ class TeamContext implements Context
                 $expectedMessage
             ));
         }
+    }
+
+    /**
+     * @param string $slug
+     *
+     * @return array
+     */
+    private function getTeamInList($slug)
+    {
+        $this->assertResponseCodeIs($this->response, 200);
+        $list = json_decode($this->response->getContent(), true);
+        $matchingTeam = array_filter($list, function (array $team) use ($slug) {
+            return $team['slug'] == $slug;
+        });
+
+        return $matchingTeam;
     }
 }
