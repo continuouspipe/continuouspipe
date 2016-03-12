@@ -189,7 +189,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     {
         $tokens = $bucket->getGitHubTokens();
         $matchingTokens = $tokens->filter(function (GitHubToken $token) use ($user) {
-            return $token->getLogin() == $user->getUsername();
+            return $token->getIdentifier() == $user->getUsername();
         });
 
         if ($matchingTokens->count() > 0) {

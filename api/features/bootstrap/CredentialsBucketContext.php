@@ -189,12 +189,12 @@ class CredentialsBucketContext implements Context
     }
 
     /**
-     * @When I delete the GitHub token of :login from the bucket :bucket
+     * @When I delete the GitHub token of :identifier from the bucket :bucket
      */
-    public function iDeleteTheGithubTokenOfFromTheBucket($login, $bucket)
+    public function iDeleteTheGithubTokenOfFromTheBucket($identifier, $bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/github-tokens/%s', $bucket, $login),
+            sprintf('/api/bucket/%s/github-tokens/%s', $bucket, $identifier),
             'DELETE'
         ));
     }
