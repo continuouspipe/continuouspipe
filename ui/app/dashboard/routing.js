@@ -18,6 +18,7 @@ angular.module('continuousPipeRiver')
             })
             .state('create-team', {
                 url: '/create-team',
+                parent: 'layout',
                 views: {
                     'content@': {
                         templateUrl: 'dashboard/views/teams/create.html',

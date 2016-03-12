@@ -41,6 +41,21 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+            .state('flows.create', {
+                url: '/create',
+                views: {
+                    'content@': {
+                        templateUrl: 'team/flows/views/create.html',
+                        controller: 'CreateFlowController'
+                    },
+                    'title@layout': {
+                        controller: function($scope, team) {
+                            $scope.team = team;
+                        },
+                        template: '<a ui-sref="flows({team: team.slug})">{{ team.slug }}</a> / Create a flow'
+                    }
+                }
+            })
             .state('users', {
                 parent: 'team',
                 url: '/users',

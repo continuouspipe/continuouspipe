@@ -1,32 +1,24 @@
-<md-content flex layout="row">
-    <md-content flex layout="column">
-        <md-content flex>
-            <form name="teamForm">
-                <div class="form-container">
-                    <p>You need to select a name and a unique identifier for your team.</p>
-                    <md-input-container class="md-block" flex-gt-xs>
-                        <label>Name</label>
-                        <input ng-model="team.name" required />
-                    </md-input-container>
-                    <md-input-container class="md-block" flex-gt-xs>
-                        <label>Unique identifier</label>
-                        <input ng-model="team.slug" required />
-                    </md-input-container>
-                </div>
-            </form>
-        </md-content>
-        <md-toolbar>
-            <div class="md-toolbar-tools">
-                <span flex></span>
-                <md-button class="md-raised" aria-label="Create" ng-disabled="teamForm.$invalid || isLoading" ng-click="create(team)">
-                    <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
-                    Create
-                </md-button>
-            </div>
-        </md-toolbar>
-    </md-content>
-    <md-content flex="20" class="help-sidebar">
-        <h2>Teams</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec mi metus, luctus eget neque non, tincidunt vehicula sapien. Nunc rutrum, urna eu condimentum finibus, erat nunc hendrerit purus, vitae molestie felis metus sit amet libero.</p>
-    </md-content>
+<md-content flex>
+    <form name="teamForm">
+        <div class="form-container">
+            <p>You need to select a name and a unique identifier for your team.</p>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Name</label>
+                <input ng-model="team.name" required />
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Unique identifier</label>
+                <input ng-model="team.slug" required />
+            </md-input-container>
+        </div>
+    </form>
 </md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create" ng-disabled="teamForm.$invalid || isLoading" ng-click="create(team)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
+            Create
+        </md-button>
+    </div>
+</md-toolbar>

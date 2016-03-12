@@ -1,0 +1,167 @@
+<md-content flex id="content" layout="column" ng-if="wizard.step == 0">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>1/4 Select your code repository</span>
+            </h2>
+        </div>
+    </md-toolbar>
+    <md-content flex layout="row">
+        <md-sidenav md-is-locked-open="true" class="organisation-list">
+            <md-list flex>
+                <md-list-item class="md-1-line" ng-click="selectedOrganisation = null;" ng-class="{'selected': !selectedRepository.organisation}">
+                    <img ng-src="http://www.gravatar.com/avatar/{{ user.email | gravatar }}" class="md-avatar" />
+                    <div class="md-list-item-text" layout="column">
+                        <h3>Personal repositories</h3>
+                    </div>
+                </md-list-item>
+                <md-divider ></md-divider>
+                <md-subheader class="md-no-sticky">Organisations</md-subheader>
+                <remote-resource resource-name="organisations">
+                    <md-list-item class="md-1-line" ng-repeat="organisation in organisations" ng-click="selectedRepository.organisation = organisation;" ng-class="{'selected': selectedRepository.organisation == organisation}">
+                        <img ng-src="{{ organisation.organisation.avatar_url }}" class="md-avatar" />
+                        <div class="md-list-item-text" layout="column">
+                            <h3>{{ organisation.organisation.login }}</h3>
+                        </div>
+                    </md-list-item>
+                </remote-resource>
+            </md-list>
+        </md-sidenav>
+        <md-content flex id="content">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <md-input-container md-no-float class="md-block">
+                        <md-icon><i class="material-icons">search</i></md-icon>
+                        <input ng-model="selectedRepository.filter.$" type="text" placeholder="Filter repository">
+                    </md-input-container>
+                </div>
+            </md-toolbar>
+            <md-list flex>
+                <remote-resource resource-name="repositories">
+                    <md-list-item class="md-1-line" ng-repeat="repository in repositories | filter:selectedRepository.filter" ng-click="selectedRepository.repository = repository;" ng-class="{'selected': selectedRepository.repository == repository}">
+                        <i class="material-icons md-avatar" ng-if="repository.repository.private">lock</i>
+                        <i class="material-icons md-avatar" ng-if="!repository.repository.private">public</i>
+                        <div class="md-list-item-text" layout="column">
+                            <h3>{{ repository.repository.name }}</h3>
+                        </div>
+                    </md-list-item>
+                </remote-resource>
+            </md-list>
+        </md-content>
+    </md-content>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <span flex></span>
+            <md-button class="md-raised" aria-label="Next" ng-click="wizard.step = 1;" ng-disabled="!selectedRepository.repository">Next</md-button>
+        </div>
+    </md-toolbar>
+</md-content>
+<md-content flex id="content" layout="column" ng-if="wizard.step == 1">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>2/4 Docker images</span>
+            </h2>
+        </div>
+    </md-toolbar>
+    <md-content flex layout="column">
+        <md-subheader>Docker Registry</md-subheader>
+        <md-radio-group ng-model="wizard.registry">
+            <md-radio-button value="docker.io" class="md-primary">Docker Hub Registry</md-radio-button>
+            <md-radio-button value=""> Custom Docker Hub Registry</md-radio-button>
+        </md-radio-group>
+        <md-subheader>Your application images</md-subheader>
+        <md-input-container>
+            <label>Branch</label>
+            <input ng-model="selectedRepository.branch">
+        </md-input-container>
+        <remote-resource resource-name="components">
+            <md-list ng-repeat="component in components | filter:{'has_to_be_built':true}">
+                <md-list-item>
+                    <md-checkbox ng-model="component.selected"></md-checkbox>
+                    <p>{{ component.name }}</p>
+                </md-list-item>
+                <md-content ng-show="component.selected">
+                    <md-input-container class="md-block">
+                        <label>Image name</label>
+                        <input ng-model="component.image_name" />
+                    </md-input-container>
+                </md-content>
+            </md-list>
+        </remote-resource>
+    </md-content>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-button aria-label="Previous" ng-click="wizard.step = 0;">Previous</md-button>
+            <span flex></span>
+            <md-button class="md-raised" aria-label="Next" ng-click="wizard.step = 2;">Next</md-button>
+        </div>
+    </md-toolbar>
+</md-content>
+<md-content flex id="content" layout="column" ng-if="wizard.step == 2">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>3/4 Containers deployment</span>
+            </h2>
+        </div>
+    </md-toolbar>
+    <md-content flex layout="column">
+        <md-subheader>Docker Registry</md-subheader>
+        <md-radio-group ng-model="wizard.cluster">
+            <md-radio-button value="hosted" class="md-primary" disabled="disabled">Hosted Kubernetes cluster <small>Directly contact us for an early access</small></md-radio-button>
+            <md-radio-button value="">Custom Kubernetes cluster</md-radio-button>
+        </md-radio-group>
+        <md-subheader>Containers properties</md-subheader>
+        <md-list ng-repeat="component in components">
+            <md-list-item>
+                <p>{{ component.name }}</p>
+            </md-list-item>
+            <md-content>
+                <md-subheader class="md-no-sticky">Visibility</md-subheader>
+                <md-radio-group ng-model="component.visibility">
+                    <md-radio-button value="public" class="md-primary">Public component</md-radio-button>
+                    <md-radio-button value="private">Private</md-radio-button>
+                </md-radio-group>
+
+                <md-subheader class="md-no-sticky">Update policy</md-subheader>
+                <md-radio-group ng-model="component.update_policy">
+                    <md-radio-button value="rolling-update" class="md-primary">Rolling update</md-radio-button>
+                    <md-radio-button value="lock">Only create, do not update (databases, psstt)</md-radio-button>
+                </md-radio-group>
+            </md-content>
+        </md-list>
+    </md-content>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-button aria-label="Previous" ng-click="wizard.step = 1;">Previous</md-button>
+            <span flex></span>
+            <md-button class="md-raised" aria-label="Next" ng-click="wizard.step = 3;">Next</md-button>
+        </div>
+    </md-toolbar>
+</md-content>
+
+<md-content flex id="content" layout="column" ng-if="wizard.step == 3">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>4/4 Configuration</span>
+            </h2>
+        </div>
+    </md-toolbar>
+    <md-content flex layout="column">
+        <p>Hey, we've generated a configuration for you!</p>
+        <p>Where do you want it to be stored?</p>
+        <md-radio-group ng-model="configuration.storage">
+            <md-radio-button value="repository" class="md-primary">In my code repository</md-radio-button>
+            <md-radio-button value="cp">On ContinuousPipe</md-radio-button>
+        </md-radio-group>
+    </md-content>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-button aria-label="Previous" ng-click="wizard.step = 2;">Previous</md-button>
+            <span flex></span>
+            <md-button class="md-raised" aria-label="Next" ng-click="finish()">Finish</md-button>
+        </div>
+    </md-toolbar>
+</md-content>
