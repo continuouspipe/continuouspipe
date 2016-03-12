@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\CodeRepository\DockerCompose;
 use ContinuousPipe\DockerCompose\Transformer\ComponentTransformer;
 use ContinuousPipe\DockerCompose\Transformer\TransformException;
 
-class DockerComposeComponent
+class DockerComposeComponent implements \JsonSerializable
 {
     /**
      * @var ComponentTransformer
@@ -193,5 +193,25 @@ class DockerComposeComponent
         return array_map(function ($definition) {
             return new DockerComposeVolume($definition);
         }, $this->parsed['volumes']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        try {
+            $imageName = $this->getImageName();
+        } catch (ResolveException $e) {
+            $imageName = null;
+        }
+
+        return [
+            'name' => $this->getName(),
+            'has_to_be_built' => $this->hasToBeBuilt(),
+            'image_name' => $imageName,
+            'visibility' => $this->getVisibility(),
+            'update_policy' => $this->getUpdatePolicy(),
+        ];
     }
 }

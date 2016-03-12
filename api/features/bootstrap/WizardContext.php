@@ -3,36 +3,47 @@
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubOrganisation;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
+use ContinuousPipe\River\Tests\CodeRepository\InMemoryOrganisationRepository;
+use GitHub\WebHook\Model\Organisation;
 use GitHub\WebHook\Model\Repository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 
-class RepositoryContext implements Context
+class WizardContext implements Context
 {
     /**
      * @var Kernel
      */
     private $kernel;
+
     /**
      * @var InMemoryCodeRepositoryRepository
      */
     private $codeRepositoryRepository;
+
+    /**
+     * @var InMemoryOrganisationRepository
+     */
+    private $organisationRepository;
+
     /**
      * @var Response
      */
     private $response;
 
     /**
-     * @param Kernel                           $kernel
+     * @param Kernel $kernel
      * @param InMemoryCodeRepositoryRepository $codeRepositoryRepository
+     * @param InMemoryOrganisationRepository $organisationRepository
      */
-    public function __construct(
-        Kernel $kernel,
-        InMemoryCodeRepositoryRepository $codeRepositoryRepository)
+    public function __construct(Kernel $kernel, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryOrganisationRepository $organisationRepository)
     {
         $this->kernel = $kernel;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
+        $this->organisationRepository = $organisationRepository;
     }
 
     /**
@@ -64,7 +75,7 @@ class RepositoryContext implements Context
      */
     public function iSendARequestToListMyRepositories()
     {
-        $this->response = $this->kernel->handle(Request::create('/user-repositories', 'GET'));
+        $this->response = $this->kernel->handle(Request::create('/wizard/repositories', 'GET'));
     }
 
     /**
@@ -72,7 +83,7 @@ class RepositoryContext implements Context
      */
     public function iSendARequestToListRepositoriesOf($organisation)
     {
-        $this->response = $this->kernel->handle(Request::create("/user-repositories/organisation/$organisation", 'GET'));
+        $this->response = $this->kernel->handle(Request::create(sprintf('/wizard/organisations/%s/repositories', $organisation), 'GET'));
     }
 
     /**
@@ -96,6 +107,42 @@ class RepositoryContext implements Context
 
         if (count($received)) {
             throw new \Exception('Received more repositories than expected.');
+        }
+    }
+
+    /**
+     * @Given I am a member of the following organisations:
+     */
+    public function iAmAMemberOfTheFollowingOrganisations(TableNode $organisations)
+    {
+        foreach ($organisations->getHash() as $organisation) {
+            $this->organisationRepository->add(new GitHubOrganisation(
+                new Organisation($organisation['organisation'], 'url')
+            ));
+        }
+    }
+
+    /**
+     * @When I send a request to list my organisations
+     */
+    public function iSendARequestToListMyOrganisations()
+    {
+        $this->response = $this->kernel->handle(Request::create('/wizard/organisations', 'GET'));
+    }
+
+    /**
+     * @Then I should receive the following list of organisations:
+     */
+    public function iShouldReceiveTheFollowingListOfOrganisations(TableNode $expected)
+    {
+        $received = array_map(function ($organisation) {
+            return $organisation['organisation']['login'];
+        }, json_decode($this->response->getContent(), true));
+
+        foreach ($expected->getHash() as $organisation) {
+            if (!in_array($organisation['organisation'], $received)) {
+                throw new \Exception("Have not received organisation '$organisation'");
+            }
         }
     }
 }

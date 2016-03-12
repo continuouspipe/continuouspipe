@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace AppBundle\Controller\Wizard;
 
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
 use ContinuousPipe\Security\User\User;
@@ -9,9 +9,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
- * @Route(service="app.controller.user_repositories")
+ * @Route("/wizard", service="app.controller.wizard.repositories")
  */
-class UserRepositoriesController
+class RepositoriesController
 {
     /**
      * @var CodeRepositoryRepository
@@ -27,7 +27,7 @@ class UserRepositoriesController
     }
 
     /**
-     * @Route("/user-repositories")
+     * @Route("/repositories")
      * @ParamConverter("user", converter="user")
      * @View
      */
@@ -37,7 +37,7 @@ class UserRepositoriesController
     }
 
     /**
-     * @Route("/user-repositories/organisation/{organisation}")
+     * @Route("/organisations/{organisation}/repositories")
      * @View
      */
     public function listByOrganisationAction($organisation)
