@@ -13,14 +13,14 @@
         <table class="table hover">
             <thead>
             <tr>
-                <th>Login</th>
+                <th>Identifier</th>
                 <th>Token</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="token in tokens">
-                <td>{{ token.login }}</td>
+                <td>{{ token.identifier }}</td>
                 <td>{{ token.accessToken }}</td>
                 <td>
                     <md-button ng-click="deleteToken(token)" class="md-icon-button"><i class="material-icons">delete</i></md-button>

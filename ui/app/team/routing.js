@@ -26,7 +26,7 @@ angular.module('continuousPipeRiver')
                         controller: function($scope, team) {
                             $scope.team = team;
                         },
-                        template: '{{ team.slug }}'
+                        template: '{{ team.name || team.slug }}'
                     }
                 }
             })
@@ -52,7 +52,7 @@ angular.module('continuousPipeRiver')
                         controller: function($scope, team) {
                             $scope.team = team;
                         },
-                        template: '<a ui-sref="flows({team: team.slug})">{{ team.slug }}</a> / Create a flow'
+                        template: '<a ui-sref="flows({team: team.slug})">{{ team.name || team.slug }}</a> / Create a flow'
                     }
                 }
             })

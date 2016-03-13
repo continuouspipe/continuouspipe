@@ -164,11 +164,25 @@ body {
 
             md-content {
                 background: $content-background;
+
+                md-toolbar {
+                    z-index: 100;
+                }
+
+                md-content {
+                    md-toolbar {
+                        z-index: 50;
+                    }
+                }
             }
 
             md-toolbar {
+                z-index: 200;
                 background: $inner-toolbar-background !important;
                 color: $inner-toolbar-color;
+
+                /* from AMD: .md-whiteframe-1dp */
+                box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
 
                 .md-button {
                     background: $inner-toolbar-button-background;

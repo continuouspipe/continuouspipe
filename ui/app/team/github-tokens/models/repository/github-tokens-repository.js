@@ -2,7 +2,7 @@
 
 angular.module('continuousPipeRiver')
     .service('GitHubTokensRepository', function($resource, $teamContext, AUTHENTICATOR_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/bucket/:bucket/github-tokens/:login');
+        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/bucket/:bucket/github-tokens/:identifier');
 
         var getBucketUuid = function() {
             return $teamContext.getCurrentTeam().bucket_uuid;
@@ -13,7 +13,7 @@ angular.module('continuousPipeRiver')
         };
 
         this.remove = function(token) {
-            return this.resource.delete({bucket: getBucketUuid(), login: token.login}).$promise;
+            return this.resource.delete({bucket: getBucketUuid(), identifier: token.identifier}).$promise;
         };
 
         this.create = function(token) {
