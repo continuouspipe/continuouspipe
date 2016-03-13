@@ -73,9 +73,9 @@ class TideFactory
      * @param Flow                $flow
      * @param TideCreationRequest $creationRequest
      *
-     * @return Tide
-     *
      * @throws CommitResolverException
+     *
+     * @return Tide
      */
     public function createFromCreationRequest(Flow $flow, TideCreationRequest $creationRequest)
     {

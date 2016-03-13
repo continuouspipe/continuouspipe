@@ -12,6 +12,8 @@ interface CommitResolver
      * @param CodeRepository  $repository
      * @param string          $branch
      *
+     * @throws CommitResolverException
+     *
      * @return string
      */
     public function getHeadCommitOfBranch(BucketContainer $bucketContainer, CodeRepository $repository, $branch);

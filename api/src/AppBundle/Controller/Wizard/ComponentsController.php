@@ -45,10 +45,15 @@ class ComponentsController
     public function getAction(CodeRepository $repository, User $user, $branch)
     {
         $sha1 = $this->commitResolver->getHeadCommitOfBranch($user, $repository, $branch);
-        $components = $this->componentsResolver->resolve(
-            new CodeReference($repository, $sha1, $branch),
-            $user
-        );
+
+        try {
+            $components = $this->componentsResolver->resolve(
+                new CodeReference($repository, $sha1, $branch),
+                $user
+            );
+        } catch (CodeRepository\DockerCompose\ResolveException $e) {
+            return [];
+        }
 
         return array_map(function (CodeRepository\DockerCompose\DockerComposeComponent $component) {
             return $component->jsonSerialize();
