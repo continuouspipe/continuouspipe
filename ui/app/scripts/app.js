@@ -22,7 +22,8 @@ angular
         'angular-jwt',
         'angular-md5',
         'angular-google-analytics',
-        'slugifier'
+        'slugifier',
+        'ui.ace'
     ])
     .config(function($urlRouterProvider, $breadcrumbProvider, $locationProvider, AnalyticsProvider) {
         $urlRouterProvider.otherwise('/');

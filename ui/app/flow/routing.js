@@ -56,5 +56,15 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+            .state('flow.configuration', {
+                url: '/configuration',
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/configuration/edit.html',
+                        controller: 'FlowConfigurationController'
+                    }
+                },
+                aside: true
+            })
         ;
     });
