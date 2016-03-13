@@ -29,7 +29,7 @@
 
 <div flex layout="row">
     <md-sidenav md-is-open="aside" md-is-locked-open="aside" class="sidebar" ui-view="aside"></md-sidenav>
-    <md-content flex id="content" layout="column" ui-view="content"></md-content>
+    <md-content flex class="content" layout="column" ui-view="content"></md-content>
 </div>
 
 <!-- build:js(.) scripts/vendor.js -->
@@ -49,6 +49,7 @@
 <script src="bower_components/angular-resource/angular-resource.js"></script>
 <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
 <script src="bower_components/angular-slugify/angular-slugify.js"></script>
+<script src="bower_components/angular-timeago/src/timeAgo.js"></script>
 <script src="bower_components/angular-touch/angular-touch.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/iframe-resizer/src/iframeResizer.js"></script>
@@ -95,6 +96,7 @@
 <script src="tide/directives/log-frame.js"></script>
 <script src="tide/models/repository/tide-repository.js"></script>
 <script src="tide/filters/httpify.js"></script>
+<script src="tide/filters/tide-status-class.js"></script>
 
 <script src="team/routing.js"></script>
 <script src="team/users/controllers/list.js"></script>

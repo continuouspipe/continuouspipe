@@ -10,10 +10,10 @@
 </md-toolbar>
 <md-content flex id="content" class="card-grid">
     <remote-resource resource-name="flows">
-        <md-card ng-repeat="flow in flows">
+        <md-card ng-repeat="flow in flows" class="flow-card">
             <md-card-header ui-sref="flow.tides({uuid: flow.uuid})">
                 <md-card-avatar>
-                    <md-icon class="md-avatar-icon"><i class="material-icons">transform</i></md-icon>
+                    <md-icon class="md-avatar-icon">widgets</md-icon>
                 </md-card-avatar>
                 <md-card-header-text>
                     <span class="md-title">{{ flow.repository.repository.name }}</span>
@@ -21,25 +21,21 @@
                 </md-card-header-text>
             </md-card-header>
 
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Branch</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-show="!flow.tides.length">
-                    <td colspan="3">No tides found.</td>
-                </tr>
-                <tr ng-repeat="tide in flow.tides" ui-sref="tide.logs({uuid: flow.uuid, tideUuid: tide.uuid})">
-                    <td>{{ tide.code_reference.branch }}</td>
-                    <td>{{ tide.creation_date | date:'dd/MM/yyyy hh:mm:ss' }}</td>
-                    <td>{{ tide.status }}</td>
-                </tr>
-                </tbody>
-            </table>
+            <md-card-content ng-if="!flow.tides.length">
+                <p>No tides run in this flow.</p>
+            </md-card-content>
+
+            <md-card-title ng-if="flow.tides.length">
+                <md-card-title-text>
+                    <span class="md-headline">Last tide</span>
+                </md-card-title-text>
+            </md-card-title>
+
+            <md-card-content ng-if="flow.tides.length" class="tide-summary" ui-sref="tide.logs({uuid: flow.uuid, tideUuid: flow.tides[0].uuid})" ng-class="flow.tides[0].status | tideStatusClass">
+                <h3>{{ flow.tides[0].code_reference.branch }}</h3>
+                <h4>{{ flow.tides[0].code_reference.sha1 }}</h4>
+                <p>{{ flow.tides[0].creation_date | timeAgo }}</p>
+            </md-card-content>
         </md-card>
     </remote-resource>
 </md-content>

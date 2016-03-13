@@ -23,9 +23,10 @@ angular
         'angular-md5',
         'angular-google-analytics',
         'slugifier',
-        'ui.ace'
+        'ui.ace',
+        'yaru22.angular-timeago'
     ])
-    .config(function($urlRouterProvider, $breadcrumbProvider, $locationProvider, AnalyticsProvider) {
+    .config(function($urlRouterProvider, $breadcrumbProvider, $locationProvider, $mdThemingProvider, AnalyticsProvider) {
         $urlRouterProvider.otherwise('/');
         $locationProvider.html5Mode(true);
         $breadcrumbProvider.setOptions({
@@ -36,6 +37,8 @@ angular
             .setAccount('UA-71216332-2')
             .setPageEvent('$stateChangeSuccess')
         ;
+
+        $mdThemingProvider.theme('blue');
     })
     // We need to inject it at least once to have automatic tracking
     .run(function(Analytics) {})
