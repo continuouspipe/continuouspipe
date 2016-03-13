@@ -23,6 +23,13 @@ $running-dark-color: #1D8CD9;
 $failure-color: #FDE3E3;
 $failure-dark-color: #F28282;
 
+.title-text {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #80868D;
+    font-size: 14px;
+}
+
 table.table {
     border-top: 1px solid #F3F4F8;
     border-collapse: collapse;
@@ -35,16 +42,36 @@ table.table {
     }
 
     thead {
-        background: #F6F8FA;
+        background: $content-background;
+        border-bottom: 1px solid #ccc;
+
+        th {
+            @extend .title-text;
+
+            padding: 25px;
+        }
     }
 
-    tr:nth-child(2n) {
-        background: #FBFCFD;
+    tbody {
+        td {
+            padding: 25px;
+        }
+
+        tr {
+            border-bottom: 1px solid #efefef;
+        }
+
+        tr:nth-child(2n+1) {
+            background: #fff;
+        }
+        tr:nth-child(2n) {
+            background: #fcfcfc;
+        }
     }
 
     &.hover {
         tbody tr:hover {
-            background: #f4f4f4;
+            background: #fcfcfc;
         }
     }
 
@@ -171,7 +198,7 @@ body {
         padding: 20px;
 
         md-card {
-            width: 400px;
+            width: 365px;
             box-shadow: none;
             border: 1px solid #efefef;
             float: left;
@@ -184,13 +211,11 @@ body {
                 padding-top: 0;
 
                 .md-headline {
+                    @extend .title-text;
+
                     background: $content-background;
                     border-radius: 32px;
                     padding: 0 15px;
-                    text-transform: uppercase;
-                    font-weight: bold;
-                    color: #80868D;
-                    font-size: 14px;
                 }
             }
 
@@ -215,24 +240,6 @@ body {
 
                 h4 {
                     font-size: 12px;
-                }
-
-                &.status-failure {
-                    background: $failure-color;
-                    color: $failure-dark-color;
-                    border-left: 2px solid $failure-dark-color;
-                }
-
-                &.status-success {
-                    background: $success-color;
-                    color: $success-dark-color;
-                    border-left: 2px solid $success-dark-color;
-                }
-
-                &.status-running {
-                    background: $running-color;
-                    color: $running-dark-color;
-                    border-left: 2px solid $running-dark-color;
                 }
             }
         }
@@ -296,6 +303,26 @@ body {
                 background: #fefefe;
                 padding: 10px;
             }
+        }
+    }
+
+    .status-container {
+        &.status-failure {
+            background: $failure-color;
+            color: $failure-dark-color;
+            border-left: 2px solid $failure-dark-color;
+        }
+
+        &.status-success {
+            background: $success-color;
+            color: $success-dark-color;
+            border-left: 2px solid $success-dark-color;
+        }
+
+        &.status-running {
+            background: $running-color;
+            color: $running-dark-color;
+            border-left: 2px solid $running-dark-color;
         }
     }
 }

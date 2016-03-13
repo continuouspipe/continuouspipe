@@ -31,7 +31,7 @@
                 </md-card-title-text>
             </md-card-title>
 
-            <md-card-content ng-if="flow.tides.length" class="tide-summary" ui-sref="tide.logs({uuid: flow.uuid, tideUuid: flow.tides[0].uuid})" ng-class="flow.tides[0].status | tideStatusClass">
+            <md-card-content ng-if="flow.tides.length" class="tide-summary status-container" ui-sref="tide.logs({uuid: flow.uuid, tideUuid: flow.tides[0].uuid})" ng-class="flow.tides[0].status | tideStatusClass">
                 <h3>{{ flow.tides[0].code_reference.branch }}</h3>
                 <h4>{{ flow.tides[0].code_reference.sha1 }}</h4>
                 <p>{{ flow.tides[0].creation_date | timeAgo }}</p>
