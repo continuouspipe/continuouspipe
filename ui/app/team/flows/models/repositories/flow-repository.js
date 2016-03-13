@@ -26,10 +26,10 @@ angular.module('continuousPipeRiver')
             }).$promise;
         };
 
-        this.createFromRepository = function(repository) {
+        this.createFromRepositoryAndTeam = function(team, repository) {
             return $resource(RIVER_API_URL+'/flows').save({
                 repository: repository.repository.id,
-                team: $teamContext.getCurrent().slug
+                team: team.slug
             }).$promise;
         };
     });

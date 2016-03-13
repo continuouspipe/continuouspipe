@@ -98,11 +98,6 @@ body {
             padding: 20px;
         }
 
-        md-toolbar {
-            background: #52A6FF !important;
-            color: #fff !important;
-        }
-
         .help-sidebar {
             padding: 10px;
             background: #ACB1B4;
@@ -143,6 +138,52 @@ body {
             height: 100%;
 
             border: none;
+        }
+    }
+
+    .flow-wizard {
+        md-list {
+            padding: 0;
+        }
+
+        .step-repository {
+            md-list-item {
+                &.selected {
+                    background: #efefef;
+                }
+            }
+
+            .organisation-list {
+                md-list-item {
+                    .md-avatar {
+                        border-radius: 0;
+                    }
+                }
+            }
+
+            .filter-repository-toolbar {
+                background: #EFEFEF;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+                padding-top: 20px;
+                min-height: 69px;
+                height: 69px;
+
+                md-icon {
+                    color: grey;
+                }
+
+                md-input-container.md-block {
+                    width: 100%;
+                }
+            }
+        }
+
+        .step-configuration {
+            pre {
+                border: 1px solid #ccc;
+                background: #fefefe;
+                padding: 10px;
+            }
         }
     }
 }
