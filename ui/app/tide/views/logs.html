@@ -1,4 +1,4 @@
-<md-toolbar class="status-container" ng-class="tide.status | tideStatusClass">
+<md-toolbar class="status-container" ng-class="(summary.status || tide.status) | tideStatusClass">
     <div class="md-toolbar-tools">
         <h2 ng-hide="summary"><span>Loading...</span></h2>
         <h2 ng-show="summary && summary.status != 'running'">{{ summary.status | firstUpperCase }}</h2>
