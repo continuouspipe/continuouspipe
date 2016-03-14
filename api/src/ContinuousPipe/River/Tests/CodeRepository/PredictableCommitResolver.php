@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Tests\CodeRepository;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
-use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class PredictableCommitResolver implements CommitResolver
 {
@@ -17,7 +17,7 @@ class PredictableCommitResolver implements CommitResolver
     /**
      * {@inheritdoc}
      */
-    public function getHeadCommitOfBranch(Bucket $credentialsBucket, CodeRepository $repository, $branch)
+    public function getHeadCommitOfBranch(BucketContainer $bucketContainer, CodeRepository $repository, $branch)
     {
         if (!array_key_exists($branch, $this->resolutions)) {
             throw new CommitResolverException(sprintf(

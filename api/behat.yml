@@ -49,12 +49,10 @@ default:
                     - @river.pipe_client
                     - @jms_serializer
                 - Task\WaitContext: ~
-                - OrganisationContext:
-                    - @kernel
-                    - @repository_river.organisation_repository
-                - RepositoryContext:
+                - WizardContext:
                     - @kernel
                     - @repository_river.code_repository_repository
+                    - @repository_river.organisation_repository
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideSummaryContext:

@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
-use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
 {
@@ -32,10 +32,10 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
     /**
      * {@inheritdoc}
      */
-    public function getFileSystem(CodeReference $codeReference, Team $team)
+    public function getFileSystem(CodeReference $codeReference, BucketContainer $bucketContainer)
     {
         return new CodeRepository\GitHubRelativeFileSystem(
-            $this->gitHubClientFactory->createClientFromBucketUuid($team->getBucketUuid()),
+            $this->gitHubClientFactory->createClientFromBucketUuid($bucketContainer->getBucketUuid()),
             $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
             $codeReference->getCommitSha()
         );

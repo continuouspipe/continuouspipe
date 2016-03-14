@@ -30,9 +30,13 @@
             <argument type="service" id="river.docker_compose.parser.yaml" />
         </service>
 
-        <service id="river.docker_compose.configuration_enhancer" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\DockerComposeConfigurationAsDefault">
+        <service id="river.docker_compose.repository_components_resolver" class="ContinuousPipe\River\CodeRepository\DockerCompose\RepositoryComponentsResolver">
             <argument type="service" id="river.file_system_resolver" />
             <argument type="service" id="river.docker_compose.parser.project" />
+        </service>
+
+        <service id="river.docker_compose.configuration_enhancer" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\DockerComposeConfigurationAsDefault">
+            <argument type="service" id="river.docker_compose.repository_components_resolver" />
         </service>
     </services>
 </container>

@@ -42,6 +42,13 @@ class Repository
     private $url;
 
     /**
+     * @JMS\Type("string")
+     *
+     * @var string
+     */
+    private $defaultBranch;
+
+    /**
      * @param string $name
      * @param string $url
      * @param bool   $private
@@ -94,5 +101,13 @@ class Repository
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultBranch()
+    {
+        return $this->defaultBranch;
     }
 }

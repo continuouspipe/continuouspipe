@@ -5,12 +5,17 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.controller.user_repositories" class="AppBundle\Controller\UserRepositoriesController">
+        <service id="app.controller.wizard.repositories" class="AppBundle\Controller\Wizard\RepositoriesController">
             <argument type="service" id="repository_river.code_repository_repository" />
         </service>
-        <service id="app.controller.user_organisations" class="AppBundle\Controller\UserOrganisationsController">
+        <service id="app.controller.wizard.organisations" class="AppBundle\Controller\Wizard\OrganisationsController">
             <argument type="service" id="repository_river.organisation_repository" />
         </service>
+        <service id="app.controller.wizard.components" class="AppBundle\Controller\Wizard\ComponentsController">
+            <argument type="service" id="river.docker_compose.repository_components_resolver" />
+            <argument type="service" id="river.commit_resolver" />
+        </service>
+
         <service id="app.controller.flow" class="AppBundle\Controller\FlowController">
             <argument type="service" id="river.repository.flow" />
             <argument type="service" id="river.flow_factory" />

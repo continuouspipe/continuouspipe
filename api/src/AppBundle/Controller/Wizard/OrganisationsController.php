@@ -1,15 +1,15 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace AppBundle\Controller\Wizard;
 
 use ContinuousPipe\River\CodeRepository\OrganisationRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations\View;
 
 /**
- * @Route(service="app.controller.user_organisations")
+ * @Route("/wizard", service="app.controller.wizard.organisations")
  */
-class UserOrganisationsController
+class OrganisationsController
 {
     /**
      * @var OrganisationRepository
@@ -25,7 +25,7 @@ class UserOrganisationsController
     }
 
     /**
-     * @Route("/user-organisations")
+     * @Route("/organisations")
      * @View
      */
     public function listAction()
