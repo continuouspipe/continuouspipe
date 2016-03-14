@@ -16,11 +16,12 @@ angular.module('continuousPipeRiver')
             $scope.error = null;
 
             TideRepository.create(flow, tide).then(function() {
-                $state.go('flow', {
+                $state.go('flow.tides', {
                     uuid: flow.uuid
                 });
-            }, function(response) {
-                $scope.error = response.data ? response.data.error : 'Unknown error ('+response.status+')';
+            }, function(error) {
+                var message = ((error || {}).data || {}).message || "An unknown error occured while creating a tide";
+                swal("Error !", message, "error");
             })['finally'](function() {
                 $scope.isLoading = false;
             });
