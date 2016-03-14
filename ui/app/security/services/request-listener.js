@@ -7,8 +7,7 @@ angular.module('continuousPipeRiver')
         }];
 
         $httpProvider.interceptors.push('jwtInterceptor');
-
-        $httpProvider.interceptors.push(function($q, $authenticationProvider) {
+        $httpProvider.interceptors.push(function($q, $authenticationProvider, $injector) {
             return {
                 'responseError': function(response) {
                     if (response.status == 401) {
@@ -21,10 +20,30 @@ angular.module('continuousPipeRiver')
                 }
             };
         });
-
     })
-    .run(function($authenticationProvider) {
+    .run(function($authenticationProvider, $rootScope, $state, $errorContext) {
         if (!$authenticationProvider.isAuthenticated()) {
             $authenticationProvider.handleAuthentication();
         }
+
+        $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
+            $errorContext.set(error);
+
+            if (error.status == 403) {
+                $state.go('error.403', {}, {location: false});
+            } else if (error.status == 404) {
+                $state.go('error.404', {}, {location: false});
+            } else {
+                $state.go('error.500', {}, {location: false});                
+            }
+        });
+    })
+    .service('$errorContext', function() {
+        this.get = function() {
+            return this.error;
+        };
+
+        this.set = function(error) {
+            this.error = error;
+        };
     });

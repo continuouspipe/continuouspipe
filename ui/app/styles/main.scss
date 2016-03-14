@@ -99,9 +99,7 @@ body {
             }
         }
 
-        .account-button {
-            height: 50px;
-            width: 50px;
+        button.md-button.account-button {
             padding: 0;
 
             img {
@@ -150,6 +148,10 @@ body {
     }
 
     md-content {
+        .error-content {
+            padding: 40px;
+        }
+        
         .form-container {
             padding: 20px;
         }
