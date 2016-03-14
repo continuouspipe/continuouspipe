@@ -91,7 +91,9 @@ tasks:
             image:
                 from_service: api
             commands:
+                - composer run-script update-parameters
                 - php app/console doctrine:migrations:migrate --no-interaction
+
             environment:
                 - name: DATABASE_HOST
                   value: 104.155.7.25
