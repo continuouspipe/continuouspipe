@@ -83,6 +83,10 @@ table.table {
 }
 
 body {
+    .md-open-menu-container {
+        z-index: 500;
+    }
+    
     > md-toolbar {
         background: $header-background !important;
         height: 40px;
@@ -151,7 +155,7 @@ body {
         .error-content {
             padding: 40px;
         }
-        
+
         .form-container {
             padding: 20px;
         }

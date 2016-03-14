@@ -7,19 +7,6 @@ angular.module('continuousPipeRiver')
         }];
 
         $httpProvider.interceptors.push('jwtInterceptor');
-        $httpProvider.interceptors.push(function($q, $authenticationProvider, $injector) {
-            return {
-                'responseError': function(response) {
-                    if (response.status == 401) {
-                        $authenticationProvider.handleAuthentication();
-
-                        return response;
-                    }
-
-                    return $q.reject(response);
-                }
-            };
-        });
     })
     .run(function($authenticationProvider, $rootScope, $state, $errorContext) {
         if (!$authenticationProvider.isAuthenticated()) {
@@ -29,7 +16,12 @@ angular.module('continuousPipeRiver')
         $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
             $errorContext.set(error);
 
-            if (error.status == 403) {
+            // Do not retry or anything
+            event.preventDefault();
+
+            if (error.status == 401) {
+                $authenticationProvider.handleAuthentication();
+            } else if (error.status == 403) {
                 $state.go('error.403', {}, {location: false});
             } else if (error.status == 404) {
                 $state.go('error.404', {}, {location: false});
