@@ -43,4 +43,27 @@ angular.module('continuousPipeRiver')
                 aside: false
             })
         ;
+
+        $stateProvider
+            .state('kaikai', {
+                url: '/kaikai/:tideUuid',
+                resolve: {
+                    tide: function($stateParams, TideRepository) {
+                        return TideRepository.find($stateParams.tideUuid);
+                    }
+                },
+                views: {
+                    'content@': {
+                        controller: function($state, tide) {
+                            $state.go('tide.logs', {
+                                team: tide.team.slug,
+                                uuid: tide.flow.uuid,
+                                tideUuid: tide.uuid
+                            });
+                        }
+                    }
+                },
+                aside: false
+            })
+        ;
     });
