@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "64cc59000dadcb35450e0cb4edff1d39",
-    "content-hash": "65247ab8436d0495b7e978069fdee4d3",
+    "hash": "fef3fbeca8d4dfea009a89aa0ac36e86",
+    "content-hash": "d45d5b514f1fc84b13cbad4f81b2742d",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -155,16 +155,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "dev-credentials-bucket",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "e916b1f648b6eefc6e88089e77107264eac8820d"
+                "reference": "b51cb93fea559784c39a967aa81948db1088b964"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/e916b1f648b6eefc6e88089e77107264eac8820d",
-                "reference": "e916b1f648b6eefc6e88089e77107264eac8820d",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/b51cb93fea559784c39a967aa81948db1088b964",
+                "reference": "b51cb93fea559784c39a967aa81948db1088b964",
                 "shasum": ""
             },
             "require": {
@@ -184,10 +184,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/credentials-bucket",
+                "source": "https://github.com/continuouspipe/security/tree/1.4.1",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2016-03-12 15:01:44"
+            "time": "2016-03-14 12:06:02"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -5445,8 +5445,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "csa/guzzle-bundle": 0,
-        "continuous-pipe/security": 20
+        "csa/guzzle-bundle": 0
     },
     "prefer-stable": false,
     "prefer-lowest": false,

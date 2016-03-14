@@ -51,7 +51,7 @@ class SecurityContext implements Context
         $bucket = new Bucket(Uuid::uuid1());
         $this->inMemoryAuthenticatorClient->addBucket($bucket);
 
-        $team = new Team($slug, $bucket->getUuid());
+        $team = new Team($slug, $slug, $bucket->getUuid());
         $this->inMemoryAuthenticatorClient->addTeam($team);
 
         return $team;
