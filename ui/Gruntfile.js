@@ -442,7 +442,19 @@ module.exports = function (grunt) {
           PIPE_API_URL: 'http://'+(process.env.PIPE_API_URL || 'pipe_api.docker/app_dev.php')
         }
       }
+    },
+
+    ngtemplates: {
+      continuousPipeRiver: {
+        cwd: 'app',
+        src: '**/*.html',
+        dest: 'templates.js',
+        options: {
+          usemin: 'scripts/app.js'
+        }
+      }
     }
+
   });
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
@@ -477,10 +489,12 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'ngconstant:environment',
     'wiredep',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
+    'ngtemplates',
     'concat',
     'ngAnnotate',
     'copy:dist',
