@@ -6,7 +6,7 @@
         </h2>
     </div>
 </md-toolbar>
-<md-content flex id="content" class="card-grid">
+<md-content flex id="content" class="card-grid large">
     <remote-resource resource-name="environments">
         <md-card ng-repeat="environment in environments">
             <md-card-header>
@@ -39,8 +39,9 @@
                                 <a href="http://{{ endpoint }}">{{ endpoint }}</a>
                             </li>
                         </ul>
+                        <em ng-show="!component.status.public_endpoints.length">None</em>
                     </td>
-                    <td>{{ component.status.status }}</td>
+                    <td class="status-text" ng-class="{'status-success': component.status.status == 'healthy', 'status-failure': component.status.status == 'unhealthy', 'status-running': component.status.status === 'unknown'}">{{ component.status.status }}</td>
                 </tr>
                 </tbody>
             </table>
