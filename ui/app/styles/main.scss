@@ -217,6 +217,12 @@ body {
     .card-grid {
         padding: 20px;
 
+        &.large {
+            md-card {
+                width: 99%;
+            }
+        }
+
         md-card {
             width: 365px;
             box-shadow: none;
@@ -236,6 +242,10 @@ body {
                     background: $content-background;
                     border-radius: 32px;
                     padding: 0 15px;
+                }
+
+                &:first-child {
+                    margin-top: 20px;
                 }
             }
 
@@ -260,6 +270,26 @@ body {
 
                 h4 {
                     font-size: 12px;
+                }
+            }
+
+            table.table {
+                thead {
+                    th {
+                        padding: 5px;
+                    }
+                }
+
+                tbody {
+                    td {
+                        padding: 5px;
+
+                        ul {
+                            margin: 0;
+                            list-style: none;
+                            padding: 0;
+                        }
+                    }
                 }
             }
         }
@@ -343,6 +373,20 @@ body {
             background: $running-color;
             color: $running-dark-color;
             border-left: 2px solid $running-dark-color;
+        }
+    }
+
+    .status-text {
+        &.status-failure {
+            color: $failure-dark-color;
+        }
+
+        &.status-success {
+            color: $success-dark-color;
+        }
+
+        &.status-running {
+            color: $running-dark-color;
         }
     }
 }

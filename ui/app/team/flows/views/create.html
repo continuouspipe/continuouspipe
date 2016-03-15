@@ -201,6 +201,7 @@
     <md-content flex layout="column">
         <div class="form-container">
             <p>In order to configure how your Docker containers will be deployed, select a branch that have your Docker Compose configuration.</p>
+            <br />
             <md-input-container class="md-block">
                 <label>Branch</label>
                 <input ng-model="wizard.componentsBranch">
@@ -219,6 +220,16 @@
                             <md-input-container class="md-block">
                                 <label>Image name</label>
                                 <input ng-model="component.image_name" ng-disabled="!component.has_to_be_built" />
+                            </md-input-container>
+
+                            <md-input-container class="md-block">
+                                <label>Exposed port(s)</label>
+                                <md-chips
+                                    ng-model="component.exposed_ports"
+                                    placeholder="Enter a port number"
+                                    delete-button-label="Remove port"
+                                    delete-hint="Press delete to remove a port"
+                                    secondary-placeholder="+Port"></md-chips>
                             </md-input-container>
 
                             <md-subheader class="md-no-sticky">Visibility</md-subheader>

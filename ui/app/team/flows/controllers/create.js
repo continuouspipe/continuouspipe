@@ -202,18 +202,22 @@ angular.module('continuousPipeRiver')
                     };
                 }
 
-                configuration.tasks.deployment.deploy.services[component.name] = {};
+                configuration.tasks.deployment.deploy.services[component.name] = {
+                    specification: {}
+                };
                 if (component.visibility == 'public') {
-                    configuration.tasks.deployment.deploy.services[component.name].specification = {
-                        accessibility: {
-                            from_external: true
-                        }
+                    configuration.tasks.deployment.deploy.services[component.name].specification.accessibility = {
+                        from_external: true
                     };
                 }
 
                 if (component.update_policy == 'lock') {
                     configuration.tasks.deployment.deploy.services[component.name].locked = true;
                 }
+
+                configuration.tasks.deployment.deploy.services[component.name].specification.ports = (component.exposed_ports || []).map(function(portNumber) {
+                    return parseInt(portNumber);
+                });
             }
 
             return configuration;
