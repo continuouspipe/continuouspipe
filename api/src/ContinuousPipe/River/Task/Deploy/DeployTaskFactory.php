@@ -131,6 +131,17 @@ class DeployTaskFactory implements TaskFactory
                                     ->append(Configuration::getEnvironmentVariablesNode())
                                     ->arrayNode('ports')
                                         ->prototype('array')
+                                            ->beforeNormalization()
+                                                ->ifTrue(function($value) {
+                                                    return is_int($value);
+                                                })
+                                                ->then(function ($port) {
+                                                    return [
+                                                        'port' => $port,
+                                                        'identifier' => sprintf('port-%d', $port),
+                                                    ];
+                                                })
+                                            ->end()
                                             ->children()
                                                 ->scalarNode('identifier')->isRequired()->end()
                                                 ->integerNode('port')->isRequired()->end()

@@ -84,7 +84,6 @@ Feature:
     And the component "one" should be deployed with the reverse proxy extension and contains the domain name "example.com"
 
   Scenario: Fills the guessed port for all the deploy tasks
-
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -119,3 +118,23 @@ Feature:
     Then the component "app" should be deployed with a TCP port 80 named "web1" opened
     And the first deploy succeed
     Then the component "app" should be deployed with a TCP port 80 named "web2" opened
+
+  Scenario: Can specify only the port number
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: my/app
+                            accessibility:
+                                from_external: true
+                            ports:
+                                - 80
+    """
+    When a tide is started
+    Then the component "app" should be deployed with a TCP port 80

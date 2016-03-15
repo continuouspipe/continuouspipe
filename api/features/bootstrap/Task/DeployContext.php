@@ -327,6 +327,22 @@ class DeployContext implements Context
     }
 
     /**
+     * @Then the component :componentName should be deployed with a TCP port :portNumber
+     */
+    public function theComponentShouldBeDeployedWithATcpPort($componentName, $portNumber)
+    {
+        $component = $this->getDeployedComponent($componentName);
+        $ports = $component->getSpecification()->getPorts();
+        $matchingPorts = array_filter($ports, function(Component\Port $port) use ($portNumber) {
+            return $port->getPort() == $portNumber;
+        });
+
+        if (0 == count($matchingPorts)) {
+            throw new \RuntimeException('No matching port found');
+        }
+    }
+
+    /**
      * @Then the component :componentName should have a persistent volume mounted at :mountPath
      */
     public function theComponentShouldHaveAPersistentVolumeMountedAt($componentName, $mountPath)
