@@ -2,9 +2,10 @@
 set -xe
 
 # Updates the configuration file
-cd /build && \
+cd /app && \
    grunt ngconstant && \
-   cp .tmp/scripts/config.js /usr/share/nginx/html/scripts/config.js
+   cp .tmp/scripts/config.js dist/scripts/config.js
 
 # Start nginx
 nginx -g "daemon off;"
+
