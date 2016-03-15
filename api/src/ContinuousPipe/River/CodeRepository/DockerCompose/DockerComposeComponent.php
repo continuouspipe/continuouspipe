@@ -212,6 +212,7 @@ class DockerComposeComponent implements \JsonSerializable
             'image_name' => $imageName,
             'visibility' => $this->getVisibility(),
             'update_policy' => $this->getUpdatePolicy(),
+            'exposed_ports' => $this->getExposedPorts(),
         ];
     }
 }
