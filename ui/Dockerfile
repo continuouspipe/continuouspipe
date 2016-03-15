@@ -12,26 +12,25 @@ RUN apt-get install -y ruby ruby-dev build-essential git \
   && npm install -g grunt-cli bower
 
 # Build the application
-RUN mkdir /build
-WORKDIR /build
+RUN mkdir /app
+WORKDIR /app
+
+# Copy configuration
+COPY /docker/run.sh /run.sh
+COPY /docker/nginx/vhost.conf /etc/nginx/conf.d/default.conf
 
 # Install node dependencies
-ADD package.json /build/package.json
+ADD package.json /app/package.json
 RUN npm install
 
 # Install bower dependencies
-ADD .bowerrc /build/.bowerrc
-ADD bower.json /build/bower.json
+ADD .bowerrc /app/.bowerrc
+ADD bower.json /app/bower.json
 RUN bower install --config.interactive=false --allow-root
 
 # Build the code
-COPY . /build
-RUN grunt build \
- && rm -rf /usr/share/nginx/html/* \
- && mv dist/* /usr/share/nginx/html
-
-WORKDIR /usr/share/nginx/html
+COPY . /app
+RUN grunt build
 
 # Copy the runnable
-COPY /docker/run.sh /run.sh
 CMD ["/run.sh"]
