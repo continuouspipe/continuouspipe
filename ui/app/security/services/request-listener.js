@@ -6,6 +6,18 @@ angular.module('continuousPipeRiver')
             return $tokenStorage.get();
         }];
 
+        $httpProvider.interceptors.push(function($q, $authenticationProvider) {
+            return {
+                'responseError': function(response) {
+                    if (response.status == 401) {
+                        $authenticationProvider.handleAuthentication();
+                    }
+
+                    return $q.reject(response);
+                }
+            };
+        });
+
         $httpProvider.interceptors.push('jwtInterceptor');
     })
     .run(function($authenticationProvider, $rootScope, $state, $errorContext) {
@@ -19,7 +31,7 @@ angular.module('continuousPipeRiver')
             // Do not retry or anything
             event.preventDefault();
 
-            if (error.status == 401) {
+            if (error.status == 401 || !$authenticationProvider.isAuthenticated()) {
                 $authenticationProvider.handleAuthentication();
             } else if (error.status == 403) {
                 $state.go('error.403', {}, {location: false});
