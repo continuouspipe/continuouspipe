@@ -212,7 +212,7 @@ angular.module('continuousPipeRiver')
                 }
 
                 if (component.update_policy == 'lock') {
-                    configuration.tasks.deployment.deploy.services[component.name].lock = true;
+                    configuration.tasks.deployment.deploy.services[component.name].locked = true;
                 }
             }
 
