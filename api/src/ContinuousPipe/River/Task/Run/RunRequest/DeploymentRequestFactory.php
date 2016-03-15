@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Run\RunRequest;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
@@ -47,7 +48,10 @@ class DeploymentRequestFactory
                 $configuration->getClusterIdentifier()
             ),
             new DeploymentRequest\Specification([
-                $this->createComponent($context->getTaskId(), $configuration),
+                $this->createComponent(
+                    $this->createComponentName($context),
+                    $configuration
+                ),
             ]),
             new DeploymentRequest\Notification(
                 $this->getNotificationUrl($context),
@@ -137,5 +141,15 @@ class DeploymentRequestFactory
     private function getCommand(RunTaskConfiguration $configuration)
     {
         return ['sh', '-cex', implode('; ', $configuration->getCommands())];
+    }
+
+    /**
+     * @param RunContext $context
+     *
+     * @return string
+     */
+    private function createComponentName(RunContext $context)
+    {
+        return (new Slugify())->slugify($context->getTaskId());
     }
 }
