@@ -237,6 +237,10 @@ body {
                     border-radius: 32px;
                     padding: 0 15px;
                 }
+
+                &:first-child {
+                    margin-top: 20px;
+                }
             }
 
             &.flow-card {
