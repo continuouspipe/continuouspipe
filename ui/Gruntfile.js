@@ -77,7 +77,7 @@ module.exports = function (grunt) {
           middleware: function (connect) {
             return [
               rewrite([
-                '!\\.html|\\.js|\\.css|\\.woff|\\.ttf|\\.png$ /index.html'
+                '!\\.html|\\.js|\\.css|\\.woff|\\.ttf|\\.png|\\.jpg$ /index.html'
               ]),
               connect.static('.tmp'),
               connect().use(
@@ -436,13 +436,25 @@ module.exports = function (grunt) {
           dest: '.tmp/scripts/config.js'
         },
         constants: {
-          RIVER_API_URL: 'http://'+(process.env.RIVER_API_URL || 'continuouspipe_river.docker/app_dev.php'),
-          AUTHENTICATOR_API_URL: 'http://'+(process.env.AUTHENTICATOR_API_URL || 'continuouspipe_authenticator.docker/app_dev.php'),
-          LOG_STREAM_URL: 'http://'+(process.env.LOG_STREAM_URL || 'logstream.docker'),
-          PIPE_API_URL: 'http://'+(process.env.PIPE_API_URL || 'continuouspipe_pipe.docker/app_dev.php')
+          RIVER_API_URL: 'http://'+(process.env.RIVER_API_URL || 'river_api.docker/app_dev.php'),
+          AUTHENTICATOR_API_URL: 'http://'+(process.env.AUTHENTICATOR_API_URL || 'authenticator_app.docker/app_dev.php'),
+          LOG_STREAM_URL: 'http://'+(process.env.LOG_STREAM_URL || 'logstream-frontend.docker'),
+          PIPE_API_URL: 'http://'+(process.env.PIPE_API_URL || 'pipe_api.docker/app_dev.php')
+        }
+      }
+    },
+
+    ngtemplates: {
+      continuousPipeRiver: {
+        cwd: 'app',
+        src: '**/*.html',
+        dest: 'templates.js',
+        options: {
+          usemin: 'scripts/app.js'
         }
       }
     }
+
   });
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
@@ -477,10 +489,12 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'ngconstant:environment',
     'wiredep',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
+    'ngtemplates',
     'concat',
     'ngAnnotate',
     'copy:dist',

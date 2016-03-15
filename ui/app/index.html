@@ -8,24 +8,29 @@
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
-    <link rel="stylesheet" href="styles/vendor/app.min.1.css">
-    <link rel="stylesheet" href="styles/vendor/app.min.2.css">
-    <link rel="stylesheet" href="bower_components/material-design-iconic-font/css/material-design-iconic-font.css">
+    <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
     <link rel="stylesheet" href="bower_components/loaders.css/loaders.css">
     <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+    <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.css">
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
 </head>
-<body ng-app="continuousPipeRiver" ng-class="{'toggled sw-toggled': asideEnabled}">
+<body ng-app="continuousPipeRiver" layout="column">
 <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
     your browser</a> to improve your experience.</p>
 <![endif]-->
 
-<div ui-view></div>
+<md-toolbar layout="row" ui-view="header"></md-toolbar>
+
+<div flex layout="row">
+    <md-sidenav md-is-open="aside" md-is-locked-open="aside" class="sidebar" ui-view="aside"></md-sidenav>
+    <md-content flex class="content" layout="column" ui-view="content"></md-content>
+</div>
 
 <!-- build:js(.) scripts/vendor.js -->
 <!-- bower:js -->
@@ -34,16 +39,19 @@
 <script src="bower_components/angular-animate/angular-animate.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
 <script src="bower_components/angular-breadcrumb/release/angular-breadcrumb.js"></script>
-<script src="bower_components/angular-drag-and-drop-lists/angular-drag-and-drop-lists.js"></script>
 <script src="bower_components/angular-google-analytics/dist/angular-google-analytics.js"></script>
 <script src="bower_components/angular-jwt/dist/angular-jwt.js"></script>
-<script src="bower_components/angular-md5/angular-md5.js"></script>
+<script src="bower_components/angular-loading-bar/build/loading-bar.js"></script>
+<script src="bower_components/angular-aria/angular-aria.js"></script>
 <script src="bower_components/angular-messages/angular-messages.js"></script>
+<script src="bower_components/angular-material/angular-material.js"></script>
+<script src="bower_components/angular-md5/angular-md5.js"></script>
 <script src="bower_components/angular-resource/angular-resource.js"></script>
 <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script src="bower_components/angular-slugify/angular-slugify.js"></script>
+<script src="bower_components/angular-timeago/src/timeAgo.js"></script>
 <script src="bower_components/angular-touch/angular-touch.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-<script src="bower_components/bootstrap-select/dist/js/bootstrap-select.js"></script>
 <script src="bower_components/iframe-resizer/src/iframeResizer.js"></script>
 <script src="bower_components/iframe-resizer/src/iframeResizer.contentWindow.js"></script>
 <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
@@ -53,9 +61,10 @@
 <script src="bower_components/js-yaml/dist/js-yaml.js"></script>
 <!-- endbuild -->
 
-<!-- build:js({.tmp,app}) scripts/scripts.js -->
-<script src="scripts/app.js"></script>
 <script src="scripts/config.js"></script>
+
+<!-- build:js({.tmp,app}) scripts/app.js -->
+<script src="scripts/app.js"></script>
 
 <script src="security/services/authentication-provider.js"></script>
 <script src="security/services/request-listener.js"></script>
@@ -65,48 +74,50 @@
 <script src="security/model/repository/user-repository.js"></script>
 <script src="security/model/repository/team-repository.js"></script>
 <script src="security/model/repository/team-membership-repository.js"></script>
-<script src="security/controllers/team.js"></script>
 <script src="security/routing.js"></script>
 
-<script src="layout/controllers/breadcrumb.js"></script>
+<script src="dashboard/controllers/teams.js"></script>
+<script src="dashboard/routing.js"></script>
+
 <script src="layout/controllers/header.js"></script>
+<script src="layout/controllers/error.js"></script>
 <script src="layout/directives/remote-resource.js"></script>
-<script src="layout/directives/form/float-input.js"></script>
-<script src="layout/directives/form/select-input.js"></script>
 <script src="layout/services/remote-resource.js"></script>
 <script src="layout/listeners/aside.js"></script>
-<script src="layout/listeners/breadcrumb.js"></script>
 <script src="layout/routing.js"></script>
+<script src="layout/config.js"></script>
 
-<script src="flow/controllers/list.js"></script>
-<script src="flow/controllers/show.js"></script>
-<script src="flow/controllers/create.js"></script>
+<script src="flow/controllers/tides.js"></script>
+<script src="flow/controllers/environments.js"></script>
 <script src="flow/controllers/configuration.js"></script>
-<script src="flow/models/repository/flow-repository.js"></script>
-<script src="flow/models/repository/repository-repository.js"></script>
-<script src="flow/models/repository/organisation-repository.js"></script>
 <script src="flow/models/repository/environment-repository.js"></script>
 <script src="flow/routing.js"></script>
 
 <script src="tide/routing.js"></script>
 <script src="tide/controllers/logs.js"></script>
-<script src="tide/controllers/kaikai.js"></script>
-<script src="tide/controllers/create.js"></script>
 <script src="tide/directives/log-frame.js"></script>
 <script src="tide/models/repository/tide-repository.js"></script>
 <script src="tide/filters/httpify.js"></script>
+<script src="tide/filters/tide-status-class.js"></script>
+<script src="tide/filters/first-upper-case.js"></script>
 
-<script src="account/routing.js"></script>
-<script src="account/registry-credentials/controllers/list.js"></script>
-<script src="account/registry-credentials/controllers/create.js"></script>
-<script src="account/registry-credentials/models/repository/registry-credentials-repository.js"></script>
-<script src="account/github-tokens/controllers/list.js"></script>
-<script src="account/github-tokens/controllers/create.js"></script>
-<script src="account/github-tokens/models/repository/github-tokens-repository.js"></script>
-<script src="account/clusters/controllers/list.js"></script>
-<script src="account/clusters/controllers/create.js"></script>
-<script src="account/clusters/directives/cluster-selector.js"></script>
-<script src="account/clusters/models/repository/cluster-repository.js"></script>
+<script src="team/routing.js"></script>
+<script src="team/layout/filters/join.js"></script>
+<script src="team/users/controllers/list.js"></script>
+<script src="team/users/controllers/add.js"></script>
+<script src="team/flows/controllers/create.js"></script>
+<script src="team/flows/controllers/list.js"></script>
+<script src="team/flows/models/repositories/flow-repository.js"></script>
+<script src="team/flows/models/repositories/wizard-repository.js"></script>
+<script src="team/registry-credentials/controllers/list.js"></script>
+<script src="team/registry-credentials/controllers/create.js"></script>
+<script src="team/registry-credentials/models/repository/registry-credentials-repository.js"></script>
+<script src="team/github-tokens/controllers/list.js"></script>
+<script src="team/github-tokens/controllers/create.js"></script>
+<script src="team/github-tokens/models/repository/github-tokens-repository.js"></script>
+<script src="team/clusters/controllers/list.js"></script>
+<script src="team/clusters/controllers/add.js"></script>
+<script src="team/clusters/models/repository/cluster-repository.js"></script>
 <!-- endbuild -->
 </body>
 </html>

@@ -1,0 +1,32 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="tides">{{ tides.length }} tides</span>
+            <span ng-hide="tides">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Start manually" ui-sref="flow.create-tide"><md-icon>play_arrow</md-icon> Start manually</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <remote-resource resource-name="tides">
+        <table class="table hover actionable">
+            <thead>
+            <tr>
+                <th>UUID</th>
+                <th>Code reference</th>
+                <th>Creation date</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="tide in tides" ui-sref="tide.logs({tideUuid: tide.uuid})" class="status-container" ng-class="tide.status | tideStatusClass">
+                <td>{{ tide.uuid }}</td>
+                <td>{{ tide.code_reference.branch }} <small>({{ tide.code_reference.sha1 }})</small></td>
+                <td>{{ tide.creation_date | timeAgo }}</td>
+                <td>{{ tide.status }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>

@@ -1,0 +1,41 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="flows">{{ flows.length }} flows</span>
+            <span ng-hide="flows">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create a flow" ui-sref="flows.create"><md-icon>add</md-icon> Create a flow</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content" class="card-grid">
+    <remote-resource resource-name="flows">
+        <md-card ng-repeat="flow in flows" class="flow-card">
+            <md-card-header ui-sref="flow.tides({uuid: flow.uuid})">
+                <md-card-avatar>
+                    <md-icon class="md-avatar-icon">widgets</md-icon>
+                </md-card-avatar>
+                <md-card-header-text>
+                    <span class="md-title">{{ flow.repository.repository.name }}</span>
+                    <span class="md-subhead">{{ flow.repository.repository.owner.login }}</span>
+                </md-card-header-text>
+            </md-card-header>
+
+            <md-card-content ng-if="!flow.tides.length">
+                <p>No tides run in this flow.</p>
+            </md-card-content>
+
+            <md-card-title ng-if="flow.tides.length">
+                <md-card-title-text>
+                    <span class="md-headline">Last tide</span>
+                </md-card-title-text>
+            </md-card-title>
+
+            <md-card-content ng-if="flow.tides.length" class="tide-summary status-container" ui-sref="tide.logs({uuid: flow.uuid, tideUuid: flow.tides[0].uuid})" ng-class="flow.tides[0].status | tideStatusClass">
+                <h3>{{ flow.tides[0].code_reference.branch }}</h3>
+                <h4>{{ flow.tides[0].code_reference.sha1 }}</h4>
+                <p>{{ flow.tides[0].creation_date | timeAgo }}</p>
+            </md-card-content>
+        </md-card>
+    </remote-resource>
+</md-content>

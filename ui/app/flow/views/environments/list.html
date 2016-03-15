@@ -1,0 +1,49 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="environments">{{ environments.length }} environments</span>
+            <span ng-hide="environments">Loading...</span>
+        </h2>
+    </div>
+</md-toolbar>
+<md-content flex id="content" class="card-grid">
+    <remote-resource resource-name="environments">
+        <md-card ng-repeat="environment in environments">
+            <md-card-header>
+                <md-card-avatar>
+                    <md-icon class="md-avatar-icon"><i class="material-icons">transform</i></md-icon>
+                </md-card-avatar>
+                <md-card-header-text>
+                    <span class="md-title">{{ environment.name }}</span>
+                    <span class="md-subhead">{{ environment.components.length }} components</span>
+                </md-card-header-text>
+            </md-card-header>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Component name</th>
+                    <th>Endpoint</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-show="!environment.components.length">
+                    <td colspan="3">No components found.</td>
+                </tr>
+                <tr ng-repeat="component in environment.components">
+                    <td>{{ component.name }}</td>
+                    <td>
+                        <ul ng-show="component.status.public_endpoints.length" class="m-0 p-l-10">
+                            <li ng-repeat="endpoint in component.status.public_endpoints">
+                                <a href="http://{{ endpoint }}">{{ endpoint }}</a>
+                            </li>
+                        </ul>
+                    </td>
+                    <td>{{ component.status.status }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </md-card>
+    </remote-resource>
+</md-content>

@@ -1,0 +1,283 @@
+<md-content flex id="content" layout="column" ng-if="wizard.step == 0" class="flow-wizard">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>1/4 Select your code repository</span>
+            </h2>
+        </div>
+    </md-toolbar>
+    <md-content flex layout="row" class="step-repository">
+        <md-sidenav md-is-locked-open="true" class="organisation-list">
+            <md-list flex>
+                <md-list-item class="md-1-line" ng-click="wizard.organisation = null;" ng-class="{'selected': !wizard.organisation}">
+                    <img ng-src="http://www.gravatar.com/avatar/{{ user.email | gravatar }}" class="md-avatar" />
+                    <div class="md-list-item-text" layout="column">
+                        <p>Personal repositories</p>
+                    </div>
+                </md-list-item>
+                <md-divider ></md-divider>
+                <md-subheader class="md-no-sticky">Organisations</md-subheader>
+                <md-divider ></md-divider>
+                <remote-resource resource-name="organisations">
+                    <md-list-item class="md-1-line" ng-repeat="organisation in organisations" ng-click="wizard.organisation = organisation;" ng-class="{'selected': wizard.organisation == organisation}">
+                        <img ng-src="{{ organisation.organisation.avatar_url }}" class="md-avatar" />
+                        <div class="md-list-item-text" layout="column">
+                            <p>{{ organisation.organisation.login }}</p>
+                        </div>
+                    </md-list-item>
+                </remote-resource>
+            </md-list>
+        </md-sidenav>
+        <md-content flex id="content" layout="column">
+            <md-toolbar class="filter-repository-toolbar">
+                <div class="md-toolbar-tools">
+                    <md-input-container md-no-float class="md-block">
+                        <md-icon><i class="material-icons">search</i></md-icon>
+                        <input ng-model="wizard.repositoryFilter.$" type="text" placeholder="Filter repository">
+                    </md-input-container>
+                </div>
+            </md-toolbar>
+            <md-content flex>
+                <remote-resource resource-name="repositories">
+                    <md-list>
+                        <md-list-item class="md-1-line" ng-repeat="repository in repositories | filter:wizard.repositoryFilter" ng-click="wizard.repository = repository;" ng-class="{'selected': wizard.repository == repository}">
+                            <md-icon class="md-avatar-icon" ng-if="repository.repository.private">lock</md-icon>
+                            <md-icon class="md-avatar-icon" ng-if="!repository.repository.private">public</md-icon>
+                            <p>{{ repository.repository.name }}</p>
+                        </md-list-item>
+                    </md-list>
+                </remote-resource>
+            </md-content>
+        </md-content>
+    </md-content>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <span flex></span>
+            <md-button class="md-raised" aria-label="Next" ng-click="wizard.step = 1;" ng-disabled="!wizard.repository">Next</md-button>
+        </div>
+    </md-toolbar>
+</md-content>
+
+<md-content flex id="content" layout="column" ng-if="wizard.step == 1">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>2/4 Docker images registry</span>
+            </h2>
+        </div>
+    </md-toolbar>
+    <md-content flex layout="column">
+        <md-subheader>Where do you want to push your Docker images?</md-subheader>
+        <div class="form-container">
+            <md-radio-group ng-model="wizard.registryType">
+                <md-radio-button value="docker-hub" class="md-primary">
+                    Docker Hub Registry
+                </md-radio-button>
+                <md-radio-button value="custom">
+                    Custom Docker Hub Registry
+                </md-radio-button>
+            </md-radio-group>
+            <md-autocomplete
+                ng-if="wizard.registryType == 'custom'"
+                md-search-text="wizard.registry.serverAddress"
+                md-items="registry in searchRegistries(wizard.registry.serverAddress)"
+                md-item-text="registry.serverAddress"
+                md-min-length="3"
+                placeholder="Registry address"
+                required="required">
+                <md-item-template><span>{{ registry.serverAddress }}</span></md-item-template>
+                <md-not-found>
+                    No existing repository credentials found for this address. Please enter the credentials above.
+                </md-not-found>
+            </md-autocomplete>
+        </div>
+
+        <md-subheader ng-if="wizard.registryType">Registry credentials</md-subheader>
+        <form class="form-container" name="credentialsForm">
+            <remote-resource ng-if="wizard.registryType" resource-name="registryCredentials">
+                <p ng-show="wizard.registryExists">The registry credentials already exists, you're good to go to the next step already :)</p>
+                <div ng-show="!wizard.registryExists" >
+                    <md-input-container class="md-block">
+                        <label>Username</label>
+                        <input ng-model="wizard.registry.username" type="text" required>
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Password</label>
+                        <input ng-model="wizard.registry.password" type="password" required>
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Email</label>
+                        <input ng-model="wizard.registry.email" type="email" required>
+                    </md-input-container>
+                </div>
+            </remote-resource>
+        </form>
+    </md-content>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-button aria-label="Previous" ng-click="wizard.step = 0;">Previous</md-button>
+            <span flex></span>
+            <md-button class="md-raised" aria-label="Next" ng-click="wizard.step = 2;" ng-disabled="!wizard.registryType || credentialsForm.$invalid || !wizard.registry.serverAddress">Next</md-button>
+        </div>
+    </md-toolbar>
+</md-content>
+
+<md-content flex id="content" layout="column" ng-if="wizard.step == 2">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>3/5 Container cluster</span>
+            </h2>
+        </div>
+    </md-toolbar>
+    <md-content flex layout="column">
+        <md-subheader>Where do you want to deploy your containers?</md-subheader>
+        <div class="form-container">
+            <md-radio-group ng-model="wizard.cluster.type">
+                <md-radio-button class="md-primary" disabled="disabled">Hosted Kubernetes cluster <small>Directly contact us for an early access</small></md-radio-button>
+                <md-radio-button value="kubernetes">Custom Kubernetes cluster</md-radio-button>
+            </md-radio-group>
+
+            <md-autocomplete
+                md-search-text="wizard.cluster.identifier"
+                md-items="cluster in searchClusters(wizard.cluster.identifier)"
+                md-item-text="cluster.identifier"
+                md-min-length="3"
+                placeholder="Cluster identifier"
+                required="required">
+                <md-item-template>
+                    <span>{{ cluster.identifier }}</span>
+                </md-item-template>
+                <md-not-found>
+                    No existing cluster found for this identifier. Please enter the credentials above.
+                </md-not-found>
+            </md-autocomplete>
+        </div>
+
+        <md-subheader>Cluster credentials</md-subheader>
+        <form class="form-container" name="clusterForm">
+            <remote-resource resource-name="clusters">
+                <p ng-show="wizard.clusterExists">The cluster already exists, you're good to go to the next step already :)</p>
+                <div ng-show="!wizard.clusterExists" >
+                    <md-input-container class="md-block">
+                        <label>Address</label>
+                        <input ng-model="wizard.cluster.address" type="text" required>
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Version</label>
+                        <md-select ng-model="wizard.cluster.version" required>
+                            <md-option>v1</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Username</label>
+                        <input ng-model="wizard.cluster.username" type="text" required>
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Password</label>
+                        <input ng-model="wizard.cluster.password" type="password" required>
+                    </md-input-container>
+                </div>
+            </remote-resource>
+        </form>
+    </md-content>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-button aria-label="Previous" ng-click="wizard.step = 1;">Previous</md-button>
+            <span flex></span>
+            <md-button class="md-raised" aria-label="Next" ng-click="wizard.step = 3;" ng-disabled="clusterForm.$invalid || !wizard.cluster.identifier">Next</md-button>
+        </div>
+    </md-toolbar>
+</md-content>
+
+<md-content flex id="content" layout="column" ng-if="wizard.step == 3">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>4/5 Your application containers</span>
+            </h2>
+        </div>
+    </md-toolbar>
+    <md-content flex layout="column">
+        <div class="form-container">
+            <p>In order to configure how your Docker containers will be deployed, select a branch that have your Docker Compose configuration.</p>
+            <md-input-container class="md-block">
+                <label>Branch</label>
+                <input ng-model="wizard.componentsBranch">
+            </md-input-container>
+
+            <remote-resource resource-name="components">
+                <p ng-show="components.length == 0">No components found. Maybe you don't have any Docker Compose configuration?</p>
+                <div ng-show="components.length" class="card-grid">
+                    <md-card ng-repeat="component in components">
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">{{ component.name }}</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content>
+                            <md-input-container class="md-block">
+                                <label>Image name</label>
+                                <input ng-model="component.image_name" ng-disabled="!component.has_to_be_built" />
+                            </md-input-container>
+
+                            <md-subheader class="md-no-sticky">Visibility</md-subheader>
+                            <md-radio-group ng-model="component.visibility">
+                                <md-radio-button value="public" class="md-primary">Public component</md-radio-button>
+                                <md-radio-button value="private">Private</md-radio-button>
+                            </md-radio-group>
+
+                            <md-subheader class="md-no-sticky">Update policy</md-subheader>
+                            <md-radio-group ng-model="component.update_policy">
+                                <md-radio-button value="rolling-update" class="md-primary">Rolling update</md-radio-button>
+                                <md-radio-button value="lock">Only create, do not update (databases, psstt)</md-radio-button>
+                            </md-radio-group>
+                        </md-card-content>
+                    </md-card>
+                </div>
+            </remote-resource>
+        </div>
+    </md-content>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-button aria-label="Previous" ng-click="wizard.step = 2;">Previous</md-button>
+            <span flex></span>
+            <md-button class="md-raised" aria-label="Next" ng-click="wizard.step = 4;">Next</md-button>
+        </div>
+    </md-toolbar>
+</md-content>
+
+<md-content flex id="content" layout="column" ng-if="wizard.step == 4" class="step-configuration">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>5/5 Configuration</span>
+            </h2>
+        </div>
+    </md-toolbar>
+    <md-content flex layout="column">
+        <md-subheader>Configuration storage</md-subheader>
+        <div class="form-container">
+            <p>Hey, we've generated a configuration for you! Where do you want it to be stored?</p>
+            <md-radio-group ng-model="wizard.configurationStorage">
+                <md-radio-button value="cp">On ContinuousPipe</md-radio-button>
+                <md-radio-button value="repository" class="md-primary">In my code repository</md-radio-button>
+            </md-radio-group>
+        </div>
+        <md-subheader ng-show="wizard.configurationStorage == 'repository'">Generated configuration</md-subheader>
+        <div ng-show="wizard.configurationStorage == 'repository'" class="form-container">
+            <p>Copy this configuration in a <code>continuous-pipe.yml</code> file at the root of your code repository.</p>
+            <pre>{{ wizard.configuration }}</pre>
+        </div>
+    </md-content>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-button aria-label="Previous" ng-click="wizard.step = 3;">Previous</md-button>
+            <span flex></span>
+            <md-button class="md-raised" aria-label="Next" ng-click="finish()" ng-disabled="isLoading">
+                <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
+                Finish
+            </md-button>
+        </div>
+    </md-toolbar>
+</md-content>

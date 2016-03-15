@@ -1,0 +1,34 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="credentials">{{ credentials.length }} credentials</span>
+            <span ng-hide="credentials">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Add" ui-sref="registry-credentials.create">Add</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <remote-resource resource-name="credentials">
+        <table class="table hover">
+            <thead>
+            <tr>
+                <th>Server</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="credential in credentials">
+                <td>{{ credential.serverAddress }}</td>
+                <td>{{ credential.username }}</td>
+                <td>{{ credential.email }}</td>
+                <td>
+                    <md-button ng-click="deleteCredentials(credential)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>

@@ -1,0 +1,36 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="clusters">{{ clusters.length }} clusters</span>
+            <span ng-hide="clusters">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Add" ui-sref="clusters.add">Add</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <remote-resource resource-name="clusters">
+        <table class="table hover">
+            <thead>
+            <tr>
+                <th>Type</th>
+                <th>Identifier</th>
+                <th>Address</th>
+                <th>Credentials</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="cluster in clusters">
+                <td>{{ cluster.type }}</td>
+                <td>{{ cluster.identifier }}</td>
+                <td>{{ cluster.address }} <small>{{ cluster.version }}</small></td>
+                <td>User <small>{{ cluster.username }}</small></td>
+                <td>
+                    <md-button ng-click="deleteCluster(cluster)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>

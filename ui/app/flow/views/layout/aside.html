@@ -1,12 +1,11 @@
-<div class="sidebar-inner">
-    <div class="si-inner">
-        <ul class="main-menu m-t-0">
-            <li ui-sref-active="active">
-                <a ui-sref="flow.overview"><i class="md md-dns"></i> Overview</a>
-            </li>
-            <li ui-sref-active="active">
-                <a ui-sref="flow.configuration"><i class="md md-shuffle"></i> Configuration</a>
-            </li>
-        </ul>
-    </div>
-</div>
+<md-menu-content>
+    <md-menu-item>
+        <md-button ui-sref-active="selected" ui-sref="flow.tides"><md-icon>reorder</md-icon> Tides</md-button>
+    </md-menu-item>
+    <md-menu-item>
+        <md-button ui-sref-active="selected" ui-sref="flow.environments"><md-icon>pageview</md-icon> Environments</md-button>
+    </md-menu-item>
+    <md-menu-item>
+        <md-button ui-sref-active="selected" ui-sref="flow.configuration"><md-icon>settings</md-icon> Configuration</md-button>
+    </md-menu-item>
+</md-menu-content>

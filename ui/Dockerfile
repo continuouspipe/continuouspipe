@@ -1,35 +1,37 @@
-FROM node
+FROM nginx
 
-RUN mkdir /app
-WORKDIR /app
+# Install NodeJS
+RUN apt-get update \
+ && apt-get install -y curl \
+ && curl -sL https://deb.nodesource.com/setup_5.x | bash - \
+ && apt-get install -y nodejs build-essential
 
-# Install prerequisites CLI tools
-RUN npm install -g grunt-cli
-RUN npm install -g bower
+# Install prerequisites build tools
+RUN apt-get install -y ruby ruby-dev build-essential git \
+  && gem install compass \
+  && npm install -g grunt-cli bower
 
-# Install compass
-RUN apt-get update -y && apt-get install -y ruby ruby-dev build-essential && \
-    gem install compass
+# Build the application
+RUN mkdir /build
+WORKDIR /build
 
-# Install Node
-ADD package.json /app/package.json
+# Install node dependencies
+ADD package.json /build/package.json
 RUN npm install
 
 # Install bower dependencies
-ADD .bowerrc /app/.bowerrc
-ADD bower.json /app/bower.json
+ADD .bowerrc /build/.bowerrc
+ADD bower.json /build/bower.json
 RUN bower install --config.interactive=false --allow-root
 
-# Add application code
-ADD . /app
+# Build the code
+COPY . /build
+RUN grunt build \
+ && rm -rf /usr/share/nginx/html/* \
+ && mv dist/* /usr/share/nginx/html
 
-# Set the environment to the development one
-ENV NODE_ENV development
+WORKDIR /usr/share/nginx/html
 
-# Port 80 for server
-# Port 35729 for livereload
-EXPOSE 80 35729
-
-# Add running permissions
-RUN chmod +x /app/docker/run.sh
-CMD ["/app/docker/run.sh"]
+# Copy the runnable
+COPY /docker/run.sh /run.sh
+CMD ["/run.sh"]

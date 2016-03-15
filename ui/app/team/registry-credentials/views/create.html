@@ -1,0 +1,46 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Add a Docker Registry credential</span>
+        </h2>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <form name="credentialsForm">
+        <md-subheader class="md-primary">Registry</md-subheader>
+        <div class="form-container">
+            <md-radio-group ng-model="credentials.serverAddress">
+                <md-radio-button value="docker.io" class="md-primary">Docker Hub Registry</md-radio-button>
+                <md-radio-button value="">Custom registry</md-radio-button>
+            </md-radio-group>
+            <md-input-container class="md-block" flex-gt-xs ng-show="credentials.serverAddress != 'docker.io'">
+                <label>Registry address</label>
+                <input ng-model="credentials.serverAddress" required />
+            </md-input-container>
+        </div>
+        <md-subheader class="md-primary">Credentials</md-subheader>
+        <div class="form-container">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Username</label>
+                <input ng-model="credentials.username" required />
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Email</label>
+                <input ng-model="credentials.email" required />
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Password</label>
+                <input type="password" ng-model="credentials.password" required />
+            </md-input-container>
+        </div>
+    </form>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create" ng-disabled="credentialsForm.$invalid || isLoading" ng-click="create(credentials)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
+            Create
+        </md-button>
+    </div>
+</md-toolbar>

@@ -3,22 +3,8 @@
 angular.module('continuousPipeRiver')
     .config(function($stateProvider) {
         $stateProvider
-            .state('tides', {
-                parent: 'flow',
-                url: '/tides',
-                abstract: true
-            })
-            .state('tides.create', {
-                url: '/create',
-                views: {
-                    '@layout': {
-                        controller: 'TideCreateController',
-                        templateUrl: 'tide/views/create.html'
-                    }
-                }
-            })
             .state('tide', {
-                parent: 'tides',
+                parent: 'flow',
                 url: '/:tideUuid',
                 abstract: true,
                 resolve: {
@@ -26,66 +12,58 @@ angular.module('continuousPipeRiver')
                         return TideRepository.find($stateParams.tideUuid);
                     }
                 },
-                ncyBreadcrumb: {
-                    label: 'Tide #{{ tide.uuid }}'
+                views: {
+                    'title@layout': {
+                        template:
+                            '<a ui-sref="flows({team: team.slug})">{{ team.name || team.slug }}</a> / '+
+                            '<a ui-sref="flow.tides({uuid: flow.uuid})">{{ flow.repository.repository.name }}</a> / '+
+                            '{{ tide.uuid }}'
+                        ,
+                        controller: function($scope, team, flow, tide) {
+                            $scope.team = team;
+                            $scope.flow = flow;
+                            $scope.tide = tide;
+                        }
+                    }
                 }
             })
             .state('tide.logs', {
                 url: '/logs',
                 views: {
-                    '@layout': {
+                    'content@': {
                         controller: 'TideLogsController',
                         templateUrl: 'tide/views/logs.html'
                     }
                 },
-                ncyBreadcrumb: {
-                    label: 'Logs'
-                },
-                aside: true
-            })
-
-            // KAI-KAI view
-            .state('kaikai', {
-                parent: 'layout',
-                url: '/kaikai/:tideUuid',
                 resolve: {
-                    tide: function($stateParams, TideRepository) {
-                        return TideRepository.find($stateParams.tideUuid);
-                    },
                     summary: function(TideSummaryRepository, tide) {
                         return TideSummaryRepository.findByTide(tide);
                     }
                 },
-                views: {
-                    'header@layout': {
-                        templateUrl: 'tide/views/kaikai/header.html',
-                        controller: 'KaiKaiHeaderController'
-                    },
-                    '@layout': {
-                        controller: 'KaiKaiController'
-                    }
-                },
-                breadcrumb: false
+                aside: false
             })
-            .state('kaikai.logs', {
-                url: '/logs',
-                views: {
-                    '@layout': {
-                        controller: 'KaiKaiLogsController',
-                        templateUrl: 'tide/views/kaikai/logs.html'
+        ;
+
+        $stateProvider
+            .state('kaikai', {
+                url: '/kaikai/:tideUuid',
+                resolve: {
+                    tide: function($stateParams, TideRepository) {
+                        return TideRepository.find($stateParams.tideUuid);
                     }
                 },
-                breadcrumb: false
-            })
-            .state('kaikai.service', {
-                url: '/service/:name',
                 views: {
-                    '@layout': {
-                        controller: 'KaiKaiServiceController',
-                        templateUrl: 'tide/views/kaikai/service.html'
+                    'content@': {
+                        controller: function($state, tide) {
+                            $state.go('tide.logs', {
+                                team: tide.team.slug,
+                                uuid: tide.flow.uuid,
+                                tideUuid: tide.uuid
+                            });
+                        }
                     }
                 },
-                breadcrumb: false
+                aside: false
             })
         ;
     });

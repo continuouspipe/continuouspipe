@@ -1,106 +1,353 @@
-$loader-color: rgb(66, 133, 244);
+@import "fonts";
 
-.bgm-alt {
-    background-color: #f7f7f7;
+$header-background: #232731;
+
+$sidebar-background: #333844;
+$sidebar-color: #ACB1B4;
+
+$inner-toolbar-background: white;
+$inner-toolbar-color: #6D6D6D;
+$inner-toolbar-button-background: #52A6FF;
+$inner-toolbar-button-color: #fff;
+
+$logo-size: 40px;
+$header-height: 64px;
+$sidebar-selected-background: rgba(255, 255, 255, 0.1);
+$content-background: #F2F4F6;
+$inner-toolbar-button-hovered-background: #3076FF;
+
+$success-color: #E3F2D4;
+$success-dark-color: #80BD42;
+$running-color: #E6F2FB;
+$running-dark-color: #1D8CD9;
+$failure-color: #FDE3E3;
+$failure-dark-color: #F28282;
+
+.title-text {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #80868D;
+    font-size: 14px;
 }
 
-header {
-    .header-links {
-        margin-left: 40px;
+table.table {
+    border-top: 1px solid #F3F4F8;
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
 
-        .top-menu > li.active:not(#toggle-width):before {
-            -webkit-transform: scale3d(1, 1, 1);
-            -moz-transform: scale3d(1, 1, 1);
-            -ms-transform: scale3d(1, 1, 1);
-            -o-transform: scale3d(1, 1, 1);
-            transform: scale3d(1, 1, 1);
-            opacity: 1;
+    td, th {
+        padding: 10px;
+        text-align: left;
+    }
+
+    thead {
+        background: $content-background;
+        border-bottom: 1px solid #ccc;
+
+        th {
+            @extend .title-text;
+
+            padding: 25px;
         }
     }
 
-    .header-link {
-        color: #fff;
-        line-height: 35px;
-        padding: 0 10px;
+    tbody {
+        td {
+            padding: 25px;
+        }
+
+        tr {
+            border-bottom: 1px solid #efefef;
+        }
+
+        tr:nth-child(2n+1) {
+            background: #fff;
+        }
+        tr:nth-child(2n) {
+            background: #fcfcfc;
+        }
     }
 
-    .header-inner {
-        .top-menu {
-            .dropdown-user-account {
-                background-position: right;
-                min-width: 35px;
-                padding-left: 10px;
-                margin-right: 10px;
+    &.hover {
+        tbody tr:hover {
+            background: #fcfcfc;
+        }
+    }
 
-                span {
+    &.actionable {
+        tbody tr {
+            cursor: pointer;
+        }
+    }
+}
+
+body {
+    .md-open-menu-container {
+        z-index: 500;
+    }
+    
+    > md-toolbar {
+        background: $header-background !important;
+        height: 40px;
+
+        .md-button.logo {
+            width: $header-height;
+            height: $header-height;
+
+            md-icon {
+                padding-top: 5px;
+                font-size: $logo-size;
+                width: $logo-size;
+                height: $logo-size;
+            }
+        }
+
+        button.md-button.account-button {
+            padding: 0;
+
+            img {
+                border-radius: 50%;
+                max-width: 100%;
+            }
+        }
+
+        h2 {
+            font-size: 19px;
+            padding: 5px;
+
+            &.title {
+                a {
                     color: #fff;
-                    vertical-align: middle;
-                    line-height: 35px;
+                    text-decoration: none;
                 }
             }
+        }
+    }
 
-            .dropdown-menu {
-                li.separator {
-                    border-bottom: 1px solid #ccc;
-                    margin: 5px;
+    md-sidenav.sidebar {
+        background: $sidebar-background;
+        max-width: 250px;
+
+        md-menu-content {
+            background: none;
+            color: $sidebar-color;
+            padding-top: 0;
+
+            md-menu-item {
+                .selected {
+                    background: $sidebar-selected-background;
+                }
+
+                md-icon {
+                    color: $sidebar-color;
                 }
             }
+        }
 
-            .team-dropdown {
-                > li {
-                    position: relative;
+        .md-subheader {
+            background: none;
+            color: #fff;
+        }
+    }
 
-                    a.settings-button {
-                        position: absolute;
-                        right: 0;
-                        top: 0;
+    md-content {
+        .error-content {
+            padding: 40px;
+        }
+
+        .form-container {
+            padding: 20px;
+        }
+
+        .help-sidebar {
+            padding: 10px;
+            background: #ACB1B4;
+        }
+
+        &.content {
+            background: $content-background;
+
+            md-content {
+                background: $content-background;
+
+                md-toolbar {
+                    z-index: 100;
+                }
+
+                md-content {
+                    md-toolbar {
+                        z-index: 50;
                     }
                 }
             }
 
-            li {
-                vertical-align: top;
+            md-toolbar {
+                z-index: 200;
+                background: $inner-toolbar-background !important;
+                color: $inner-toolbar-color;
 
-                &.profile-picture {
-                    margin-left: 20px;
+                /* from AMD: .md-whiteframe-1dp */
+                box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+
+                .md-button {
+                    background: $inner-toolbar-button-background;
+                    color: $inner-toolbar-button-color;
+                    border-radius: 20px;
+                    padding: 0 15px;
 
                     &:hover {
-                        &:before {
-                            opacity: 0 !important;
-                        }
+                        background: $inner-toolbar-button-hovered-background !important;
                     }
 
-                    span.picture {
-                        display: inline-block;
-                        height: 40px;
-                        width: 40px;
-                        border-radius: 40px;
-                        overflow: hidden;
-
-                        img {
-                            width: 100%;
-                            height: 100%;
-                        }
+                    md-icon {
+                        color: $inner-toolbar-button-color !important;
                     }
-                }
-
-                .dropdown-with-text {
-                    background-position: right;
-                    padding: 0 30px 0 15px;
-                    margin-right: 10px;
                 }
             }
         }
     }
-}
 
-.sidebar-inner {
-    h2 {
-        font-size: 17px;
-        font-weight: 400;
-        padding-left: 20px;
+    button.md-button {
+        md-progress-circular {
+            float: left;
+        }
+    }
+
+    .card-grid {
+        padding: 20px;
+
+        md-card {
+            width: 365px;
+            box-shadow: none;
+            border: 1px solid #efefef;
+            float: left;
+            
+            md-card-header {
+                cursor: pointer;
+            }
+
+            md-card-title {
+                padding-top: 0;
+
+                .md-headline {
+                    @extend .title-text;
+
+                    background: $content-background;
+                    border-radius: 32px;
+                    padding: 0 15px;
+                }
+            }
+
+            &.flow-card {
+                md-card-title {
+                    padding-bottom: 0;
+
+                    .md-headline {
+                        border-radius: 10px 10px 0 0;
+                    }
+                }
+            }
+
+            md-card-content.tide-summary {
+                margin: 0 16px 16px 16px;
+                padding: 20px;
+                cursor: pointer;
+
+                h3, h4 {
+                    margin: 0;
+                }
+
+                h4 {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+
+    log-frame {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+
+        > iframe {
+            width: 100%;
+            height: 100%;
+
+            border: none;
+        }
+    }
+
+    .flow-wizard {
+        md-list {
+            padding: 0;
+        }
+
+        .step-repository {
+            md-list-item {
+                &.selected {
+                    background: #efefef;
+                }
+            }
+
+            .organisation-list {
+                md-list-item {
+                    .md-avatar {
+                        border-radius: 0;
+                    }
+                }
+            }
+
+            .filter-repository-toolbar {
+                background: #EFEFEF;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+                padding-top: 20px;
+                min-height: 69px;
+                height: 69px;
+
+                md-icon {
+                    color: grey;
+                }
+
+                md-input-container.md-block {
+                    width: 100%;
+                }
+            }
+        }
+
+        .step-configuration {
+            pre {
+                border: 1px solid #ccc;
+                background: #fefefe;
+                padding: 10px;
+            }
+        }
+    }
+
+    .status-container {
+        &.status-failure {
+            background: $failure-color;
+            color: $failure-dark-color;
+            border-left: 2px solid $failure-dark-color;
+        }
+
+        &.status-success {
+            background: $success-color;
+            color: $success-dark-color;
+            border-left: 2px solid $success-dark-color;
+        }
+
+        &.status-running {
+            background: $running-color;
+            color: $running-dark-color;
+            border-left: 2px solid $running-dark-color;
+        }
     }
 }
+
+$loader-color: rgb(66, 133, 244);
 
 .remote-resource {
     padding: 20px;
@@ -121,111 +368,11 @@ header {
     }
 }
 
-.form-group {
-    .checkbox-label {
-        font-weight: normal;
-        padding-left: 10px;
-    }
-
-    .input-group-addon {
-        vertical-align: middle;
-
-        i {
-            font-size: 1.5em;
-        }
-    }
-}
-
-.card {
-    .card-header {
-        h2 {
-            a {
-                color: inherit;
-            }
-
-            .card-header-right {
-                float: right;
-            }
-
-            small {
-                &.card-header-right {
-                    margin-top: 0;
-                }
-            }
-        }
-
-        ul.actions {
-            a {
-                i {
-                    color: #fff;
-                }
-            }
-        }
-    }
-}
-
 pre.deployment-logs {
     border: 0;
     background-color: #000;
     color: #fff;
     border-radius: 0;
-}
-
-iframe.log-frame {
-    width: 100%;
-    border: none;
-}
-
-.bootgrid-header {
-    padding-left: 0px;
-    padding-top: 20px;
-
-    .search {
-        margin-bottom: 10px;
-
-        .search-field {
-            padding-left: 10px;
-        }
-    }
-}
-
-ul.tasks {
-    display: table;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-
-    > li {
-        &:nth-of-type(odd) {
-            background-color: #f4f4f4;
-        }
-
-        .action-icons {
-            i {
-                cursor: pointer;
-            }
-        }
-
-        &.dndDraggingSource {
-            // display: none;
-        }
-
-        &.dndPlaceholder {
-            background: #ffe033;
-        }
-
-        display: table-row;
-
-        > div {
-            vertical-align: top;
-            padding: 10px;
-            display: table-cell;
-        }
-
-        div.task-actions {
-            width: 40px;
-        }
-    }
 }
 
 .yaml-editor {
@@ -234,45 +381,4 @@ ul.tasks {
 .yaml-editor-buttons {
     text-align: center;
     padding: 10px;
-}
-
-// KaiKai page
-.header-kaikai {
-    .tide-status {
-        padding: 5px;
-        font-size: 0.8em;
-        margin-left: 10px;
-    }
-
-    .remote-resource.loading {
-        padding: 0;
-        float: left;
-
-        .loader {
-            display: inline-block;
-
-            > div {
-                border-top-color: #fff;
-                border-left-color: #fff;
-                border-right-color: #fff;
-            }
-        }
-
-        > span {
-            color: #fff;
-            padding-left: 10px;
-            line-height: 35px;
-            display: inline-block;
-            vertical-align: top;
-        }
-    }
-}
-
-.kaikai-service-frame {
-    position: fixed;
-    top: 65px;
-    right: 0;
-    border: none;
-    width: 100%;
-    height: 100%;
 }

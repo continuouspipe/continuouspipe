@@ -22,6 +22,6 @@ angular.module('continuousPipeRiver')
         };
 
         this.redirectToAuthentication = function() {
-            window.location = AUTHENTICATOR_API_URL+'/authenticate?callback='+encodeURIComponent(window.location);
+            window.location.href = AUTHENTICATOR_API_URL+'/authenticate?callback='+encodeURIComponent(window.location);
         };
     });

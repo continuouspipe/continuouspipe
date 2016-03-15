@@ -1,0 +1,16 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2><span>Configuration saved on CP</span></h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Save" ng-click="save()" ng-disabled="isLoading"><md-icon>save</md-icon> Save</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content" class="configuration-content">
+    <div class="yaml-editor" ui-ace="aceOption" ng-model="flow.yml_configuration"></div>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Save" ng-click="save()" ng-disabled="isLoading"><md-icon>save</md-icon> Save</md-button>
+    </div>
+</md-toolbar>

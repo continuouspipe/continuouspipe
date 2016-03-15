@@ -1,0 +1,32 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="tokens">{{ tokens.length }} tokens</span>
+            <span ng-hide="tokens">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Add" ui-sref="github-tokens.create">Add</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <remote-resource resource-name="tokens">
+        <table class="table hover">
+            <thead>
+            <tr>
+                <th>Identifier</th>
+                <th>Token</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="token in tokens">
+                <td>{{ token.identifier }}</td>
+                <td>{{ token.accessToken }}</td>
+                <td>
+                    <md-button ng-click="deleteToken(token)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>

@@ -1,9 +1,14 @@
-<div class="container">
-    <div class="card">
-        <div class="card-header ch-alt">
-            <h2>Logs</h2>
-        </div>
+<md-toolbar class="status-container" ng-class="(summary.status || tide.status) | tideStatusClass">
+    <div class="md-toolbar-tools">
+        <h2 ng-hide="summary"><span>Loading...</span></h2>
+        <h2 ng-show="summary && summary.status != 'running'">{{ summary.status | firstUpperCase }}</h2>
 
-        <log-frame log="tide.log_id"></log-frame>
+        <md-progress-circular md-mode="indeterminate"  ng-show="summary && summary.status == 'running'"></md-progress-circular>
+        <h2 ng-show="summary && summary.status == 'running'">
+            <span>{{ summary.current_task.log }}</span>
+        </h2>
     </div>
-</div>
+</md-toolbar>
+<md-content flex id="content" class="card-grid">
+    <log-frame log="tide.log_id"></log-frame>
+</md-content>

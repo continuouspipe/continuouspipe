@@ -8,26 +8,44 @@ angular.module('continuousPipeRiver')
                 resolve: {
                     user: function($userContext) {
                         return $userContext.refreshUser();
-                    },
-                    teamContext: function($teamContext) {
-                        return $teamContext.refreshTeams();
                     }
                 },
                 views: {
-                    '': {
-                        templateUrl: 'layout/views/layout.html'
-                    },
-                    'header@layout': {
+                    header: {
                         templateUrl: 'layout/views/header.html',
                         controller: 'HeaderController'
-                    },
-                    'breadcrumb@layout': {
-                        templateUrl: 'layout/views/breadcrumb.html',
-                        controller: 'BreadcrumbController'
                     }
-                },
-                ncyBreadcrumb: {
-                    skip: true
+                }
+            })
+            .state('error', {
+                abstract: true,
+                parent: 'layout'
+            })
+            .state('error.404', {
+                url: '/error/404',
+                views: {
+                    'content@': {
+                        templateUrl: 'layout/views/error/404.html',
+                        controller: 'ErrorController'
+                    }
+                }
+            })
+            .state('error.403', {
+                url: '/error/403',
+                views: {
+                    'content@': {
+                        templateUrl: 'layout/views/error/403.html',
+                        controller: 'ErrorController'
+                    }
+                }
+            })
+            .state('error.500', {
+                url: '/error/500',
+                views: {
+                    'content@': {
+                        templateUrl: 'layout/views/error/500.html',
+                        controller: 'ErrorController'
+                    }
                 }
             })
         ;
