@@ -4,7 +4,7 @@ tasks:
 
     canary:
         deploy:
-            cluster: gke
+            cluster: fra-01 
             services:
                 ui:
                     specification:
@@ -22,7 +22,7 @@ tasks:
 
     production:
         deploy:
-            cluster: fra-01
+            cluster: gke
             services:
                 ui:
                     specification:
