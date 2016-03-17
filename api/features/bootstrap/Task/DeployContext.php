@@ -420,7 +420,9 @@ class DeployContext implements Context
      */
     public function theNameOfTheDeployedEnvironmentShouldBe($expectedName)
     {
-        $foundName = $this->environmentNamingStrategy->getName($this->flowContext->getCurrentUuid(), $this->getDeployTask()->getContext()->getCodeReference());
+        $foundName = $this->environmentNamingStrategy->getName(
+            $this->tideContext->getCurrentTideUuid(), $this->getDeployTask()->getConfiguration()->getEnvironmentName()
+        );
 
         if ($foundName != $expectedName) {
             throw new \RuntimeException(sprintf(
@@ -436,7 +438,10 @@ class DeployContext implements Context
      */
     public function theNameOfTheDeployedEnvironmentShouldNotBe($name)
     {
-        $foundName = $this->environmentNamingStrategy->getName($this->flowContext->getCurrentUuid(), $this->getDeployTask()->getContext()->getCodeReference());
+        $foundName = $this->environmentNamingStrategy->getName(
+            $this->tideContext->getCurrentTideUuid(),
+            $this->getDeployTask()->getConfiguration()->getEnvironmentName()
+        );
 
         if ($foundName == $name) {
             throw new \RuntimeException(sprintf(
@@ -451,7 +456,10 @@ class DeployContext implements Context
      */
     public function theNameOfTheDeployedEnvironmentShouldBeLessOrEqualsThanCharactersLong($characters)
     {
-        $foundName = $this->environmentNamingStrategy->getName($this->flowContext->getCurrentUuid(), $this->getDeployTask()->getContext()->getCodeReference());
+        $foundName = $this->environmentNamingStrategy->getName(
+            $this->tideContext->getCurrentTideUuid(),
+            $this->getDeployTask()->getConfiguration()->getEnvironmentName()
+        );
 
         if (strlen($foundName) > $characters) {
             throw new \RuntimeException(sprintf(

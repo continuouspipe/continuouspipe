@@ -9,6 +9,7 @@
             <argument type="service" id="command_bus" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.task.deploy.configuration.component_factory" />
+            <argument>%default_environment_expression%</argument>
 
             <tag name="river.task_factory" task="deploy" />
         </service>
@@ -24,15 +25,34 @@
         </service>
         <service id="river.pipe.cluster_identifier_resolver" class="ContinuousPipe\River\Pipe\ClusterIdentifierResolver" />
 
-        <service id="river.task.deploy.naming.flow_and_branch_strategy" class="ContinuousPipe\River\Task\Deploy\Naming\FlowUuidAndBranchNameStrategy" />
+        <!-- Naming strategies -->
+        <service id="river.task.deploy.naming.expression_resolver" class="ContinuousPipe\River\Task\Deploy\Naming\ExpressionResolverNamingStrategy">
+            <argument type="service" id="river.task_filter.context_factory" />
+            <argument type="service" id="river.repository.tide" />
+        </service>
+
+        <service id="river.task.deploy.naming.default_environment_expression"
+                 class="ContinuousPipe\River\Task\Deploy\Naming\DefaultEnvironmentExpressionDecorator"
+                 decorates="river.task.deploy.naming.expression_resolver">
+            <argument type="service" id="river.task.deploy.naming.default_environment_expression.inner" />
+            <argument>%default_environment_expression%</argument>
+        </service>
+
+        <service id="river.task.deploy.naming.slugify"
+                 class="ContinuousPipe\River\Task\Deploy\Naming\SlugifyNamingStrategyDecorator"
+                 decorates="river.task.deploy.naming.expression_resolver">
+            <argument type="service" id="river.task.deploy.naming.slugify.inner" />
+        </service>
+
         <service id="river.task.deploy.naming.environment_strategy" class="ContinuousPipe\River\Task\Deploy\Naming\LimitedLengthNamingStrategy">
-            <argument type="service" id="river.task.deploy.naming.flow_and_branch_strategy" />
+            <argument type="service" id="river.task.deploy.naming.expression_resolver" />
         </service>
 
         <service id="river.task.deploy.deployment_request_factory" class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\FlattenDeploymentRequestFactory">
             <argument type="service" id="router" />
             <argument type="service" id="river.task.deploy.naming.environment_strategy" />
         </service>
+
         <service id="river.handler.start_deploy" class="ContinuousPipe\River\Task\Deploy\Handler\StartDeploymentHandler">
             <argument type="service" id="river.task.deploy.deployment_request_factory" />
             <argument type="service" id="river.pipe_client" />

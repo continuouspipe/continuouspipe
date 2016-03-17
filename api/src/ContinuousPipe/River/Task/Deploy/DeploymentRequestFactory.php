@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
 
 interface DeploymentRequestFactory
 {
@@ -11,6 +12,8 @@ interface DeploymentRequestFactory
      *
      * @param DeployContext           $context
      * @param DeployTaskConfiguration $configuration
+     *
+     * @throws UnresolvedEnvironmentNameException
      *
      * @return DeploymentRequest
      */

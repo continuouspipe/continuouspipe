@@ -3,10 +3,12 @@
 namespace ContinuousPipe\River\Task\Deploy\Handler;
 
 use ContinuousPipe\Pipe\Client;
+use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
+use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Rhumsaa\Uuid\Uuid;
@@ -54,7 +56,17 @@ class StartDeploymentHandler
     public function handle(StartDeploymentCommand $command)
     {
         $deployContext = $command->getDeployContext();
-        $deploymentRequest = $this->deploymentRequestFactory->create($deployContext, $command->getConfiguration());
+
+        try {
+            $deploymentRequest = $this->deploymentRequestFactory->create($deployContext, $command->getConfiguration());
+        } catch (UnresolvedEnvironmentNameException $e) {
+            $this->eventBus->handle(new TideFailed($command->getTideUuid()));
+
+            $logger = $this->loggerFactory->from($deployContext->getTaskLog());
+            $logger->child(new Text($e->getMessage()));
+
+            return;
+        }
 
         try {
             $deployment = $this->pipeClient->start($deploymentRequest, $deployContext->getUser());

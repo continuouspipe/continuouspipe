@@ -14,8 +14,7 @@ class CodeReferenceResolverSpec extends ObjectBehavior
     public function it_returns_the_code_reference_of_a_push_event(PushEvent $pushEvent, Commit $commit, Repository $repository)
     {
         $pushEvent->getReference()->willReturn('refs/heads/master');
-        $pushEvent->getHeadCommit()->willReturn($commit);
-        $commit->getId()->willReturn('sha');
+        $pushEvent->getAfter()->willReturn('sha');
         $pushEvent->getRepository()->willReturn($repository);
 
         $this->fromPushEvent($pushEvent)->shouldBeLike(new CodeReference(

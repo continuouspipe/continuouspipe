@@ -1,11 +1,12 @@
 <?php
 
-namespace ContinuousPipe\River\EventListener\GitHub\PullRequestClosed;
+namespace ContinuousPipe\River\EventListener\GitHub\BranchDeleted;
 
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
-use ContinuousPipe\River\Pipe\ClusterIdentifierNotFound;
+use ContinuousPipe\River\Event\GitHub\BranchDeleted;
+use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
@@ -37,6 +38,10 @@ class DeleteRelatedEnvironment
      * @var LoggerInterface
      */
     private $systemLogger;
+    /**
+     * @var EventStore
+     */
+    private $eventStore;
 
     /**
      * @param Client                    $client
@@ -44,52 +49,53 @@ class DeleteRelatedEnvironment
      * @param EnvironmentNamingStrategy $environmentNamingStrategy
      * @param ClusterIdentifierResolver $clusterIdentifierResolver
      * @param LoggerInterface           $systemLogger
+     * @param EventStore                $eventStore
      */
-    public function __construct(Client $client, TideRepository $tideRepository, EnvironmentNamingStrategy $environmentNamingStrategy, ClusterIdentifierResolver $clusterIdentifierResolver, LoggerInterface $systemLogger)
+    public function __construct(Client $client, TideRepository $tideRepository, EnvironmentNamingStrategy $environmentNamingStrategy, ClusterIdentifierResolver $clusterIdentifierResolver, LoggerInterface $systemLogger, EventStore $eventStore)
     {
         $this->client = $client;
         $this->tideRepository = $tideRepository;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
         $this->clusterIdentifierResolver = $clusterIdentifierResolver;
         $this->systemLogger = $systemLogger;
+        $this->eventStore = $eventStore;
     }
 
     /**
-     * @param PullRequestClosed $event
+     * @param BranchDeleted $event
      */
-    public function notify(PullRequestClosed $event)
+    public function notify(BranchDeleted $event)
     {
         $tides = $this->tideRepository->findByCodeReference($event->getCodeReference());
 
         foreach ($tides as $tide) {
-            try {
-                $target = $this->getTideTarget($tide);
-            } catch (ClusterIdentifierNotFound $e) {
-                $this->systemLogger->error('Unable to resolve tide target provider', [
-                    'exception' => $e,
-                    'tide' => $tide,
-                ]);
+            $targets = $this->getTideTargets($tide);
 
-                continue;
+            foreach ($targets as $target) {
+                $this->client->deleteEnvironment($target, $tide->getTeam(), $tide->getUser());
             }
-
-            $this->client->deleteEnvironment($target, $tide->getTeam(), $tide->getUser());
         }
     }
 
     /**
      * @param Tide $tide
      *
-     * @return Client\DeploymentRequest\Target
+     * @return Client\DeploymentRequest\Target[]
      */
-    private function getTideTarget(Tide $tide)
+    private function getTideTargets(Tide $tide)
     {
-        return new Client\DeploymentRequest\Target(
-            $this->environmentNamingStrategy->getName(
-                $tide->getFlow()->getUuid(),
-                $tide->getCodeReference()
-            ),
-            $this->clusterIdentifierResolver->getClusterIdentifier($tide)
-        );
+        return array_map(function (DeploymentStarted $deploymentStarted) {
+            return $deploymentStarted->getDeployment()->getRequest()->getTarget();
+        }, $this->getStartedDeployments($tide));
+    }
+
+    /**
+     * @param Tide $tide
+     *
+     * @return DeploymentStarted[]
+     */
+    private function getStartedDeployments(Tide $tide)
+    {
+        return $this->eventStore->findByTideUuidAndType($tide->getUuid(), DeploymentStarted::class);
     }
 }

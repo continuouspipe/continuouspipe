@@ -46,7 +46,7 @@ Feature:
                 commands:
                     - echo foo
                 image: busybox
-                environment:
+                environment_variables:
                     - name: BAZ
                       value: ${FOO}
                     - name: PUBLIC_ADDRESS

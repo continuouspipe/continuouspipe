@@ -99,14 +99,15 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestOpened"/>
         </service>
 
-        <service id="river.listener.github.pull_request.delete_related_environment" class="ContinuousPipe\River\EventListener\GitHub\PullRequestClosed\DeleteRelatedEnvironment">
+        <service id="river.listener.github.pull_request.delete_related_environment" class="ContinuousPipe\River\EventListener\GitHub\BranchDeleted\DeleteRelatedEnvironment">
             <argument type="service" id="river.pipe_client" />
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.task.deploy.naming.environment_strategy" />
             <argument type="service" id="river.pipe.cluster_identifier_resolver" />
             <argument type="service" id="logger" />
+            <argument type="service" id="river.event_store" />
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestClosed"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\BranchDeleted" />
         </service>
 
         <service id="river.listener.github.eventually_create_and_start_tide" class="ContinuousPipe\River\EventListener\GitHub\EventuallyCreateAndStartTide">

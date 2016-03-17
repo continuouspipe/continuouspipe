@@ -3,23 +3,27 @@
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
 use ContinuousPipe\Model\Environment;
-use ContinuousPipe\River\CodeReference;
 use Rhumsaa\Uuid\Uuid;
 
 interface EnvironmentNamingStrategy
 {
     /**
-     * Get name of the deployed environment.
+     * Get name of the environment.
      *
-     * @param Uuid          $flowUuid
-     * @param CodeReference $codeReference
+     * @param Uuid        $tideUuid
+     * @param string|null $expression
+     *
+     * @throws UnresolvedEnvironmentNameException
      *
      * @return string
      */
-    public function getName(Uuid $flowUuid, CodeReference $codeReference);
+    public function getName(Uuid $tideUuid, $expression = null);
 
     /**
      * Returns true if the environment is part of the given flow.
+     *
+     * @deprecated That shouldn't be part of this interface. We should instead get the environments
+     *             for a given flow.
      *
      * @param Uuid        $flowUuid
      * @param Environment $environment

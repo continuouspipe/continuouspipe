@@ -44,7 +44,10 @@ class DeploymentRequestFactory
     {
         return new DeploymentRequest(
             new DeploymentRequest\Target(
-                $this->getEnvironmentName($context),
+                $this->environmentNamingStrategy->getName(
+                    $context->getTideUuid(),
+                    $configuration->getEnvironmentName()
+                ),
                 $configuration->getClusterIdentifier()
             ),
             new DeploymentRequest\Specification([
@@ -58,19 +61,6 @@ class DeploymentRequestFactory
                 $context->getTaskLog()->getId()
             ),
             $context->getTeam()->getBucketUuid()
-        );
-    }
-
-    /**
-     * @param TideContext $context
-     *
-     * @return string
-     */
-    private function getEnvironmentName(TideContext $context)
-    {
-        return $this->environmentNamingStrategy->getName(
-            $context->getFlowUuid(),
-            $context->getCodeReference()
         );
     }
 
@@ -126,7 +116,7 @@ class DeploymentRequestFactory
     {
         $variables = [];
 
-        foreach ($configuration->getEnvironment() as $key => $value) {
+        foreach ($configuration->getEnvironmentVariables() as $key => $value) {
             $variables[] = new Component\EnvironmentVariable($key, $value);
         }
 

@@ -44,7 +44,10 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
 
         return new DeploymentRequest(
             new DeploymentRequest\Target(
-                $this->getEnvironmentName($context),
+                $this->environmentNamingStrategy->getName(
+                    $context->getTideUuid(),
+                    $configuration->getEnvironmentName()
+                ),
                 $configuration->getClusterIdentifier()
             ),
             new DeploymentRequest\Specification(
@@ -55,19 +58,6 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
                 $context->getTaskLog()->getId()
             ),
             $bucketUuid
-        );
-    }
-
-    /**
-     * @param DeployContext $context
-     *
-     * @return string
-     */
-    private function getEnvironmentName(DeployContext $context)
-    {
-        return $this->environmentNamingStrategy->getName(
-            $context->getFlowUuid(),
-            $context->getCodeReference()
         );
     }
 }

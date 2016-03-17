@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Task\Deploy;
 use ContinuousPipe\Model\Component\Port;
 use ContinuousPipe\River\Flow\Configuration;
 use ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory;
+use ContinuousPipe\River\Task\Deploy\Configuration\Environment;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
 use LogStream\LoggerFactory;
@@ -29,15 +30,22 @@ class DeployTaskFactory implements TaskFactory
     private $componentFactory;
 
     /**
+     * @var string
+     */
+    private $defaultEnvironmentExpression;
+
+    /**
      * @param MessageBus       $commandBus
      * @param LoggerFactory    $loggerFactory
      * @param ComponentFactory $componentFactory
+     * @param string           $defaultEnvironmentExpression
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, ComponentFactory $componentFactory)
+    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, ComponentFactory $componentFactory, $defaultEnvironmentExpression)
     {
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
         $this->componentFactory = $componentFactory;
+        $this->defaultEnvironmentExpression = $defaultEnvironmentExpression;
     }
 
     /**
@@ -51,7 +59,8 @@ class DeployTaskFactory implements TaskFactory
             DeployContext::createDeployContext($taskContext),
             new DeployTaskConfiguration(
                 $configuration['cluster'],
-                $this->generateServices($configuration['services'])
+                $this->generateServices($configuration['services']),
+                $configuration['environment']['name']
             )
         );
     }
@@ -67,6 +76,15 @@ class DeployTaskFactory implements TaskFactory
         $node
             ->children()
                 ->scalarNode('cluster')->isRequired()->end()
+                ->arrayNode('environment')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('name')
+                            ->isRequired()
+                            ->defaultValue(null)
+                        ->end()
+                    ->end()
+                ->end()
                 ->arrayNode('services')
                     ->isRequired()
                     ->useAttributeAsKey('name')
@@ -132,7 +150,7 @@ class DeployTaskFactory implements TaskFactory
                                     ->arrayNode('ports')
                                         ->prototype('array')
                                             ->beforeNormalization()
-                                                ->ifTrue(function($value) {
+                                                ->ifTrue(function ($value) {
                                                     return is_int($value);
                                                 })
                                                 ->then(function ($port) {

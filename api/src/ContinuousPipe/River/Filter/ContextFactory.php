@@ -50,6 +50,12 @@ class ContextFactory
                 'branch' => $tideContext->getCodeReference()->getBranch(),
                 'sha' => $tideContext->getCodeReference()->getCommitSha(),
             ]),
+            'tide' => new ArrayObject([
+                'uuid' => (string) $tideContext->getTideUuid(),
+            ]),
+            'flow' => new ArrayObject([
+                'uuid' => (string) $tideContext->getFlowUuid(),
+            ]),
             'tasks' => $this->createTasksView($tide->getTasks()->getTasks()),
         ]);
 

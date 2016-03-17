@@ -53,7 +53,7 @@ class DeploymentEvent implements TideEvent, TaskEvent
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getTaskId()
     {

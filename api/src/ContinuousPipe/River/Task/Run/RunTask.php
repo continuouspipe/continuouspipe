@@ -148,12 +148,12 @@ class RunTask extends EventDrivenTask
         }, []);
 
         foreach ($publicEndpointMappings as $name => $address) {
-            $this->configuration->addEnvironment($name, $address);
+            $this->configuration->addEnvironmentVariable($name, $address);
         }
 
-        $this->configuration->setEnvironment(
+        $this->configuration->setEnvironmentVariables(
             ReplaceEnvironmentVariableValues::replaceValues(
-                $this->configuration->getEnvironment(),
+                $this->configuration->getEnvironmentVariables(),
                 $publicEndpointMappings
             )
         );
