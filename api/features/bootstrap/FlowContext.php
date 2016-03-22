@@ -316,23 +316,37 @@ EOF;
     }
 
     /**
-     * @Given I have the a deployed environment named :name
+     * @Given I have a deployed environment named :name
      */
-    public function iHaveTheADeployedEnvironmentNamed($name)
+    public function iHaveADeployedEnvironmentNamed($name)
     {
         $this->pipeClient->addEnvironment(new Environment($name, $name));
     }
 
     /**
-     * @When I request the list of deployed environments
+     * @Given I have a deployed environment named :name and labelled :labelsString
      */
-    public function iRequestTheListOfDeployedEnvironments()
+    public function iHaveADeployedEnvironmentNamedAndLabelled($name, $labelsString)
     {
-        $url = sprintf('/flows/%s/environments', (string) $this->flowUuid);
+        $labels = [];
+        foreach (explode(',', $labelsString) as $label) {
+            list($key, $value) = explode('=', $label);
+
+            $labels[$key] = $value;
+        }
+
+        $this->pipeClient->addEnvironment(new Environment($name, $name, [], null, $labels));
+    }
+
+    /**
+     * @When I request the list of deployed environments of the flow :uuid
+     */
+    public function iRequestTheListOfDeployedEnvironmentsOfTheFlow($uuid)
+    {
+        $url = sprintf('/flows/%s/environments', $uuid);
         $this->response = $this->kernel->handle(Request::create($url, 'GET'));
 
         $this->assertResponseCode(200);
-        echo $this->response->getContent();
     }
 
     /**
