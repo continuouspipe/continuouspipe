@@ -15,26 +15,40 @@ Feature:
     And the target cluster identifier is "my-cluster"
     And the credentials bucket is "00000000-0000-0000-0000-000000000000"
     And the specification come from the template "simple-app"
+    And the environment label "flow" contains "1234567890"
+    And the environment label "tide" contains "0987654321"
     And the pods of the replication controllers will be created successfully and running
     When I send the built deployment request
     Then the deployment should be successful
 
-  Scenario: I get the list of running components
+  Scenario: List of environments for a given label
+    When I request the environment list of the cluster "my-cluster" of the team "my-team" that have the labels "flow=1234567890"
+    Then I should see the environment "my-environment"
+
+  Scenario: List of environments with many labels
+    When I request the environment list of the cluster "my-cluster" of the team "my-team" that have the labels "flow=1234567890,tide=0987654321"
+    Then I should see the environment "my-environment"
+
+  Scenario: List of enviroments with non-matching labels
+    When I request the environment list of the cluster "my-cluster" of the team "my-team" that have the labels "flow=0987654321"
+    Then I should not see the environment "my-environment"
+
+  Scenario: List of running components
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then I should see the component "app"
     And I should see the component "mysql"
 
-  Scenario:
+  Scenario: Pods not running is unhealthy
     Given pods are running but not ready for the replication controller "app"
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should be "unhealthy"
 
-  Scenario:
+  Scenario: Pods pending is unhealthy
     Given pods are pending for the replication controller "app"
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should be "unhealthy"
 
-  Scenario:
+  Scenario: RC pods running is healthy
     Given pods are running for the replication controller "app"
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should be "healthy"

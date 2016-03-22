@@ -69,4 +69,12 @@ class FakeEnvironmentClient implements EnvironmentClient
             1
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByLabels(array $labels)
+    {
+        return [];
+    }
 }

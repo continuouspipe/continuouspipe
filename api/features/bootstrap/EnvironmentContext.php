@@ -104,6 +104,24 @@ class EnvironmentContext implements Context
     }
 
     /**
+     * @When I request the environment list of the cluster :cluster of the team :team that have the labels :labels
+     */
+    public function iRequestTheEnvironmentListOfTheClusterOfTheTeamThatHaveTheLabels($cluster, $team, $labels)
+    {
+        $labelsFilters = ['labels' => []];
+        foreach (explode(',', $labels) as $label) {
+            list($key, $value) = explode('=', $label);
+
+            $labelsFilters['labels'][$key] = $value;
+        }
+
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/teams/%s/clusters/%s/environments', $team, $cluster).'?'.http_build_query($labelsFilters),
+            'GET'
+        ));
+    }
+
+    /**
      * @When I delete the environment named :environment of the cluster :cluster of the team :team
      */
     public function iDeleteTheEnvironmentNamedOfTheClusterOfTheTeam($environment, $cluster, $team)
@@ -268,10 +286,61 @@ class EnvironmentContext implements Context
     }
 
     /**
+     * @Then I should see the environment :identifier
+     */
+    public function iShouldSeeTheEnvironment($identifier)
+    {
+        $environments = $this->getEnvironmentsFromResponse();
+        $matchingEnvironments = array_filter($environments, function(array $environment) use ($identifier) {
+            return $environment['identifier'] == $identifier;
+        });
+
+        if (count($matchingEnvironments) == 0) {
+            throw new \RuntimeException('No matching environments found');
+        }
+    }
+
+    /**
+     * @Then I should not see the environment :identifier
+     */
+    public function iShouldNotSeeTheEnvironment($identifier)
+    {
+        $environments = $this->getEnvironmentsFromResponse();
+        $matchingEnvironments = array_filter($environments, function(array $environment) use ($identifier) {
+            return $environment['identifier'] == $identifier;
+        });
+
+        if (count($matchingEnvironments) > 0) {
+            throw new \RuntimeException(sprintf('Found %d matching environments, while expecting 0', count($matchingEnvironments)));
+        }
+    }
+
+    /**
      * @param string $name
      * @return array
      */
     private function getComponentFromListResponse($name)
+    {
+        $environments = $this->getEnvironmentsFromResponse();
+
+        foreach ($environments as $environment) {
+            $components = $environment['components'];
+            $matchingComponents = array_filter($components, function ($component) use ($name) {
+                return $component['name'] == $name;
+            });
+
+            if (0 < count($matchingComponents)) {
+                return current($matchingComponents);
+            }
+        }
+
+        throw new \RuntimeException(sprintf('No component named "%s" found in the environment', $name));
+    }
+
+    /**
+     * @return array
+     */
+    private function getEnvironmentsFromResponse()
     {
         if ($this->response->getStatusCode() !== 200) {
             echo $this->response->getContent();
@@ -287,17 +356,6 @@ class EnvironmentContext implements Context
             throw new \RuntimeException('Expecting an array, got something else');
         }
 
-        foreach ($environments as $environment) {
-            $components = $environment['components'];
-            $matchingComponents = array_filter($components, function ($component) use ($name) {
-                return $component['name'] == $name;
-            });
-
-            if (0 < count($matchingComponents)) {
-                return current($matchingComponents);
-            }
-        }
-
-        throw new \RuntimeException(sprintf('No component named "%s" found in the environment', $name));
+        return $environments;
     }
 }

@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -42,11 +43,16 @@ class EnvironmentController extends Controller
      * @ParamConverter("team", converter="team", options={"slug"="teamSlug"})
      * @View
      */
-    public function listAction(Team $team, $clusterIdentifier)
+    public function listAction(Request $request, Team $team, $clusterIdentifier)
     {
         $cluster = $this->getCluster($team, $clusterIdentifier);
+        $environmentClient = $this->environmentClientFactory->getByCluster($cluster);
 
-        return $this->environmentClientFactory->getByCluster($cluster)->findAll();
+        if (is_array($labels = $request->query->get('labels'))) {
+            return $environmentClient->findByLabels($labels);
+        }
+
+        return $environmentClient->findAll();
     }
 
     /**
