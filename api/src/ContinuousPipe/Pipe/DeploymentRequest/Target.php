@@ -12,6 +12,13 @@ class Target
     private $environmentName;
 
     /**
+     * Environment labels.
+     *
+     * @var array
+     */
+    private $environmentLabels;
+
+    /**
      * Identifier of the cluster.
      *
      * @var string
@@ -32,5 +39,13 @@ class Target
     public function getClusterIdentifier()
     {
         return $this->clusterIdentifier;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEnvironmentLabels()
+    {
+        return $this->environmentLabels ?: [];
     }
 }

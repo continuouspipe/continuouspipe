@@ -6,3 +6,6 @@ ContinuousPipe\Pipe\DeploymentRequest\Target:
         clusterIdentifier:
             type: string
             serialized_name: clusterIdentifier
+        environmentLabels:
+            type: array<string,string>
+            serialized_name: environmentLabels

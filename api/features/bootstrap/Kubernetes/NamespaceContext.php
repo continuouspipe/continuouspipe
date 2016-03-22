@@ -282,4 +282,46 @@ class NamespaceContext implements Context, SnippetAcceptingContext
             ));
         }
     }
+
+    /**
+     * @Then the namespace :name should be created
+     */
+    public function theNamespaceShouldBeCreated($name)
+    {
+        $matchingNamespaces = array_filter($this->namespaceRepository->getCreated(), function(KubernetesNamespace $namespace) use ($name) {
+            return $namespace->getMetadata()->getName() == $name;
+        });
+
+        if (count($matchingNamespaces) == 0) {
+            throw new \RuntimeException(sprintf(
+                'No namespace named "%s" found is list of created namespaces',
+                $name
+            ));
+        }
+    }
+
+    /**
+     * @Then the namespace :name should have the label :key that contains :value
+     */
+    public function theNamespaceShouldHaveTheLabelThatContains($name, $key, $value)
+    {
+        $namespace = $this->namespaceRepository->findOneByName($name);
+        $rawLabels = $namespace->getMetadata()->getLabelList()->toAssociativeArray();
+
+        if (!array_key_exists($key, $rawLabels)) {
+            throw new \RuntimeException(sprintf(
+                'Label "%s" expected to be found in the label list',
+                $key
+            ));
+        }
+
+        if ($rawLabels[$key] != $value) {
+            throw new \RuntimeException(sprintf(
+                'Expected label "%s" to have the value "%s" but found "%s"',
+                $key,
+                $value,
+                $rawLabels[$key]
+            ));
+        }
+    }
 }
