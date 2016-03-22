@@ -14,6 +14,15 @@ interface EnvironmentClient
     public function findAll();
 
     /**
+     * Find environments by labels.
+     *
+     * @param array $labels
+     *
+     * @return Environment[]
+     */
+    public function findByLabels(array $labels);
+
+    /**
      * @param string $identifier
      *
      * @throws EnvironmentNotFound

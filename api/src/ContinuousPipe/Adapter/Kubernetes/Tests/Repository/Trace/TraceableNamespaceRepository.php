@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace;
 
+use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Repository\NamespaceRepository;
 
@@ -36,6 +37,14 @@ class TraceableNamespaceRepository implements NamespaceRepository
     public function findAll()
     {
         return $this->namespaceRepository->findAll();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByLabels(KeyValueObjectList $labels)
+    {
+        return $this->namespaceRepository->findByLabels($labels);
     }
 
     /**

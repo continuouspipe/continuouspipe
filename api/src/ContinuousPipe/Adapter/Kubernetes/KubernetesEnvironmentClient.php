@@ -8,7 +8,9 @@ use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Model\Environment;
 use Kubernetes\Client\Client;
 use Kubernetes\Client\Exception\NamespaceNotFound;
+use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\KubernetesNamespace;
+use Kubernetes\Client\Model\Label;
 
 class KubernetesEnvironmentClient implements EnvironmentClient
 {
@@ -37,7 +39,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
      */
     public function findAll()
     {
-        $namespaces = $this->client->getNamespaceRepository()->findAll();
+        $namespaces = $this->getNamespaceRepository()->findAll();
         $environments = [];
 
         foreach ($namespaces->getNamespaces() as $namespace) {
@@ -50,10 +52,23 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     /**
      * {@inheritdoc}
      */
+    public function findByLabels(array $labels)
+    {
+        $namespaceLabels = KeyValueObjectList::fromAssociativeArray($labels, Label::class);
+        $namespaces = $this->getNamespaceRepository()->findByLabels($namespaceLabels);
+
+        return array_map(function (KubernetesNamespace $namespace) {
+            return $this->namespaceToEnvironment($namespace);
+        }, $namespaces);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function find($identifier)
     {
         try {
-            $namespace = $this->client->getNamespaceRepository()->findOneByName($identifier);
+            $namespace = $this->getNamespaceRepository()->findOneByName($identifier);
         } catch (NamespaceNotFound $e) {
             throw new EnvironmentNotFound();
         }
@@ -66,7 +81,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
      */
     public function delete(Environment $environment)
     {
-        $namespaceRepository = $this->client->getNamespaceRepository();
+        $namespaceRepository = $this->getNamespaceRepository();
         $namespaceRepository->delete(
             $namespaceRepository->findOneByName($environment->getIdentifier())
         );
@@ -87,5 +102,13 @@ class KubernetesEnvironmentClient implements EnvironmentClient
             $namespaceMetadata->getName(),
             $this->namespaceInspector->getComponents($namespaceClient)
         );
+    }
+
+    /**
+     * @return \Kubernetes\Client\Repository\NamespaceRepository
+     */
+    private function getNamespaceRepository()
+    {
+        return $this->client->getNamespaceRepository();
     }
 }

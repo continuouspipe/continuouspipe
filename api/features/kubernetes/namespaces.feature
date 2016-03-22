@@ -42,3 +42,9 @@ Feature:
     Given the default service account won't be created at the same time than the namespace
     When I send the built deployment request
     Then the service account should be updated with a docker registry pull secret
+
+  Scenario: The namespace should be labelled
+    Given the environment label "flow" contains "12345"
+    When I send the built deployment request
+    Then the namespace "my-environment" should be created
+    And the namespace "my-environment" should have the label "flow" that contains "12345"

@@ -77,7 +77,9 @@ class StartDeploymentHandler
         $environment = new Environment(
             $target->getEnvironmentName(),
             $target->getEnvironmentName(),
-            $specification->getComponents()
+            $specification->getComponents(),
+            null,
+            $target->getEnvironmentLabels()
         );
 
         $logger->child(new Text(sprintf(

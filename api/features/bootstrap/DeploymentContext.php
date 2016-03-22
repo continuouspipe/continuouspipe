@@ -101,6 +101,18 @@ class DeploymentContext implements Context
     }
 
     /**
+     * @Given the environment label :key contains :value
+     */
+    public function theEnvironmentLabelContains($key, $value)
+    {
+        if (!array_key_exists('environmentLabels', $this->deploymentRequest['target'])) {
+            $this->deploymentRequest['target']['environmentLabels'] = [];
+        }
+
+        $this->deploymentRequest['target']['environmentLabels'][$key] = $value;
+    }
+
+    /**
      * @Given the specification come from the template :template
      */
     public function theSpecificationComeFromTheTemplate($template)

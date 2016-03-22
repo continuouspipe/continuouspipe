@@ -3,12 +3,16 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
 use Kubernetes\Client\Exception\NamespaceNotFound;
+use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\NamespaceList;
 use Kubernetes\Client\Repository\NamespaceRepository;
 
 class InMemoryNamespaceRepository implements NamespaceRepository
 {
+    /**
+     * @var KubernetesNamespace[]
+     */
     private $namespaces = [];
 
     /**
@@ -17,6 +21,26 @@ class InMemoryNamespaceRepository implements NamespaceRepository
     public function findAll()
     {
         return new NamespaceList($this->namespaces);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByLabels(KeyValueObjectList $labels)
+    {
+        return array_values(array_filter($this->namespaces, function (KubernetesNamespace $namespace) use ($labels) {
+            $foundLabels = $namespace->getMetadata()->getLabelsAsAssociativeArray();
+
+            foreach ($labels->toAssociativeArray() as $key => $value) {
+                if (!array_key_exists($key, $foundLabels)) {
+                    return false;
+                } elseif ($foundLabels[$key] != $value) {
+                    return false;
+                }
+            }
+
+            return true;
+        }));
     }
 
     /**
