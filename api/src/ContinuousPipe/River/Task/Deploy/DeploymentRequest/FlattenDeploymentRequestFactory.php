@@ -43,7 +43,7 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
         $bucketUuid = $context->getTeam()->getBucketUuid();
 
         return new DeploymentRequest(
-            $this->targetEnvironmentFactory->create($context->getTideUuid(), $configuration),
+            $this->targetEnvironmentFactory->create($context, $configuration),
             new DeploymentRequest\Specification(
                 $configuration->getComponents()
             ),

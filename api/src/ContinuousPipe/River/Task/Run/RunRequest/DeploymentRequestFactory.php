@@ -44,7 +44,7 @@ class DeploymentRequestFactory
     public function createDeploymentRequest(RunContext $context, RunTaskConfiguration $configuration)
     {
         return new DeploymentRequest(
-            $this->targetEnvironmentFactory->create($context->getTideUuid(), $configuration),
+            $this->targetEnvironmentFactory->create($context, $configuration),
             new DeploymentRequest\Specification([
                 $this->createComponent(
                     $this->createComponentName($context),

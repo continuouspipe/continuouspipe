@@ -138,3 +138,23 @@ Feature:
     """
     When a tide is started
     Then the component "app" should be deployed with a TCP port 80
+
+  Scenario: The environment is created with some tags
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    When I tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: my/app
+                            accessibility:
+                                from_external: true
+                            ports:
+                                - 80
+    """
+    Then the deployed environment should have the tag "flow=00000000-0000-0000-0000-000000000000"

@@ -471,17 +471,33 @@ class DeployContext implements Context
     }
 
     /**
+     * @Then the deployed environment should have the tag :tag
+     */
+    public function theDeployedEnvironmentShouldHaveTheTag($tag)
+    {
+        $deploymentRequest = $this->getLastDeploymentRequest();
+        $environmentLabels = $deploymentRequest->getTarget()->getEnvironmentLabels();
+
+        list($key, $value) = explode('=', $tag);
+
+        if (!array_key_exists($key, $environmentLabels)) {
+            throw new \RuntimeException(sprintf('Label "%s" is not found', $key));
+        } else if ($environmentLabels[$key] != $value) {
+            throw new \RuntimeException(sprintf(
+                'Expected value "%s" but found "%s"',
+                $value,
+                $environmentLabels[$key]
+            ));
+        }
+    }
+
+    /**
      * @param string $componentName
      * @return Component
      */
     private function getDeployedComponent($componentName)
     {
-        $deploymentRequests = $this->traceablePipeClient->getRequests();
-        if (0 == count($deploymentRequests)) {
-            throw new \RuntimeException('No deployment request found');
-        }
-
-        $deploymentRequest = array_pop($deploymentRequests);
+        $deploymentRequest = $this->getLastDeploymentRequest();
         $components = $deploymentRequest->getSpecification()->getComponents();
         $matchingComponents = array_filter($components, function(Component $component) use ($componentName) {
             return $component->getName() == $componentName;
@@ -597,5 +613,18 @@ class DeployContext implements Context
                 $response->getStatusCode()
             ));
         }
+    }
+
+    /**
+     * @return DeploymentRequest
+     */
+    private function getLastDeploymentRequest()
+    {
+        $deploymentRequests = $this->traceablePipeClient->getRequests();
+        if (0 == count($deploymentRequests)) {
+            throw new \RuntimeException('No deployment request found');
+        }
+
+        return array_pop($deploymentRequests);
     }
 }

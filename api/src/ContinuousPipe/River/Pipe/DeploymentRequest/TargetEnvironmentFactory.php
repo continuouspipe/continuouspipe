@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
-use Rhumsaa\Uuid\Uuid;
+use ContinuousPipe\River\TideContext;
 
 class TargetEnvironmentFactory
 {
@@ -25,19 +25,22 @@ class TargetEnvironmentFactory
     /**
      * Create the target environment descriptor.
      *
-     * @param Uuid                          $tideUuid
+     * @param TideContext                   $tideContext
      * @param EnvironmentAwareConfiguration $configuration
      *
      * @return Target
      */
-    public function create(Uuid $tideUuid, EnvironmentAwareConfiguration $configuration)
+    public function create(TideContext $tideContext, EnvironmentAwareConfiguration $configuration)
     {
         return new Target(
             $this->environmentNamingStrategy->getName(
-                $tideUuid,
+                $tideContext->getTideUuid(),
                 $configuration->getEnvironmentName()
             ),
-            $configuration->getClusterIdentifier()
+            $configuration->getClusterIdentifier(),
+            [
+                'flow' => (string) $tideContext->getFlowUuid(),
+            ]
         );
     }
 }
