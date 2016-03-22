@@ -23,13 +23,25 @@ class Target
     private $clusterIdentifier;
 
     /**
+     * Environment labels.
+     *
+     * @JMS\Type("array<string,string>")
+     * @JMS\SerializedName("environmentLabels")
+     *
+     * @var string
+     */
+    private $environmentLabels;
+
+    /**
      * @param string $environmentName
      * @param string $clusterIdentifier
+     * @param array  $environmentLabels
      */
-    public function __construct($environmentName, $clusterIdentifier)
+    public function __construct($environmentName, $clusterIdentifier, array $environmentLabels = [])
     {
         $this->environmentName = $environmentName;
         $this->clusterIdentifier = $clusterIdentifier;
+        $this->environmentLabels = $environmentLabels;
     }
 
     /**
@@ -46,5 +58,13 @@ class Target
     public function getClusterIdentifier()
     {
         return $this->clusterIdentifier;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEnvironmentLabels()
+    {
+        return $this->environmentLabels;
     }
 }

@@ -2,9 +2,10 @@
 
 namespace ContinuousPipe\River\Task\Run;
 
+use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
 use JMS\Serializer\Annotation as JMS;
 
-class RunTaskConfiguration
+class RunTaskConfiguration implements EnvironmentAwareConfiguration
 {
     /**
      * @JMS\Type("string")

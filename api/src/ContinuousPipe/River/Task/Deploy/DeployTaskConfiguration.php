@@ -3,9 +3,10 @@
 namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\Model\Component;
+use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
 use JMS\Serializer\Annotation as JMS;
 
-class DeployTaskConfiguration
+class DeployTaskConfiguration implements EnvironmentAwareConfiguration
 {
     /**
      * @JMS\Type("string")

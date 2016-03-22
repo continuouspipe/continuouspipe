@@ -14,17 +14,6 @@
             <tag name="river.task_factory" task="deploy" />
         </service>
 
-        <service id="river.pipe_client.guzzle_client" class="GuzzleHttp\Client">
-            <tag name="csa_guzzle.client" />
-        </service>
-        <service id="river.pipe_client" class="ContinuousPipe\Pipe\HttpPipeClient">
-            <argument type="service" id="river.pipe_client.guzzle_client" />
-            <argument type="service" id="jms_serializer" />
-            <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
-            <argument>%pipe_base_url%</argument>
-        </service>
-        <service id="river.pipe.cluster_identifier_resolver" class="ContinuousPipe\River\Pipe\ClusterIdentifierResolver" />
-
         <!-- Naming strategies -->
         <service id="river.task.deploy.naming.expression_resolver" class="ContinuousPipe\River\Task\Deploy\Naming\ExpressionResolverNamingStrategy">
             <argument type="service" id="river.task_filter.context_factory" />
@@ -50,7 +39,7 @@
 
         <service id="river.task.deploy.deployment_request_factory" class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\FlattenDeploymentRequestFactory">
             <argument type="service" id="router" />
-            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
+            <argument type="service" id="river.pipe.target_environment_factory" />
         </service>
 
         <service id="river.handler.start_deploy" class="ContinuousPipe\River\Task\Deploy\Handler\StartDeploymentHandler">
