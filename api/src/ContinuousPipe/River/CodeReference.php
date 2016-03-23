@@ -24,7 +24,7 @@ class CodeReference
      * @param string         $sha1
      * @param string         $branch
      */
-    public function __construct(CodeRepository $codeRepository, $sha1, $branch = null)
+    public function __construct(CodeRepository $codeRepository, $sha1 = null, $branch = null)
     {
         $this->codeRepository = $codeRepository;
         $this->sha1 = $sha1;
@@ -40,7 +40,7 @@ class CodeReference
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getCommitSha()
     {

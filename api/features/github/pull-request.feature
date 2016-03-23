@@ -27,11 +27,6 @@ Feature:
     Then the addresses of the environment should be commented on the pull-request
     And the comment "1234" should have been deleted
 
-  Scenario: The environment should be deleted when a pull-request is closed
-    Given a tide is created for branch "foo" and commit "12345" with a deploy task
-    When a pull-request is closed with head commit "12345"
-    Then the environment should be deleted
-
   Scenario: An environment created from an external pull-request should be labelled as it
     Given I have a flow with the following configuration:
     """

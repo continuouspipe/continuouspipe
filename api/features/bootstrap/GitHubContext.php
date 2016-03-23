@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
+use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\EventBus\EventStore;
@@ -270,7 +271,7 @@ class GitHubContext implements Context
     }
 
     /**
-     * @When a status webhook is received with the context :arg1 and the value :arg2 for a different code reference
+     * @When a status webhook is received with the context :context and the value :state for a different code reference
      */
     public function aStatusWebhookIsReceivedWithTheContextAndTheValueForADifferentCodeReference($context, $state)
     {
@@ -279,6 +280,19 @@ class GitHubContext implements Context
         $decoded['state'] = $state;
 
         $this->sendWebHook('status', json_encode($decoded));
+    }
+
+    /**
+     * @When the branch :branch with head :sha1 is deleted
+     */
+    public function theBranchIsDeleted($branch, $sha1)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/push-deleted-pr-branch.json'), true);
+        $contents['ref'] = 'refs/head/'.$branch;
+        $contents['before'] = $sha1;
+        $contents['after'] = CodeReferenceResolver::EMPTY_COMMIT;
+
+        $this->sendWebHook('push', json_encode($contents));
     }
 
     /**

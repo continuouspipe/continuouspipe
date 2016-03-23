@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
 use ContinuousPipe\Model\Environment;
-use ContinuousPipe\River\CodeReference;
 use Rhumsaa\Uuid\Uuid;
 
 class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
@@ -33,9 +32,9 @@ class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function getName(Uuid $flowUuid, CodeReference $codeReference)
+    public function getName(Uuid $flowUuid, $expression = null)
     {
-        $name = $this->namingStrategy->getName($flowUuid, $codeReference);
+        $name = $this->namingStrategy->getName($flowUuid, $expression);
         if (strlen($name) <= $this->maxLength) {
             return $name;
         }

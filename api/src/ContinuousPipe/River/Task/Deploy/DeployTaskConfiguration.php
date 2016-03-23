@@ -3,9 +3,10 @@
 namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\Model\Component;
+use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
 use JMS\Serializer\Annotation as JMS;
 
-class DeployTaskConfiguration
+class DeployTaskConfiguration implements EnvironmentAwareConfiguration
 {
     /**
      * @JMS\Type("string")
@@ -22,13 +23,22 @@ class DeployTaskConfiguration
     private $services;
 
     /**
+     * @JMS\Type("string")
+     *
+     * @var string
+     */
+    private $environmentName;
+
+    /**
      * @param string      $clusterIdentifier
      * @param Component[] $services
+     * @param string      $environmentName
      */
-    public function __construct($clusterIdentifier, array $services)
+    public function __construct($clusterIdentifier, array $services, $environmentName)
     {
         $this->clusterIdentifier = $clusterIdentifier;
         $this->services = $services;
+        $this->environmentName = $environmentName;
     }
 
     /**
@@ -53,5 +63,13 @@ class DeployTaskConfiguration
     public function getComponents()
     {
         return $this->services;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEnvironmentName()
+    {
+        return $this->environmentName;
     }
 }

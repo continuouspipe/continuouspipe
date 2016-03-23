@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Task\Run\RunRequest;
 use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
+use ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory;
 use ContinuousPipe\River\Task\Run\RunContext;
 use ContinuousPipe\River\Task\Run\RunTaskConfiguration;
 use ContinuousPipe\River\TideContext;
@@ -19,34 +19,32 @@ class DeploymentRequestFactory
     private $urlGenerator;
 
     /**
-     * @var EnvironmentNamingStrategy
+     * @var TargetEnvironmentFactory
      */
-    private $environmentNamingStrategy;
+    private $targetEnvironmentFactory;
 
     /**
-     * @param UrlGeneratorInterface     $urlGenerator
-     * @param EnvironmentNamingStrategy $environmentNamingStrategy
+     * @param UrlGeneratorInterface    $urlGenerator
+     * @param TargetEnvironmentFactory $targetEnvironmentFactory
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, EnvironmentNamingStrategy $environmentNamingStrategy)
+    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory)
     {
         $this->urlGenerator = $urlGenerator;
-        $this->environmentNamingStrategy = $environmentNamingStrategy;
+        $this->targetEnvironmentFactory = $targetEnvironmentFactory;
     }
 
     /**
      * Create a deployment request for the following run configuration.
      *
-     * @param RunContext $context
+     * @param RunContext           $context
+     * @param RunTaskConfiguration $configuration
      *
      * @return DeploymentRequest
      */
     public function createDeploymentRequest(RunContext $context, RunTaskConfiguration $configuration)
     {
         return new DeploymentRequest(
-            new DeploymentRequest\Target(
-                $this->getEnvironmentName($context),
-                $configuration->getClusterIdentifier()
-            ),
+            $this->targetEnvironmentFactory->create($context, $configuration),
             new DeploymentRequest\Specification([
                 $this->createComponent(
                     $this->createComponentName($context),
@@ -58,19 +56,6 @@ class DeploymentRequestFactory
                 $context->getTaskLog()->getId()
             ),
             $context->getTeam()->getBucketUuid()
-        );
-    }
-
-    /**
-     * @param TideContext $context
-     *
-     * @return string
-     */
-    private function getEnvironmentName(TideContext $context)
-    {
-        return $this->environmentNamingStrategy->getName(
-            $context->getFlowUuid(),
-            $context->getCodeReference()
         );
     }
 
@@ -126,7 +111,7 @@ class DeploymentRequestFactory
     {
         $variables = [];
 
-        foreach ($configuration->getEnvironment() as $key => $value) {
+        foreach ($configuration->getEnvironmentVariables() as $key => $value) {
             $variables[] = new Component\EnvironmentVariable($key, $value);
         }
 

@@ -94,25 +94,25 @@ class HttpPipeClient implements Client
             $clusterIdentifier
         );
 
-        try {
-            $response = $this->client->get($url, [
-                'headers' => $this->getRequestHeaders($authenticatedUser),
-            ]);
-        } catch (ClientException $e) {
-            if ($e->getResponse()->getStatusCode() == 404) {
-                throw new ClusterNotFound(sprintf(
-                    'Cluster named "%s" is not found',
-                    $clusterIdentifier
-                ));
-            }
+        return $this->requestEnvironmentList($authenticatedUser, $url);
+    }
 
-            throw $e;
-        }
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels)
+    {
+        $queryFilters = [
+            'labels' => $labels,
+        ];
 
-        $contents = $this->getResponseContents($response);
-        $environments = $this->serializer->deserialize($contents, 'array<'.Environment::class.'>', 'json');
+        $url = sprintf(
+            $this->baseUrl.'/teams/%s/clusters/%s/environments?'.http_build_query($queryFilters),
+            $team->getSlug(),
+            $clusterIdentifier
+        );
 
-        return $environments;
+        return $this->requestEnvironmentList($authenticatedUser, $url);
     }
 
     /**
@@ -143,5 +143,33 @@ class HttpPipeClient implements Client
         }
 
         return $body->getContents();
+    }
+
+    /**
+     * @param User   $user
+     * @param string $url
+     *
+     * @throws ClusterNotFound
+     *
+     * @return Environment[]
+     */
+    private function requestEnvironmentList(User $user, $url)
+    {
+        try {
+            $response = $this->client->get($url, [
+                'headers' => $this->getRequestHeaders($user),
+            ]);
+        } catch (ClientException $e) {
+            if ($e->getResponse()->getStatusCode() == 404) {
+                throw new ClusterNotFound('Unable to get the environment list');
+            }
+
+            throw $e;
+        }
+
+        $contents = $this->getResponseContents($response);
+        $environments = $this->serializer->deserialize($contents, 'array<'.Environment::class.'>', 'json');
+
+        return $environments;
     }
 }

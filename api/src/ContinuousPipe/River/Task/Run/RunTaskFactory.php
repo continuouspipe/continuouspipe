@@ -71,6 +71,12 @@ class RunTaskFactory implements TaskFactory
                     ->prototype('scalar')->end()
                 ->end()
                 ->arrayNode('environment')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('name')->defaultValue(null)->isRequired()->end()
+                    ->end()
+                ->end()
+                ->arrayNode('environment_variables')
                     ->prototype('array')
                         ->children()
                             ->scalarNode('name')->isRequired()->end()
@@ -95,7 +101,8 @@ class RunTaskFactory implements TaskFactory
             $configuration['cluster'],
             $configuration['image']['name'],
             $configuration['commands'],
-            $this->resolveEnvironment($configuration)
+            $this->resolveEnvironment($configuration),
+            $configuration['environment']['name']
         );
     }
 
@@ -107,7 +114,7 @@ class RunTaskFactory implements TaskFactory
     private function resolveEnvironment(array $configuration)
     {
         $variables = [];
-        foreach ($configuration['environment'] as $item) {
+        foreach ($configuration['environment_variables'] as $item) {
             $variables[$item['name']] = $item['value'];
         }
 

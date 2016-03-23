@@ -533,17 +533,11 @@ EOF;
      */
     public function aTideIsStartedWithTasks(array $tasks)
     {
-        $this->flowContext->iHaveAFlow();
-        $continuousPipeFile = Yaml::dump([
+        $configuration = [
             'tasks' => $tasks
-        ]);
+        ];
 
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'continuous-pipe.yml' => $continuousPipeFile
-        ]);
-
-        $this->createTide();
-        $this->startTide();
+        $this->aTideIsStartedWithConfiguration($configuration);
     }
 
     /**
@@ -730,6 +724,14 @@ EOF;
                 ]
             ]
         ]);
+    }
+
+    /**
+     * @Given I tide is started with the following configuration:
+     */
+    public function iTideIsStartedWithTheFollowingConfiguration(PyStringNode $configuration)
+    {
+        $this->aTideIsStartedWithConfiguration(Yaml::parse($configuration->getRaw()));
     }
 
     /**
@@ -1057,5 +1059,21 @@ EOF;
         }
 
         return $this->tideUuid;
+    }
+
+    /**
+     * @param $configuration
+     */
+    private function aTideIsStartedWithConfiguration($configuration)
+    {
+        $this->flowContext->iHaveAFlow();
+        $continuousPipeFile = Yaml::dump($configuration);
+
+        $this->fakeFileSystemResolver->prepareFileSystem([
+            'continuous-pipe.yml' => $continuousPipeFile
+        ]);
+
+        $this->createTide();
+        $this->startTide();
     }
 }

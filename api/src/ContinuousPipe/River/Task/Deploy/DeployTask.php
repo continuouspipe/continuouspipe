@@ -146,4 +146,12 @@ class DeployTask extends EventDrivenTask
 
         return $view;
     }
+
+    /**
+     * @return DeployTaskConfiguration
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
+    }
 }

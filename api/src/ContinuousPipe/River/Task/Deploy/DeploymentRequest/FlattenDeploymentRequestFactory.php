@@ -3,10 +3,10 @@
 namespace ContinuousPipe\River\Task\Deploy\DeploymentRequest;
 
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory;
 use ContinuousPipe\River\Task\Deploy\DeployContext;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
@@ -17,18 +17,18 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
     private $urlGenerator;
 
     /**
-     * @var EnvironmentNamingStrategy
+     * @var TargetEnvironmentFactory
      */
-    private $environmentNamingStrategy;
+    private $targetEnvironmentFactory;
 
     /**
-     * @param UrlGeneratorInterface     $urlGenerator
-     * @param EnvironmentNamingStrategy $environmentNamingStrategy
+     * @param UrlGeneratorInterface    $urlGenerator
+     * @param TargetEnvironmentFactory $targetEnvironmentFactory
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, EnvironmentNamingStrategy $environmentNamingStrategy)
+    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory)
     {
         $this->urlGenerator = $urlGenerator;
-        $this->environmentNamingStrategy = $environmentNamingStrategy;
+        $this->targetEnvironmentFactory = $targetEnvironmentFactory;
     }
 
     /**
@@ -43,10 +43,7 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
         $bucketUuid = $context->getTeam()->getBucketUuid();
 
         return new DeploymentRequest(
-            new DeploymentRequest\Target(
-                $this->getEnvironmentName($context),
-                $configuration->getClusterIdentifier()
-            ),
+            $this->targetEnvironmentFactory->create($context, $configuration),
             new DeploymentRequest\Specification(
                 $configuration->getComponents()
             ),
@@ -55,19 +52,6 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
                 $context->getTaskLog()->getId()
             ),
             $bucketUuid
-        );
-    }
-
-    /**
-     * @param DeployContext $context
-     *
-     * @return string
-     */
-    private function getEnvironmentName(DeployContext $context)
-    {
-        return $this->environmentNamingStrategy->getName(
-            $context->getFlowUuid(),
-            $context->getCodeReference()
         );
     }
 }

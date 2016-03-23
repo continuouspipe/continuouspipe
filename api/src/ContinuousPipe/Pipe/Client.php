@@ -2,9 +2,9 @@
 
 namespace ContinuousPipe\Pipe;
 
+use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
-use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 
@@ -37,4 +37,16 @@ interface Client
      * @return \ContinuousPipe\Model\Environment[]
      */
     public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser);
+
+    /**
+     * @param string $clusterIdentifier
+     * @param Team   $team
+     * @param User   $authenticatedUser
+     * @param array  $labels
+     *
+     * @throws ClusterNotFound
+     *
+     * @return Environment[]
+     */
+    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels);
 }

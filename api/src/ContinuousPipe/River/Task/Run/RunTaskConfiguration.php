@@ -2,9 +2,10 @@
 
 namespace ContinuousPipe\River\Task\Run;
 
+use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
 use JMS\Serializer\Annotation as JMS;
 
-class RunTaskConfiguration
+class RunTaskConfiguration implements EnvironmentAwareConfiguration
 {
     /**
      * @JMS\Type("string")
@@ -32,20 +33,29 @@ class RunTaskConfiguration
      *
      * @var array
      */
-    private $environment;
+    private $environmentVariables;
+
+    /**
+     * @JMS\Type("string")
+     *
+     * @var string
+     */
+    private $environmentName;
 
     /**
      * @param string $clusterIdentifier
      * @param string $image
      * @param array  $commands
-     * @param array  $environment
+     * @param array  $environmentVariables
+     * @param string $environmentName
      */
-    public function __construct($clusterIdentifier, $image, array $commands, array $environment)
+    public function __construct($clusterIdentifier, $image, array $commands, array $environmentVariables, $environmentName)
     {
         $this->clusterIdentifier = $clusterIdentifier;
         $this->image = $image;
         $this->commands = $commands;
-        $this->environment = $environment;
+        $this->environmentVariables = $environmentVariables;
+        $this->environmentName = $environmentName;
     }
 
     /**
@@ -75,25 +85,33 @@ class RunTaskConfiguration
     /**
      * @return array
      */
-    public function getEnvironment()
+    public function getEnvironmentVariables()
     {
-        return $this->environment;
+        return $this->environmentVariables;
     }
 
     /**
      * @param string $name
      * @param string $address
      */
-    public function addEnvironment($name, $address)
+    public function addEnvironmentVariable($name, $address)
     {
-        $this->environment[$name] = $address;
+        $this->environmentVariables[$name] = $address;
     }
 
     /**
-     * @param array $environment
+     * @param array $environmentVariables
      */
-    public function setEnvironment(array $environment)
+    public function setEnvironmentVariables(array $environmentVariables)
     {
-        $this->environment = $environment;
+        $this->environmentVariables = $environmentVariables;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEnvironmentName()
+    {
+        return $this->environmentName;
     }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.pipe_client.guzzle_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="river.pipe_client" class="ContinuousPipe\Pipe\HttpPipeClient">
+            <argument type="service" id="river.pipe_client.guzzle_client" />
+            <argument type="service" id="jms_serializer" />
+            <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
+            <argument>%pipe_base_url%</argument>
+        </service>
+        <service id="river.pipe.cluster_identifier_resolver" class="ContinuousPipe\River\Pipe\ClusterIdentifierResolver" />
+
+        <service id="river.pipe.target_environment_factory" class="ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory">
+            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
+        </service>
+    </services>
+</container>

@@ -6,6 +6,7 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
+    default_environment_expression: 'flow.uuid ~ "-" ~ code_reference.branch'
 
 framework:
     #esi:             ~

@@ -44,6 +44,26 @@ class FakeClient implements Client
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels)
+    {
+        return array_values(array_filter($this->environments, function (Environment $environment) use ($labels) {
+            $environmentLabels = $environment->getLabels();
+
+            foreach ($labels as $key => $value) {
+                if (!array_key_exists($key, $environmentLabels)) {
+                    return false;
+                } elseif ($environmentLabels[$key] != $value) {
+                    return false;
+                }
+            }
+
+            return true;
+        }));
+    }
+
+    /**
      * @param Environment $environment
      */
     public function addEnvironment(Environment $environment)

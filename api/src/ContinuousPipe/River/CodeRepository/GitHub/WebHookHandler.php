@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
+use ContinuousPipe\River\Event\GitHub\BranchDeleted;
 use ContinuousPipe\River\Event\GitHub\CodePushed;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
 use ContinuousPipe\River\Event\GitHub\PullRequestOpened;
@@ -78,7 +79,12 @@ class WebHookHandler
     private function handlePushEvent(Flow $flow, PushEvent $event)
     {
         $codeReference = $this->codeReferenceResolver->fromPushEvent($event);
-        $this->eventBus->handle(new CodePushed($flow, $event, $codeReference));
+
+        if ($event->isDeleted()) {
+            $this->eventBus->handle(new BranchDeleted($flow, $codeReference));
+        } elseif ($codeReference->getCommitSha() !== null) {
+            $this->eventBus->handle(new CodePushed($flow, $event, $codeReference));
+        }
     }
 
     /**

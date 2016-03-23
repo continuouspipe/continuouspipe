@@ -10,6 +10,8 @@ use GitHub\WebHook\Model\Repository;
 
 class CodeReferenceResolver
 {
+    const EMPTY_COMMIT = '0000000000000000000000000000000000000000';
+
     /**
      * Create code reference from a GitHub push event.
      *
@@ -22,7 +24,7 @@ class CodeReferenceResolver
         return $this->create(
             $pushEvent->getRepository(),
             $pushEvent->getReference(),
-            $pushEvent->getHeadCommit()->getId()
+            $pushEvent->getAfter() !== self::EMPTY_COMMIT ? $pushEvent->getAfter() : $pushEvent->getBefore()
         );
     }
 

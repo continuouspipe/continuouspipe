@@ -68,6 +68,14 @@ class TraceableClient implements Client
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels)
+    {
+        return $this->client->getEnvironmentsLabelled($clusterIdentifier, $team, $authenticatedUser, $labels);
+    }
+
+    /**
      * @return DeploymentRequest\Target[]
      */
     public function getDeletions()
