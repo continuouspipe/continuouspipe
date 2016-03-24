@@ -63,7 +63,7 @@ class ComponentTransformer
 
         $source = new Component\Source($image);
         $specification = new Component\Specification($source, $accessibility, $scalability, $portMappings, $environmentVariables, $volumes, $volumeMounts);
-        $component = new Component($identifier, $identifier, $specification, [], $labels, $locked);
+        $component = new Component($identifier, $identifier, $specification, [], $labels, null, new Component\DeploymentStrategy(null, null, null, $locked));
 
         return $component;
     }
