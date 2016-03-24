@@ -464,6 +464,57 @@ class ReplicationControllerContext implements Context
     }
 
     /**
+     * @Then the requested CPU of the container of the replication controller :name should be :request
+     */
+    public function theRequestedCpuOfTheContainerOfTheReplicationControllerShouldBe($name, $request)
+    {
+        $container = $this->getReplicationControllerContainer($name);
+        $actual = $container->getResources()->getRequests()->getCpu();
+
+        if ($actual != $request) {
+            throw new \RuntimeException(sprintf(
+                'Expected to get "%s" but got "%s"',
+                $request,
+                $actual
+            ));
+        }
+    }
+
+    /**
+     * @Then the requested memory of the container of the replication controller :name should be :request
+     */
+    public function theRequestedMemoryOfTheContainerOfTheReplicationControllerShouldBe($name, $request)
+    {
+        $container = $this->getReplicationControllerContainer($name);
+        $actual = $container->getResources()->getRequests()->getMemory();
+
+        if ($actual != $request) {
+            throw new \RuntimeException(sprintf(
+                'Expected to get "%s" but got "%s"',
+                $request,
+                $actual
+            ));
+        }
+    }
+
+    /**
+     * @Then the CPU limit of the container of the replication controller :name should be :limit
+     */
+    public function theCpuLimitOfTheContainerOfTheReplicationControllerShouldBe($name, $limit)
+    {
+        $container = $this->getReplicationControllerContainer($name);
+        $actual = $container->getResources()->getLimits()->getCpu();
+
+        if ($actual != $limit) {
+            throw new \RuntimeException(sprintf(
+                'Expected to get "%s" but got "%s"',
+                $limit,
+                $actual
+            ));
+        }
+    }
+
+    /**
      * @Then :count pods of the replication controller :name should be running
      */
     public function podsOfTheReplicationControllerShouldBeRunning($count, $name)
@@ -516,14 +567,25 @@ class ReplicationControllerContext implements Context
      */
     private function getReplicationControllerProbe($name, $probeType)
     {
-        $replicationController = $this->replicationControllerRepository->findOneByName($name);
-        $container = $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()->getContainers()[0];
+        $container = $this->getReplicationControllerContainer($name);
         $probe = $probeType == 'readiness' ? $container->getReadinessProbe() : $container->getLivenessProbe();
 
         if (null === $probe) {
             throw new \RuntimeException('No liveness probe found');
         }
-        
+
         return $probe;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Client\Model\Container
+     */
+    private function getReplicationControllerContainer($name)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($name);
+
+        return $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()->getContainers()[0];
     }
 }

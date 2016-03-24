@@ -11,6 +11,9 @@ use Kubernetes\Client\Model\HttpGetAction;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodSpecification;
 use Kubernetes\Client\Model\Probe;
+use Kubernetes\Client\Model\ResourceLimits;
+use Kubernetes\Client\Model\ResourceRequirements;
+use Kubernetes\Client\Model\ResourceRequirementsRequests;
 use Kubernetes\Client\Model\SecurityContext;
 use Kubernetes\Client\Model\VolumeMount;
 
@@ -92,7 +95,7 @@ class PodTransformer
             Container::PULL_POLICY_ALWAYS,
             $specification->getCommand(),
             $securityContext,
-            null,
+            $this->createResources($specification->getResources()),
             $this->createProbe($component->getDeploymentStrategy()->getLivenessProbe()),
             $this->createProbe($component->getDeploymentStrategy()->getReadinessProbe())
         );
@@ -194,6 +197,22 @@ class PodTransformer
             $componentProbe->getPeriodSeconds(),
             $componentProbe->getSuccessThreshold(),
             $componentProbe->getFailureThreshold()
+        );
+    }
+
+    /**
+     * @param Component\Resources|null $resources
+     * @return ResourceRequirements|null
+     */
+    private function createResources(Component\Resources $resources = null)
+    {
+        if (null === $resources) {
+            return null;
+        }
+
+        return new ResourceRequirements(
+            (null !== ($requests = $resources->getRequests())) ? new ResourceRequirementsRequests(null, $requests->getMemory(), $requests->getCpu()) : null,
+            (null !== ($limits = $resources->getLimits())) ? new ResourceLimits($limits->getMemory(), $limits->getCpu()) : null
         );
     }
 }

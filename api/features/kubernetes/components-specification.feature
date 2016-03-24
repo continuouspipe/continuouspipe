@@ -177,3 +177,40 @@ Feature:
     And pods are running for the replication controller "app"
     Then the volume claim "app-volume" should not be created
     And the component "app" should be created with a persistent volume mounted in "/app/shared"
+
+  Scenario: It requests and limits the components' resources
+    When I send a deployment request with the following components specification:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "accessibility": {
+            "from_cluster": true,
+            "from_external": false
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 5
+          },
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "4Gi"
+            },
+            "limits": {
+              "cpu": "900m"
+            }
+          }
+        }
+      }
+    ]
+    """
+    Then the replication controller "app" should be created
+    And the requested CPU of the container of the replication controller "app" should be "100m"
+    And the requested memory of the container of the replication controller "app" should be "4Gi"
+    And the CPU limit of the container of the replication controller "app" should be "900m"
