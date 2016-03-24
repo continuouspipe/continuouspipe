@@ -14,12 +14,12 @@ Feature:
       | my-cluster | kubernetes | https://1.2.3.4 | v1      | username | password |
     And the pods of the replication controllers will be created successfully and running
 
-  Scenario:
+  Scenario: It creates a lock component when the environment do not exists
     When the specification come from the template "simple-app"
     And I send the built deployment request
     Then the replication controller "mysql" should be created
 
-  Scenario:
+  Scenario: It do not update an existing component
     Given I have an existing replication controller "mysql"
     And I have an existing replication controller "app"
     When the specification come from the template "simple-app"
@@ -47,3 +47,50 @@ Feature:
     When I send the built deployment request
     And the deployment should be successful
     And the pod "app" should be deleted
+
+  Scenario: It creates the different probes successfully
+    When I send a deployment request with the following components specification:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "accessibility": {
+            "from_cluster": true,
+            "from_external": false
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 5
+          }
+        },
+        "deployment_strategy": {
+          "liveness_probe": {
+            "type": "http",
+            "path": "/healthz",
+            "port": 80,
+            "period_seconds": 15,
+            "failure_threshold": 1
+          },
+          "readiness_probe": {
+            "type": "http",
+            "path": "/healthz",
+            "port": 80,
+            "initial_delay_seconds": 10,
+            "success_threshold": 2
+          }
+        }
+      }
+    ]
+    """
+    Then the replication controller "app" should be created
+    And the liveness probe of the replication controller "app" should be an HTTP request at "/healthz" on port 80
+    And the liveness probe of the replication controller "app" should run every 15 seconds
+    And the liveness probe of the replication controller "app" should fail after 1 failure
+    And the readiness probe of the replication controller "app" should be an HTTP request at "/healthz" on port 80
+    And the readiness probe of the replication controller "app" should start after 10 seconds
+    And the readiness probe of the replication controller "app" should success after 2 success

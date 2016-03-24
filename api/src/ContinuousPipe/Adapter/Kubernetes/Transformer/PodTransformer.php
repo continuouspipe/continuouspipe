@@ -7,8 +7,10 @@ use ContinuousPipe\Model\Component;
 use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\ContainerPort;
 use Kubernetes\Client\Model\EnvironmentVariable;
+use Kubernetes\Client\Model\HttpGetAction;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodSpecification;
+use Kubernetes\Client\Model\Probe;
 use Kubernetes\Client\Model\SecurityContext;
 use Kubernetes\Client\Model\VolumeMount;
 
@@ -38,7 +40,7 @@ class PodTransformer
     {
         $specification = new PodSpecification(
             [
-                $this->createContainer($component->getIdentifier(), $component->getSpecification()),
+                $this->createContainer($component),
             ],
             $this->createVolumes($component->getSpecification()),
             $this->getPodRestartPolicy($component),
@@ -67,13 +69,14 @@ class PodTransformer
     }
 
     /**
-     * @param string                  $name
-     * @param Component\Specification $specification
+     * @param Component $component
      *
      * @return Container
      */
-    private function createContainer($name, Component\Specification $specification)
+    private function createContainer(Component $component)
     {
+        $specification = $component->getSpecification();
+
         if ($runtimePolicy = $specification->getRuntimePolicy()) {
             $securityContext = new SecurityContext($runtimePolicy->isPrivileged());
         } else {
@@ -81,14 +84,17 @@ class PodTransformer
         }
 
         return new Container(
-            $name,
+            $component->getName(),
             $this->getImageName($specification->getSource()),
             $this->createEnvironmentVariables($specification->getEnvironmentVariables()),
             $this->createPorts($specification->getPorts()),
             $this->createVolumeMounts($specification->getVolumeMounts()),
             Container::PULL_POLICY_ALWAYS,
             $specification->getCommand(),
-            $securityContext
+            $securityContext,
+            null,
+            $this->createProbe($component->getDeploymentStrategy()->getLivenessProbe()),
+            $this->createProbe($component->getDeploymentStrategy()->getReadinessProbe())
         );
     }
 
@@ -159,5 +165,35 @@ class PodTransformer
         $scalability = $component->getSpecification()->getScalability();
 
         return $scalability->isEnabled() ? PodSpecification::RESTART_POLICY_ALWAYS : PodSpecification::RESTART_POLICY_NEVER;
+    }
+
+    /**
+     * @param Component\Probe|null $componentProbe
+     *
+     * @return Probe|null
+     */
+    private function createProbe(Component\Probe $componentProbe = null)
+    {
+        if (null === $componentProbe) {
+            return;
+        } elseif (!$componentProbe instanceof Component\Probe\Http) {
+            throw new \RuntimeException('Only support HTTP probes');
+        }
+
+        return new Probe(
+            null,
+            new HttpGetAction(
+                $componentProbe->getPath(),
+                $componentProbe->getPort(),
+                $componentProbe->getHost(),
+                $componentProbe->getScheme()
+            ),
+            null,
+            $componentProbe->getInitialDelaySeconds(),
+            $componentProbe->getTimeoutSeconds(),
+            $componentProbe->getPeriodSeconds(),
+            $componentProbe->getSuccessThreshold(),
+            $componentProbe->getFailureThreshold()
+        );
     }
 }

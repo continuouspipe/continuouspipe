@@ -373,6 +373,96 @@ class ReplicationControllerContext implements Context
         }
     }
 
+
+    /**
+     * @Then the :probeType probe of the replication controller :name should be an HTTP request at :path on port :port
+     */
+    public function theProbeOfTheReplicationControllerShouldBeAnHttpRequestAtOnPort($probeType, $name, $path, $port)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if (null === ($httpProbe = $probe->getHttpGet())) {
+            throw new \RuntimeException('No HTTP liveness probe found');
+        } else if ($httpProbe->getPath() != $path) {
+            throw new \RuntimeException(sprintf(
+                'Expected to found path "%s" but found "%s"',
+                $path,
+                $httpProbe->getPath()
+            ));
+        } else if ($httpProbe->getPort() != $port) {
+            throw new \RuntimeException(sprintf(
+                'Expected port %d but found %d',
+                $port,
+                $httpProbe->getPort()
+            ));
+        }
+    }
+
+
+    /**
+     * @Then the :probeType probe of the replication controller :arg1 should run every :arg2 seconds
+     */
+    public function theProbeOfTheReplicationControllerShouldRunEverySeconds($probeType, $name, $seconds)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if ($probe->getPeriodSeconds() != $seconds) {
+            throw new \RuntimeException(sprintf(
+                'Expected to find %d seconds but found %d',
+                $seconds,
+                $probe->getPeriodSeconds()
+            ));
+        }
+    }
+
+    /**
+     * @Then the :probeType probe of the replication controller :name should fail after :count failure
+     */
+    public function theProbeOfTheReplicationControllerShouldFailAfterFailure($probeType, $name, $count)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if ($probe->getFailureThreshold() != $count) {
+            throw new \RuntimeException(sprintf(
+                'Expected to find %d but found %d',
+                $count,
+                $probe->getFailureThreshold()
+            ));
+        }
+    }
+
+    /**
+     * @Then the :probeType probe of the replication controller :name should start after :seconds seconds
+     */
+    public function theProbeOfTheReplicationControllerShouldStartAfterSeconds($probeType, $name, $seconds)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if ($probe->getInitialDelaySeconds() != $seconds) {
+            throw new \RuntimeException(sprintf(
+                'Expected to find %d seconds but found %d',
+                $seconds,
+                $probe->getInitialDelaySeconds()
+            ));
+        }
+    }
+
+    /**
+     * @Then the :probeType probe of the replication controller :name should success after :count success
+     */
+    public function theProbeOfTheReplicationControllerShouldRunSuccessAfterSuccess($probeType, $name, $count)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if ($probe->getSuccessThreshold() != $count) {
+            throw new \RuntimeException(sprintf(
+                'Expected to find %d but found %d',
+                $count,
+                $probe->getSuccessThreshold()
+            ));
+        }
+    }
+
     /**
      * @Then :count pods of the replication controller :name should be running
      */
@@ -417,5 +507,23 @@ class ReplicationControllerContext implements Context
         }
 
         return current($matchingRCs);
+    }
+
+    /**
+     * @param string $name
+     * @param string $probeType
+     * @return Client\Model\Probe
+     */
+    private function getReplicationControllerProbe($name, $probeType)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($name);
+        $container = $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()->getContainers()[0];
+        $probe = $probeType == 'readiness' ? $container->getReadinessProbe() : $container->getLivenessProbe();
+
+        if (null === $probe) {
+            throw new \RuntimeException('No liveness probe found');
+        }
+        
+        return $probe;
     }
 }
