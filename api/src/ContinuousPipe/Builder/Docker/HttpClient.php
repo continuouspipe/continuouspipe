@@ -269,6 +269,7 @@ EOF;
             'nocache' => (integer) false,
             'rm' => (integer) false,
             'dockerfile' => $this->dockerfileResolver->getFilePath($request->getContext()),
+            'buildargs' => json_encode($request->getEnvironment())
         ];
 
         $content = $archive->isStreamed() ? new Stream($archive->read()) : $archive->read();
