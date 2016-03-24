@@ -1,7 +1,7 @@
 Feature:
-  In order to run a container or a command as part of the deployment
-  As a developer
-  I want to be able to deploy services in an attached mode
+  In order to ensure that the component is correctly deployed
+  As an API consumer
+  I want to be able to precise how the things will be deployed and optionally how
 
   Background:
     Given I am authenticated
@@ -12,6 +12,19 @@ Feature:
     And there is a cluster in the bucket "00000000-0000-0000-0000-000000000000" with the following configuration:
       | identifier | type       | address         | version | username | password |
       | my-cluster | kubernetes | https://1.2.3.4 | v1      | username | password |
+    And the pods of the replication controllers will be created successfully and running
+
+  Scenario:
+    When the specification come from the template "simple-app"
+    And I send the built deployment request
+    Then the replication controller "mysql" should be created
+
+  Scenario:
+    Given I have an existing replication controller "mysql"
+    And I have an existing replication controller "app"
+    When the specification come from the template "simple-app"
+    And I send the built deployment request
+    Then the replication controller "mysql" shouldn't be updated
 
   Scenario: It creates only the pod as the component is not scalable
     Given the pod "app" will run successfully
