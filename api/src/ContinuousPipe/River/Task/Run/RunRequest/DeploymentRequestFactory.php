@@ -96,9 +96,8 @@ class DeploymentRequestFactory
             ),
             [],
             [],
-            false,
             null,
-            new Component\DeploymentStrategy(true)
+            new Component\DeploymentStrategy(null, null, true, false)
         );
     }
 

@@ -35,7 +35,8 @@ class ComponentFactory
             $this->getSpecification($configuration),
             $this->getExtensions($configuration),
             [],
-            $configuration['locked']
+            null,
+            new Component\DeploymentStrategy(null, null, false, $configuration['locked'])
         );
 
         return $component;

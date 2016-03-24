@@ -94,7 +94,7 @@ tasks:
                 - composer run-script update-parameters
                 - php app/console doctrine:migrations:migrate --no-interaction
 
-            environment:
+            environment_variables:
                 - name: DATABASE_HOST
                   value: 104.155.7.25
                 - name: DATABASE_USER
