@@ -161,6 +161,7 @@ EOF;
         }
 
         if ($json['status'] != 'success') {
+            echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
                 'Expected status to be successful, but found "%s"',
                 $json['status']
