@@ -34,6 +34,8 @@
     ],
     "labels": [
     ],
-    "locked": false
+    "deployment_strategy": {
+      "locked": false
+    }
   }
 ]

@@ -21,6 +21,8 @@
       "volume_mounts": []
     },
     "extensions": [],
-    "locked": false
+    "deployment_strategy": {
+      "locked": false
+    }
   }
 ]

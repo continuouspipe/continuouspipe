@@ -29,8 +29,7 @@
     },
     "labels": {
       "com.continuouspipe.visibility": "public"
-    },
-    "locked": false
+    }
   },
   {
     "name": "mysql",
@@ -65,6 +64,8 @@
     "labels": {
       "com.continuouspipe.update": "lock"
     },
-    "locked": true
+    "deployment_strategy": {
+      "locked": true
+    }
   }
 ]

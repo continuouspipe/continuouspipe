@@ -373,6 +373,147 @@ class ReplicationControllerContext implements Context
         }
     }
 
+
+    /**
+     * @Then the :probeType probe of the replication controller :name should be an HTTP request at :path on port :port
+     */
+    public function theProbeOfTheReplicationControllerShouldBeAnHttpRequestAtOnPort($probeType, $name, $path, $port)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if (null === ($httpProbe = $probe->getHttpGet())) {
+            throw new \RuntimeException('No HTTP liveness probe found');
+        } else if ($httpProbe->getPath() != $path) {
+            throw new \RuntimeException(sprintf(
+                'Expected to found path "%s" but found "%s"',
+                $path,
+                $httpProbe->getPath()
+            ));
+        } else if ($httpProbe->getPort() != $port) {
+            throw new \RuntimeException(sprintf(
+                'Expected port %d but found %d',
+                $port,
+                $httpProbe->getPort()
+            ));
+        }
+    }
+
+
+    /**
+     * @Then the :probeType probe of the replication controller :arg1 should run every :arg2 seconds
+     */
+    public function theProbeOfTheReplicationControllerShouldRunEverySeconds($probeType, $name, $seconds)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if ($probe->getPeriodSeconds() != $seconds) {
+            throw new \RuntimeException(sprintf(
+                'Expected to find %d seconds but found %d',
+                $seconds,
+                $probe->getPeriodSeconds()
+            ));
+        }
+    }
+
+    /**
+     * @Then the :probeType probe of the replication controller :name should fail after :count failure
+     */
+    public function theProbeOfTheReplicationControllerShouldFailAfterFailure($probeType, $name, $count)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if ($probe->getFailureThreshold() != $count) {
+            throw new \RuntimeException(sprintf(
+                'Expected to find %d but found %d',
+                $count,
+                $probe->getFailureThreshold()
+            ));
+        }
+    }
+
+    /**
+     * @Then the :probeType probe of the replication controller :name should start after :seconds seconds
+     */
+    public function theProbeOfTheReplicationControllerShouldStartAfterSeconds($probeType, $name, $seconds)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if ($probe->getInitialDelaySeconds() != $seconds) {
+            throw new \RuntimeException(sprintf(
+                'Expected to find %d seconds but found %d',
+                $seconds,
+                $probe->getInitialDelaySeconds()
+            ));
+        }
+    }
+
+    /**
+     * @Then the :probeType probe of the replication controller :name should success after :count success
+     */
+    public function theProbeOfTheReplicationControllerShouldRunSuccessAfterSuccess($probeType, $name, $count)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if ($probe->getSuccessThreshold() != $count) {
+            throw new \RuntimeException(sprintf(
+                'Expected to find %d but found %d',
+                $count,
+                $probe->getSuccessThreshold()
+            ));
+        }
+    }
+
+    /**
+     * @Then the requested CPU of the container of the replication controller :name should be :request
+     */
+    public function theRequestedCpuOfTheContainerOfTheReplicationControllerShouldBe($name, $request)
+    {
+        $container = $this->getReplicationControllerContainer($name);
+        $actual = $container->getResources()->getRequests()->getCpu();
+
+        if ($actual != $request) {
+            throw new \RuntimeException(sprintf(
+                'Expected to get "%s" but got "%s"',
+                $request,
+                $actual
+            ));
+        }
+    }
+
+    /**
+     * @Then the requested memory of the container of the replication controller :name should be :request
+     */
+    public function theRequestedMemoryOfTheContainerOfTheReplicationControllerShouldBe($name, $request)
+    {
+        $container = $this->getReplicationControllerContainer($name);
+        $actual = $container->getResources()->getRequests()->getMemory();
+
+        if ($actual != $request) {
+            throw new \RuntimeException(sprintf(
+                'Expected to get "%s" but got "%s"',
+                $request,
+                $actual
+            ));
+        }
+    }
+
+    /**
+     * @Then the CPU limit of the container of the replication controller :name should be :limit
+     */
+    public function theCpuLimitOfTheContainerOfTheReplicationControllerShouldBe($name, $limit)
+    {
+        $container = $this->getReplicationControllerContainer($name);
+        $actual = $container->getResources()->getLimits()->getCpu();
+
+        if ($actual != $limit) {
+            throw new \RuntimeException(sprintf(
+                'Expected to get "%s" but got "%s"',
+                $limit,
+                $actual
+            ));
+        }
+    }
+
     /**
      * @Then :count pods of the replication controller :name should be running
      */
@@ -417,5 +558,34 @@ class ReplicationControllerContext implements Context
         }
 
         return current($matchingRCs);
+    }
+
+    /**
+     * @param string $name
+     * @param string $probeType
+     * @return Client\Model\Probe
+     */
+    private function getReplicationControllerProbe($name, $probeType)
+    {
+        $container = $this->getReplicationControllerContainer($name);
+        $probe = $probeType == 'readiness' ? $container->getReadinessProbe() : $container->getLivenessProbe();
+
+        if (null === $probe) {
+            throw new \RuntimeException('No liveness probe found');
+        }
+
+        return $probe;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Client\Model\Container
+     */
+    private function getReplicationControllerContainer($name)
+    {
+        $replicationController = $this->replicationControllerRepository->findOneByName($name);
+
+        return $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()->getContainers()[0];
     }
 }

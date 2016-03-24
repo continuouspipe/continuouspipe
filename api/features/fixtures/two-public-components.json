@@ -27,8 +27,7 @@
     ],
     "labels": {
       "com.continuouspipe.visibility": "public"
-    },
-    "locked": false
+    }
   },
   {
     "name": "ui",
@@ -59,7 +58,6 @@
     ],
     "labels": {
       "com.continuouspipe.visibility": "public"
-    },
-    "locked": false
+    }
   }
 ]

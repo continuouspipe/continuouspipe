@@ -36,6 +36,8 @@
     "labels": {
       "com.continuouspipe.visibility": "public"
     },
-    "locked": false
+    "deployment_strategy": {
+      "locked": false
+    }
   }
 ]

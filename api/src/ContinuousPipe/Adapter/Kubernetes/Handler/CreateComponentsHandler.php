@@ -191,7 +191,7 @@ class CreateComponentsHandler implements DeploymentHandler
         }
 
         if ($existingObject !== null) {
-            if ($component->isLocked()) {
+            if (null !== ($deploymentStrategy = $component->getDeploymentStrategy()) && $deploymentStrategy->isLocked()) {
                 $logger->child(new Text('NOT updated '.$this->getObjectTypeAndName($object).' because it is locked'));
 
                 return;
