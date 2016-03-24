@@ -30,16 +30,23 @@ class ComponentTransformer
     {
         $replicationControllerName = $replicationController->getMetadata()->getName();
         $containers = $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()->getContainers();
-
         if (0 == count($containers)) {
             throw new \InvalidArgumentException('The pod specification should have at least one container');
         }
 
-        return new Component($replicationControllerName, $replicationControllerName, new Component\Specification(
-            $this->getComponentSource($containers[0]),
-            $this->getComponentAccessibility($namespaceClient, $replicationController),
-            new Component\Scalability(true, $replicationController->getSpecification()->getReplicas())
-        ), [], [], false, $this->getComponentStatus($namespaceClient, $replicationController));
+        return new Component(
+            $replicationControllerName,
+            $replicationControllerName,
+            new Component\Specification(
+                $this->getComponentSource($containers[0]),
+                $this->getComponentAccessibility($namespaceClient, $replicationController),
+                new Component\Scalability(true, $replicationController->getSpecification()->getReplicas())
+            ),
+            [],
+            [],
+            $this->getComponentStatus($namespaceClient, $replicationController),
+            new Component\DeploymentStrategy(null, null, false, false)
+        );
     }
 
     /**

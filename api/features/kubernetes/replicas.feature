@@ -40,17 +40,8 @@ Feature:
               "name": "MYSQL_PASSWORD",
               "value": "root"
             }
-          ],
-          "volumes": [
-          ],
-          "volume_mounts": [
           ]
-        },
-        "extensions": [
-        ],
-        "labels": [
-        ],
-        "locked": false
+        }
       }
     ]
     """
@@ -84,17 +75,8 @@ Feature:
               "name": "MYSQL_PASSWORD",
               "value": "root"
             }
-          ],
-          "volumes": [
-          ],
-          "volume_mounts": [
           ]
-        },
-        "extensions": [
-        ],
-        "labels": [
-        ],
-        "locked": false
+        }
       }
     ]
     """
@@ -126,17 +108,8 @@ Feature:
               "name": "MYSQL_PASSWORD",
               "value": "root"
             }
-          ],
-          "volumes": [
-          ],
-          "volume_mounts": [
           ]
-        },
-        "extensions": [
-        ],
-        "labels": [
-        ],
-        "locked": false
+        }
       }
     ]
     """
@@ -169,17 +142,8 @@ Feature:
               "name": "MYSQL_PASSWORD",
               "value": "root"
             }
-          ],
-          "volumes": [
-          ],
-          "volume_mounts": [
           ]
-        },
-        "extensions": [
-        ],
-        "labels": [
-        ],
-        "locked": false
+        }
       }
     ]
     """

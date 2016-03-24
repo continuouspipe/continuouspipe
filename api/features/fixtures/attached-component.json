@@ -32,8 +32,8 @@
     "labels": [
     ],
     "deployment_strategy": {
-      "attached": true
-    },
-    "locked": false
+      "attached": true,
+      "locked": false
+    }
   }
 ]
