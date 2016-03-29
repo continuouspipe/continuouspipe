@@ -202,12 +202,13 @@ class PodTransformer
 
     /**
      * @param Component\Resources|null $resources
+     *
      * @return ResourceRequirements|null
      */
     private function createResources(Component\Resources $resources = null)
     {
         if (null === $resources) {
-            return null;
+            return;
         }
 
         return new ResourceRequirements(
