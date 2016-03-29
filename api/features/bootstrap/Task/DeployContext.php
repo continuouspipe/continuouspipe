@@ -416,6 +416,27 @@ class DeployContext implements Context
     }
 
     /**
+     * @Then the readiness probe of the component :name should be an http probe on path :path
+     */
+    public function theReadinessProbeOfTheComponentShouldBeAnHttpProbeOnPath($name, $path)
+    {
+        if (null === ($probe = $this->getDeployedComponent($name)->getDeploymentStrategy()->getReadinessProbe())) {
+            throw new \RuntimeException('No readiness probe found');
+        }
+
+        if (!$probe instanceof Component\Probe\Http) {
+            throw new \RuntimeException('Not an HTTP probe');
+        }
+
+        if ($path != $probe->getPath()) {
+            throw new \RuntimeException(sprintf(
+                'Found path "%s"',
+                $probe->getPath()
+            ));
+        }
+    }
+
+    /**
      * @Then the name of the deployed environment should be :expectedName
      */
     public function theNameOfTheDeployedEnvironmentShouldBe($expectedName)

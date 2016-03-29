@@ -91,6 +91,24 @@ class DeployTaskFactory implements TaskFactory
                     ->prototype('array')
                         ->addDefaultsIfNotSet()
                         ->canBeEnabled()
+                        ->beforeNormalization()
+                            ->always()
+                            ->then(function ($array) {
+                                if (isset($array['locked'])) {
+                                    if (!array_key_exists('deployment_strategy', $array)) {
+                                        $array['deployment_strategy'] = [];
+                                    }
+
+                                    if (!array_key_exists('locked', $array['deployment_strategy'])) {
+                                        $array['deployment_strategy']['locked'] = $array['locked'];
+                                    }
+
+                                    unset($array['locked']);
+                                }
+
+                                return $array;
+                            })
+                        ->end()
                         ->children()
                             ->arrayNode('specification')
                                 ->isRequired()
@@ -183,7 +201,7 @@ class DeployTaskFactory implements TaskFactory
                                     ->end()
                                 ->end()
                             ->end()
-                            ->booleanNode('locked')->defaultFalse()->end()
+                            ->append($this->getDeploymentStrategyNode())
                         ->end()
                     ->end()
                 ->end()
@@ -211,5 +229,45 @@ class DeployTaskFactory implements TaskFactory
         }
 
         return $services;
+    }
+
+    private function getDeploymentStrategyNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('deployment_strategy');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->booleanNode('locked')->defaultFalse()->end()
+                ->booleanNode('attached')->defaultFalse()->end()
+                ->append($this->getProbeNode('liveness_probe'))
+                ->append($this->getProbeNode('readiness_probe'))
+            ->end();
+
+        return $node;
+    }
+
+    private function getProbeNode($name)
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root($name);
+
+        $node
+            ->children()
+                ->scalarNode('type')->defaultValue('http')->end()
+                ->integerNode('initial_delay_seconds')->end()
+                ->integerNode('timeout_seconds')->end()
+                ->integerNode('period_seconds')->end()
+                ->integerNode('success_threshold')->end()
+                ->integerNode('failure_threshold')->end()
+                ->scalarNode('path')->end()
+                ->integerNode('port')->end()
+                ->scalarNode('host')->end()
+                ->scalarNode('scheme')->end()
+            ->end()
+        ;
+
+        return $node;
     }
 }
