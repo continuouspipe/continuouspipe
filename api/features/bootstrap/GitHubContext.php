@@ -182,6 +182,7 @@ class GitHubContext implements Context
         $contents['pull_request']['head']['ref'] = $reference;
         $contents['pull_request']['head']['sha'] = sha1($reference);
         $contents['pull_request']['head']['label'] = $repositoryLabel.':'.$reference;
+        $contents['pull_request']['head']['repo']['id'] = rand(10000, 99999);
 
         $this->sendWebHook('pull_request', json_encode($contents));
     }
