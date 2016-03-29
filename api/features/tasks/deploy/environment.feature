@@ -158,3 +158,64 @@ Feature:
                                 - 80
     """
     Then the deployed environment should have the tag "flow=00000000-0000-0000-0000-000000000000"
+
+  Scenario: By default, do not precise the number of replicas in the deployment request
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        specification:
+                            scalability:
+                                enabled: true
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the component "image0" should be deployed as scaling
+    And the component "image0" should be deployed with an unknown number of replicas
+
+  Scenario: Explicit number of replicas
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        specification:
+                            scalability:
+                                enabled: true
+                                number_of_replicas: 5
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the component "image0" should be deployed as scaling
+    And the component "image0" should be deployed with 5 replicas
+
+  Scenario: Probes
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        deployment_strategy:
+                            readiness_probe:
+                                initial_delay_seconds: 5
+                                timeout_seconds: 5
+                                period_seconds: 5
+                                type: http
+                                path: /
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the readiness probe of the component "image0" should be an http probe on path "/"
