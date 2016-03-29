@@ -59,7 +59,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
 
         return array_map(function (KubernetesNamespace $namespace) {
             return $this->namespaceToEnvironment($namespace);
-        }, $namespaces);
+        }, $namespaces->getNamespaces());
     }
 
     /**

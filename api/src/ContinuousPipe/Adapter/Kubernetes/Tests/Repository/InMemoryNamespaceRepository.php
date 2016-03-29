@@ -28,7 +28,7 @@ class InMemoryNamespaceRepository implements NamespaceRepository
      */
     public function findByLabels(KeyValueObjectList $labels)
     {
-        return array_values(array_filter($this->namespaces, function (KubernetesNamespace $namespace) use ($labels) {
+        return new NamespaceList(array_values(array_filter($this->namespaces, function (KubernetesNamespace $namespace) use ($labels) {
             $foundLabels = $namespace->getMetadata()->getLabelsAsAssociativeArray();
 
             foreach ($labels->toAssociativeArray() as $key => $value) {
@@ -40,7 +40,7 @@ class InMemoryNamespaceRepository implements NamespaceRepository
             }
 
             return true;
-        }));
+        })));
     }
 
     /**
