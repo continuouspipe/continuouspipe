@@ -9,7 +9,7 @@ Feature:
   Scenario: The addresses are commented when the deployment is successful
     Given there is 1 application images in the repository
     And a tide is started with a deploy task
-    And a pull-request contains the tide-related commit
+    And the pull-request #1 contains the tide-related commit
     When the deployment succeed
     Then the addresses of the environment should be commented on the pull-request
 
@@ -21,7 +21,7 @@ Feature:
   Scenario: Replace the previous comment if already exists on the PR
     Given there is 1 application images in the repository
     And a tide is started with a deploy task
-    And a pull-request contains the tide-related commit
+    And the pull-request #1 contains the tide-related commit
     And a comment identified "1234" was already added
     When the deployment succeed
     Then the addresses of the environment should be commented on the pull-request

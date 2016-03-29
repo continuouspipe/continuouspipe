@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b286b6b850af0ed72cc8b0ac28c2774e",
-    "content-hash": "f306a653ea9cec8cfe3bc7538fc872ec",
+    "hash": "21881c7d02acb4b8723d91b6bc29044e",
+    "content-hash": "3853aebb91b5a8abe7dacca1bf2793a4",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -125,16 +125,16 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
-                "reference": "b1c4485051fef520573a8d4c2e7e984a5b574ad7"
+                "reference": "9b98a88212f039b30e6d268e253b664cf0801949"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/b1c4485051fef520573a8d4c2e7e984a5b574ad7",
-                "reference": "b1c4485051fef520573a8d4c2e7e984a5b574ad7",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/9b98a88212f039b30e6d268e253b664cf0801949",
+                "reference": "9b98a88212f039b30e6d268e253b664cf0801949",
                 "shasum": ""
             },
             "require-dev": {
@@ -148,10 +148,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/model/tree/2.1.0",
+                "source": "https://github.com/continuouspipe/model/tree/2.1.1",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2016-03-24 13:24:25"
+            "time": "2016-03-29 13:42:41"
         },
         {
             "name": "continuous-pipe/security",

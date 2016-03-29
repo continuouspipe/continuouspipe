@@ -9,9 +9,9 @@ use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
-use ContinuousPipe\Security\Credentials\BucketNotFound;
-use ContinuousPipe\Security\Credentials\BucketRepository;
+use Github\Client;
 use GitHub\WebHook\Model\PullRequest;
 use GitHub\WebHook\Model\Repository;
 
@@ -33,22 +33,15 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
     private $tideRepository;
 
     /**
-     * @var BucketRepository
+     * @param ClientFactory  $gitHubClientFactory
+     * @param EventStore     $eventStore
+     * @param TideRepository $tideRepository
      */
-    private $bucketRepository;
-
-    /**
-     * @param ClientFactory    $gitHubClientFactory
-     * @param EventStore       $eventStore
-     * @param TideRepository   $tideRepository
-     * @param BucketRepository $bucketRepository
-     */
-    public function __construct(ClientFactory $gitHubClientFactory, EventStore $eventStore, TideRepository $tideRepository, BucketRepository $bucketRepository)
+    public function __construct(ClientFactory $gitHubClientFactory, EventStore $eventStore, TideRepository $tideRepository)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->eventStore = $eventStore;
         $this->tideRepository = $tideRepository;
-        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -61,31 +54,13 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
         $tide = $this->tideRepository->find($deploymentSuccessful->getTideUuid());
 
         try {
-            $bucket = $this->bucketRepository->find($tide->getTeam()->getBucketUuid());
-        } catch (BucketNotFound $e) {
-            throw new NotificationException('The credentials bucket do not exists', $e->getCode(), $e);
-        }
-
-        try {
-            $client = $this->gitHubClientFactory->createClientFromBucket($bucket);
+            $client = $this->gitHubClientFactory->createClientFromBucketUuid($tide->getTeam()->getBucketUuid());
         } catch (UserCredentialsNotFound $e) {
             throw new NotificationException('No valid GitHub credentials in bucket', $e->getCode(), $e);
         }
 
         // Remove previous comments
-        $commentEvents = $this->eventStore->findByTideUuidAndType($tide->getUuid(), CommentedTideFeedback::class);
-        foreach ($commentEvents as $event) {
-            /* @var CommentedTideFeedback $event */
-            try {
-                $client->issues()->comments()->remove(
-                    $repository->getOwner()->getLogin(),
-                    $repository->getName(),
-                    $event->getCommentId()
-                );
-            } catch (\Exception $e) {
-                // Might be handled better but as this is not really mandatory...
-            }
-        }
+        $this->removePreviousComments($client, $repository, $tide);
 
         // Create the new comment
         $comment = $client->issues()->comments()->create(
@@ -118,5 +93,30 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
         }
 
         return $contents;
+    }
+
+    /**
+     * @param Client     $client
+     * @param Repository $repository
+     * @param Tide       $tide
+     */
+    private function removePreviousComments(Client $client, Repository $repository, Tide $tide)
+    {
+        $tides = $this->tideRepository->findByBranch($tide->getFlow()->getUuid(), $tide->getCodeReference());
+        foreach ($tides as $tide) {
+            $commentEvents = $this->eventStore->findByTideUuidAndType($tide->getUuid(), CommentedTideFeedback::class);
+            foreach ($commentEvents as $event) {
+                /* @var CommentedTideFeedback $event */
+                try {
+                    $client->issues()->comments()->remove(
+                        $repository->getOwner()->getLogin(),
+                        $repository->getName(),
+                        $event->getCommentId()
+                    );
+                } catch (\Exception $e) {
+                    // Might be handled better but as this is not really mandatory...
+                }
+            }
+        }
     }
 }

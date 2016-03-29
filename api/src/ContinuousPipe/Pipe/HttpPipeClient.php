@@ -106,11 +106,8 @@ class HttpPipeClient implements Client
             'labels' => $labels,
         ];
 
-        $url = sprintf(
-            $this->baseUrl.'/teams/%s/clusters/%s/environments?'.http_build_query($queryFilters),
-            $team->getSlug(),
-            $clusterIdentifier
-        );
+        $url = sprintf($this->baseUrl.'/teams/%s/clusters/%s/environments', $team->getSlug(), $clusterIdentifier);
+        $url .= '?'.http_build_query($queryFilters);
 
         return $this->requestEnvironmentList($authenticatedUser, $url);
     }

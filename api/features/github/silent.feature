@@ -16,6 +16,6 @@ Feature:
 
   Scenario: No comment on PR
     When a tide is started with a deploy task
-    And a pull-request contains the tide-related commit
+    And the pull-request #1 contains the tide-related commit
     When the deployment succeed
     Then the addresses of the environment should not be commented on the pull-request
