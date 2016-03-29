@@ -111,7 +111,8 @@ Feature:
                                 - identifier: api80
                                   port: 80
                     mysql:
-                        locked: true
+                        deployment_strategy:
+                            locked: true
     """
 
   Scenario: It loads the environment variables and replaces variable values if some

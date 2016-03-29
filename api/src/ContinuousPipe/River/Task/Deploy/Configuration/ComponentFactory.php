@@ -36,7 +36,7 @@ class ComponentFactory
             $this->getExtensions($configuration),
             [],
             null,
-            new Component\DeploymentStrategy(null, null, false, $configuration['locked'])
+            $this->getDeploymentStrategy($configuration)
         );
 
         return $component;
@@ -54,6 +54,20 @@ class ComponentFactory
         $jsonEncodedSpecification = json_encode($configuration['specification']);
 
         return $this->serializer->deserialize($jsonEncodedSpecification, Component\Specification::class, 'json');
+    }
+
+    /**
+     * Get component deployment strategy from the configuration.
+     *
+     * @param array $configuration
+     *
+     * @return Component\DeploymentStrategy
+     */
+    private function getDeploymentStrategy(array $configuration)
+    {
+        $jsonEncoded = json_encode($configuration['deployment_strategy']);
+
+        return $this->serializer->deserialize($jsonEncoded, Component\DeploymentStrategy::class, 'json');
     }
 
     /**
