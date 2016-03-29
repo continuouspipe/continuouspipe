@@ -39,7 +39,7 @@ class CodeReferenceResolver
 
         return $this->create(
             $event->getRepository(),
-            $headReference->getLabel(),
+            $this->isDifferentRepositories($event) ? $headReference->getLabel() : $headReference->getReference(),
             $headReference->getSha1()
         );
     }
@@ -85,5 +85,15 @@ class CodeReferenceResolver
             $sha1,
             $branch
         );
+    }
+
+    /**
+     * @param PullRequestEvent $event
+     *
+     * @return bool
+     */
+    private function isDifferentRepositories(PullRequestEvent $event)
+    {
+        return $event->getPullRequest()->getBase()->getRepository()->getId() != $event->getPullRequest()->getHead()->getRepository()->getId();
     }
 }
