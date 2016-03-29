@@ -110,4 +110,14 @@ class InMemoryTideRepository implements TideRepository
 
         return array_values($this->tideByFlow[$uuid]);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByBranch(Uuid $flowUuid, CodeReference $codeReference)
+    {
+        return array_values(array_filter($this->tides, function (Tide $tide) use ($flowUuid, $codeReference) {
+            return $tide->getFlow()->getUuid() == $flowUuid && $tide->getCodeReference()->getBranch() == $codeReference->getBranch();
+        }));
+    }
 }
