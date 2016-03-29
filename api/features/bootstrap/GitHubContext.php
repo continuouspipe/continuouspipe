@@ -313,12 +313,12 @@ class GitHubContext implements Context
     }
 
     /**
-     * @Given a pull-request contains the tide-related commit
+     * @Given the pull-request #:number contains the tide-related commit
      */
-    public function aPullRequestContainsTheTideRelatedCommit()
+    public function aPullRequestContainsTheTideRelatedCommit($number)
     {
         $this->fakePullRequestResolver->willResolve([
-            new \GitHub\WebHook\Model\PullRequest(1, 1),
+            new \GitHub\WebHook\Model\PullRequest($number, $number),
         ]);
     }
 

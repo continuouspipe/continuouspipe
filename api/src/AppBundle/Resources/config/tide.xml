@@ -77,6 +77,7 @@
         <service id="river.task_filter.context_factory" class="ContinuousPipe\River\Filter\ContextFactory">
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="logger" />
+            <argument type="service" id="river.github.pull_request_resolver" />
         </service>
 
         <service id="river.tide.task_runner" class="ContinuousPipe\River\Task\StartTaskRunner" />
