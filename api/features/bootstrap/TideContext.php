@@ -416,6 +416,15 @@ EOF;
     }
 
     /**
+     * @When a tide is started for the branch :branch and commit :sha1
+     */
+    public function aTideIsStartedForTheBranchAndCommit($branch, $sha1)
+    {
+        $this->createTide($branch, $sha1);
+        $this->startTide();
+    }
+
+    /**
      * @Then the image tag :tag should be built
      */
     public function theImageTagShouldBeBuilt($tag)
