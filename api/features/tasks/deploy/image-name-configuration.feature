@@ -251,3 +251,48 @@ Feature:
                                 image: docker.io/inviqasession/cp-website
                                 tag: master
     """
+
+  Scenario: The image name is configured in the build
+    Given I have a "docker-compose.yml" file in my repository that contains:
+    """
+    app:
+        build: .
+        volumes:
+            - ./:/app
+        expose:
+            - 80
+    """
+    And I have a flow with the following configuration:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    app:
+                        image: docker.io/inviqasession/cp-website
+                        naming_strategy: sha1
+
+        deploy:
+            deploy:
+                cluster: fra-01
+    """
+    When a tide is started for the branch "master" and commit "3b0110193e36b317207909163d0a582f6f568cf8"
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    app:
+                        image: docker.io/inviqasession/cp-website
+                        tag: 3b0110193e36b317207909163d0a582f6f568cf8
+        deploy:
+            deploy:
+                cluster: fra-01
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: docker.io/inviqasession/cp-website
+                                tag: 3b0110193e36b317207909163d0a582f6f568cf8
+    """

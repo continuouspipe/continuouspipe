@@ -42,6 +42,7 @@ class AddDefaultBuildTag implements ConfigurationEnhancer
                 // Get the image name values
                 $imageNamePath = $path.'[services]['.$serviceName.'][image]';
                 $imageTagPath = $path.'[services]['.$serviceName.'][tag]';
+                $namingStrategyPath = $path.'[services]['.$serviceName.'][naming_strategy]';
 
                 $values = $this->getValuesAtPath($configs, $imageNamePath);
 
@@ -53,7 +54,7 @@ class AddDefaultBuildTag implements ConfigurationEnhancer
                 // If there's no image name with tag name, then add one
                 $tags = $this->getValuesAtPath($configs, $imageTagPath);
                 if (count($tags) == 0) {
-                    $propertyAccessor->setValue($enhancedConfig, $imageTagPath, $this->getDefaultImageTag($codeReference));
+                    $propertyAccessor->setValue($enhancedConfig, $imageTagPath, $this->getDefaultImageTag($codeReference, $this->getNamingStrategy($configs, $namingStrategyPath)));
                 }
             }
         }
@@ -65,16 +66,38 @@ class AddDefaultBuildTag implements ConfigurationEnhancer
 
     /**
      * @param CodeReference $codeReference
+     * @param string        $namingStrategy
      *
      * @return string
      */
-    private function getDefaultImageTag(CodeReference $codeReference)
+    private function getDefaultImageTag(CodeReference $codeReference, $namingStrategy)
     {
+        if ($namingStrategy == 'sha1') {
+            return $codeReference->getCommitSha();
+        }
+
         $tag = $codeReference->getBranch();
         if ($tag && !preg_match('#^'.self::DOCKER_TAG_REGEX.'$#', $tag)) {
             $tag = (new Slugify())->slugify($tag);
         }
 
         return $tag;
+    }
+
+    /**
+     * @param array  $configs
+     * @param string $namingStrategyPath
+     *
+     * @return string|null
+     */
+    private function getNamingStrategy($configs, $namingStrategyPath)
+    {
+        $values = $this->getValuesAtPath($configs, $namingStrategyPath);
+
+        if (count($values) == 0) {
+            return;
+        }
+
+        return end($values);
     }
 }
