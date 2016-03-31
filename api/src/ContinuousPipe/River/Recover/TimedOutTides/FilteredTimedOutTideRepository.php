@@ -38,10 +38,13 @@ class FilteredTimedOutTideRepository implements TimedOutTideRepository
         $runningTides = $this->tideRepository->findRunningByFlowUuid($uuid);
 
         return array_filter($runningTides, function (Tide $tide) {
-            $tideDateTime = $tide->getStartDate() ?: $tide->getCreationDate();
-            $runningSeconds = time() - $tideDateTime->getTimestamp();
+            if (!($start = $tide->getStartDate()) instanceof \DateTimeInterface) {
+                return false;
+            }
 
-            return $runningSeconds * 1000 > $this->tideTimeout;
+            $runningMilliSeconds = (time() - $start->getTimestamp()) * 1000;
+
+            return $runningMilliSeconds > $this->tideTimeout;
         });
     }
 }
