@@ -15,6 +15,8 @@ use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\RunTask;
 use ContinuousPipe\River\Task\Task;
+use ContinuousPipe\River\Tide;
+use Rhumsaa\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class TasksContext implements Context
@@ -74,6 +76,32 @@ class TasksContext implements Context
 
         if ($deployTasks[0]->isRunning()) {
             throw new \RuntimeException('The deploy task is running');
+        }
+    }
+
+    /**
+     * @Then the build task of the first tide should be skipped
+     */
+    public function theBuildTaskOfTheFirstTideShouldBeSkipped()
+    {
+        $tide = $this->tideContext->findTideByIndex(0);
+        $task = $this->getTasksOfType(BuildTask::class, $tide->getUuid())[0];
+
+        if (!$task->isSkipped()) {
+            throw new \RuntimeException('The build task is not skipped');
+        }
+    }
+
+    /**
+     * @Then the build task of the second tide should be running
+     */
+    public function theBuildTaskOfTheSecondTideShouldBeRunning()
+    {
+        $tide = $this->tideContext->findTideByIndex(1);
+        $task = $this->getTasksOfType(BuildTask::class, $tide->getUuid())[0];
+
+        if (!$task->isRunning()) {
+            throw new \RuntimeException('The build task is not running');
         }
     }
 
@@ -196,12 +224,14 @@ class TasksContext implements Context
 
     /**
      * @param string $taskType
+     * @param Uuid $tideUuid
      *
      * @return \ContinuousPipe\River\Task\Task[]
      */
-    public function getTasksOfType($taskType)
+    public function getTasksOfType($taskType, Uuid $tideUuid = null)
     {
-        $tasks = $this->getCurrentTide()->getTasks()->getTasks();
+        $tide = null === $tideUuid ? $this->getCurrentTide() : $this->tideRepository->find($tideUuid);
+        $tasks = $tide->getTasks()->getTasks();
 
         return array_values(array_filter($tasks, function (Task $task) use ($taskType) {
             return get_class($task) == $taskType || is_subclass_of($task, $taskType);
