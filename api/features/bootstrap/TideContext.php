@@ -188,6 +188,20 @@ EOF;
     }
 
     /**
+     * @When the second tide starts
+     */
+    public function theSecondTideStarts()
+    {
+        $tides = $this->viewTideRepository->findLastByFlow($this->flowContext->getCurrentFlow(), 1);
+        if (count($tides) == 0) {
+            throw new \RuntimeException('Found not tide UUID, and no tide in flow');
+        }
+
+        $this->tideUuid = $tides[0]->getUuid();
+        $this->commandBus->handle(new StartTideCommand($this->tideUuid));
+    }
+
+    /**
      * @When the tide for commit :sha1 is tentatively started
      */
     public function theTideForCommitIsTentativelyStarted($sha1)
@@ -1084,5 +1098,24 @@ EOF;
 
         $this->createTide();
         $this->startTide();
+    }
+
+    /**
+     * @param int $index
+     *
+     * @return Tide
+     */
+    public function findTideByIndex($index)
+    {
+        $index = (int) $index;
+        $tides = $this->viewTideRepository->findByFlowUuid(
+            $this->flowContext->getCurrentUuid()
+        );
+
+        if (!array_key_exists($index, $tides)) {
+            throw new \RuntimeException(sprintf('Tide #%d is not found', $index));
+        }
+
+        return $tides[$index];
     }
 }
