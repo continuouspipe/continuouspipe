@@ -15,7 +15,7 @@ use ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\TimedOutTideRepository;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
 use ContinuousPipe\River\Tests\Queue\TracedDelayedCommandBus;
-use ContinuousPipe\River\Tests\Recover\TimedOutTides\InMemoryTimedOutTideRepository;
+use ContinuousPipe\River\Tests\View\PredictableTimeResolver;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\Security\Team\Team;
 use LogStream\Node\Container;
@@ -101,6 +101,10 @@ class TideContext implements Context
      * @var TracedDelayedCommandBus
      */
     private $tracedDelayedMessageProducer;
+    /**
+     * @var PredictableTimeResolver
+     */
+    private $predictableTimeResolver;
 
     /**
      * @param MessageBus $commandBus
@@ -112,8 +116,9 @@ class TideContext implements Context
      * @param Kernel $kernel
      * @param PredictableCommitResolver $commitResolver
      * @param TracedDelayedCommandBus $tracedDelayedMessageProducer
+     * @param PredictableTimeResolver $predictableTimeResolver
      */
-    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository, Kernel $kernel, PredictableCommitResolver $commitResolver, TracedDelayedCommandBus $tracedDelayedMessageProducer)
+    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository, Kernel $kernel, PredictableCommitResolver $commitResolver, TracedDelayedCommandBus $tracedDelayedMessageProducer, PredictableTimeResolver $predictableTimeResolver)
     {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
@@ -124,6 +129,7 @@ class TideContext implements Context
         $this->kernel = $kernel;
         $this->commitResolver = $commitResolver;
         $this->tracedDelayedMessageProducer = $tracedDelayedMessageProducer;
+        $this->predictableTimeResolver = $predictableTimeResolver;
     }
 
     /**
@@ -133,6 +139,14 @@ class TideContext implements Context
     {
         $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
         $this->tideConfigurationContext = $scope->getEnvironment()->getContext('TideConfigurationContext');
+    }
+
+    /**
+     * @Transform :datetime
+     */
+    public function transformDateTime($value)
+    {
+        return \DateTime::createFromFormat(\DateTime::ISO8601, $value);
     }
 
     /**
@@ -337,6 +351,52 @@ EOF;
     public function theTideIsRepresentedAsFailed()
     {
         $this->assertTideStatusIs(ContinuousPipe\River\View\Tide::STATUS_FAILURE);
+    }
+
+    /**
+     * @Then the tide is represented as successful
+     */
+    public function theTideIsRepresentedAsSuccessful()
+    {
+        $this->assertTideStatusIs(ContinuousPipe\River\View\Tide::STATUS_SUCCESS);
+    }
+
+    /**
+     * @When the current datetime is :datetime
+     */
+    public function theCurrentDatetimeIs(\DateTime $datetime)
+    {
+        $this->predictableTimeResolver->setCurrent($datetime);
+    }
+
+    /**
+     * @Then the tide creation date should be :datetime
+     */
+    public function theTideCreationDateShouldBe(\DateTime $datetime)
+    {
+        $tide = $this->viewTideRepository->find($this->tideUuid);
+
+        $this->assertDateEquals($datetime, $tide->getCreationDate());
+    }
+
+    /**
+     * @Then the tide start date should be :datetime
+     */
+    public function theTideStartDateShouldBe(\DateTime $datetime)
+    {
+        $tide = $this->viewTideRepository->find($this->tideUuid);
+
+        $this->assertDateEquals($datetime, $tide->getStartDate());
+    }
+
+    /**
+     * @Then the tide finish date should be :datetime
+     */
+    public function theTideFinishDateShouldBe(\DateTime $datetime)
+    {
+        $tide = $this->viewTideRepository->find($this->tideUuid);
+
+        $this->assertDateEquals($datetime, $tide->getFinishDate());
     }
 
     /**
@@ -1117,5 +1177,16 @@ EOF;
         }
 
         return $tides[$index];
+    }
+
+    private function assertDateEquals(\DateTime $expected, \DateTime $found = null)
+    {
+        if ($expected != $found) {
+            throw new \RuntimeException(sprintf(
+                'Expected %s but got %s',
+                $expected->format(\DateTime::ISO8601),
+                $found ? $found->format(\DateTime::ISO8601) : 'NULL'
+            ));
+        }
     }
 }

@@ -5,6 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="river.time_resolver" class="ContinuousPipe\River\Infrastructure\InMemory\NativeTimeResolver" />
         <service id="river.tide.saga" class="ContinuousPipe\River\TideSaga">
             <argument type="service" id="event_bus" />
             <argument type="service" id="river.repository.tide" />
@@ -106,12 +107,14 @@
         <service id="river.view.listener.tide_created" class="ContinuousPipe\River\View\EventListener\TideCreatedListener">
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.time_resolver" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
         </service>
 
         <service id="river.view.listener.tide_status" class="ContinuousPipe\River\View\EventListener\TideStatusListener">
             <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.time_resolver" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted"/>
