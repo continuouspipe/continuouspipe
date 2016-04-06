@@ -65,6 +65,10 @@ class MergeEnvironmentVariables implements TideConfigurationFactory
         $variableReferences = [];
 
         foreach ($variables as $index => $variable) {
+            if (array_key_exists('condition', $variable)) {
+                continue;
+            }
+
             $name = $variable['name'];
 
             if (array_key_exists($name, $variableReferences)) {
