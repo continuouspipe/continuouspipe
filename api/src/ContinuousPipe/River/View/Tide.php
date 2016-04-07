@@ -88,7 +88,7 @@ class Tide
      *
      * @return Tide
      */
-    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate = null)
+    public static function create(Uuid $uuid, Flow $flow, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate)
     {
         $tide = new self();
         $tide->uuid = $uuid;

@@ -7,6 +7,7 @@ use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\River\View\TimeResolver;
 
 class TideCreatedListener
 {
@@ -18,15 +19,21 @@ class TideCreatedListener
      * @var FlowRepository
      */
     private $flowRepository;
+    /**
+     * @var TimeResolver
+     */
+    private $timeResolver;
 
     /**
      * @param TideRepository $tideRepository
      * @param FlowRepository $flowRepository
+     * @param TimeResolver   $timeResolver
      */
-    public function __construct(TideRepository $tideRepository, FlowRepository $flowRepository)
+    public function __construct(TideRepository $tideRepository, FlowRepository $flowRepository, TimeResolver $timeResolver)
     {
         $this->tideRepository = $tideRepository;
         $this->flowRepository = $flowRepository;
+        $this->timeResolver = $timeResolver;
     }
 
     /**
@@ -44,7 +51,8 @@ class TideCreatedListener
             $tideContext->getLog(),
             $tideContext->getTeam(),
             $tideContext->getUser(),
-            $tideContext->getConfiguration()
+            $tideContext->getConfiguration(),
+            $this->timeResolver->resolve()
         );
 
         $view->setStatus(Tide::STATUS_PENDING);

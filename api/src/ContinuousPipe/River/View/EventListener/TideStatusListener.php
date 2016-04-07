@@ -8,6 +8,7 @@ use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\River\View\TimeResolver;
 
 class TideStatusListener
 {
@@ -17,11 +18,18 @@ class TideStatusListener
     private $tideRepository;
 
     /**
-     * @param TideRepository $tideRepository
+     * @var TimeResolver
      */
-    public function __construct(TideRepository $tideRepository)
+    private $timeResolver;
+
+    /**
+     * @param TideRepository $tideRepository
+     * @param TimeResolver   $timeResolver
+     */
+    public function __construct(TideRepository $tideRepository, TimeResolver $timeResolver)
     {
         $this->tideRepository = $tideRepository;
+        $this->timeResolver = $timeResolver;
     }
 
     /**
@@ -33,10 +41,13 @@ class TideStatusListener
 
         if ($event instanceof TideStarted) {
             $view->setStatus(Tide::STATUS_RUNNING);
+            $view->setStartDate($this->timeResolver->resolve());
         } elseif ($event instanceof TideFailed) {
             $view->setStatus(Tide::STATUS_FAILURE);
+            $view->setFinishDate($this->timeResolver->resolve());
         } elseif ($event instanceof TideSuccessful) {
             $view->setStatus(Tide::STATUS_SUCCESS);
+            $view->setFinishDate($this->timeResolver->resolve());
         }
 
         $this->tideRepository->save($view);
