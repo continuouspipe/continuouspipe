@@ -11,6 +11,6 @@ class NativeTimeResolver implements TimeResolver
      */
     public function resolve()
     {
-        return new \DateTime();
+        return \DateTime::createFromFormat('U.u', microtime(true));
     }
 }

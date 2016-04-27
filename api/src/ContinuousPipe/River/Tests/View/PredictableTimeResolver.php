@@ -7,16 +7,21 @@ use ContinuousPipe\River\View\TimeResolver;
 class PredictableTimeResolver implements TimeResolver
 {
     /**
+     * @var TimeResolver
+     */
+    private $decoratedResolver;
+
+    /**
      * @var \DateTime
      */
     private $current;
 
     /**
-     * @param \DateTime|null $current
+     * @param TimeResolver $decoratedResolver
      */
-    public function __construct(\DateTime $current = null)
+    public function __construct(TimeResolver $decoratedResolver)
     {
-        $this->current = $current ?: new \DateTime();
+        $this->decoratedResolver = $decoratedResolver;
     }
 
     /**
@@ -24,7 +29,7 @@ class PredictableTimeResolver implements TimeResolver
      */
     public function resolve()
     {
-        return $this->current;
+        return $this->current ?: $this->decoratedResolver->resolve();
     }
 
     /**
