@@ -35,6 +35,7 @@ WORKDIR /app
 
 # Install dependencies
 ARG GITHUB_TOKEN=
+ARG SYMFONY_ENV=prod
 RUN if [ -n "$GITHUB_TOKEN" ]; then \
         composer config github-oauth.github.com $GITHUB_TOKEN && \
         composer install -o --no-interaction; \
