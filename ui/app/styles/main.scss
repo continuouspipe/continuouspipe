@@ -121,6 +121,17 @@ body {
                     color: #fff;
                     text-decoration: none;
                 }
+                
+                span.branch {
+                    background: rgba(255, 255, 255, 0.4);
+                    padding: 4px 10px 6px 5px;
+                    margin-left: 10px;
+                    color: #fff;
+                    
+                    > md-icon {
+                        text-align: center;
+                    }
+                }
             }
         }
     }
