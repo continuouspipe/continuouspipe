@@ -10,8 +10,16 @@ angular.module('continuousPipeRiver')
             },
             restrict: 'E',
             link: function(scope) {
-                scope.hasStatus = function(status) {
-                    return status === $remoteResource.get(scope.resourceName).status;
+                scope.has = function(key, value) {
+                    if (value === undefined) {
+                        value = true;
+                    }
+
+                    return value == $remoteResource.get(scope.resourceName)[key];
+                };
+
+                scope.do = function(action) {
+                    $remoteResource.get(scope.resourceName)[action]();
                 };
 
                 scope.$watch('resourceName', function(resourceName) {

@@ -410,6 +410,21 @@ $loader-color: rgb(66, 133, 244);
             border-right-color: $loader-color;
         }
     }
+
+    &.has-more {
+        text-align: center;
+
+        > span {
+            display: inline-block;
+            padding: 5px;
+            border: 1px solid #fff;
+            background: #e69335;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 20px 5px;
+        }
+    }
 }
 
 pre.deployment-logs {
