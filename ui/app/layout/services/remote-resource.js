@@ -15,11 +15,21 @@ angular.module('continuousPipeRiver')
         };
 
         this.load = function(name, promise) {
-            var resource = this.get(name);
+            var resource = this.get(name),
+                resourceController = this;
+
             resource.status = 'loading';
 
-            promise.then(function() {
+            promise.then(function(result) {
                 resource.status = 'loaded';
+
+                // Handle the paginated lists
+                if (result.pagination) {
+                    resource.more = result.pagination.hasMore;
+                    resource.loadMore = function() {
+                        return resourceController.load(name, result.pagination.loadMore());
+                    };
+                }
             }, function(error) {
                 resource.status = 'error';
                 resource.error = 'An error appeared while loading '+name;

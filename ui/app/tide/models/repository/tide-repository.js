@@ -4,10 +4,39 @@ angular.module('continuousPipeRiver')
     .service('TideRepository', function($resource, RIVER_API_URL) {
         this.resource = $resource(RIVER_API_URL+'/tides/:uuid');
 
-        this.findByFlow = function(flow) {
+        this.buildListPagination = function(flow, list, limit, page) {
+            return {
+                hasMore: (list.loaded_length || list.length) >= limit,
+                loadMore: function() {
+                    return this.findByFlow(flow, limit, page + 1).then(function(itemsToAdd) {
+                        itemsToAdd.forEach(function(item) {
+                            list.push(item);
+                        });
+
+                        list.loaded_length = itemsToAdd.length;
+                        list.pagination = this.buildListPagination(flow, list, limit, page + 1);
+
+                        return list;
+                    }.bind(this));
+                }.bind(this)
+            };
+        };
+
+        this.findByFlow = function(flow, limit, page) {
+            limit = limit || 20;
+            page = page || 1;
+
             return $resource(RIVER_API_URL+'/flows/:uuid/tides').query({
-                uuid: flow.uuid
-            }).$promise;
+                uuid: flow.uuid,
+                limit: limit,
+                page: page
+            }).$promise.then(function(list) {
+                list.pagination = this.buildListPagination(flow, list, limit, page);
+
+                return list;
+            }.bind(this), function(error) {
+                return $q.reject(error);
+            });
         };
 
         this.find = function(uuid) {
