@@ -1249,6 +1249,9 @@ EOF;
             $this->flowContext->getCurrentUuid()
         );
 
+        // Reverse the order because it's displayed from the last to the first
+        $tides = array_reverse($tides);
+
         if (!array_key_exists($index, $tides)) {
             throw new \RuntimeException(sprintf('Tide #%d is not found', $index));
         }

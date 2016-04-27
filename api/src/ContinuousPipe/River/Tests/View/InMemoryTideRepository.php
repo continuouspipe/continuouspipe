@@ -72,9 +72,8 @@ class InMemoryTideRepository implements TideRepository
     public function findLastByFlow(Flow $flow, $limit)
     {
         $tides = $this->findByFlowUuid($flow->getUuid());
-        $offset = max(0, count($tides) - $limit);
 
-        return array_slice($tides, $offset, $limit);
+        return array_slice($tides, 0, $limit);
     }
 
     /**
