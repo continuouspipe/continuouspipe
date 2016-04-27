@@ -23,7 +23,7 @@ class PullRequest implements ExternalRelation
     {
         $relation = new self();
         $relation->link = sprintf(
-            'https://github.com/%s/%s/pulls/%d',
+            'https://github.com/%s/%s/pull/%d',
             $codeRepository->getGitHubRepository()->getOwner()->getLogin(),
             $codeRepository->getGitHubRepository()->getName(),
             $pullRequest->getNumber()
