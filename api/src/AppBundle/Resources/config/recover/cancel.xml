@@ -11,5 +11,13 @@
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Recover\CancelTides\Command\CancelTideCommand" />
         </service>
+
+        <!-- Event listener s-->
+        <service id="river.recover.cancel_tides.listener.log_cancelled" class="ContinuousPipe\River\Recover\CancelTides\EventListener\LogCancelledListener">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="log_stream.logger_factory" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Recover\CancelTides\Event\TideCancelled"/>
+        </service>
     </services>
 </container>
