@@ -59,10 +59,10 @@ class RunTask extends EventDrivenTask
     public function start()
     {
         $logger = $this->loggerFactory->from($this->context->getLog());
+
         $log = $logger->child(new Text(sprintf(
-            'Running "%s" on the image "%s"',
-            implode(' ', $this->configuration->getCommands()),
-            $this->configuration->getImage()
+            'Running "%s"',
+            $this->context->getTaskId()
         )))->getLog();
 
         $this->context->setTaskLog($log);
