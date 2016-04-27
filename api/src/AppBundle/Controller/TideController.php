@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Recover\CancelTides\Command\CancelTideCommand;
 use ContinuousPipe\River\Tide\Request\TideCreationRequest;
 use ContinuousPipe\River\Tide\TideSummaryCreator;
 use ContinuousPipe\River\TideFactory;
@@ -55,14 +56,20 @@ class TideController
     private $paginator;
 
     /**
+     * @var MessageBus
+     */
+    private $commandBus;
+
+    /**
      * @param TideRepository     $tideRepository
      * @param ValidatorInterface $validator
      * @param TideFactory        $tideFactory
      * @param MessageBus         $eventBus
      * @param TideSummaryCreator $tideSummaryCreator
      * @param PaginatorInterface $paginator
+     * @param MessageBus         $commandBus
      */
-    public function __construct(TideRepository $tideRepository, ValidatorInterface $validator, TideFactory $tideFactory, MessageBus $eventBus, TideSummaryCreator $tideSummaryCreator, PaginatorInterface $paginator)
+    public function __construct(TideRepository $tideRepository, ValidatorInterface $validator, TideFactory $tideFactory, MessageBus $eventBus, TideSummaryCreator $tideSummaryCreator, PaginatorInterface $paginator, MessageBus $commandBus)
     {
         $this->tideRepository = $tideRepository;
         $this->validator = $validator;
@@ -70,6 +77,7 @@ class TideController
         $this->eventBus = $eventBus;
         $this->tideSummaryCreator = $tideSummaryCreator;
         $this->paginator = $paginator;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -145,5 +153,16 @@ class TideController
         return $this->tideSummaryCreator->fromTide(
             $this->tideRepository->find(Uuid::fromString($uuid))
         );
+    }
+
+    /**
+     * Cancel the given tide.
+     *
+     * @Route("/tides/{uuid}/cancel", methods={"POST"})
+     * @View
+     */
+    public function cancelAction($uuid)
+    {
+        $this->commandBus->handle(new CancelTideCommand(Uuid::fromString($uuid)));
     }
 }

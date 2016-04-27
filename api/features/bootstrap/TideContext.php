@@ -234,6 +234,26 @@ EOF;
     }
 
     /**
+     * @When I cancel the tide
+     */
+    public function iCancelTheTide()
+    {
+        $response = $this->kernel->handle(Request::create(
+            sprintf('/tides/%s/cancel', (string) $this->getCurrentTideUuid()),
+            'POST'
+        ));
+
+        if ($response->getStatusCode() != 204) {
+            echo $response->getContent();
+
+            throw new \RuntimeException(sprintf(
+                'Expected status code 200, got %d',
+                $response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
      * @Given there is :number application images in the repository
      */
     public function thereIsApplicationImagesInTheRepository($number)
