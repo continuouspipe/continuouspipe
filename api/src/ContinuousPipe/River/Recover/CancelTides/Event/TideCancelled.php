@@ -1,12 +1,12 @@
 <?php
 
-namespace ContinuousPipe\River\Recover\TimedOutTides\Event;
+namespace ContinuousPipe\River\Recover\CancelTides\Event;
 
 use ContinuousPipe\River\Event\TideEvent;
 use Rhumsaa\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
-class TideTimedOut implements TideEvent
+class TideCancelled implements TideEvent
 {
     /**
      * @JMS\Type("Rhumsaa\Uuid\Uuid")
