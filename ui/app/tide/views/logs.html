@@ -9,6 +9,11 @@
                 <span>{{ summary.current_task.log }}</span>
             </h2>
         </div>
+        <div ng-show="relations.length" class="relations">
+            <a ng-repeat="relation in relations" ng-href="{{ relation.link }}" class="relation">
+                <md-icon class="cp-icon-github"></md-icon>
+            </a>
+        </div>
         <md-button class="md-raised md-warn" ng-show="summary.status == 'running'" ng-click="cancel()" ng-disabled="isLoading">Cancel</md-button>
     </div>
 </md-toolbar>

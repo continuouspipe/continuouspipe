@@ -61,4 +61,10 @@ angular.module('continuousPipeRiver')
         this.findByTide = function(tide) {
             return this.resource.get({uuid: tide.uuid}).$promise;
         };
+
+        this.findExternalRelations = function(tide) {
+            return $resource(RIVER_API_URL+'/tides/:uuid/external-relations').query({
+                uuid: tide.uuid
+            }).$promise;
+        };
     });

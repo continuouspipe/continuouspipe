@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TideLogsController', function(TideRepository, $scope, $state, tide, summary) {
+    .controller('TideLogsController', function(TideRepository, TideSummaryRepository, $scope, $state, tide, summary) {
         $scope.tide = tide;
         $scope.summary = summary;
 
@@ -31,4 +31,8 @@ angular.module('continuousPipeRiver')
                 $scope.isLoading = false;
             });
         };
+
+        TideSummaryRepository.findExternalRelations(tide).then(function(relations) {
+            $scope.relations = relations;
+        });
     });

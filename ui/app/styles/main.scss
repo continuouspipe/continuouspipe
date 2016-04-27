@@ -368,6 +368,16 @@ body {
     }
 
     .status-container {
+        .relations {
+            a.relation {
+                margin-left: 10px;
+
+                md-icon {
+                    color: #000;
+                }
+            }
+        }
+
         &.status-failure {
             background: $failure-color;
             color: $failure-dark-color;
@@ -384,6 +394,12 @@ body {
             background: $running-color;
             color: $running-dark-color;
             border-left: 2px solid $running-dark-color;
+
+            .relations {
+                margin-right: 10px;
+                border-right: 1px solid #ccc;
+                padding-right: 10px;
+            }
         }
     }
 
