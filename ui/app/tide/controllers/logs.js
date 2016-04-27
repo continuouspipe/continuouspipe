@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TideLogsController', function($scope, $state, tide, summary) {
+    .controller('TideLogsController', function(TideRepository, $scope, $state, tide, summary) {
         $scope.tide = tide;
         $scope.summary = summary;
 
@@ -21,4 +21,14 @@ angular.module('continuousPipeRiver')
         });
 
         reloadSummaryIfRunning();
+
+        $scope.cancel = function() {
+            $scope.isLoading = true;
+            TideRepository.cancel(tide).then(function() {}, function(error) {
+                var message = ((error || {}).data || {}).message || "An unknown error occured while cancelling the tide";
+                swal("Error !", message, "error");
+            })['finally'](function() {
+                $scope.isLoading = false;
+            });
+        };
     });
