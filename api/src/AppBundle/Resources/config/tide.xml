@@ -144,5 +144,11 @@
                 <argument type="service" id="river.tide.start_voter.context" />
             </argument>
         </service>
+
+        <!-- External relations -->
+        <service id="river.tide.external_relations.resolver" class="ContinuousPipe\River\Tide\ExternalRelation\GitHub\PullRequestResolver">
+            <argument type="service" id="river.github.pull_request_resolver" />
+            <argument type="service" id="river.view.tide_repository" />
+        </service>
     </services>
 </container>
