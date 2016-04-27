@@ -60,6 +60,54 @@ class TideSummaryContext implements Context
     }
 
     /**
+     * @When I ask the external relations
+     */
+    public function iAskTheExternalRelations()
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/tides/%s/external-relations', $this->tideContext->getCurrentTideUuid()),
+            'GET'
+        ));
+
+        if ($this->response->getStatusCode() != 200) {
+            throw new \RuntimeException(sprintf(
+                'Expected to get the status code 200, got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
+     * @Then I should see the GitHub pull-request #:number
+     */
+    public function iShouldSeeTheGithubPullRequest($number)
+    {
+        $relations = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingRelations = array_filter($relations, function(array $relation) use ($number) {
+            return $relation['type'] == 'github' && substr($relation['link'], -strlen($number)-1) == '/'.$number;
+        });
+
+        if (count($matchingRelations) == 0) {
+            throw new \RuntimeException('Relation not found');
+        }
+    }
+
+    /**
+     * @Then I should see no external relation
+     */
+    public function iShouldSeeNoExternalRelation()
+    {
+        $relations = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if (count($relations) != 0) {
+            throw new \RuntimeException(sprintf(
+                'Expected 0 relations, found %d',
+                count($relations)
+            ));
+        }
+    }
+
+    /**
      * @Then I should see that the tide is failed
      */
     public function iShouldSeeThatTheTideIsFailed()

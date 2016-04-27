@@ -34,3 +34,14 @@ Feature:
     When I ask the summary of the tide
     Then I should see that the tide is running
     And I should see that the current task is the deploy task
+
+  Scenario: Get the pull-request links
+    Given a tide is started
+    And the pull-request #1 contains the tide-related commit
+    When I ask the external relations
+    Then I should see the GitHub pull-request #1
+
+  Scenario: No relation
+    Given a tide is started
+    When I ask the external relations
+    Then I should see no external relation
