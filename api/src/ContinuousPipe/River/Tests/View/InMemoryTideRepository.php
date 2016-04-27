@@ -108,7 +108,12 @@ class InMemoryTideRepository implements TideRepository
             return [];
         }
 
-        return array_values($this->tideByFlow[$uuid]);
+        $tides = array_values($this->tideByFlow[$uuid]);
+        usort($tides, function (Tide $left, Tide $right) {
+            return $left->getCreationDate() > $right->getCreationDate() ? -1 : 1;
+        });
+
+        return $tides;
     }
 
     /**

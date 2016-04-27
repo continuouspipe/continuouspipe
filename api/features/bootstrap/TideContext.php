@@ -322,6 +322,45 @@ EOF;
     }
 
     /**
+     * @When I retrieve the list tides of the flow :flowUuid
+     */
+    public function iRetrieveTheListTidesOfTheFlow($flowUuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/flows/%s/tides', $flowUuid)
+        ));
+    }
+
+    /**
+     * @When I retrieve the list tides of the flow :flowUuid with a limit of :limit tides
+     */
+    public function iRetrieveTheListTidesOfTheFlowWithALimitOfTides($flowUuid, $limit)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/flows/%s/tides', $flowUuid),
+            'GET',
+            [
+                'limit' => $limit,
+            ]
+        ));
+    }
+
+    /**
+     * @When I retrieve the page :page of the list of tides of the flow :flowUuid with a limit of :limit tides
+     */
+    public function iRetrieveThePageOfTheListOfTidesOfTheFlowWithALimitOfTides($page, $flowUuid, $limit)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/flows/%s/tides', $flowUuid),
+            'GET',
+            [
+                'limit' => $limit,
+                'page' => $page,
+            ]
+        ));
+    }
+
+    /**
      * @Then a tide view representation should have be created
      */
     public function aTideViewRepresentationShouldHaveBeCreated()
@@ -1010,6 +1049,14 @@ EOF;
     }
 
     /**
+     * @Given I have a tide :uuid
+     */
+    public function iHaveATide($uuid)
+    {
+        $this->createTide('master', null, Uuid::fromString($uuid));
+    }
+
+    /**
      * @Then the tide :uuid should be failed
      */
     public function theTideShouldWithUuidBeFailed($uuid)
@@ -1036,6 +1083,36 @@ EOF;
 
         if (count($matchingCommands) == 0) {
             throw new \RuntimeException('No SpotTimedOutTidesCommand found');
+        }
+    }
+
+    /**
+     * @Then I should not see the tide :uuid
+     */
+    public function iShouldNotSeeTheTide($uuid)
+    {
+        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingTides = array_filter($tides, function(array $tide) use ($uuid) {
+            return $tide['uuid'] == $uuid;
+        });
+
+        if (count($matchingTides) != 0) {
+            throw new \RuntimeException(sprintf('Found tide %s', $uuid));
+        }
+    }
+
+    /**
+     * @Then I should see the tide :uuid
+     */
+    public function iShouldSeeTheTide($uuid)
+    {
+        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingTides = array_filter($tides, function(array $tide) use ($uuid) {
+            return $tide['uuid'] == $uuid;
+        });
+
+        if (count($matchingTides) == 0) {
+            throw new \RuntimeException(sprintf('Tide %s not found', $uuid));
         }
     }
 
