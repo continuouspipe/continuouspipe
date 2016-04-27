@@ -59,6 +59,9 @@ doctrine:
         user:     "%database_user%"
         password: "%database_password%"
         charset:  UTF8
+        
+        # see https://github.com/doctrine/DoctrineBundle/issues/351
+        server_version: 5.6
 
         types:
             b64Object: ContinuousPipe\River\Infrastructure\Doctrine\Type\Base64Object
