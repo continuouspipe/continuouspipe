@@ -8,12 +8,15 @@ use ContinuousPipe\River\Tide\Request\TideCreationRequest;
 use ContinuousPipe\River\Tide\TideSummaryCreator;
 use ContinuousPipe\River\TideFactory;
 use ContinuousPipe\River\View\TideRepository;
+use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
+use Knp\Component\Pager\PaginatorInterface;
 use Rhumsaa\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -47,19 +50,26 @@ class TideController
     private $tideSummaryCreator;
 
     /**
+     * @var PaginatorInterface
+     */
+    private $paginator;
+
+    /**
      * @param TideRepository     $tideRepository
      * @param ValidatorInterface $validator
      * @param TideFactory        $tideFactory
      * @param MessageBus         $eventBus
      * @param TideSummaryCreator $tideSummaryCreator
+     * @param PaginatorInterface $paginator
      */
-    public function __construct(TideRepository $tideRepository, ValidatorInterface $validator, TideFactory $tideFactory, MessageBus $eventBus, TideSummaryCreator $tideSummaryCreator)
+    public function __construct(TideRepository $tideRepository, ValidatorInterface $validator, TideFactory $tideFactory, MessageBus $eventBus, TideSummaryCreator $tideSummaryCreator, PaginatorInterface $paginator)
     {
         $this->tideRepository = $tideRepository;
         $this->validator = $validator;
         $this->tideFactory = $tideFactory;
         $this->eventBus = $eventBus;
         $this->tideSummaryCreator = $tideSummaryCreator;
+        $this->paginator = $paginator;
     }
 
     /**
@@ -69,9 +79,16 @@ class TideController
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @View
      */
-    public function findByFlowAction(Flow $flow)
+    public function findByFlowAction(Request $request, Flow $flow)
     {
-        return $this->tideRepository->findByFlowUuid($flow->getUuid());
+        /** @var SlidingPagination $paginated */
+        $paginated = $this->paginator->paginate(
+            $this->tideRepository->findByFlowUuid($flow->getUuid()),
+            $request->get('page', 1),
+            $request->get('limit', 100)
+        );
+
+        return $paginated->getItems();
     }
 
     /**

@@ -72,9 +72,8 @@ class InMemoryTideRepository implements TideRepository
     public function findLastByFlow(Flow $flow, $limit)
     {
         $tides = $this->findByFlowUuid($flow->getUuid());
-        $offset = max(0, count($tides) - $limit);
 
-        return array_slice($tides, $offset, $limit);
+        return array_slice($tides, 0, $limit);
     }
 
     /**
@@ -108,7 +107,12 @@ class InMemoryTideRepository implements TideRepository
             return [];
         }
 
-        return array_values($this->tideByFlow[$uuid]);
+        $tides = array_values($this->tideByFlow[$uuid]);
+        usort($tides, function (Tide $left, Tide $right) {
+            return $left->getCreationDate() > $right->getCreationDate() ? -1 : 1;
+        });
+
+        return $tides;
     }
 
     /**

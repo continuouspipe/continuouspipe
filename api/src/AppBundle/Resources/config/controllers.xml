@@ -42,6 +42,7 @@
             <argument type="service" id="river.tide_factory" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="river.tide_summary_creator" />
+            <argument type="service" id="knp_paginator" />
         </service>
         <service id="app.controller.flow_environment" class="AppBundle\Controller\FlowEnvironmentController">
             <argument type="service" id="river.flow.environment_client" />

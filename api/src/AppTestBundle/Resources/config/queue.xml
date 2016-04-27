@@ -5,7 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.time_resolver" class="ContinuousPipe\River\Tests\View\PredictableTimeResolver" />
+        <service id="river.time_resolver.predictable"
+                 class="ContinuousPipe\River\Tests\View\PredictableTimeResolver"
+                 decorates="river.time_resolver">
+            <argument type="service" id="river.time_resolver.predictable.inner" />
+        </service>
 
         <service id="river.queue.delayed_command_bus.in_memory" class="ContinuousPipe\River\Tests\Queue\InMemoryDelayedCommandBus" />
         <service id="river.queue.delayed_command_bus" alias="river.queue.delayed_command_bus.in_memory" />
