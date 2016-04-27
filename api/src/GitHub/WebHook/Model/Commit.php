@@ -43,6 +43,7 @@ class Commit
 
     /**
      * @JMS\Type("GitHub\WebHook\Model\CommitUser")
+     * @JMS\Groups({"commit"})
      *
      * @var CommitUser
      */
@@ -50,6 +51,7 @@ class Commit
 
     /**
      * @JMS\Type("GitHub\WebHook\Model\CommitUser")
+     * @JMS\Groups({"commit"})
      *
      * @var CommitUser
      */
@@ -58,6 +60,7 @@ class Commit
     /**
      * @JMS\Type("array<string>")
      * @JMS\SerializedName("added")
+     * @JMS\Groups({"commit"})
      *
      * @var string[]
      */
@@ -66,6 +69,7 @@ class Commit
     /**
      * @JMS\Type("array<string>")
      * @JMS\SerializedName("removed")
+     * @JMS\Groups({"commit"})
      *
      * @var string[]
      */
@@ -74,6 +78,7 @@ class Commit
     /**
      * @JMS\Type("array<string>")
      * @JMS\SerializedName("modified")
+     * @JMS\Groups({"commit"})
      *
      * @var string[]
      */
