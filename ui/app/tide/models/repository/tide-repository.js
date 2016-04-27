@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('TideRepository', function($resource, RIVER_API_URL) {
+    .service('TideRepository', function($resource, $q, RIVER_API_URL) {
         this.resource = $resource(RIVER_API_URL+'/tides/:uuid');
 
         this.buildListPagination = function(flow, list, limit, page) {
@@ -48,11 +48,23 @@ angular.module('continuousPipeRiver')
                 uuid: flow.uuid
             }, tide).$promise;
         };
+
+        this.cancel = function(tide) {
+            return $resource(RIVER_API_URL+'/tides/:uuid/cancel').save({
+                uuid: tide.uuid
+            }, {}).$promise;
+        };
     })
     .service('TideSummaryRepository', function($resource, RIVER_API_URL) {
         this.resource = $resource(RIVER_API_URL+'/tides/:uuid/summary');
 
         this.findByTide = function(tide) {
             return this.resource.get({uuid: tide.uuid}).$promise;
+        };
+
+        this.findExternalRelations = function(tide) {
+            return $resource(RIVER_API_URL+'/tides/:uuid/external-relations').query({
+                uuid: tide.uuid
+            }).$promise;
         };
     });
