@@ -95,7 +95,7 @@ class Tide
         $tide->flow = $flow;
         $tide->codeReference = $codeReference;
         $tide->logId = $log->getId();
-        $tide->creationDate = $creationDate ?: new \DateTime();
+        $tide->creationDate = $creationDate;
         $tide->team = $team;
         $tide->user = $user;
         $tide->configuration = $configuration;
