@@ -6,11 +6,11 @@ angular.module('continuousPipeRiver')
         $scope.summary = summary;
 
         var timeOutIdentifier = null,
-            reloadSummaryIfRunning = function() {
-            if ($scope.summary.status == 'running') {
+            reloadSummaryIfNotCompleted = function() {
+            if (['running', 'pending'].indexOf($scope.summary.status) != -1) {
                 timeOutIdentifier = setTimeout(function () {
                     $scope.summary.$get({uuid: tide.uuid})['finally'](function() {
-                        reloadSummaryIfRunning();
+                        reloadSummaryIfNotCompleted();
                     });
                 }, 4000);
             }
@@ -20,7 +20,7 @@ angular.module('continuousPipeRiver')
             timeOutIdentifier && clearTimeout(timeOutIdentifier);
         });
 
-        reloadSummaryIfRunning();
+        reloadSummaryIfNotCompleted();
 
         $scope.cancel = function() {
             $scope.isLoading = true;

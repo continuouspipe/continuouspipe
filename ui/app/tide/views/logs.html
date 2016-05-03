@@ -14,7 +14,12 @@
                 <md-icon class="cp-icon-github"></md-icon>
             </a>
         </div>
-        <md-button class="md-raised md-warn" ng-show="summary.status == 'running'" ng-click="cancel()" ng-disabled="isLoading">Cancel</md-button>
+        <md-button class="md-raised md-warn"
+                   ng-show="['running', 'pending'].indexOf(summary.status) != -1"
+                   ng-click="cancel()"
+                   ng-disabled="isLoading">
+            Cancel
+        </md-button>
     </div>
 </md-toolbar>
 <md-content flex id="content" class="card-grid">
