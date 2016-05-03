@@ -7,7 +7,7 @@
     <embeddable name="ContinuousPipe\River\View\Tide">
         <field name="status" type="string" nullable="false" />
         <field name="logId" type="string" nullable="false" />
-        <field name="creationDate" type="datetime" nullable="false" />
+        <field name="creationDate" type="datetime" nullable="true" />
         <field name="startDate" type="datetime" nullable="true" />
         <field name="finishDate" type="datetime" nullable="true" />
         <field name="configuration" type="b64Object" nullable="true" />
