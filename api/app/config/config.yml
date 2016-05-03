@@ -65,7 +65,7 @@ doctrine:
 
         types:
             b64Object: ContinuousPipe\River\Infrastructure\Doctrine\Type\Base64Object
-            datetime: ContinuousPipe\River\Infrastructure\Doctrine\Type\PostgresMicroDateTimeType
+            datetime: ContinuousPipe\River\Infrastructure\Doctrine\Type\UTCDateTimeType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
