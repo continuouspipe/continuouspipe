@@ -15,4 +15,11 @@ interface TideConcurrencyManager
      * @return bool
      */
     public function shouldTideStart(Tide $tide);
+
+    /**
+     * Schedule a postponed tide start.
+     *
+     * @param Tide $tide
+     */
+    public function postPoneTideStart(Tide $tide);
 }

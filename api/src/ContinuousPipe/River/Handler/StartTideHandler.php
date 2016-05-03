@@ -27,22 +27,15 @@ class StartTideHandler
     private $concurrencyManager;
 
     /**
-     * @var DelayedCommandBus
-     */
-    private $delayedMessageProducer;
-
-    /**
      * @param MessageBus                                         $eventBus
      * @param TideRepository                                     $tideRepository
      * @param Tide\Concurrency\TideConcurrencyManager            $concurrencyManager
-     * @param \ContinuousPipe\River\CommandBus\DelayedCommandBus $delayedMessageProducer
      */
-    public function __construct(MessageBus $eventBus, TideRepository $tideRepository, Tide\Concurrency\TideConcurrencyManager $concurrencyManager, DelayedCommandBus $delayedMessageProducer)
+    public function __construct(MessageBus $eventBus, TideRepository $tideRepository, Tide\Concurrency\TideConcurrencyManager $concurrencyManager)
     {
         $this->eventBus = $eventBus;
         $this->tideRepository = $tideRepository;
         $this->concurrencyManager = $concurrencyManager;
-        $this->delayedMessageProducer = $delayedMessageProducer;
     }
 
     /**
@@ -55,7 +48,7 @@ class StartTideHandler
         if ($this->concurrencyManager->shouldTideStart($tide)) {
             $this->eventBus->handle(new TideStarted($command->getTideUuid()));
         } else {
-            $this->delayedMessageProducer->publish($command, 60 * 1000);
+            $this->concurrencyManager->postPoneTideStart($tide);
         }
     }
 }

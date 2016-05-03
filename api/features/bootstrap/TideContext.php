@@ -16,6 +16,7 @@ use ContinuousPipe\River\Recover\TimedOutTides\TimedOutTideRepository;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
 use ContinuousPipe\River\Tests\Queue\TracedDelayedCommandBus;
 use ContinuousPipe\River\Tests\View\PredictableTimeResolver;
+use ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\Security\Team\Team;
 use LogStream\Node\Container;
@@ -223,6 +224,16 @@ EOF;
         $tide = $this->getTideBySha1($sha1);
 
         $this->commandBus->handle(new StartTideCommand($tide->getUuid()));
+    }
+
+    /**
+     * @When the tide for commit :sha1 is successful
+     */
+    public function theTideForCommitIsSuccessful($sha1)
+    {
+        $tide = $this->getTideBySha1($sha1);
+
+        $this->eventBus->handle(new TideSuccessful($tide->getUuid()));
     }
 
     /**
@@ -1033,19 +1044,17 @@ EOF;
     }
 
     /**
-     * @Then the start of the tide for the commit :sha1 should be delayed
+     * @Then the start of the pending tides of the branch :branch should be delayed
      */
-    public function theStartOfTheTideForTheCommitShouldBeDelayed($sha1)
+    public function theStartOfThePendingTidesOfTheBranchShouldBeDelayed($branch)
     {
         $messages = $this->tracedDelayedMessageProducer->getMessages();
-        $matchingMessages = array_filter($messages, function($message) use ($sha1) {
-            if (!$message instanceof StartTideCommand) {
+        $matchingMessages = array_filter($messages, function($message) use ($branch) {
+            if (!$message instanceof RunPendingTidesCommand) {
                 return false;
             }
 
-            $tide = $this->viewTideRepository->find($message->getTideUuid());
-
-            return $tide->getCodeReference()->getCommitSha() == $sha1;
+            return $message->getBranch() == $branch;
         });
 
         if (count($matchingMessages) == 0) {

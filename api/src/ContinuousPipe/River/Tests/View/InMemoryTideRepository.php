@@ -124,4 +124,14 @@ class InMemoryTideRepository implements TideRepository
             return $tide->getFlow()->getUuid() == $flowUuid && $tide->getCodeReference()->getBranch() == $codeReference->getBranch();
         }));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findPendingByFlowUuidAndBranch(Uuid $flowUuid, $branch)
+    {
+        return array_values(array_filter($this->findByFlowUuid($flowUuid), function (Tide $tide) use ($branch) {
+            return $tide->getCodeReference()->getBranch() == $branch && $tide->getStatus() == Tide::STATUS_PENDING;
+        }));
+    }
 }
