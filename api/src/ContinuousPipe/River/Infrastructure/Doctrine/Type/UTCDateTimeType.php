@@ -22,7 +22,7 @@ class UTCDateTimeType extends DateTimeType
             $value->setTimezone(self::getUtc());
         }
 
-        return parent::convertToDatabaseValue($value, $platform);
+        return $value !== null ? $value->format($this->getDateTimeFormatString()) : null;
     }
 
     /**
@@ -40,7 +40,7 @@ class UTCDateTimeType extends DateTimeType
         }
 
         $converted = \DateTime::createFromFormat(
-            $platform->getDateTimeFormatString(),
+            $this->getDateTimeFormatString(),
             $value,
             self::getUTC()
         );
@@ -49,11 +49,19 @@ class UTCDateTimeType extends DateTimeType
             throw ConversionException::conversionFailedFormat(
                 $value,
                 $this->getName(),
-                $platform->getDateTimeFormatString()
+                $this->getDateTimeFormatString()
             );
         }
 
         return $converted;
+    }
+
+    /**
+     * @return string
+     */
+    private function getDateTimeFormatString()
+    {
+        return 'Y-m-d H:i:s.u';
     }
 
     /**
