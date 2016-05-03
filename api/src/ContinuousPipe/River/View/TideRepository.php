@@ -54,6 +54,14 @@ interface TideRepository
     public function findRunningByFlowUuidAndBranch(Uuid $flowUuid, $branch);
 
     /**
+     * @param Uuid $flowUuid
+     * @param string $branch
+     *
+     * @return Tide[]
+     */
+    public function findPendingByFlowUuidAndBranch(Uuid $flowUuid, $branch);
+
+    /**
      * Find running tides for the given flow.
      *
      * @param Uuid $flowUuid

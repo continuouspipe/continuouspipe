@@ -121,8 +121,26 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
         </service>
 
+        <!-- Concurrency -->
         <service id="river.tide.concurrency_manager" class="ContinuousPipe\River\Tide\Concurrency\ViewRepositoryBasedConcurrencyManager">
             <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.queue.delayed_command_bus" />
+        </service>
+
+        <service id="river.tide.concurrency.run_pending_tides_handler" class="ContinuousPipe\River\Tide\Concurrency\Handler\RunPendingTidesHandler">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.tide.concurrency_manager" />
+            <argument type="service" id="command_bus" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand" />
+        </service>
+
+        <service id="river.tide.concurrency.run_pending_when_tide_is_finished" class="ContinuousPipe\River\Tide\Concurrency\EventListener\RunPendingTidesWhenATideIsFinished">
+            <argument type="service" id="river.view.tide_repository"/>
+            <argument type="service" id="command_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
         </service>
 
         <!-- Tide start voters -->

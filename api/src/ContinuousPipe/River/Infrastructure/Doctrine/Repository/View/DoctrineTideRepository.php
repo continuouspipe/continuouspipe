@@ -143,6 +143,22 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
+    public function findPendingByFlowUuidAndBranch(Uuid $flowUuid, $branch)
+    {
+        $dtos = $this->getEntityRepository()->findBy([
+            'flow' => (string) $flowUuid,
+            'tide.codeReference.branch' => $branch,
+            'tide.status' => Tide::STATUS_PENDING,
+        ]);
+
+        return array_map(function (TideDto $dto) {
+            return $this->dtoToTide($dto);
+        }, $dtos);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findRunningByFlowUuid(Uuid $flowUuid)
     {
         $dtos = $this->getEntityRepository()->findBy([
