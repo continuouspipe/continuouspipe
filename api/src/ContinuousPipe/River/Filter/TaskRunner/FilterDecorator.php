@@ -118,6 +118,8 @@ class FilterDecorator implements TaskRunner
             ), $e->getCode(), $e);
         } catch (\InvalidArgumentException $e) {
             throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
+        } catch (\RuntimeException $e) {
+            throw new TideConfigurationException('The filter seems to be wrong, we will investigate', $e->getCode(), $e);
         }
 
         if (!is_bool($evaluated)) {
