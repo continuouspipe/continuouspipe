@@ -57,25 +57,29 @@ class StartDeploymentHandler
     {
         $deployContext = $command->getDeployContext();
 
+        $taskLog = $deployContext->getTaskLog();
+        $taskId = $deployContext->getTaskId();
+        $user = $deployContext->getUser();
+
         try {
             $deploymentRequest = $this->deploymentRequestFactory->create($deployContext, $command->getConfiguration());
         } catch (UnresolvedEnvironmentNameException $e) {
             $this->eventBus->handle(new TideFailed($command->getTideUuid()));
 
-            $logger = $this->loggerFactory->from($deployContext->getTaskLog());
+            $logger = $this->loggerFactory->from($taskLog);
             $logger->child(new Text($e->getMessage()));
 
             return;
         }
 
         try {
-            $deployment = $this->pipeClient->start($deploymentRequest, $deployContext->getUser());
-            $this->eventBus->handle(new DeploymentStarted($command->getTideUuid(), $deployment, $deployContext->getTaskId()));
+            $deployment = $this->pipeClient->start($deploymentRequest, $user);
+            $this->eventBus->handle(new DeploymentStarted($command->getTideUuid(), $deployment, $taskId));
         } catch (\Exception $e) {
             $failedDeployment = new Client\Deployment(Uuid::fromString(Uuid::NIL), $deploymentRequest, Client\Deployment::STATUS_FAILURE);
-            $this->eventBus->handle(new DeploymentFailed($command->getTideUuid(), $failedDeployment, $deployContext->getTaskId()));
+            $this->eventBus->handle(new DeploymentFailed($command->getTideUuid(), $failedDeployment, $taskId));
 
-            $logger = $this->loggerFactory->from($deployContext->getTaskLog());
+            $logger = $this->loggerFactory->from($taskLog);
             $logger->child(new Text(sprintf(
                 'PANIC (%s): %s',
                 get_class($e),

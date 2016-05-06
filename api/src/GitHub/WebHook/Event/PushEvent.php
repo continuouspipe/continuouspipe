@@ -56,6 +56,7 @@ class PushEvent implements Event
 
     /**
      * @JMS\Type("array<GitHub\WebHook\Model\Commit>")
+     * @JMS\Groups({"commit"})
      *
      * @var Commit[]
      */

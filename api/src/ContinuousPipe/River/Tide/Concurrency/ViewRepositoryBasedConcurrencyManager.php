@@ -25,9 +25,9 @@ class ViewRepositoryBasedConcurrencyManager implements TideConcurrencyManager
     private $retryStartInterval;
 
     /**
-     * @param TideRepository $tideRepository
+     * @param TideRepository    $tideRepository
      * @param DelayedCommandBus $delayedCommandBus
-     * @param int $retryStartInterval
+     * @param int               $retryStartInterval
      */
     public function __construct(TideRepository $tideRepository, DelayedCommandBus $delayedCommandBus, $retryStartInterval = 60000)
     {

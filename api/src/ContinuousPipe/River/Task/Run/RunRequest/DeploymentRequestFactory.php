@@ -9,6 +9,7 @@ use ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory;
 use ContinuousPipe\River\Task\Run\RunContext;
 use ContinuousPipe\River\Task\Run\RunTaskConfiguration;
 use ContinuousPipe\River\TideContext;
+use ContinuousPipe\River\View\TideRepository;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class DeploymentRequestFactory
@@ -24,13 +25,20 @@ class DeploymentRequestFactory
     private $targetEnvironmentFactory;
 
     /**
+     * @var TideRepository
+     */
+    private $tideRepository;
+
+    /**
      * @param UrlGeneratorInterface    $urlGenerator
      * @param TargetEnvironmentFactory $targetEnvironmentFactory
+     * @param TideRepository           $tideRepository
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory)
+    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory, TideRepository $tideRepository)
     {
         $this->urlGenerator = $urlGenerator;
         $this->targetEnvironmentFactory = $targetEnvironmentFactory;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -43,8 +51,10 @@ class DeploymentRequestFactory
      */
     public function createDeploymentRequest(RunContext $context, RunTaskConfiguration $configuration)
     {
+        $tide = $this->tideRepository->find($context->getTideUuid());
+
         return new DeploymentRequest(
-            $this->targetEnvironmentFactory->create($context, $configuration),
+            $this->targetEnvironmentFactory->create($tide, $configuration),
             new DeploymentRequest\Specification([
                 $this->createComponent(
                     $this->createComponentName($context),

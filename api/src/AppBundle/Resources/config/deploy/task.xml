@@ -40,6 +40,7 @@
         <service id="river.task.deploy.deployment_request_factory" class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\FlattenDeploymentRequestFactory">
             <argument type="service" id="router" />
             <argument type="service" id="river.pipe.target_environment_factory" />
+            <argument type="service" id="river.view.tide_repository"/>
         </service>
 
         <service id="river.handler.start_deploy" class="ContinuousPipe\River\Task\Deploy\Handler\StartDeploymentHandler">

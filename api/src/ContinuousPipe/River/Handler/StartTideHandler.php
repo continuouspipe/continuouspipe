@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Handler;
 
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\Event\TideStarted;
-use ContinuousPipe\River\CommandBus\DelayedCommandBus;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use SimpleBus\Message\Bus\MessageBus;
@@ -27,9 +26,9 @@ class StartTideHandler
     private $concurrencyManager;
 
     /**
-     * @param MessageBus                                         $eventBus
-     * @param TideRepository                                     $tideRepository
-     * @param Tide\Concurrency\TideConcurrencyManager            $concurrencyManager
+     * @param MessageBus                              $eventBus
+     * @param TideRepository                          $tideRepository
+     * @param Tide\Concurrency\TideConcurrencyManager $concurrencyManager
      */
     public function __construct(MessageBus $eventBus, TideRepository $tideRepository, Tide\Concurrency\TideConcurrencyManager $concurrencyManager)
     {

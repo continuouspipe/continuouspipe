@@ -22,7 +22,7 @@ class RunPendingTidesCommand
     private $branch;
 
     /**
-     * @param Uuid $flowUuid
+     * @param Uuid   $flowUuid
      * @param string $branch
      */
     public function __construct(Uuid $flowUuid, $branch)

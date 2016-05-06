@@ -27,9 +27,9 @@ class RunPendingTidesHandler
     private $commandBus;
 
     /**
-     * @param TideRepository $tideRepository
+     * @param TideRepository         $tideRepository
      * @param TideConcurrencyManager $tideConcurrencyManager
-     * @param MessageBus $commandBus
+     * @param MessageBus             $commandBus
      */
     public function __construct(TideRepository $tideRepository, TideConcurrencyManager $tideConcurrencyManager, MessageBus $commandBus)
     {
@@ -44,7 +44,7 @@ class RunPendingTidesHandler
     public function handle(RunPendingTidesCommand $command)
     {
         $pendingTides = $this->tideRepository->findPendingByFlowUuidAndBranch($command->getFlowUuid(), $command->getBranch());
-        usort($pendingTides, function(Tide $left, Tide $right) {
+        usort($pendingTides, function (Tide $left, Tide $right) {
             return $left->getCreationDate() > $right->getCreationDate() ? 1 : -1;
         });
 

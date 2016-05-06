@@ -7,6 +7,7 @@ use ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory;
 use ContinuousPipe\River\Task\Deploy\DeployContext;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
+use ContinuousPipe\River\View\TideRepository;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
@@ -22,13 +23,20 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
     private $targetEnvironmentFactory;
 
     /**
+     * @var TideRepository
+     */
+    private $tideRepository;
+
+    /**
      * @param UrlGeneratorInterface    $urlGenerator
      * @param TargetEnvironmentFactory $targetEnvironmentFactory
+     * @param TideRepository           $tideRepository
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory)
+    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory, TideRepository $tideRepository)
     {
         $this->urlGenerator = $urlGenerator;
         $this->targetEnvironmentFactory = $targetEnvironmentFactory;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -41,9 +49,10 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $bucketUuid = $context->getTeam()->getBucketUuid();
+        $tide = $this->tideRepository->find($context->getTideUuid());
 
         return new DeploymentRequest(
-            $this->targetEnvironmentFactory->create($context, $configuration),
+            $this->targetEnvironmentFactory->create($tide, $configuration),
             new DeploymentRequest\Specification(
                 $configuration->getComponents()
             ),
