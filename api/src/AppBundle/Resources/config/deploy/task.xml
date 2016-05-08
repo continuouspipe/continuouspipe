@@ -47,16 +47,13 @@
             <argument type="service" id="river.pipe_client" />
             <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="river.view.tide_repository"/>
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand" />
         </service>
 
         <service id="river.task.deploy.configuration.component_factory" class="ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory">
             <argument type="service" id="jms_serializer" />
-        </service>
-
-        <service id="river.task.deploy.serializer.context_handler" class="ContinuousPipe\River\Task\Deploy\Serializer\DeployContextSerializerHandler">
-            <tag name="jms_serializer.subscribing_handler" />
         </service>
     </services>
 </container>

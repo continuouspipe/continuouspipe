@@ -9,6 +9,7 @@ use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
+use ContinuousPipe\River\View\TideRepository;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Rhumsaa\Uuid\Uuid;
@@ -37,17 +38,24 @@ class StartDeploymentHandler
     private $loggerFactory;
 
     /**
+     * @var TideRepository
+     */
+    private $tideRepository;
+
+    /**
      * @param DeploymentRequestFactory $deploymentRequestFactory
      * @param Client                   $pipeClient
      * @param MessageBus               $eventBus
      * @param LoggerFactory            $loggerFactory
+     * @param TideRepository           $tideRepository
      */
-    public function __construct(DeploymentRequestFactory $deploymentRequestFactory, Client $pipeClient, MessageBus $eventBus, LoggerFactory $loggerFactory)
+    public function __construct(DeploymentRequestFactory $deploymentRequestFactory, Client $pipeClient, MessageBus $eventBus, LoggerFactory $loggerFactory, TideRepository $tideRepository)
     {
         $this->deploymentRequestFactory = $deploymentRequestFactory;
         $this->pipeClient = $pipeClient;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -55,27 +63,28 @@ class StartDeploymentHandler
      */
     public function handle(StartDeploymentCommand $command)
     {
-        $deployContext = $command->getDeployContext();
+        $taskDetails = $command->getTaskDetails();
+        $tide = $this->tideRepository->find($command->getTideUuid());
 
         try {
-            $deploymentRequest = $this->deploymentRequestFactory->create($deployContext, $command->getConfiguration());
+            $deploymentRequest = $this->deploymentRequestFactory->create($tide, $taskDetails, $command->getConfiguration());
         } catch (UnresolvedEnvironmentNameException $e) {
             $this->eventBus->handle(new TideFailed($command->getTideUuid()));
 
-            $logger = $this->loggerFactory->from($deployContext->getTaskLog());
+            $logger = $this->loggerFactory->fromId($taskDetails->getLogId());
             $logger->child(new Text($e->getMessage()));
 
             return;
         }
 
         try {
-            $deployment = $this->pipeClient->start($deploymentRequest, $deployContext->getUser());
-            $this->eventBus->handle(new DeploymentStarted($command->getTideUuid(), $deployment, $deployContext->getTaskId()));
+            $deployment = $this->pipeClient->start($deploymentRequest, $tide->getUser());
+            $this->eventBus->handle(new DeploymentStarted($command->getTideUuid(), $deployment, $taskDetails->getIdentifier()));
         } catch (\Exception $e) {
             $failedDeployment = new Client\Deployment(Uuid::fromString(Uuid::NIL), $deploymentRequest, Client\Deployment::STATUS_FAILURE);
-            $this->eventBus->handle(new DeploymentFailed($command->getTideUuid(), $failedDeployment, $deployContext->getTaskId()));
+            $this->eventBus->handle(new DeploymentFailed($command->getTideUuid(), $failedDeployment, $taskDetails->getIdentifier()));
 
-            $logger = $this->loggerFactory->from($deployContext->getTaskLog());
+            $logger = $this->loggerFactory->fromId($taskDetails->getLogId());
             $logger->child(new Text(sprintf(
                 'PANIC (%s): %s',
                 get_class($e),

@@ -4,9 +4,10 @@ namespace ContinuousPipe\River\Task\Deploy\DeploymentRequest;
 
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory;
-use ContinuousPipe\River\Task\Deploy\DeployContext;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
+use ContinuousPipe\River\Task\TaskDetails;
+use ContinuousPipe\River\View\Tide;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
@@ -34,22 +35,22 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
     /**
      * {@inheritdoc}
      */
-    public function create(DeployContext $context, DeployTaskConfiguration $configuration)
+    public function create(Tide $tide, TaskDetails $taskDetails, DeployTaskConfiguration $configuration)
     {
         $callbackUrl = $this->urlGenerator->generate('pipe_notification_post', [
-            'tideUuid' => $context->getTideUuid(),
+            'tideUuid' => $tide->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $bucketUuid = $context->getTeam()->getBucketUuid();
+        $bucketUuid = $tide->getTeam()->getBucketUuid();
 
         return new DeploymentRequest(
-            $this->targetEnvironmentFactory->create($context, $configuration),
+            $this->targetEnvironmentFactory->create($tide, $configuration),
             new DeploymentRequest\Specification(
                 $configuration->getComponents()
             ),
             new DeploymentRequest\Notification(
                 $callbackUrl,
-                $context->getTaskLog()->getId()
+                $taskDetails->getLogId()
             ),
             $bucketUuid
         );

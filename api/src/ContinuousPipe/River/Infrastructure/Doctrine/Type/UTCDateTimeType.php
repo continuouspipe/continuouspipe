@@ -8,10 +8,10 @@ use Doctrine\DBAL\Types\DateTimeType;
 
 class UTCDateTimeType extends DateTimeType
 {
-    static private $utc;
+    private static $utc;
 
     /**
-     * @param \DateTime $value
+     * @param \DateTime        $value
      * @param AbstractPlatform $platform
      *
      * @return string
@@ -26,7 +26,7 @@ class UTCDateTimeType extends DateTimeType
     }
 
     /**
-     * @param string $value
+     * @param string           $value
      * @param AbstractPlatform $platform
      *
      * @return \DateTime
@@ -67,7 +67,7 @@ class UTCDateTimeType extends DateTimeType
     /**
      * @return \DateTimeZone
      */
-    static private function getUTC()
+    private static function getUTC()
     {
         if (self::$utc === null) {
             self::$utc = new \DateTimeZone('UTC');

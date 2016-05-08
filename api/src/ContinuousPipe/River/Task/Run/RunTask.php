@@ -10,6 +10,7 @@ use ContinuousPipe\River\Task\Run\Command\StartRunCommand;
 use ContinuousPipe\River\Task\Run\Event\RunFailed;
 use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\Event\RunSuccessful;
+use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Task\TaskQueued;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -71,7 +72,7 @@ class RunTask extends EventDrivenTask
         $this->addDeploymentEnvironmentVariables();
         $this->commandBus->handle(new StartRunCommand(
             $this->context->getTideUuid(),
-            $this->context,
+            new TaskDetails($this->context->getTaskId(), $log->getId()),
             $this->configuration
         ));
     }

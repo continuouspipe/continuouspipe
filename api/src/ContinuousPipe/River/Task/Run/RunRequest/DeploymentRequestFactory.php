@@ -6,9 +6,9 @@ use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory;
-use ContinuousPipe\River\Task\Run\RunContext;
 use ContinuousPipe\River\Task\Run\RunTaskConfiguration;
-use ContinuousPipe\River\TideContext;
+use ContinuousPipe\River\Task\TaskDetails;
+use ContinuousPipe\River\View\Tide;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class DeploymentRequestFactory
@@ -36,40 +36,41 @@ class DeploymentRequestFactory
     /**
      * Create a deployment request for the following run configuration.
      *
-     * @param RunContext           $context
+     * @param Tide                 $tide
+     * @param TaskDetails          $taskDetails
      * @param RunTaskConfiguration $configuration
      *
      * @return DeploymentRequest
      */
-    public function createDeploymentRequest(RunContext $context, RunTaskConfiguration $configuration)
+    public function createDeploymentRequest(Tide $tide, TaskDetails $taskDetails, RunTaskConfiguration $configuration)
     {
         return new DeploymentRequest(
-            $this->targetEnvironmentFactory->create($context, $configuration),
+            $this->targetEnvironmentFactory->create($tide, $configuration),
             new DeploymentRequest\Specification([
                 $this->createComponent(
-                    $this->createComponentName($context),
+                    $this->createComponentName($taskDetails),
                     $configuration
                 ),
             ]),
             new DeploymentRequest\Notification(
-                $this->getNotificationUrl($context),
-                $context->getTaskLog()->getId()
+                $this->getNotificationUrl($tide),
+                $taskDetails->getLogId()
             ),
-            $context->getTeam()->getBucketUuid()
+            $tide->getTeam()->getBucketUuid()
         );
     }
 
     /**
      * Get the notification URL to give to the runner client.
      *
-     * @param TideContext $context
+     * @param Tide $tide
      *
      * @return string
      */
-    private function getNotificationUrl(TideContext $context)
+    private function getNotificationUrl(Tide $tide)
     {
         return $this->urlGenerator->generate('runner_notification_post', [
-            'tideUuid' => $context->getTideUuid(),
+            'tideUuid' => $tide->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
@@ -128,12 +129,12 @@ class DeploymentRequestFactory
     }
 
     /**
-     * @param RunContext $context
+     * @param TaskDetails $taskDetails
      *
      * @return string
      */
-    private function createComponentName(RunContext $context)
+    private function createComponentName(TaskDetails $taskDetails)
     {
-        return (new Slugify())->slugify($context->getTaskId());
+        return (new Slugify())->slugify($taskDetails->getIdentifier());
     }
 }

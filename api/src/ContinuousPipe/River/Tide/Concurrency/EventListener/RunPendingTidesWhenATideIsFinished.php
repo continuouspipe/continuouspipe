@@ -21,7 +21,7 @@ class RunPendingTidesWhenATideIsFinished
 
     /**
      * @param TideRepository $tideRepository
-     * @param MessageBus $commandBus
+     * @param MessageBus     $commandBus
      */
     public function __construct(TideRepository $tideRepository, MessageBus $commandBus)
     {

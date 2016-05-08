@@ -8,6 +8,7 @@ use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\TaskQueued;
@@ -73,7 +74,7 @@ class DeployTask extends EventDrivenTask
 
         $this->commandBus->handle(new StartDeploymentCommand(
             $this->context->getTideUuid(),
-            $this->context,
+            new TaskDetails($this->context->getTaskId(), $log->getId()),
             $this->configuration
         ));
     }
