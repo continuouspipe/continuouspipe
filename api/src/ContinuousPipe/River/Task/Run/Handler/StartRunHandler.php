@@ -6,7 +6,6 @@ use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\River\Task\Run\Command\StartRunCommand;
 use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\RunRequest\DeploymentRequestFactory;
-use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\View\TideRepository;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -51,16 +50,15 @@ class StartRunHandler
      */
     public function handle(StartRunCommand $command)
     {
-        $context = $command->getContext();
-        $taskDetails = new TaskDetails($context->getTaskId(), $context->getTaskLog()->getId());
+        $taskDetails = $command->getTaskDetails();
 
-        $tide = $this->tideRepository->find($command->getUuid());
+        $tide = $this->tideRepository->find($command->getTideUuid());
         $deploymentRequest = $this->deploymentRequestFactory->createDeploymentRequest($tide, $taskDetails, $command->getConfiguration());
         $deployment = $this->pipeClient->start($deploymentRequest, $tide->getUser());
 
         $this->eventBus->handle(new RunStarted(
             $tide->getUuid(),
-            $command->getTaskId(),
+            $taskDetails->getIdentifier(),
             $deployment->getUuid()
         ));
     }
