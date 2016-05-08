@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Command;
 
-use ContinuousPipe\River\Task\Deploy\DeployContext;
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
+use ContinuousPipe\River\Task\TaskDetails;
 use Rhumsaa\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
@@ -17,13 +17,6 @@ class StartDeploymentCommand
     private $tideUuid;
 
     /**
-     * @JMS\Type("ContinuousPipe\River\Task\Deploy\DeployContext")
-     *
-     * @var DeployContext
-     */
-    private $deployContext;
-
-    /**
      * @JMS\Type("ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration")
      *
      * @var DeployTaskConfiguration
@@ -31,15 +24,22 @@ class StartDeploymentCommand
     private $configuration;
 
     /**
-     * @param Uuid                    $tideUuid
-     * @param DeployContext           $deployContext
+     * @JMS\Type("ContinuousPipe\River\Task\TaskDetails")
+     *
+     * @var TaskDetails
+     */
+    private $taskDetails;
+
+    /**
+     * @param Uuid $tideUuid
+     * @param TaskDetails $taskDetails
      * @param DeployTaskConfiguration $configuration
      */
-    public function __construct(Uuid $tideUuid, DeployContext $deployContext, DeployTaskConfiguration $configuration)
+    public function __construct(Uuid $tideUuid, TaskDetails $taskDetails, DeployTaskConfiguration $configuration)
     {
         $this->tideUuid = $tideUuid;
-        $this->deployContext = $deployContext;
         $this->configuration = $configuration;
+        $this->taskDetails = $taskDetails;
     }
 
     /**
@@ -51,11 +51,11 @@ class StartDeploymentCommand
     }
 
     /**
-     * @return DeployContext
+     * @return TaskDetails
      */
-    public function getDeployContext()
+    public function getTaskDetails()
     {
-        return $this->deployContext;
+        return $this->taskDetails;
     }
 
     /**

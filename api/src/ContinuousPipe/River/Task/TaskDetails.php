@@ -2,14 +2,20 @@
 
 namespace ContinuousPipe\River\Task;
 
+use JMS\Serializer\Annotation as JMS;
+
 class TaskDetails
 {
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $identifier;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $logId;

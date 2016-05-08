@@ -37,7 +37,7 @@ class StartDeploymentHandler
      * @var LoggerFactory
      */
     private $loggerFactory;
-    
+
     /**
      * @var TideRepository
      */
@@ -64,20 +64,15 @@ class StartDeploymentHandler
      */
     public function handle(StartDeploymentCommand $command)
     {
-        $deployContext = $command->getDeployContext();
-
-        $taskLog = $deployContext->getTaskLog();
-        $taskId = $deployContext->getTaskId();
-
+        $taskDetails = $command->getTaskDetails();
         $tide = $this->tideRepository->find($command->getTideUuid());
-        $taskDetails = new TaskDetails($taskId, $taskLog->getId());
 
         try {
             $deploymentRequest = $this->deploymentRequestFactory->create($tide, $taskDetails, $command->getConfiguration());
         } catch (UnresolvedEnvironmentNameException $e) {
             $this->eventBus->handle(new TideFailed($command->getTideUuid()));
 
-            $logger = $this->loggerFactory->from($taskLog);
+            $logger = $this->loggerFactory->fromId($taskDetails->getLogId());
             $logger->child(new Text($e->getMessage()));
 
             return;
@@ -85,12 +80,12 @@ class StartDeploymentHandler
 
         try {
             $deployment = $this->pipeClient->start($deploymentRequest, $tide->getUser());
-            $this->eventBus->handle(new DeploymentStarted($command->getTideUuid(), $deployment, $taskId));
+            $this->eventBus->handle(new DeploymentStarted($command->getTideUuid(), $deployment, $taskDetails->getIdentifier()));
         } catch (\Exception $e) {
             $failedDeployment = new Client\Deployment(Uuid::fromString(Uuid::NIL), $deploymentRequest, Client\Deployment::STATUS_FAILURE);
-            $this->eventBus->handle(new DeploymentFailed($command->getTideUuid(), $failedDeployment, $taskId));
+            $this->eventBus->handle(new DeploymentFailed($command->getTideUuid(), $failedDeployment, $taskDetails->getIdentifier()));
 
-            $logger = $this->loggerFactory->from($taskLog);
+            $logger = $this->loggerFactory->fromId($taskDetails->getLogId());
             $logger->child(new Text(sprintf(
                 'PANIC (%s): %s',
                 get_class($e),
