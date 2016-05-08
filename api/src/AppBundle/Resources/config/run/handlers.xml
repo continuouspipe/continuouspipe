@@ -5,10 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.task.run.serializer.context_handler" class="ContinuousPipe\River\Task\Run\Serializer\RunContextSerializerHandler">
-            <tag name="jms_serializer.subscribing_handler" />
-        </service>
-
         <service id="river.task.run.deployment_request_factory" class="ContinuousPipe\River\Task\Run\RunRequest\DeploymentRequestFactory">
             <argument type="service" id="router" />
             <argument type="service" id="river.pipe.target_environment_factory" />

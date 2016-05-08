@@ -55,9 +55,5 @@
         <service id="river.task.deploy.configuration.component_factory" class="ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory">
             <argument type="service" id="jms_serializer" />
         </service>
-
-        <service id="river.task.deploy.serializer.context_handler" class="ContinuousPipe\River\Task\Deploy\Serializer\DeployContextSerializerHandler">
-            <tag name="jms_serializer.subscribing_handler" />
-        </service>
     </services>
 </container>
