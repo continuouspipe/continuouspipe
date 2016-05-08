@@ -9,7 +9,6 @@ use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
-use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\View\TideRepository;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;

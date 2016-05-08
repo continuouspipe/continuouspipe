@@ -31,8 +31,8 @@ class StartDeploymentCommand
     private $taskDetails;
 
     /**
-     * @param Uuid $tideUuid
-     * @param TaskDetails $taskDetails
+     * @param Uuid                    $tideUuid
+     * @param TaskDetails             $taskDetails
      * @param DeployTaskConfiguration $configuration
      */
     public function __construct(Uuid $tideUuid, TaskDetails $taskDetails, DeployTaskConfiguration $configuration)
