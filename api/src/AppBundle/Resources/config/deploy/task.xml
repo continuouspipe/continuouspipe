@@ -40,7 +40,6 @@
         <service id="river.task.deploy.deployment_request_factory" class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\FlattenDeploymentRequestFactory">
             <argument type="service" id="router" />
             <argument type="service" id="river.pipe.target_environment_factory" />
-            <argument type="service" id="river.view.tide_repository"/>
         </service>
 
         <service id="river.handler.start_deploy" class="ContinuousPipe\River\Task\Deploy\Handler\StartDeploymentHandler">
@@ -48,6 +47,7 @@
             <argument type="service" id="river.pipe_client" />
             <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="river.view.tide_repository"/>
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand" />
         </service>

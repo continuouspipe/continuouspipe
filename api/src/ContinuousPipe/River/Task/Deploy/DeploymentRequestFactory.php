@@ -3,19 +3,19 @@
 namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
-use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
+use ContinuousPipe\River\Task\TaskDetails;
+use ContinuousPipe\River\View\Tide;
 
 interface DeploymentRequestFactory
 {
     /**
      * Create a deployment request for the pipe client based on that pipe.
      *
-     * @param DeployContext           $context
+     * @param Tide                    $tide
+     * @param TaskDetails             $taskDetails
      * @param DeployTaskConfiguration $configuration
-     *
-     * @throws UnresolvedEnvironmentNameException
      *
      * @return DeploymentRequest
      */
-    public function create(DeployContext $context, DeployTaskConfiguration $configuration);
+    public function create(Tide $tide, TaskDetails $taskDetails, DeployTaskConfiguration $configuration);
 }
