@@ -1,0 +1,6 @@
+<div class="log"
+     ng-repeat="(logId, log) in logs"
+     ng-class="['type-'+log.type, 'status-'+log.status]"
+     ng-include="'views/logs/log-'+log.type+'.ng.html'">
+
+</div>

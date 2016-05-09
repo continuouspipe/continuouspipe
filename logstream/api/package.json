@@ -6,7 +6,10 @@
   "author": "Samuel ROZE <samuel.roze@gmail.com>",
   "dependencies": {
     "express": "^4.13.3",
+    "firebase": "^2.4.2",
     "http2": "^3.3.2",
-    "mongodb": "^2.1.4"
+    "merge": "^1.2.0",
+    "mongodb": "^2.1.4",
+    "node-uuid": "^1.4.7"
   }
 }

@@ -2,10 +2,8 @@ frontend:
     build: frontend
     environment:
         ROOT_URL: http://an-unknown-address.docker
-        MONGO_URL: mongodb://mongodb:27017/logstream
+        FIREBASE_APP: continuous-pipe
         PORT: 80
-    links:
-        - mongodb
     expose:
         - 80
         - 43130
@@ -13,15 +11,8 @@ frontend:
 
 api:
     build: api
-    links:
-        - mongodb
     expose:
         - 443
     environment:
-        MONGO_URL: mongodb://mongodb:27017/logstream
         PORT: 443
-
-mongodb:
-    image: mongo
-    expose:
-        - 27017
+        FIREBASE_APP: continuous-pipe
