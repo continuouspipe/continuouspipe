@@ -42,7 +42,7 @@ var HttpHandlerFactory = function(LogsCollection) {
 
     var patchLog = function(request, response) {
         getRequestJson(request, response, function(patch) {
-            return LogsCollection.update(request.logId, patch, function (error) {
+            return LogsCollection.update(request.logId, patch, function (error, log) {
                 if (error !== null) {
                     response.writeHead(500);
                     response.end('Unable to update the log');
@@ -50,15 +50,8 @@ var HttpHandlerFactory = function(LogsCollection) {
                     return;
                 }
 
-                LogsCollection.find(request.logId, function(error, log) {
-                    if (error !== null) {
-                        response.writeHead(500);
-                        response.end('Unable to find updated log');
-                    } else {
-                        response.writeHead(200);
-                        response.end(JSON.stringify(log));
-                    }
-                });
+                response.writeHead(200);
+                response.end(JSON.stringify(log));
             })
         });
     };
@@ -68,7 +61,7 @@ var HttpHandlerFactory = function(LogsCollection) {
             return createLog(request, response);
         }
 
-        var matches = request.url.match(/\/v1\/logs\/([^\/]+)/);
+        var matches = request.url.match(/\/v1\/logs\/(.+)/);
         if (matches !== null && request.method == 'PATCH') {
             request.logId = matches[1];
 

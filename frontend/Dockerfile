@@ -1,20 +1,37 @@
-FROM meteorhacks/meteord:base
+FROM nginx
 
-# Install dependencies
-RUN apt-get update && \
-    apt-get install -y git && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Install NodeJS
+RUN apt-get update \
+ && apt-get install -y curl \
+ && curl -sL https://deb.nodesource.com/setup_5.x | bash - \
+ && apt-get install -y nodejs build-essential
 
-# Copy application
+# Install prerequisites build tools
+RUN apt-get install -y ruby ruby-dev build-essential git \
+  && gem install compass \
+  && npm install -g grunt-cli bower
+
+# Build the application
+RUN mkdir /app
+WORKDIR /app
+
+# Copy configuration
+COPY /docker/run.sh /run.sh
+COPY /docker/nginx/vhost.conf /etc/nginx/conf.d/default.conf
+
+# Install node dependencies
+ADD package.json /app/package.json
+RUN npm install
+
+# Install bower dependencies
+ADD .bowerrc /app/.bowerrc
+ADD bower.json /app/bower.json
+RUN bower install --config.interactive=false --allow-root
+
+# Build the code
 COPY . /app
+ARG GRUNT_CONCURRENCY=1
+RUN grunt build
 
-# Copy endpoint scripts
-RUN chmod +x /app/docker/run.sh /app/docker/tcp-port-scan.sh
-
-# Run the Meteor installation
-RUN bash $METEORD_DIR/on_build.sh
-
-# Update the entrypoint
-ENTRYPOINT ["/bin/bash"]
-CMD ["/app/docker/run.sh"]
+# Copy the runnable
+CMD ["/run.sh"]

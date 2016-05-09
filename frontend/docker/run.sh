@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 set -xe
 
-echo "Waiting MongoDB to be accessible"
-/app/docker/tcp-port-scan.sh mongodb 27017
+# Updates the configuration file
+#cd /app && \
+#   grunt ngconstant && \
+#   cp .tmp/scripts/config.js dist/scripts/config.js
 
-echo "Mongo is accessible, wait 1 second before starting Meteor"
-sleep 1
+# Start nginx
+nginx -g "daemon off;"
 
-bash $METEORD_DIR/run_app.sh

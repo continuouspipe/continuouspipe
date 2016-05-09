@@ -20,5 +20,3 @@ tasks:
                         accessibility:
                             from_external: true
 
-                mongodb:
-                    locked: true

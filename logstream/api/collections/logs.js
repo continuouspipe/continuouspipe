@@ -1,38 +1,37 @@
-var ObjectId = require('mongodb').ObjectId;
+var uuid = require('node-uuid');
 
-var LogsCollection = function(db) {
-    var collection = db.collection('logs');
-
+var LogsCollection = function(root) {
     this.insert = function(log, callback) {
-        if (!log._id) {
-            log._id = (new ObjectId()).toHexString();
-        }
+        var path = log.parent ? log.parent+'/children' : null,
+            logRoot = path ? root.child(path) : root,
+            child = logRoot.push();
 
-        log.createdAt = new Date();
         log.updatedAt = new Date();
+        log.createdAt = new Date();
 
-        collection.insertOne(log, {w: 1}, function(error) {
-            callback(error);
-        });
-    };
+        child.set(log, function(error) {
+            log._id = path !== null ? path+'/'+child.key() : child.key();
 
-    this.find = function(id, callback) {
-        return collection.findOne({_id: id}, function(error, log) {
             callback(error, log);
         });
     };
 
     this.update = function(id, updatedProperties, callback) {
+        var child = root.child(id);
+
         updatedProperties.updatedAt = new Date();
 
-        return collection.updateOne({_id: id}, {
-            $set: updatedProperties
-        }, function(error, result) {
-            if (error === null && result.result.nModified != 1) {
-                callback(new Error(result.result.nModified+' updated logs instead of 1'));
-            } else {
-                callback(error, result);
+        child.update(updatedProperties, function(error) {
+            if (error) {
+                return callback(error);
             }
+
+            child.once('value', function(snapshot) {
+                var value = snapshot.val();
+                value._id = id;
+
+                callback(null, value);
+            });
         });
     };
 };
