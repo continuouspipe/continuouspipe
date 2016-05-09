@@ -3,7 +3,8 @@ environment_variables:
       value: 56572b8e90e4bd47230e1add
     - name: KEEN_WRITE_KEY
       value: 5d3a020fd710c5fd231394e8c2912a0cc50bf2142586ffdd13105b2f15cb525ded70fd3342a5ad7a273cd2e416cd777716264f3b8003ef1c193dbf737d02d5f85619df8ec4b29c780185b70cde839a7d93bcda17f6f2aa729a3cff4f24ff8031d39f70eafd604958409a5f99cc364586
-
+    - name: BUILDER_URL
+      value: http://api.3636576e-677a-11e5-bf13-4b0c2fa0d3cf-master.proxy.fra-02.cluster.continuouspipe.io
 tasks:
     images:
         build:
@@ -33,7 +34,7 @@ tasks:
                             - name: LOGSTREAM_URL
                               value: https://api.logstream.continuouspipe.io
                             - name: BUILDER_URL
-                              value: http://api.3636576e-677a-11e5-bf13-4b0c2fa0d3cf-master.proxy.fra-01.cluster.continuouspipe.io
+                              value: ${BUILDER_URL}
                             - name: PIPE_URL
                               value: http://pipe.continuouspipe.io
                             - name: RIVER_UI_URL
@@ -65,7 +66,7 @@ tasks:
                             - name: LOGSTREAM_URL
                               value: https://api.logstream.continuouspipe.io
                             - name: BUILDER_URL
-                              value: http://api.3636576e-677a-11e5-bf13-4b0c2fa0d3cf-master.proxy.fra-01.cluster.continuouspipe.io
+                              value: ${BUILDER_URL}
                             - name: PIPE_URL
                               value: http://pipe.continuouspipe.io
                             - name: RIVER_URL
