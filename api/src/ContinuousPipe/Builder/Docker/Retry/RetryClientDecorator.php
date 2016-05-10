@@ -12,31 +12,31 @@ use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 use LogStream\Node\Text;
+use Tolerance\Waiter\CountLimited;
+use Tolerance\Waiter\ExponentialBackOff;
+use Tolerance\Waiter\SleepWaiter;
+use Tolerance\Waiter\Waiter;
 
 class RetryClientDecorator implements Client
 {
-    /**
-     * Max retry count.
-     */
-    const MAX_RETRIES = 3;
-
-    /**
-     * Delay between retries, in seconds.
-     *
-     * @var int
-     */
-    const DELAY_BETWEEN_RETRIES = 5;
     /**
      * @var Client
      */
     private $client;
 
     /**
-     * @param Client $client
+     * @var int
      */
-    public function __construct(Client $client)
+    private $maxRetries;
+
+    /**
+     * @param Client $client
+     * @param int $maxRetries
+     */
+    public function __construct(Client $client, $maxRetries = 10)
     {
         $this->client = $client;
+        $this->maxRetries = $maxRetries;
     }
 
     /**
@@ -60,7 +60,11 @@ class RetryClientDecorator implements Client
      */
     public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
     {
-        $attempts = 0;
+        $remainingAttempts = $this->maxRetries;
+        $exponentialBackOffWaiter = new ExponentialBackOff(
+            new SleepWaiter(),
+            1
+        );
 
         do {
             try {
@@ -71,16 +75,19 @@ class RetryClientDecorator implements Client
                 }
             }
 
-            $retryIn = self::DELAY_BETWEEN_RETRIES * ($attempts + 1);
             $logger->child(new Text(sprintf(
                 'Detected infrastructure error, retrying in %s seconds',
-                $retryIn
+                $exponentialBackOffWaiter->getNextTime()
             )));
 
-            sleep($retryIn);
-        } while (++$attempts <= self::MAX_RETRIES);
+            $exponentialBackOffWaiter->wait();
+        } while ($remainingAttempts-- > 0);
 
-        throw new DockerException(sprintf('Failed even after retries: %s', $e->getMessage()), $e->getCode(), $e);
+        throw new DockerException(
+            sprintf('Failed even after %d retries: %s', $this->maxRetries, $e->getMessage()),
+            $e->getCode(),
+            $e
+        );
     }
 
     /**
