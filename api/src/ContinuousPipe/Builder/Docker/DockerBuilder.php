@@ -89,14 +89,16 @@ class DockerBuilder implements Builder
             $archive->delete();
         }
 
-        try {
-            $this->runCommandsAndCommitImage($logger, $image, $commands);
-        } catch (DockerException $e) {
-            throw new BuildException(
-                sprintf('Unable to run isolated command: %s', $e->getMessage()),
-                $e->getCode(),
-                $e
-            );
+        if (count($commands) > 0) {
+            try {
+                $image = $this->runCommandsAndCommitImage($logger, $image, $commands);
+            } catch (DockerException $e) {
+                throw new BuildException(
+                    sprintf('Unable to run isolated command: %s', $e->getMessage()),
+                    $e->getCode(),
+                    $e
+                );
+            }
         }
 
         return $image;
@@ -138,10 +140,6 @@ class DockerBuilder implements Builder
      */
     private function runCommandsAndCommitImage(Logger $logger, Image $image, array $commands)
     {
-        if (count($commands) == 0) {
-            return $image;
-        }
-
         $logger = $logger->child(new Text('Running extra build commands'))->updateStatus(Log::RUNNING);
 
         try {

@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Request\BuildRequest;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use Docker\Container;
 use Docker\Context\Context;
 use Docker\Docker;
@@ -39,17 +40,24 @@ class HttpClient implements Client
     private $outputHandler;
 
     /**
+     * @var BucketRepository
+     */
+    private $bucketRepository;
+
+    /**
      * @param Docker             $docker
      * @param DockerfileResolver $dockerfileResolver
      * @param LoggerInterface    $logger
      * @param OutputHandler      $outputHandler
+     * @param BucketRepository   $bucketRepository
      */
-    public function __construct(Docker $docker, DockerfileResolver $dockerfileResolver, LoggerInterface $logger, OutputHandler $outputHandler)
+    public function __construct(Docker $docker, DockerfileResolver $dockerfileResolver, LoggerInterface $logger, OutputHandler $outputHandler, BucketRepository $bucketRepository)
     {
         $this->docker = $docker;
         $this->dockerfileResolver = $dockerfileResolver;
         $this->logger = $logger;
         $this->outputHandler = $outputHandler;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -282,7 +290,10 @@ EOF;
         $client = $this->docker->getHttpClient();
         $client->setDefaultOption('timeout', 1800);
         $client->post(['/build{?data*}', ['data' => $options]], [
-            'headers' => ['Content-Type' => 'application/tar'],
+            'headers' => [
+                'Content-Type' => 'application/tar',
+                'X-Registry-Config' => $this->generateHttpRegistryConfig($request),
+            ],
             'body' => $content,
             'stream' => true,
             'callback' => $callback,
@@ -317,5 +328,29 @@ EOF;
         }
 
         return $path;
+    }
+
+    /**
+     * @param BuildRequest $request
+     *
+     * @return string
+     */
+    private function generateHttpRegistryConfig(BuildRequest $request)
+    {
+        $bucket = $this->bucketRepository->find($request->getCredentialsBucket());
+        $registryConfig = [];
+
+        foreach ($bucket->getDockerRegistries() as $dockerRegistry) {
+            $registryConfig[$dockerRegistry->getServerAddress()] = [
+                'username' => $dockerRegistry->getUsername(),
+                'password' => $dockerRegistry->getPassword(),
+            ];
+        }
+
+        if (array_key_exists('docker.io', $registryConfig)) {
+            $registryConfig['https://index.docker.io/v1/'] = $registryConfig['docker.io'];
+        }
+
+        return base64_encode(json_encode($registryConfig));
     }
 }
