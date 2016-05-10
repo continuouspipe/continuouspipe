@@ -3,7 +3,7 @@
 namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\BuildRepository;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 

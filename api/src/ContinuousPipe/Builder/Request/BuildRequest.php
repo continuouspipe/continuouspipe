@@ -7,7 +7,7 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Logging;
 use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Repository;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class BuildRequest
 {

@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Builder;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface BuildRepository
 {
