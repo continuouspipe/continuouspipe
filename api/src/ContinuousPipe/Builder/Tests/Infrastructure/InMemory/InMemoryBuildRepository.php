@@ -5,7 +5,7 @@ namespace ContinuousPipe\Builder\Tests\Infrastructure\InMemory;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\BuildNotFound;
 use ContinuousPipe\Builder\BuildRepository;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class InMemoryBuildRepository implements BuildRepository
 {

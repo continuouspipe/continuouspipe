@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Builder\Docker\Exception\DaemonException;
 use ContinuousPipe\Builder\Docker\Exception\DaemonNetworkException;
 use ContinuousPipe\Builder\Docker\Exception\PushAlreadyInProgress;
 use ContinuousPipe\Builder\Docker\HttpClient\OutputHandler;
@@ -44,6 +45,14 @@ class DockerOutputContext implements Context
     public function theIdentifiedErrorShouldBeADaemonNetworkError()
     {
         $this->assertExceptionIs(DaemonNetworkException::class);
+    }
+
+    /**
+     * @Then the identified error should be a daemon error
+     */
+    public function theIdentifiedErrorShouldBeADaemonError()
+    {
+        $this->assertExceptionIs(DaemonException::class);
     }
 
     /**

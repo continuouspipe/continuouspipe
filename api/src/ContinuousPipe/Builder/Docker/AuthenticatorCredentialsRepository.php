@@ -7,7 +7,7 @@ use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class AuthenticatorCredentialsRepository implements CredentialsRepository
 {

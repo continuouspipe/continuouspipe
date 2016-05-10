@@ -5,7 +5,7 @@ namespace ContinuousPipe\Builder\Docker;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface CredentialsRepository
 {

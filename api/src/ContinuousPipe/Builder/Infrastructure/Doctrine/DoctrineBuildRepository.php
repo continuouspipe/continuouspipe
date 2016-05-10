@@ -6,7 +6,7 @@ use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\BuildNotFound;
 use ContinuousPipe\Builder\BuildRepository;
 use Doctrine\ORM\EntityManager;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class DoctrineBuildRepository implements BuildRepository
 {
