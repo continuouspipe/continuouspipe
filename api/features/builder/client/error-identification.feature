@@ -18,6 +18,14 @@ Feature:
     When the Docker daemon returns the error "push docker.io/inviqasession/graze is already in progress"
     Then the identified error should be a push already in progress error
 
+  Scenario: Push or pull already in progress
+    When the Docker daemon returns the error "push or pull docker.io/inviqasession/ft is already in progress"
+    Then the identified error should be a push already in progress error
+
   Scenario: Daemon network connection issues
     When the Docker daemon returns the error "Failed to upload metadata: Put https://cdn-registry-1.docker.io/v1/images/81f2929c91fd50473aef0f72dcc507206c25b2d4673c155e7e14e00d8dc59245/json: net/http: TLS handshake timeout"
+    Then the identified error should be a daemon network error
+
+  Scenario: Daemon network connection issues
+    When the Docker daemon returns the error "Failed even after retries: Head https://dseasb33srnrn.cloudfront.net/registry-v2/docker/registry/v2/blobs/sha256/5c/5c1d75783f7f66ae3006b86d2a3868a482699942c9e4b8951c3c3fc282ec5490/data?Expires=1462800791&Signature=LK72D8I7GtxTxD3HsZ5tOiCdGYCq5aypMaDqBLAFmgtP94UOQcQN5D9TBTAFepffJ4gAjEu3Kd-VqkavCbic274gg95D9irsbYgCzqEdmXvhNhPh6F3OP8fJ-WrQ0uCFQ~GKHSDbjcckUM0W68UsBmYSakQlPDQA--cN8GBOq3U_&Key-Pair-Id=APKAJECH5M7VWIS5YZ6Q: net/http: TLS handshake timeout"
     Then the identified error should be a daemon network error

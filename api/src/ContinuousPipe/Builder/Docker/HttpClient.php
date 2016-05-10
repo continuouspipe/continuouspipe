@@ -85,7 +85,7 @@ class HttpClient implements Client
                 $this->getOutputCallback($logger)
             );
         } catch (\Docker\Exception $e) {
-            $this->logger->notice('An error appeared while pushing an image', [
+            $this->logger->error('An error appeared while pushing an image', [
                 'image' => $image,
                 'exception' => $e,
             ]);
@@ -96,7 +96,7 @@ class HttpClient implements Client
                 throw $e->getPrevious();
             }
 
-            $this->logger->warning('An unexpected error appeared while building an image', [
+            $this->logger->error('An unexpected error appeared while building an image', [
                 'image' => $image,
                 'exception' => $e,
             ]);
