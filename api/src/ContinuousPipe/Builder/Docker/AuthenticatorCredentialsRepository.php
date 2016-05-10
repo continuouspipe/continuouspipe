@@ -15,6 +15,7 @@ class AuthenticatorCredentialsRepository implements CredentialsRepository
      * @var RegistryServerResolver
      */
     private $registryServerResolver;
+
     /**
      * @var BucketRepository
      */

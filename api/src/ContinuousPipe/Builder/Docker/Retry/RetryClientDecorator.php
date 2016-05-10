@@ -12,10 +12,8 @@ use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 use LogStream\Node\Text;
-use Tolerance\Waiter\CountLimited;
 use Tolerance\Waiter\ExponentialBackOff;
 use Tolerance\Waiter\SleepWaiter;
-use Tolerance\Waiter\Waiter;
 
 class RetryClientDecorator implements Client
 {
@@ -31,7 +29,7 @@ class RetryClientDecorator implements Client
 
     /**
      * @param Client $client
-     * @param int $maxRetries
+     * @param int    $maxRetries
      */
     public function __construct(Client $client, $maxRetries = 10)
     {
