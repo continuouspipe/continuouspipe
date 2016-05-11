@@ -12,6 +12,7 @@ use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 use LogStream\Node\Text;
+use Tolerance\Waiter\CountLimited;
 use Tolerance\Waiter\ExponentialBackOff;
 use Tolerance\Waiter\SleepWaiter;
 
@@ -28,13 +29,20 @@ class RetryClientDecorator implements Client
     private $maxRetries;
 
     /**
+     * @var int
+     */
+    private $retryInterval;
+
+    /**
      * @param Client $client
      * @param int    $maxRetries
+     * @param int    $retryInterval
      */
-    public function __construct(Client $client, $maxRetries = 10)
+    public function __construct(Client $client, $maxRetries = 10, $retryInterval = 30)
     {
         $this->client = $client;
         $this->maxRetries = $maxRetries;
+        $this->retryInterval = $retryInterval;
     }
 
     /**
@@ -59,10 +67,6 @@ class RetryClientDecorator implements Client
     public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
     {
         $remainingAttempts = $this->maxRetries;
-        $exponentialBackOffWaiter = new ExponentialBackOff(
-            new SleepWaiter(),
-            1
-        );
 
         do {
             try {
@@ -75,10 +79,10 @@ class RetryClientDecorator implements Client
 
             $logger->child(new Text(sprintf(
                 'Detected infrastructure error, retrying in %s seconds',
-                $exponentialBackOffWaiter->getNextTime()
+                $this->retryInterval
             )));
 
-            $exponentialBackOffWaiter->wait();
+            (new SleepWaiter())->wait($this->retryInterval);
         } while ($remainingAttempts-- > 0);
 
         throw new DockerException(
