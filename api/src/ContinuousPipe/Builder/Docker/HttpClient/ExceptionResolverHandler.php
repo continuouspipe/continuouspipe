@@ -21,7 +21,7 @@ class ExceptionResolverHandler implements OutputHandler
         '/^Head ([a-z0-9:\/\.-]+): EOF$/' => DaemonNetworkException::class,
         '/^Head ([a-z0-9:\/\.-]+): ([a-z0-9\ \/:\.]+): i\/o timeout$/' => DaemonNetworkException::class,
         '/^use of closed network connection$/' => DaemonNetworkException::class,
-        '/^push (or pull )?([a-z0-9\.\/]+) is already in progress$/' => PushAlreadyInProgress::class,
+        '/^push (or pull )?([^ ]+) is already in progress$/' => PushAlreadyInProgress::class,
         '/net\/http: TLS handshake timeout$/' => DaemonNetworkException::class,
         '/^Received unexpected HTTP status: 500 Internal Server Error$/' => DaemonException::class,
     ];
