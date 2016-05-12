@@ -37,3 +37,7 @@ Feature:
   Scenario: Daemon internal error
     When the Docker daemon returns the error "Received unexpected HTTP status: 500 Internal Server Error"
     Then the identified error should be a daemon error
+
+  Scenario: Daemon internal error
+    When the Docker daemon returns the error "Received unexpected HTTP status: 500 INTERNAL SERVER ERROR"
+    Then the identified error should be a daemon error
