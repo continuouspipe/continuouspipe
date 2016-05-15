@@ -18,8 +18,8 @@ class ConnectController extends HWIOAuthBundleConnectController
             $error = $error->getMessage();
         }
 
-        return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:login.html.' . $this->getTemplatingEngine(), array(
-            'error'   => $error,
+        return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:login.html.'.$this->getTemplatingEngine(), array(
+            'error' => $error,
         ));
     }
 

@@ -33,6 +33,7 @@
             <argument type="service" id="router" />
             <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
             <argument type="service" id="security.token_storage" />
+            <argument>%default_redirection_url%</argument>
         </service>
 
         <service id="request.param_converter.security_user" class="ContinuousPipe\Authenticator\Infrastructure\Request\ParamConverter\UserParamConverter">
