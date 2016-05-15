@@ -57,15 +57,21 @@ var HttpHandlerFactory = function(LogsCollection) {
     };
 
     return function(request, response) {
-        if (request.url == '/v1/logs' && request.method == 'POST') {
-            return createLog(request, response);
-        }
+        var matches, routes = [
+            {url: /^\/v1\/logs$/, method: 'POST', handler: createLog},
+            {url: /^\/v1\/logs\/(.+)/, method: 'PATCH', handler: patchLog, parameterMapping: function(request, matches) {
+                request.logId = matches[1];
+            }}
+        ];
 
-        var matches = request.url.match(/\/v1\/logs\/(.+)/);
-        if (matches !== null && request.method == 'PATCH') {
-            request.logId = matches[1];
+        for (var i = 0; i < routes.length; i++) {
+            var route = routes[i];
 
-            return patchLog(request, response);
+            if (request.method == route.method && null !== (matches = request.url.match(route.url))) {
+                route.parameterMapping && route.parameterMapping(request, matches);
+
+                return route.handler(request, response);
+            }
         }
 
         response.writeHead(404);
