@@ -5,7 +5,9 @@
       "http://ui.continuouspipe.io",
       "https://logstream.continuouspipe.io",
       "https://ui.continuouspipe.io",
-      "http://localhost:9000"
+      "http://localhost:9000",
+      "http://logstream-frontend.docker",
+      "http://logstream_frontend.docker"
     ],
     "responseHeader": [
       "Content-Type"
