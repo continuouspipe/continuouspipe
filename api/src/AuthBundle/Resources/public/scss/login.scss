@@ -1,0 +1,42 @@
+html.login {
+    background: #232731;
+
+    div.login-container {
+        max-width: 400px;
+        margin: auto;
+        margin-top: 50px;
+        color: #fff;
+
+        p, h1, a {
+            text-align: center;
+            font-family: Roboto,"Helvetica Neue",sans-serif;
+        }
+
+        h1 {
+            margin: 20px 0;
+            color: #b5b5b5;
+        }
+
+        i.cp-icon-logo {
+            font-size: 3em;
+        }
+
+        div.login-inner {
+            padding-top: 50px;
+            text-align: center;
+
+            a.login-button {
+                display: inline-block;
+                border: 1px solid #fff;
+                background: #efefef;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                border-radius: 5px;
+                color: #333;
+            }
+        }
+    }
+
+
+}
