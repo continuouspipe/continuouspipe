@@ -1,0 +1,23 @@
+@import "cp_font";
+
+$header-background: #232731;
+
+header.header {
+    background: $header-background;
+    height: 64px;
+    color: rgba(255,255,255,0.87);
+    font-family: Roboto,"Helvetica Neue",sans-serif;
+
+    i.icon {
+        font-size: 2.5em;
+        color: #fff;
+        float: left;
+        margin: 12px;
+    }
+
+    h1 {
+        line-height: 64px;
+        font-size: 1.3em;
+        font-weight: bold;
+    }
+}
