@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowConfigurationController', function($scope, $remoteResource, $mdToast, TideRepository, EnvironmentRepository, FlowRepository, flow) {
+    .controller('FlowConfigurationController', function($scope, $remoteResource, $mdToast, $state, TideRepository, EnvironmentRepository, FlowRepository, flow) {
         $scope.aceOption = {
             mode: 'yaml'
         };
@@ -21,6 +21,26 @@ angular.module('continuousPipeRiver')
                 swal("Error !", message, "error");
             })['finally'](function() {
                 $scope.isLoading = false;
+            });
+        };
+
+        $scope.delete = function() {
+            swal({
+                title: "Are you sure?",
+                text: "This will remove the flow and its tide history",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }, function() {
+                FlowRepository.remove(flow).then(function() {
+                    swal("Deleted!", "Cluster successfully deleted.", "success");
+
+                    $state.go('flows');
+                }, function() {
+                    swal("Error !", "An unknown error occurred while deleting the flow", "error");
+                });
             });
         };
 
