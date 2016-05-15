@@ -16,7 +16,7 @@
         <service id="admin.controller.tide" class="AdminBundle\Controller\TideController">
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.event_store" />
-            <argument>%logstream_url%</argument>
+            <argument>%logstream_frontend_url%</argument>
         </service>
 
         <service id="admin.twig_extension" class="AdminBundle\Twig\AdminExtension" public="false">
