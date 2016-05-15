@@ -1,9 +1,9 @@
 angular.module('logstream')
-    .directive('logs', ['RecursionHelper', function(RecursionHelper) {
+    .directive('logs', ['RecursionHelper', '$http', function(RecursionHelper, $http) {
         return {
             restrict: 'E',
             scope: {
-                logs: '='
+                parent: '='
             },
             templateUrl: 'views/logs/logs.ng.html',
             controller: ['$scope', function ($scope) {
@@ -11,6 +11,26 @@ angular.module('logstream')
                 $scope.toggleChildrenDisplay = function(logId) {
                     $scope.displayChildrenOf[logId] = !$scope.displayChildrenOf[logId];
                 };
+
+                var loadArchive = function (parent) {
+                    if (!parent || !parent.archived) {
+                        return;
+                    }
+
+                    $http.get($scope.parent.archive).then(function (response) {
+                        $scope.parent = response.data;
+                    }, function (error) {
+                        $scope.parent.children = [
+                            {type: 'text', status: 'error', contents: 'Unable to log the children from archive'}
+                        ];
+                    });
+                };
+
+                if ($scope.parent.$loaded) {
+                    $scope.parent.$loaded().then(loadArchive);
+                } else {
+                    loadArchive($scope.parent);
+                }
             }],
             compile: function(element) {
                 return RecursionHelper.compile(element);

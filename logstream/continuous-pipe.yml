@@ -15,6 +15,11 @@ tasks:
                     specification:
                         accessibility:
                             from_external: true
+
+                        environment_variables:
+                            - name: LOG_STREAM_API_URL
+                              value: https://api.logstream.continuouspipe.io
+
                 api:
                     specification:
                         accessibility:

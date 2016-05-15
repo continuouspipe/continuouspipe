@@ -8,7 +8,8 @@ angular
         'ngSanitize',
         'ngTouch',
         'firebase',
-        'RecursionHelper'
+        'RecursionHelper',
+        'config'
     ])
     .config(function ($routeProvider) {
         $routeProvider

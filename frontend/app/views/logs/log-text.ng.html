@@ -6,5 +6,5 @@
     </i> {{ ::log.contents }}
 </div>
 <div class="children">
-    <logs ng-if="displayChildrenOf[logId]" logs="log.children"></logs>
+    <logs ng-if="displayChildrenOf[logId]" parent="log"></logs>
 </div>
