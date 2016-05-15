@@ -1,0 +1,19 @@
+{% extends "::base.html.twig" %}
+{% block body_attributes %} class="login-content"{% endblock %}
+{% block html_attributes %} class="login-content"{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('stylesheets/login.css') }}" />
+{% endblock %}
+{% block body %}
+    {% if error %}
+    <div class="login-error">
+        <div class="alert-danger">{{ error }}</div>
+    </div>
+    {% endif %}
+
+    {% for owner in hwi_oauth_resource_owners() %}
+        <a href="{{ hwi_oauth_login_url(owner) }}" class="btn btn-primary btn-block waves-effect waves-button waves-float login-button">
+            Login with {{ owner | trans({}, 'HWIOAuthBundle') }}
+        </a>
+    {% endfor %}
+{% endblock %}

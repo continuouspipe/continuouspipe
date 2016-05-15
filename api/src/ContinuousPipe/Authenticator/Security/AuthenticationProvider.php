@@ -30,17 +30,34 @@ class AuthenticationProvider
      */
     private $tokenStorage;
 
-    public function __construct(RouterInterface $router, JWTManagerInterface $jwtManager, TokenStorageInterface $tokenStorage)
+    /**
+     * @var string
+     */
+    private $defaultRedirectionUrl;
+
+    /**
+     * @param RouterInterface       $router
+     * @param JWTManagerInterface   $jwtManager
+     * @param TokenStorageInterface $tokenStorage
+     * @param string                $defaultRedirectionUrl
+     */
+    public function __construct(RouterInterface $router, JWTManagerInterface $jwtManager, TokenStorageInterface $tokenStorage, $defaultRedirectionUrl)
     {
         $this->router = $router;
         $this->jwtManager = $jwtManager;
         $this->tokenStorage = $tokenStorage;
+        $this->defaultRedirectionUrl = $defaultRedirectionUrl;
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
     public function getAuthenticationResponse(Request $request)
     {
         if (null === ($callback = $request->query->get(self::QUERY_CALLBACK_KEY))) {
-            return new Response('No callback provided', Response::HTTP_BAD_REQUEST);
+            $callback = $this->defaultRedirectionUrl;
         }
 
         $response = new RedirectResponse($this->router->generate('hwi_oauth_connect'));
@@ -56,9 +73,7 @@ class AuthenticationProvider
         $jwtToken = $this->jwtManager->create($user);
 
         if (null === ($callback = $request->cookies->get(self::COOKIE_CALLBACK_KEY))) {
-            return new Response('No callback found.', Response::HTTP_BAD_REQUEST, [
-                'X-JWT-Token' => $jwtToken,
-            ]);
+            $callback = $this->defaultRedirectionUrl;
         }
 
         $url = $callback.'?token='.$jwtToken;
