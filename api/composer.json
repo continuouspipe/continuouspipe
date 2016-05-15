@@ -25,7 +25,7 @@
         "nelmio/cors-bundle": "^1.4",
         "doctrine/doctrine-migrations-bundle": "^1.0",
         "raven/raven": "^0.12.1",
-        "sroze/log-stream": "~0.2.2",
+        "sroze/log-stream": "~0.3.0",
         "sroze/tolerance": "~0.2.0",
         "continuous-pipe/model": "~2.1.1",
         "continuous-pipe/security": "~1.4.1",
@@ -83,6 +83,7 @@
                 "builder_base_url": "BUILDER_URL",
                 "pipe_base_url": "PIPE_URL",
                 "logstream_url": "LOGSTREAM_URL",
+                "logstream_frontend_url": "LOGSTREAM_FRONTEND_URL",
                 "keen_project_id": "KEEN_PROJECT_ID",
                 "keen_write_key": "KEEN_WRITE_KEY"
             }

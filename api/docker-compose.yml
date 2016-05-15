@@ -13,6 +13,7 @@ api:
         - BUILDER_URL=builder_api.docker/app_dev.php
         - PIPE_URL=pipe_api.docker/app_dev.php
         - LOGSTREAM_URL=https://logstream-api.docker
+        - LOGSTREAM_FRONTEND_URL=https://logstream-frontend.docker
         - RIVER_URL=river_api.docker/app_dev.php
     expose:
         - 80
@@ -33,6 +34,7 @@ worker:
         - BUILDER_URL=builder_api.docker/app_dev.php
         - PIPE_URL=pipe_api.docker/app_dev.php
         - LOGSTREAM_URL=https://logstream-api.docker
+        - LOGSTREAM_FRONTEND_URL=https://logstream-frontend.docker
         - RIVER_URL=river_api.docker/app_dev.php
 
 database:

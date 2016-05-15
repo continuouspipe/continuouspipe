@@ -7,6 +7,23 @@
     <li class="active">{{ flow.uuid }}</li>
     <li class="active">Tides</li>
 </ol>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Operations</div>
+            <table class="table">
+                <tr>
+                    <th>Archive tides' logs</th>
+                    <td>
+                        <form action="{{ path('admin_tides_archive_logs', {'team': team.slug, 'flow': flow.uuid}) }}" method="POST">
+                            <button class="btn btn-primary">Archive logs</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
 <table class="table table-bordered table-hover">
     <thead>
         <tr>
