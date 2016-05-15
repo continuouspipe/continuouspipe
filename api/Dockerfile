@@ -40,7 +40,7 @@ RUN if [ -n "$GITHUB_TOKEN" ]; then \
         composer config github-oauth.github.com $GITHUB_TOKEN && \
         composer install -o --no-interaction; \
     fi; \
-    && app/console assets:install
+    app/console assets:install
 
 # Remove cache and logs if some and fixes permissions
 RUN ((rm -rf app/cache/* && rm -rf app/logs/*) || true) \
