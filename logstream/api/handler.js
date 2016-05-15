@@ -70,6 +70,20 @@ var HttpHandlerFactory = function(LogsCollection) {
         });
     };
 
+    var getLog = function(request, response) {
+        return LogsCollection.fetch(request.logId, function (error, log) {
+            if (error !== null) {
+                response.writeHead(500);
+                response.end('Unable to get the log');
+
+                return;
+            }
+
+            response.writeHead(200);
+            response.end(JSON.stringify(log));
+        });
+    };
+
     return function(request, response) {
         var matches,
             matchFirstArgumentAsLogId = function(request, matches) {
@@ -78,6 +92,7 @@ var HttpHandlerFactory = function(LogsCollection) {
             routes = [
             {url: /^\/v1\/logs$/, method: 'POST', handler: createLog},
             {url: /^\/v1\/logs\/(.+)/, method: 'PATCH', handler: patchLog, parameterMapping: matchFirstArgumentAsLogId},
+            {url: /^\/v1\/logs\/(.+)/, method: 'GET', handler: getLog, parameterMapping: matchFirstArgumentAsLogId},
             {url: /^\/v1\/archive\/(.+)/, method: 'POST', handler: archiveLog, parameterMapping: matchFirstArgumentAsLogId}
         ];
 

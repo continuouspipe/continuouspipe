@@ -12,20 +12,25 @@ angular.module('logstream')
                     $scope.displayChildrenOf[logId] = !$scope.displayChildrenOf[logId];
                 };
 
-                $scope.parent.$loaded().then(function(parent) {
-                    if (!parent.archived) {
+                var loadArchive = function (parent) {
+                    if (!parent || !parent.archived) {
                         return;
                     }
 
-                    $http.get($scope.parent.archive).then(function(response) {
-                        console.log('got', response.data);
-                    }, function(error) {
-                        console.log('error', error);
+                    $http.get($scope.parent.archive).then(function (response) {
+                        $scope.parent = response.data;
+                    }, function (error) {
                         $scope.parent.children = [
                             {type: 'text', status: 'error', contents: 'Unable to log the children from archive'}
                         ];
                     });
-                });
+                };
+
+                if ($scope.parent.$loaded) {
+                    $scope.parent.$loaded().then(loadArchive);
+                } else {
+                    loadArchive($scope.parent);
+                }
             }],
             compile: function(element) {
                 return RecursionHelper.compile(element);

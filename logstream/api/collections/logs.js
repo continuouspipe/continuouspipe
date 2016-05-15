@@ -36,6 +36,22 @@ var LogsCollection = function(root, bucket) {
         });
     };
 
+    this.fetch = function(id, callback) {
+        root.child(id).once('value', function(snapshot, error) {
+            if (error) {
+                callback(error);
+            }
+
+            var log = snapshot.val();
+
+            if (log.archived) {
+                return this.fetchArchive(id, callback);
+            }
+
+            return callback(null, log);
+        }.bind(this));
+    };
+
     this.archive = function(id, callback) {
         root.child(id).once('value', function(snapshot, error) {
             if (error) {
@@ -43,7 +59,7 @@ var LogsCollection = function(root, bucket) {
             }
 
             var value = snapshot.val(),
-                file = md5(id)+'.json';
+                file = this._getArchiveFileName(id);
 
             // Return the log directly when already archived
             if (value.archived) {
@@ -67,7 +83,29 @@ var LogsCollection = function(root, bucket) {
                     });
                 })
                 .end(JSON.stringify(value));
-        });
+        }.bind(this));
+    };
+
+    this.fetchArchive = function(id, callback) {
+        var chunks = [];
+
+        bucket.file(this._getArchiveFileName(id))
+            .createReadStream()
+            .on('data', function(response){
+                chunks.push(response.toString());
+            })
+            .on('end', function(){
+                var contents = chunks.join('');
+
+                callback(null, JSON.parse(contents));
+            })
+            .on('error', function(error) {
+                callback(error);
+            })
+    };
+
+    this._getArchiveFileName = function(id) {
+        return md5(id)+'.json';
     };
 };
 
