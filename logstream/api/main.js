@@ -2,7 +2,8 @@ var http2 = require('http2'),
     fs = require('fs'),
     LogsCollection = require('./collections/logs.js'),
     HandlerFactory = require('./handler'),
-    Firebase = require('firebase');
+    Firebase = require('firebase'),
+    gcloud = require('gcloud');
 
 // Create the firebase connection
 var firebase_application = process.env.FIREBASE_APP;
@@ -11,7 +12,11 @@ if (!firebase_application) {
     process.exit(1);
 }
 
-var firebase = new Firebase('https://'+firebase_application+'.firebaseio.com/');
+var firebase = new Firebase('https://'+firebase_application+'.firebaseio.com/'),
+    storage = gcloud.storage({
+        projectId: 'continuous-pipe-1042',
+        keyFilename: 'keys/continuous-pipe-6e52d1420d38.json'
+    });
 
 // Start the HTTP server
 var port = process.env.PORT || 443;
@@ -23,7 +28,8 @@ var options = {
 
 var handler = HandlerFactory(
     new LogsCollection(
-        firebase.child('logs')
+        firebase.child('logs'),
+        storage.bucket('logstream-archives')
     )
 );
 

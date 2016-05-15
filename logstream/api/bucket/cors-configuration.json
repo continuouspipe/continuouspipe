@@ -1,0 +1,18 @@
+[
+  {
+    "origin": [
+      "http://logstream.continuouspipe.io",
+      "http://ui.continuouspipe.io",
+      "https://logstream.continuouspipe.io",
+      "https://ui.continuouspipe.io",
+      "http://localhost:9000"
+    ],
+    "responseHeader": [
+      "Content-Type"
+    ],
+    "method": [
+      "GET"
+    ],
+    "maxAgeSeconds": 3600
+  }
+]

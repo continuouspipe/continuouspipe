@@ -7,7 +7,9 @@
   "dependencies": {
     "express": "^4.13.3",
     "firebase": "^2.4.2",
+    "gcloud": "^0.33.0",
     "http2": "^3.3.2",
+    "md5": "^2.1.0",
     "merge": "^1.2.0",
     "mongodb": "^2.1.4",
     "node-uuid": "^1.4.7"

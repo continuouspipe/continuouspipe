@@ -52,16 +52,33 @@ var HttpHandlerFactory = function(LogsCollection) {
 
                 response.writeHead(200);
                 response.end(JSON.stringify(log));
-            })
+            });
+        });
+    };
+
+    var archiveLog = function(request, response) {
+        return LogsCollection.archive(request.logId, function (error, log) {
+            if (error !== null) {
+                response.writeHead(500);
+                response.end('Unable to archive the log');
+
+                return;
+            }
+
+            response.writeHead(200);
+            response.end(JSON.stringify(log));
         });
     };
 
     return function(request, response) {
-        var matches, routes = [
-            {url: /^\/v1\/logs$/, method: 'POST', handler: createLog},
-            {url: /^\/v1\/logs\/(.+)/, method: 'PATCH', handler: patchLog, parameterMapping: function(request, matches) {
+        var matches,
+            matchFirstArgumentAsLogId = function(request, matches) {
                 request.logId = matches[1];
-            }}
+            },
+            routes = [
+            {url: /^\/v1\/logs$/, method: 'POST', handler: createLog},
+            {url: /^\/v1\/logs\/(.+)/, method: 'PATCH', handler: patchLog, parameterMapping: matchFirstArgumentAsLogId},
+            {url: /^\/v1\/archive\/(.+)/, method: 'POST', handler: archiveLog, parameterMapping: matchFirstArgumentAsLogId}
         ];
 
         for (var i = 0; i < routes.length; i++) {
