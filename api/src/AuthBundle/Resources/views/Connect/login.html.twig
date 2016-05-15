@@ -8,9 +8,7 @@
 
     <div class="login-inner">
         {% if error %}
-        <div class="login-error">
-            <div class="alert-danger">{{ error }}</div>
-        </div>
+        <p class="login-error">{{ error }}</p>
         {% endif %}
 
         <a href="{{ hwi_oauth_login_url('github') }}" class="login-button"><i class="cp-icon-github"></i> Login with GitHub</a>

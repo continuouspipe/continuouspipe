@@ -22,10 +22,15 @@ html.login {
         }
 
         div.login-inner {
-            padding-top: 50px;
             text-align: center;
+            padding-top: 30px;
+
+            p.login-error {
+                color: #e23d3d;
+            }
 
             a.login-button {
+                margin-top: 20px;
                 display: inline-block;
                 border: 1px solid #fff;
                 background: #efefef;
