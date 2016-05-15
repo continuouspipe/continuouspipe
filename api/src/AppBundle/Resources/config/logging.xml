@@ -19,5 +19,14 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
         </service>
+
+        <service id="river.log_stream.archive_logs.handler.archive_flow_logs_handler" class="ContinuousPipe\River\LogStream\ArchiveLogs\Handler\ArchiveFlowLogsHandler">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="log_stream.client" />
+            <argument type="service" id="river.event_store" />
+            <argument type="service" id="event_bus"/>
+
+            <tag name="command_handler" handles="ContinuousPipe\River\LogStream\ArchiveLogs\Command\ArchiveFlowLogsCommand" />
+        </service>
     </services>
 </container>

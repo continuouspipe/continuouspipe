@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b7a34d0158063d111ecb89861bdb68b1",
-    "content-hash": "defe59aeff13557d6f6500a0a89df33d",
+    "hash": "e5c01c610205cf5e5631da3a74010b98",
+    "content-hash": "a861883b38755dfd45727751e2a5dc90",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3613,16 +3613,16 @@
         },
         {
             "name": "sroze/log-stream",
-            "version": "0.2.2",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroze/logstream-client.git",
-                "reference": "e7df033db17ca5f79b849bf63f0ec12e1bd8b40b"
+                "reference": "b35feb302123d84f9b693ff82059a84126d95cdd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/logstream-client/zipball/e7df033db17ca5f79b849bf63f0ec12e1bd8b40b",
-                "reference": "e7df033db17ca5f79b849bf63f0ec12e1bd8b40b",
+                "url": "https://api.github.com/repos/sroze/logstream-client/zipball/b35feb302123d84f9b693ff82059a84126d95cdd",
+                "reference": "b35feb302123d84f9b693ff82059a84126d95cdd",
                 "shasum": ""
             },
             "require": {
@@ -3647,7 +3647,7 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "time": "2016-01-23 22:46:00"
+            "time": "2016-05-15 21:17:30"
         },
         {
             "name": "sroze/tolerance",

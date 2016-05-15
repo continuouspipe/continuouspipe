@@ -25,7 +25,7 @@
         "nelmio/cors-bundle": "^1.4",
         "doctrine/doctrine-migrations-bundle": "^1.0",
         "raven/raven": "^0.12.1",
-        "sroze/log-stream": "~0.2.2",
+        "sroze/log-stream": "~0.3.0",
         "sroze/tolerance": "~0.2.0",
         "continuous-pipe/model": "~2.1.1",
         "continuous-pipe/security": "~1.4.1",

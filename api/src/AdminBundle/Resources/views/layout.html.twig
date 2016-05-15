@@ -14,6 +14,12 @@
     </div>
 </nav>
 <div class="container-fluid">
+    {% for type, messages in app.session.flashBag.all() %}
+        {% for message in messages %}
+        <div class="alert alert-{{ type }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+
     {% block content %}{% endblock %}
 </div>
 {% endblock %}

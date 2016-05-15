@@ -11,6 +11,9 @@
 
         <service id="admin.controller.flow" class="AdminBundle\Controller\FlowController">
             <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="command_bus"/>
+            <argument type="service" id="router" />
+            <argument type="service" id="session" />
         </service>
 
         <service id="admin.controller.tide" class="AdminBundle\Controller\TideController">
