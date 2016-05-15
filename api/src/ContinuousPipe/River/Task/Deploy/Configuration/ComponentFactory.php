@@ -61,10 +61,14 @@ class ComponentFactory
      *
      * @param array $configuration
      *
-     * @return Component\DeploymentStrategy
+     * @return Component\DeploymentStrategy|null
      */
     private function getDeploymentStrategy(array $configuration)
     {
+        if (!array_key_exists('deployment_strategy', $configuration)) {
+            return null;
+        }
+
         $jsonEncoded = json_encode($configuration['deployment_strategy']);
 
         return $this->serializer->deserialize($jsonEncoded, Component\DeploymentStrategy::class, 'json');
