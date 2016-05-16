@@ -111,6 +111,10 @@ class WebHookHandler
      */
     private function handleStatusEvent(StatusEvent $event)
     {
+        if ($event->getContext() == GitHubCodeStatusUpdater::GITHUB_CONTEXT) {
+            return;
+        }
+
         $codeReference = $this->codeReferenceResolver->fromStatusEvent($event);
         $tides = $this->tideViewRepository->findByCodeReference($codeReference);
 
