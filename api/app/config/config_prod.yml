@@ -28,7 +28,4 @@ monolog:
             type:  error_log
             level: debug
         console:
-            type:    group
-            members: [sentry, console_display]
-        console_display:
             type:  console
