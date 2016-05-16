@@ -25,10 +25,16 @@ class RawOutputHandler implements OutputHandler
      */
     public function handle($output)
     {
+        $rawOutput = $output;
+
         if (is_array($output)) {
             if (array_key_exists('error', $output)) {
                 if (!is_string($output['error'])) {
-                    $output['error'] = 'Stringified error: '.print_r($output, true);
+                    $this->logger->warning('Unknown error output found in Docker stream', [
+                        'output' => $output,
+                    ]);
+
+                    $output['error'] = print_r($output, true);
                 }
 
                 throw new DockerException($output['error']);
@@ -41,7 +47,7 @@ class RawOutputHandler implements OutputHandler
 
         if (null !== $output && !is_string($output)) {
             $this->logger->warning('Unknown output found in Docker stream', [
-                'output' => $output,
+                'output' => $rawOutput,
             ]);
 
             return '';
