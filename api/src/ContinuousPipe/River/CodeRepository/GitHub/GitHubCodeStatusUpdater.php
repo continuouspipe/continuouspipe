@@ -15,6 +15,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     const STATE_SUCCESS = 'success';
     const STATE_PENDING = 'pending';
     const STATE_FAILURE = 'failure';
+    const GITHUB_CONTEXT = 'continuous-pipe-river';
 
     /**
      * @var ClientFactory
@@ -95,7 +96,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
                 $tideContext->getCodeReference()->getCommitSha(),
                 [
                     'state' => $state,
-                    'context' => 'continuous-pipe-river',
+                    'context' => self::GITHUB_CONTEXT,
                     'target_url' => $this->generateTideUrl($tideContext),
                 ]
             );
