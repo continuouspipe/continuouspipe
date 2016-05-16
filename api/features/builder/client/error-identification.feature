@@ -31,7 +31,7 @@ Feature:
     Then the identified error should be a daemon network error
 
   Scenario: Daemon network connection issues
-    When the Docker daemon returns the error "Failed even after retries: Head https://dseasb33srnrn.cloudfront.net/registry-v2/docker/registry/v2/blobs/sha256/5c/5c1d75783f7f66ae3006b86d2a3868a482699942c9e4b8951c3c3fc282ec5490/data?Expires=1462800791&Signature=LK72D8I7GtxTxD3HsZ5tOiCdGYCq5aypMaDqBLAFmgtP94UOQcQN5D9TBTAFepffJ4gAjEu3Kd-VqkavCbic274gg95D9irsbYgCzqEdmXvhNhPh6F3OP8fJ-WrQ0uCFQ~GKHSDbjcckUM0W68UsBmYSakQlPDQA--cN8GBOq3U_&Key-Pair-Id=APKAJECH5M7VWIS5YZ6Q: net/http: TLS handshake timeout"
+    When the Docker daemon returns the error "Head https://dseasb33srnrn.cloudfront.net/registry-v2/docker/registry/v2/blobs/sha256/5c/5c1d75783f7f66ae3006b86d2a3868a482699942c9e4b8951c3c3fc282ec5490/data?Expires=1462800791&Signature=LK72D8I7GtxTxD3HsZ5tOiCdGYCq5aypMaDqBLAFmgtP94UOQcQN5D9TBTAFepffJ4gAjEu3Kd-VqkavCbic274gg95D9irsbYgCzqEdmXvhNhPh6F3OP8fJ-WrQ0uCFQ~GKHSDbjcckUM0W68UsBmYSakQlPDQA--cN8GBOq3U_&Key-Pair-Id=APKAJECH5M7VWIS5YZ6Q: net/http: TLS handshake timeout"
     Then the identified error should be a daemon network error
 
   Scenario: Daemon internal error
@@ -41,3 +41,7 @@ Feature:
   Scenario: Daemon internal error
     When the Docker daemon returns the error "Received unexpected HTTP status: 500 INTERNAL SERVER ERROR"
     Then the identified error should be a daemon error
+
+  Scenario: Push timeout
+    When the Docker daemon returns the error "Head https://quay.io/v2/sroze/ft/blobs/sha256:c4d7cdda3413170869ccb4c6803b666efd97cd83f609813291df37cd93a153f1: Get https://quay.io/v2/auth?account=sroze&scope=repository%3Asroze%2Fft%3Apush%2Cpull&service=quay.io: net/http: request canceled (Client.Timeout exceeded while awaiting headers)"
+    Then the identified error should be a daemon network error

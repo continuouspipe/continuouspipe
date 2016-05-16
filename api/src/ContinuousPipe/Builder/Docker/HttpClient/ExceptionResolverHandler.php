@@ -18,8 +18,9 @@ class ExceptionResolverHandler implements OutputHandler
      * @var array
      */
     private $matchRules = [
-        '/^Head ([a-z0-9:\/\.-]+): EOF$/' => DaemonNetworkException::class,
-        '/^Head ([a-z0-9:\/\.-]+): ([a-z0-9\ \/:\.]+): i\/o timeout$/' => DaemonNetworkException::class,
+        '/^Head ([a-z0-9:\/\.\:-]+): EOF$/' => DaemonNetworkException::class,
+        '/^Head ([a-z0-9:\/\.\:-]+): ([A-Za-z0-9\ \/:\.\?\&\%\=]+): i\/o timeout$/' => DaemonNetworkException::class,
+        '/^Head ([a-z0-9:\/\.\:-]+): ([A-Za-z0-9\ \/:\.\?\&\%\=]+): net\/http: request canceled \(Client\.Timeout exceeded while awaiting headers\)$/' => DaemonNetworkException::class,
         '/^use of closed network connection$/' => DaemonNetworkException::class,
         '/^push (or pull )?([^ ]+) is already in progress$/' => PushAlreadyInProgress::class,
         '/net\/http: TLS handshake timeout$/' => DaemonNetworkException::class,
