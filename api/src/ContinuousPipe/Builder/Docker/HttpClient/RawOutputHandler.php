@@ -3,9 +3,23 @@
 namespace ContinuousPipe\Builder\Docker\HttpClient;
 
 use ContinuousPipe\Builder\Docker\DockerException;
+use Psr\Log\LoggerInterface;
 
 class RawOutputHandler implements OutputHandler
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -26,7 +40,11 @@ class RawOutputHandler implements OutputHandler
         }
 
         if (null !== $output && !is_string($output)) {
-            $output = 'Unknown ('.gettype($output).')';
+            $this->logger->warning('Unknown output found in Docker stream', [
+                'output' => $output,
+            ]);
+
+            return '';
         }
 
         return $output;

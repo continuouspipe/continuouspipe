@@ -3,6 +3,7 @@
 namespace Integration;
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Builder\Docker\HttpClient\OutputHandler;
 use ContinuousPipe\Builder\Docker\HttpClient\RawOutputHandler;
 use Docker\Container;
 use Docker\Docker;
@@ -14,13 +15,19 @@ class DockerContext implements Context
      * @var Docker
      */
     private $docker;
+    /**
+     * @var OutputHandler
+     */
+    private $outputHandler;
 
     /**
      * @param Docker $docker
+     * @param OutputHandler $outputHandler
      */
-    public function __construct(Docker $docker)
+    public function __construct(Docker $docker, OutputHandler $outputHandler)
     {
         $this->docker = $docker;
+        $this->outputHandler = $outputHandler;
     }
 
     /**
@@ -56,9 +63,8 @@ class DockerContext implements Context
         ]);
 
         $output = '';
-        $outputHandler = new RawOutputHandler();
-        $successful = $containerManager->run($container, function($raw) use (&$output, $outputHandler) {
-            $output .= $outputHandler->handle($raw);
+        $successful = $containerManager->run($container, function($raw) use (&$output) {
+            $output .= $this->outputHandler->handle($raw);
         });
 
         if (!$successful) {

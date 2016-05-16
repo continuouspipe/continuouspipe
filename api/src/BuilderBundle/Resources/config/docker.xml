@@ -17,7 +17,9 @@
             <argument type="service" id="docker.client"/>
         </service>
 
-        <service id="builder.docker.client.output_handler" class="ContinuousPipe\Builder\Docker\HttpClient\RawOutputHandler" />
+        <service id="builder.docker.client.output_handler" class="ContinuousPipe\Builder\Docker\HttpClient\RawOutputHandler">
+            <argument type="service" id="logger" />
+        </service>
         <service id="builder.docker.client.output_handler.exception_resolver"
                  class="ContinuousPipe\Builder\Docker\HttpClient\ExceptionResolverHandler"
                  decorates="builder.docker.client.output_handler">

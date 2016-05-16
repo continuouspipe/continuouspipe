@@ -78,7 +78,7 @@ class RetryClientDecorator implements Client
             }
 
             $logger->child(new Text(sprintf(
-                'Detected infrastructure error, retrying in %s seconds',
+                "\n".'Detected a Docker error, retrying in %s seconds'."\n",
                 $this->retryInterval
             )));
 
