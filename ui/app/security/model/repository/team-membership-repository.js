@@ -12,7 +12,7 @@ angular.module('continuousPipeRiver')
         });
 
         this.add = function(team, user, permissions) {
-            return this.resource.add({team: team.slug, username: user.username}, permissions).$promise
+            return this.resource.add({team: team.slug, username: user.username}, {permissions: permissions}).$promise
         };
 
         this.remove = function(team, user) {
