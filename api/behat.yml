@@ -34,6 +34,7 @@ default:
                     - @repository_river.code_repository_repository
                     - @security.authenticator.client
                     - @river.pipe_client.fake
+                    - @river.pipe_client
                     - @authenticator.team_repository
                 - Task\BuildContext:
                     - @river.event_store
@@ -84,6 +85,7 @@ smoke:
                     - @repository_river.code_repository_repository
                     - @security.authenticator.client
                     - @river.pipe_client.fake
+                    - @river.pipe_client
                     - @authenticator.team_repository
                 - TideContext:
                     - @command_bus
