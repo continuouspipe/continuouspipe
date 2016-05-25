@@ -20,6 +20,13 @@
                    ng-disabled="isLoading">
             Cancel
         </md-button>
+
+        <md-button class="md-raised md-warn"
+                   ng-show="['failure'].indexOf(summary.status) != -1"
+                   ng-click="retry()"
+                   ng-disabled="isLoading">
+            Retry
+        </md-button>
     </div>
 </md-toolbar>
 <md-content flex id="content" class="card-grid">

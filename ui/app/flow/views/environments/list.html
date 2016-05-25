@@ -14,9 +14,15 @@
                     <md-icon class="md-avatar-icon"><i class="material-icons">transform</i></md-icon>
                 </md-card-avatar>
                 <md-card-header-text>
-                    <span class="md-title">{{ environment.name }}</span>
+                    <span class="md-title">{{ environment.identifier }}</span>
                     <span class="md-subhead">{{ environment.components.length }} components</span>
                 </md-card-header-text>
+
+                <md-button class="md-raised md-warn"
+                           ng-click="delete(environment)"
+                           ng-disabled="isLoading">
+                    Delete
+                </md-button>
             </md-card-header>
 
             <table class="table">
