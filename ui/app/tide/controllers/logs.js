@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TideLogsController', function(TideRepository, TideSummaryRepository, $scope, $state, tide, summary) {
+    .controller('TideLogsController', function(TideRepository, TideSummaryRepository, $scope, $state, flow, tide, summary) {
         $scope.tide = tide;
         $scope.summary = summary;
 
@@ -26,6 +26,25 @@ angular.module('continuousPipeRiver')
             $scope.isLoading = true;
             TideRepository.cancel(tide).then(function() {}, function(error) {
                 var message = ((error || {}).data || {}).message || "An unknown error occured while cancelling the tide";
+                swal("Error !", message, "error");
+            })['finally'](function() {
+                $scope.isLoading = false;
+            });
+        };
+
+        $scope.retry = function() {
+            $scope.isLoading = true;
+
+            TideRepository.create(flow, {
+                branch: tide.code_reference.branch,
+                sha1: tide.code_reference.sha1
+            }).then(function(created) {
+                $state.go('tide.logs', {
+                    uuid: flow.uuid,
+                    tideUuid: created.uuid
+                });
+            }, function(error) {
+                var message = ((error || {}).data || {}).message || "An unknown error occured while creating the tide";
                 swal("Error !", message, "error");
             })['finally'](function() {
                 $scope.isLoading = false;
