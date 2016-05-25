@@ -20,7 +20,7 @@ angular.module('continuousPipeRiver')
                 confirmButtonText: "Yes, remove it!",
                 closeOnConfirm: false
             }, function() {
-                EnvironmentRepository.remove(flow, environment).then(function () {
+                EnvironmentRepository.delete(flow, environment).then(function () {
                     loadEnvironments();
                 }, function (error) {
                     var message = ((error || {}).data || {}).message || "An unknown error occured while deleting the environment";

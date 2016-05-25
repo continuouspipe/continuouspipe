@@ -3,7 +3,7 @@
 angular.module('continuousPipeRiver')
     .service('EnvironmentRepository', function($resource, RIVER_API_URL) {
         this.resource = $resource(RIVER_API_URL+'/flows/:uuid/environments/:name', {}, {
-            remove: {
+            delete: {
                 method: 'DELETE'
             }
         });
@@ -13,7 +13,7 @@ angular.module('continuousPipeRiver')
         };
 
         this.delete = function(flow, environment) {
-            return this.resource.remove({uuid: flow.uuid}, {
+            return this.resource.delete({uuid: flow.uuid}, {
                 identifier: environment.identifier,
                 cluster: environment.cluster
             }).$promise;
