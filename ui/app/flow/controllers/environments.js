@@ -6,11 +6,7 @@ angular.module('continuousPipeRiver')
 
         var loadEnvironments = function() {
             $remoteResource.load('environments', EnvironmentRepository.findByFlow(flow)).then(function (environments) {
-                $scope.environments = environments.map(function (environment) {
-                    environment.name = environment.name.substr(flow.uuid.length + 1);
-
-                    return environment;
-                });
+                $scope.environments = environments;
             });
         };
 
