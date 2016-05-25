@@ -5,6 +5,8 @@ namespace ContinuousPipe\River\Flow;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\ClusterNotFound;
+use ContinuousPipe\River\Environment\DeployedEnvironment;
+use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
 use ContinuousPipe\River\Pipe\ClusterIdentifierNotFound;
 use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
 use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
@@ -12,7 +14,10 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\Security\Authenticator\UserContext;
 
-class EnvironmentClient
+/**
+ * @deprecated To be moved under `ContinuousPipe\River\Environment` namespace.
+ */
+class EnvironmentClient implements DeployedEnvironmentRepository
 {
     /**
      * @var Client
@@ -56,11 +61,7 @@ class EnvironmentClient
     }
 
     /**
-     * Get environments for the given flow.
-     *
-     * @param Flow $flow
-     *
-     * @return Environment[]
+     * {@inheritdoc}
      */
     public function findByFlow(Flow $flow)
     {
@@ -76,10 +77,34 @@ class EnvironmentClient
                 $clusterEnvironments = [];
             }
 
-            $environments = array_merge($environments, $clusterEnvironments);
+            // Convert Pipe's `Environment` objects to `DeployedEnvironment`s
+            $deployedEnvironments = array_map(function (Environment $environment) use ($clusterIdentifier) {
+                return new DeployedEnvironment(
+                    $environment->getIdentifier(),
+                    $clusterIdentifier,
+                    $environment->getComponents()
+                );
+            }, $clusterEnvironments);
+
+            $environments = array_merge($environments, $deployedEnvironments);
         }
 
         return $this->uniqueEnvironments($environments);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(Flow $flow, DeployedEnvironment $environment)
+    {
+        $this->pipeClient->deleteEnvironment(
+            new Client\DeploymentRequest\Target(
+                $environment->getIdentifier(),
+                $environment->getCluster()
+            ),
+            $flow->getContext()->getTeam(),
+            $this->userContext->getCurrent()
+        );
     }
 
     /**
@@ -142,9 +167,9 @@ class EnvironmentClient
     }
 
     /**
-     * @param Environment[] $environments
+     * @param DeployedEnvironment[] $environments
      *
-     * @return Environment[]
+     * @return DeployedEnvironment[]
      */
     private function uniqueEnvironments(array $environments)
     {

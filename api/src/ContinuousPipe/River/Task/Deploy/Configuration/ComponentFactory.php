@@ -66,7 +66,7 @@ class ComponentFactory
     private function getDeploymentStrategy(array $configuration)
     {
         if (!array_key_exists('deployment_strategy', $configuration)) {
-            return null;
+            return;
         }
 
         $jsonEncoded = json_encode($configuration['deployment_strategy']);

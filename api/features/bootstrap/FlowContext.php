@@ -5,7 +5,9 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
+use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
+use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
@@ -68,6 +70,11 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     private $pipeClient;
 
     /**
+     * @var TraceableClient
+     */
+    private $traceablePipeClient;
+
+    /**
      * @var Response|null
      */
     private $response;
@@ -87,9 +94,10 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @param InMemoryCodeRepositoryRepository $codeRepositoryRepository
      * @param InMemoryAuthenticatorClient $authenticatorClient
      * @param FakeClient $pipeClient
+     * @param TraceableClient $traceablePipeClient
      * @param TeamRepository $teamRepository
      */
-    public function __construct(Kernel $kernel, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient, FakeClient $pipeClient, TeamRepository $teamRepository)
+    public function __construct(Kernel $kernel, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient, FakeClient $pipeClient, TraceableClient $traceablePipeClient, TeamRepository $teamRepository)
     {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
@@ -97,6 +105,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         $this->authenticatorClient = $authenticatorClient;
         $this->pipeClient = $pipeClient;
         $this->teamRepository = $teamRepository;
+        $this->traceablePipeClient = $traceablePipeClient;
     }
 
     /**
@@ -350,13 +359,43 @@ EOF;
     }
 
     /**
+     * @When I delete the environment named :name deployed on :cluster of the flow :uuid
+     */
+    public function iDeleteTheEnvironmentNamedOfTheFlow($name, $cluster, $uuid)
+    {
+        $url = sprintf('/flows/%s/environments', $uuid, $name);
+        $this->response = $this->kernel->handle(Request::create(
+            $url, 'DELETE', [], [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+                'identifier' => $name,
+                'cluster' => $cluster,
+            ])
+        ));
+
+        $this->assertResponseCode(204);
+    }
+
+    /**
+     * @Then the environment :name should have been deleted
+     */
+    public function theEnvironmentShouldHaveBeenDeleted($name)
+    {
+        $deletedEnvironments = array_map(function(Target $target) {
+            return $target->getEnvironmentName();
+        }, $this->traceablePipeClient->getDeletions());
+
+        if (!in_array($name, $deletedEnvironments)) {
+            throw new \RuntimeException(sprintf('Environment not found in (%s)', implode(', ', $deletedEnvironments)));
+        }
+    }
+
+    /**
      * @Then I should see the environment :name
      */
     public function iShouldSeeTheEnvironment($name)
     {
         $environments = json_decode($this->response->getContent(), true);
         $matchingEnvironments = array_filter($environments, function(array $environment) use ($name) {
-            return $environment['name'] == $name;
+            return $environment['identifier'] == $name;
         });
 
         if (0 == count($matchingEnvironments)) {
@@ -393,12 +432,12 @@ EOF;
     {
         $environments = json_decode($this->response->getContent(), true);
         $matchingEnvironments = array_filter($environments, function(array $environment) use ($name) {
-            return $environment['name'] == $name;
+            return $environment['identifier'] == $name;
         });
 
         if (0 != count($matchingEnvironments)) {
             throw new \RuntimeException(sprintf(
-                'Environment named "%s" found',
+                'Environment "%s" found',
                 $name
             ));
         }

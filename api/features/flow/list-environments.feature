@@ -27,3 +27,10 @@ Feature:
     When I request the list of deployed environments of the flow "00000000-0000-0000-0000-000000000000"
     Then I should see the environment "00000000-0000-0000-0000-000000000000-bar"
     And I should see the environment "my-custom"
+
+  Scenario: Delete an environment
+    Given I have a deployed environment named "staging" and labelled "flow=00000000-0000-0000-0000-000000000000"
+    When I delete the environment named "staging" deployed on "fake/foo" of the flow "00000000-0000-0000-0000-000000000000"
+    And I request the list of deployed environments of the flow "00000000-0000-0000-0000-000000000000"
+    Then I should not see the environment "staging"
+    And the environment "staging" should have been deleted
