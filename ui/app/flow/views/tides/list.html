@@ -21,7 +21,7 @@
             </thead>
             <tbody>
             <tr ng-repeat="tide in tides" ui-sref="tide.logs({tideUuid: tide.uuid})" class="status-container" ng-class="tide.status | tideStatusClass">
-                <td><a ui-sref="tide.logs({tideUuid: tide.uuid})">{{ tide.uuid }}</a></td>
+                <td><a ui-sref="tide.logs({tideUuid: tide.uuid})" class="hidden-link">{{ tide.uuid }}</a></td>
                 <td>{{ tide.code_reference.branch }} <small>({{ tide.code_reference.sha1 }})</small></td>
                 <td>{{ tide.creation_date | timeAgo }}</td>
                 <td>{{ tide.status }}</td>
