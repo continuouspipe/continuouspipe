@@ -119,7 +119,7 @@ class TideFactory
                 $e->getMessage()
             )));
 
-            $extraEvents[] = new TideFailed($tideUuid);
+            $extraEvents[] = new TideFailed($tideUuid, $e->getMessage());
         }
 
         $tideContext = TideContext::createTide(

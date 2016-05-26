@@ -2,8 +2,9 @@
 
 namespace ContinuousPipe\River\Tests\CodeRepository\Status;
 
-use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
+use ContinuousPipe\River\Tide\Status\CodeStatusUpdater;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\Tide\Status\Status;
 use Rhumsaa\Uuid\Uuid;
 
 class FakeCodeStatusUpdater implements CodeStatusUpdater
@@ -15,7 +16,7 @@ class FakeCodeStatusUpdater implements CodeStatusUpdater
      */
     public function success(Tide $tide)
     {
-        $this->statuses[(string) $tide->getUuid()] = 'success';
+        $this->update($tide, new Status('success'));
     }
 
     /**
@@ -23,7 +24,7 @@ class FakeCodeStatusUpdater implements CodeStatusUpdater
      */
     public function pending(Tide $tide)
     {
-        $this->statuses[(string) $tide->getUuid()] = 'pending';
+        $this->update($tide, new Status('pending'));
     }
 
     /**
@@ -31,13 +32,13 @@ class FakeCodeStatusUpdater implements CodeStatusUpdater
      */
     public function failure(Tide $tide)
     {
-        $this->statuses[(string) $tide->getUuid()] = 'failure';
+        $this->update($tide, new Status('failure'));
     }
 
     /**
      * @param Uuid $uuid
      *
-     * @return string
+     * @return Status
      */
     public function getStatusForTideUuid(Uuid $uuid)
     {
@@ -52,5 +53,13 @@ class FakeCodeStatusUpdater implements CodeStatusUpdater
     public function hasStatusForTideUuid(Uuid $uuid)
     {
         return array_key_exists((string) $uuid, $this->statuses);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(Tide $tide, Status $status)
+    {
+        $this->statuses[(string) $tide->getUuid()] = $status;
     }
 }

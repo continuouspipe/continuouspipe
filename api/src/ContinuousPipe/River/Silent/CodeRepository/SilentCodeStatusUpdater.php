@@ -2,20 +2,20 @@
 
 namespace ContinuousPipe\River\Silent\CodeRepository;
 
-use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\Tide\Status\Status;
 
-class SilentCodeStatusUpdater implements CodeStatusUpdater
+class SilentCodeStatusUpdater implements Tide\Status\CodeStatusUpdater
 {
     /**
-     * @var CodeStatusUpdater
+     * @var \ContinuousPipe\River\Tide\Status\CodeStatusUpdater
      */
     private $decoratedUpdater;
 
     /**
-     * @param CodeStatusUpdater $decoratedUpdater
+     * @param \ContinuousPipe\River\Tide\Status\CodeStatusUpdater $decoratedUpdater
      */
-    public function __construct(CodeStatusUpdater $decoratedUpdater)
+    public function __construct(Tide\Status\CodeStatusUpdater $decoratedUpdater)
     {
         $this->decoratedUpdater = $decoratedUpdater;
     }
@@ -54,6 +54,18 @@ class SilentCodeStatusUpdater implements CodeStatusUpdater
         }
 
         $this->decoratedUpdater->failure($tide);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(Tide $tide, Status $status)
+    {
+        if ($this->isSilent($tide)) {
+            return;
+        }
+
+        $this->decoratedUpdater->update($tide, $status);
     }
 
     /**

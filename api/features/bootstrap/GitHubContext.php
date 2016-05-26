@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\Event\TideCreated;
@@ -112,11 +113,31 @@ class GitHubContext implements Context
             $this->tideContext->getCurrentTideUuid()
         );
 
-        if ($status !== $foundStatus) {
+        if ($status !== $foundStatus->getState()) {
             throw new \RuntimeException(sprintf(
                 'Found status "%s" instead of expected "%s"',
-                $foundStatus,
+                $foundStatus->getState(),
                 $status
+            ));
+        }
+    }
+
+    /**
+     * @Then the GitHub commit status description should be:
+     */
+    public function theGithubCommitStatusDescriptionShouldBeTaskFailed(PyStringNode $string)
+    {
+        $foundStatus = $this->fakeCodeStatusUpdater->getStatusForTideUuid(
+            $this->tideContext->getCurrentTideUuid()
+        );
+
+        $description = $string->getRaw();
+
+        if ($description !== $foundStatus->getDescription()) {
+            throw new \RuntimeException(sprintf(
+                'Found description "%s" instead of expected "%s"',
+                $foundStatus->getDescription(),
+                $description
             ));
         }
     }

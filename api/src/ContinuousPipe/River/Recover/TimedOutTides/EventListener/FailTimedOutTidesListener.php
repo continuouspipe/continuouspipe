@@ -26,6 +26,6 @@ class FailTimedOutTidesListener
      */
     public function notify(TideTimedOut $event)
     {
-        $this->eventBus->handle(new TideFailed($event->getTideUuid()));
+        $this->eventBus->handle(new TideFailed($event->getTideUuid(), 'Timed out'));
     }
 }

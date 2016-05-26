@@ -3,10 +3,11 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeRepository\CodeStatusException;
-use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
+use ContinuousPipe\River\Tide\Status\CodeStatusUpdater;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\Tide\Status\Status;
 use ContinuousPipe\River\TideContext;
 use GuzzleHttp\Exception\RequestException;
 
@@ -42,7 +43,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
      */
     public function success(Tide $tide)
     {
-        $this->updateCodeStatus($tide, self::STATE_SUCCESS);
+        $this->update($tide, new Status(Status::STATE_SUCCESS));
     }
 
     /**
@@ -50,7 +51,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
      */
     public function pending(Tide $tide)
     {
-        $this->updateCodeStatus($tide, self::STATE_PENDING);
+        $this->update($tide, new Status(Status::STATE_PENDING));
     }
 
     /**
@@ -58,18 +59,13 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
      */
     public function failure(Tide $tide)
     {
-        $this->updateCodeStatus($tide, self::STATE_FAILURE);
+        $this->update($tide, new Status(Status::STATE_FAILURE));
     }
 
     /**
-     * @param Tide   $tide
-     * @param string $state
-     *
-     * @throws CodeStatusException
-     * @throws \ContinuousPipe\River\GitHub\UserCredentialsNotFound
-     * @throws \Github\Exception\MissingArgumentException
+     * {@inheritdoc}
      */
-    private function updateCodeStatus(Tide $tide, $state)
+    public function update(Tide $tide, Status $status)
     {
         $tideContext = $tide->getContext();
 

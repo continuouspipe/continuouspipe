@@ -241,7 +241,7 @@ EOF;
      */
     public function theTideFailed()
     {
-        $this->eventBus->handle(new TideFailed($this->tideUuid));
+        $this->eventBus->handle(new TideFailed($this->tideUuid, 'TideContext reason'));
     }
 
     /**

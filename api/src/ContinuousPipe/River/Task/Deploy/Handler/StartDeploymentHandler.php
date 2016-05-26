@@ -69,7 +69,7 @@ class StartDeploymentHandler
         try {
             $deploymentRequest = $this->deploymentRequestFactory->create($tide, $taskDetails, $command->getConfiguration());
         } catch (UnresolvedEnvironmentNameException $e) {
-            $this->eventBus->handle(new TideFailed($command->getTideUuid()));
+            $this->eventBus->handle(new TideFailed($command->getTideUuid(), $e->getMessage()));
 
             $logger = $this->loggerFactory->fromId($taskDetails->getLogId());
             $logger->child(new Text($e->getMessage()));
