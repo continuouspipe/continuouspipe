@@ -27,7 +27,7 @@ class TideSpec extends ObjectBehavior
     public function it_should_not_be_running_if_failed()
     {
         $this->apply(new TideStarted(Uuid::uuid1()));
-        $this->apply(new TideFailed(Uuid::uuid1()));
+        $this->apply(new TideFailed(Uuid::uuid1(), 'Dunno why'));
         $this->shouldNotBeRunning();
     }
 

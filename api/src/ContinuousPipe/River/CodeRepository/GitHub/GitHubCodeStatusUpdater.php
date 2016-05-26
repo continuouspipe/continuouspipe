@@ -3,18 +3,16 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeRepository\CodeStatusException;
-use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
+use ContinuousPipe\River\Tide\Status\CodeStatusUpdater;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\Tide\Status\Status;
 use ContinuousPipe\River\TideContext;
 use GuzzleHttp\Exception\RequestException;
 
 class GitHubCodeStatusUpdater implements CodeStatusUpdater
 {
-    const STATE_SUCCESS = 'success';
-    const STATE_PENDING = 'pending';
-    const STATE_FAILURE = 'failure';
     const GITHUB_CONTEXT = 'continuous-pipe-river';
 
     /**
@@ -40,36 +38,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     /**
      * {@inheritdoc}
      */
-    public function success(Tide $tide)
-    {
-        $this->updateCodeStatus($tide, self::STATE_SUCCESS);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function pending(Tide $tide)
-    {
-        $this->updateCodeStatus($tide, self::STATE_PENDING);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function failure(Tide $tide)
-    {
-        $this->updateCodeStatus($tide, self::STATE_FAILURE);
-    }
-
-    /**
-     * @param Tide   $tide
-     * @param string $state
-     *
-     * @throws CodeStatusException
-     * @throws \ContinuousPipe\River\GitHub\UserCredentialsNotFound
-     * @throws \Github\Exception\MissingArgumentException
-     */
-    private function updateCodeStatus(Tide $tide, $state)
+    public function update(Tide $tide, Status $status)
     {
         $tideContext = $tide->getContext();
 
@@ -90,15 +59,21 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
 
         try {
             $gitHubRepository = $repository->getGitHubRepository();
+            $statusParameters = [
+                'state' => $status->getState(),
+                'context' => self::GITHUB_CONTEXT,
+                'target_url' => $this->generateTideUrl($tideContext),
+            ];
+
+            if (null !== $status->getDescription()) {
+                $statusParameters['description'] = $status->getDescription();
+            }
+
             $client->repository()->statuses()->create(
                 $gitHubRepository->getOwner()->getLogin(),
                 $gitHubRepository->getName(),
                 $tideContext->getCodeReference()->getCommitSha(),
-                [
-                    'state' => $state,
-                    'context' => self::GITHUB_CONTEXT,
-                    'target_url' => $this->generateTideUrl($tideContext),
-                ]
+                $statusParameters
             );
         } catch (RequestException $e) {
             throw new CodeStatusException('Unable to update code status', $e->getCode(), $e);

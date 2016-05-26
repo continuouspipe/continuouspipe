@@ -174,8 +174,11 @@ class Tide
      */
     private function handleTasks(TideEvent $event)
     {
-        if ($this->tasks->hasFailed()) {
-            $this->newEvents[] = new TideFailed($event->getTideUuid());
+        if (null !== ($failedTask = $this->tasks->getFailedTask())) {
+            $this->newEvents[] = new TideFailed(
+                $event->getTideUuid(),
+                sprintf('Task "%s" failed', $failedTask->getContext()->getTaskId())
+            );
         } elseif ($this->tasks->allSuccessful()) {
             $this->newEvents[] = new TideSuccessful($event->getTideUuid());
         } elseif (!$this->tasks->hasRunning() && !$event instanceof TaskFailed) {
@@ -183,7 +186,7 @@ class Tide
                 $this->nextTask();
             } catch (TaskRunnerException $e) {
                 $this->newEvents[] = new TaskFailed($event->getTideUuid(), $e->getTask()->getContext(), $e->getMessage());
-                $this->newEvents[] = new TideFailed($event->getTideUuid());
+                $this->newEvents[] = new TideFailed($event->getTideUuid(), $e->getMessage());
             }
         }
     }

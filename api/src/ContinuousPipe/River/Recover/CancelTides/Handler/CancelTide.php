@@ -28,6 +28,6 @@ class CancelTide
     public function handle(CancelTideCommand $command)
     {
         $this->eventBus->handle(new TideCancelled($command->getTideUuid()));
-        $this->eventBus->handle(new TideFailed($command->getTideUuid()));
+        $this->eventBus->handle(new TideFailed($command->getTideUuid(), 'Manually cancelled'));
     }
 }

@@ -54,15 +54,19 @@ class TaskList
     }
 
     /**
-     * Has a failed task ?
+     * Get failed task.
      *
-     * @return bool
+     * If no failed task, then returns NULL.
+     *
+     * @return Task|null
      */
-    public function hasFailed()
+    public function getFailedTask()
     {
-        return 0 < count(array_filter($this->tasks, function (Task $task) {
+        $failedTasks = array_filter($this->tasks, function (Task $task) {
             return $task->isFailed();
-        }));
+        });
+
+        return count($failedTasks) ? current($failedTasks) : null;
     }
 
     /**

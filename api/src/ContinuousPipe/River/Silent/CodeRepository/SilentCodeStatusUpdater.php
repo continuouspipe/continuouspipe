@@ -2,8 +2,9 @@
 
 namespace ContinuousPipe\River\Silent\CodeRepository;
 
-use ContinuousPipe\River\CodeRepository\CodeStatusUpdater;
+use ContinuousPipe\River\Tide\Status\CodeStatusUpdater;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\Tide\Status\Status;
 
 class SilentCodeStatusUpdater implements CodeStatusUpdater
 {
@@ -23,37 +24,13 @@ class SilentCodeStatusUpdater implements CodeStatusUpdater
     /**
      * {@inheritdoc}
      */
-    public function success(Tide $tide)
+    public function update(Tide $tide, Status $status)
     {
         if ($this->isSilent($tide)) {
             return;
         }
 
-        $this->decoratedUpdater->success($tide);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function pending(Tide $tide)
-    {
-        if ($this->isSilent($tide)) {
-            return;
-        }
-
-        $this->decoratedUpdater->pending($tide);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function failure(Tide $tide)
-    {
-        if ($this->isSilent($tide)) {
-            return;
-        }
-
-        $this->decoratedUpdater->failure($tide);
+        $this->decoratedUpdater->update($tide, $status);
     }
 
     /**

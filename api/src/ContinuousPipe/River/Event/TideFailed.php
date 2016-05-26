@@ -12,11 +12,18 @@ class TideFailed implements TideEvent
     private $tideUuid;
 
     /**
-     * @param Uuid $tideUuid
+     * @var string
      */
-    public function __construct(Uuid $tideUuid)
+    private $reason;
+
+    /**
+     * @param Uuid   $tideUuid
+     * @param string $reason
+     */
+    public function __construct(Uuid $tideUuid, $reason)
     {
         $this->tideUuid = $tideUuid;
+        $this->reason = $reason;
     }
 
     /**
@@ -25,5 +32,13 @@ class TideFailed implements TideEvent
     public function getTideUuid()
     {
         return $this->tideUuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReason()
+    {
+        return $this->reason;
     }
 }
