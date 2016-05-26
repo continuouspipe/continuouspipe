@@ -101,8 +101,13 @@ class TideStatusListener
     private function getDurationString(Tide $tide)
     {
         $view = $this->tideViewRepository->find($tide->getUuid());
-        $duration = $this->timeResolver->resolve()->getTimestamp() - $view->getStartDate()->getTimestamp();
 
-        return gmdate('i\m s\s', $duration);
+        if ($view->getStartDate() !== null) {
+            $duration = $this->timeResolver->resolve()->getTimestamp() - $view->getStartDate()->getTimestamp();
+
+            return gmdate('i\m s\s', $duration);
+        }
+
+        return '0';
     }
 }

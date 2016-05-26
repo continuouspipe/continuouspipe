@@ -13,9 +13,6 @@ use GuzzleHttp\Exception\RequestException;
 
 class GitHubCodeStatusUpdater implements CodeStatusUpdater
 {
-    const STATE_SUCCESS = 'success';
-    const STATE_PENDING = 'pending';
-    const STATE_FAILURE = 'failure';
     const GITHUB_CONTEXT = 'continuous-pipe-river';
 
     /**
@@ -36,30 +33,6 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->uiBaseUrl = $uiBaseUrl;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function success(Tide $tide)
-    {
-        $this->update($tide, new Status(Status::STATE_SUCCESS));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function pending(Tide $tide)
-    {
-        $this->update($tide, new Status(Status::STATE_PENDING));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function failure(Tide $tide)
-    {
-        $this->update($tide, new Status(Status::STATE_FAILURE));
     }
 
     /**
@@ -86,15 +59,21 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
 
         try {
             $gitHubRepository = $repository->getGitHubRepository();
+            $statusParameters = [
+                'state' => $status->getState(),
+                'context' => self::GITHUB_CONTEXT,
+                'target_url' => $this->generateTideUrl($tideContext),
+            ];
+
+            if (null !== $status->getDescription()) {
+                $statusParameters['description'] = $status->getDescription();
+            }
+
             $client->repository()->statuses()->create(
                 $gitHubRepository->getOwner()->getLogin(),
                 $gitHubRepository->getName(),
                 $tideContext->getCodeReference()->getCommitSha(),
-                [
-                    'state' => $state,
-                    'context' => self::GITHUB_CONTEXT,
-                    'target_url' => $this->generateTideUrl($tideContext),
-                ]
+                $statusParameters
             );
         } catch (RequestException $e) {
             throw new CodeStatusException('Unable to update code status', $e->getCode(), $e);

@@ -12,30 +12,6 @@ class FakeCodeStatusUpdater implements CodeStatusUpdater
     private $statuses = [];
 
     /**
-     * {@inheritdoc}
-     */
-    public function success(Tide $tide)
-    {
-        $this->update($tide, new Status('success'));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function pending(Tide $tide)
-    {
-        $this->update($tide, new Status('pending'));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function failure(Tide $tide)
-    {
-        $this->update($tide, new Status('failure'));
-    }
-
-    /**
      * @param Uuid $uuid
      *
      * @return Status
