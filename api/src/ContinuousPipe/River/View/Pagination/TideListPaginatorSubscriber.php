@@ -34,12 +34,16 @@ class TideListPaginatorSubscriber implements EventSubscriberInterface
         }
 
         if ($list instanceof DoctrineTideList) {
+            $countBuilder = clone $list->getQueryBuilder();
+            $count = (int) $countBuilder->select('COUNT(dto)')->getQuery()->getSingleScalarResult();
+
             $list
                 ->getQueryBuilder()
                 ->setFirstResult($event->getOffset())
                 ->setMaxResults($event->getLimit())
             ;
         } else if ($list instanceof InMemoryTideList) {
+            $count = count($list->toArray());
             $list = new InMemoryTideList(array_slice(
                 $list->toArray(),
                 $event->getOffset(),
@@ -48,7 +52,7 @@ class TideListPaginatorSubscriber implements EventSubscriberInterface
         }
 
         $tides = $list->toArray();
-        $event->count = count($tides);
+        $event->count = $count;
         $event->items = $tides;
 
         $event->stopPropagation();

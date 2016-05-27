@@ -34,7 +34,7 @@
         </tr>
     </thead>
     <tbody>
-    {% for tide in tides %}
+    {% for tide in pagination %}
         <tr>
             <td><a href="{{ path('admin_tide', {'team': team.slug, 'flow': flow.uuid, 'uuid': tide.uuid}) }}">{{ tide.uuid }}</a></td>
             <td>{{ tide.codeReference.branch }} ({{ tide.codeReference.commitSha }})</td>
@@ -44,4 +44,8 @@
     {% endfor %}
     </tbody>
 </table>
+
+<div class="navigation">
+    {{ knp_pagination_render(pagination) }}
+</div>
 {% endblock %}

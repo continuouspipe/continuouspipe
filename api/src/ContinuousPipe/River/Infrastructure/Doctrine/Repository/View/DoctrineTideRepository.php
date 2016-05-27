@@ -45,11 +45,10 @@ class DoctrineTideRepository implements TideRepository
     {
         $queryBuilder = $this
             ->getEntityRepository()
-            ->createQueryBuilder('tide')
-            ->where([
-                'flow' => (string) $uuid,
-            ])
-            ->orderBy('tide.creationDate', 'DESC')
+            ->createQueryBuilder('dto')
+            ->where('dto.flow = :flowUuid')
+            ->setParameter('flowUuid', (string) $uuid)
+            ->orderBy('dto.tide.creationDate', 'DESC')
         ;
 
         return new DoctrineTideList($queryBuilder, function (TideDto $dto) {

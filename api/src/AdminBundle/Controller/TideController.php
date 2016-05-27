@@ -12,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route(service="admin.controller.tide")
@@ -39,10 +40,10 @@ class TideController
     private $logStreamUrl;
 
     /**
-     * @param TideRepository $tideRepository
-     * @param EventStore $eventStore
+     * @param TideRepository     $tideRepository
+     * @param EventStore         $eventStore
      * @param PaginatorInterface $paginator
-     * @param string $logStreamUrl
+     * @param string             $logStreamUrl
      */
     public function __construct(TideRepository $tideRepository, EventStore $eventStore, PaginatorInterface $paginator, $logStreamUrl)
     {
@@ -58,12 +59,16 @@ class TideController
      * @ParamConverter("flow", converter="flow", options={"identifier"="flow"})
      * @Template
      */
-    public function listAction(Team $team, Flow $flow)
+    public function listAction(Team $team, Flow $flow, Request $request)
     {
         return [
             'team' => $team,
             'flow' => $flow,
-            'tides' => $this->tideRepository->findByFlowUuid($flow->getUuid())->toArray(),
+            'pagination' => $this->paginator->paginate(
+                $this->tideRepository->findByFlowUuid($flow->getUuid()),
+                $request->query->getInt('page', 1),
+                50
+            ),
         ];
     }
 
