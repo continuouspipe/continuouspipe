@@ -23,6 +23,9 @@ tasks:
                 rabbitmq:
                     locked: true
 
+                blackfire:
+                    locked: true
+
                 api:
                     specification:
                         accessibility:
