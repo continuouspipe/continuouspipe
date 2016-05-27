@@ -149,9 +149,26 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
-     * @When I send a flow creation request with the following parameters:
+     * @When I send a flow creation request for the team :team with the following parameters:
      */
-    public function iSendAFlowCreationRequestWithTheFollowingParameters(TableNode $parameters)
+    public function iSendAFlowCreationRequestForTheTeamWithTheFollowingParameters($team, TableNode $parameters)
+    {
+        $creationRequest = json_encode($parameters->getHash()[0]);
+
+        $this->response = $this->kernel->handle(Request::create('/teams/'.$team.'/flows', 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], $creationRequest));
+
+        $flowView = json_decode($this->response->getContent(), true);
+        if (array_key_exists('uuid', $flowView)) {
+            $this->flowUuid = $flowView['uuid'];
+        }
+    }
+
+    /**
+     * @When I send a deprecated flow creation request with the following parameters:
+     */
+    public function iSendADeprecatedFlowCreationRequestWithTheFollowingParameters(TableNode $parameters)
     {
         $creationRequest = json_encode($parameters->getHash()[0]);
 

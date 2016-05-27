@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository\View;
 
-use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideList;
 use Doctrine\ORM\QueryBuilder;
 
@@ -20,7 +19,7 @@ class DoctrineTideList implements TideList
 
     /**
      * @param QueryBuilder $queryBuilder
-     * @param callable $transformer
+     * @param callable     $transformer
      */
     public function __construct(QueryBuilder $queryBuilder, callable $transformer)
     {

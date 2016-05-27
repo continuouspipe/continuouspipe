@@ -7,7 +7,6 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\View\TideDto;
 use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository;
 use ContinuousPipe\River\Repository\TideNotFound;
-use ContinuousPipe\River\Tests\View\InMemoryTideList;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use Doctrine\ORM\EntityManager;
