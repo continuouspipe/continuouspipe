@@ -10,8 +10,9 @@ use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use SimpleBus\Message\Bus\MessageBus;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -129,6 +130,7 @@ class FlowController
      *
      * @Route("/flows/{uuid}", methods={"GET"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', flow)")
      * @View
      */
     public function getAction(Flow $flow)
@@ -142,6 +144,7 @@ class FlowController
      * @Route("/flows/{uuid}", methods={"PUT"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @ParamConverter("updateRequest", converter="fos_rest.request_body")
+     * @Security("is_granted('UPDATE', flow)")
      * @View
      */
     public function updateAction(Flow $flow, Flow\Request\FlowUpdateRequest $updateRequest)
@@ -157,6 +160,7 @@ class FlowController
      *
      * @Route("/flows/{uuid}", methods={"DELETE"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @Security("is_granted('DELETE', flow)")
      * @View
      */
     public function deleteAction(Flow $flow)

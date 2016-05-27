@@ -271,6 +271,14 @@ EOF;
     }
 
     /**
+     * @Then the flow is not saved because of an authorization exception
+     */
+    public function theFlowIsNotSavedBecauseOfAnAuthorizationException()
+    {
+        $this->assertResponseCode(403);
+    }
+
+    /**
      * @Then the flow is successfully saved
      */
     public function theFlowIsSuccessfullySaved()
@@ -380,6 +388,23 @@ EOF;
      */
     public function iDeleteTheEnvironmentNamedOfTheFlow($name, $cluster, $uuid)
     {
+        $this->iTentativelyDeleteTheEnvironmentNamedOfTheFlow($name, $cluster, $uuid);
+        $this->assertResponseCode(204);
+    }
+
+    /**
+     * @When I should be told that I don't have the permissions
+     */
+    public function iShouldBeToldThatIDonTHaveThePermissions()
+    {
+        $this->assertResponseCode(403);
+    }
+
+    /**
+     * @When I tentatively delete the environment named :name deployed on :cluster of the flow :uuid
+     */
+    public function iTentativelyDeleteTheEnvironmentNamedOfTheFlow($name, $cluster, $uuid)
+    {
         $url = sprintf('/flows/%s/environments', $uuid, $name);
         $this->response = $this->kernel->handle(Request::create(
             $url, 'DELETE', [], [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
@@ -387,8 +412,6 @@ EOF;
                 'cluster' => $cluster,
             ])
         ));
-
-        $this->assertResponseCode(204);
     }
 
     /**

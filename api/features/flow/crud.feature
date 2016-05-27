@@ -4,7 +4,7 @@ Feature:
   I need to be able to create a new flow
 
   Background:
-    Given I am authenticated
+    Given I am authenticated as "samuel"
 
   Scenario: I can list the flows of a team
     Given the team "samuel" exists
@@ -45,8 +45,17 @@ Feature:
     And the flow UUID should be "00000000-0000-0000-0000-000000000000"
 
   @smoke
-  Scenario:
-    Given I have a flow
+  Scenario: I can update the flow
+    Given the team "samuel" exists
+    And the user "samuel" is "ADMIN" of the team "samuel"
+    And I have a flow in the team "samuel"
     When I send an update request with a configuration
     Then the flow is successfully saved
     And the stored configuration is not empty
+
+  Scenario: Only administrators can update a flow
+    Given the team "samuel" exists
+    And the user "samuel" is "USER" of the team "samuel"
+    And I have a flow in the team "samuel"
+    When I send an update request with a configuration
+    Then the flow is not saved because of an authorization exception

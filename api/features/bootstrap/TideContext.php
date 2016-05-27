@@ -1120,6 +1120,7 @@ EOF;
      */
     public function iShouldNotSeeTheTide($uuid)
     {
+        $this->assertResponseStatus(200);
         $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
         $matchingTides = array_filter($tides, function(array $tide) use ($uuid) {
             return $tide['uuid'] == $uuid;
@@ -1135,6 +1136,7 @@ EOF;
      */
     public function iShouldSeeTheTide($uuid)
     {
+        $this->assertResponseStatus(200);
         $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
         $matchingTides = array_filter($tides, function(array $tide) use ($uuid) {
             return $tide['uuid'] == $uuid;
@@ -1295,6 +1297,20 @@ EOF;
                 'Expected %s but got %s',
                 $expected->format(\DateTime::ISO8601),
                 $found ? $found->format(\DateTime::ISO8601) : 'NULL'
+            ));
+        }
+    }
+
+    /**
+     * @param int $status
+     */
+    private function assertResponseStatus($status)
+    {
+        if ($this->response->getStatusCode() != $status) {
+            throw new \RuntimeException(sprintf(
+                'Expected status %d but got %d',
+                $status,
+                $this->response->getStatusCode()
             ));
         }
     }
