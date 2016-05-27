@@ -7,6 +7,7 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\View\TideDto;
 use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository;
 use ContinuousPipe\River\Repository\TideNotFound;
+use ContinuousPipe\River\Tests\View\InMemoryTideList;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use Doctrine\ORM\EntityManager;
@@ -42,15 +43,17 @@ class DoctrineTideRepository implements TideRepository
      */
     public function findByFlowUuid(Uuid $uuid)
     {
-        $dtos = $this->getEntityRepository()->findBy([
-            'flow' => (string) $uuid,
-        ], [
-            'tide.creationDate' => 'DESC',
-        ]);
+        $queryBuilder = $this
+            ->getEntityRepository()
+            ->createQueryBuilder('dto')
+            ->where('dto.flow = :flowUuid')
+            ->setParameter('flowUuid', (string) $uuid)
+            ->orderBy('dto.tide.creationDate', 'DESC')
+        ;
 
-        return array_map(function (TideDto $dto) {
+        return new DoctrineTideList($queryBuilder, function (TideDto $dto) {
             return $this->dtoToTide($dto);
-        }, $dtos);
+        });
     }
 
     /**

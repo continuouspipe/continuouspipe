@@ -14,7 +14,7 @@ interface TideRepository
      *
      * @param Uuid $uuid
      *
-     * @return Tide[]
+     * @return TideList
      */
     public function findByFlowUuid(Uuid $uuid);
 

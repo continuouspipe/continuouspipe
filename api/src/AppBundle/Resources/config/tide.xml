@@ -168,5 +168,9 @@
             <argument type="service" id="river.github.pull_request_resolver" />
             <argument type="service" id="river.view.tide_repository" />
         </service>
+
+        <service id="river.tide.view.list_pagination" class="ContinuousPipe\River\View\Pagination\TideListPaginatorSubscriber">
+            <tag name="knp_paginator.subscriber" />
+        </service>
     </services>
 </container>
