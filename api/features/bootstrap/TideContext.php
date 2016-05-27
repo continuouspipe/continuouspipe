@@ -496,7 +496,7 @@ EOF;
     {
         $flow = $this->flowContext->getCurrentFlow();
         $tides = $this->viewTideRepository->findByFlowUuid($flow->getUuid());
-        $numberOfTideStarted = count($tides);
+        $numberOfTideStarted = count($tides->toArray());
 
         if ($count != $numberOfTideStarted) {
             throw new \RuntimeException(sprintf(
@@ -1279,7 +1279,7 @@ EOF;
         );
 
         // Reverse the order because it's displayed from the last to the first
-        $tides = array_reverse($tides);
+        $tides = array_reverse($tides->toArray());
 
         if (!array_key_exists($index, $tides)) {
             throw new \RuntimeException(sprintf('Tide #%d is not found', $index));

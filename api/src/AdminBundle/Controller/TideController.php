@@ -55,7 +55,7 @@ class TideController
         return [
             'team' => $team,
             'flow' => $flow,
-            'tides' => $this->tideRepository->findByFlowUuid($flow->getUuid()),
+            'tides' => $this->tideRepository->findByFlowUuid($flow->getUuid())->toArray(),
         ];
     }
 

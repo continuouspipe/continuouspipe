@@ -73,7 +73,7 @@ class InMemoryTideRepository implements TideRepository
     {
         $tides = $this->findByFlowUuid($flow->getUuid());
 
-        return array_slice($tides, 0, $limit);
+        return array_slice($tides->toArray(), 0, $limit);
     }
 
     /**
@@ -81,7 +81,7 @@ class InMemoryTideRepository implements TideRepository
      */
     public function findRunningByFlowUuidAndBranch(Uuid $flowUuid, $branch)
     {
-        return array_values(array_filter($this->findByFlowUuid($flowUuid), function (Tide $tide) use ($branch) {
+        return array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) use ($branch) {
             return $tide->getCodeReference()->getBranch() == $branch && $tide->getStatus() == Tide::STATUS_RUNNING;
         }));
     }
@@ -91,7 +91,7 @@ class InMemoryTideRepository implements TideRepository
      */
     public function findRunningByFlowUuid(Uuid $flowUuid)
     {
-        return array_values(array_filter($this->findByFlowUuid($flowUuid), function (Tide $tide) {
+        return array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) {
             return $tide->getStatus() == Tide::STATUS_RUNNING;
         }));
     }
@@ -104,7 +104,7 @@ class InMemoryTideRepository implements TideRepository
         $uuid = (string) $uuid;
 
         if (!array_key_exists($uuid, $this->tideByFlow)) {
-            return [];
+            return new InMemoryTideList();
         }
 
         $tides = array_values($this->tideByFlow[$uuid]);
@@ -112,7 +112,7 @@ class InMemoryTideRepository implements TideRepository
             return $left->getCreationDate() > $right->getCreationDate() ? -1 : 1;
         });
 
-        return $tides;
+        return new InMemoryTideList($tides);
     }
 
     /**
@@ -130,7 +130,7 @@ class InMemoryTideRepository implements TideRepository
      */
     public function findPendingByFlowUuidAndBranch(Uuid $flowUuid, $branch)
     {
-        return array_values(array_filter($this->findByFlowUuid($flowUuid), function (Tide $tide) use ($branch) {
+        return array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) use ($branch) {
             return $tide->getCodeReference()->getBranch() == $branch && $tide->getStatus() == Tide::STATUS_PENDING;
         }));
     }

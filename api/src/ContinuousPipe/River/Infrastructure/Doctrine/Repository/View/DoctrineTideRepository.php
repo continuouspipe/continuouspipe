@@ -7,6 +7,7 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\View\TideDto;
 use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository;
 use ContinuousPipe\River\Repository\TideNotFound;
+use ContinuousPipe\River\Tests\View\InMemoryTideList;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use Doctrine\ORM\EntityManager;
@@ -48,9 +49,9 @@ class DoctrineTideRepository implements TideRepository
             'tide.creationDate' => 'DESC',
         ]);
 
-        return array_map(function (TideDto $dto) {
+        return new InMemoryTideList(array_map(function (TideDto $dto) {
             return $this->dtoToTide($dto);
-        }, $dtos);
+        }, $dtos));
     }
 
     /**

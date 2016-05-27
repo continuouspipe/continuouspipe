@@ -74,7 +74,7 @@ class ArchiveFlowLogsHandler
      */
     private function getArchivableTides(Uuid $flowUuid)
     {
-        $tides = $this->tideRepository->findByFlowUuid($flowUuid);
+        $tides = $this->tideRepository->findByFlowUuid($flowUuid)->toArray();
 
         // Only archive tides finished before yesterday
         $yesterday = (new \DateTime())->sub(new \DateInterval('P1D'));

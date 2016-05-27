@@ -114,7 +114,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
      */
     private function findClusterIdentifiers(Flow $flow)
     {
-        $tides = $this->tideRepository->findByFlowUuid($flow->getUuid());
+        $tides = $this->tideRepository->findByFlowUuid($flow->getUuid())->toArray();
         $clusterIdentifiers = [];
 
         foreach ($tides as $tide) {
