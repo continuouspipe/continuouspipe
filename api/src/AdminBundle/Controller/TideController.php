@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @Route(service="admin.controller.tide")
@@ -28,20 +29,27 @@ class TideController
     private $eventStore;
 
     /**
+     * @var PaginatorInterface
+     */
+    private $paginator;
+
+    /**
      * @var string
      */
     private $logStreamUrl;
 
     /**
      * @param TideRepository $tideRepository
-     * @param EventStore     $eventStore
-     * @param string         $logStreamUrl
+     * @param EventStore $eventStore
+     * @param PaginatorInterface $paginator
+     * @param string $logStreamUrl
      */
-    public function __construct(TideRepository $tideRepository, EventStore $eventStore, $logStreamUrl)
+    public function __construct(TideRepository $tideRepository, EventStore $eventStore, PaginatorInterface $paginator, $logStreamUrl)
     {
         $this->tideRepository = $tideRepository;
         $this->eventStore = $eventStore;
         $this->logStreamUrl = $logStreamUrl;
+        $this->paginator = $paginator;
     }
 
     /**

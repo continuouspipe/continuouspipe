@@ -43,15 +43,18 @@ class DoctrineTideRepository implements TideRepository
      */
     public function findByFlowUuid(Uuid $uuid)
     {
-        $dtos = $this->getEntityRepository()->findBy([
-            'flow' => (string) $uuid,
-        ], [
-            'tide.creationDate' => 'DESC',
-        ]);
+        $queryBuilder = $this
+            ->getEntityRepository()
+            ->createQueryBuilder('tide')
+            ->where([
+                'flow' => (string) $uuid,
+            ])
+            ->orderBy('tide.creationDate', 'DESC')
+        ;
 
-        return new InMemoryTideList(array_map(function (TideDto $dto) {
+        return new DoctrineTideList($queryBuilder, function (TideDto $dto) {
             return $this->dtoToTide($dto);
-        }, $dtos));
+        });
     }
 
     /**
