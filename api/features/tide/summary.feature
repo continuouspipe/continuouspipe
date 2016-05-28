@@ -4,7 +4,10 @@ Feature:
   I want to be able to get the summary of the tide and all the useful informations from it
 
   Background:
-    Given I am authenticated
+    Given I am authenticated as "samuel"
+    And the team "samuel" exists
+    And I have a flow in the team "samuel"
+    And the user "samuel" is "USER" of the team "samuel"
     And there is 1 application images in the repository
 
   Scenario: I can get the summary of a given tide

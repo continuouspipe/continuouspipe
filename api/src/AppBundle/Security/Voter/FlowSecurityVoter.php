@@ -3,6 +3,7 @@
 namespace AppBundle\Security\Voter;
 
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamRepository;
@@ -36,7 +37,7 @@ class FlowSecurityVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        return $subject instanceof Flow;
+        return $subject instanceof Flow || $subject instanceof Tide;
     }
 
     /**
@@ -44,7 +45,7 @@ class FlowSecurityVoter extends Voter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
-        $team = $subject->getContext()->getTeam();
+        $team = $this->extractTeam($subject);
         $user = $token->getUser();
 
         if (!$user instanceof SecurityUser) {
@@ -79,5 +80,21 @@ class FlowSecurityVoter extends Voter
         }
 
         return;
+    }
+
+    /**
+     * @param mixed $subject
+     *
+     * @return Team
+     */
+    private function extractTeam($subject)
+    {
+        if ($subject instanceof Flow) {
+            return $subject->getContext()->getTeam();
+        } else if ($subject instanceof Tide) {
+            return $subject->getTeam();
+        }
+
+        throw new \InvalidArgumentException(sprintf('Unable to extract the team from %s', get_class($subject)));
     }
 }

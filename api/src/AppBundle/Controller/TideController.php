@@ -148,6 +148,7 @@ class TideController
      *
      * @Route("/tides/{uuid}", methods={"GET"})
      * @ParamConverter("tide", converter="tide", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', tide)")
      * @View
      */
     public function getAction(Tide $tide)
@@ -160,6 +161,7 @@ class TideController
      *
      * @Route("/tides/{uuid}/summary", methods={"GET"})
      * @ParamConverter("tide", converter="tide", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', tide)")
      * @View
      */
     public function summaryAction(Tide $tide)
@@ -170,6 +172,7 @@ class TideController
     /**
      * @Route("/tides/{uuid}/external-relations", methods={"GET"})
      * @ParamConverter("tide", converter="tide", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', tide)")
      * @View
      */
     public function externalRelationsAction(Tide $tide)
@@ -182,6 +185,7 @@ class TideController
      *
      * @Route("/tides/{uuid}/cancel", methods={"POST"})
      * @ParamConverter("tide", converter="tide", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', tide)")
      * @View
      */
     public function cancelAction(Tide $tide)
