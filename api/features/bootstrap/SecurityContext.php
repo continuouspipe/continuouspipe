@@ -98,4 +98,15 @@ class SecurityContext implements Context
 
         $this->inMemoryAuthenticatorClient->addTeam($team);
     }
+
+    /**
+     * @Given the user :username is a ghost
+     */
+    public function theUserIsAGhost($username)
+    {
+        $user = $this->inMemoryAuthenticatorClient->getUserByUsername($username);
+        $user->setRoles(array_merge($user->getRoles(), ['ROLE_GHOST']));
+
+        $this->inMemoryAuthenticatorClient->addUser($user);
+    }
 }

@@ -36,4 +36,8 @@ Feature:
     When I retrieve the list tides of the flow "00000000-0000-0000-0000-000000000000"
     Then I should be told that I don't have the permissions the list the tides
 
-
+  Scenario: A ghost user can list the tides
+    Given I am authenticated as "another-ghost"
+    And the user "another-ghost" is a ghost
+    When I retrieve the list tides of the flow "00000000-0000-0000-0000-000000000000"
+    Then I should see the tide "00000000-0000-0000-0000-000000000001"

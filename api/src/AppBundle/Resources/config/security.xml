@@ -10,5 +10,9 @@
 
             <tag name="security.voter" />
         </service>
+
+        <service id="river.security.voter.ghost" class="ContinuousPipe\Security\Voter\GhostUserPermissionVoter"  public="false">
+            <tag name="security.voter" />
+        </service>
     </services>
 </container>
