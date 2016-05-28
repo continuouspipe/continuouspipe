@@ -88,6 +88,16 @@ class TeamContext implements Context
     }
 
     /**
+     * @Given the user :username is user of the team :slug
+     */
+    public function theUserIsUserOfTheTeam($username, $slug)
+    {
+        $team = $this->teamRepository->find($slug);
+        $user = $this->securityContext->thereIsAUser($username);
+        $this->teamMembershipRepository->save(new TeamMembership($team, $user->getUser(), ['USER']));
+    }
+
+    /**
      * @Given the user :username is in the team :slug
      */
     public function theUserIsInTheTeam($username, $slug)
@@ -149,6 +159,27 @@ class TeamContext implements Context
     public function iRequestTheListOfTeams()
     {
         $this->response = $this->kernel->handle(Request::create('/api/teams', 'GET'));
+    }
+
+    /**
+     * @When I request the details of team :team
+     */
+    public function iRequestTheDetailsOfTeam($team)
+    {
+        $this->response = $this->kernel->handle(Request::create('/api/teams/'.$team, 'GET'));
+    }
+
+    /**
+     * @Then I should see the team details
+     */
+    public function iShouldSeeTheTeamDetails()
+    {
+        if ($this->response->getStatusCode() !== 200) {
+            throw new \RuntimeException(sprintf(
+                'Expected status 200 but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
     }
 
     /**

@@ -3,7 +3,7 @@ Feature:
   As a user
   I want to be able to list my teams
 
-  Scenario: As a user, I cannot all the other teams
+  Scenario: As a user, I don't see the other teams
     Given I am authenticated as user "samuel"
     And there is a team "foo"
     And there is a team "bar"
