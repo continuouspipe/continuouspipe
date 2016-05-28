@@ -9,7 +9,7 @@ use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use PhpSpec\ObjectBehavior;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class BuildTaskSpec extends ObjectBehavior
