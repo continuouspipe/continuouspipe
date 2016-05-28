@@ -1000,6 +1000,19 @@ EOF;
     }
 
     /**
+     * @Then a permission error should be returned
+     */
+    public function aPermissionErrorShouldBeReturned()
+    {
+        if ($this->response->getStatusCode() != 403) {
+            throw new \RuntimeException(sprintf(
+                'Expected status code 403, but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
      * @When I send a tide creation request for commit :sha1
      */
     public function iSendATideCreationRequestForCommit($sha1)
@@ -1145,6 +1158,14 @@ EOF;
         if (count($matchingTides) == 0) {
             throw new \RuntimeException(sprintf('Tide %s not found', $uuid));
         }
+    }
+
+    /**
+     * @Then I should be told that I don't have the permissions the list the tides
+     */
+    public function iShouldBeToldThatIDonTHaveThePermissionsTheListTheTides()
+    {
+        $this->assertResponseStatus(403);
     }
 
     /**

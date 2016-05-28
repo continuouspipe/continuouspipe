@@ -15,6 +15,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Rhumsaa\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use FOS\RestBundle\Controller\Annotations\View;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -93,6 +94,7 @@ class TideController
      *
      * @Route("/flows/{uuid}/tides", methods={"GET"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', flow)")
      * @View
      */
     public function findByFlowAction(Request $request, Flow $flow)
@@ -113,6 +115,7 @@ class TideController
      * @Route("/flows/{uuid}/tides", methods={"POST"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @ParamConverter("creationRequest", converter="fos_rest.request_body")
+     * @Security("is_granted('CREATE_TIDE', flow)")
      * @View(statusCode=201)
      */
     public function createAction(Flow $flow, TideCreationRequest $creationRequest)

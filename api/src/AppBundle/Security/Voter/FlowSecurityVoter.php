@@ -16,6 +16,7 @@ class FlowSecurityVoter extends Voter
     const ATTRIBUTE_READ = 'READ';
     const ATTRIBUTE_DELETE = 'DELETE';
     const ATTRIBUTE_UPDATE = 'UPDATE';
+    const ATTRIBUTE_CREATE_TIDE = 'CREATE_TIDE';
 
     /**
      * @var TeamRepository
@@ -53,7 +54,7 @@ class FlowSecurityVoter extends Voter
         // Reload the memberships of the team
         if (null === ($membership = $this->getUserMembership($team, $user->getUser()))) {
             return false;
-        } elseif ('READ' == $attribute) {
+        } elseif (in_array($attribute, ['READ', 'CREATE_TIDE'])) {
             return true;
         }
 

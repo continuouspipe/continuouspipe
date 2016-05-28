@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
+use ContinuousPipe\Security\Team\TeamNotFound;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository;
@@ -61,11 +62,15 @@ class SecurityContext implements Context
      */
     public function theTeamExists($slug)
     {
-        $bucket = new Bucket(Uuid::uuid1());
-        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+        try {
+            $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($slug);
+        } catch (TeamNotFound $e) {
+            $bucket = new Bucket(Uuid::uuid1());
+            $this->inMemoryAuthenticatorClient->addBucket($bucket);
 
-        $team = new Team($slug, $slug, $bucket->getUuid());
-        $this->inMemoryAuthenticatorClient->addTeam($team);
+            $team = new Team($slug, $slug, $bucket->getUuid());
+            $this->inMemoryAuthenticatorClient->addTeam($team);
+        }
 
         return $team;
     }
@@ -84,11 +89,13 @@ class SecurityContext implements Context
 
         $memberships->add(new TeamMembership($team, $user, [$permission]));
 
-        $this->inMemoryAuthenticatorClient->addTeam(new Team(
+        $team = new Team(
             $team->getSlug(),
             $team->getName(),
             $team->getBucketUuid(),
             $memberships->toArray()
-        ));
+        );
+
+        $this->inMemoryAuthenticatorClient->addTeam($team);
     }
 }
