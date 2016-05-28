@@ -64,6 +64,12 @@
             <tag name="request.param_converter" converter="flow" />
         </service>
 
+        <service id="app.request.param_converter.tide" class="AppBundle\Request\ParamConverter\TideParamConverter">
+            <argument type="service" id="river.view.tide_repository"/>
+
+            <tag name="request.param_converter" converter="tide" />
+        </service>
+
         <service id="app.request.param_converter.team" class="ContinuousPipe\Security\Request\ParamConverter\TeamParamConverter">
             <argument type="service" id="authenticator.team_repository" />
 
