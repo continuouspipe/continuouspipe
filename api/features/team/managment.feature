@@ -67,3 +67,14 @@ Feature:
     Then the team should be successfully created
     And I request the list of teams
     And I should see that the team "continuous-pipe" is named "Continuous Pipe"
+
+  Scenario: Non-members can't access the team details
+    Given there is a team "foo"
+    When I request the details of team "foo"
+    Then I should be told that I don't have the authorization
+
+  Scenario: Members can access the team details
+    Given there is a team "foo"
+    And the user "samuel" is user of the team "foo"
+    When I request the details of team "foo"
+    Then I should see the team details

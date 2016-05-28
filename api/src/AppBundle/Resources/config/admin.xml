@@ -13,10 +13,11 @@
         </service>
 
         <service id="app.admin.user" class="AppBundle\Admin\UserAdmin">
+            <argument />
+            <argument>ContinuousPipe\Security\User\User</argument>
+            <argument />
+
             <tag name="sonata.admin" manager_type="orm" group="Users" label="Users"/>
-            <argument />
-            <argument>ContinuousPipe\Security\User\SecurityUser</argument>
-            <argument />
         </service>
     </services>
 </container>

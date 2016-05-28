@@ -2,6 +2,7 @@
 
 namespace AppBundle\Admin;
 
+use ContinuousPipe\Security\User\User;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -25,11 +26,14 @@ class UserAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('username')
+            ->add('username', 'text', [
+                'read_only' => true,
+            ])
             ->add('roles', 'choice', [
                 'choices' => [
                     'ROLE_USER' => 'User',
                     'ROLE_ADMIN' => 'Administrator',
+                    'ROLE_GHOST' => 'Ghost',
                 ],
                 'multiple' => true,
             ])

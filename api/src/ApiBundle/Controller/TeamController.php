@@ -98,6 +98,7 @@ class TeamController
     /**
      * @Route("/teams/{slug}", methods={"GET"})
      * @ParamConverter("team", converter="team")
+     * @Security("is_granted('READ', team)")
      * @View
      */
     public function getAction(Team $team)
