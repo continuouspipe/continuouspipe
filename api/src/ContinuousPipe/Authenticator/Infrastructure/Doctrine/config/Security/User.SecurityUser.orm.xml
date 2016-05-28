@@ -12,7 +12,6 @@
             </cascade>
             <join-column name="user_id" referenced-column-name="username" />
         </one-to-one>
-        <field name="roles" type="array" />
         <field name="salt" type="string" nullable="true" />
         <field name="password" type="string" nullable="true" />
     </entity>

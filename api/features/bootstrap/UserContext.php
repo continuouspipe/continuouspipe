@@ -5,7 +5,8 @@ use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\GitHubToken;
-use Rhumsaa\Uuid\Uuid;
+use ContinuousPipe\Security\User\UserRepository;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -57,6 +58,16 @@ class UserContext implements Context
         $this->securityUserRepository->save($securityUser);
     }
 
+    /**
+     * @Given the user :username have the role :role
+     */
+    public function theUserHaveTheRole($username, $role)
+    {
+        $user = $this->securityUserRepository->findOneByUsername($username);
+        $user->getUser()->setRoles(array_merge($user->getRoles(), [$role]));
+
+        $this->securityUserRepository->save($user);
+    }
 
     /**
      * @When I request the details of user :username
@@ -110,6 +121,20 @@ class UserContext implements Context
                 'Expected status code 200, got %d',
                 $this->response->getStatusCode()
             ));
+        }
+    }
+
+    /**
+     * @Then I should see that the user have the role :role
+     */
+    public function iShouldSeeThatTheUserHaveTheRole($role)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if (!in_array($role, $json['roles'])) {
+            echo $this->response->getContent();
+
+            throw new \RuntimeException('Role not found');
         }
     }
 

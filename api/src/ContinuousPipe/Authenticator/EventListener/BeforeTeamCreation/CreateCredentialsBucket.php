@@ -6,7 +6,7 @@ use ContinuousPipe\Authenticator\Event\TeamCreationEvent;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Team\Team;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CreateCredentialsBucket implements EventSubscriberInterface

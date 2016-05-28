@@ -8,5 +8,6 @@
         <id name="username" type="string" />
         <field name="email" type="string" nullable="true" />
         <field name="bucketUuid" type="string" />
+        <field name="roles" type="array" />
     </entity>
 </doctrine-mapping>
