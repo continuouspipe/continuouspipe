@@ -4,7 +4,7 @@ namespace ContinuousPipe\Pipe\Client;
 
 use ContinuousPipe\Security\User\User;
 use JMS\Serializer\Annotation as JMS;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class Deployment
 {

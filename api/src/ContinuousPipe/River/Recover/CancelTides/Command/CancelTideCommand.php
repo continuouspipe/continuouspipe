@@ -2,13 +2,13 @@
 
 namespace ContinuousPipe\River\Recover\CancelTides\Command;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
 class CancelTideCommand
 {
     /**
-     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     * @JMS\Type("Ramsey\Uuid\Uuid")
      *
      * @var Uuid
      */

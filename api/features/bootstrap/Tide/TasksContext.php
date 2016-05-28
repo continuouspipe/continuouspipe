@@ -16,7 +16,7 @@ use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\RunTask;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tide;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class TasksContext implements Context

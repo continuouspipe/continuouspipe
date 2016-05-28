@@ -22,7 +22,7 @@ use ContinuousPipe\Security\Team\Team;
 use LogStream\Node\Container;
 use LogStream\Node\Text;
 use LogStream\Tree\TreeLog;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
 use ContinuousPipe\River\Event\TideFailed;

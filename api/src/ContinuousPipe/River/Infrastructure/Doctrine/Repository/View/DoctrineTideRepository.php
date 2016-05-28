@@ -11,7 +11,7 @@ use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use Doctrine\ORM\EntityManager;
 use LogStream\Tree\TreeLog;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class DoctrineTideRepository implements TideRepository
 {

@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\LogStream\ArchiveLogs\Event;
 
 use ContinuousPipe\River\Event\TideEvent;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class TideLogsArchived implements TideEvent
 {

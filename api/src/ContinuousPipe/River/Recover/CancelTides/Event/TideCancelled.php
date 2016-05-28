@@ -3,13 +3,13 @@
 namespace ContinuousPipe\River\Recover\CancelTides\Event;
 
 use ContinuousPipe\River\Event\TideEvent;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
 class TideCancelled implements TideEvent
 {
     /**
-     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     * @JMS\Type("Ramsey\Uuid\Uuid")
      *
      * @var Uuid
      */

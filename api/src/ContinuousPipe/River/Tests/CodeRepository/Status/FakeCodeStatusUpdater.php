@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Tests\CodeRepository\Status;
 use ContinuousPipe\River\Tide\Status\CodeStatusUpdater;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Status\Status;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class FakeCodeStatusUpdater implements CodeStatusUpdater
 {

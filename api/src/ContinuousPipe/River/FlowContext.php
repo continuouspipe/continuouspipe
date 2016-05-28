@@ -4,7 +4,7 @@ namespace ContinuousPipe\River;
 
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class FlowContext implements Context
 {

@@ -4,13 +4,13 @@ namespace ContinuousPipe\River\Task\Deploy\Command;
 
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
 use ContinuousPipe\River\Task\TaskDetails;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
 class StartDeploymentCommand
 {
     /**
-     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     * @JMS\Type("Ramsey\Uuid\Uuid")
      *
      * @var Uuid
      */

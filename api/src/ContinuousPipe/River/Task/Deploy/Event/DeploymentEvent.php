@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Task\Deploy\Event;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\TaskEvent;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class DeploymentEvent implements TideEvent, TaskEvent
 {

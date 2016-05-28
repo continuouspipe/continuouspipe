@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Event\GitHub;
 
 use ContinuousPipe\River\Event\TideEvent;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class CommentedTideFeedback implements TideEvent
 {

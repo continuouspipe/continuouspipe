@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Repository;
 
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\Security\Team\Team;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface FlowRepository
 {

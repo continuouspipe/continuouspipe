@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Tide\ExternalRelation;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface ExternalRelationResolver
 {

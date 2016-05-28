@@ -12,7 +12,7 @@ use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
 use ContinuousPipe\River\View\TideRepository;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class StartDeploymentHandler

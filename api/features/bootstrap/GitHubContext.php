@@ -256,7 +256,9 @@ class GitHubContext implements Context
             if ($httpMethod == 'GET' && preg_match('#/issues/'.$number.'/labels$#', $path)) {
                 return new \Guzzle\Http\Message\Response(
                     200,
-                    [],
+                    [
+                        'Content-Type' => 'application/json',
+                    ],
                     '[{"url": "'.$path.'/'.urlencode($label).'","name": "'.$label.'","color": "f29513"}]'
                 );
             }
@@ -481,7 +483,7 @@ class GitHubContext implements Context
 
         if (isset($json['uuid'])) {
             $uuid = $json['uuid'];
-            $this->tideContext->setCurrentTideUuid(\Rhumsaa\Uuid\Uuid::fromString($uuid));
+            $this->tideContext->setCurrentTideUuid(\Ramsey\Uuid\Uuid::fromString($uuid));
         }
     }
 }

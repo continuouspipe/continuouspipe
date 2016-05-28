@@ -2,13 +2,13 @@
 
 namespace ContinuousPipe\River\Recover\TimedOutTides\Command;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
 class SpotTimedOutTidesCommand
 {
     /**
-     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     * @JMS\Type("Ramsey\Uuid\Uuid")
      *
      * @var Uuid
      */

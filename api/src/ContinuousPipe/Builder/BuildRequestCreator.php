@@ -6,7 +6,7 @@ use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
 use Psr\Log\LoggerInterface;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class BuildRequestCreator
 {

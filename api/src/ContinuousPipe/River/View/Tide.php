@@ -6,7 +6,7 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use LogStream\Log;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class Tide
 {

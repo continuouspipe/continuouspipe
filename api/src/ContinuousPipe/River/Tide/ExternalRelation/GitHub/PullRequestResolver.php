@@ -6,7 +6,7 @@ use ContinuousPipe\River\CodeRepository\PullRequestResolver as CodeRepositoryPul
 use ContinuousPipe\River\Tide\ExternalRelation\ExternalRelationResolver;
 use ContinuousPipe\River\View\TideRepository;
 use GitHub\WebHook\Model\PullRequest as GitHubPullRequest;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class PullRequestResolver implements ExternalRelationResolver
 {

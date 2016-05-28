@@ -7,7 +7,7 @@ use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\View\TideRepository;
 use GitHub\WebHook\Model\PullRequest;
 use GitHub\WebHook\Model\Repository;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class SilentDeploymentNotifier implements PullRequestDeploymentNotifier
 {

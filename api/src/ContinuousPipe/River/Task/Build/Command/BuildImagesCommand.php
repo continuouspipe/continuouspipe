@@ -3,13 +3,13 @@
 namespace ContinuousPipe\River\Task\Build\Command;
 
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
 class BuildImagesCommand
 {
     /**
-     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     * @JMS\Type("Ramsey\Uuid\Uuid")
      *
      * @var Uuid
      */

@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Task\Build\Event;
 
 use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\River\Event\TideEvent;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 abstract class BuildEvent implements TideEvent
 {

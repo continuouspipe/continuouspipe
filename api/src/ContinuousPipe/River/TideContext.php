@@ -4,7 +4,7 @@ namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
 use LogStream\Log;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class TideContext extends FlowContext
 {

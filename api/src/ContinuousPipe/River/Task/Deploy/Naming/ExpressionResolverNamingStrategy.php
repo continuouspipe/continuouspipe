@@ -6,7 +6,7 @@ use ContinuousPipe\Model\Environment;
 use ContinuousPipe\River\Filter\ContextFactory;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 

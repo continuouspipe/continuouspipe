@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Recover\TimedOutTides;
 
 use ContinuousPipe\River\View\Tide;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface TimedOutTideRepository
 {

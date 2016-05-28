@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
 use ContinuousPipe\Model\Environment;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class DefaultEnvironmentExpressionDecorator implements EnvironmentNamingStrategy
 {

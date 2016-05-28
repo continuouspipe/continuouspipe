@@ -4,7 +4,7 @@ namespace ContinuousPipe\Runner;
 
 use ContinuousPipe\Runner\Client\RunRequest;
 use ContinuousPipe\Security\User\User;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface Client
 {

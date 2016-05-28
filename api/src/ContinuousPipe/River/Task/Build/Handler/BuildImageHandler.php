@@ -12,7 +12,7 @@ use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Build\Command\BuildImageCommand;
 use ContinuousPipe\River\Task\Build\Event\BuildStarted;
 use LogStream\LoggerFactory;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
