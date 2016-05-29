@@ -151,9 +151,6 @@ class DoctrineEventStore implements EventStore
      */
     private function fromDto($dto)
     {
-        $event = unserialize(base64_decode($dto->serializedEvent));
-        $event = UuidReplacer::replace($event);
-
-        return $event;
+        return unserialize(base64_decode($dto->serializedEvent));
     }
 }
