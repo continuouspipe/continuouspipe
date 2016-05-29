@@ -5,7 +5,7 @@ namespace AppBundle\Controller;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Task\Run\Event\RunFailed;
 use ContinuousPipe\River\Task\Run\Event\RunSuccessful;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

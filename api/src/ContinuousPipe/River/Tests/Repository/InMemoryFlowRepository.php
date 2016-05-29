@@ -6,7 +6,7 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Team\Team;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class InMemoryFlowRepository implements FlowRepository
 {

@@ -6,7 +6,7 @@ use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\Builder\Client\BuilderClient;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Security\User\User;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class EmptyBuilderClient implements BuilderClient
 {

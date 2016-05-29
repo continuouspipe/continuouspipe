@@ -5,7 +5,7 @@ namespace ContinuousPipe\Runner\Tests;
 use ContinuousPipe\Runner\Client;
 use ContinuousPipe\Runner\Client\RunRequest;
 use ContinuousPipe\Security\User\User;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class InMemoryClient implements Client
 {

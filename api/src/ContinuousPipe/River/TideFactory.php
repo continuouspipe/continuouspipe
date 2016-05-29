@@ -17,7 +17,7 @@ use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Tide\Request\TideCreationRequest;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class TideFactory
 {

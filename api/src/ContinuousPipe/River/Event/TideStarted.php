@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Event;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class TideStarted implements TideEvent
 {

@@ -3,24 +3,25 @@
 namespace AppBundle\Request\ParamConverter;
 
 use ContinuousPipe\River\Repository\FlowRepository;
+use ContinuousPipe\River\View\TideRepository;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class FlowParamConverter implements ParamConverterInterface
+class TideParamConverter implements ParamConverterInterface
 {
     /**
-     * @var FlowRepository
+     * @var TideRepository
      */
-    private $flowRepository;
+    private $tideRepository;
 
     /**
-     * @param FlowRepository $flowRepository
+     * @param TideRepository $tideRepository
      */
-    public function __construct(FlowRepository $flowRepository)
+    public function __construct(TideRepository $tideRepository)
     {
-        $this->flowRepository = $flowRepository;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -32,9 +33,9 @@ class FlowParamConverter implements ParamConverterInterface
         $identifier = $request->get($identifierKey);
 
         $uuid = Uuid::fromString($identifier);
-        $flow = $this->flowRepository->find($uuid);
+        $tide = $this->tideRepository->find($uuid);
 
-        $request->attributes->set($configuration->getName(), $flow);
+        $request->attributes->set($configuration->getName(), $tide);
     }
 
     /**
@@ -42,6 +43,6 @@ class FlowParamConverter implements ParamConverterInterface
      */
     public function supports(ParamConverter $configuration)
     {
-        return $configuration->getConverter() == 'flow';
+        return $configuration->getConverter() == 'tide';
     }
 }

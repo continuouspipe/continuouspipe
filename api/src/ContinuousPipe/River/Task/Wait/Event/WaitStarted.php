@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Task\Wait\Event;
 
 use LogStream\Log;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class WaitStarted extends WaitEvent
 {

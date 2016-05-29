@@ -6,7 +6,8 @@ Feature:
   Background:
     Given there is 1 application images in the repository
     And I have a flow
-    And I am authenticated
+    And I am authenticated as "samuel"
+    And the user "samuel" is "USER" of the team "samuel"
 
   @smoke
   Scenario: The following tasks are not ran

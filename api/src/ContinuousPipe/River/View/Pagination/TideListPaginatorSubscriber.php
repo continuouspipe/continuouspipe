@@ -18,8 +18,8 @@ class TideListPaginatorSubscriber implements EventSubscriberInterface
         return [
             'knp_pager.items' => [
                 'items',
-                1
-            ]
+                1,
+            ],
         ];
     }
 
@@ -42,7 +42,7 @@ class TideListPaginatorSubscriber implements EventSubscriberInterface
                 ->setFirstResult($event->getOffset())
                 ->setMaxResults($event->getLimit())
             ;
-        } else if ($list instanceof InMemoryTideList) {
+        } elseif ($list instanceof InMemoryTideList) {
             $count = count($list->toArray());
             $list = new InMemoryTideList(array_slice(
                 $list->toArray(),

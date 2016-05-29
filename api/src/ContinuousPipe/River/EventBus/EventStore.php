@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\EventBus;
 
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideEventWithMetadata;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface EventStore
 {

@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Task\Run\Event;
 
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\TaskEvent;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class RunStarted implements TideEvent, TaskEvent
 {

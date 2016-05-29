@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\LogStream\ArchiveLogs\Command;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
 class ArchiveFlowLogsCommand

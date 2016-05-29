@@ -6,8 +6,8 @@ use ContinuousPipe\River\Flow\Request\FlowCreationRequest;
 use ContinuousPipe\River\Flow\Request\FlowUpdateRequest;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
 use ContinuousPipe\Security\Authenticator\UserContext;
-use ContinuousPipe\Security\Team\TeamRepository;
-use Rhumsaa\Uuid\Uuid;
+use ContinuousPipe\Security\Team\Team;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Yaml\Yaml;
 
 class FlowFactory
@@ -23,20 +23,13 @@ class FlowFactory
     private $codeRepositoryRepository;
 
     /**
-     * @var TeamRepository
-     */
-    private $teamRepository;
-
-    /**
      * @param UserContext              $userContext
      * @param CodeRepositoryRepository $codeRepositoryRepository
-     * @param TeamRepository           $teamRepository
      */
-    public function __construct(UserContext $userContext, CodeRepositoryRepository $codeRepositoryRepository, TeamRepository $teamRepository)
+    public function __construct(UserContext $userContext, CodeRepositoryRepository $codeRepositoryRepository)
     {
         $this->userContext = $userContext;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
-        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -44,7 +37,7 @@ class FlowFactory
      *
      * @return Flow
      */
-    public function fromCreationRequest(FlowCreationRequest $creationRequest)
+    public function fromCreationRequest(Team $team, FlowCreationRequest $creationRequest)
     {
         if (null != $creationRequest->getUuid()) {
             $uuid = Uuid::fromString($creationRequest->getUuid());
@@ -54,7 +47,7 @@ class FlowFactory
 
         $flowContext = FlowContext::createFlow(
             $uuid,
-            $this->teamRepository->find($creationRequest->getTeam()),
+            $team,
             $this->userContext->getCurrent(),
             $this->codeRepositoryRepository->findByIdentifier($creationRequest->getRepository()),
             $this->parseConfiguration($creationRequest)

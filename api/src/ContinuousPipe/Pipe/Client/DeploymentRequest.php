@@ -6,7 +6,7 @@ use ContinuousPipe\Pipe\Client\DeploymentRequest\Notification;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Specification;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use JMS\Serializer\Annotation as JMS;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class DeploymentRequest
 {
@@ -32,7 +32,7 @@ class DeploymentRequest
     private $notification;
 
     /**
-     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     * @JMS\Type("Ramsey\Uuid\Uuid")
      * @JMS\SerializedName("credentialsBucket")
      *
      * @var Uuid

@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Task\Build\Event;
 
 use ContinuousPipe\River\Event\TideEvent;
 use LogStream\Log;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class ImageBuildsFailed implements TideEvent
 {

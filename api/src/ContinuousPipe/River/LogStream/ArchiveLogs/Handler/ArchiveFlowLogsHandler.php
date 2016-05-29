@@ -9,7 +9,7 @@ use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use LogStream\Client;
 use LogStream\Tree\TreeLog;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class ArchiveFlowLogsHandler

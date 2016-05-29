@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeRepository;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Yaml\Yaml;
 
 class Flow

@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Task\Run\Event;
 
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class RunFailed implements TideEvent
 {

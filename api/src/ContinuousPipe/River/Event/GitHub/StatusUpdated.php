@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Event\GitHub;
 
 use ContinuousPipe\River\Event\TideEvent;
 use GitHub\WebHook\Event\StatusEvent;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class StatusUpdated implements TideEvent
 {

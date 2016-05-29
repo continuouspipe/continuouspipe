@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
 use LogStream\Log;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class TaskLogCreated implements TideEvent, TaskEvent
 {

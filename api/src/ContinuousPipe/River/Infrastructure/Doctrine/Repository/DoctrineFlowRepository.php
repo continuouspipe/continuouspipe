@@ -9,7 +9,7 @@ use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\UserRepository;
 use Doctrine\ORM\EntityManager;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class DoctrineFlowRepository implements FlowRepository
 {

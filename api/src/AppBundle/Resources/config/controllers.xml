@@ -22,6 +22,7 @@
             <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="validator" />
+            <argument type="service" id="authenticator.team_repository" />
         </service>
         <service id="app.controller.github_webhook" class="AppBundle\Controller\GitHubWebHookController">
             <argument type="service" id="river.github.web_hook_handler" />
@@ -61,6 +62,12 @@
             <argument type="service" id="river.repository.flow" />
 
             <tag name="request.param_converter" converter="flow" />
+        </service>
+
+        <service id="app.request.param_converter.tide" class="AppBundle\Request\ParamConverter\TideParamConverter">
+            <argument type="service" id="river.view.tide_repository"/>
+
+            <tag name="request.param_converter" converter="tide" />
         </service>
 
         <service id="app.request.param_converter.team" class="ContinuousPipe\Security\Request\ParamConverter\TeamParamConverter">

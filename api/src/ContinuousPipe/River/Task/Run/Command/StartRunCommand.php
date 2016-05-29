@@ -4,13 +4,13 @@ namespace ContinuousPipe\River\Task\Run\Command;
 
 use ContinuousPipe\River\Task\Run\RunTaskConfiguration;
 use ContinuousPipe\River\Task\TaskDetails;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
 class StartRunCommand
 {
     /**
-     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     * @JMS\Type("Ramsey\Uuid\Uuid")
      *
      * @var Uuid
      */

@@ -10,7 +10,7 @@ use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\EventBus\EventStore;
 use Psr\Log\LoggerInterface;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class TideReportListener
 {

@@ -13,7 +13,7 @@ use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\FlowContext as RiverFlowContext;
 use ContinuousPipe\River\CodeRepository;
@@ -149,9 +149,26 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
-     * @When I send a flow creation request with the following parameters:
+     * @When I send a flow creation request for the team :team with the following parameters:
      */
-    public function iSendAFlowCreationRequestWithTheFollowingParameters(TableNode $parameters)
+    public function iSendAFlowCreationRequestForTheTeamWithTheFollowingParameters($team, TableNode $parameters)
+    {
+        $creationRequest = json_encode($parameters->getHash()[0]);
+
+        $this->response = $this->kernel->handle(Request::create('/teams/'.$team.'/flows', 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], $creationRequest));
+
+        $flowView = json_decode($this->response->getContent(), true);
+        if (array_key_exists('uuid', $flowView)) {
+            $this->flowUuid = $flowView['uuid'];
+        }
+    }
+
+    /**
+     * @When I send a deprecated flow creation request with the following parameters:
+     */
+    public function iSendADeprecatedFlowCreationRequestWithTheFollowingParameters(TableNode $parameters)
     {
         $creationRequest = json_encode($parameters->getHash()[0]);
 
@@ -251,6 +268,14 @@ EOF;
     public function theFlowIsNotSaved()
     {
         $this->assertResponseCode(400);
+    }
+
+    /**
+     * @Then the flow is not saved because of an authorization exception
+     */
+    public function theFlowIsNotSavedBecauseOfAnAuthorizationException()
+    {
+        $this->assertResponseCode(403);
     }
 
     /**
@@ -363,6 +388,23 @@ EOF;
      */
     public function iDeleteTheEnvironmentNamedOfTheFlow($name, $cluster, $uuid)
     {
+        $this->iTentativelyDeleteTheEnvironmentNamedOfTheFlow($name, $cluster, $uuid);
+        $this->assertResponseCode(204);
+    }
+
+    /**
+     * @When I should be told that I don't have the permissions
+     */
+    public function iShouldBeToldThatIDonTHaveThePermissions()
+    {
+        $this->assertResponseCode(403);
+    }
+
+    /**
+     * @When I tentatively delete the environment named :name deployed on :cluster of the flow :uuid
+     */
+    public function iTentativelyDeleteTheEnvironmentNamedOfTheFlow($name, $cluster, $uuid)
+    {
         $url = sprintf('/flows/%s/environments', $uuid, $name);
         $this->response = $this->kernel->handle(Request::create(
             $url, 'DELETE', [], [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
@@ -370,8 +412,6 @@ EOF;
                 'cluster' => $cluster,
             ])
         ));
-
-        $this->assertResponseCode(204);
     }
 
     /**

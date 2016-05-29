@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\View;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\TideNotFound;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface TideRepository
 {

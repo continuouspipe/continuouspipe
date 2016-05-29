@@ -22,7 +22,7 @@ use ContinuousPipe\Security\Team\Team;
 use LogStream\Node\Container;
 use LogStream\Node\Text;
 use LogStream\Tree\TreeLog;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
 use ContinuousPipe\River\Event\TideFailed;
@@ -1000,6 +1000,19 @@ EOF;
     }
 
     /**
+     * @Then a permission error should be returned
+     */
+    public function aPermissionErrorShouldBeReturned()
+    {
+        if ($this->response->getStatusCode() != 403) {
+            throw new \RuntimeException(sprintf(
+                'Expected status code 403, but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
      * @When I send a tide creation request for commit :sha1
      */
     public function iSendATideCreationRequestForCommit($sha1)
@@ -1120,6 +1133,7 @@ EOF;
      */
     public function iShouldNotSeeTheTide($uuid)
     {
+        $this->assertResponseStatus(200);
         $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
         $matchingTides = array_filter($tides, function(array $tide) use ($uuid) {
             return $tide['uuid'] == $uuid;
@@ -1135,6 +1149,7 @@ EOF;
      */
     public function iShouldSeeTheTide($uuid)
     {
+        $this->assertResponseStatus(200);
         $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
         $matchingTides = array_filter($tides, function(array $tide) use ($uuid) {
             return $tide['uuid'] == $uuid;
@@ -1143,6 +1158,14 @@ EOF;
         if (count($matchingTides) == 0) {
             throw new \RuntimeException(sprintf('Tide %s not found', $uuid));
         }
+    }
+
+    /**
+     * @Then I should be told that I don't have the permissions the list the tides
+     */
+    public function iShouldBeToldThatIDonTHaveThePermissionsTheListTheTides()
+    {
+        $this->assertResponseStatus(403);
     }
 
     /**
@@ -1295,6 +1318,20 @@ EOF;
                 'Expected %s but got %s',
                 $expected->format(\DateTime::ISO8601),
                 $found ? $found->format(\DateTime::ISO8601) : 'NULL'
+            ));
+        }
+    }
+
+    /**
+     * @param int $status
+     */
+    private function assertResponseStatus($status)
+    {
+        if ($this->response->getStatusCode() != $status) {
+            throw new \RuntimeException(sprintf(
+                'Expected status %d but got %d',
+                $status,
+                $this->response->getStatusCode()
             ));
         }
     }

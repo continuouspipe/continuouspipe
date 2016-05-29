@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Repository;
 
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\TideFactory;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class EventBusTideRepository implements TideRepository
 {

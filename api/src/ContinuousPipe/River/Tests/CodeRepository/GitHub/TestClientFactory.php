@@ -7,7 +7,7 @@ use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\User\User;
 use Github\Client;
 use Github\HttpClient\HttpClientInterface;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class TestClientFactory implements ClientFactory
 {

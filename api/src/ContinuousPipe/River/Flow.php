@@ -26,7 +26,7 @@ class Flow
     }
 
     /**
-     * @return \Rhumsaa\Uuid\Uuid
+     * @return \Ramsey\Uuid\Uuid
      */
     public function getUuid()
     {

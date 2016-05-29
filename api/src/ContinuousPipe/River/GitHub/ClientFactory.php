@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\GitHub;
 use ContinuousPipe\Security\Credentials\Bucket;
 use Github\Client;
 use ContinuousPipe\Security\User\User;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface ClientFactory
 {

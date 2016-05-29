@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Repository;
 
 use ContinuousPipe\River\Tide;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface TideRepository
 {

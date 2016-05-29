@@ -9,12 +9,14 @@ use ContinuousPipe\River\Tide\ExternalRelation\ExternalRelationResolver;
 use ContinuousPipe\River\Tide\Request\TideCreationRequest;
 use ContinuousPipe\River\Tide\TideSummaryCreator;
 use ContinuousPipe\River\TideFactory;
+use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Knp\Component\Pager\PaginatorInterface;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use FOS\RestBundle\Controller\Annotations\View;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -93,6 +95,7 @@ class TideController
      *
      * @Route("/flows/{uuid}/tides", methods={"GET"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', flow)")
      * @View
      */
     public function findByFlowAction(Request $request, Flow $flow)
@@ -113,6 +116,7 @@ class TideController
      * @Route("/flows/{uuid}/tides", methods={"POST"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @ParamConverter("creationRequest", converter="fos_rest.request_body")
+     * @Security("is_granted('CREATE_TIDE', flow)")
      * @View(statusCode=201)
      */
     public function createAction(Flow $flow, TideCreationRequest $creationRequest)
@@ -143,43 +147,49 @@ class TideController
      * Get a tide by its UUID.
      *
      * @Route("/tides/{uuid}", methods={"GET"})
+     * @ParamConverter("tide", converter="tide", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', tide)")
      * @View
      */
-    public function getAction($uuid)
+    public function getAction(Tide $tide)
     {
-        return $this->tideRepository->find(Uuid::fromString($uuid));
+        return $tide;
     }
 
     /**
      * Get summary of a the given tide.
      *
      * @Route("/tides/{uuid}/summary", methods={"GET"})
+     * @ParamConverter("tide", converter="tide", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', tide)")
      * @View
      */
-    public function summaryAction($uuid)
+    public function summaryAction(Tide $tide)
     {
-        return $this->tideSummaryCreator->fromTide(
-            $this->tideRepository->find(Uuid::fromString($uuid))
-        );
+        return $this->tideSummaryCreator->fromTide($tide);
     }
 
     /**
      * @Route("/tides/{uuid}/external-relations", methods={"GET"})
+     * @ParamConverter("tide", converter="tide", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', tide)")
      * @View
      */
-    public function externalRelationsAction($uuid)
+    public function externalRelationsAction(Tide $tide)
     {
-        return $this->externalRelationResolver->getRelations(Uuid::fromString($uuid));
+        return $this->externalRelationResolver->getRelations($tide->getUuid());
     }
 
     /**
      * Cancel the given tide.
      *
      * @Route("/tides/{uuid}/cancel", methods={"POST"})
+     * @ParamConverter("tide", converter="tide", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', tide)")
      * @View
      */
-    public function cancelAction($uuid)
+    public function cancelAction(Tide $tide)
     {
-        $this->commandBus->handle(new CancelTideCommand(Uuid::fromString($uuid)));
+        $this->commandBus->handle(new CancelTideCommand($tide->getUuid()));
     }
 }

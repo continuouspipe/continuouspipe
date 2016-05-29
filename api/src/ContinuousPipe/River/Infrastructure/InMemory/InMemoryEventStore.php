@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Infrastructure\InMemory;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideEventWithMetadata;
 use ContinuousPipe\River\EventBus\EventStore;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class InMemoryEventStore implements EventStore
 {

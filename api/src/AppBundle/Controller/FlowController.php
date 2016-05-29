@@ -9,8 +9,10 @@ use ContinuousPipe\River\FlowFactory;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\Security\Team\Team;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use ContinuousPipe\Security\Team\TeamRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use SimpleBus\Message\Bus\MessageBus;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -46,36 +48,61 @@ class FlowController
     private $validator;
 
     /**
+     * @var TeamRepository
+     */
+    private $teamRepository;
+
+    /**
      * @param FlowRepository     $flowRepository
      * @param FlowFactory        $flowFactory
      * @param MessageBus         $eventBus
      * @param TideRepository     $tideRepository
      * @param ValidatorInterface $validator
+     * @param TeamRepository     $teamRepository
      */
-    public function __construct(FlowRepository $flowRepository, FlowFactory $flowFactory, MessageBus $eventBus, TideRepository $tideRepository, ValidatorInterface $validator)
+    public function __construct(FlowRepository $flowRepository, FlowFactory $flowFactory, MessageBus $eventBus, TideRepository $tideRepository, ValidatorInterface $validator, TeamRepository $teamRepository)
     {
         $this->flowRepository = $flowRepository;
         $this->eventBus = $eventBus;
         $this->flowFactory = $flowFactory;
         $this->tideRepository = $tideRepository;
         $this->validator = $validator;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
      * Create a new flow from a repository.
      *
+     * @deprecated Should be removed in favor of `fromRepositoryAction`
+     *
      * @Route("/flows", methods={"POST"})
      * @ParamConverter("creationRequest", converter="fos_rest.request_body")
      * @View
      */
-    public function fromRepositoryAction(Flow\Request\FlowCreationRequest $creationRequest)
+    public function deprecatedFromRepositoryAction(Flow\Request\FlowCreationRequest $creationRequest)
+    {
+        return $this->fromRepositoryAction(
+            $this->teamRepository->find($creationRequest->getTeam()),
+            $creationRequest
+        );
+    }
+
+    /**
+     * Create a flow in the team.
+     *
+     * @Route("/teams/{slug}/flows", methods={"POST"})
+     * @ParamConverter("team", converter="team", options={"slug"="slug"})
+     * @ParamConverter("creationRequest", converter="fos_rest.request_body")
+     * @View
+     */
+    public function fromRepositoryAction(Team $team, Flow\Request\FlowCreationRequest $creationRequest)
     {
         $errors = $this->validator->validate($creationRequest);
         if ($errors->count() > 0) {
             return \FOS\RestBundle\View\View::create($errors->get(0), 400);
         }
 
-        $flow = $this->flowFactory->fromCreationRequest($creationRequest);
+        $flow = $this->flowFactory->fromCreationRequest($team, $creationRequest);
         $this->eventBus->handle(new BeforeFlowSave($flow));
         $flow = $this->flowRepository->save($flow);
 
@@ -83,7 +110,7 @@ class FlowController
     }
 
     /**
-     * Create a new flow from a repository.
+     * List flows of a team.
      *
      * @Route("/teams/{slug}/flows", methods={"GET"})
      * @ParamConverter("team", converter="team", options={"slug"="slug"})
@@ -103,6 +130,7 @@ class FlowController
      *
      * @Route("/flows/{uuid}", methods={"GET"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @Security("is_granted('READ', flow)")
      * @View
      */
     public function getAction(Flow $flow)
@@ -116,6 +144,7 @@ class FlowController
      * @Route("/flows/{uuid}", methods={"PUT"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @ParamConverter("updateRequest", converter="fos_rest.request_body")
+     * @Security("is_granted('UPDATE', flow)")
      * @View
      */
     public function updateAction(Flow $flow, Flow\Request\FlowUpdateRequest $updateRequest)
@@ -131,6 +160,7 @@ class FlowController
      *
      * @Route("/flows/{uuid}", methods={"DELETE"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @Security("is_granted('DELETE', flow)")
      * @View
      */
     public function deleteAction(Flow $flow)

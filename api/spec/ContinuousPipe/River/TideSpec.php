@@ -8,7 +8,7 @@ use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
 use PhpSpec\ObjectBehavior;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class TideSpec extends ObjectBehavior
 {
