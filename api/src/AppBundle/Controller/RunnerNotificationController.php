@@ -9,6 +9,7 @@ use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use FOS\RestBundle\Controller\Annotations\View;
 
 /**
  * @Route(service="app.controller.runner_notification")
@@ -31,6 +32,7 @@ class RunnerNotificationController
     /**
      * @Route("/runner/notification/tide/{tideUuid}", methods={"POST"}, name="runner_notification_post")
      * @ParamConverter("deployment", converter="fos_rest.request_body")
+     * @View
      */
     public function postAction($tideUuid, Deployment $deployment)
     {
