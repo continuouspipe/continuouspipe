@@ -16,16 +16,24 @@ class Version20160529133433 extends AbstractMigration
      */
     public function up(Schema $schema)
     {
-        $results = $this->connection->fetchAll('SELECT id, serialized_event, event_datetime FROM event_dto');
-        foreach ($results as $row) {
-            $event = unserialize(base64_decode($row['serialized_event']));
-            $event = UuidReplacer::replace($event);
+        $numberOfEvents = $this->connection->fetchAssoc('SELECT COUNT(*) as number FROM event_dto')['number'];
+        $numberOfEventsPerLoop = 100;
+        $numberOfLoops = ceil($numberOfEvents / $numberOfEvents);
 
-            $row['serialized_event'] = base64_encode(serialize($event));
-            $this->connection->update('event_dto', [
-                'serialized_event' => $row['serialized_event'],
-                'event_datetime' => $row['event_datetime'],
-            ], ['id' => $row['id']]);
+        for ($i = 0; $i < $numberOfLoops; $i++) {
+            $offset = ($i * $numberOfEventsPerLoop);
+
+            $results = $this->connection->fetchAll('SELECT id, serialized_event, event_datetime FROM event_dto LIMIT '.$numberOfEventsPerLoop.' OFFSET '.$offset);
+            foreach ($results as $row) {
+                $event = unserialize(base64_decode($row['serialized_event']));
+                $event = UuidReplacer::replace($event);
+
+                $row['serialized_event'] = base64_encode(serialize($event));
+                $this->connection->update('event_dto', [
+                    'serialized_event' => $row['serialized_event'],
+                    'event_datetime' => $row['event_datetime'],
+                ], ['id' => $row['id']]);
+            }
         }
     }
 
