@@ -88,6 +88,11 @@
         <service id="app.listener.jwt_token_created.add_user_email" class="ContinuousPipe\Authenticator\EventListener\JWTTokenCreated\AddUserEmailInToken">
             <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_jwt_created" method="onJWTCreated" />
         </service>
+        <service id="app.listener.serializer.obfuscate_credentials" class="ContinuousPipe\Authenticator\Obfuscate\Serializer\ObfuscateCredentialsSubscriber">
+            <argument type="service" id="security.token_storage"/>
+
+            <tag name="jms_serializer.event_subscriber" />
+        </service>
 
         <!-- Validation -->
         <service id="app.validator.unique_team" class="ApiBundle\Validator\Constraints\UniqueTeamConstraintValidator">
