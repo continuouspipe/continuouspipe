@@ -6,6 +6,7 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideEventWithMetadata;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\EventDto;
+use ContinuousPipe\River\Infrastructure\Doctrine\UuidUpgrade\UuidReplacer;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\Uuid;
 
@@ -84,7 +85,7 @@ class DoctrineEventStore implements EventStore
 
         return array_map(function (EventDto $dto) {
             return new TideEventWithMetadata(
-                unserialize(base64_decode($dto->serializedEvent)),
+                $this->fromDto($dto),
                 $dto->eventDatetime
             );
         }, $dtoCollection);
@@ -103,7 +104,7 @@ class DoctrineEventStore implements EventStore
 
         return array_map(function (EventDto $dto) {
             return new TideEventWithMetadata(
-                unserialize(base64_decode($dto->serializedEvent)),
+                $this->fromDto($dto),
                 $dto->eventDatetime
             );
         }, $dtoCollection);
@@ -118,7 +119,7 @@ class DoctrineEventStore implements EventStore
     {
         $events = [];
         foreach ($dtoCollection as $dto) {
-            $events[] = unserialize(base64_decode($dto->serializedEvent));
+            $events[] = $this->fromDto($dto);
         }
 
         return $events;
@@ -141,5 +142,18 @@ class DoctrineEventStore implements EventStore
         $microSeconds = sprintf('%06d', ($time - floor($time)) * 1000000);
 
         return new \DateTime(date('Y-m-d H:i:s.'.$microSeconds, $time));
+    }
+
+    /**
+     * @param EventDto $dto
+     *
+     * @return TideEvent
+     */
+    private function fromDto($dto)
+    {
+        $event = unserialize(base64_decode($dto->serializedEvent));
+        $event = UuidReplacer::replace($event);
+
+        return $event;
     }
 }
