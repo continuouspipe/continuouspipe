@@ -112,7 +112,7 @@ fos_rest:
         enabled: true
 
     view:
-        view_response_listener: force
+        view_response_listener: true
 
     format_listener:
         rules:
