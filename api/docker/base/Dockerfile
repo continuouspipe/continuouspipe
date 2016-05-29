@@ -1,4 +1,4 @@
-FROM php:7.0.6-apache
+FROM php:7.0.5-apache
 
 # PHP extension
 RUN requirements="zlib1g-dev libicu-dev libmcrypt-dev git wget" \
