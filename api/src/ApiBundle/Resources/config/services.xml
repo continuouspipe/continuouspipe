@@ -71,6 +71,11 @@
                  public="false">
             <tag name="security.voter" />
         </service>
+        <service id="security.access.system_voter"
+                 class="ContinuousPipe\Authenticator\Security\Voter\SystemUserPermissionVoter"
+                 public="false">
+            <tag name="security.voter" />
+        </service>
 
         <!-- Event listeners -->
         <service id="app.listener.before_team_creation.create_credentials_bucket"
