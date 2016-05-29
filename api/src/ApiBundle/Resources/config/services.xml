@@ -71,6 +71,11 @@
                  public="false">
             <tag name="security.voter" />
         </service>
+        <service id="security.access.system_voter"
+                 class="ContinuousPipe\Authenticator\Security\Voter\SystemUserPermissionVoter"
+                 public="false">
+            <tag name="security.voter" />
+        </service>
 
         <!-- Event listeners -->
         <service id="app.listener.before_team_creation.create_credentials_bucket"
@@ -87,6 +92,11 @@
         </service>
         <service id="app.listener.jwt_token_created.add_user_email" class="ContinuousPipe\Authenticator\EventListener\JWTTokenCreated\AddUserEmailInToken">
             <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_jwt_created" method="onJWTCreated" />
+        </service>
+        <service id="app.listener.serializer.obfuscate_credentials" class="ContinuousPipe\Authenticator\Obfuscate\Serializer\ObfuscateCredentialsSubscriber">
+            <argument type="service" id="security.token_storage"/>
+
+            <tag name="jms_serializer.event_subscriber" />
         </service>
 
         <!-- Validation -->

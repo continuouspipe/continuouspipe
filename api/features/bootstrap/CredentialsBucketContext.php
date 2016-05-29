@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Authenticator\Obfuscate\Serializer\ObfuscateCredentialsSubscriber;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use Ramsey\Uuid\Uuid;
@@ -135,6 +136,23 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @When I ask the list of the docker registry credentials in the bucket :bucket with the API key :key
+     */
+    public function iAskTheListOfTheDockerRegistryCredentialsInTheBucketWithTheApiKey($bucket, $key)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/docker-registries', $bucket),
+            'GET',
+            [],
+            [],
+            [],
+            [
+                'HTTP_X_API_KEY' => $key
+            ]
+        ));
+    }
+
+    /**
      * @When I ask the details of the bucket :bucket
      */
     public function iAskTheDetailsOfTheBucket($bucket)
@@ -226,6 +244,23 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @When I ask the list of the clusters in the bucket :bucket with the API key :key
+     */
+    public function iAskTheListOfTheClustersInTheBucketWithTheApiKey($bucket, $key)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/clusters', $bucket),
+            'GET',
+            [],
+            [],
+            [],
+            [
+                'HTTP_X_API_KEY' => $key
+            ]
+        ));
+    }
+
+    /**
      * @When I delete the cluster :identifier from the bucket :bucket
      */
     public function iDeleteTheClusterFromTheBucket($identifier, $bucket)
@@ -281,12 +316,12 @@ class CredentialsBucketContext implements Context
     }
 
     /**
-     * @Then the list should not contain the access token :accessToken
+     * @Then the list should not contain the access token :identifier
      */
-    public function theListShouldNotContainTheAccessToken($accessToken)
+    public function theListShouldNotContainTheAccessToken($identifier)
     {
         try {
-            $this->theListShouldContainTheAccessToken($accessToken);
+            $this->theListShouldContainTheAccessToken($identifier);
             $found = true;
         } catch (\RuntimeException $e) {
             $found = false;
@@ -298,17 +333,17 @@ class CredentialsBucketContext implements Context
     }
 
     /**
-     * @Then the list should contain the access token :token
+     * @Then the list should contain the access token :identifier
      */
-    public function theListShouldContainTheAccessToken($token)
+    public function theListShouldContainTheAccessToken($identifier)
     {
         $decoded = json_decode($this->response->getContent(), true);
         if (!is_array($decoded)) {
             throw new \RuntimeException('Expected to get an array in the JSON response');
         }
 
-        $matchingCredentials = array_filter($decoded, function(array $row) use ($token) {
-            return $row['accessToken'] == $token;
+        $matchingCredentials = array_filter($decoded, function(array $row) use ($identifier) {
+            return $row['identifier'] == $identifier;
         });
 
         if (0 == count($matchingCredentials)) {
@@ -378,6 +413,49 @@ class CredentialsBucketContext implements Context
     public function iShouldSeeTheListOfTheDockerRegistryCredentials()
     {
         $this->assertResponseCodeIs($this->response, 200);
+    }
+
+    /**
+     * @Then the :key should be obfuscated in the list items
+     */
+    public function theShouldBeObfuscatedInTheListItems($key)
+    {
+        $this->assertResponseCodeIs($this->response, 200);
+
+        $items = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        foreach ($items as $item) {
+            $value = $item[$key];
+            $expected = ObfuscateCredentialsSubscriber::OBFUSCATE_PLACEHOLDER;
+
+            if ($value != $expected) {
+                throw new \RuntimeException(sprintf(
+                    'Expected the value %s but got %s',
+                    $expected,
+                    $value
+                ));
+            }
+        }
+    }
+
+    /**
+     * @Then the :key should not be obfuscated in the list items
+     */
+    public function theShouldNotBeObfuscatedInTheListItems($key)
+    {
+        $this->assertResponseCodeIs($this->response, 200);
+
+        $items = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        foreach ($items as $item) {
+            $value = $item[$key];
+            $unexpected = ObfuscateCredentialsSubscriber::OBFUSCATE_PLACEHOLDER;
+
+            if ($value == $unexpected) {
+                throw new \RuntimeException(sprintf(
+                    'Got %s',
+                    $value
+                ));
+            }
+        }
     }
 
     /**

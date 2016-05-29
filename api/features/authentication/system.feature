@@ -19,3 +19,10 @@ Feature:
     And there is a bucket "00000000-0000-0000-0000-000000000000"
     When I ask the list of the GitHub tokens in the bucket "00000000-0000-0000-0000-000000000000" with the API key "0987654321"
     Then I should receive a list
+
+  Scenario: As system, I can have access to any team details
+    Given there is the api key "0987654321"
+    And there is a team "foo"
+    And the user "samuel" is user of the team "foo"
+    When I request the details of team "foo" with the API key "0987654321"
+    Then I should see the team details

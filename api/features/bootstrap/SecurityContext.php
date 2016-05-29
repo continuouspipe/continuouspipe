@@ -72,6 +72,14 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Given I am not authenticated
+     */
+    public function iAmNotAuthenticated()
+    {
+        $this->tokenStorage->setToken(null);
+    }
+
+    /**
      * @Given there is a user :username
      */
     public function thereIsAUser($username)

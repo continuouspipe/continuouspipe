@@ -26,7 +26,7 @@ Feature:
       | sroze      | e72e16c7e42f292c6912e7710c838347ae178b4a |
     When I ask the list of the GitHub tokens in the bucket "00000000-0000-0000-0000-000000000000"
     Then I should receive a list
-    And the list should contain the access token "e72e16c7e42f292c6912e7710c838347ae178b4a"
+    And the list should contain the access token "sroze"
 
   Scenario: I can delete a GitHub token from a bucket
     Given I have the following GitHub tokens in the bucket "00000000-0000-0000-0000-000000000000":
@@ -34,7 +34,7 @@ Feature:
       | sroze      | e72e16c7e42f292c6912e7710c838347ae178b4a |
     When I delete the GitHub token of "sroze" from the bucket "00000000-0000-0000-0000-000000000000"
     And I ask the list of the GitHub tokens in the bucket "00000000-0000-0000-0000-000000000000"
-    Then the list should not contain the access token "e72e16c7e42f292c6912e7710c838347ae178b4a"
+    Then the list should not contain the access token "sroze"
 
   @smoke
   Scenario: I can create a GitHub token with the same identifier on many buckets

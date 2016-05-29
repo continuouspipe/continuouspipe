@@ -170,6 +170,22 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I request the details of team :team with the API key :key
+     */
+    public function iRequestTheDetailsOfTeamWithTheApiKey($team, $key)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams/'.$team, 'GET',
+            [],
+            [],
+            [],
+            [
+                'HTTP_X_API_KEY' => $key
+            ]
+        ));
+    }
+
+    /**
      * @Then I should see the team details
      */
     public function iShouldSeeTheTeamDetails()
