@@ -1,4 +1,4 @@
-FROM docker.io/inviqasession/cp-river-base:v3
+FROM docker.io/inviqasession/cp-river-base:v4
 
 # Apache & PHP configuration
 RUN a2enmod rewrite
