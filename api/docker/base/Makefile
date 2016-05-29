@@ -1,5 +1,5 @@
 NAME = docker.io/inviqasession/cp-river-base
-VERSION = v4
+VERSION = v5
 
 .PHONY: all build push
 
