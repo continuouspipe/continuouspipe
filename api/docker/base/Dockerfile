@@ -1,4 +1,4 @@
-FROM php:5.6-apache
+FROM php:7-apache
 
 # PHP extension
 RUN requirements="zlib1g-dev libicu-dev libmcrypt-dev git wget" \
@@ -10,7 +10,7 @@ RUN requirements="zlib1g-dev libicu-dev libmcrypt-dev git wget" \
     && docker-php-ext-install opcache \
     && docker-php-ext-install bcmath \
     && docker-php-ext-install mcrypt \
-    && pecl install apcu-4.0.8 && echo extension=apcu.so > /usr/local/etc/php/conf.d/apcu.ini \
+    && pecl install apcu-5.1.4 && echo extension=apcu.so > /usr/local/etc/php/conf.d/apcu.ini \
     && apt-get purge --auto-remove -y
 
 RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
