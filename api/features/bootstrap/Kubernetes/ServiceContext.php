@@ -120,6 +120,14 @@ class ServiceContext implements Context
     }
 
     /**
+     * @Then the service :name should be updated
+     */
+    public function theServiceShouldBeUpdated($name)
+    {
+        $this->findServiceByNameInList($this->serviceRepository->getUpdated(), $name);
+    }
+
+    /**
      * @Then the service :name should not be deleted
      */
     public function theServiceShouldNotBeDeleted($name)

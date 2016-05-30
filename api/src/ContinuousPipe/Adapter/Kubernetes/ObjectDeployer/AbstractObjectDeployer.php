@@ -21,7 +21,7 @@ abstract class AbstractObjectDeployer implements ObjectDeployer
         $updated = [];
 
         if ($repository->exists($name)) {
-            if (null === $deploymentStrategy || $deploymentStrategy->isLocked() === false) {
+            if ($this->needsToBeUpdated($namespaceClient, $object, $deploymentStrategy)) {
                 $updated[] = $this->update($namespaceClient, $object);
             }
         } else {
@@ -59,5 +59,17 @@ abstract class AbstractObjectDeployer implements ObjectDeployer
     protected function create(NamespaceClient $namespaceClient, KubernetesObject $object)
     {
         return $this->getRepository($namespaceClient, $object)->create($object);
+    }
+
+    /**
+     * @param NamespaceClient    $namespaceClient
+     * @param KubernetesObject   $object
+     * @param DeploymentStrategy $deploymentStrategy
+     *
+     * @return bool
+     */
+    protected function needsToBeUpdated(NamespaceClient $namespaceClient, KubernetesObject $object, DeploymentStrategy $deploymentStrategy = null)
+    {
+        return null === $deploymentStrategy || $deploymentStrategy->isLocked() === false;
     }
 }

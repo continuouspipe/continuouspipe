@@ -52,6 +52,4 @@ Feature:
     And the service "app" will be created with the public IP "1.2.3.4"
     When the specification come from the template "simple-app-public"
     And I send the built deployment request
-    Then the service "app" should not be updated
-    And the service "app" should be deleted
-    And the service "app" should be created
+    Then the service "app" should be updated
