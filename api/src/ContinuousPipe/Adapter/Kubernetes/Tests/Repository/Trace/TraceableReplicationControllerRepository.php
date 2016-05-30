@@ -102,6 +102,14 @@ class TraceableReplicationControllerRepository implements ReplicationControllerR
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function exists($name)
+    {
+        return $this->repository->exists($name);
+    }
+
+    /**
      * @return \Kubernetes\Client\Model\ReplicationController[]
      */
     public function getUpdatedReplicationControllers()

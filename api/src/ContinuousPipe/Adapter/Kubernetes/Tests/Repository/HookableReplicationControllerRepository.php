@@ -93,6 +93,14 @@ class HookableReplicationControllerRepository implements ReplicationControllerRe
     /**
      * {@inheritdoc}
      */
+    public function exists($name)
+    {
+        return $this->repository->exists($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findByLabels(array $labels)
     {
         return $this->repository->findByLabels($labels);
