@@ -9,6 +9,7 @@ use ContinuousPipe\Adapter\Kubernetes\Event\AfterCreatingComponent;
 use ContinuousPipe\Adapter\Kubernetes\Event\BeforeCreatingComponent;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
+use ContinuousPipe\Adapter\Kubernetes\Transformer\TransformationException;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Command\CreateComponentsCommand;
@@ -19,9 +20,11 @@ use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Exception\ObjectNotFound;
+use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
+use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\NamespaceClient;
 use Kubernetes\Client\Repository\ObjectRepository;
@@ -130,6 +133,12 @@ class CreateComponentsHandler implements DeploymentHandler
 
                 $this->eventDispatcher->dispatch(AfterCreatingComponent::NAME, new AfterCreatingComponent(
                     $client, $context, $component, $status
+                ));
+            } catch (TransformationException $e) {
+                throw new ComponentException(sprintf(
+                    'Unable to create the component "%s": %s',
+                    $component->getName(),
+                    $e->getMessage()
                 ));
             } catch (ClientError $e) {
                 throw new ComponentException(sprintf(
@@ -245,6 +254,10 @@ class CreateComponentsHandler implements DeploymentHandler
             $repository = $namespaceClient->getServiceRepository();
         } elseif ($object instanceof ReplicationController) {
             $repository = $namespaceClient->getReplicationControllerRepository();
+        } elseif ($object instanceof Ingress) {
+            $repository = $namespaceClient->getIngressRepository();
+        } elseif ($object instanceof Secret) {
+            $repository = $namespaceClient->getSecretRepository();
         } else {
             throw new \RuntimeException(sprintf(
                 'Unsupported object of type "%s"',

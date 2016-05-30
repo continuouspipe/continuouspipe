@@ -8,6 +8,7 @@ use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
 use ContinuousPipe\Adapter\Kubernetes\Service\CreatedService;
 use ContinuousPipe\Adapter\Kubernetes\Service\FoundService;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
+use ContinuousPipe\Adapter\Kubernetes\Transformer\TransformationException;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
@@ -78,13 +79,23 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     public function handle(CreatePublicEndpointsCommand $command)
     {
         $context = $command->getContext();
-        $services = $this->getPublicServices($context->getEnvironment());
-        $serviceRepository = $this->clientFactory->get($context)->getServiceRepository();
 
         $logger = $this->loggerFactory->from($context->getLog())->child(new Text('Create services for public endpoints'));
         $logger->updateStatus(Log::RUNNING);
 
         try {
+            $services = $this->getPublicServices($context->getEnvironment());
+        } catch (TransformationException $e) {
+            $logger->child(new Text($e->getMessage()));
+            $logger->updateStatus(Log::FAILURE);
+
+            $this->eventBus->handle(new DeploymentFailed($context));
+
+            return;
+        }
+
+        try {
+            $serviceRepository = $this->clientFactory->get($context)->getServiceRepository();
             $createdServices = $this->createServices($serviceRepository, $services, $logger);
 
             $logger->updateStatus(Log::SUCCESS);

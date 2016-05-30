@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Adapter\Kubernetes\Listener\PublicServicesCreated;
+namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\WaitReadiness\EventListener\PublicServicesCreated;
 
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointNotFound;

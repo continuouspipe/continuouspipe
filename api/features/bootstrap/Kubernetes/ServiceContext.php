@@ -220,6 +220,21 @@ class ServiceContext implements Context
             }
         }
     }
+    /**
+     * @Then the service :name should have the type :type
+     */
+    public function theServiceShouldHaveTheType($name, $type)
+    {
+        $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $name);
+
+        if ($service->getSpecification()->getType() != $type) {
+            throw new \RuntimeException(sprintf(
+                'Expected type "%s" but got "%s"',
+                $type,
+                $service->getSpecification()->getType()
+            ));
+        }
+    }
 
     /**
      * @param Service[] $services

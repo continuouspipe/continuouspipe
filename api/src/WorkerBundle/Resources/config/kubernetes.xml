@@ -17,10 +17,14 @@
             <argument type="service" id="event_dispatcher" />
         </service>
         <service id="kubernetes.transformer.replication_controller_factory" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ReplicationControllerFactory" />
+        <service id="kubernetes.transformer.ingress_factory" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\Ingress\Factory\IngressFactory">
+            <argument type="service" id="kubernetes.naming_strategy.identifier" />
+        </service>
         <service id="kubernetes.transformer.component" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer">
             <argument type="service" id="kubernetes.transformer.pod" />
             <argument type="service" id="kubernetes.transformer.service" />
             <argument type="service" id="kubernetes.transformer.replication_controller_factory" />
+            <argument type="service" id="kubernetes.transformer.ingress_factory" />
         </service>
         <service id="kubernetes.transformer.environment" class="ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer">
             <argument type="service" id="kubernetes.transformer.component" />
@@ -73,7 +77,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" />
             <argument type="service" id="authenticator.bucket_repository" />
         </service>
-        <service id="pipe.adapter.kubernetes.listener.wait_public_services" class="ContinuousPipe\Adapter\Kubernetes\Listener\PublicServicesCreated\WaitPublicServicesEndpoints">
+        <service id="pipe.adapter.kubernetes.listener.wait_public_services" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\WaitReadiness\EventListener\PublicServicesCreated\WaitPublicServicesEndpoints">
             <argument type="service" id="event_bus" />
             <argument type="service" id="pipe.adapter.kubernetes.service_waiter" />
             <argument type="service" id="log_stream.logger_factory" />

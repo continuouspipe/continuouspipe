@@ -23,6 +23,8 @@ class EnvironmentTransformer
     /**
      * @param Environment $environment
      *
+     * @throws TransformationException
+     *
      * @return KubernetesObject[]
      */
     public function getElementListFromEnvironment(Environment $environment)

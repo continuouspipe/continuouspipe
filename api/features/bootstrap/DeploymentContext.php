@@ -118,7 +118,17 @@ class DeploymentContext implements Context
     public function theSpecificationComeFromTheTemplate($template)
     {
         $this->deploymentRequest['specification'] = [
-            'components' => json_decode(file_get_contents(__DIR__.'/../fixtures/'.$template.'.json'), true),
+            'components' => \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/'.$template.'.json'), true),
+        ];
+    }
+
+    /**
+     * @Given the components specification are:
+     */
+    public function theComponentsSpecificationAre(PyStringNode $string)
+    {
+        $this->deploymentRequest['specification'] = [
+            'components' => \GuzzleHttp\json_decode($string->getRaw(), true),
         ];
     }
 
@@ -201,6 +211,8 @@ class DeploymentContext implements Context
             $json = json_decode($this->response->getContent(), true);
 
             self::$deploymentUuid = Uuid::fromString($json['uuid']);
+        } else {
+            echo $this->response->getContent();
         }
     }
 
