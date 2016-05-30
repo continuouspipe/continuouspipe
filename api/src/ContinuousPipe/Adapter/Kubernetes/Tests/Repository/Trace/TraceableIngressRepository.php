@@ -54,6 +54,14 @@ class TraceableIngressRepository implements IngressRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function update(Ingress $ingress)
+    {
+        return $this->decoratedRepository->update($ingress);
+    }
+
+    /**
      * @return Ingress[]
      */
     public function getCreated()

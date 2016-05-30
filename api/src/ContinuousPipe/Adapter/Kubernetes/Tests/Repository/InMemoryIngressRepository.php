@@ -39,4 +39,12 @@ class InMemoryIngressRepository implements IngressRepository
     {
         return array_key_exists($name, $this->ingresses);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(Ingress $ingress)
+    {
+        $this->ingresses[$ingress->getMetadata()->getName()] = $ingress;
+    }
 }

@@ -56,6 +56,14 @@ class HookableIngressRepository implements IngressRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function update(Ingress $ingress)
+    {
+        return $this->decoratedRepository->update($ingress);
+    }
+
+    /**
      * @param callable $hook
      */
     public function addFindOneByNameHooks(callable $hook)
