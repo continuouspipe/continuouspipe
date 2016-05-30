@@ -7,7 +7,7 @@ use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
 use ContinuousPipe\Adapter\Kubernetes\Component\ComponentException;
 use ContinuousPipe\Adapter\Kubernetes\Event\AfterCreatingComponent;
 use ContinuousPipe\Adapter\Kubernetes\Event\BeforeCreatingComponent;
-use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
+use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointObjectVoter;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\TransformationException;
 use ContinuousPipe\Model\Component;
@@ -58,7 +58,7 @@ class CreateComponentsHandler implements DeploymentHandler
     private $loggerFactory;
 
     /**
-     * @var PublicServiceVoter
+     * @var PublicEndpointObjectVoter
      */
     private $publicServiceVoter;
 
@@ -68,14 +68,14 @@ class CreateComponentsHandler implements DeploymentHandler
     private $eventDispatcher;
 
     /**
-     * @param ComponentTransformer     $componentTransformer
-     * @param DeploymentClientFactory  $clientFactory
-     * @param MessageBus               $eventBus
-     * @param LoggerFactory            $loggerFactory
-     * @param PublicServiceVoter       $publicServiceVoter
-     * @param EventDispatcherInterface $eventDispatcher
+     * @param ComponentTransformer      $componentTransformer
+     * @param DeploymentClientFactory   $clientFactory
+     * @param MessageBus                $eventBus
+     * @param LoggerFactory             $loggerFactory
+     * @param PublicEndpointObjectVoter $publicServiceVoter
+     * @param EventDispatcherInterface  $eventDispatcher
      */
-    public function __construct(ComponentTransformer $componentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, PublicServiceVoter $publicServiceVoter, EventDispatcherInterface $eventDispatcher)
+    public function __construct(ComponentTransformer $componentTransformer, DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, PublicEndpointObjectVoter $publicServiceVoter, EventDispatcherInterface $eventDispatcher)
     {
         $this->componentTransformer = $componentTransformer;
         $this->clientFactory = $clientFactory;
@@ -167,7 +167,7 @@ class CreateComponentsHandler implements DeploymentHandler
         $creationStatus = new ComponentCreationStatus();
 
         foreach ($objects as $object) {
-            if ($this->publicServiceVoter->isAPublicService($object)) {
+            if ($this->publicServiceVoter->isPublicEndpointObject($object)) {
                 $logger->child(new Text('Ignoring the public service '.$this->getObjectTypeAndName($object)));
 
                 continue;

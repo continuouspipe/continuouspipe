@@ -33,7 +33,7 @@
         <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector">
             <argument type="service" id="kubernetes.reverse_transformer.component" />
         </service>
-        <service id="kubernetes.public_endpoint.public_service_voter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter" />
+        <service id="kubernetes.public_endpoint.public_service_voter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointObjectVoter" />
 
         <!-- Kubernetes client -->
         <service id="pipe.adapter.kubernetes.guzzle_client" class="GuzzleHttp\Client">

@@ -4,7 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
-use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicServiceVoter;
+use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointObjectVoter;
 use ContinuousPipe\Adapter\Kubernetes\Service\CreatedService;
 use ContinuousPipe\Adapter\Kubernetes\Service\FoundService;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
@@ -48,23 +48,23 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     private $loggerFactory;
 
     /**
-     * @var PublicServiceVoter
+     * @var PublicEndpointObjectVoter
      */
     private $publicServiceVoter;
 
     /**
-     * @param EnvironmentTransformer  $environmentTransformer
-     * @param DeploymentClientFactory $clientFactory
-     * @param MessageBus              $eventBus
-     * @param LoggerFactory           $loggerFactory
-     * @param PublicServiceVoter      $publicServiceVoter
+     * @param EnvironmentTransformer    $environmentTransformer
+     * @param DeploymentClientFactory   $clientFactory
+     * @param MessageBus                $eventBus
+     * @param LoggerFactory             $loggerFactory
+     * @param PublicEndpointObjectVoter $publicServiceVoter
      */
     public function __construct(
         EnvironmentTransformer $environmentTransformer,
         DeploymentClientFactory $clientFactory,
         MessageBus $eventBus,
         LoggerFactory $loggerFactory,
-        PublicServiceVoter $publicServiceVoter
+        PublicEndpointObjectVoter $publicServiceVoter
     ) {
         $this->environmentTransformer = $environmentTransformer;
         $this->clientFactory = $clientFactory;
@@ -151,7 +151,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
         $publicServices = array_filter(
             $namespaceObjects,
             function (KubernetesObject $object) {
-                return $this->publicServiceVoter->isAPublicService($object);
+                return $this->publicServiceVoter->isPublicEndpointObject($object);
             }
         );
 
