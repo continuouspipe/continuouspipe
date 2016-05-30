@@ -70,10 +70,10 @@ class IngressFactory implements EndpointFactory
         $type = $endpoint->getType() ?: ServiceSpecification::TYPE_CLUSTER_IP;
 
         $labels = $this->namingStrategy->getLabelsByComponent($component);
-        $labels->add(new Label('source-of-ingress', $endpoint->getName()));
+        $serviceSpecification = new ServiceSpecification($labels->toAssociativeArray(), $ports, $type);
 
+        $labels->add(new Label('source-of-ingress', $endpoint->getName()));
         $objectMetadata = new ObjectMetadata($endpoint->getName(), $labels);
-        $serviceSpecification = new ServiceSpecification($objectMetadata->getLabelsAsAssociativeArray(), $ports, $type);
         $service = new Service($objectMetadata, $serviceSpecification);
 
         return $service;
