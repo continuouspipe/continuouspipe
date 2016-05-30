@@ -9,7 +9,6 @@ ui:
     - PIPE_API_URL=pipe_api.docker/app_dev.php
   labels:
     com.continuouspipe.image-name: inviqasession/cp-river-ui
-    com.continuouspipe.visibility: public
   expose:
     - 80
     - 35729

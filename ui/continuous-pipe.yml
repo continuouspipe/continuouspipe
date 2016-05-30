@@ -25,6 +25,16 @@ tasks:
             cluster: gke
             services:
                 ui:
+                    endpoints:
+                        -
+                            name: https
+                            type: NodePort
+                            ssl_certificates:
+                                -
+                                    name: continuouspipeio
+                                    cert: ${WILDCARD_SSL_CERT}
+                                    key: ${WILDCARD_SSL_KEY}
+
                     specification:
                         environment_variables:
                             - name: AUTHENTICATOR_API_URL
@@ -35,5 +45,6 @@ tasks:
                               value: pipe.continuouspipe.io
                             - name: RIVER_API_URL
                               value: river.continuouspipe.io
+
         filter:
             expression: code_reference.branch == 'master'
