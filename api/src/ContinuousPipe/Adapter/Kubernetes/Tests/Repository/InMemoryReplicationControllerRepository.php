@@ -91,6 +91,14 @@ class InMemoryReplicationControllerRepository implements ReplicationControllerRe
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function exists($name)
+    {
+        return array_key_exists($name, $this->replicationControllers);
+    }
+
+    /**
      * Return true is the replication controller labels' are matching.
      *
      * @param ReplicationController $replicationController

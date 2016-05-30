@@ -1,16 +1,16 @@
 <?php
 
-namespace ContinuousPipe\Adapter\Kubernetes\Listener\PublicServicesCreated;
+namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\WaitReadiness\EventListener\PublicServicesCreated;
 
+use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointNotFound;
-use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\ServiceWaiter;
-use ContinuousPipe\Adapter\Kubernetes\Service\CreatedService;
-use ContinuousPipe\Adapter\Kubernetes\Service\Service;
+use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointWaiter;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\PublicEndpointsCreated;
 use ContinuousPipe\Pipe\Event\PublicEndpointsReady;
+use Kubernetes\Client\Model\KubernetesObject;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -24,7 +24,7 @@ class WaitPublicServicesEndpoints
     private $eventBus;
 
     /**
-     * @var ServiceWaiter
+     * @var PublicEndpointWaiter
      */
     private $waiter;
 
@@ -34,11 +34,11 @@ class WaitPublicServicesEndpoints
     private $loggerFactory;
 
     /**
-     * @param MessageBus    $eventBus
-     * @param ServiceWaiter $waiter
-     * @param LoggerFactory $loggerFactory
+     * @param MessageBus           $eventBus
+     * @param PublicEndpointWaiter $waiter
+     * @param LoggerFactory        $loggerFactory
      */
-    public function __construct(MessageBus $eventBus, ServiceWaiter $waiter, LoggerFactory $loggerFactory)
+    public function __construct(MessageBus $eventBus, PublicEndpointWaiter $waiter, LoggerFactory $loggerFactory)
     {
         $this->eventBus = $eventBus;
         $this->waiter = $waiter;
@@ -51,16 +51,18 @@ class WaitPublicServicesEndpoints
     public function notify(PublicServicesCreated $event)
     {
         $context = $event->getContext();
+        $status = $event->getStatus();
 
         $logger = $this->loggerFactory->from($context->getLog())->child(
             new Text('Waiting public endpoints to be created')
         )->updateStatus(Log::RUNNING);
 
         try {
-            $endpoints = $this->waitEndpoints($context, $event->getServices(), $logger->getLog());
+            $objects = $this->getObjectsToWait($status);
+            $endpoints = $this->waitEndpoints($context, $objects, $logger->getLog());
             $logger->updateStatus(Log::SUCCESS);
 
-            if ($this->hasNewServices($event->getServices())) {
+            if (count($status->getCreated()) > 0) {
                 $this->eventBus->handle(new PublicEndpointsCreated($context, $endpoints));
             }
 
@@ -73,37 +75,34 @@ class WaitPublicServicesEndpoints
     }
 
     /**
-     * @param DeploymentContext $context
-     * @param Service[]         $services
-     * @param Log               $log
+     * @param DeploymentContext  $context
+     * @param KubernetesObject[] $objects
+     * @param Log                $log
      *
      * @return \ContinuousPipe\Pipe\Environment\PublicEndpoint[]
      */
-    private function waitEndpoints(DeploymentContext $context, array $services, Log $log)
+    private function waitEndpoints(DeploymentContext $context, array $objects, Log $log)
     {
         $endpoints = [];
-        foreach ($services as $service) {
-            $endpoints[] = $this->waiter->waitService($context, $service, $log);
+        foreach ($objects as $object) {
+            $endpoints[] = $this->waiter->waitEndpoint($context, $object, $log);
         }
 
         return $endpoints;
     }
 
     /**
-     * Returns true if one on these services were just created.
+     * @param ComponentCreationStatus $status
      *
-     * @param Service[] $services
-     *
-     * @return bool
+     * @return KubernetesObject[]
      */
-    private function hasNewServices(array $services)
+    private function getObjectsToWait(ComponentCreationStatus $status)
     {
-        return array_reduce(
-            $services,
-            function ($hasNewServices, $service) {
-                return $service instanceof CreatedService ?: $hasNewServices;
-            },
-            false
-        );
+        $objects = array_merge($status->getCreated(), $status->getUpdated());
+        $objects = array_filter($objects, function (KubernetesObject $object) {
+            return !$object->getMetadata()->getLabelList()->hasKey('source-of-ingress');
+        });
+
+        return array_values($objects);
     }
 }

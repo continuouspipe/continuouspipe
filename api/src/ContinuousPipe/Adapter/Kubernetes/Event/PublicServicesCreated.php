@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Event;
 
+use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
 use ContinuousPipe\Pipe\DeploymentContext;
-use Kubernetes\Client\Model\Service;
 
 class PublicServicesCreated
 {
@@ -13,18 +13,18 @@ class PublicServicesCreated
     private $context;
 
     /**
-     * @var Service[]
+     * @var ComponentCreationStatus
      */
-    private $services;
+    private $status;
 
     /**
-     * @param DeploymentContext $context
-     * @param Service[]         $services
+     * @param DeploymentContext       $context
+     * @param ComponentCreationStatus $status
      */
-    public function __construct(DeploymentContext $context, array $services)
+    public function __construct(DeploymentContext $context, ComponentCreationStatus $status)
     {
         $this->context = $context;
-        $this->services = $services;
+        $this->status = $status;
     }
 
     /**
@@ -36,10 +36,10 @@ class PublicServicesCreated
     }
 
     /**
-     * @return \Kubernetes\Client\Model\Service[]
+     * @return ComponentCreationStatus
      */
-    public function getServices()
+    public function getStatus()
     {
-        return $this->services;
+        return $this->status;
     }
 }

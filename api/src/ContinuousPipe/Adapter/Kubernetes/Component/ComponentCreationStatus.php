@@ -105,4 +105,14 @@ class ComponentCreationStatus extends ComponentStatus
     {
         return count($this->deleted) > 0;
     }
+
+    /**
+     * @param ComponentCreationStatus $status
+     */
+    public function merge(ComponentCreationStatus $status)
+    {
+        $this->created = array_merge($this->created, $status->getCreated());
+        $this->updated = array_merge($this->updated, $status->getUpdated());
+        $this->deleted = array_merge($this->deleted, $status->getDeleted());
+    }
 }

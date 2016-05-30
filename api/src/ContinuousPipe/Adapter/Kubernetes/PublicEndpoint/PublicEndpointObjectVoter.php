@@ -2,11 +2,12 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint;
 
+use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServiceSpecification;
 
-class PublicServiceVoter
+class PublicEndpointObjectVoter
 {
     /**
      * Return true if this is a public service.
@@ -15,8 +16,12 @@ class PublicServiceVoter
      *
      * @return bool
      */
-    public function isAPublicService(KubernetesObject $object)
+    public function isPublicEndpointObject(KubernetesObject $object)
     {
+        if ($object instanceof Ingress || $object->getMetadata()->getLabelList()->hasKey('source-of-ingress')) {
+            return true;
+        }
+
         return $object instanceof Service && $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER;
     }
 }

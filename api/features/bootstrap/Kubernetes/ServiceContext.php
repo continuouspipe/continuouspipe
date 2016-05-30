@@ -120,6 +120,14 @@ class ServiceContext implements Context
     }
 
     /**
+     * @Then the service :name should be updated
+     */
+    public function theServiceShouldBeUpdated($name)
+    {
+        $this->findServiceByNameInList($this->serviceRepository->getUpdated(), $name);
+    }
+
+    /**
      * @Then the service :name should not be deleted
      */
     public function theServiceShouldNotBeDeleted($name)
@@ -218,6 +226,21 @@ class ServiceContext implements Context
                     $row['name']
                 ));
             }
+        }
+    }
+    /**
+     * @Then the service :name should have the type :type
+     */
+    public function theServiceShouldHaveTheType($name, $type)
+    {
+        $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $name);
+
+        if ($service->getSpecification()->getType() != $type) {
+            throw new \RuntimeException(sprintf(
+                'Expected type "%s" but got "%s"',
+                $type,
+                $service->getSpecification()->getType()
+            ));
         }
     }
 
