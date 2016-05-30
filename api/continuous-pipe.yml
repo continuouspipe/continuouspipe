@@ -27,10 +27,17 @@ tasks:
                     locked: true
 
                 api:
-                    specification:
-                        accessibility:
-                            from_external: true
+                    endpoints:
+                        -
+                            name: https
+                            type: NodePort
+                            ssl_certificates:
+                                -
+                                    name: continuouspipeio
+                                    cert: ${WILDCARD_SSL_CERT}
+                                    key: ${WILDCARD_SSL_KEY}
 
+                    specification:
                         environment_variables:
                             - name: AUTHENTICATOR_URL
                               value: http://authenticator.continuouspipe.io
@@ -90,8 +97,8 @@ tasks:
                               value: river
                             - name: DATABASE_PASSWORD
                               value: 138xHEqgD93lk
-        filter:
-            expression: code_reference.branch == 'master'
+#        filter:
+#            expression: code_reference.branch == 'master'
 
     migrations:
         run:

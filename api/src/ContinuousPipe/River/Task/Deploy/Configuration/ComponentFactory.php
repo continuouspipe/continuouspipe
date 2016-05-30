@@ -36,7 +36,8 @@ class ComponentFactory
             $this->getExtensions($configuration),
             [],
             null,
-            $this->getDeploymentStrategy($configuration)
+            $this->getDeploymentStrategy($configuration),
+            $this->getEndpoints($configuration)
         );
 
         return $component;
@@ -54,6 +55,20 @@ class ComponentFactory
         $jsonEncodedSpecification = json_encode($configuration['specification']);
 
         return $this->serializer->deserialize($jsonEncodedSpecification, Component\Specification::class, 'json');
+    }
+
+    /**
+     * Get component endpoints from the configuration.
+     *
+     * @param array $configuration
+     *
+     * @return Component\Endpoint[]
+     */
+    private function getEndpoints(array $configuration)
+    {
+        $jsonEncodedEndpoints = json_encode($configuration['endpoints']);
+
+        return $this->serializer->deserialize($jsonEncodedEndpoints, sprintf('array<%s>', Component\Endpoint::class), 'json');
     }
 
     /**

@@ -117,6 +117,7 @@ fos_rest:
     format_listener:
         rules:
             - { path: '^/(_profiler|admin)', priorities: ['html'] }
+            - { path: '^/$', priorities: ['html'], fallback_format: html, prefer_extension: false }
             - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
 
     exception:
