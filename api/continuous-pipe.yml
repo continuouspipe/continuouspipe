@@ -38,6 +38,9 @@ tasks:
                                     key: ${WILDCARD_SSL_KEY}
 
                     specification:
+                        accessibility:
+                            from_external: true
+
                         environment_variables:
                             - name: AUTHENTICATOR_URL
                               value: http://authenticator.continuouspipe.io
@@ -52,7 +55,7 @@ tasks:
                             - name: RIVER_UI_URL
                               value: http://ui.continuouspipe.io
                             - name: RIVER_URL
-                              value: ${SERVICE_API_PUBLIC_ENDPOINT}
+                              value: river.continuouspipe.io
                             - name: KEEN_PROJECT_ID
                               value: ${KEEN_PROJECT_ID}
                             - name: KEEN_WRITE_KEY
@@ -84,7 +87,7 @@ tasks:
                             - name: PIPE_URL
                               value: http://pipe.continuouspipe.io
                             - name: RIVER_URL
-                              value: ${SERVICE_API_PUBLIC_ENDPOINT}
+                              value: river.continuouspipe.io
                             - name: KEEN_PROJECT_ID
                               value: ${KEEN_PROJECT_ID}
                             - name: KEEN_WRITE_KEY
