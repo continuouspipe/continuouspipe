@@ -3,25 +3,20 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
+use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
 use ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\ObjectDeployer;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointObjectVoter;
-use ContinuousPipe\Adapter\Kubernetes\Service\CreatedService;
-use ContinuousPipe\Adapter\Kubernetes\Service\FoundService;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer;
-use ContinuousPipe\Adapter\Kubernetes\Transformer\TransformationException;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
-use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Model\KubernetesObject;
-use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\NamespaceClient;
 use LogStream\Log;
-use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -92,24 +87,13 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
         $logger->updateStatus(Log::RUNNING);
 
         try {
-            $services = $this->getPublicServices($context->getEnvironment());
-        } catch (TransformationException $e) {
-            $logger->child(new Text($e->getMessage()));
-            $logger->updateStatus(Log::FAILURE);
-
-            $this->eventBus->handle(new DeploymentFailed($context));
-
-            return;
-        }
-
-        try {
-            $createdServices = $this->createServices($this->clientFactory->get($context), $services, $logger);
+            $objects = $this->getPublicEndpointObjects($context->getEnvironment());
+            $status = $this->createPublicEndpointObjects($this->clientFactory->get($context), $objects);
 
             $logger->updateStatus(Log::SUCCESS);
-
-            $this->eventBus->handle(new PublicServicesCreated($context, $createdServices));
-        } catch (ClientError $e) {
-            $logger->child(new Text('Error: '.$e->getMessage()));
+            $this->eventBus->handle(new PublicServicesCreated($context, $status));
+        } catch (\Exception $e) {
+            $logger->child(new Text($e->getMessage()));
             $logger->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed($context));
@@ -117,41 +101,37 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     }
 
     /**
-     * @param NamespaceClient $namespaceClient
-     * @param Service[]       $services
-     * @param Logger          $logger
+     * @param NamespaceClient    $namespaceClient
+     * @param KubernetesObject[] $objects
      *
-     * @return \Kubernetes\Client\Model\Service[]
+     * @return ComponentCreationStatus
      */
-    private function createServices(NamespaceClient $namespaceClient, array $services, Logger $logger)
+    private function createPublicEndpointObjects(NamespaceClient $namespaceClient, array $objects)
     {
-        $publicServices = [];
-        foreach ($services as $service) {
-            $status = $this->objectDeployer->deploy($namespaceClient, $service);
+        $status = new ComponentCreationStatus();
 
-            $created = $status->getCreated();
-            $publicServices[] = count($created) == 0 ? new FoundService($service) : new CreatedService($service);
+        foreach ($objects as $object) {
+            $status->merge(
+                $this->objectDeployer->deploy($namespaceClient, $object)
+            );
         }
 
-        return $publicServices;
+        return $status;
     }
 
     /**
      * @param Environment $environment
      *
-     * @return Service[]
+     * @return KubernetesObject[]
      */
-    private function getPublicServices(Environment $environment)
+    private function getPublicEndpointObjects(Environment $environment)
     {
         $namespaceObjects = $this->environmentTransformer->getElementListFromEnvironment($environment);
-        $publicServices = array_filter(
-            $namespaceObjects,
-            function (KubernetesObject $object) {
-                return $this->publicServiceVoter->isPublicEndpointObject($object);
-            }
-        );
+        $objects = array_filter($namespaceObjects, function (KubernetesObject $object) {
+            return $this->publicServiceVoter->isPublicEndpointObject($object);
+        });
 
-        return array_values($publicServices);
+        return array_values($objects);
     }
 
     /**

@@ -2,21 +2,21 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint;
 
-use ContinuousPipe\Adapter\Kubernetes\Service\Service;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
+use Kubernetes\Client\Model\KubernetesObject;
 use LogStream\Log;
 
-interface ServiceWaiter
+interface PublicEndpointWaiter
 {
     /**
      * @param DeploymentContext $context
-     * @param Service           $service
+     * @param KubernetesObject  $object
      * @param Log               $log
      *
      * @throws EndpointNotFound
      *
      * @return PublicEndpoint
      */
-    public function waitService(DeploymentContext $context, Service $service, Log $log);
+    public function waitEndpoint(DeploymentContext $context, KubernetesObject $object, Log $log);
 }

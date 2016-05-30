@@ -11,6 +11,7 @@ use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressBackend;
 use Kubernetes\Client\Model\IngressSpecification;
 use Kubernetes\Client\Model\IngressTls;
+use Kubernetes\Client\Model\Label;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Model\Service;
@@ -43,7 +44,7 @@ class IngressFactory implements EndpointFactory
             return $this->createSslCertificateSecret($endpoint, $sslCertificate);
         }, $endpoint->getSslCertificates());
 
-        $ingress = $this->createIngress($service, $sslCertificatesSecrets);
+        $ingress = $this->createIngress($component, $service, $sslCertificatesSecrets);
 
         return array_merge($sslCertificatesSecrets, [$service, $ingress]);
     }
@@ -68,7 +69,10 @@ class IngressFactory implements EndpointFactory
 
         $type = $endpoint->getType() ?: ServiceSpecification::TYPE_CLUSTER_IP;
 
-        $objectMetadata = new ObjectMetadata($endpoint->getName(), $this->namingStrategy->getLabelsByComponent($component));
+        $labels = $this->namingStrategy->getLabelsByComponent($component);
+        $labels->add(new Label('source-of-ingress', $endpoint->getName()));
+
+        $objectMetadata = new ObjectMetadata($endpoint->getName(), $labels);
         $serviceSpecification = new ServiceSpecification($objectMetadata->getLabelsAsAssociativeArray(), $ports, $type);
         $service = new Service($objectMetadata, $serviceSpecification);
 
@@ -96,15 +100,19 @@ class IngressFactory implements EndpointFactory
     }
 
     /**
+     * @param Component                 $component
      * @param Service                   $service
      * @param Endpoint\SslCertificate[] $sslCertificatesSecrets
      *
      * @return Ingress
      */
-    private function createIngress(Service $service, array $sslCertificatesSecrets)
+    private function createIngress(Component $component, Service $service, array $sslCertificatesSecrets)
     {
         return new Ingress(
-            $service->getMetadata(),
+            new ObjectMetadata(
+                $service->getMetadata()->getName(),
+                $this->namingStrategy->getLabelsByComponent($component)
+            ),
             new IngressSpecification(
                 new IngressBackend(
                     $service->getMetadata()->getName(),

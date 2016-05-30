@@ -53,3 +53,37 @@ Feature:
     When the specification come from the template "simple-app-public"
     And I send the built deployment request
     Then the service "app" should be updated
+
+  Scenario: The public endpoint is populated also with ingresses
+    Given the ingress "http" will be created with the public DNS address "app.my.dns"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "type": "NodePort"
+          }
+        ]
+      }
+    ]
+    """
+    And I send the built deployment request
+    Then the replication controller "app" should be created with the following environment variables:
+      | name                          | value      |
+      | ENDPOINT_HTTP_PUBLIC_ENDPOINT | app.my.dns |

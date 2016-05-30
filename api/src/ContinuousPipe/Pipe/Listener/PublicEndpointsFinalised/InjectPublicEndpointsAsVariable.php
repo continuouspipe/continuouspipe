@@ -22,7 +22,8 @@ class InjectPublicEndpointsAsVariable
             $environmentVariables = $specification->getEnvironmentVariables();
 
             foreach ($publicEndpoints as $publicEndpoint) {
-                $environmentVariables[] = $this->getEnvironmentVariableForEndpoint($publicEndpoint);
+                $environmentVariables[] = $this->getServiceEnvironmentVariableForEndpoint($publicEndpoint);
+                $environmentVariables[] = $this->getEndpointEnvironmentVariableForEndpoint($publicEndpoint);
             }
 
             $specification->setEnvironmentVariables(
@@ -36,11 +37,25 @@ class InjectPublicEndpointsAsVariable
      *
      * @return EnvironmentVariable
      */
-    private function getEnvironmentVariableForEndpoint(PublicEndpoint $endpoint)
+    private function getServiceEnvironmentVariableForEndpoint(PublicEndpoint $endpoint)
     {
-        $variableName = sprintf('SERVICE_%s_PUBLIC_ENDPOINT', strtoupper($endpoint->getName()));
+        return new EnvironmentVariable(
+            sprintf('SERVICE_%s_PUBLIC_ENDPOINT', strtoupper($endpoint->getName())),
+            $endpoint->getAddress()
+        );
+    }
 
-        return new EnvironmentVariable($variableName, $endpoint->getAddress());
+    /**
+     * @param PublicEndpoint $endpoint
+     *
+     * @return EnvironmentVariable
+     */
+    private function getEndpointEnvironmentVariableForEndpoint(PublicEndpoint $endpoint)
+    {
+        return new EnvironmentVariable(
+            sprintf('ENDPOINT_%s_PUBLIC_ENDPOINT', strtoupper($endpoint->getName())),
+            $endpoint->getAddress()
+        );
     }
 
     /**

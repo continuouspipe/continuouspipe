@@ -43,7 +43,7 @@ Feature:
           }
         ]
       }
-      ]
+    ]
     """
     When I send the built deployment request
     Then the service "https" should be created
@@ -77,7 +77,7 @@ Feature:
           }
         ]
       }
-      ]
+    ]
     """
     When I send the built deployment request
     Then the service "http" should be created

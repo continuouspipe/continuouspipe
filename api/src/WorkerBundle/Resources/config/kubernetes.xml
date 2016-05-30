@@ -61,7 +61,7 @@
         <service id="pipe.adapter.kubernetes.deployment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
         </service>
-        <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\LoopServiceWaiter">
+        <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\LoopPublicEndpointWaiter">
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="tolerance.waiter" />
