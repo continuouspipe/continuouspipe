@@ -219,3 +219,33 @@ Feature:
     When a tide is started
     Then the component "image0" should be deployed
     And the readiness probe of the component "image0" should be an http probe on path "/"
+
+  Scenario: Add endpoints
+    When I tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: https
+                                type: NodePort
+                                ssl_certificates:
+                                    -
+                                        name: continuouspipeio
+                                        cert: VALUE
+                                        key: VALUE
+                        specification:
+                            source:
+                                image: my/app
+                            accessibility:
+                                from_external: true
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "https"
+    And the endpoint "https" of the component "app" should be deployed with 1 SSL certificate

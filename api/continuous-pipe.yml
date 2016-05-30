@@ -27,10 +27,15 @@ tasks:
                     locked: true
 
                 api:
-                    specification:
-                        accessibility:
-                            from_external: true
+                    endpoints:
+                        https:
+                            type: NodePort
+                            ssl_certificates:
+                                -
+                                    cert: VALUE
+                                    key: VALUE
 
+                    specification:
                         environment_variables:
                             - name: AUTHENTICATOR_URL
                               value: http://authenticator.continuouspipe.io
@@ -58,6 +63,8 @@ tasks:
                               value: river
                             - name: DATABASE_PASSWORD
                               value: 138xHEqgD93lk
+
+
 
                 worker:
                     specification:

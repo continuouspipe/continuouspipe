@@ -274,6 +274,43 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the component :name should be deployed with an endpoint named :endpointName
+     */
+    public function theComponentShouldBeDeployedWithAnEndpointNamed($name, $endpointName)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $matching = array_filter($component->getEndpoints(), function(Component\Endpoint $endpoint) use ($endpointName) {
+            return $endpoint->getName() == $endpointName;
+        });
+
+        if (count($matching) === 0) {
+            throw new \RuntimeException('Endpoint not found');
+        }
+    }
+
+    /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with :count SSL certificate
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithSslCertificate($endpointName, $name, $count)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        /** @var Component\Endpoint $endpoint */
+        $endpoint = current(array_filter($component->getEndpoints(), function(Component\Endpoint $endpoint) use ($endpointName) {
+            return $endpoint->getName() == $endpointName;
+        }));
+
+        $numberOfCertificates = count($endpoint->getSslCertificates());
+
+        if ($numberOfCertificates != $count) {
+            throw new \RuntimeException(sprintf(
+                'Expected %d certificates but found %d',
+                $count,
+                $numberOfCertificates
+            ));
+        }
+    }
+
+    /**
      * @Then the commands should be run with the following environment variables:
      */
     public function theCommandsShouldBeRunWithTheFollowingEnvironmentVariables(TableNode $table)

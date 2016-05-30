@@ -190,6 +190,7 @@ class DeployTaskFactory implements TaskFactory
                                     ->end()
                                 ->end()
                             ->end()
+                            ->append($this->getServiceEndpointsNode())
                             ->arrayNode('extensions')
                                 ->children()
                                     ->arrayNode('reverse_proxy')
@@ -265,6 +266,33 @@ class DeployTaskFactory implements TaskFactory
                 ->integerNode('port')->end()
                 ->scalarNode('host')->end()
                 ->scalarNode('scheme')->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    private function getServiceEndpointsNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('endpoints');
+
+        $node
+            ->prototype('array')
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->scalarNode('name')->isRequired()->end()
+                    ->scalarNode('type')->defaultNull()->end()
+                    ->arrayNode('ssl_certificates')
+                        ->prototype('array')
+                            ->children()
+                                ->scalarNode('name')->isRequired()->end()
+                                ->scalarNode('cert')->isRequired()->end()
+                                ->scalarNode('key')->isRequired()->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "15ed9ca5477cefd34e8f8ca84b45d035",
-    "content-hash": "9112cab83049dd18d43cd0a3885f8ea4",
+    "hash": "590d0159a12a2be5ba13537f222ff45a",
+    "content-hash": "c44877d14232a2d0ad89fd8743613463",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -125,16 +125,16 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "2.1.1",
+            "version": "dev-ingress",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
-                "reference": "9b98a88212f039b30e6d268e253b664cf0801949"
+                "reference": "5c2e508ee245bc6bba20c50c140dd7d0929e4c6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/9b98a88212f039b30e6d268e253b664cf0801949",
-                "reference": "9b98a88212f039b30e6d268e253b664cf0801949",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/5c2e508ee245bc6bba20c50c140dd7d0929e4c6b",
+                "reference": "5c2e508ee245bc6bba20c50c140dd7d0929e4c6b",
                 "shasum": ""
             },
             "require-dev": {
@@ -148,10 +148,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/model/tree/2.1.1",
+                "source": "https://github.com/continuouspipe/model/tree/ingress",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2016-03-29 13:42:41"
+            "time": "2016-05-30 19:12:23"
         },
         {
             "name": "continuous-pipe/security",
@@ -5753,7 +5753,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "csa/guzzle-bundle": 0
+        "csa/guzzle-bundle": 0,
+        "continuous-pipe/model": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
