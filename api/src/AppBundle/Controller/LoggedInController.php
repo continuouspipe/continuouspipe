@@ -26,7 +26,7 @@ class LoggedInController
     }
 
     /**
-     * @Route("/", name="logged_in_page")
+     * @Route("/logged-in", name="logged_in_page")
      */
     public function indexAction(Request $request)
     {
