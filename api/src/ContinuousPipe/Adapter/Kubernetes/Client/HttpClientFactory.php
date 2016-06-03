@@ -43,7 +43,7 @@ class HttpClientFactory implements KubernetesClientFactory
         $httpClient = new GuzzleHttpClient(
             $this->guzzleClient,
             $cluster->getAddress(),
-            $cluster->getVersion()
+            $this->getClusterVersion($cluster)
         );
 
         if (null !== $cluster->getUsername()) {
@@ -58,5 +58,15 @@ class HttpClientFactory implements KubernetesClientFactory
                 )
             )
         );
+    }
+
+    /**
+     * @param Cluster $cluster
+     * 
+     * @return string
+     */
+    private function getClusterVersion(Cluster $cluster)
+    {
+        return explode('.', $cluster)[0];
     }
 }
