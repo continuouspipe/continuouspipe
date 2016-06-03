@@ -82,11 +82,6 @@ class StartDeploymentHandler
             $target->getEnvironmentLabels()
         );
 
-        $logger->child(new Text(sprintf(
-            'Found %d components in `docker-compose.yml` file.',
-            count($environment->getComponents())
-        )));
-
         try {
             $cluster = $this->getCluster($request->getCredentialsBucket(), $target->getClusterIdentifier());
         } catch (ClusterNotFound $e) {
