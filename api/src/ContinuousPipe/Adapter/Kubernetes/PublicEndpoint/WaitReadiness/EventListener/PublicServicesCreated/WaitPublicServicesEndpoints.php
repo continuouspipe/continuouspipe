@@ -98,7 +98,7 @@ class WaitPublicServicesEndpoints
      */
     private function getObjectsToWait(ComponentCreationStatus $status)
     {
-        $objects = array_merge($status->getCreated(), $status->getUpdated());
+        $objects = array_merge($status->getCreated(), $status->getUpdated(), $status->getIgnored());
         $objects = array_filter($objects, function (KubernetesObject $object) {
             return !$object->getMetadata()->getLabelList()->hasKey('source-of-ingress');
         });
