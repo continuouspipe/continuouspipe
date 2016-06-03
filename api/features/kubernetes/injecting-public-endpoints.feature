@@ -47,7 +47,7 @@ Feature:
     And the service "app" should not be deleted
     And the service "app" should not be created
 
-  Scenario: The public services should be deleted and then created if selectors are different
+  Scenario: The public services should be updated if selectors are different
     Given I have a service "app" with the selector "component-identifier=app"
     And the service "app" will be created with the public IP "1.2.3.4"
     When the specification come from the template "simple-app-public"

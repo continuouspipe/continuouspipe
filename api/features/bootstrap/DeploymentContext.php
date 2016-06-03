@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\DeploymentRequest;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\DeploymentStarted;
@@ -272,6 +273,25 @@ class DeploymentContext implements Context
 
         if (count($deploymentSuccessfulEvents) == 0) {
             throw new \RuntimeException('No event successful deployment found');
+        }
+    }
+
+    /**
+     * @Then the deployment should contain the endpoint :endpoint
+     */
+    public function theDeploymentShouldContainTheEndpoint($endpoint)
+    {
+        $deployment = $this->deploymentRepository->find(self::$deploymentUuid);
+        $endpoints = array_map(function(PublicEndpoint $publicEndpoint) {
+            return $publicEndpoint->getAddress();
+        }, $deployment->getPublicEndpoints());
+
+        if (!in_array($endpoint, $endpoints)) {
+            throw new \RuntimeException(sprintf(
+                'Endpoint "%s" not found in %s',
+                $endpoint,
+                implode(', ', $endpoints)
+            ));
         }
     }
 

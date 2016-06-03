@@ -16,6 +16,7 @@ Feature:
     And the pods of the replication controllers will be created successfully and running
 
   Scenario: Creates an ingress with SSL
+    Given the ingress "https" will be created with the public DNS address "app.my.dns"
     Given the components specification are:
     """
     [
@@ -50,6 +51,7 @@ Feature:
     And the service "https" should have the type "ClusterIP"
     And the ingress named "https" should be created
     And the ingress named "https" should have 1 SSL certificate
+    And the deployment should contain the endpoint "app.my.dns"
 
   Scenario: Creates other type of services
     Given the components specification are:
@@ -83,3 +85,11 @@ Feature:
     Then the service "http" should be created
     And the service "http" should have the type "NodePort"
     And the ingress named "http" should be created
+
+  Scenario: The existing services should also be waited and their endpoints fetched
+    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app"
+    And the service "app" will be created with the public IP "1.2.3.4"
+    When the specification come from the template "simple-app-public"
+    And I send the built deployment request
+    Then the service "app" should not be updated
+    And the deployment should contain the endpoint "1.2.3.4"

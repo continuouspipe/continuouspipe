@@ -8,30 +8,37 @@ use Kubernetes\Client\Model\KubernetesObject;
 class ComponentCreationStatus extends ComponentStatus
 {
     /**
-     * @var \Kubernetes\Client\Model\KubernetesObject[]
+     * @var KubernetesObject[]
      */
     private $created;
 
     /**
-     * @var \Kubernetes\Client\Model\KubernetesObject[]
+     * @var KubernetesObject[]
      */
     private $updated;
 
     /**
-     * @var \Kubernetes\Client\Model\KubernetesObject[]
+     * @var KubernetesObject[]
      */
     private $deleted;
+
+    /**
+     * @var KubernetesObject[]
+     */
+    private $ignored;
 
     /**
      * @param KubernetesObject[] $created
      * @param KubernetesObject[] $updated
      * @param KubernetesObject[] $deleted
+     * @param KubernetesObject[] $ignored
      */
-    public function __construct(array $created = [], array $updated = [], array $deleted = [])
+    public function __construct(array $created = [], array $updated = [], array $deleted = [], array $ignored = [])
     {
         $this->created = $created;
         $this->updated = $updated;
         $this->deleted = $deleted;
+        $this->ignored = $ignored;
     }
 
     /**
@@ -83,6 +90,14 @@ class ComponentCreationStatus extends ComponentStatus
     }
 
     /**
+     * @return \Kubernetes\Client\Model\KubernetesObject[]
+     */
+    public function getIgnored()
+    {
+        return $this->ignored;
+    }
+
+    /**
      * @return bool
      */
     public function isCreated()
@@ -114,5 +129,6 @@ class ComponentCreationStatus extends ComponentStatus
         $this->created = array_merge($this->created, $status->getCreated());
         $this->updated = array_merge($this->updated, $status->getUpdated());
         $this->deleted = array_merge($this->deleted, $status->getDeleted());
+        $this->ignored = array_merge($this->ignored, $status->getIgnored());
     }
 }

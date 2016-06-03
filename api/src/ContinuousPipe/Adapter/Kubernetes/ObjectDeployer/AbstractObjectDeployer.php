@@ -19,16 +19,19 @@ abstract class AbstractObjectDeployer implements ObjectDeployer
         $name = $object->getMetadata()->getName();
         $created = [];
         $updated = [];
+        $ignored = [];
 
         if ($repository->exists($name)) {
             if ($this->needsToBeUpdated($namespaceClient, $object, $deploymentStrategy)) {
                 $updated[] = $this->update($namespaceClient, $object);
+            } else {
+                $ignored[] = $object;
             }
         } else {
             $created[] = $this->create($namespaceClient, $object);
         }
 
-        return new ComponentCreationStatus($created, $updated);
+        return new ComponentCreationStatus($created, $updated, [], $ignored);
     }
 
     /**
