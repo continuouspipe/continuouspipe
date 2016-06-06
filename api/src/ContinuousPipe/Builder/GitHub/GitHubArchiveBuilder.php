@@ -6,6 +6,7 @@ use ContinuousPipe\Builder\Archive\ArchiveCreationException;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
+use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use LogStream\Logger;
 use LogStream\Node\Text;
@@ -43,7 +44,12 @@ class GitHubArchiveBuilder implements ArchiveBuilder
      */
     public function getArchive(BuildRequest $buildRequest, Logger $logger)
     {
-        $bucket = $this->bucketRepository->find($buildRequest->getCredentialsBucket());
+        try {
+            $bucket = $this->bucketRepository->find($buildRequest->getCredentialsBucket());
+        } catch (BucketNotFound $e) {
+            throw new ArchiveCreationException('Credentials bucket not found', $e->getCode(), $e);
+        }
+
         try {
             $httpClient = $this->gitHubHttpClientFactory->createFromBucket($bucket);
         } catch (CredentialsNotFound $e) {
