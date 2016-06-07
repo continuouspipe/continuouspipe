@@ -12,7 +12,6 @@
             <argument type="service" id="command_bus" />
             <argument type="service" id="logger" />
 
-            <tag name="monolog.logger" channel="worker" />
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Command\StartBuildCommand"/>
         </service>
 
@@ -21,7 +20,6 @@
             <argument type="service" id="event_bus" />
             <argument type="service" id="logger" />
 
-            <tag name="monolog.logger" channel="worker" />
             <tag name="command_handler" handles="ContinuousPipe\Builder\Command\BuildImageCommand"/>
         </service>
 
