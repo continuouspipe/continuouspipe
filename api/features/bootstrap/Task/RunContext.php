@@ -311,6 +311,74 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the component :name should request :request of CPU
+     */
+    public function theComponentShouldRequestOfCpu($name, $request)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $requests = $component->getSpecification()->getResources()->getRequests();
+
+        if ($requests->getCpu() != $request) {
+            throw new \RuntimeException(sprintf(
+                'Expected %s but found %s',
+                $request,
+                $requests->getCpu()
+            ));
+        }
+    }
+
+    /**
+     * @Then the component :name should be limited to :limit of CPU
+     */
+    public function theComponentShouldBeLimitedToOfCpu($name, $limit)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $limits = $component->getSpecification()->getResources()->getLimits();
+
+        if ($limits->getCpu() != $limit) {
+            throw new \RuntimeException(sprintf(
+                'Expected %s but found %s',
+                $limit,
+                $limits->getCpu()
+            ));
+        }
+    }
+
+    /**
+     * @Then the component :name should request :request of memory
+     */
+    public function theComponentShouldRequestOfMemory($name, $request)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $requests = $component->getSpecification()->getResources()->getRequests();
+
+        if ($requests->getMemory() != $request) {
+            throw new \RuntimeException(sprintf(
+                'Expected %s but found %s',
+                $request,
+                $requests->getMemory()
+            ));
+        }
+    }
+
+    /**
+     * @Then the component :name should be limited to :limit of memory
+     */
+    public function theComponentShouldBeLimitedToOfMemory($name, $limit)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $limits = $component->getSpecification()->getResources()->getLimits();
+
+        if ($limits->getMemory() != $limit) {
+            throw new \RuntimeException(sprintf(
+                'Expected %s but found %s',
+                $limit,
+                $limits->getMemory()
+            ));
+        }
+    }
+
+    /**
      * @Then the commands should be run with the following environment variables:
      */
     public function theCommandsShouldBeRunWithTheFollowingEnvironmentVariables(TableNode $table)
