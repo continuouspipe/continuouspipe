@@ -5,13 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="docker.client" class="Docker\Http\DockerClient">
-            <argument type="collection"/>
-            <argument>%docker_entrypoint%</argument>
-            <argument>null</argument>
-            <argument>false</argument>
-
-            <tag name="csa_guzzle.client" />
+        <service id="docker.client" class="Docker\DockerClient">
+            <argument type="collection">
+                <argument key="remote_socket">%docker_entrypoint%</argument>
+                <argument key="ssl">false</argument>
+            </argument>
         </service>
         <service id="docker" class="Docker\Docker">
             <argument type="service" id="docker.client"/>

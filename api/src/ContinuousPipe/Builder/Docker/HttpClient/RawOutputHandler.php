@@ -3,6 +3,8 @@
 namespace ContinuousPipe\Builder\Docker\HttpClient;
 
 use ContinuousPipe\Builder\Docker\DockerException;
+use Docker\API\Model\BuildInfo;
+use Docker\API\Model\CreateImageInfo;
 use Psr\Log\LoggerInterface;
 
 class RawOutputHandler implements OutputHandler
@@ -25,6 +27,26 @@ class RawOutputHandler implements OutputHandler
      */
     public function handle($output)
     {
+        if ($output instanceof BuildInfo) {
+            if (!empty($error = $output->getError())) {
+                throw new DockerException($error);
+            }
+
+            return $output->getStream();
+        }
+
+        if ($output instanceof CreateImageInfo) {
+            if (!empty($error = $output->getError())) {
+                throw new DockerException($error);
+            }
+
+            if (null !== ($progressDetails = $output->getProgressDetail())) {
+                return $progressDetails->getMessage();
+            }
+
+            return $output->getProgress();
+        }
+
         $rawOutput = $output;
 
         if (is_array($output)) {
