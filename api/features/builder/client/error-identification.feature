@@ -42,6 +42,14 @@ Feature:
     When the Docker daemon returns the error "Received unexpected HTTP status: 500 INTERNAL SERVER ERROR"
     Then the identified error should be a daemon error
 
-  Scenario: Push timeout
+  Scenario: Push HEAD timeout
     When the Docker daemon returns the error "Head https://quay.io/v2/sroze/ft/blobs/sha256:c4d7cdda3413170869ccb4c6803b666efd97cd83f609813291df37cd93a153f1: Get https://quay.io/v2/auth?account=sroze&scope=repository%3Asroze%2Fft%3Apush%2Cpull&service=quay.io: net/http: request canceled (Client.Timeout exceeded while awaiting headers)"
+    Then the identified error should be a daemon network error
+
+  Scenario: Push PUT timeout
+    When the Docker daemon returns the error "Put https://quay.io/v2/sroze/ft/manifests/51c2b6f8de95a36a49813a1bbdabd2d2a7d07e9f: Get https://quay.io/v2/auth?account=sroze&scope=repository%3Asroze%2Fft%3Apush%2Cpull&service=quay.io: net/http: request canceled (Client.Timeout exceeded while awaiting headers)"
+    Then the identified error should be a daemon network error
+
+  Scenario: Push TCP error
+    When the Docker daemon returns the error "Put https://quay.io/v2/sroze/ft/blobs/uploads/b8f93d65-296c-41ed-9324-3369f69112ee?digest=sha256%3A200140c720609a98e8da53eb9596b732545d9085bfe583dcbd7a5b0503b3415f: Get https://quay.io/v2/auth?account=sroze&scope=repository%3Asroze%2Fft%3Apush%2Cpull&service=quay.io: read tcp 54.235.117.86:443: use of closed network connection"
     Then the identified error should be a daemon network error
