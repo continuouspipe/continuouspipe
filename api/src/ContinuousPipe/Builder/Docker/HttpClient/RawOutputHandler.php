@@ -41,7 +41,9 @@ class RawOutputHandler implements OutputHandler
             }
 
             if (null !== ($progressDetails = $output->getProgressDetail())) {
-                return $progressDetails->getMessage();
+                if (!empty($message = $progressDetails->getMessage())) {
+                    return $progressDetails->getMessage();
+                }
             }
 
             if (!empty($progress = $output->getProgress())) {
