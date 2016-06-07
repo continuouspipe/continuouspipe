@@ -4,8 +4,10 @@ namespace ContinuousPipe\River\Handler;
 
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\Event\TideStarted;
+use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\View\TideRepository;
+use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
 class StartTideHandler
@@ -26,15 +28,22 @@ class StartTideHandler
     private $concurrencyManager;
 
     /**
-     * @param MessageBus                              $eventBus
-     * @param TideRepository                          $tideRepository
-     * @param Tide\Concurrency\TideConcurrencyManager $concurrencyManager
+     * @var LoggerInterface
      */
-    public function __construct(MessageBus $eventBus, TideRepository $tideRepository, Tide\Concurrency\TideConcurrencyManager $concurrencyManager)
+    private $logger;
+
+    /**
+     * @param MessageBus $eventBus
+     * @param TideRepository $tideRepository
+     * @param Tide\Concurrency\TideConcurrencyManager $concurrencyManager
+     * @param LoggerInterface $logger
+     */
+    public function __construct(MessageBus $eventBus, TideRepository $tideRepository, Tide\Concurrency\TideConcurrencyManager $concurrencyManager, LoggerInterface $logger)
     {
         $this->eventBus = $eventBus;
         $this->tideRepository = $tideRepository;
         $this->concurrencyManager = $concurrencyManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -42,7 +51,15 @@ class StartTideHandler
      */
     public function handle(StartTideCommand $command)
     {
-        $tide = $this->tideRepository->find($command->getTideUuid());
+        try {
+            $tide = $this->tideRepository->find($command->getTideUuid());
+        } catch (TideNotFound $e) {
+            $this->logger->error('Tide not found, so not started', [
+                'tideUuid' => (string) $command->getTideUuid(),
+            ]);
+
+            return;
+        }
 
         if ($this->concurrencyManager->shouldTideStart($tide)) {
             $this->eventBus->handle(new TideStarted($command->getTideUuid()));
