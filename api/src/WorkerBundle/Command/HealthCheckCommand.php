@@ -24,7 +24,7 @@ class HealthCheckCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $this->getDocker()->getInfo();
+            $this->getDocker()->getMiscManager()->getVersion();
 
             $output->writeln('<info>- Getting Docker informations</info>');
         } catch (\Exception $e) {

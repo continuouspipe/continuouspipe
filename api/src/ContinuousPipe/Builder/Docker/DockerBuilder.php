@@ -11,10 +11,8 @@ use ContinuousPipe\Builder\BuildException;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\IsolatedCommands\CommandExtractor;
 use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
-use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
-use LogStream\Node\Text;
 
 class DockerBuilder implements Builder
 {
@@ -72,11 +70,6 @@ class DockerBuilder implements Builder
             throw new BuildException(sprintf('Unable to create archive: %s', $e->getMessage()), $e->getCode(), $e);
         }
 
-        $commands = $this->commandExtractor->getCommands($build, $archive);
-        if (count($commands) > 0) {
-            $archive = $this->commandExtractor->getArchiveWithStrippedDockerfile($build, $archive);
-        }
-
         try {
             $image = $this->dockerClient->build($archive, $request, $logger);
         } catch (DockerException $e) {
@@ -87,18 +80,6 @@ class DockerBuilder implements Builder
             );
         } finally {
             $archive->delete();
-        }
-
-        if (count($commands) > 0) {
-            try {
-                $image = $this->runCommandsAndCommitImage($logger, $image, $commands);
-            } catch (DockerException $e) {
-                throw new BuildException(
-                    sprintf('Unable to run isolated command: %s', $e->getMessage()),
-                    $e->getCode(),
-                    $e
-                );
-            }
         }
 
         return $image;
@@ -127,33 +108,5 @@ class DockerBuilder implements Builder
                 $e
             );
         }
-    }
-
-    /**
-     * @param Logger $logger
-     * @param Image  $image
-     * @param array  $commands
-     *
-     * @throws DockerException
-     *
-     * @return Image
-     */
-    private function runCommandsAndCommitImage(Logger $logger, Image $image, array $commands)
-    {
-        $logger = $logger->child(new Text('Running extra build commands'))->updateStatus(Log::RUNNING);
-
-        try {
-            foreach ($commands as $command) {
-                $image = $this->dockerClient->runAndCommit($image, $logger, $command);
-            }
-
-            $logger->updateStatus(Log::SUCCESS);
-        } catch (DockerException $e) {
-            $logger->updateStatus(Log::FAILURE);
-
-            throw $e;
-        }
-
-        return $image;
     }
 }

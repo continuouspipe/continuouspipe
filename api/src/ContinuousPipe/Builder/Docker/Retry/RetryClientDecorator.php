@@ -12,8 +12,6 @@ use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 use LogStream\Node\Text;
-use Tolerance\Waiter\CountLimited;
-use Tolerance\Waiter\ExponentialBackOff;
 use Tolerance\Waiter\SleepWaiter;
 
 class RetryClientDecorator implements Client
