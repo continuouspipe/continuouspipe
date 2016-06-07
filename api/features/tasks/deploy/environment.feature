@@ -249,3 +249,30 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "https"
     And the endpoint "https" of the component "app" should be deployed with 1 SSL certificate
+
+  Scenario: I can set resource requests and limits
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        specification:
+                            resources:
+                                requests:
+                                    cpu: 250m
+                                    memory: 2Gi
+                                limits:
+                                    cpu: 1
+                                    memory: 3Gi
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the component "image0" should request "250m" of CPU
+    And the component "image0" should be limited to "1" of CPU
+    And the component "image0" should request "2Gi" of memory
+    And the component "image0" should be limited to "3Gi" of memory
+
