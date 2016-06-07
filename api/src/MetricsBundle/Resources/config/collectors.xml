@@ -5,9 +5,23 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="metrics.rabbitmq.http_client" class="MetricsBundle\RabbitMq\RabbitMqHttpClient">
+            <argument type="service" id="csa_guzzle.client.rabbitmq" />
+            <argument>%rabbitmq_host%</argument>
+            <argument>%rabbitmq_management_port%</argument>
+            <argument>%rabbitmq_user%</argument>
+            <argument>%rabbitmq_password%</argument>
+        </service>
+
+        <service id="metrics.collector.rabbit_mq" class="MetricsBundle\RabbitMq\RabbitMqCollector">
+            <argument type="service" id="metrics.rabbitmq.http_client" />
+            <argument>%rabbitmq_vhost%</argument>
+            <argument>%rabbitmq_queue_name%</argument>
+        </service>
+
         <service id="metrics.collector.collection" class="MetricsBundle\Collector\CollectionMetricCollector">
             <argument type="collection">
-
+                <argument key="queue" type="service" id="metrics.collector.rabbit_mq" />
             </argument>
         </service>
     </services>
