@@ -12,6 +12,7 @@ use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 use LogStream\Node\Text;
+use Psr\Log\LoggerInterface;
 use Tolerance\Waiter\SleepWaiter;
 
 class RetryClientDecorator implements Client
@@ -20,6 +21,11 @@ class RetryClientDecorator implements Client
      * @var Client
      */
     private $client;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @var int
@@ -32,15 +38,17 @@ class RetryClientDecorator implements Client
     private $retryInterval;
 
     /**
-     * @param Client $client
-     * @param int    $maxRetries
-     * @param int    $retryInterval
+     * @param Client          $client
+     * @param LoggerInterface $logger
+     * @param int             $maxRetries
+     * @param int             $retryInterval
      */
-    public function __construct(Client $client, $maxRetries = 10, $retryInterval = 30)
+    public function __construct(Client $client, LoggerInterface $logger, $maxRetries = 10, $retryInterval = 30)
     {
         $this->client = $client;
         $this->maxRetries = $maxRetries;
         $this->retryInterval = $retryInterval;
+        $this->logger = $logger;
     }
 
     /**
@@ -75,8 +83,14 @@ class RetryClientDecorator implements Client
                 }
             }
 
+            $this->logger->warning('Detected a Docker error while pushing an image: {error}', [
+                'error' => $e->getMessage(),
+                'exception' => $e,
+            ]);
+
             $logger->child(new Text(sprintf(
-                "\n".'Detected a Docker error, retrying in %s seconds'."\n",
+                "\n".'Detected a Docker error, retrying in %s seconds: %s'."\n",
+                $e->getMessage(),
                 $this->retryInterval
             )));
 
