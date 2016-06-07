@@ -4,7 +4,7 @@ namespace ContinuousPipe\Builder\Docker\HttpClient;
 
 use ContinuousPipe\Builder\Docker\DockerException;
 use Docker\API\Model\BuildInfo;
-use Docker\API\Model\CreateImageInfo;
+use Docker\API\Model\PushImageInfo;
 use Psr\Log\LoggerInterface;
 
 class RawOutputHandler implements OutputHandler
@@ -35,7 +35,7 @@ class RawOutputHandler implements OutputHandler
             return $output->getStream();
         }
 
-        if ($output instanceof CreateImageInfo) {
+        if ($output instanceof PushImageInfo) {
             if (!empty($error = $output->getError())) {
                 throw new DockerException($error);
             }
