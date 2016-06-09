@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Builder\Docker;
 
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use ContinuousPipe\Builder\Docker\HttpClient\OutputHandler;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Archive;
@@ -149,7 +150,17 @@ class HttpClient implements Client
         // Allow a build to be up to half an hour
         $buildStream = $this->docker->getImageManager()->build($content, $parameters, ContainerManager::FETCH_STREAM);
         $buildStream->onFrame($this->getOutputCallback($logger));
-        $buildStream->wait();
+
+        try {
+            $buildStream->wait();
+        } catch (UnexpectedValueException $e) {
+            $this->logger->error('Unexpected exception while waiting for the Docker build', [
+                'message' => $e->getMessage(),
+                'exception' => $e,
+            ]);
+
+            throw new DockerException('Unable to ensure the build was successful: '.$e->getMessage());
+        }
 
         return $image;
     }
