@@ -13,7 +13,7 @@ Feature:
       | identifier | type       | address         | version | username | password |
       | my-cluster | kubernetes | https://1.2.3.4 | v1      | username | password |
 
-  Scenario: It is waiting the RC to have at least one running pod
+  Scenario: It is waiting the RC to have at least one ready pod
     Given the specification come from the template "simple-app"
     And the pods of the replication controller "app" will be pending after creation
     And the pods of the replication controller "app" will become running later
