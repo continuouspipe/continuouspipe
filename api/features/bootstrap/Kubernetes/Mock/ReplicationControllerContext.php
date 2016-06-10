@@ -132,7 +132,7 @@ class ReplicationControllerContext implements Context
                     $pod->getMetadata(),
                     $pod->getSpecification(),
                     new PodStatus(PodStatus::PHASE_RUNNING, '10.240.162.87', '10.132.1.47', [
-                        new PodStatusCondition('Ready', false)
+                        new PodStatusCondition('Ready', true)
                     ], [
                         new ContainerStatus($pod->getMetadata()->getName(), 1, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, false)
                     ])

@@ -16,6 +16,7 @@ use Kubernetes\Client\Exception\PodNotFound;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodStatus;
+use Kubernetes\Client\Model\PodStatusCondition;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\NamespaceClient;
 use LogStream\Log;
@@ -93,7 +94,7 @@ class WaitComponentsHandler implements DeploymentHandler
             if ($object instanceof ReplicationController) {
                 $promises[] = $this->waitOneReplicationControllerPodRunning($loop, $client, $logger, $object);
             } elseif ($object instanceof Pod) {
-                $promises[] = $this->waitPodRunning($loop, $client, $logger, $object);
+                $promises[] = $this->waitPodRunningAndReady($loop, $client, $logger, $object);
             }
         }
 
@@ -114,11 +115,11 @@ class WaitComponentsHandler implements DeploymentHandler
      *
      * @return React\Promise\Promise
      */
-    private function waitPodRunning(React\EventLoop\LoopInterface $loop, NamespaceClient $client, Logger $logger, Pod $pod)
+    private function waitPodRunningAndReady(React\EventLoop\LoopInterface $loop, NamespaceClient $client, Logger $logger, Pod $pod)
     {
         $podName = $pod->getMetadata()->getName();
 
-        $logger = $logger->child(new Text(sprintf('Waiting pod "%s" to be running', $podName)));
+        $logger = $logger->child(new Text(sprintf('Waiting pod "%s" to be running and ready', $podName)));
 
         return (new PromiseBuilder($loop))
             ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $podName) {
@@ -128,7 +129,7 @@ class WaitComponentsHandler implements DeploymentHandler
                     return $deferred->resolve();
                 }
 
-                if ($pod->getStatus()->getPhase() == PodStatus::PHASE_RUNNING) {
+                if ($this->isPodRunningAndReady($pod)) {
                     $deferred->resolve($pod);
                 }
             })
@@ -160,7 +161,7 @@ class WaitComponentsHandler implements DeploymentHandler
                 $pods = $client->getPodRepository()->findByReplicationController($replicationController);
 
                 $runningPods = array_filter($pods->getPods(), function (Pod $pod) {
-                    return $pod->getStatus()->getPhase() == PodStatus::PHASE_RUNNING;
+                    return $this->isPodRunningAndReady($pod);
                 });
 
                 if (count($runningPods) > 0) {
@@ -210,5 +211,31 @@ class WaitComponentsHandler implements DeploymentHandler
     public function supports(DeploymentContext $context)
     {
         return $context->getCluster() instanceof Kubernetes;
+    }
+
+    /**
+     * @param Pod $pod
+     *
+     * @return bool
+     */
+    protected  function isPodRunningAndReady(Pod $pod)
+    {
+        $status = $pod->getStatus();
+
+        if ($status->getPhase() != PodStatus::PHASE_RUNNING) {
+            return false;
+        }
+
+        /** @var PodStatusCondition $readyCondition */
+        $readyCondition = current(array_filter($status->getConditions(), function(PodStatusCondition $condition) {
+            return $condition->getType() == 'Ready';
+        }));
+
+        if ($readyCondition === false) {
+            // No Ready condition found so... let's skip.
+            return true;
+        }
+
+        return $readyCondition->isStatus();
     }
 }
