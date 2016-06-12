@@ -12,6 +12,15 @@ tasks:
             cluster: gke
             services:
                 frontend:
+                    endpoints:
+                        -
+                            name: https
+                            type: NodePort
+                            ssl_certificates:
+                                -
+                                    name: continuouspipeio
+                                    cert: ${WILDCARD_SSL_CERT}
+                                    key: ${WILDCARD_SSL_KEY}
                     specification:
                         accessibility:
                             from_external: true
