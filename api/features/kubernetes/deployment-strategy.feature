@@ -94,3 +94,40 @@ Feature:
     And the readiness probe of the replication controller "app" should be an HTTP request at "/healthz" on port 80
     And the readiness probe of the replication controller "app" should start after 10 seconds
     And the readiness probe of the replication controller "app" should success after 2 success
+
+  Scenario: It creates TCP and EXEC probes successfully
+    When I send a deployment request with the following components specification:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "accessibility": {
+            "from_cluster": true,
+            "from_external": false
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 5
+          }
+        },
+        "deployment_strategy": {
+          "liveness_probe": {
+            "type": "tcp",
+            "port": 80
+          },
+          "readiness_probe": {
+            "type": "exec",
+            "command": ["sh", "-c", "echo hello"]
+          }
+        }
+      }
+    ]
+    """
+    Then the replication controller "app" should be created
+    And the liveness probe of the replication controller "app" should be a TCP probe on port 80
+    And the readiness probe of the replication controller "app" should be an EXEC probe with the command "sh,-c,echo hello"

@@ -382,7 +382,7 @@ class ReplicationControllerContext implements Context
         $probe = $this->getReplicationControllerProbe($name, $probeType);
 
         if (null === ($httpProbe = $probe->getHttpGet())) {
-            throw new \RuntimeException('No HTTP liveness probe found');
+            throw new \RuntimeException('No HTTP probe found');
         } else if ($httpProbe->getPath() != $path) {
             throw new \RuntimeException(sprintf(
                 'Expected to found path "%s" but found "%s"',
@@ -398,6 +398,42 @@ class ReplicationControllerContext implements Context
         }
     }
 
+    /**
+     * @Then the :probeType probe of the replication controller :name should be a TCP probe on port :port
+     */
+    public function theLivenessProbeOfTheReplicationControllerShouldBeATcpProbeOnPort($probeType, $name, $port)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+
+        if (null === ($tcpProbe = $probe->getTcpSocket())) {
+            throw new \RuntimeException('No TCP probe found');
+        } else if ($tcpProbe->getPort() != $port) {
+            throw new \RuntimeException(sprintf(
+                'Expected port %d but found %d',
+                $port,
+                $tcpProbe->getPort()
+            ));
+        }
+    }
+
+    /**
+     * @Then the :probeType probe of the replication controller :name should be an EXEC probe with the command :command
+     */
+    public function theReadinessProbeOfTheReplicationControllerShouldBeAnExecProbeWithTheCommand($probeType, $name, $command)
+    {
+        $probe = $this->getReplicationControllerProbe($name, $probeType);
+        $command = explode(',', $command);
+
+        if (null === ($execProbe = $probe->getExec())) {
+            throw new \RuntimeException('No Exec probe found');
+        } else if ($execProbe->getCommand() != $command) {
+            throw new \RuntimeException(sprintf(
+                'Expected command "%s" but found "%s"',
+                implode(',', $command),
+                implode(',', $execProbe->getCommand())
+            ));
+        }
+    }
 
     /**
      * @Then the :probeType probe of the replication controller :arg1 should run every :arg2 seconds

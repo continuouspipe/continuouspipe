@@ -218,7 +218,7 @@ class WaitComponentsHandler implements DeploymentHandler
      *
      * @return bool
      */
-    protected  function isPodRunningAndReady(Pod $pod)
+    protected function isPodRunningAndReady(Pod $pod)
     {
         $status = $pod->getStatus();
 
@@ -227,7 +227,7 @@ class WaitComponentsHandler implements DeploymentHandler
         }
 
         /** @var PodStatusCondition $readyCondition */
-        $readyCondition = current(array_filter($status->getConditions(), function(PodStatusCondition $condition) {
+        $readyCondition = current(array_filter($status->getConditions(), function (PodStatusCondition $condition) {
             return $condition->getType() == 'Ready';
         }));
 
