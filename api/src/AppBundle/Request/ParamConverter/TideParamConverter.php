@@ -2,7 +2,6 @@
 
 namespace AppBundle\Request\ParamConverter;
 
-use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View\TideRepository;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

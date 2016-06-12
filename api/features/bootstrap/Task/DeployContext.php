@@ -437,6 +437,49 @@ class DeployContext implements Context
     }
 
     /**
+     * @Then the readiness probe of the component :name should be a tcp probe on port :port
+     */
+    public function theReadinessProbeOfTheComponentShouldBeATcpProbeOnPort($name, $port)
+    {
+        if (null === ($probe = $this->getDeployedComponent($name)->getDeploymentStrategy()->getReadinessProbe())) {
+            throw new \RuntimeException('No readiness probe found');
+        }
+
+        if (!$probe instanceof Component\Probe\Tcp) {
+            throw new \RuntimeException('Not a TCP probe');
+        }
+
+        if ($port != $probe->getPort()) {
+            throw new \RuntimeException(sprintf(
+                'Found port "%s"',
+                $probe->getPort()
+            ));
+        }
+    }
+
+    /**
+     * @Then the readiness probe of the component :name should be an exec probe with the command :command
+     */
+    public function theReadinessProbeOfTheComponentShouldBeAnExecProbeWithTheCommand($name, $command)
+    {
+        if (null === ($probe = $this->getDeployedComponent($name)->getDeploymentStrategy()->getReadinessProbe())) {
+            throw new \RuntimeException('No readiness probe found');
+        }
+
+        if (!$probe instanceof Component\Probe\Exec) {
+            throw new \RuntimeException('Not a EXEC probe');
+        }
+
+        $command = explode(',', $command);
+        if ($command != $probe->getCommand()) {
+            throw new \RuntimeException(sprintf(
+                'Found command "%s"',
+                implode(',', $probe->getCommand())
+            ));
+        }
+    }
+
+    /**
      * @Then the name of the deployed environment should be :expectedName
      */
     public function theNameOfTheDeployedEnvironmentShouldBe($expectedName)

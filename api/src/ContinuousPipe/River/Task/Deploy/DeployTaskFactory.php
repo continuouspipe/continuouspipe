@@ -278,10 +278,13 @@ class DeployTaskFactory implements TaskFactory
                 ->integerNode('period_seconds')->end()
                 ->integerNode('success_threshold')->end()
                 ->integerNode('failure_threshold')->end()
-                ->scalarNode('path')->end()
                 ->integerNode('port')->end()
+                ->scalarNode('path')->end()
                 ->scalarNode('host')->end()
                 ->scalarNode('scheme')->end()
+                ->arrayNode('command')
+                    ->prototype('scalar')->end()
+                ->end()
             ->end()
         ;
 

@@ -198,7 +198,7 @@ Feature:
     And the component "image0" should be deployed as scaling
     And the component "image0" should be deployed with 5 replicas
 
-  Scenario: Probes
+  Scenario: HTTP Probes
     Given there is 1 application images in the repository
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
@@ -219,6 +219,52 @@ Feature:
     When a tide is started
     Then the component "image0" should be deployed
     And the readiness probe of the component "image0" should be an http probe on path "/"
+
+  Scenario: TCP probe
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        deployment_strategy:
+                            readiness_probe:
+                                initial_delay_seconds: 5
+                                timeout_seconds: 5
+                                period_seconds: 5
+                                type: tcp
+                                port: 3306
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the readiness probe of the component "image0" should be a tcp probe on port 3306
+
+  Scenario: EXEC probe
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        deployment_strategy:
+                            readiness_probe:
+                                initial_delay_seconds: 5
+                                timeout_seconds: 5
+                                period_seconds: 5
+                                type: exec
+                                command:
+                                    - blah
+                                    - blah
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the readiness probe of the component "image0" should be an exec probe with the command "blah,blah"
 
   Scenario: Add endpoints
     When I tide is started with the following configuration:

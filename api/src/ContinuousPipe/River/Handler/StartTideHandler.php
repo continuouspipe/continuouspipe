@@ -33,10 +33,10 @@ class StartTideHandler
     private $logger;
 
     /**
-     * @param MessageBus $eventBus
-     * @param TideRepository $tideRepository
+     * @param MessageBus                              $eventBus
+     * @param TideRepository                          $tideRepository
      * @param Tide\Concurrency\TideConcurrencyManager $concurrencyManager
-     * @param LoggerInterface $logger
+     * @param LoggerInterface                         $logger
      */
     public function __construct(MessageBus $eventBus, TideRepository $tideRepository, Tide\Concurrency\TideConcurrencyManager $concurrencyManager, LoggerInterface $logger)
     {
