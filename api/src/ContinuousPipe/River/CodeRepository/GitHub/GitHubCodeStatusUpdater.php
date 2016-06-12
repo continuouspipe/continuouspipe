@@ -88,8 +88,10 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     private function generateTideUrl(TideContext $tideContext)
     {
         return sprintf(
-            '%s/kaikai/%s',
+            '%s/team/%s/%s/%s/logs',
             $this->getUiBaseUrl(),
+            $tideContext->getTeam()->getSlug(),
+            (string) $tideContext->getFlowUuid(),
             (string) $tideContext->getTideUuid()
         );
     }
@@ -102,7 +104,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
         $baseUrl = $this->uiBaseUrl;
 
         if (strpos($baseUrl, 'http') !== 0) {
-            $baseUrl = 'http://'.$baseUrl;
+            $baseUrl = 'https://'.$baseUrl;
         }
 
         return $baseUrl;
