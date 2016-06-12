@@ -52,13 +52,19 @@ class WaitPublicServicesEndpoints
     {
         $context = $event->getContext();
         $status = $event->getStatus();
+        $objects = $this->getObjectsToWait($status);
+
+        if (count($objects) == 0) {
+            $this->eventBus->handle(new PublicEndpointsReady($context, []));
+
+            return;
+        }
 
         $logger = $this->loggerFactory->from($context->getLog())->child(
             new Text('Waiting public endpoints to be created')
         )->updateStatus(Log::RUNNING);
 
         try {
-            $objects = $this->getObjectsToWait($status);
             $endpoints = $this->waitEndpoints($context, $objects, $logger->getLog());
             $logger->updateStatus(Log::SUCCESS);
 

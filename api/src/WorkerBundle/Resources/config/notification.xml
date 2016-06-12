@@ -11,7 +11,6 @@
         <service id="pipe.notification.notifier" class="ContinuousPipe\Pipe\Notification\HttpNotifier">
             <argument type="service" id="pipe.notification.http_notifier.http_client" />
             <argument type="service" id="jms_serializer" />
-            <argument type="service" id="pipe.deployment_logger_factory" />
         </service>
         <service id="pipe.notification.deployment_status_listener" class="ContinuousPipe\Pipe\Notification\Listener\DeploymentStatusListener">
             <argument type="service" id="pipe.notification.notifier" />

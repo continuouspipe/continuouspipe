@@ -59,10 +59,8 @@ class ComponentAttacher
         $logger = $this->loggerFactory->from($context->getLog());
 
         foreach ($createdPods as $pod) {
-            $podLogger = $logger->child(new Text(sprintf(
-                'Waiting component "%s"',
-                $pod->getMetadata()->getName()
-            )))->updateStatus(Log::RUNNING);
+            $podLogger = $logger->child(new Text(sprintf('Waiting component "%s"', $pod->getMetadata()->getName())));
+            $podLogger->updateStatus(Log::RUNNING);
 
             $rawLogger = $podLogger->child(new Raw());
 
@@ -75,11 +73,12 @@ class ComponentAttacher
                     $rawLogger->updateStatus(Log::SUCCESS);
                 } else {
                     $rawLogger->updateStatus(Log::FAILURE);
+                    $podLogger->updateStatus(Log::FAILURE);
 
                     throw new ComponentException('Did not end successfully');
                 }
             } catch (Exception $e) {
-                $podLogger->child(new Text($e->getMessage()));
+                $podLogger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
                 $podLogger->updateStatus(Log::FAILURE);
             } finally {
                 $podRepository->delete($pod);

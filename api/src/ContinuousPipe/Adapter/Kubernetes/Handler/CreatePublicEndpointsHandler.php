@@ -83,8 +83,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
     {
         $context = $command->getContext();
 
-        $logger = $this->loggerFactory->from($context->getLog())->child(new Text('Create services for public endpoints'));
-        $logger->updateStatus(Log::RUNNING);
+        $logger = $this->loggerFactory->from($context->getLog());
 
         try {
             $objects = $this->getPublicEndpointObjects($context->getEnvironment());
@@ -93,8 +92,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
             $logger->updateStatus(Log::SUCCESS);
             $this->eventBus->handle(new PublicServicesCreated($context, $status));
         } catch (\Exception $e) {
-            $logger->child(new Text($e->getMessage()));
-            $logger->updateStatus(Log::FAILURE);
+            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed($context));
         }

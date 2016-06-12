@@ -21,6 +21,7 @@ use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Exception\Exception as KubernetesException;
 use Kubernetes\Client\NamespaceClient;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -98,7 +99,7 @@ class CreateComponentsHandler implements DeploymentHandler
             $this->eventBus->handle(new ComponentsCreated($context, $componentStatus));
         } catch (ComponentException $e) {
             $logger = $this->loggerFactory->from($context->getLog());
-            $logger->child(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed($context));
         }

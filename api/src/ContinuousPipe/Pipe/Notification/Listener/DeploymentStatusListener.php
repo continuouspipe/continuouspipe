@@ -7,6 +7,7 @@ use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
 use ContinuousPipe\Pipe\Notification\NotificationException;
 use ContinuousPipe\Pipe\Notification\Notifier;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
+use LogStream\Log;
 use LogStream\Node\Text;
 
 class DeploymentStatusListener
@@ -47,22 +48,18 @@ class DeploymentStatusListener
         $logger = $this->loggerFactory->create($deployment);
 
         if (null === ($notification = $deployment->getRequest()->getNotification())) {
-            $logger->child(new Text('No notification configuration'));
-
             return;
         }
 
         $httpCallbackUrl = $notification->getHttpCallbackUrl();
         if (empty($httpCallbackUrl)) {
-            $logger->child(new Text('Empty HTTP notification URL'));
-
             return;
         }
 
         try {
             $this->notifier->notify($httpCallbackUrl, $deployment);
         } catch (NotificationException $e) {
-            $logger->child(new Text(sprintf('Error while sending notification to "%s": %s', $httpCallbackUrl, $e->getMessage())));
+            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
         }
     }
 }

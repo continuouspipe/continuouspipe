@@ -68,12 +68,6 @@ class StartDeploymentHandler
         $target = $request->getTarget();
         $specification = $request->getSpecification();
 
-        $logger->child(new Text(sprintf(
-            'Deploying to the environment "%s" to cluster "%s"',
-            $target->getEnvironmentName(),
-            $target->getClusterIdentifier()
-        )));
-
         $environment = new Environment(
             $target->getEnvironmentName(),
             $target->getEnvironmentName(),
@@ -85,7 +79,7 @@ class StartDeploymentHandler
         try {
             $cluster = $this->getCluster($request->getCredentialsBucket(), $target->getClusterIdentifier());
         } catch (ClusterNotFound $e) {
-            $logger->child(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed(
                 new DeploymentContext($deployment, null, $logger->getLog(), $environment)
