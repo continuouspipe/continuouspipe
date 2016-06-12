@@ -19,7 +19,7 @@ use ContinuousPipe\Pipe\Event\ComponentsCreated;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
-use Kubernetes\Client\Exception\ClientError;
+use Kubernetes\Client\Exception\Exception as KubernetesException;
 use Kubernetes\Client\NamespaceClient;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -136,7 +136,7 @@ class CreateComponentsHandler implements DeploymentHandler
                     $component->getName(),
                     $e->getMessage()
                 ));
-            } catch (ClientError $e) {
+            } catch (KubernetesException $e) {
                 throw new ComponentException(sprintf(
                     'An error appeared while creating the component "%s": %s',
                     $component->getName(),
