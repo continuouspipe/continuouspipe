@@ -7,6 +7,7 @@ use ContinuousPipe\Model\Component;
 use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\ContainerPort;
 use Kubernetes\Client\Model\EnvironmentVariable;
+use Kubernetes\Client\Model\ExecAction;
 use Kubernetes\Client\Model\HttpGetAction;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodSpecification;
@@ -15,6 +16,7 @@ use Kubernetes\Client\Model\ResourceLimits;
 use Kubernetes\Client\Model\ResourceRequirements;
 use Kubernetes\Client\Model\ResourceRequirementsRequests;
 use Kubernetes\Client\Model\SecurityContext;
+use Kubernetes\Client\Model\TcpSocketAction;
 use Kubernetes\Client\Model\VolumeMount;
 
 class PodTransformer
@@ -179,19 +181,12 @@ class PodTransformer
     {
         if (null === $componentProbe) {
             return;
-        } elseif (!$componentProbe instanceof Component\Probe\Http) {
-            throw new \RuntimeException('Only support HTTP probes');
         }
 
         return new Probe(
-            null,
-            new HttpGetAction(
-                $componentProbe->getPath(),
-                $componentProbe->getPort(),
-                $componentProbe->getHost(),
-                $componentProbe->getScheme()
-            ),
-            null,
+            $componentProbe instanceof Component\Probe\Exec ? $this->createExecAction($componentProbe) : null,
+            $componentProbe instanceof Component\Probe\Http ? $this->createHttpAction($componentProbe) : null,
+            $componentProbe instanceof Component\Probe\Tcp ? $this->createTcpAction($componentProbe) : null,
             $componentProbe->getInitialDelaySeconds(),
             $componentProbe->getTimeoutSeconds(),
             $componentProbe->getPeriodSeconds(),
@@ -215,5 +210,40 @@ class PodTransformer
             (null !== ($requests = $resources->getRequests())) ? new ResourceRequirementsRequests(null, $requests->getMemory(), $requests->getCpu()) : null,
             (null !== ($limits = $resources->getLimits())) ? new ResourceLimits($limits->getMemory(), $limits->getCpu()) : null
         );
+    }
+
+    /**
+     * @param Component\Probe\Http $componentProbe
+     *
+     * @return HttpGetAction
+     */
+    private function createHttpAction(Component\Probe\Http $componentProbe)
+    {
+        return new HttpGetAction(
+            $componentProbe->getPath(),
+            $componentProbe->getPort(),
+            $componentProbe->getHost(),
+            $componentProbe->getScheme()
+        );
+    }
+
+    /**
+     * @param Component\Probe\Tcp $componentProbe
+     *
+     * @return TcpSocketAction
+     */
+    private function createTcpAction(Component\Probe\Tcp $componentProbe)
+    {
+        return new TcpSocketAction($componentProbe->getPort());
+    }
+
+    /**
+     * @param Component\Probe\Exec $componentProbe
+     *
+     * @return ExecAction
+     */
+    private function createExecAction(Component\Probe\Exec $componentProbe)
+    {
+        return new ExecAction($componentProbe->getCommand());
     }
 }
