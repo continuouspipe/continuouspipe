@@ -11,6 +11,8 @@ class NativeTimeResolver implements TimeResolver
      */
     public function resolve()
     {
-        return \DateTime::createFromFormat('U.u', microtime(true));
+        $microTime = sprintf('%01.4f', microtime(true));
+
+        return \DateTime::createFromFormat('U.u', $microTime);
     }
 }
