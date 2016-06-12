@@ -5,6 +5,7 @@ namespace ContinuousPipe\Builder;
 use ContinuousPipe\Builder\Logging\BuildLoggerFactory;
 use ContinuousPipe\Builder\Notifier\HttpNotifier;
 use ContinuousPipe\Builder\Notifier\NotificationException;
+use LogStream\Log;
 use LogStream\Node\Text;
 
 class Notifier
@@ -40,9 +41,8 @@ class Notifier
 
             try {
                 $this->httpNotifier->notify($http, $build);
-                $logger->child(new Text(sprintf('Sent HTTP notification to "%s"', $http->getAddress())));
             } catch (NotificationException $e) {
-                $logger->child(new Text($e->getMessage()));
+                $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
             }
         }
     }
