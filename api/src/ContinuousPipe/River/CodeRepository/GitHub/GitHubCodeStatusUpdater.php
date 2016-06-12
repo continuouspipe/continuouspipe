@@ -13,7 +13,7 @@ use GuzzleHttp\Exception\RequestException;
 
 class GitHubCodeStatusUpdater implements CodeStatusUpdater
 {
-    const GITHUB_CONTEXT = 'continuous-pipe-river';
+    const GITHUB_CONTEXT = 'ContinuousPipe';
 
     /**
      * @var ClientFactory
