@@ -5,6 +5,7 @@ namespace ContinuousPipe\Builder\Logging\Docker;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
 use ContinuousPipe\Builder\BuildException;
+use LogStream\Log;
 use LogStream\Logger;
 use LogStream\Node\Text;
 
@@ -31,7 +32,7 @@ class LoggedDockerBuilder implements Builder
         try {
             $this->builder->build($build, $logger);
         } catch (BuildException $e) {
-            $logger->child(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
 
             throw $e;
         }
@@ -45,7 +46,7 @@ class LoggedDockerBuilder implements Builder
         try {
             $this->builder->push($build, $logger);
         } catch (BuildException $e) {
-            $logger->child(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
 
             throw $e;
         }

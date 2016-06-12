@@ -68,7 +68,7 @@ class LoggedDockerClient implements Client
 
             $logger->updateStatus(Log::SUCCESS);
         } catch (DockerException $e) {
-            $logger->child(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
             $logger->updateStatus(Log::FAILURE);
 
             throw $e;
@@ -87,7 +87,7 @@ class LoggedDockerClient implements Client
 
             $logger->updateStatus(Log::SUCCESS);
         } catch (DockerException $e) {
-            $logger->child(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
             $logger->updateStatus(Log::FAILURE);
 
             throw $e;
