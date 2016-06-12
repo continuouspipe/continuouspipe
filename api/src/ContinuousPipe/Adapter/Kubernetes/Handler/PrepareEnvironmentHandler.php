@@ -20,6 +20,7 @@ use Kubernetes\Client\Model\LocalObjectReference;
 use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Model\ServiceAccount;
 use Kubernetes\Client\NamespaceClient;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -93,7 +94,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
             $this->createOrUpdateNamespaceCredentials($client, $context, $namespace);
         } catch (\Exception $e) {
             $logger = $this->loggerFactory->from($context->getLog());
-            $logger->child(new Text($e->getMessage()));
+            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed($context));
 
@@ -121,12 +122,10 @@ class PrepareEnvironmentHandler implements DeploymentHandler
 
         if (!$namespaceRepository->exists($namespaceName)) {
             $namespace = $namespaceRepository->create($namespace);
-            $logger->child(new Text(sprintf('Created new namespace "%s"', $namespaceName)));
 
             $this->eventBus->handle(new NamespaceCreated($namespace, $context));
         } else {
             $namespace = $namespaceRepository->findOneByName($namespaceName);
-            $logger->child(new Text(sprintf('Reusing existing namespace "%s"', $namespaceName)));
         }
 
         return $namespace;

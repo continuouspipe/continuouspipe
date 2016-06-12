@@ -79,9 +79,7 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
 
             $endpoint = $this->waitPublicEndpoint($client, $object, $logger);
 
-            $logger->child(
-                new Text(sprintf('Found public endpoint "%s": %s', $endpoint->getName(), $endpoint->getAddress()))
-            );
+            $logger->child(new Text(sprintf('Found public endpoint "%s": %s', $endpoint->getName(), $endpoint->getAddress())));
             $logger->updateStatus(Log::SUCCESS);
         } catch (EndpointNotFound $e) {
             $logger->child(new Text($e->getMessage()));

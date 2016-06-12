@@ -13,7 +13,6 @@ use Kubernetes\Client\Model\ResourceRequirementsRequests;
 use Kubernetes\Client\NamespaceClient;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
-use LogStream\Node\Text;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CreatePersistentVolumeClaim implements EventSubscriberInterface
@@ -73,12 +72,8 @@ class CreatePersistentVolumeClaim implements EventSubscriberInterface
 
         try {
             $persistentVolumeClaimRepository->findOneByName($persistentVolume->getName());
-            $logger->child(new Text(sprintf(
-                'Reusing existing persistent volume claim "%s"',
-                $persistentVolume->getName()
-            )));
         } catch (PersistentVolumeClaimNotFound $e) {
-            $created = $persistentVolumeClaimRepository->create(new PersistentVolumeClaim(
+            $persistentVolumeClaimRepository->create(new PersistentVolumeClaim(
                 new ObjectMetadata($persistentVolume->getName()),
                 new PersistentVolumeClaimSpecification(
                     [PersistentVolumeClaimSpecification::ACCESS_MODE_READ_WRITE_ONCE],
@@ -87,11 +82,6 @@ class CreatePersistentVolumeClaim implements EventSubscriberInterface
                     ))
                 )
             ));
-
-            $logger->child(new Text(sprintf(
-                'Created persistent volume claim "%s"',
-                $created->getMetadata()->getName()
-            )));
         }
     }
 }
