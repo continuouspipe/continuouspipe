@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\DockerCompose;
 
+use ContinuousPipe\DockerCompose\DockerComposeException;
 use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\River\CodeReference;
@@ -42,7 +43,7 @@ class RepositoryComponentsResolver implements ComponentsResolver
             foreach ($this->projectParser->parse($fileSystem, $codeReference->getBranch()) as $name => $raw) {
                 $dockerComposeComponents[] = DockerComposeComponent::fromParsed($name, $raw);
             }
-        } catch (FileNotFound $e) {
+        } catch (DockerComposeException $e) {
             throw new ResolveException($e->getMessage(), $e->getCode(), $e);
         }
 
