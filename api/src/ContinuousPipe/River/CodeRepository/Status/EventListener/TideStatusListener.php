@@ -85,7 +85,7 @@ class TideStatusListener
         if ($event instanceof TideCreated) {
             $this->codeStatusUpdater->update($tide, new Status(Status::STATE_PENDING, 'Running'));
         } elseif ($event instanceof TideSuccessful) {
-            $status = new Status(Status::STATE_SUCCESS, sprintf('Successfully ran in %d seconds', $this->getDurationString($tide)));
+            $status = new Status(Status::STATE_SUCCESS, sprintf('Successfully ran in %s', $this->getDurationString($tide)));
 
             $this->codeStatusUpdater->update($tide, $status);
         } elseif ($event instanceof TideFailed) {
