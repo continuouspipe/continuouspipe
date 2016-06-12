@@ -54,7 +54,7 @@ tasks:
                             - name: PIPE_URL
                               value: http://pipe.continuouspipe.io
                             - name: RIVER_UI_URL
-                              value: http://ui.continuouspipe.io
+                              value: https://ui.continuouspipe.io
                             - name: RIVER_URL
                               value: river.continuouspipe.io
                             - name: KEEN_PROJECT_ID
@@ -89,6 +89,8 @@ tasks:
                               value: http://pipe.continuouspipe.io
                             - name: RIVER_URL
                               value: river.continuouspipe.io
+                            - name: RIVER_UI_URL
+                              value: https://ui.continuouspipe.io
                             - name: KEEN_PROJECT_ID
                               value: ${KEEN_PROJECT_ID}
                             - name: KEEN_WRITE_KEY
