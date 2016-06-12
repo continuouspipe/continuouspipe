@@ -6,7 +6,6 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideEventWithMetadata;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\EventDto;
-use ContinuousPipe\River\Infrastructure\Doctrine\UuidUpgrade\UuidReplacer;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\Uuid;
 

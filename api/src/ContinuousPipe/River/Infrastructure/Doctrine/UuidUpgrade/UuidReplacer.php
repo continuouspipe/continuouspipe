@@ -10,10 +10,10 @@ class UuidReplacer
     public static function replace($object)
     {
         if (is_array($object)) {
-            return array_map(function($child) {
+            return array_map(function ($child) {
                 return self::replace($child);
             }, $object);
-        } else if (!is_object($object)) {
+        } elseif (!is_object($object)) {
             return $object;
         }
 
