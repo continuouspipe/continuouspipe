@@ -506,3 +506,43 @@ Feature:
                                 - identifier: api80
                                   port: 80
     """
+
+  Scenario: It loads everything from the v2 of Docker Compose
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        kube:
+            deploy:
+                cluster: foo
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    version: '2'
+    services:
+        api:
+            image: foo/bar
+            command: /app/run.sh
+            expose:
+                - 80
+            volumes:
+                - /var/run/docker.sock:/var/run/docker.sock
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        kube:
+            deploy:
+                services:
+                    api:
+                        specification:
+                            source:
+                                image: foo/bar
+                            command:
+                                - /app/run.sh
+                            volumes:
+                                - type: hostPath
+                                  path: /var/run/docker.sock
+                            volume_mounts:
+                                - mount_path: /var/run/docker.sock
+    """
