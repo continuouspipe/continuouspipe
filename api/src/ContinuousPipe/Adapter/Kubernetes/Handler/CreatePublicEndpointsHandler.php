@@ -89,7 +89,6 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
             $objects = $this->getPublicEndpointObjects($context->getEnvironment());
             $status = $this->createPublicEndpointObjects($this->clientFactory->get($context), $objects);
 
-            $logger->updateStatus(Log::SUCCESS);
             $this->eventBus->handle(new PublicServicesCreated($context, $status));
         } catch (\Exception $e) {
             $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
