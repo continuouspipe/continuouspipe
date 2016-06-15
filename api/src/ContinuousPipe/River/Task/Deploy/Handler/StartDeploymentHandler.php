@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Task\Deploy\Handler;
 
 use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\River\Event\TideFailed;
+use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
@@ -12,6 +13,7 @@ use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
 use ContinuousPipe\River\View\TideRepository;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -41,6 +43,10 @@ class StartDeploymentHandler
      * @var TideRepository
      */
     private $tideRepository;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @param DeploymentRequestFactory $deploymentRequestFactory
@@ -48,14 +54,16 @@ class StartDeploymentHandler
      * @param MessageBus               $eventBus
      * @param LoggerFactory            $loggerFactory
      * @param TideRepository           $tideRepository
+     * @param LoggerInterface          $logger
      */
-    public function __construct(DeploymentRequestFactory $deploymentRequestFactory, Client $pipeClient, MessageBus $eventBus, LoggerFactory $loggerFactory, TideRepository $tideRepository)
+    public function __construct(DeploymentRequestFactory $deploymentRequestFactory, Client $pipeClient, MessageBus $eventBus, LoggerFactory $loggerFactory, TideRepository $tideRepository, LoggerInterface $logger)
     {
         $this->deploymentRequestFactory = $deploymentRequestFactory;
         $this->pipeClient = $pipeClient;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
         $this->tideRepository = $tideRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -64,7 +72,16 @@ class StartDeploymentHandler
     public function handle(StartDeploymentCommand $command)
     {
         $taskDetails = $command->getTaskDetails();
-        $tide = $this->tideRepository->find($command->getTideUuid());
+
+        try {
+            $tide = $this->tideRepository->find($command->getTideUuid());
+        } catch (TideNotFound $e) {
+            $this->logger->critical('Tide not found while starting to build images', [
+                'tideUuid' => (string) $command->getTideUuid(),
+            ]);
+
+            return;
+        }
 
         try {
             $deploymentRequest = $this->deploymentRequestFactory->create($tide, $taskDetails, $command->getConfiguration());
