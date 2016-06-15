@@ -10,6 +10,7 @@
             <argument type="service" id="river.repository.tide" />
             <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="router" />
+            <argument type="service" id="logger" />
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Build\Command\BuildImageCommand" />
         </service>
@@ -19,6 +20,7 @@
             <argument type="service" id="river.repository.tide" />
             <argument type="service" id="builder.build_request_creator" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="logger" />
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Build\Command\BuildImagesCommand" />
         </service>

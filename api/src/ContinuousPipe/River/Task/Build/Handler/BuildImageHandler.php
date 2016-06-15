@@ -8,10 +8,12 @@ use ContinuousPipe\Builder\Logging;
 use ContinuousPipe\Builder\LogStreamLogging;
 use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Request\BuildRequest;
+use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Build\Command\BuildImageCommand;
 use ContinuousPipe\River\Task\Build\Event\BuildStarted;
 use LogStream\LoggerFactory;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -35,20 +37,27 @@ class BuildImageHandler
      * @var UrlGeneratorInterface
      */
     private $urlGenerator;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @param BuilderClient         $builderClient
      * @param TideRepository        $tideRepository
      * @param MessageBus            $eventBus
      * @param UrlGeneratorInterface $urlGenerator
-     * @param LoggerFactory         $loggerFactory
+     * @param LoggerInterface       $logger
+     *
+     * @internal param LoggerFactory $loggerFactory
      */
-    public function __construct(BuilderClient $builderClient, TideRepository $tideRepository, MessageBus $eventBus, UrlGeneratorInterface $urlGenerator)
+    public function __construct(BuilderClient $builderClient, TideRepository $tideRepository, MessageBus $eventBus, UrlGeneratorInterface $urlGenerator, LoggerInterface $logger)
     {
         $this->builderClient = $builderClient;
         $this->eventBus = $eventBus;
         $this->tideRepository = $tideRepository;
         $this->urlGenerator = $urlGenerator;
+        $this->logger = $logger;
     }
 
     /**
@@ -57,7 +66,16 @@ class BuildImageHandler
     public function handle(BuildImageCommand $command)
     {
         $tideUuid = $command->getTideUuid();
-        $tide = $this->tideRepository->find($tideUuid);
+
+        try {
+            $tide = $this->tideRepository->find($tideUuid);
+        } catch (TideNotFound $e) {
+            $this->logger->critical('Tide not found while starting to build an image', [
+                'tideUuid' => (string) $tideUuid,
+            ]);
+
+            return;
+        }
 
         $buildRequest = $this->getBuildRequestWithNotificationConfiguration($tideUuid, $command->getBuildRequest(), $command->getLogId());
         $build = $this->builderClient->build($buildRequest, $tide->getContext()->getUser());

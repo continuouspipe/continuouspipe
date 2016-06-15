@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\CodeRepository\DockerCompose;
 
 use ContinuousPipe\DockerCompose\DockerComposeException;
-use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
