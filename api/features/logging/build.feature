@@ -12,10 +12,6 @@ Feature:
 
   Scenario:
     When a tide is started with a build task
-    Then a "Building image 'image0'" log should be created under the "Building application images" one
-
-  Scenario:
-    When a tide is started with a build task
     And all the image builds are successful
     Then the "Building application images" log should be successful
 
