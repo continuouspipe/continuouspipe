@@ -41,7 +41,8 @@ class LoggedDockerClient implements Client
      */
     public function build(Archive $archive, BuildRequest $request, Logger $logger)
     {
-        $logger = $logger->child(new Text('Start Docker build'))->updateStatus(Log::RUNNING);
+        $title = sprintf('Building Docker image <code>%s</code>', $this->getImageName($request->getImage()));
+        $logger = $logger->child(new Text($title))->updateStatus(Log::RUNNING);
 
         try {
             $image = $this->client->build($archive, $request, $logger->child(new Raw()));
@@ -61,7 +62,8 @@ class LoggedDockerClient implements Client
      */
     public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
     {
-        $logger = $logger->child(new Text('Pushing Docker image'))->updateStatus(Log::RUNNING);
+        $title = sprintf('Pushing Docker image <code>%s</code>', $this->getImageName($image));
+        $logger = $logger->child(new Text($title))->updateStatus(Log::RUNNING);
 
         try {
             $this->client->push($image, $credentials, $logger->child(new Raw()));
@@ -94,5 +96,15 @@ class LoggedDockerClient implements Client
         }
 
         return $image;
+    }
+
+    /**
+     * @param Image $image
+     *
+     * @return string
+     */
+    private function getImageName(Image $image)
+    {
+        return $image->getName().':'.$image->getTag();
     }
 }
