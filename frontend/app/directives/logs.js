@@ -7,7 +7,7 @@ angular.module('logstream')
             },
             templateUrl: 'views/logs/logs.ng.html',
             controller: ['$scope', function ($scope) {
-                $scope.follow = false;
+                $scope.follow = true;
                 $scope.displayChildrenOf = [];
                 $scope.toggleChildrenDisplay = function(logId) {
                     $scope.displayChildrenOf[logId] = !$scope.displayChildrenOf[logId];
