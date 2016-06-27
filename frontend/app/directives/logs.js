@@ -7,6 +7,7 @@ angular.module('logstream')
             },
             templateUrl: 'views/logs/logs.ng.html',
             controller: ['$scope', function ($scope) {
+                $scope.follow = false;
                 $scope.displayChildrenOf = [];
                 $scope.toggleChildrenDisplay = function(logId) {
                     $scope.displayChildrenOf[logId] = !$scope.displayChildrenOf[logId];
@@ -66,9 +67,26 @@ angular.module('logstream')
                     var value = concatLogChildren(log),
                         html = ansi_up.ansi_to_html(value);
 
-                    console.log('update HTML');
-                    $(element).html(html);
+                    $(element).html(html).trigger('updated-html');
                 });
             }
+        };
+    })
+    .directive('followScroll', function() {
+        return {
+            link: function(scope, element, attributes) {
+                var scrollToTheBottom = function() {
+                    element.scrollTop(element[0].scrollHeight);
+                };
+
+                scope.$watch(attributes.followScroll, function(follow) {
+                    element[follow ? 'on' : 'off']('updated-html', scrollToTheBottom);
+
+                    if (follow) {
+                        scrollToTheBottom();
+                    }
+                });
+            },
+            restrict: 'A'
         };
     });
