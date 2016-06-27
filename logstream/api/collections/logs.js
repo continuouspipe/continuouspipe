@@ -7,9 +7,6 @@ var LogsCollection = function(root, bucket) {
             logRoot = path ? root.child(path) : root,
             child = logRoot.push();
 
-        log.updatedAt = new Date();
-        log.createdAt = new Date();
-
         child.set(log, function(error) {
             log._id = path !== null ? path+'/'+child.key() : child.key();
 
@@ -19,8 +16,6 @@ var LogsCollection = function(root, bucket) {
 
     this.update = function(id, updatedProperties, callback) {
         var child = root.child(id);
-
-        updatedProperties.updatedAt = new Date();
 
         child.update(updatedProperties, function(error) {
             if (error) {
