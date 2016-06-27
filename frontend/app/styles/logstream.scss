@@ -19,11 +19,28 @@ body {
 
     .log {
         &.type-raw {
+            position: relative;
+
             pre {
                 background: #002b36;
                 color: #839496;
                 white-space: pre-wrap;
                 max-height: 400px;
+            }
+
+            button.follow-button {
+                position: absolute;
+                right: 10px;
+                bottom: 10px;
+                background: #fff;
+                padding: 5px 10px;
+                border-radius: 5px;
+                border: none;
+
+                &.selected {
+                    box-shadow: inset 0 0 15px #777;
+                    color: green;
+                }
             }
         }
 

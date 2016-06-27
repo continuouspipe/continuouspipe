@@ -7,6 +7,7 @@ angular.module('logstream')
             },
             templateUrl: 'views/logs/logs.ng.html',
             controller: ['$scope', function ($scope) {
+                $scope.follow = true;
                 $scope.displayChildrenOf = [];
                 $scope.toggleChildrenDisplay = function(logId) {
                     $scope.displayChildrenOf[logId] = !$scope.displayChildrenOf[logId];
@@ -62,13 +63,37 @@ angular.module('logstream')
                     return value;
                 };
 
+                function encode(r) {
+                    return r.replace(/[\x26\x0A\<>'"]/g, function(r) {
+                        return"&#"+r.charCodeAt(0)+";";
+                    });
+                }
+
                 scope.$watch('rawLogsContent', function(log) {
                     var value = concatLogChildren(log),
-                        html = ansi_up.ansi_to_html(value);
+                        sanitizedValue = encode(value),
+                        html = ansi_up.ansi_to_html(sanitizedValue);
 
-                    console.log('update HTML');
-                    $(element).html(html);
+                    $(element).html(html).trigger('updated-html');
                 });
             }
+        };
+    })
+    .directive('followScroll', function() {
+        return {
+            link: function(scope, element, attributes) {
+                var scrollToTheBottom = function() {
+                    element.scrollTop(element[0].scrollHeight);
+                };
+
+                scope.$watch(attributes.followScroll, function(follow) {
+                    element[follow ? 'on' : 'off']('updated-html', scrollToTheBottom);
+
+                    if (follow) {
+                        scrollToTheBottom();
+                    }
+                });
+            },
+            restrict: 'A'
         };
     });
