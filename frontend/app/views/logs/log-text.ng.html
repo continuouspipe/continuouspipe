@@ -3,7 +3,8 @@
     <i class="round">
         <span ng-if="!displayChildrenOf[logId]" class="glyphicon glyphicon-chevron-right"></span>
         <span ng-if="displayChildrenOf[logId]" class="glyphicon glyphicon-chevron-down"></span>
-    </i> {{ ::log.contents }}
+    </i>
+    <span ng-bind-html="log.contents"></span>
 </div>
 <div class="children">
     <logs ng-if="displayChildrenOf[logId]" parent="log"></logs>
