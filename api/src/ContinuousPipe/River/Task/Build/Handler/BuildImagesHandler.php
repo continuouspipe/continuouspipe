@@ -104,9 +104,7 @@ class BuildImagesHandler
         }
 
         foreach ($buildRequests as $buildRequest) {
-            $log = $logger->child(new Text(sprintf('Building image \'%s\'', $buildRequest->getImage()->getName())))->getLog();
-
-            $command = new BuildImageCommand($tideUuid, $buildRequest, $log->getId());
+            $command = new BuildImageCommand($tideUuid, $buildRequest, $logger->getLog()->getId());
             $this->commandBus->handle($command);
         }
     }
