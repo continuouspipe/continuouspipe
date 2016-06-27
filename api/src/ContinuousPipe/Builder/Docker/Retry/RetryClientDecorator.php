@@ -89,9 +89,9 @@ class RetryClientDecorator implements Client
             ]);
 
             $logger->child(new Text(sprintf(
-                "\n".'Detected a Docker error, retrying in %s seconds: %s'."\n",
-                $e->getMessage(),
-                $this->retryInterval
+                "\n".'Detected a Docker error, retrying in %d seconds: %s'."\n",
+                $this->retryInterval,
+                $e->getMessage()
             )));
 
             (new SleepWaiter())->wait($this->retryInterval);
