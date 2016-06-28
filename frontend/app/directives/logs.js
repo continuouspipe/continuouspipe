@@ -3,12 +3,17 @@ angular.module('logstream')
         return {
             restrict: 'E',
             scope: {
-                parent: '='
+                parent: '=',
+                level: '@'
             },
             templateUrl: 'views/logs/logs.ng.html',
             controller: ['$scope', function ($scope) {
                 $scope.follow = true;
                 $scope.displayChildrenOf = [];
+                $scope.shouldDisplayChildrenOf = function(logId) {
+                    return $scope.level == 1 || $scope.displayChildrenOf[logId];
+                };
+                
                 $scope.toggleChildrenDisplay = function(logId) {
                     $scope.displayChildrenOf[logId] = !$scope.displayChildrenOf[logId];
                 };

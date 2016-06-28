@@ -7,5 +7,5 @@
     <span ng-bind-html="log.contents"></span>
 </div>
 <div class="children">
-    <logs ng-if="displayChildrenOf[logId]" parent="log"></logs>
+    <logs ng-if="shouldDisplayChildrenOf(logId)" parent="log" level="{{ level + 1 }}"></logs>
 </div>
