@@ -8,6 +8,7 @@ use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
+use GuzzleHttp\Exception\ClientException;
 use LogStream\Logger;
 use LogStream\Node\Text;
 
@@ -59,7 +60,11 @@ class GitHubArchiveBuilder implements ArchiveBuilder
         $archiveUrl = $this->remoteArchiveLocator->getArchiveUrl($buildRequest->getRepository());
 
         $packer = new ArchivePacker($httpClient);
-        $article = $packer->createFromUrl($buildRequest->getContext(), $archiveUrl);
+        try {
+            $article = $packer->createFromUrl($buildRequest->getContext(), $archiveUrl);
+        } catch (ClientException $e) {
+            throw new ArchiveCreationException($e->getMessage(), $e->getCode(), $e);
+        }
 
         return $article;
     }
