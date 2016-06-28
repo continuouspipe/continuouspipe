@@ -8,24 +8,92 @@ $running-color: #2979ca;
 $text-rounds-radius: 20px;
 
 body {
-    background: transparent;
+    background: #F2F4F6;
 }
 
 .log-container {
-    .children {
-        padding-top: 10px;
-        padding-left: 25px;
-    }
+    margin: 30px;
 
     .log {
+        margin: 10px 0;
+
+        > div.content {
+            .duration {
+                float: right;
+            }
+        }
+
+        &.level-1 {
+            margin-bottom: 30px;
+            
+            > div.content {
+                font-size: 1.3em;
+                border-bottom: 3px solid grey;
+                font-variant: small-caps;
+                font-weight: 200;
+
+                .expand-icon, .status-icon {
+                    display: none;
+                }
+            }
+
+            &.status-running {
+                > div.content {
+                    border-bottom-color: $running-color;
+                }
+            }
+
+            &.status-success {
+                > div.content {
+                    border-bottom-color: $success-color;
+                }
+            }
+
+            &.status-failure {
+                > div.content {
+                    border-bottom-color: $failure-color;
+                }
+            }
+        }
+
+        &.level-2 {
+            border: 1px solid #ccc;
+
+            &.status-success {
+                border-left: 3px solid $success-color;
+            }
+            &.status-running {
+                border-left: 3px solid $running-color;
+            }
+            &.status-failure {
+                border-left: 3px solid $failure-color;
+            }
+
+            > div.content {
+                background: #fff;
+                box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
+                padding: 10px;
+            }
+
+            &.has-children {
+                > div.content {
+                    cursor: pointer;
+                }
+            }
+        }
+
         &.type-raw {
             position: relative;
+            margin: 0;
 
             pre {
                 background: #002b36;
                 color: #839496;
                 white-space: pre-wrap;
                 max-height: 400px;
+                margin: 0;
+                border: none;
+                border-radius: 0;
             }
 
             button.follow-button {
@@ -45,68 +113,37 @@ body {
         }
 
         &.type-text {
-            div.content {
-                div.counter {
-                    float: right;
-                }
-
-                i.round {
-                    display: inline-block;
-                    width: $text-rounds-radius;
-                    height: $text-rounds-radius;
-                    border-radius: ($text-rounds-radius / 2);
-                    background-color: $default-color;
-                    vertical-align: middle;
-                    text-align: center;
-
-                    > .glyphicon {
-                        color: #fff;
-                        font-size: 0.7em;
-                        vertical-align: middle;
-                        margin-top: -3px;
-
-                        &.glyphicon-chevron-right {
-                            margin-top: -4px;
-                        }
-                    }
-                }
-            }
-
-            .children {
-                padding-left: 20px;
-                margin-left: $text-rounds-radius / 2;
-                border-left: 1px solid $default-color;
-            }
-
-            &.status-running {
-                > div.content i.round {
-                    background-color: $running-color;
-                }
-
-                > .children {
-                    border-left-color: $running-color;
-                }
-            }
-
-            &.status-success {
-                > div.content i.round {
-                    background-color: $success-color;
-                }
-
-                > .children {
-                    border-left-color: $success-color;
-                }
-            }
-
-            &.status-failure {
-                > div.content i.round {
-                    background-color: $failure-color;
-                }
-
-                > .children {
-                    border-left-color: $failure-color;
-                }
+            &.level-3 {
+                margin: 0;
+                padding: 10px;
             }
         }
+    }
+}
+
+// Animations
+.glyphicon-spin {
+    -webkit-animation: spin 2000ms infinite linear;
+    animation: spin 2000ms infinite linear;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
     }
 }
