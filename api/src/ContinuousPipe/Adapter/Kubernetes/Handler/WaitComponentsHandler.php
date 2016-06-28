@@ -155,6 +155,7 @@ class WaitComponentsHandler implements DeploymentHandler
     private function waitOneReplicationControllerPodRunning(React\EventLoop\LoopInterface $loop, NamespaceClient $client, Logger $logger, ReplicationController $replicationController)
     {
         $logger = $logger->child(new Text(sprintf('Waiting at least one pod of RC "%s" to be running', $replicationController->getMetadata()->getName())));
+        $logger->updateStatus(Log::RUNNING);
 
         return (new PromiseBuilder($loop))
             ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $replicationController) {
