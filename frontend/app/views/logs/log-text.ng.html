@@ -1,9 +1,4 @@
 <div class="content" ng-click="toggleChildrenDisplay(logId)">
-    <div ng-if="log.status == 'running'" class="counter" log-time-counter="log"></div>
-    <i class="round">
-        <span ng-if="!displayChildrenOf[logId]" class="glyphicon glyphicon-chevron-right"></span>
-        <span ng-if="displayChildrenOf[logId]" class="glyphicon glyphicon-chevron-down"></span>
-    </i>
     <span ng-bind-html="log.contents"></span>
 </div>
 <div class="children">

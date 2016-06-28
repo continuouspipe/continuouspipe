@@ -14,20 +14,61 @@ body {
 .log-container {
     margin: 30px;
 
-    .children {
-        padding-top: 10px;
-        padding-left: 25px;
-    }
-
     .log {
+        margin: 10px 0;
+
+        &.level-1 {
+            > div.content {
+                font-size: 1.5em;
+                border-bottom: 3px solid grey;
+            }
+
+            &.status-running {
+                > div.content {
+                    border-bottom-color: $running-color;
+                }
+            }
+
+            &.status-success {
+                > div.content {
+                    border-bottom-color: $success-color;
+                }
+            }
+
+            &.status-failure {
+                > div.content {
+                    border-bottom-color: $failure-color;
+                }
+            }
+        }
+
+        &.level-2 {
+            border: 1px solid #ccc;
+
+            > div.content {
+                padding: 10px;
+                background: #efefef;
+            }
+
+            &.has-children {
+                > div.content {
+                    cursor: pointer;
+                }
+            }
+        }
+
         &.type-raw {
             position: relative;
+            margin: 0;
 
             pre {
                 background: #002b36;
                 color: #839496;
                 white-space: pre-wrap;
                 max-height: 400px;
+                margin: 0;
+                border: none;
+                border-radius: 0;
             }
 
             button.follow-button {
@@ -47,67 +88,9 @@ body {
         }
 
         &.type-text {
-            div.content {
-                div.counter {
-                    float: right;
-                }
-
-                i.round {
-                    display: inline-block;
-                    width: $text-rounds-radius;
-                    height: $text-rounds-radius;
-                    border-radius: ($text-rounds-radius / 2);
-                    background-color: $default-color;
-                    vertical-align: middle;
-                    text-align: center;
-
-                    > .glyphicon {
-                        color: #fff;
-                        font-size: 0.7em;
-                        vertical-align: middle;
-                        margin-top: -3px;
-
-                        &.glyphicon-chevron-right {
-                            margin-top: -4px;
-                        }
-                    }
-                }
-            }
-
-            .children {
-                padding-left: 20px;
-                margin-left: $text-rounds-radius / 2;
-                border-left: 1px solid $default-color;
-            }
-
-            &.status-running {
-                > div.content i.round {
-                    background-color: $running-color;
-                }
-
-                > .children {
-                    border-left-color: $running-color;
-                }
-            }
-
-            &.status-success {
-                > div.content i.round {
-                    background-color: $success-color;
-                }
-
-                > .children {
-                    border-left-color: $success-color;
-                }
-            }
-
-            &.status-failure {
-                > div.content i.round {
-                    background-color: $failure-color;
-                }
-
-                > .children {
-                    border-left-color: $failure-color;
-                }
+            &.level-3 {
+                margin: 0;
+                padding: 10px;
             }
         }
     }

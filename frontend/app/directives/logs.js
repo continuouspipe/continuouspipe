@@ -13,7 +13,10 @@ angular.module('logstream')
                 $scope.shouldDisplayChildrenOf = function(logId) {
                     return $scope.level == 1 || $scope.displayChildrenOf[logId];
                 };
-                
+                $scope.$watch('level', function(value) {
+                    $scope.level = parseInt(value);
+                });
+
                 $scope.toggleChildrenDisplay = function(logId) {
                     $scope.displayChildrenOf[logId] = !$scope.displayChildrenOf[logId];
                 };
