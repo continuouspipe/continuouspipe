@@ -8,7 +8,7 @@ $running-color: #2979ca;
 $text-rounds-radius: 20px;
 
 body {
-    background: transparent;
+    background: #F2F4F6;
 }
 
 .log-container {
@@ -17,10 +17,24 @@ body {
     .log {
         margin: 10px 0;
 
+        > div.content {
+            .duration {
+                float: right;
+            }
+        }
+
         &.level-1 {
+            margin-bottom: 30px;
+            
             > div.content {
-                font-size: 1.5em;
+                font-size: 1.3em;
                 border-bottom: 3px solid grey;
+                font-variant: small-caps;
+                font-weight: 200;
+
+                .expand-icon, .status-icon {
+                    display: none;
+                }
             }
 
             &.status-running {
@@ -45,9 +59,20 @@ body {
         &.level-2 {
             border: 1px solid #ccc;
 
+            &.status-success {
+                border-left: 3px solid $success-color;
+            }
+            &.status-running {
+                border-left: 3px solid $running-color;
+            }
+            &.status-failure {
+                border-left: 3px solid $failure-color;
+            }
+
             > div.content {
+                background: #fff;
+                box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
                 padding: 10px;
-                background: #efefef;
             }
 
             &.has-children {
@@ -93,5 +118,32 @@ body {
                 padding: 10px;
             }
         }
+    }
+}
+
+// Animations
+.glyphicon-spin {
+    -webkit-animation: spin 2000ms infinite linear;
+    animation: spin 2000ms infinite linear;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
     }
 }
