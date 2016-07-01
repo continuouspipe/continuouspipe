@@ -14,8 +14,8 @@ Feature:
     Then the addresses of the environment should be commented on the pull-request
 
   Scenario: The addresses are automatically commented if the deployment is already done
-    Given a deployment for a commit "123" is successful
-    When a pull-request is created with head commit "123"
+    Given a deployment for a commit "123" on branch "foo" is successful
+    When a pull-request is created from branch "foo" with head commit "123"
     Then the addresses of the environment should be commented on the pull-request
 
   Scenario: Replace the previous comment if already exists on the PR

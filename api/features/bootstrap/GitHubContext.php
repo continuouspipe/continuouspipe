@@ -403,13 +403,14 @@ class GitHubContext implements Context
     }
 
     /**
-     * @When a pull-request is created with head commit :sha
+     * @When a pull-request is created from branch :branch with head commit :sha
      */
-    public function aPullRequestIsCreatedWithHeadCommit($sha)
+    public function aPullRequestIsCreatedWithHeadCommit($branch, $sha)
     {
         $contents = file_get_contents(__DIR__.'/../fixtures/pull_request-created.json');
         $decoded = json_decode($contents, true);
         $decoded['pull_request']['head']['sha'] = $sha;
+        $decoded['pull_request']['head']['ref'] = $branch;
         $contents = json_encode($decoded);
 
         $flowUuid = $this->flowContext->getCurrentUuid();
@@ -454,6 +455,18 @@ class GitHubContext implements Context
 
         if (0 == count($deletions)) {
             throw new \RuntimeException('No deleted environment found');
+        }
+    }
+
+    /**
+     * @Then the environment should not be deleted
+     */
+    public function theEnvironmentShouldNotBeDeleted()
+    {
+        $deletions = $this->traceableClient->getDeletions();
+
+        if (0 != count($deletions)) {
+            throw new \RuntimeException('Deleted environment(s) found');
         }
     }
 
