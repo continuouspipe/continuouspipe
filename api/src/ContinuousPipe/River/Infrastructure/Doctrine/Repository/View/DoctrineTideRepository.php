@@ -96,6 +96,7 @@ class DoctrineTideRepository implements TideRepository
     {
         $dtos = $this->getEntityRepository()->findBy([
             'tide.codeReference.sha1' => $codeReference->getCommitSha(),
+            'tide.codeReference.branch' => $codeReference->getBranch(),
         ]);
 
         return array_map(function (TideDto $dto) {

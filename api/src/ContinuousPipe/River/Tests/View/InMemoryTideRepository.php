@@ -31,7 +31,7 @@ class InMemoryTideRepository implements TideRepository
         $this->tideByFlow[$flowUuid][$tideUuid] = $tide;
 
         // Save by code reference
-        $codeReference = $tide->getCodeReference()->getCommitSha();
+        $codeReference = $this->getCodeReferenceIdentifier($tide->getCodeReference());
         if (!array_key_exists($codeReference, $this->tideByCodeReference)) {
             $this->tideByCodeReference[$codeReference] = [];
         }
@@ -58,7 +58,7 @@ class InMemoryTideRepository implements TideRepository
      */
     public function findByCodeReference(CodeReference $codeReference)
     {
-        $codeReferenceIdentifier = $codeReference->getCommitSha();
+        $codeReferenceIdentifier = $this->getCodeReferenceIdentifier($codeReference);
         if (!array_key_exists($codeReferenceIdentifier, $this->tideByCodeReference)) {
             return [];
         }
@@ -133,5 +133,19 @@ class InMemoryTideRepository implements TideRepository
         return array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) use ($branch) {
             return $tide->getCodeReference()->getBranch() == $branch && $tide->getStatus() == Tide::STATUS_PENDING;
         }));
+    }
+
+    /**
+     * @param CodeReference $codeReference
+     *
+     * @return string
+     */
+    private function getCodeReferenceIdentifier(CodeReference $codeReference)
+    {
+        return sprintf(
+            '%s:%s',
+            $codeReference->getBranch(),
+            $codeReference->getCommitSha()
+        );
     }
 }

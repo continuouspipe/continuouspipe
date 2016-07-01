@@ -217,21 +217,21 @@ EOF;
     }
 
     /**
-     * @When the tide for commit :sha1 is tentatively started
+     * @When the tide for the branch :branch and commit :sha1 is tentatively started
      */
-    public function theTideForCommitIsTentativelyStarted($sha1)
+    public function theTideForCommitIsTentativelyStarted($branch, $sha1)
     {
-        $tide = $this->getTideBySha1($sha1);
+        $tide = $this->getTideByCodeReference($branch, $sha1);
 
         $this->commandBus->handle(new StartTideCommand($tide->getUuid()));
     }
 
     /**
-     * @When the tide for commit :sha1 is successful
+     * @When the tide for branch :branch and commit :sha1 is successful
      */
-    public function theTideForCommitIsSuccessful($sha1)
+    public function theTideForCommitIsSuccessful($branch, $sha1)
     {
-        $tide = $this->getTideBySha1($sha1);
+        $tide = $this->getTideByCodeReference($branch, $sha1);
 
         $this->eventBus->handle(new TideSuccessful($tide->getUuid()));
     }
@@ -648,9 +648,9 @@ EOF;
     }
 
     /**
-     * @Given a deployment for a commit :sha is successful
+     * @Given a deployment for a commit :sha on branch :branch is successful
      */
-    public function aDeploymentForACommitIsSuccessful($sha)
+    public function aDeploymentForACommitIsSuccessful($sha, $branch)
     {
         $this->thereIsApplicationImagesInTheRepository(1);
         $this->flowContext->iHaveAFlow();
@@ -665,7 +665,7 @@ EOF;
             'continuous-pipe.yml' => $continuousPipeFile
         ]);
 
-        $this->createTide('foo', $sha);
+        $this->createTide($branch, $sha);
         $this->startTide();
 
         $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
@@ -1027,11 +1027,11 @@ EOF;
     }
 
     /**
-     * @Then the tide for the commit :sha1 should be started
+     * @Then the tide for the branch :branch and commit :sha1 should be started
      */
-    public function theTideForTheCommitShouldBeStarted($sha1)
+    public function theTideForTheCommitShouldBeStarted($branch, $sha1)
     {
-        $tideStatus = $this->getTideBySha1($sha1)->getStatus();
+        $tideStatus = $this->getTideByCodeReference($branch, $sha1)->getStatus();
 
         if ($tideStatus != Tide::STATUS_RUNNING) {
             throw new \RuntimeException(sprintf(
@@ -1042,11 +1042,11 @@ EOF;
     }
 
     /**
-     * @Then the tide for the commit :sha1 should not be started
+     * @Then the tide for the branch :branch and commit :sha1 should not be started
      */
-    public function theTideForTheCommitShouldNotBeStarted($sha1)
+    public function theTideForTheCommitShouldNotBeStarted($branch, $sha1)
     {
-        $tideStatus = $this->getTideBySha1($sha1)->getStatus();
+        $tideStatus = $this->getTideByCodeReference($branch, $sha1)->getStatus();
 
         if ($tideStatus == Tide::STATUS_RUNNING) {
             throw new \RuntimeException(sprintf(
@@ -1173,10 +1173,10 @@ EOF;
      *
      * @return Tide
      */
-    private function getTideBySha1($sha1)
+    private function getTideByCodeReference($branch, $sha1)
     {
         $codeRepository = $this->flowContext->getCurrentFlow()->getContext()->getCodeRepository();
-        $tides = $this->viewTideRepository->findByCodeReference(new CodeReference($codeRepository, $sha1));
+        $tides = $this->viewTideRepository->findByCodeReference(new CodeReference($codeRepository, $sha1, $branch));
 
         if (count($tides) != 1) {
             throw new \RuntimeException(sprintf(

@@ -78,6 +78,8 @@ class CodeReferenceResolver
     {
         if (0 === strpos($branch, 'refs/heads/')) {
             $branch = substr($branch, strlen('refs/heads/'));
+        } else if (0 === strpos($branch, 'refs/head/')) {
+            $branch = substr($branch, strlen('refs/head/'));
         }
 
         return new CodeReference(
