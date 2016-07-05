@@ -47,9 +47,15 @@ class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
     {
         $variables = [];
         foreach ($configuration['environment_variables'] as $item) {
-            if ($this->shouldResolveVariable($item, $context)) {
-                $variables[$item['name']] = $item['value'];
+            if (array_key_exists('condition', $item) && !$this->isConditionValid($item['condition'], $context)) {
+                continue;
             }
+
+            if (array_key_exists('expression', $item)) {
+                $item['value'] = $this->resolveExpression($item['expression'], $context);
+            }
+
+            $variables[$item['name']] = $item['value'];
         }
 
         return $variables;
@@ -96,36 +102,32 @@ class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
     }
 
     /**
-     * @param array       $item
+     * @param string      $condition
      * @param ArrayObject $context
      *
      * @return bool
      *
      * @throws TideConfigurationException
      */
-    private function shouldResolveVariable(array $item, ArrayObject $context)
+    private function isConditionValid($condition, ArrayObject $context)
     {
-        if (!array_key_exists('condition', $item)) {
-            return true;
-        }
-
-        return $this->isConditionValid($item['condition'], $context);
+        return (bool) $this->resolveExpression($condition, $context);
     }
 
     /**
-     * @param string      $expression
+     * @param string $expression
      * @param ArrayObject $context
      *
-     * @return bool
+     * @return string
      *
      * @throws TideConfigurationException
      */
-    private function isConditionValid($expression, ArrayObject $context)
+    private function resolveExpression($expression, ArrayObject $context)
     {
         $language = new ExpressionLanguage();
 
         try {
-            return (bool) $language->evaluate($expression, $context->asArray());
+            return $language->evaluate($expression, $context->asArray());
         } catch (SyntaxError $e) {
             throw new TideConfigurationException(sprintf(
                 'The expression provided ("%s") is not valid: %s',
