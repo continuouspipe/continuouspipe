@@ -55,3 +55,25 @@ Feature:
             deploy:
                 cluster: foo
     """
+
+  Scenario: Variable from an expression
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    environment_variables:
+        - name: BRANCH_NAME
+          expression: code_reference.branch
+
+    tasks:
+        named:
+            deploy:
+                cluster: ${BRANCH_NAME}
+                services: []
+    """
+    When the configuration of the tide is generated for the branch "master"
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: master
+    """

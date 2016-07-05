@@ -97,8 +97,9 @@ class Configuration implements ConfigurationInterface
             ->prototype('array')
                 ->children()
                     ->scalarNode('name')->isRequired()->end()
-                    ->scalarNode('value')->isRequired()->end()
+                    ->scalarNode('value')->end()
                     ->scalarNode('condition')->end()
+                    ->scalarNode('expression')->end()
                 ->end()
             ->end()
         ;
