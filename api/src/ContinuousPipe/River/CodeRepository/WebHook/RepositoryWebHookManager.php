@@ -70,6 +70,14 @@ class RepositoryWebHookManager
         try {
             $this->webHookManager->setup($codeRepository->getGitHubRepository(), $webHook);
         } catch (BadResponseException $e) {
+            $response = $e->getResponse()->json();
+
+            if (is_array($response) && array_key_exists('errors', $response) && is_array($response['errors'])) {
+                if ('Hook already exists on this repository' == $response['errors'][0]['message']) {
+                    return;
+                }
+            }
+
             throw new CouldNotCreateWebHookException('Could not create GitHub web hook for the repository.');
         }
     }
