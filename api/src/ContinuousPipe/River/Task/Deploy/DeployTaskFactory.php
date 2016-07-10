@@ -8,9 +8,13 @@ use ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory;
 use ContinuousPipe\River\Task\Deploy\Configuration\Environment;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
+use ContinuousPipe\River\Tide\Configuration\ArrayObject;
+use ContinuousPipe\River\TideConfigurationException;
 use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 class DeployTaskFactory implements TaskFactory
 {
@@ -59,7 +63,7 @@ class DeployTaskFactory implements TaskFactory
             DeployContext::createDeployContext($taskContext),
             new DeployTaskConfiguration(
                 $configuration['cluster'],
-                $this->generateServices($configuration['services']),
+                $this->generateServices($taskContext, $configuration['services']),
                 $configuration['environment']['name']
             )
         );
@@ -110,6 +114,7 @@ class DeployTaskFactory implements TaskFactory
                             })
                         ->end()
                         ->children()
+                            ->scalarNode('condition')->end()
                             ->arrayNode('specification')
                                 ->isRequired()
                                 ->addDefaultsIfNotSet()
@@ -229,16 +234,17 @@ class DeployTaskFactory implements TaskFactory
     }
 
     /**
+     * @param TaskContext $taskContext
      * @param array $servicesConfiguration
      *
      * @return array
      */
-    private function generateServices(array $servicesConfiguration)
+    private function generateServices(TaskContext $taskContext, array $servicesConfiguration)
     {
         $services = [];
 
         foreach ($servicesConfiguration as $name => $configuration) {
-            if ($configuration['enabled'] === false) {
+            if ($this->shouldSkipService($taskContext, $configuration)) {
                 continue;
             }
 
@@ -316,5 +322,50 @@ class DeployTaskFactory implements TaskFactory
         ;
 
         return $node;
+    }
+
+    /**
+     * @param TaskContext $taskContext
+     * @param array $configuration
+     *
+     * @return bool
+     */
+    private function shouldSkipService(TaskContext $taskContext, array $configuration)
+    {
+        if (array_key_exists('condition', $configuration)) {
+            return !$this->isConditionValid($configuration['condition'], new ArrayObject([
+                'code_reference' => new ArrayObject([
+                    'branch' => $taskContext->getCodeReference()->getBranch(),
+                    'sha' => $taskContext->getCodeReference()->getCommitSha(),
+                ]),
+            ]));
+        }
+
+        return $configuration['enabled'] === false;
+    }
+
+    /**
+     * @param string $expression
+     * @param ArrayObject $context
+     *
+     * @return string
+     *
+     * @throws TideConfigurationException
+     */
+    private function isConditionValid($expression, ArrayObject $context)
+    {
+        $language = new ExpressionLanguage();
+
+        try {
+            return (bool) $language->evaluate($expression, $context->asArray());
+        } catch (SyntaxError $e) {
+            throw new TideConfigurationException(sprintf(
+                'The expression provided ("%s") is not valid: %s',
+                $expression,
+                $e->getMessage()
+            ), $e->getCode(), $e);
+        } catch (\InvalidArgumentException $e) {
+            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

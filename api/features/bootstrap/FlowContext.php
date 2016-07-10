@@ -307,6 +307,8 @@ EOF;
         if (null === $this->currentFlow) {
             $this->createFlow();
         }
+
+        return $this->currentFlow;
     }
 
     /**
