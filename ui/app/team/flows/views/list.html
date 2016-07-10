@@ -22,19 +22,11 @@
             </md-card-header>
 
             <md-card-content ng-if="!flow.tides.length">
-                <p>No tides run in this flow.</p>
+                <p>No tide ran yet.</p>
             </md-card-content>
 
-            <md-card-title ng-if="flow.tides.length">
-                <md-card-title-text>
-                    <span class="md-headline">Last tide</span>
-                </md-card-title-text>
-            </md-card-title>
-
-            <md-card-content ng-if="flow.tides.length" class="tide-summary status-container" ui-sref="tide.logs({uuid: flow.uuid, tideUuid: flow.tides[0].uuid})" ng-class="flow.tides[0].status | tideStatusClass">
-                <h3>{{ flow.tides[0].code_reference.branch }}</h3>
-                <h4>{{ flow.tides[0].code_reference.sha1 }}</h4>
-                <p>{{ flow.tides[0].creation_date | timeAgo }}</p>
+            <md-card-content ng-if="flow.tides.length">
+                <p class="status-container" ng-class="flow.tides[0].status | tideStatusClass">Last tide ran <strong>{{ flow.tides[0].creation_date | timeAgo }}</strong></p>
             </md-card-content>
         </md-card>
     </remote-resource>

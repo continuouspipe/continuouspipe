@@ -244,6 +244,10 @@ body {
                 cursor: pointer;
             }
 
+            &:hover {
+                box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.25);
+            }
+
             md-card-title {
                 padding-top: 0;
 
@@ -267,6 +271,15 @@ body {
                     .md-headline {
                         border-radius: 10px 10px 0 0;
                     }
+                }
+            }
+
+            md-card-content {
+                padding-top: 0;
+
+                > p {
+                    background: $content-background;
+                    padding: 10px;
                 }
             }
 
