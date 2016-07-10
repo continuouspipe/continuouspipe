@@ -33,7 +33,7 @@ class DeployedEnvironment
      * @param string      $cluster
      * @param Component[] $components
      */
-    public function __construct($identifier, $cluster, array $components)
+    public function __construct($identifier, $cluster, array $components = [])
     {
         $this->identifier = $identifier;
         $this->cluster = $cluster;

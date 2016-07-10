@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route(service="app.controller.flow_environment")
@@ -39,14 +40,15 @@ class FlowEnvironmentController
     }
 
     /**
-     * @Route("/flows/{uuid}/environments", methods={"DELETE"})
+     * @Route("/flows/{uuid}/environments/{name}", methods={"DELETE"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
-     * @ParamConverter("environment", converter="fos_rest.request_body")
      * @Security("is_granted('DELETE', flow)")
      * @View
      */
-    public function deleteAction(Flow $flow, DeployedEnvironment $environment)
+    public function deleteAction(Flow $flow, Request $request, $name)
     {
+        $environment = new DeployedEnvironment($name, $request->query->get('cluster'));
+
         $this->environmentClient->delete($flow, $environment);
     }
 }
