@@ -9,18 +9,14 @@ angular.module('continuousPipeRiver')
         });
 
         this.findByFlow = function(flow) {
-            return this.resource.query({uuid: flow.uuid}).$promise
+            return this.resource.query({uuid: flow.uuid}).$promise;
         };
 
         this.delete = function(flow, environment) {
-            return $http.delete(RIVER_API_URL+'/flows/'+flow.uuid+'/environments', {
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
-                },
-                data: {
-                    identifier: environment.identifier,
-                    cluster: environment.cluster
-                }
-            });
+            return this.resource.delete({
+                uuid: flow.uuid, 
+                name: environment.identifier,
+                cluster: environment.cluster
+            }).$promise;
         };
     });

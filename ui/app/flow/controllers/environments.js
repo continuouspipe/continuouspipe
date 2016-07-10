@@ -21,6 +21,8 @@ angular.module('continuousPipeRiver')
                 closeOnConfirm: false
             }, function() {
                 EnvironmentRepository.delete(flow, environment).then(function () {
+                    swal("Deleted!", "Environment successfully deleted.", "success");
+
                     loadEnvironments();
                 }, function (error) {
                     var message = ((error || {}).data || {}).message || "An unknown error occured while deleting the environment";
