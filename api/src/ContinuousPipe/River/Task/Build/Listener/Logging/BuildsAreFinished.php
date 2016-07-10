@@ -7,7 +7,7 @@ use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 
-class BuildsListener
+class BuildsAreFinished
 {
     /**
      * @var LoggerFactory

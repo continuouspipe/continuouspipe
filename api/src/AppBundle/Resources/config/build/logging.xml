@@ -6,14 +6,7 @@
 
     <services>
         <!-- Event subscribers -->
-        <service id="river.logging.listener.build" class="ContinuousPipe\River\Task\Build\Listener\Logging\BuildListener">
-            <argument type="service" id="log_stream.logger_factory" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\BuildSuccessful"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\BuildFailed"/>
-        </service>
-
-        <service id="river.logging.listener.builds" class="ContinuousPipe\River\Task\Build\Listener\Logging\BuildsListener">
+        <service id="river.logging.listener.build_are_finished" class="ContinuousPipe\River\Task\Build\Listener\Logging\BuildsAreFinished">
             <argument type="service" id="log_stream.logger_factory" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed"/>
