@@ -1243,7 +1243,10 @@ EOF;
      */
     private function factoryTide($branch = 'master', $sha = null, Uuid $uuid = null)
     {
-        $flow = $this->flowContext->getCurrentFlow();
+        if (null === ($flow = $this->flowContext->getCurrentFlow())) {
+            $flow = $this->flowContext->iHaveAFlow();
+        }
+
         $sha = $sha ?: sha1($branch);
 
         return $this->tideFactory->createFromCodeReference(
