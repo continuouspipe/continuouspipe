@@ -407,8 +407,8 @@ EOF;
      */
     public function iTentativelyDeleteTheEnvironmentNamedOfTheFlow($name, $cluster, $uuid)
     {
-        $url = sprintf('/flows/%s/environments/%s/delete', $uuid, $name);
-        $this->response = $this->kernel->handle(Request::create($url, 'POST', ['cluster' => $cluster]));
+        $url = sprintf('/flows/%s/environments/%s', $uuid, $name);
+        $this->response = $this->kernel->handle(Request::create($url, 'DELETE', ['cluster' => $cluster]));
     }
 
     /**

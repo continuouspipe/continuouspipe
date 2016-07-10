@@ -40,7 +40,7 @@ class FlowEnvironmentController
     }
 
     /**
-     * @Route("/flows/{uuid}/environments/{name}/delete", methods={"POST"})
+     * @Route("/flows/{uuid}/environments/{name}", methods={"DELETE"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @Security("is_granted('DELETE', flow)")
      * @View
