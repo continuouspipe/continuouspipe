@@ -8,10 +8,6 @@ Feature:
     And there is a team "my-team"
     And the user "samuel" is administrator of the team "my-team"
 
-  @smoke
-  Scenario: I can add a user by its email
-    Given there is a user "someone"
-    And the email of the user "someone" is "email@exmaple.com"
-    When I add the user "email@exmaple.com" in the team "my-team"
-    Then the user should be added to the team
-    And I can see the user "someone" in the team "my-team"
+  Scenario: I can invite a user to a team
+    When I invite the user "user@example.com" to the team "my-team"
+    Then the invitation for the user "user@example.com" should be created
