@@ -31,6 +31,25 @@ class InMemorySecurityUserRepository implements SecurityUserRepository
     /**
      * {@inheritdoc}
      */
+    public function findOneByEmail($email)
+    {
+        $matchingUsers = array_filter($this->users, function (SecurityUser $user) use ($email) {
+            return $user->getUser()->getEmail() == $email;
+        });
+
+        if (count($matchingUsers) == 0) {
+            throw new UserNotFound(sprintf(
+                'User with email "%s" not found',
+                $email
+            ));
+        }
+
+        return current($matchingUsers);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function save(SecurityUser $user)
     {
         $this->users[$user->getUser()->getUsername()] = $user;

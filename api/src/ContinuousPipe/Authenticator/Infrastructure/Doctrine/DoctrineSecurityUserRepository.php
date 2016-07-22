@@ -39,6 +39,28 @@ class DoctrineSecurityUserRepository implements SecurityUserRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function findOneByEmail($email)
+    {
+        $user = $this->entityManager->getRepository(SecurityUser::class)->createQueryBuilder('security_user')
+            ->join('security_user.user', 'user')
+            ->where('user.email = :email')
+            ->setParameter('email', $email)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (null === $user) {
+            throw new UserNotFound(sprintf(
+                'User with email "%s" is not found',
+                $email
+            ));
+        }
+
+        return $user;
+    }
+
+    /**
      * {@inheritdoc.
      */
     public function save(SecurityUser $user)
