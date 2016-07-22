@@ -41,5 +41,13 @@ angular
         $mdThemingProvider.theme('blue');
     })
     // We need to inject it at least once to have automatic tracking
-    .run(function(Analytics) {})
+    .run(function(Analytics, $rootScope) {
+        $rootScope.$on('user_context.user_updated', function(event, user) {
+            window.Intercom("boot", {
+                app_id: "jzwmwqmf",
+                user_id: user.username,
+                email: user.email
+            });
+        });
+    })
 ;

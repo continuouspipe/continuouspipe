@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('$userContext', function(jwtHelper, UserRepository, $tokenStorage, $q) {
+    .service('$userContext', function(jwtHelper, UserRepository, $tokenStorage, $q, $rootScope) {
         this.user = null;
         this.getUser = function() {
             return this.user;
@@ -13,6 +13,8 @@ angular.module('continuousPipeRiver')
 
             return UserRepository.findByUsername(decoded.username).then(function(user) {
                 userContext.user = user;
+
+                $rootScope.$emit('user_context.user_updated', user);
 
                 return user;
             }, function(error) {
