@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -25,6 +26,22 @@ class InvitationContext implements Context
     {
         $this->kernel = $kernel;
         $this->userInvitationRepository = $userInvitationRepository;
+    }
+
+    /**
+     * @Given the user with email :email was invited to join the team :team
+     */
+    public function theUserWithEmailWasInvitedToJoinTheTeam($email, $team)
+    {
+        $this->userInvitationRepository->save(new UserInvitation($email, $team, [], new \DateTime()));
+    }
+
+    /**
+     * @Given the user with email :email was invited to be administrator of the team :team
+     */
+    public function theUserWithEmailWasInvitedToBeAdministratorOfTheTeam($email, $team)
+    {
+        $this->userInvitationRepository->save(new UserInvitation($email, $team, ['ADMIN'], new \DateTime()));
     }
 
     /**

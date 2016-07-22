@@ -17,4 +17,11 @@ interface UserInvitationRepository
      * @return UserInvitation
      */
     public function save(UserInvitation $userInvitation);
+
+    /**
+     * @param UserInvitation $invitation
+     *
+     * @throws InvitationException
+     */
+    public function delete(UserInvitation $invitation);
 }

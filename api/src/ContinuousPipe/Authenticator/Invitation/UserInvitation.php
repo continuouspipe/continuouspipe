@@ -15,6 +15,11 @@ class UserInvitation
     private $teamSlug;
 
     /**
+     * @var string[]
+     */
+    private $permissions;
+
+    /**
      * @var \DateTimeInterface
      */
     private $creationDate;
@@ -22,12 +27,14 @@ class UserInvitation
     /**
      * @param string             $userEmail
      * @param string             $teamSlug
+     * @param array              $permissions
      * @param \DateTimeInterface $creationDate
      */
-    public function __construct($userEmail, $teamSlug, \DateTimeInterface $creationDate)
+    public function __construct($userEmail, $teamSlug, array $permissions, \DateTimeInterface $creationDate)
     {
         $this->userEmail = $userEmail;
         $this->teamSlug = $teamSlug;
+        $this->permissions = $permissions;
         $this->creationDate = $creationDate;
     }
 
@@ -53,5 +60,13 @@ class UserInvitation
     public function getCreationDate()
     {
         return $this->creationDate;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPermissions()
+    {
+        return $this->permissions;
     }
 }

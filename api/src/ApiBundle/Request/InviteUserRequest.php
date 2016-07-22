@@ -16,4 +16,15 @@ class InviteUserRequest
      * @var string
      */
     public $email;
+
+    /**
+     * @Assert\All({
+     *     @Assert\Choice(choices = {"USER", "ADMIN"}, message = "Choose a valid permission.")
+     * })
+     *
+     * @JMS\Type("array<string>")
+     *
+     * @var string[]
+     */
+    public $permissions;
 }

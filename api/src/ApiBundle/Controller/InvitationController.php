@@ -55,7 +55,7 @@ class InvitationController
         }
 
         $invitation = $this->userInvitationRepository->save(
-            new UserInvitation($inviteUserRequest->email, $team->getSlug(), new \DateTime())
+            new UserInvitation($inviteUserRequest->email, $team->getSlug(), $inviteUserRequest->permissions ?: [], new \DateTime())
         );
 
         return $invitation;

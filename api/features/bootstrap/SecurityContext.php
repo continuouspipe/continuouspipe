@@ -12,7 +12,11 @@ use ContinuousPipe\Security\User\User;
 use ContinuousPipe\Authenticator\WhiteList\WhiteList;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 class SecurityContext implements Context, SnippetAcceptingContext
 {
@@ -43,6 +47,10 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @var InMemoryApiKeyRepository
      */
     private $apiKeyRepository;
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
      * @param UserProvider $userProvider
@@ -50,14 +58,16 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @param TokenStorageInterface $tokenStorage
      * @param SecurityUserRepository $securityUserRepository
      * @param InMemoryApiKeyRepository $apiKeyRepository
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository, InMemoryApiKeyRepository $apiKeyRepository)
+    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository, InMemoryApiKeyRepository $apiKeyRepository, EventDispatcherInterface $eventDispatcher)
     {
         $this->userProvider = $userProvider;
         $this->whiteList = $whiteList;
         $this->tokenStorage = $tokenStorage;
         $this->securityUserRepository = $securityUserRepository;
         $this->apiKeyRepository = $apiKeyRepository;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -149,6 +159,25 @@ class SecurityContext implements Context, SnippetAcceptingContext
         } catch (\Exception $e) {
             $this->exception = $e;
         }
+    }
+
+    /**
+     * @When the user :username with email :email login
+     */
+    public function theUserWithEmailLogin($username, $email)
+    {
+        $roles = ['ROLE_USER'];
+        $user = new User($username, Uuid::uuid4(), $roles);
+        $user->setEmail($email);
+        $token = new JWTUserToken($roles);
+        $token->setUser(new SecurityUser($user));
+
+        $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken('1234567890'), $email));
+
+        $this->eventDispatcher->dispatch('security.interactive_login', new InteractiveLoginEvent(
+            Request::create('/'),
+            $token
+        ));
     }
 
     /**
