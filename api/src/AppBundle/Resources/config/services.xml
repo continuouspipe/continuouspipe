@@ -20,6 +20,9 @@
         <service id="app.repository.team" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineTeamRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
+        <service id="app.repository.user_invitation" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineUserInvitationRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
         <service id="app.security.user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\UserProvider">
             <argument type="service" id="app.repository.security_user" />
             <argument type="service" id="app.user_details.github" />

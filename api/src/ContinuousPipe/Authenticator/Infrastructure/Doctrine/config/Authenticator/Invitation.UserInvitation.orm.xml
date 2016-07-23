@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <entity name="ContinuousPipe\Authenticator\Invitation\UserInvitation">
+        <id name="uuid" type="string" />
+        <field name="userEmail" type="string" />
+        <field name="teamSlug" type="string" />
+        <field name="permissions" type="array" />
+        <field name="creationDate" type="datetime" />
+    </entity>
+
+</doctrine-mapping>
