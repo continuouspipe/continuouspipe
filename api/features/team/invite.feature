@@ -13,6 +13,7 @@ Feature:
     When I invite the user "user@example.com" to the team "my-team"
     Then the invitation for the user "user@example.com" should be created
 
+  @smoke
   Scenario: Transforms invitations when login-in
     Given the user with email "user@example.com" was invited to join the team "my-team"
     When the user "invited" with email "user@example.com" login
