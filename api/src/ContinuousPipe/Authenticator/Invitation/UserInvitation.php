@@ -2,12 +2,12 @@
 
 namespace ContinuousPipe\Authenticator\Invitation;
 
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class UserInvitation
 {
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $uuid;
 
@@ -32,18 +32,27 @@ class UserInvitation
     private $creationDate;
 
     /**
-     * @param string             $userEmail
-     * @param string             $teamSlug
-     * @param array              $permissions
+     * @param UuidInterface $uuid
+     * @param string $userEmail
+     * @param string $teamSlug
+     * @param array $permissions
      * @param \DateTimeInterface $creationDate
      */
-    public function __construct($userEmail, $teamSlug, array $permissions, \DateTimeInterface $creationDate)
+    public function __construct(UuidInterface $uuid, $userEmail, $teamSlug, array $permissions, \DateTimeInterface $creationDate)
     {
-        $this->uuid = Uuid::uuid4();
+        $this->uuid = $uuid;
         $this->userEmail = $userEmail;
         $this->teamSlug = $teamSlug;
         $this->permissions = $permissions;
         $this->creationDate = $creationDate;
+    }
+
+    /**
+     * @return UuidInterface
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
     }
 
     /**

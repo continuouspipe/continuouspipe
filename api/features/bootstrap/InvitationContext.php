@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -39,7 +40,7 @@ class InvitationContext implements Context
      */
     public function theUserWithEmailWasInvitedToJoinTheTeam($email, $team)
     {
-        $this->userInvitationRepository->save(new UserInvitation($email, $team, [], new \DateTime()));
+        $this->userInvitationRepository->save(new UserInvitation(Uuid::uuid4(), $email, $team, [], new \DateTime()));
     }
 
     /**
@@ -47,7 +48,7 @@ class InvitationContext implements Context
      */
     public function theUserWithEmailWasInvitedToBeAdministratorOfTheTeam($email, $team)
     {
-        $this->userInvitationRepository->save(new UserInvitation($email, $team, ['ADMIN'], new \DateTime()));
+        $this->userInvitationRepository->save(new UserInvitation(Uuid::uuid4(), $email, $team, ['ADMIN'], new \DateTime()));
     }
 
     /**
@@ -85,19 +86,43 @@ class InvitationContext implements Context
     }
 
     /**
+     * @When I delete the invitation for the user with email :email for the team :team
+     */
+    public function iDeleteTheInvitationForTheUserWithEmailForTheTeam($email, $team)
+    {
+        $invitation = $this->findInvitationByUserAndTeam($email, $team);
+        $url = sprintf('/api/teams/%s/invitations/%s', $team, $invitation->getUuid());
+        $response = $this->kernel->handle(Request::create($url, 'DELETE'));
+
+        $this->assertResponseStatusCode($response, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
      * @Then I should see the invitation for the user with email :email
      */
     public function iShouldSeeTheInvitationForTheUserWithEmail($email)
     {
-        $invitations = \GuzzleHttp\json_decode($this->response->getContent(), true);
-        $matchingInvitations = array_filter($invitations, function(array $invitation) use ($email) {
-            return $invitation['user_email'] == $email;
-        });
+        $invitations = $this->extractInvitationsFromResponseForUserWithEmail($email);
 
-        if (count($matchingInvitations) == 0) {
+        if (count($invitations) == 0) {
             throw new \RuntimeException(sprintf(
                 'No matching user email found in the list of %d invitations',
-                count($matchingInvitations)
+                count($invitations)
+            ));
+        }
+    }
+
+    /**
+     * @Then I should not see the invitation for the user with email :email
+     */
+    public function iShouldNotSeeTheInvitationForTheUserWithEmail($email)
+    {
+        $invitations = $this->extractInvitationsFromResponseForUserWithEmail($email);
+
+        if (count($invitations) != 0) {
+            throw new \RuntimeException(sprintf(
+                'Found matching user email found in the list of %d invitations',
+                count($invitations)
             ));
         }
     }
@@ -118,8 +143,8 @@ class InvitationContext implements Context
     }
 
     /**
-     * @param $response
-     * @param $expectedStatusCode
+     * @param Response $response
+     * @param int $expectedStatusCode
      */
     private function assertResponseStatusCode($response, $expectedStatusCode)
     {
@@ -132,5 +157,39 @@ class InvitationContext implements Context
                 $response->getStatusCode()
             ));
         }
+    }
+
+    /**
+     * @param string $email
+     *
+     * @return array
+     */
+    private function extractInvitationsFromResponseForUserWithEmail($email)
+    {
+        $invitations = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        return array_filter($invitations, function(array $invitation) use ($email) {
+            return $invitation['user_email'] == $email;
+        });
+    }
+
+    /**
+     * @param string $email
+     * @param string $team
+     *
+     * @return UserInvitation
+     */
+    private function findInvitationByUserAndTeam($email, $team)
+    {
+        $invitationsByUser = $this->userInvitationRepository->findByUserEmail($email);
+        $invitationsByTeamAndUser = array_filter($invitationsByUser, function (UserInvitation $invitation) use ($team) {
+            return $invitation->getTeamSlug() == $team;
+        });
+
+        if (count($invitationsByTeamAndUser) == 0) {
+            throw new \RuntimeException('No matching invitation found');
+        }
+
+        return current($invitationsByTeamAndUser);
     }
 }

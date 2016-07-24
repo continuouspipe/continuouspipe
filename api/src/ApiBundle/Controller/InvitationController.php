@@ -6,7 +6,9 @@ use ApiBundle\Request\InviteUserRequest;
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
 use ContinuousPipe\Security\Team\Team;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -55,7 +57,7 @@ class InvitationController
         }
 
         $invitation = $this->userInvitationRepository->save(
-            new UserInvitation($inviteUserRequest->email, $team->getSlug(), $inviteUserRequest->permissions ?: [], new \DateTime())
+            new UserInvitation(Uuid::uuid4(), $inviteUserRequest->email, $team->getSlug(), $inviteUserRequest->permissions ?: [], new \DateTime())
         );
 
         return $invitation;
@@ -70,5 +72,25 @@ class InvitationController
     public function listAction(Team $team)
     {
         return $this->userInvitationRepository->findByTeam($team);
+    }
+
+    /**
+     * @Route("/teams/{slug}/invitations/{uuid}", methods={"DELETE"})
+     * @ParamConverter("team", converter="team")
+     * @Security("is_granted('ADMIN', team)")
+     * @View
+     */
+    public function deleteAction(Team $team, $uuid)
+    {
+        $invitations = $this->userInvitationRepository->findByTeam($team);
+        $matchingInvitations = array_filter($invitations, function(UserInvitation $invitation) use ($uuid) {
+            return $invitation->getUuid()->toString() == $uuid;
+        });
+
+        if (count($matchingInvitations) == 0) {
+            throw new NotFoundHttpException(sprintf('Invitation %s not found in team', $uuid));
+        }
+
+        $this->userInvitationRepository->delete(reset($matchingInvitations));
     }
 }
