@@ -60,4 +60,15 @@ class InvitationController
 
         return $invitation;
     }
+
+    /**
+     * @Route("/teams/{slug}/invitations", methods={"GET"})
+     * @ParamConverter("team", converter="team")
+     * @Security("is_granted('READ', team)")
+     * @View
+     */
+    public function listAction(Team $team)
+    {
+        return $this->userInvitationRepository->findByTeam($team);
+    }
 }

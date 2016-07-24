@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class InvitationContext implements Context
@@ -17,6 +18,11 @@ class InvitationContext implements Context
      * @var UserInvitationRepository
      */
     private $userInvitationRepository;
+
+    /**
+     * @var Response|null
+     */
+    private $response;
 
     /**
      * @param KernelInterface $kernel
@@ -64,12 +70,34 @@ class InvitationContext implements Context
             ])
         ));
 
-        if ($response->getStatusCode() !== 201) {
-            echo $response->getContent();
+        $this->assertResponseStatusCode($response, 201);
+    }
 
+    /**
+     * @When I request the list of invitations for the team :team
+     */
+    public function iRequestTheListOfInvitationsForTheTeam($team)
+    {
+        $url = sprintf('/api/teams/%s/invitations', $team);
+        $this->response = $this->kernel->handle(Request::create($url));
+
+        $this->assertResponseStatusCode($this->response, 200);
+    }
+
+    /**
+     * @Then I should see the invitation for the user with email :email
+     */
+    public function iShouldSeeTheInvitationForTheUserWithEmail($email)
+    {
+        $invitations = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingInvitations = array_filter($invitations, function(array $invitation) use ($email) {
+            return $invitation['user_email'] == $email;
+        });
+
+        if (count($matchingInvitations) == 0) {
             throw new \RuntimeException(sprintf(
-                'Expected status code 201 but got %d',
-                $response->getStatusCode()
+                'No matching user email found in the list of %d invitations',
+                count($matchingInvitations)
             ));
         }
     }
@@ -85,6 +113,23 @@ class InvitationContext implements Context
             throw new \RuntimeException(sprintf(
                 'Found no invitation for user "%s"',
                 $email
+            ));
+        }
+    }
+
+    /**
+     * @param $response
+     * @param $expectedStatusCode
+     */
+    private function assertResponseStatusCode($response, $expectedStatusCode)
+    {
+        if ($response->getStatusCode() !== $expectedStatusCode) {
+            echo $response->getContent();
+
+            throw new \RuntimeException(sprintf(
+                'Expected status code %d but got %d',
+                $expectedStatusCode,
+                $response->getStatusCode()
             ));
         }
     }

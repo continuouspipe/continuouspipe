@@ -4,6 +4,7 @@ namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine;
 
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
+use ContinuousPipe\Security\Team\Team;
 use Doctrine\ORM\EntityManager;
 
 class DoctrineUserInvitationRepository implements UserInvitationRepository
@@ -28,6 +29,16 @@ class DoctrineUserInvitationRepository implements UserInvitationRepository
     {
         return $this->getRepository()->findBy([
             'userEmail' => $email,
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByTeam(Team $team)
+    {
+        return $this->getRepository()->findBy([
+            'teamSlug' => $team->getSlug(),
         ]);
     }
 

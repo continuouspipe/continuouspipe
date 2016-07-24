@@ -24,3 +24,8 @@ Feature:
     When the user "invited" with email "user@example.com" login
     Then the user "invited" should be in the team "my-team"
     And the user "invited" should be administrator of the team "my-team"
+
+  Scenario: List the invitations and their status
+    Given the user with email "user@example.com" was invited to be administrator of the team "my-team"
+    When I request the list of invitations for the team "my-team"
+    Then I should see the invitation for the user with email "user@example.com"

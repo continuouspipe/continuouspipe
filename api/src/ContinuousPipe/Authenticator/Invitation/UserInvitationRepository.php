@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\Authenticator\Invitation;
 
+use ContinuousPipe\Security\Team\Team;
+
 interface UserInvitationRepository
 {
     /**
@@ -24,4 +26,11 @@ interface UserInvitationRepository
      * @throws InvitationException
      */
     public function delete(UserInvitation $invitation);
+
+    /**
+     * @param Team $team
+     *
+     * @return UserInvitation[]
+     */
+    public function findByTeam(Team $team);
 }
