@@ -43,10 +43,10 @@ class UserInvitation
     private $creationDate;
 
     /**
-     * @param UuidInterface $uuid
-     * @param string $userEmail
-     * @param string $teamSlug
-     * @param array $permissions
+     * @param UuidInterface      $uuid
+     * @param string             $userEmail
+     * @param string             $teamSlug
+     * @param array              $permissions
      * @param \DateTimeInterface $creationDate
      */
     public function __construct(UuidInterface $uuid, $userEmail, $teamSlug, array $permissions, \DateTimeInterface $creationDate)

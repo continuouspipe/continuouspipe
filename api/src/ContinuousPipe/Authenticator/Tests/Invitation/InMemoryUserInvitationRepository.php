@@ -49,7 +49,7 @@ class InMemoryUserInvitationRepository implements UserInvitationRepository
      */
     public function findByTeam(Team $team)
     {
-        return array_values(array_filter($this->invitations, function(UserInvitation $invitation) use ($team) {
+        return array_values(array_filter($this->invitations, function (UserInvitation $invitation) use ($team) {
             return $invitation->getTeamSlug() == $team->getSlug();
         }));
     }

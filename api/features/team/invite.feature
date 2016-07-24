@@ -35,3 +35,9 @@ Feature:
     When I delete the invitation for the user with email "user@example.com" for the team "my-team"
     And I request the list of invitations for the team "my-team"
     Then I should not see the invitation for the user with email "user@example.com"
+
+  Scenario: Updated list of users and invitations
+    Given the user with email "user@example.com" was invited to join the team "my-team"
+    When I request the status of members for the team "my-team"
+    Then I should see the invitation for the user with email "user@example.com" in the member status
+    And I should see the user "samuel" in the member status

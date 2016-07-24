@@ -6,6 +6,7 @@ use ApiBundle\Request\InviteUserRequest;
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
 use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -31,13 +32,20 @@ class InvitationController
     private $userInvitationRepository;
 
     /**
+     * @var TeamMembershipRepository
+     */
+    private $teamMembershipRepository;
+
+    /**
      * @param ValidatorInterface       $validator
      * @param UserInvitationRepository $userInvitationRepository
+     * @param TeamMembershipRepository $teamMembershipRepository
      */
-    public function __construct(ValidatorInterface $validator, UserInvitationRepository $userInvitationRepository)
+    public function __construct(ValidatorInterface $validator, UserInvitationRepository $userInvitationRepository, TeamMembershipRepository $teamMembershipRepository)
     {
         $this->validator = $validator;
         $this->userInvitationRepository = $userInvitationRepository;
+        $this->teamMembershipRepository = $teamMembershipRepository;
     }
 
     /**
@@ -83,7 +91,7 @@ class InvitationController
     public function deleteAction(Team $team, $uuid)
     {
         $invitations = $this->userInvitationRepository->findByTeam($team);
-        $matchingInvitations = array_filter($invitations, function(UserInvitation $invitation) use ($uuid) {
+        $matchingInvitations = array_filter($invitations, function (UserInvitation $invitation) use ($uuid) {
             return $invitation->getUuid()->toString() == $uuid;
         });
 
@@ -92,5 +100,19 @@ class InvitationController
         }
 
         $this->userInvitationRepository->delete(reset($matchingInvitations));
+    }
+
+    /**
+     * @Route("/teams/{slug}/members-status", methods={"GET"})
+     * @ParamConverter("team", converter="team")
+     * @Security("is_granted('READ', team)")
+     * @View
+     */
+    public function membersStatusAction(Team $team)
+    {
+        return [
+            'memberships' => $this->teamMembershipRepository->findByTeam($team),
+            'invitations' => $this->userInvitationRepository->findByTeam($team),
+        ];
     }
 }

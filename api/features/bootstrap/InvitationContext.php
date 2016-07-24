@@ -98,6 +98,41 @@ class InvitationContext implements Context
     }
 
     /**
+     * @When I request the status of members for the team :team
+     */
+    public function iRequestTheStatusOfMembersForTheTeam($team)
+    {
+        $url = sprintf('/api/teams/%s/members-status', $team);
+        $this->response = $this->kernel->handle(Request::create($url, 'GET'));
+
+        $this->assertResponseStatusCode($this->response, Response::HTTP_OK);
+    }
+
+    /**
+     * @Then I should see the invitation for the user with email :email in the member status
+     */
+    public function iShouldSeeTheInvitationForTheUserWithEmailInTheMemberStatus($email)
+    {
+        $body = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $this->extractInvitationsFromResponseForUserWithEmail($email, $body['invitations']);
+    }
+
+    /**
+     * @Then I should see the user :username in the member status
+     */
+    public function iShouldSeeTheUserInTheMemberStatus($username)
+    {
+        $body = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingMemberships = array_filter($body['memberships'], function(array $membership) use ($username) {
+            return $membership['user']['username'] == $username;
+        });
+
+        if (count($matchingMemberships) == 0) {
+            throw new \RuntimeException('No matching membership found in list');
+        }
+    }
+
+    /**
      * @Then I should see the invitation for the user with email :email
      */
     public function iShouldSeeTheInvitationForTheUserWithEmail($email)
@@ -164,9 +199,9 @@ class InvitationContext implements Context
      *
      * @return array
      */
-    private function extractInvitationsFromResponseForUserWithEmail($email)
+    private function extractInvitationsFromResponseForUserWithEmail($email, $invitations = null)
     {
-        $invitations = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $invitations = $invitations ?: \GuzzleHttp\json_decode($this->response->getContent(), true);
 
         return array_filter($invitations, function(array $invitation) use ($email) {
             return $invitation['user_email'] == $email;
