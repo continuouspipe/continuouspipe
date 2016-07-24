@@ -3,30 +3,41 @@
 namespace ContinuousPipe\Authenticator\Invitation;
 
 use Ramsey\Uuid\UuidInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class UserInvitation
 {
     /**
+     * @JMS\Type("string")
+     *
      * @var UuidInterface
      */
     private $uuid;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $userEmail;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $teamSlug;
 
     /**
+     * @JMS\Type("array<string>")
+     *
      * @var string[]
      */
     private $permissions;
 
     /**
+     * @JMS\Type("DateTime")
+     *
      * @var \DateTimeInterface
      */
     private $creationDate;
