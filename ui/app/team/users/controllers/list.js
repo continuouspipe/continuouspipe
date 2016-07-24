@@ -1,8 +1,10 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamUsersController', function($scope, TeamMembershipRepository, team) {
-        $scope.team = team;
+    .controller('TeamUsersController', function($scope, TeamMembershipRepository, TeamRepository, team) {
+        $remoteResource.load('membersStatus', TeamRepository.getMembersStatus(team.slug)).then(function (membersStatus) {
+            $scope.membersStatus = membersStatus;
+        });
 
         $scope.removeMembership = function(membership) {
             swal({
