@@ -39,7 +39,7 @@ class InvitationController
     }
 
     /**
-     * @Route("/teams/{slug}/invite", methods={"POST"})
+     * @Route("/teams/{slug}/invitations", methods={"POST"})
      * @ParamConverter("team", converter="team")
      * @ParamConverter("inviteUserRequest", converter="fos_rest.request_body")
      * @Security("is_granted('ADMIN', team)")

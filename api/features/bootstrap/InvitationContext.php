@@ -49,7 +49,7 @@ class InvitationContext implements Context
      */
     public function iInviteTheUserToTheTeam($email, $team)
     {
-        $url = sprintf('/api/teams/%s/invite', $team);
+        $url = sprintf('/api/teams/%s/invitations', $team);
         $response = $this->kernel->handle(Request::create(
             $url,
             'POST',
