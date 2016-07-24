@@ -14,4 +14,8 @@ angular.module('continuousPipeRiver')
                 {permissions: permissions, email: email}
             ).$promise;
         };
+
+        this.remove = function(team, invitation) {
+            return this.resource.remove({team: team.slug, uuid: invitation.uuid}).$promise;
+        };
     });
