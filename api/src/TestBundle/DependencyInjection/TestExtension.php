@@ -16,9 +16,11 @@ class TestExtension extends Extension
     {
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $environment = $container->getParameter('kernel.environment');
+        $loader->load('in-memory/3rd-parties.xml');
+        $loader->load('traces.xml');
 
         if ('smoke_test' !== $environment) {
-            $loader->load('in-memory.xml');
+            $loader->load('in-memory/repositories.xml');
         }
     }
 }
