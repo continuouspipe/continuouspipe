@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Invitation;
 
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use JMS\Serializer\Annotation as JMS;
 
@@ -63,6 +64,10 @@ class UserInvitation
      */
     public function getUuid()
     {
+        if (is_string($this->uuid)) {
+            $this->uuid = Uuid::fromString($this->uuid);
+        }
+
         return $this->uuid;
     }
 
