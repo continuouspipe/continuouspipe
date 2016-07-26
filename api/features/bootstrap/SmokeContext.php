@@ -24,6 +24,10 @@ class SmokeContext implements Context
      */
     public function cleanDB()
     {
+        $connection = $this->entityManager->getConnection();
+        $connection->executeUpdate('DELETE FROM team_membership');
+        $connection->executeUpdate('DELETE FROM security_user');
+
         $purger = new ORMPurger($this->entityManager);
         $purger->purge();
     }

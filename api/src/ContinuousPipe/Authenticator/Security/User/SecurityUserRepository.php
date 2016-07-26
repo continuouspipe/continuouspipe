@@ -16,6 +16,15 @@ interface SecurityUserRepository
     public function findOneByUsername($username);
 
     /**
+     * @param string $email
+     *
+     * @throws UserNotFound
+     *
+     * @return SecurityUser
+     */
+    public function findOneByEmail($email);
+
+    /**
      * @param SecurityUser $user
      *
      * @return SecurityUser

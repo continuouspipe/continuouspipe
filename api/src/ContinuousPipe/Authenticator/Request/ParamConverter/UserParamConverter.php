@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Authenticator\Infrastructure\Request\ParamConverter;
+namespace ContinuousPipe\Authenticator\Request\ParamConverter;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
@@ -40,19 +40,11 @@ class UserParamConverter implements ParamConverterInterface
     {
         $options = $configuration->getOptions();
         if (array_key_exists('byUsername', $options)) {
-            $username = $request->get($options['byUsername']);
-            try {
-                $user = $this->securityUserRepository->findOneByUsername($username);
-            } catch (UserNotFound $e) {
-                throw new NotFoundHttpException($e->getMessage());
-            }
+            $user = $this->findUserByUsername(
+                $request->get($options['byUsername'])
+            );
         } elseif (array_key_exists('fromSecurityContext', $options)) {
-            if (null === ($token = $this->tokenStorage->getToken())) {
-                throw new \RuntimeException('No user found in context');
-            }
-            if (!(($user = $token->getUser()) instanceof UserInterface)) {
-                throw new \RuntimeException('No logged-in user');
-            }
+            $user = $this->getUserFromSecurityContext();
         } else {
             throw new \RuntimeException('Unknown user param converter strategy');
         }
@@ -70,5 +62,45 @@ class UserParamConverter implements ParamConverterInterface
     public function supports(ParamConverter $configuration)
     {
         return $configuration->getConverter() == 'user';
+    }
+
+    /**
+     * @param string $usernameOrEmail
+     *
+     * @throws NotFoundHttpException
+     *
+     * @return SecurityUser
+     */
+    private function findUserByUsername($usernameOrEmail)
+    {
+        try {
+            return $this->securityUserRepository->findOneByUsername($usernameOrEmail);
+        } catch (UserNotFound $e) {
+            try {
+                return $this->securityUserRepository->findOneByEmail($usernameOrEmail);
+            } catch (UserNotFound $e) {
+                throw new NotFoundHttpException(sprintf(
+                    'No user matching username or email "%s" found',
+                    $usernameOrEmail
+                ));
+            }
+        }
+    }
+
+    /**
+     * @return UserInterface
+     */
+    private function getUserFromSecurityContext()
+    {
+        if (null === ($token = $this->tokenStorage->getToken())) {
+            throw new \RuntimeException('No user found in context');
+        }
+
+        $user = $token->getUser();
+        if (!$user instanceof UserInterface) {
+            throw new \RuntimeException('No logged-in user');
+        }
+
+        return $user;
     }
 }

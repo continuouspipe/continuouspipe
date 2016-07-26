@@ -103,7 +103,12 @@ class TeamController
      */
     public function getAction(Team $team)
     {
-        return $team;
+        return new Team(
+            $team->getSlug(),
+            $team->getName(),
+            $team->getBucketUuid(),
+            $this->teamMembershipRepository->findByTeam($team)->toArray()
+        );
     }
 
     /**

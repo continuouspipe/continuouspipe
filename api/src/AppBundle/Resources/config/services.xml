@@ -20,6 +20,15 @@
         <service id="app.repository.team" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineTeamRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
+        <service id="app.repository.user_invitation" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineUserInvitationRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+        <service id="app.invitation.event_producer.user_invitation_repository"
+                 class="ContinuousPipe\Authenticator\Invitation\EventProducer\EventProducerUserInvitationRepository"
+                 decorates="app.repository.user_invitation">
+            <argument type="service" id="app.invitation.event_producer.user_invitation_repository.inner" />
+            <argument type="service" id="event_dispatcher" />
+        </service>
         <service id="app.security.user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\UserProvider">
             <argument type="service" id="app.repository.security_user" />
             <argument type="service" id="app.user_details.github" />
@@ -36,7 +45,7 @@
             <argument>%default_redirection_url%</argument>
         </service>
 
-        <service id="request.param_converter.security_user" class="ContinuousPipe\Authenticator\Infrastructure\Request\ParamConverter\UserParamConverter">
+        <service id="request.param_converter.security_user" class="ContinuousPipe\Authenticator\Request\ParamConverter\UserParamConverter">
             <argument type="service" id="app.repository.security_user" />
             <argument type="service" id="security.token_storage" />
 
@@ -53,6 +62,19 @@
         <service id="guzzle.client" class="GuzzleHttp\Client" />
         <service id="app.user_details.github" class="ContinuousPipe\Authenticator\GitHub\GitHubUserDetails">
             <argument type="service" id="guzzle.client" />
+        </service>
+
+        <service id="app.invitation.invitation_to_team_membership_transformer" class="ContinuousPipe\Authenticator\Invitation\InvitationToTeamMembershipTransformer">
+            <argument type="service" id="app.repository.security_user"/>
+            <argument type="service" id="app.repository.team"/>
+            <argument type="service" id="app.repository.team_membership"/>
+        </service>
+        <service id="app.invitation.listener.on_logged_in.create_membership_from_invitation" class="ContinuousPipe\Authenticator\Invitation\EventListener\OnLoggedIn\CreateMembershipsFromInvitation">
+            <argument type="service" id="app.repository.user_invitation" />
+            <argument type="service" id="app.invitation.invitation_to_team_membership_transformer" />
+            <argument type="service" id="logger" />
+
+            <tag name="kernel.event_subscriber" />
         </service>
     </services>
 </container>

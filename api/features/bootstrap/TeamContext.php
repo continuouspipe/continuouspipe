@@ -249,7 +249,7 @@ class TeamContext implements Context
      */
     public function iAddTheUserInTheTeam($username, $teamSlug)
     {
-        $url = sprintf('/api/teams/%s/users/%s', $teamSlug, $username);
+        $url = sprintf('/api/teams/%s/users/%s', $teamSlug, urlencode($username));
         $this->response = $this->kernel->handle(Request::create($url, 'PUT'));
     }
 
@@ -338,7 +338,7 @@ class TeamContext implements Context
 
         if (0 == count($matchingUsers)) {
             throw new \RuntimeException(sprintf(
-                'Found 0 team matching in my teams list'
+                'Found 0 user matching in my teams list'
             ));
         }
     }

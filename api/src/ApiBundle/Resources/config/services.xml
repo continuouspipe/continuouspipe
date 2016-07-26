@@ -23,6 +23,11 @@
             <argument type="service" id="app.team_creator" />
             <argument type="service" id="validator" />
         </service>
+        <service id="api.controller.invitation" class="ApiBundle\Controller\InvitationController">
+            <argument type="service" id="validator" />
+            <argument type="service" id="app.repository.user_invitation" />
+            <argument type="service" id="app.repository.team_membership" />
+        </service>
 
         <!-- Authentication -->
         <service id="api.api_key_repository" class="ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository">

@@ -70,6 +70,17 @@ class UserContext implements Context
     }
 
     /**
+     * @Given the email of the user :username is :email
+     */
+    public function theEmailOfTheUserIs($username, $email)
+    {
+        $user = $this->securityUserRepository->findOneByUsername($username);
+        $user->getUser()->setEmail($email);
+
+        $this->securityUserRepository->save($user);
+    }
+
+    /**
      * @When I request the details of user :username
      */
     public function iRequestTheDetailsOfUser($username)

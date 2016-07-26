@@ -13,13 +13,20 @@ class GitHubOAuthResponse extends AbstractUserResponse
     private $username;
 
     /**
+     * @var null|string
+     */
+    private $email;
+
+    /**
      * @param string     $username
      * @param OAuthToken $token
+     * @param string     $email
      */
-    public function __construct($username, OAuthToken $token = null)
+    public function __construct($username, OAuthToken $token = null, $email = null)
     {
         $this->username = $username;
         $this->oAuthToken = $token ?: new OAuthToken('token');
+        $this->email = $email;
     }
 
     /**
@@ -61,6 +68,6 @@ class GitHubOAuthResponse extends AbstractUserResponse
      */
     public function getEmail()
     {
-        return $this->username;
+        return $this->email ?: $this->username;
     }
 }
