@@ -11,3 +11,4 @@ Feature:
   Scenario: Create a lead when inviting a user
     When I invite the user "user@example.com" to the team "my-team"
     Then an intercom lead should be created for the email "user@example.com"
+    And an intercom message should have been sent to "user@example.com"

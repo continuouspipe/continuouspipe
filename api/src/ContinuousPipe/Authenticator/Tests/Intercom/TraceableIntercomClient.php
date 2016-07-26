@@ -17,6 +17,11 @@ class TraceableIntercomClient implements IntercomClient
     private $createdLeads = [];
 
     /**
+     * @var array[]
+     */
+    private $sentMessages;
+
+    /**
      * @param IntercomClient $decoratedClient
      */
     public function __construct(IntercomClient $decoratedClient)
@@ -29,9 +34,23 @@ class TraceableIntercomClient implements IntercomClient
      */
     public function createLead(array $lead)
     {
+        $created = $this->decoratedClient->createLead($lead);
+
         $this->createdLeads[] = $lead;
 
-        $this->decoratedClient->createLead($lead);
+        return $created;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function message(array $message)
+    {
+        $sent = $this->decoratedClient->message($message);
+
+        $this->sentMessages[] = $message;
+
+        return $sent;
     }
 
     /**
@@ -40,5 +59,13 @@ class TraceableIntercomClient implements IntercomClient
     public function getCreatedLeads()
     {
         return $this->createdLeads;
+    }
+
+    /**
+     * @return \array[]
+     */
+    public function getSentMessages()
+    {
+        return $this->sentMessages;
     }
 }

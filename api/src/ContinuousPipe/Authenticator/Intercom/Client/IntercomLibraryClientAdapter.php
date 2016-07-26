@@ -12,12 +12,19 @@ class IntercomLibraryClientAdapter implements IntercomClient
     private $client;
 
     /**
+     * @var string
+     */
+    private $defaultAdminIdentifier;
+
+    /**
      * @param string $applicationIdentifier
      * @param string $apiKey
+     * @param string $defaultAdminIdentifier
      */
-    public function __construct($applicationIdentifier, $apiKey)
+    public function __construct($applicationIdentifier, $apiKey, $defaultAdminIdentifier)
     {
         $this->client = new IntercomLibraryClient($applicationIdentifier, $apiKey);
+        $this->defaultAdminIdentifier = $defaultAdminIdentifier;
     }
 
     /**
@@ -26,5 +33,20 @@ class IntercomLibraryClientAdapter implements IntercomClient
     public function createLead(array $lead)
     {
         return $this->client->leads->create($lead);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function message(array $message)
+    {
+        if (!array_key_exists('from', $message)) {
+            $message['from'] = [
+                'type' => 'admin',
+                'id' => $this->defaultAdminIdentifier,
+            ];
+        }
+
+        return $this->client->messages->create($message);
     }
 }

@@ -9,4 +9,8 @@ class InMemoryIntercomClient implements IntercomClient
     public function createLead(array $lead)
     {
     }
+
+    public function message(array $message)
+    {
+    }
 }

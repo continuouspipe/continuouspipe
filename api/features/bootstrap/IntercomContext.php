@@ -31,4 +31,19 @@ class IntercomContext implements Context
             throw new \RuntimeException('No matching created lead found');
         }
     }
+
+    /**
+     * @Then an intercom message should have been sent to :email
+     */
+    public function anIntercomMessageShouldHaveBeenSentTo($email)
+    {
+        $matchingMessages = array_filter($this->traceableIntercomClient->getSentMessages(), function(array $message) use ($email) {
+            return $message['to']['email'] == $email;
+        });
+
+        if (count($matchingMessages) == 0) {
+            throw new \RuntimeException('No matching message found');
+        }
+
+    }
 }

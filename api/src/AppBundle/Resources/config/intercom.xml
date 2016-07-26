@@ -8,10 +8,13 @@
         <service id="app.intercom.client" class="ContinuousPipe\Authenticator\Intercom\Client\IntercomLibraryClientAdapter">
             <argument>%intercom_application_id%</argument>
             <argument>%intercom_api_key%</argument>
+            <argument>%intercom_default_admin_id%</argument>
         </service>
 
-        <service id="app.intercom.invitation.user_invited.create_lead" class="ContinuousPipe\Authenticator\Intercom\Invitation\UserInvited\CreateLead">
+        <service id="app.intercom.invitation.user_invited.create_lead" class="ContinuousPipe\Authenticator\Intercom\Invitation\UserInvited\CreateLeadAndStartConversation">
             <argument type="service" id="app.intercom.client" />
+            <argument type="service" id="app.repository.team" />
+            <argument type="service" id="templating.engine.twig"/>
 
             <tag name="kernel.event_subscriber" />
         </service>
