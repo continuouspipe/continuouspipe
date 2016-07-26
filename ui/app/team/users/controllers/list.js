@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamUsersController', function($scope, TeamMembershipRepository, TeamRepository, InvitationRepository, team) {
+    .controller('TeamUsersController', function($scope, $remoteResource, TeamMembershipRepository, TeamRepository, InvitationRepository, team) {
         var load = function() {
             $scope.membersStatus = null;
             $remoteResource.load('membersStatus', TeamRepository.getMembersStatus(team.slug)).then(function (membersStatus) {
@@ -22,7 +22,7 @@ angular.module('continuousPipeRiver')
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, remove it!",
-                closeOnConfirm: false
+                closeOnConfirm: true
             }, function() {
                 TeamMembershipRepository.remove(team, membership.user).then(load, handleError);
             });
@@ -31,14 +31,16 @@ angular.module('continuousPipeRiver')
         $scope.removeInvitation = function(invitation) {
             swal({
                 title: "Are you sure?",
-                text: "The invitation for the user "+invitation.user_name+" will be cancelled.",
+                text: "The invitation sent to "+invitation.user_email+" will be cancelled.",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, cancel it!",
-                closeOnConfirm: false
+                closeOnConfirm: true
             }, function() {
                 InvitationRepository.remove(team, invitation).then(load, handleError);
             });
         };
+
+        load();
     });

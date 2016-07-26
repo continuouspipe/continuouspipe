@@ -41,7 +41,7 @@
             <tbody>
             <tr ng-repeat="invitation in membersStatus.invitations">
                 <td>{{ invitation.user_email }}</td>
-                <td>{{ invitation.permissions | join:', ' }}</td>
+                <td>{{ invitation.creation_date | timeAgo }}</td>
                 <td>
                     <md-button ng-click="removeInvitation(invitation)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
                 </td>
