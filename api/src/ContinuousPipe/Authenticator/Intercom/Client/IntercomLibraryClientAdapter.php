@@ -63,6 +63,16 @@ class IntercomLibraryClientAdapter implements IntercomClient
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function createEvent(array $event)
+    {
+        return $this->stdClassToArray(
+            $this->client->events->create($event)
+        );
+    }
+
+    /**
      * @param \stdClass $object
      *
      * @return array

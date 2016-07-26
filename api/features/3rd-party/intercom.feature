@@ -17,3 +17,14 @@ Feature:
     Given The user "samuel" is in the white list
     When a user login with GitHub as "samuel"
     Then an intercom user "samuel" should be created or updated
+
+  Scenario: Record the first login event when first login
+    Given The user "new-user" is in the white list
+    When a user login with GitHub as "new-user"
+    Then an intercom event "first-login" should be created
+
+  Scenario: Record the first login event when first login
+    Given The user "existing-user" is in the white list
+    And there is a user "existing-user"
+    When a user login with GitHub as "existing-user"
+    Then an intercom event "first-login" should not be created

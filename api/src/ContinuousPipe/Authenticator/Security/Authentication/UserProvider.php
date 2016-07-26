@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Security\Authentication;
 
+use ContinuousPipe\Authenticator\Security\Event\UserCreated;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use ContinuousPipe\Authenticator\Team\TeamCreator;
@@ -18,6 +19,7 @@ use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use ContinuousPipe\Authenticator\GitHub\EmailNotFoundException;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -57,17 +59,22 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      * @var TeamCreator
      */
     private $teamCreator;
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
-     * @param SecurityUserRepository   $securityUserRepository
-     * @param UserDetails              $userDetails
-     * @param WhiteList                $whiteList
-     * @param BucketRepository         $bucketRepository
+     * @param SecurityUserRepository $securityUserRepository
+     * @param UserDetails $userDetails
+     * @param WhiteList $whiteList
+     * @param BucketRepository $bucketRepository
      * @param TeamMembershipRepository $teamMembershipRepository
-     * @param TeamRepository           $teamRepository
-     * @param TeamCreator              $teamCreator
+     * @param TeamRepository $teamRepository
+     * @param TeamCreator $teamCreator
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, TeamCreator $teamCreator)
+    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, TeamCreator $teamCreator, EventDispatcherInterface $eventDispatcher)
     {
         $this->securityUserRepository = $securityUserRepository;
         $this->userDetails = $userDetails;
@@ -76,6 +83,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $this->teamMembershipRepository = $teamMembershipRepository;
         $this->teamRepository = $teamRepository;
         $this->teamCreator = $teamCreator;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -96,6 +104,8 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
             $securityUser = $this->securityUserRepository->findOneByUsername($username);
         } catch (UserNotFound $e) {
             $securityUser = $this->createUserFromUsername($username);
+
+            $this->eventDispatcher->dispatch(UserCreated::EVENT_NAME, new UserCreated($securityUser->getUser()));
         }
 
         // Get the user email if possible
@@ -150,10 +160,10 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $this->bucketRepository->save(new Bucket($bucketUuid));
 
         // Create the user
-        $user = new SecurityUser(new User($username, $bucketUuid));
-        $this->securityUserRepository->save($user);
+        $securityUser = new SecurityUser(new User($username, $bucketUuid));
+        $this->securityUserRepository->save($securityUser);
 
-        return $user;
+        return $securityUser;
     }
 
     /**

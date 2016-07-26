@@ -59,4 +59,38 @@ class IntercomContext implements Context
             throw new \RuntimeException('No matching user found');
         }
     }
+
+    /**
+     * @Then an intercom event :name should be created
+     */
+    public function anIntercomEventShouldBeCreated($name)
+    {
+        if (null === $this->findCreatedEventByName($name)) {
+            throw new \RuntimeException('Created event not found');
+        }
+    }
+
+    /**
+     * @Then an intercom event :name should not be created
+     */
+    public function anIntercomEventShouldNotBeCreated($name)
+    {
+        if (null !== $this->findCreatedEventByName($name)) {
+            throw new \RuntimeException('Created event found');
+        }
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return array|null
+     */
+    private function findCreatedEventByName($name)
+    {
+        $matchingEvents = array_filter($this->traceableIntercomClient->getCreatedEvents(), function(array $event) use ($name) {
+            return $event['event_name'] == $name;
+        });
+
+        return array_pop($matchingEvents);
+    }
 }

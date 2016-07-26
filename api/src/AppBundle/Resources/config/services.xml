@@ -37,6 +37,7 @@
             <argument type="service" id="app.repository.team_membership" />
             <argument type="service" id="app.repository.team" />
             <argument type="service" id="app.team_creator" />
+            <argument type="service" id="event_dispatcher"/>
         </service>
         <service id="app.security.authentication_provider" class="ContinuousPipe\Authenticator\Security\AuthenticationProvider">
             <argument type="service" id="router" />

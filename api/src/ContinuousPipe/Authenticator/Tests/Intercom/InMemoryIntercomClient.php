@@ -33,4 +33,12 @@ class InMemoryIntercomClient implements IntercomClient
     {
         return $user;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createEvent(array $event)
+    {
+        return $event;
+    }
 }

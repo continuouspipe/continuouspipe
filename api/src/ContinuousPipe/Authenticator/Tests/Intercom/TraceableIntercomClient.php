@@ -27,6 +27,11 @@ class TraceableIntercomClient implements IntercomClient
     private $createdOrUpdatedUsers = [];
 
     /**
+     * @var array[]
+     */
+    private $createdEvents = [];
+
+    /**
      * @param IntercomClient $decoratedClient
      */
     public function __construct(IntercomClient $decoratedClient)
@@ -71,6 +76,18 @@ class TraceableIntercomClient implements IntercomClient
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function createEvent(array $event)
+    {
+        $created = $this->decoratedClient->createEvent($event);
+
+        $this->createdEvents[] = $created;
+
+        return $created;
+    }
+
+    /**
      * @return array[]
      */
     public function getCreatedLeads()
@@ -92,5 +109,13 @@ class TraceableIntercomClient implements IntercomClient
     public function getCreatedOrUpdatedUsers()
     {
         return $this->createdOrUpdatedUsers;
+    }
+
+    /**
+     * @return \array[]
+     */
+    public function getCreatedEvents()
+    {
+        return $this->createdEvents;
     }
 }

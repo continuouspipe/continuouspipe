@@ -24,4 +24,11 @@ interface IntercomClient
      * @return array
      */
     public function createOrUpdateUser(array $user);
+
+    /**
+     * @param array $event
+     *
+     * @return array
+     */
+    public function createEvent(array $event);
 }

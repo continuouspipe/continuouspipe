@@ -24,5 +24,11 @@
 
             <tag name="kernel.event_subscriber" />
         </service>
+
+        <service id="app.intercom.invitation.user_created.first_login_event" class="ContinuousPipe\Authenticator\Intercom\EventListener\UserCreated\CreateTheFirstLoginEvent">
+            <argument type="service" id="app.intercom.client" />
+
+            <tag name="kernel.event_subscriber" />
+        </service>
     </services>
 </container>
