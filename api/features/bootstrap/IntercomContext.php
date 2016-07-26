@@ -33,17 +33,16 @@ class IntercomContext implements Context
     }
 
     /**
-     * @Then an intercom message should have been sent to :email
+     * @Then an intercom message should have been sent to the lead :lead
      */
-    public function anIntercomMessageShouldHaveBeenSentTo($email)
+    public function anIntercomMessageShouldHaveBeenSentToTheLead($lead)
     {
-        $matchingMessages = array_filter($this->traceableIntercomClient->getSentMessages(), function(array $message) use ($email) {
-            return $message['to']['email'] == $email;
+        $matchingMessages = array_filter($this->traceableIntercomClient->getSentMessages(), function(array $message) use ($lead) {
+            return $message['to']['id'] == $lead;
         });
 
         if (count($matchingMessages) == 0) {
             throw new \RuntimeException('No matching message found');
         }
-
     }
 }

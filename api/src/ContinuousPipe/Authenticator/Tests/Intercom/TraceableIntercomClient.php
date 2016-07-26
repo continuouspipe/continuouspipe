@@ -36,7 +36,7 @@ class TraceableIntercomClient implements IntercomClient
     {
         $created = $this->decoratedClient->createLead($lead);
 
-        $this->createdLeads[] = $lead;
+        $this->createdLeads[] = $created;
 
         return $created;
     }

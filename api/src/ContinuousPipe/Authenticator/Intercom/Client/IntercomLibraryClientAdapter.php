@@ -32,7 +32,9 @@ class IntercomLibraryClientAdapter implements IntercomClient
      */
     public function createLead(array $lead)
     {
-        return $this->client->leads->create($lead);
+        $created = $this->client->leads->create($lead);
+
+        return json_decode(json_encode($created), true);
     }
 
     /**

@@ -7,7 +7,7 @@ interface IntercomClient
     /**
      * @param array $lead
      *
-     * @return \stdClass
+     * @return array
      */
     public function createLead(array $lead);
 

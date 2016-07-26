@@ -26,8 +26,8 @@ class CreateLeadAndStartConversation implements EventSubscriberInterface
     private $templatingEngine;
 
     /**
-     * @param IntercomClient $intercomClient
-     * @param TeamRepository $teamRepository
+     * @param IntercomClient  $intercomClient
+     * @param TeamRepository  $teamRepository
      * @param EngineInterface $templatingEngine
      */
     public function __construct(IntercomClient $intercomClient, TeamRepository $teamRepository, EngineInterface $templatingEngine)
@@ -75,8 +75,8 @@ class CreateLeadAndStartConversation implements EventSubscriberInterface
             ]),
             'to' => [
                 'type' => 'contact',
-                'id' => $lead->id,
-            ]
+                'id' => $lead['id'],
+            ],
         ]);
     }
 }
