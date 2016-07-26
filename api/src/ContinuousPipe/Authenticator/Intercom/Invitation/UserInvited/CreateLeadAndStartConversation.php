@@ -55,7 +55,7 @@ class CreateLeadAndStartConversation implements EventSubscriberInterface
         $invitation = $event->getInvitation();
         $team = $this->teamRepository->find($invitation->getTeamSlug());
 
-        $this->intercomClient->createLead([
+        $lead = $this->intercomClient->createLead([
             'email' => $invitation->getUserEmail(),
             'companies' => [
                 [
@@ -69,12 +69,13 @@ class CreateLeadAndStartConversation implements EventSubscriberInterface
             'message_type' => 'email',
             'subject' => sprintf('You\'ve been invited to the team "%s"', $team->getName()),
             'template' => 'personal',
-            'body' => $this->templatingEngine->render('@intercom/user_invited.txt.twig', [
+            'body' => $this->templatingEngine->render('@intercom/user_invited.html.twig', [
                 'team' => $team,
+                'invitation' => $invitation,
             ]),
             'to' => [
                 'type' => 'contact',
-                'email' => $invitation->getUserEmail(),
+                'id' => $lead->id,
             ]
         ]);
     }
