@@ -11,5 +11,17 @@ interface IntercomClient
      */
     public function createLead(array $lead);
 
+    /**
+     * @param array $message
+     *
+     * @return array
+     */
     public function message(array $message);
+
+    /**
+     * @param array $user
+     *
+     * @return array
+     */
+    public function createOrUpdateUser(array $user);
 }

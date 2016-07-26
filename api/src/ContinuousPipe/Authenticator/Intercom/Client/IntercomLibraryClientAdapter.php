@@ -32,9 +32,9 @@ class IntercomLibraryClientAdapter implements IntercomClient
      */
     public function createLead(array $lead)
     {
-        $created = $this->client->leads->create($lead);
-
-        return json_decode(json_encode($created), true);
+        return $this->stdClassToArray(
+            $this->client->leads->create($lead)
+        );
     }
 
     /**
@@ -50,5 +50,25 @@ class IntercomLibraryClientAdapter implements IntercomClient
         }
 
         return $this->client->messages->create($message);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createOrUpdateUser(array $user)
+    {
+        return $this->stdClassToArray(
+            $this->client->users->create($user)
+        );
+    }
+
+    /**
+     * @param \stdClass $object
+     *
+     * @return array
+     */
+    private function stdClassToArray(\stdClass $object)
+    {
+        return json_decode(json_encode($object), true);
     }
 }

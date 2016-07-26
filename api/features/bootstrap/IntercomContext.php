@@ -45,4 +45,18 @@ class IntercomContext implements Context
             throw new \RuntimeException('No matching message found');
         }
     }
+
+    /**
+     * @Then an intercom user :username should be created or updated
+     */
+    public function anIntercomUserShouldBeCreatedOrUpdated($username)
+    {
+        $matchingUsers = array_filter($this->traceableIntercomClient->getCreatedOrUpdatedUsers(), function(array $user) use ($username) {
+            return $user['user_id'] == $username;
+        });
+
+        if (count($matchingUsers) == 0) {
+            throw new \RuntimeException('No matching user found');
+        }
+    }
 }

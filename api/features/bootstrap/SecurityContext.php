@@ -17,6 +17,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use Symfony\Component\Security\Http\SecurityEvents;
 
 class SecurityContext implements Context, SnippetAcceptingContext
 {
@@ -155,7 +156,12 @@ class SecurityContext implements Context, SnippetAcceptingContext
     public function aUserLoginWithGithubAs($username)
     {
         try {
-            $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken('1234567890')));
+            $user = $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken('1234567890')));
+
+            $token = new JWTUserToken(['ROLE_USER']);
+            $token->setUser($user);
+
+            $this->eventDispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, new InteractiveLoginEvent(Request::create('/'), $token));
         } catch (\Exception $e) {
             $this->exception = $e;
         }

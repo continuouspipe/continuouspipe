@@ -12,3 +12,8 @@ Feature:
     When I invite the user "user@example.com" to the team "my-team"
     Then an intercom lead should be created for the email "user@example.com"
     And an intercom message should have been sent to the lead "user@example.com"
+
+  Scenario: Update or create user when login
+    Given The user "samuel" is in the white list
+    When a user login with GitHub as "samuel"
+    Then an intercom user "samuel" should be created or updated
