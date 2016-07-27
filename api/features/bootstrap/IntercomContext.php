@@ -51,12 +51,21 @@ class IntercomContext implements Context
      */
     public function anIntercomUserShouldBeCreatedOrUpdated($username)
     {
-        $matchingUsers = array_filter($this->traceableIntercomClient->getCreatedOrUpdatedUsers(), function(array $user) use ($username) {
-            return $user['user_id'] == $username;
-        });
-
-        if (count($matchingUsers) == 0) {
+        if (null === $this->findCreatedOrUpdatedUser($username)) {
             throw new \RuntimeException('No matching user found');
+        }
+    }
+
+    /**
+     * @Then an intercom user :username should be updated with its companies
+     */
+    public function anIntercomUserShouldBeUpdatedWithItsCompanies($username)
+    {
+        $this->anIntercomUserShouldBeCreatedOrUpdated($username);
+
+        $user = $this->findCreatedOrUpdatedUser($username);
+        if (!array_key_exists('companies', $user)) {
+            throw new \RuntimeException('No companies found in user');
         }
     }
 
@@ -92,5 +101,19 @@ class IntercomContext implements Context
         });
 
         return array_pop($matchingEvents);
+    }
+
+    /**
+     * @param string $username
+     *
+     * @return array|null
+     */
+    private function findCreatedOrUpdatedUser($username)
+    {
+        $matchingUsers = array_filter($this->traceableIntercomClient->getCreatedOrUpdatedUsers(), function(array $user) use ($username) {
+            return $user['user_id'] == $username;
+        });
+
+        return array_pop($matchingUsers);
     }
 }

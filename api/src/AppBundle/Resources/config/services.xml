@@ -14,6 +14,12 @@
         <service id="app.repository.team_membership" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineTeamMembershipRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
+        <service id="app.repository.team_membership.event_producer_decorator"
+                 class="ContinuousPipe\Authenticator\TeamMembership\EventProducer\TeamMembershipEventProducerRepository"
+                 decorates="app.repository.team_membership">
+            <argument type="service" id="app.repository.team_membership.event_producer_decorator.inner" />
+            <argument type="service" id="event_dispatcher" />
+        </service>
         <service id="app.repository.credentials_bucket" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineCredentialsBucketRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>

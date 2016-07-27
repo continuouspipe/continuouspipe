@@ -1,15 +1,15 @@
 <?php
 
-namespace ContinuousPipe\Authenticator\Intercom\EventListener\UserLoggedIn;
+namespace ContinuousPipe\Authenticator\Intercom\EventListener\TeamMembershipUpdated;
 
 use ContinuousPipe\Authenticator\Intercom\Client\IntercomClient;
 use ContinuousPipe\Authenticator\Intercom\Normalizer\UserNormalizer;
-use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipEvent;
+use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipRemoved;
+use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipSaved;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
-use Symfony\Component\Security\Http\SecurityEvents;
 
-class CreateOrUpdateUser implements EventSubscriberInterface
+class UpdateUserAndItsCompanies implements EventSubscriberInterface
 {
     /**
      * @var IntercomClient
@@ -37,23 +37,19 @@ class CreateOrUpdateUser implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            SecurityEvents::INTERACTIVE_LOGIN => 'onUserLoggedIn',
+            TeamMembershipRemoved::EVENT_NAME => 'onTeamMembershipUpdated',
+            TeamMembershipSaved::EVENT_NAME => 'onTeamMembershipUpdated',
         ];
     }
 
     /**
-     * @param InteractiveLoginEvent $event
+     * @param TeamMembershipEvent $event
      */
-    public function onUserLoggedIn(InteractiveLoginEvent $event)
+    public function onTeamMembershipUpdated(TeamMembershipEvent $event)
     {
-        $securityUser = $event->getAuthenticationToken()->getUser();
-        if (!$securityUser instanceof SecurityUser) {
-            return;
-        }
-
         $this->intercomClient->createOrUpdateUser(
             $this->userNormalizer->normalize(
-                $securityUser->getUser()
+                $event->getTeamMembership()->getUser()
             )
         );
     }

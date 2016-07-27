@@ -28,3 +28,12 @@ Feature:
     And there is a user "existing-user"
     When a user login with GitHub as "existing-user"
     Then an intercom event "first-login" should not be created
+
+  Scenario: Update user's companies when adding to a team
+    Given there is a team "another-team"
+    When I add the user "samuel" in the team "another-team"
+    Then an intercom user "samuel" should be updated with its companies
+
+  Scenario: Update user's compagnies when removing from a team
+    When I remove the user "samuel" in the team "my-team"
+    Then an intercom user "samuel" should be updated with its companies

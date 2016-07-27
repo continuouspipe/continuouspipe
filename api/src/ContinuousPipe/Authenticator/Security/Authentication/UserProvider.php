@@ -65,13 +65,13 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     private $eventDispatcher;
 
     /**
-     * @param SecurityUserRepository $securityUserRepository
-     * @param UserDetails $userDetails
-     * @param WhiteList $whiteList
-     * @param BucketRepository $bucketRepository
+     * @param SecurityUserRepository   $securityUserRepository
+     * @param UserDetails              $userDetails
+     * @param WhiteList                $whiteList
+     * @param BucketRepository         $bucketRepository
      * @param TeamMembershipRepository $teamMembershipRepository
-     * @param TeamRepository $teamRepository
-     * @param TeamCreator $teamCreator
+     * @param TeamRepository           $teamRepository
+     * @param TeamCreator              $teamCreator
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, TeamCreator $teamCreator, EventDispatcherInterface $eventDispatcher)
