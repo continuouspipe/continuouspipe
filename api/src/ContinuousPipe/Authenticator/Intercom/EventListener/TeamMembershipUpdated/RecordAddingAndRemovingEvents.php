@@ -7,6 +7,7 @@ use ContinuousPipe\Authenticator\Intercom\Normalizer\UserNormalizer;
 use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipEvent;
 use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipRemoved;
 use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipSaved;
+use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class RecordAddingAndRemovingEvents implements EventSubscriberInterface
@@ -15,13 +16,19 @@ class RecordAddingAndRemovingEvents implements EventSubscriberInterface
      * @var IntercomClient
      */
     private $intercomClient;
+    /**
+     * @var TeamMembershipRepository
+     */
+    private $teamMembershipRepository;
 
     /**
      * @param IntercomClient $intercomClient
+     * @param TeamMembershipRepository $teamMembershipRepository
      */
-    public function __construct(IntercomClient $intercomClient)
+    public function __construct(IntercomClient $intercomClient, TeamMembershipRepository $teamMembershipRepository)
     {
         $this->intercomClient = $intercomClient;
+        $this->teamMembershipRepository = $teamMembershipRepository;
     }
 
     /**
@@ -43,6 +50,12 @@ class RecordAddingAndRemovingEvents implements EventSubscriberInterface
         $membership = $event->getTeamMembership();
         $user = $membership->getUser();
         $team = $membership->getTeam();
+
+        $numberOfMemberships = $this->teamMembershipRepository->findByTeam($team);
+        if (count($numberOfMemberships) <= 1) {
+            // Don't create the added-to-team event if it's after a creation, probably
+            return;
+        }
 
         $this->intercomClient->createEvent([
             'event_name' => 'added-to-team',

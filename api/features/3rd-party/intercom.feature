@@ -30,12 +30,17 @@ Feature:
     Then an intercom event "first-login" should not be created
 
   Scenario: Update user's companies when adding to a team
-    Given there is a team "another-team"
-    When I add the user "samuel" in the team "another-team"
-    Then an intercom user "samuel" should be updated with its companies
+    Given there is a user "another"
+    When I add the user "another" in the team "my-team"
+    Then an intercom user "another" should be updated with its companies
     And an intercom event "added-to-team" should be created
 
   Scenario: Update user's compagnies when removing from a team
     When I remove the user "samuel" in the team "my-team"
     Then an intercom user "samuel" should be updated with its companies
     And an intercom event "removed-from-team" should be created
+
+  Scenario: User created event when the user created a team
+    When I create a team "new-team"
+    Then an intercom event "created-team" should be created
+    And an intercom event "added-to-team" should not be created
