@@ -41,7 +41,6 @@ class CreateTheFirstLoginEvent implements EventSubscriberInterface
         $this->intercomClient->createEvent([
             'event_name' => 'first-login',
             'user_id' => $user->getUsername(),
-            'created_at' => time(),
             'metadata' => [
                 'username' => $user->getUsername(),
                 'email' => $user->getUsername(),

@@ -67,6 +67,10 @@ class IntercomLibraryClientAdapter implements IntercomClient
      */
     public function createEvent(array $event)
     {
+        if (!array_key_exists('created_at', $event)) {
+            $event['created_at'] = time();
+        }
+
         return $this->stdClassToArray(
             $this->client->events->create($event)
         );
