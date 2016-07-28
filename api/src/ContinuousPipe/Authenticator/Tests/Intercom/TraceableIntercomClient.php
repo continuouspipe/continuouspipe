@@ -19,7 +19,17 @@ class TraceableIntercomClient implements IntercomClient
     /**
      * @var array[]
      */
-    private $sentMessages;
+    private $sentMessages = [];
+
+    /**
+     * @var array[]
+     */
+    private $createdOrUpdatedUsers = [];
+
+    /**
+     * @var array[]
+     */
+    private $createdEvents = [];
 
     /**
      * @param IntercomClient $decoratedClient
@@ -44,6 +54,18 @@ class TraceableIntercomClient implements IntercomClient
     /**
      * {@inheritdoc}
      */
+    public function createOrUpdateUser(array $user)
+    {
+        $createdOrUpdatedUser = $this->decoratedClient->createOrUpdateUser($user);
+
+        $this->createdOrUpdatedUsers[] = $createdOrUpdatedUser;
+
+        return $createdOrUpdatedUser;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function message(array $message)
     {
         $sent = $this->decoratedClient->message($message);
@@ -51,6 +73,18 @@ class TraceableIntercomClient implements IntercomClient
         $this->sentMessages[] = $message;
 
         return $sent;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createEvent(array $event)
+    {
+        $created = $this->decoratedClient->createEvent($event);
+
+        $this->createdEvents[] = $created;
+
+        return $created;
     }
 
     /**
@@ -67,5 +101,21 @@ class TraceableIntercomClient implements IntercomClient
     public function getSentMessages()
     {
         return $this->sentMessages;
+    }
+
+    /**
+     * @return \array[]
+     */
+    public function getCreatedOrUpdatedUsers()
+    {
+        return $this->createdOrUpdatedUsers;
+    }
+
+    /**
+     * @return \array[]
+     */
+    public function getCreatedEvents()
+    {
+        return $this->createdEvents;
     }
 }

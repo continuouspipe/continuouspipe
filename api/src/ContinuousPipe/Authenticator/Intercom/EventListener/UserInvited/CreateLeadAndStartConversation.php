@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Authenticator\Intercom\Invitation\UserInvited;
+namespace ContinuousPipe\Authenticator\Intercom\EventListener\UserInvited;
 
 use ContinuousPipe\Authenticator\Intercom\Client\IntercomClient;
 use ContinuousPipe\Authenticator\Invitation\Event\UserInvited;
