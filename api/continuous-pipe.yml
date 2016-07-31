@@ -19,7 +19,7 @@ tasks:
 
     production:
         deploy:
-            cluster: gke
+            cluster: ${CLUSTER}
             services:
                 rabbitmq:
                     locked: true
@@ -108,7 +108,7 @@ tasks:
 
     migrations:
         run:
-            cluster: gke
+            cluster: ${CLUSTER}
             image:
                 from_service: api
             commands:
