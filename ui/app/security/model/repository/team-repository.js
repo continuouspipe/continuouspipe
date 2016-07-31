@@ -15,4 +15,8 @@ angular.module('continuousPipeRiver')
         this.create = function(team) {
             return this.resource.save(team).$promise;
         };
+
+        this.getMembersStatus = function(slug) {
+            return $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug/members-status').get({slug: slug}).$promise;
+        };
     });
