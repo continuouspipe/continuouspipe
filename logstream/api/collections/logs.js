@@ -1,34 +1,66 @@
 var uuid = require('node-uuid'),
-    md5 = require('md5');
+    md5 = require('md5'),
+    CONTENTS_BYTES_LIMIT = 10485760;
 
-var LogsCollection = function(root, bucket) {
+var LogsCollection = function(root, bucket, sentry) {
     this.insert = function(log, callback) {
         var path = log.parent ? log.parent+'/children' : null,
             logRoot = path ? root.child(path) : root,
             child = logRoot.push();
 
-        child.set(log, function(error) {
-            log._id = path !== null ? path+'/'+child.key() : child.key();
+        // If the contents is too long, do batch insert
+        if (log && log.contents && Buffer.byteLength(log.contents, 'utf8') > CONTENTS_BYTES_LIMIT) {
+            var buffer = Buffer.from(log.contents);
+            log.contents = buffer.toString('utf8', 0, CONTENTS_BYTES_LIMIT);
 
-            callback(error, log);
-        });
+            return this.insert(log, function(error) {
+                if (error) {
+                    return callback(error);
+                }
+
+                log.contents = buffer.toString('utf8', CONTENTS_BYTES_LIMIT);
+
+                return this.insert(log, callback);
+            });
+        }
+
+        try {
+            child.set(log, function (error) {
+                log._id = path !== null ? path + '/' + child.key() : child.key();
+
+                callback(error, log);
+            });
+        } catch (e) {
+            sentry.captureException(e);
+
+            // Silently fail as it shouldn't
+            callback(null, log);
+        }
     };
 
     this.update = function(id, updatedProperties, callback) {
         var child = root.child(id);
 
-        child.update(updatedProperties, function(error) {
-            if (error) {
-                return callback(error);
-            }
+        try {
+            child.update(updatedProperties, function(error) {
+                if (error) {
+                    return callback(error);
+                }
 
-            child.once('value', function(snapshot) {
-                var value = snapshot.val();
-                value._id = id;
+                child.once('value', function(snapshot) {
+                    var value = snapshot.val();
+                    value._id = id;
 
-                callback(null, value);
+                    callback(null, value);
+                });
             });
-        });
+        } catch (e) {
+            sentry.captureException(e);
+
+            // Silently fail as it shouldn't
+            updatedProperties._id = id;
+            callback(null, updatedProperties);
+        }
     };
 
     this.fetch = function(id, callback) {
