@@ -34,3 +34,6 @@ tasks:
                         accessibility:
                             from_external: true
 
+                        environment_variables:
+                            - name: SENTRY_DSN
+                              value: http://22dc66c5a4d44fa29a4fde743816c1e7:f0b9a26df73f4c2299d163034bc84324@sentry.tools.sroze.io/13
