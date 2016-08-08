@@ -64,7 +64,7 @@ class CreateMembershipsFromInvitation implements EventSubscriberInterface
             try {
                 $this->invitationToTeamMembershipTransformer->transformInvitation($invitation);
                 $this->userInvitationRepository->delete($invitation);
-            } catch (InvitationException $e) {
+            } catch (\Exception $e) {
                 $this->logger->error($e->getMessage(), [
                     'exception' => $e,
                     'invitation' => $invitation,
