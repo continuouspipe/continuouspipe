@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Authenticator\Intercom\EventListener\UserCreated;
 
 use ContinuousPipe\Authenticator\Intercom\Client\IntercomClient;
+use ContinuousPipe\Authenticator\Intercom\Normalizer\UserNormalizer;
 use ContinuousPipe\Authenticator\Security\Event\UserCreated;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -14,11 +15,18 @@ class CreateTheFirstLoginEvent implements EventSubscriberInterface
     private $intercomClient;
 
     /**
-     * @param IntercomClient $intercomClient
+     * @var UserNormalizer
      */
-    public function __construct(IntercomClient $intercomClient)
+    private $userNormalizer;
+
+    /**
+     * @param IntercomClient $intercomClient
+     * @param UserNormalizer $userNormalizer
+     */
+    public function __construct(IntercomClient $intercomClient, UserNormalizer $userNormalizer)
     {
         $this->intercomClient = $intercomClient;
+        $this->userNormalizer = $userNormalizer;
     }
 
     /**
@@ -37,6 +45,10 @@ class CreateTheFirstLoginEvent implements EventSubscriberInterface
     public function onUserCreated(UserCreated $event)
     {
         $user = $event->getUser();
+
+        $this->intercomClient->createOrUpdateUser(
+            $this->userNormalizer->normalize($user)
+        );
 
         $this->intercomClient->createEvent([
             'event_name' => 'first-login',
