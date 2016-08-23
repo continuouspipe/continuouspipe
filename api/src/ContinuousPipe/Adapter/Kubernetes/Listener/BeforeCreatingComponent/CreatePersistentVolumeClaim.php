@@ -74,7 +74,7 @@ class CreatePersistentVolumeClaim implements EventSubscriberInterface
             $persistentVolumeClaimRepository->findOneByName($persistentVolume->getName());
         } catch (PersistentVolumeClaimNotFound $e) {
             $persistentVolumeClaimRepository->create(new PersistentVolumeClaim(
-                new ObjectMetadata($persistentVolume->getName()),
+                $this->getPersistentVolumeClaimMetadata($persistentVolume),
                 new PersistentVolumeClaimSpecification(
                     [PersistentVolumeClaimSpecification::ACCESS_MODE_READ_WRITE_ONCE],
                     new ResourceRequirements(new ResourceRequirementsRequests(
@@ -83,5 +83,24 @@ class CreatePersistentVolumeClaim implements EventSubscriberInterface
                 )
             ));
         }
+    }
+
+    /**
+     * @param Volume\Persistent $persistentVolume
+     *
+     * @return ObjectMetadata
+     */
+    private function getPersistentVolumeClaimMetadata(Volume\Persistent $persistentVolume)
+    {
+        $metadata = new ObjectMetadata($persistentVolume->getName());
+
+        if ($storageClass = $persistentVolume->getStorageClass()) {
+            $metadata->setAnnotationsFromAssociativeArray([
+                'volume.alpha.kubernetes.io/storage-class' => $storageClass,
+                'volume.beta.kubernetes.io/storage-class' => $storageClass,
+            ]);
+        }
+
+        return $metadata;
     }
 }

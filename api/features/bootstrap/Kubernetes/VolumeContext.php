@@ -64,17 +64,7 @@ class VolumeContext implements Context
      */
     public function theVolumeClaimShouldBeCreated($claimName)
     {
-        $createdClaims = $this->traceablePersistentVolumeClaimRepository->getCreated();
-        $matchingClaims = array_filter($createdClaims, function(PersistentVolumeClaim $claim) use ($claimName) {
-            return $claim->getMetadata()->getName() == $claimName;
-        });
-
-        if (0 == count($matchingClaims)) {
-            throw new \RuntimeException(sprintf(
-                'No claim named "%s" found in created claims',
-                $claimName
-            ));
-        }
+        $this->getCreatedPVCByName($claimName);
     }
 
     /**
@@ -141,5 +131,60 @@ class VolumeContext implements Context
                 $claimName
             ));
         }
+    }
+
+    /**
+     * @Then the volume claim :name should have the annotation :annotation with the value :value
+     */
+    public function theVolumeClaimShouldHaveTheAnnotationWithTheValue($name, $annotation, $value)
+    {
+        $annotations = $this->getCreatedPVCByName($name)->getMetadata()->getAnnotationsAsAssociativeArray();
+
+        if (!array_key_exists($annotation, $annotations)) {
+            throw new \RuntimeException(sprintf('Annotation "%s" not found', $annotation));
+        }
+
+        if ($value != $annotations[$annotation]) {
+            throw new \RuntimeException(sprintf(
+                'Found value "%s" while expecting "%s"',
+                $annotations[$annotation],
+                $value
+            ));
+        }
+    }
+
+    /**
+     * @Then the volume claim :name should not have the annotation :annotation
+     */
+    public function theVolumeClaimShouldNotHaveTheAnnotation($name, $annotation)
+    {
+        if ($this->getCreatedPVCByName($name)->getMetadata()->getAnnotationList()->hasKey($annotation)) {
+            throw new \RuntimeException(sprintf(
+                'Found annotation "%s"',
+                $annotation
+            ));
+        }
+    }
+
+    /**
+     * @param string $claimName
+     *
+     * @return PersistentVolumeClaim
+     */
+    private function getCreatedPVCByName($claimName)
+    {
+        $createdClaims = $this->traceablePersistentVolumeClaimRepository->getCreated();
+        $matchingClaims = array_filter($createdClaims, function (PersistentVolumeClaim $claim) use ($claimName) {
+            return $claim->getMetadata()->getName() == $claimName;
+        });
+
+        if (0 == count($matchingClaims)) {
+            throw new \RuntimeException(sprintf(
+                'No claim named "%s" found in created claims',
+                $claimName
+            ));
+        }
+
+        return current($matchingClaims);
     }
 }
