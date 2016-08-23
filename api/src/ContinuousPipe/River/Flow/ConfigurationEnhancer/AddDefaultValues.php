@@ -19,16 +19,16 @@ class AddDefaultValues implements ConfigurationEnhancer
         $defaults = $this->getDefaultValues($configs);
         $defaultConfiguration = [];
 
-        if (array_key_exists('environment', $defaults)) {
+        if (!empty($defaults)) {
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
             $deployAndRunTaskPaths = $this->getTaskPathsOfType($configs, ['deploy', 'run']);
 
             foreach ($deployAndRunTaskPaths as $path) {
-                $propertyAccessor->setValue($defaultConfiguration, $path.'[environment]', $defaults['environment']);
+                $propertyAccessor->setValue($defaultConfiguration, $path, $defaults);
             }
-        }
 
-        array_unshift($configs, $defaultConfiguration);
+            array_unshift($configs, $defaultConfiguration);
+        }
 
         return $configs;
     }

@@ -115,7 +115,7 @@ class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
     }
 
     /**
-     * @param string $expression
+     * @param string      $expression
      * @param ArrayObject $context
      *
      * @return string

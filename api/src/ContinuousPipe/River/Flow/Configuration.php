@@ -115,6 +115,7 @@ class Configuration implements ConfigurationInterface
 
         $node
             ->children()
+                ->scalarNode('cluster')->end()
                 ->arrayNode('environment')
                     ->children()
                         ->scalarNode('name')->end()

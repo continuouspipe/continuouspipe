@@ -103,3 +103,50 @@ Feature:
                 environment:
                     name: '"bar-" ~ code_reference.branch'
     """
+
+  Scenario: Set default cluster on deploy and run tasks
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    defaults:
+        cluster: foo
+
+    tasks:
+        images:
+            build: ~
+
+        first:
+            deploy:
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: my/app
+                            accessibility:
+                                from_external: true
+                            ports:
+                                - 80
+
+        second:
+            run:
+                image: busybox
+                commands:
+                    - echo hello
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+        second:
+            run:
+                cluster: foo
+    """
+    And the generated configuration should not contain:
+    """
+    tasks:
+        images:
+            build:
+                cluster: foo
+    """
