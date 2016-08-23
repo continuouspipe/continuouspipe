@@ -178,6 +178,22 @@ Feature:
     Then the volume claim "app-volume" should not be created
     And the component "app" should be created with a persistent volume mounted in "/app/shared"
 
+  Scenario: The volume claim should contain the storage class annotation if the annotation is set
+    Given the specification come from the template "persistent-mounted-volume-with-storage-class"
+    When I send the built deployment request
+    And pods are running for the replication controller "app"
+    Then the volume claim "app-volume" should be created
+    And the volume claim "app-volume" should have the annotation "volume.alpha.kubernetes.io/storage-class" with the value "my-class"
+    And the volume claim "app-volume" should have the annotation "volume.beta.kubernetes.io/storage-class" with the value "my-class"
+
+  Scenario: The volume claim do not contain any storage class annotation if not precised
+    Given the specification come from the template "persistent-mounted-volume"
+    When I send the built deployment request
+    And pods are running for the replication controller "app"
+    Then the volume claim "app-volume" should be created
+    And the volume claim "app-volume" should not have the annotation "volume.alpha.kubernetes.io/storage-class"
+    And the volume claim "app-volume" should not have the annotation "volume.beta.kubernetes.io/storage-class"
+
   Scenario: It requests and limits the components' resources
     When I send a deployment request with the following components specification:
     """
