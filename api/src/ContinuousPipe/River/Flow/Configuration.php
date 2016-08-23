@@ -31,6 +31,7 @@ class Configuration implements ConfigurationInterface
         $root
             ->children()
                 ->append(self::getEnvironmentVariablesNode())
+                ->append(self::getDefaultsNode())
                 ->append($this->getTasksNode())
                 ->scalarNode('filter')->end()
                 ->booleanNode('silent')->defaultFalse()->end()
@@ -100,6 +101,24 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('value')->end()
                     ->scalarNode('condition')->end()
                     ->scalarNode('expression')->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    private static function getDefaultsNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('defaults');
+
+        $node
+            ->children()
+                ->arrayNode('environment')
+                    ->children()
+                        ->scalarNode('name')->end()
+                    ->end()
                 ->end()
             ->end()
         ;
