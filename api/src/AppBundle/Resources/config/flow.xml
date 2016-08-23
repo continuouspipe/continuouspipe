@@ -9,8 +9,7 @@
             <argument type="service" id="river.pipe_client" />
             <argument type="service" id="river.pipe.cluster_identifier_resolver" />
             <argument type="service" id="security.user_context" />
-            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
-            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="authenticator.bucket_repository" />
         </service>
 
         <service id="river.repository.flow" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository">

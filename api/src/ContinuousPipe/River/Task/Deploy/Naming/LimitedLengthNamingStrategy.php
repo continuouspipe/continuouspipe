@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
-use ContinuousPipe\Model\Environment;
 use Ramsey\Uuid\Uuid;
 
 class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
@@ -48,13 +47,5 @@ class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
         $strippedName .= substr(md5($branchIdentifier), 0, $hashLength);
 
         return $strippedName;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isEnvironmentPartOfFlow(Uuid $flowUuid, Environment $environment)
-    {
-        return $this->namingStrategy->isEnvironmentPartOfFlow($flowUuid, $environment);
     }
 }

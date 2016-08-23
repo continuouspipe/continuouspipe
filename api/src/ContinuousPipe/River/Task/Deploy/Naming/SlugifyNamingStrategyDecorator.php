@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
 use Cocur\Slugify\Slugify;
-use ContinuousPipe\Model\Environment;
 use Ramsey\Uuid\Uuid;
 
 class SlugifyNamingStrategyDecorator implements EnvironmentNamingStrategy
@@ -29,13 +28,5 @@ class SlugifyNamingStrategyDecorator implements EnvironmentNamingStrategy
         return (new Slugify())->slugify(
             $this->decoratedStrategy->getName($tideUuid, $expression)
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isEnvironmentPartOfFlow(Uuid $flowUuid, Environment $environment)
-    {
-        return $this->decoratedStrategy->isEnvironmentPartOfFlow($flowUuid, $environment);
     }
 }

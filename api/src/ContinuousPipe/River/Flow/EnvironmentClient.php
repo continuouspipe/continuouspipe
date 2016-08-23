@@ -7,12 +7,11 @@ use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\ClusterNotFound;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
 use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
-use ContinuousPipe\River\Pipe\ClusterIdentifierNotFound;
 use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\Security\Authenticator\UserContext;
+use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\Credentials\Cluster;
 
 /**
  * @deprecated To be moved under `ContinuousPipe\River\Environment` namespace.
@@ -35,29 +34,22 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     private $userContext;
 
     /**
-     * @var EnvironmentNamingStrategy
+     * @var BucketRepository
      */
-    private $environmentNamingStrategy;
-
-    /**
-     * @var TideRepository
-     */
-    private $tideRepository;
+    private $bucketRepository;
 
     /**
      * @param Client                    $pipeClient
      * @param ClusterIdentifierResolver $clusterIdentifierResolver
      * @param UserContext               $userContext
-     * @param EnvironmentNamingStrategy $environmentNamingStrategy
-     * @param TideRepository            $tideRepository
+     * @param BucketRepository          $bucketRepository
      */
-    public function __construct(Client $pipeClient, ClusterIdentifierResolver $clusterIdentifierResolver, UserContext $userContext, EnvironmentNamingStrategy $environmentNamingStrategy, TideRepository $tideRepository)
+    public function __construct(Client $pipeClient, ClusterIdentifierResolver $clusterIdentifierResolver, UserContext $userContext, BucketRepository $bucketRepository)
     {
         $this->pipeClient = $pipeClient;
         $this->clusterIdentifierResolver = $clusterIdentifierResolver;
         $this->userContext = $userContext;
-        $this->environmentNamingStrategy = $environmentNamingStrategy;
-        $this->tideRepository = $tideRepository;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -69,10 +61,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
 
         foreach ($this->findClusterIdentifiers($flow) as $clusterIdentifier) {
             try {
-                $clusterEnvironments = array_merge(
-                    $this->findEnvironmentStartingWithFlowUuid($flow, $clusterIdentifier),
-                    $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier)
-                );
+                $clusterEnvironments = $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier);
             } catch (ClusterNotFound $e) {
                 $clusterEnvironments = [];
             }
@@ -110,40 +99,16 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     /**
      * @param Flow $flow
      *
-     * @return array
+     * @return string[]
      */
     private function findClusterIdentifiers(Flow $flow)
     {
-        $tides = $this->tideRepository->findLastByFlow($flow, 10);
-        $clusterIdentifiers = [];
+        $teamBucketUuid = $flow->getContext()->getTeam()->getBucketUuid();
+        $credentialsBucket = $this->bucketRepository->find($teamBucketUuid);
 
-        foreach ($tides as $tide) {
-            try {
-                $clusterIdentifiers[] = $this->clusterIdentifierResolver->getClusterIdentifier($tide);
-            } catch (ClusterIdentifierNotFound $e) {
-            }
-        }
-
-        return array_unique($clusterIdentifiers);
-    }
-
-    /**
-     * @param Flow   $flow
-     * @param string $clusterIdentifier
-     *
-     * @return array
-     *
-     * @deprecated We should only use the `findEnvironmentsTaggedByFlow` method as it's definitely more
-     *             efficient on large cluster, and it allows to have custom environment names.
-     */
-    private function findEnvironmentStartingWithFlowUuid(Flow $flow, $clusterIdentifier)
-    {
-        return array_filter(
-            $this->pipeClient->getEnvironments($clusterIdentifier, $flow->getContext()->getTeam(), $this->userContext->getCurrent()),
-            function (Environment $environment) use ($flow) {
-                return $this->environmentNamingStrategy->isEnvironmentPartOfFlow($flow->getUuid(), $environment);
-            }
-        );
+        return $credentialsBucket->getClusters()->map(function (Cluster $cluster) {
+            return $cluster->getIdentifier();
+        })->toArray();
     }
 
     /**

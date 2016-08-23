@@ -14,7 +14,7 @@ class FakeClient implements Client
     /**
      * @var Environment[]
      */
-    private $environments = [];
+    private $environmentsPerCluster = [];
 
     /**
      * {@inheritdoc}
@@ -33,6 +33,15 @@ class FakeClient implements Client
      */
     public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser)
     {
+        if (!array_key_exists($target->getClusterIdentifier(), $this->environmentsPerCluster)) {
+            return;
+        }
+
+        foreach ($this->environmentsPerCluster[$target->getClusterIdentifier()] as $key => $environment) {
+            if ($environment->getName() == $target->getEnvironmentName()) {
+                unset($this->environmentsPerCluster[$target->getClusterIdentifier()][$key]);
+            }
+        }
     }
 
     /**
@@ -40,7 +49,11 @@ class FakeClient implements Client
      */
     public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
     {
-        return $this->environments;
+        if (!array_key_exists($clusterIdentifier, $this->environmentsPerCluster)) {
+            return [];
+        }
+
+        return $this->environmentsPerCluster[$clusterIdentifier];
     }
 
     /**
@@ -48,7 +61,9 @@ class FakeClient implements Client
      */
     public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels)
     {
-        return array_values(array_filter($this->environments, function (Environment $environment) use ($labels) {
+        $environments = $this->getEnvironments($clusterIdentifier, $team, $authenticatedUser);
+
+        return array_values(array_filter($environments, function (Environment $environment) use ($labels) {
             $environmentLabels = $environment->getLabels();
 
             foreach ($labels as $key => $value) {
@@ -66,8 +81,12 @@ class FakeClient implements Client
     /**
      * @param Environment $environment
      */
-    public function addEnvironment(Environment $environment)
+    public function addEnvironment($clusterIdentifier, Environment $environment)
     {
-        $this->environments[] = $environment;
+        if (!array_key_exists($clusterIdentifier, $this->environmentsPerCluster)) {
+            $this->environmentsPerCluster[$clusterIdentifier] = [];
+        }
+
+        $this->environmentsPerCluster[$clusterIdentifier][] = $environment;
     }
 }

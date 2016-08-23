@@ -352,17 +352,17 @@ EOF;
     }
 
     /**
-     * @Given I have a deployed environment named :name
+     * @Given I have a deployed environment named :name on the cluster :cluster
      */
-    public function iHaveADeployedEnvironmentNamed($name)
+    public function iHaveADeployedEnvironmentNamed($name, $cluster)
     {
-        $this->pipeClient->addEnvironment(new Environment($name, $name));
+        $this->pipeClient->addEnvironment($cluster, new Environment($name, $name));
     }
 
     /**
-     * @Given I have a deployed environment named :name and labelled :labelsString
+     * @Given I have a deployed environment named :name and labelled :labelsString on the cluster :cluster
      */
-    public function iHaveADeployedEnvironmentNamedAndLabelled($name, $labelsString)
+    public function iHaveADeployedEnvironmentNamedAndLabelled($name, $labelsString, $cluster)
     {
         $labels = [];
         foreach (explode(',', $labelsString) as $label) {
@@ -371,7 +371,7 @@ EOF;
             $labels[$key] = $value;
         }
 
-        $this->pipeClient->addEnvironment(new Environment($name, $name, [], null, $labels));
+        $this->pipeClient->addEnvironment($cluster, new Environment($name, $name, [], null, $labels));
     }
 
     /**
@@ -407,8 +407,8 @@ EOF;
      */
     public function iTentativelyDeleteTheEnvironmentNamedOfTheFlow($name, $cluster, $uuid)
     {
-        $url = sprintf('/flows/%s/environments/%s', $uuid, $name);
-        $this->response = $this->kernel->handle(Request::create($url, 'DELETE', ['cluster' => $cluster]));
+        $url = sprintf('/flows/%s/environments/%s?cluster=%s', $uuid, $name, $cluster);
+        $this->response = $this->kernel->handle(Request::create($url, 'DELETE'));
     }
 
     /**
