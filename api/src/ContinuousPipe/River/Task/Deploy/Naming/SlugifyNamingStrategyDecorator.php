@@ -30,12 +30,4 @@ class SlugifyNamingStrategyDecorator implements EnvironmentNamingStrategy
             $this->decoratedStrategy->getName($tideUuid, $expression)
         );
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isEnvironmentPartOfFlow(Uuid $flowUuid, Environment $environment)
-    {
-        return $this->decoratedStrategy->isEnvironmentPartOfFlow($flowUuid, $environment);
-    }
 }

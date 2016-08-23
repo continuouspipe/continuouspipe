@@ -69,10 +69,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
 
         foreach ($this->findClusterIdentifiers($flow) as $clusterIdentifier) {
             try {
-                $clusterEnvironments = array_merge(
-                    $this->findEnvironmentStartingWithFlowUuid($flow, $clusterIdentifier),
-                    $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier)
-                );
+                $clusterEnvironments = $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier);
             } catch (ClusterNotFound $e) {
                 $clusterEnvironments = [];
             }
@@ -125,25 +122,6 @@ class EnvironmentClient implements DeployedEnvironmentRepository
         }
 
         return array_unique($clusterIdentifiers);
-    }
-
-    /**
-     * @param Flow   $flow
-     * @param string $clusterIdentifier
-     *
-     * @return array
-     *
-     * @deprecated We should only use the `findEnvironmentsTaggedByFlow` method as it's definitely more
-     *             efficient on large cluster, and it allows to have custom environment names.
-     */
-    private function findEnvironmentStartingWithFlowUuid(Flow $flow, $clusterIdentifier)
-    {
-        return array_filter(
-            $this->pipeClient->getEnvironments($clusterIdentifier, $flow->getContext()->getTeam(), $this->userContext->getCurrent()),
-            function (Environment $environment) use ($flow) {
-                return $this->environmentNamingStrategy->isEnvironmentPartOfFlow($flow->getUuid(), $environment);
-            }
-        );
     }
 
     /**

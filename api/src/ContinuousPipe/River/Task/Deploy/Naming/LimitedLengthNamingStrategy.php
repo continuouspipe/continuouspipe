@@ -49,12 +49,4 @@ class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
 
         return $strippedName;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isEnvironmentPartOfFlow(Uuid $flowUuid, Environment $environment)
-    {
-        return $this->namingStrategy->isEnvironmentPartOfFlow($flowUuid, $environment);
-    }
 }
