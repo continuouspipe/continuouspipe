@@ -368,6 +368,25 @@ class DeployContext implements Context
     }
 
     /**
+     * @Then the component :componentName should have a persistent volume with a storage class :storageClass
+     */
+    public function theComponentShouldHaveAPersistentVolumeWithAStorageClass($componentName, $storageClass)
+    {
+        $volumes = $this->getDeployedComponent($componentName)->getSpecification()->getVolumes();
+        $matchingVolumes = array_filter($volumes, function(Component\Volume $volume) use ($storageClass) {
+            if (!$volume instanceof Component\Volume\Persistent) {
+                return false;
+            }
+
+            return $volume->getStorageClass() == $storageClass;
+        });
+
+        if (0 === count($matchingVolumes)) {
+            throw new \RuntimeException(sprintf('No volume with storage class "%s" found', $storageClass));
+        }
+    }
+
+    /**
      * @Then the component :componentName should be deployed
      */
     public function theComponentShouldBeDeployed($componentName)

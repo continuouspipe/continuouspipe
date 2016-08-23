@@ -58,6 +58,30 @@ Feature:
     Then the component "image0" should be deployed
     And the component "image0" should have a persistent volume mounted at "/var/lib/app"
 
+  Scenario: I can use persistent volumes with a storage class
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        specification:
+                            volumes:
+                                - type: persistent
+                                  name: api-volume
+                                  capacity: 5Gi
+                                  storage_class: slow
+                            volume_mounts:
+                                - name: api-volume
+                                  mount_path: /var/lib/app
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the component "image0" should have a persistent volume with a storage class "slow"
+
   Scenario: I can use the reverse-proxy extension
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
