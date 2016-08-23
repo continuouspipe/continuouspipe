@@ -236,7 +236,7 @@ class DeployTaskFactory implements TaskFactory
 
     /**
      * @param TaskContext $taskContext
-     * @param array $servicesConfiguration
+     * @param array       $servicesConfiguration
      *
      * @return array
      */
@@ -327,7 +327,7 @@ class DeployTaskFactory implements TaskFactory
 
     /**
      * @param TaskContext $taskContext
-     * @param array $configuration
+     * @param array       $configuration
      *
      * @return bool
      */
@@ -346,7 +346,7 @@ class DeployTaskFactory implements TaskFactory
     }
 
     /**
-     * @param string $expression
+     * @param string      $expression
      * @param ArrayObject $context
      *
      * @return string

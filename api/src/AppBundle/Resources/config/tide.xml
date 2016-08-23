@@ -30,6 +30,7 @@
         <service id="river.tide.configuration_enhancer.unnamed_tasks" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\TaskListAsUnnamedArrayEnhancer" />
         <service id="river.tide.configuration_enhancer.add_default_build_tag" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\AddDefaultBuildTag" />
         <service id="river.tide.configuration_enhancer.deploy_built_images" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\DeployBuiltImagesByDefault" />
+        <service id="river.tide.configuration_enhancer.add_default_values" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\AddDefaultValues" />
         <service id="river.tide.configuration_enhancer.run.get_images_name_from_built_services" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\GetImageNameFromBuiltServices">
             <argument type="collection">
                 <argument type="string" key="selector">[tasks][*][run]</argument>
@@ -54,6 +55,7 @@
                 <argument type="service" id="river.docker_compose.configuration_enhancer" />
                 <argument type="service" id="river.tide.configuration_enhancer.add_default_build_tag" />
                 <argument type="service" id="river.tide.configuration_enhancer.deploy_built_images" />
+                <argument type="service" id="river.tide.configuration_enhancer.add_default_values" />
                 <argument type="service" id="river.tide.configuration_enhancer.run.get_images_name_from_built_services" />
                 <argument type="service" id="river.tide.configuration_enhancer.deploy.get_images_name_from_built_services" />
             </argument>

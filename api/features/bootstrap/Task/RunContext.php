@@ -379,6 +379,22 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the name of the environment on which the task was run should be :name
+     */
+    public function theNameOfTheEnvironmentOnWhichTheTaskWasRunShouldBe($name)
+    {
+        $request = $this->getDeploymentRequest();
+
+        if ($name != $request->getTarget()->getEnvironmentName()) {
+            throw new \RuntimeException(sprintf(
+                'Expected namespace "%s" but got "%s"',
+                $name,
+                $request->getTarget()->getEnvironmentName()
+            ));
+        }
+    }
+
+    /**
      * @Then the commands should be run with the following environment variables:
      */
     public function theCommandsShouldBeRunWithTheFollowingEnvironmentVariables(TableNode $table)
@@ -471,12 +487,7 @@ class RunContext implements Context
      */
     private function getDeployedComponentNamed($name)
     {
-        $requests = $this->traceablePipeClient->getRequests();
-        if (count($requests) == 0) {
-            throw new \RuntimeException('No pipe request found');
-        }
-
-        $matchingComponents = array_filter($requests[0]->getSpecification()->getComponents(), function(Component $component) use ($name) {
+        $matchingComponents = array_filter($this->getDeploymentRequest()->getSpecification()->getComponents(), function(Component $component) use ($name) {
             return $component->getName() == $name;
         });
 
@@ -512,5 +523,18 @@ class RunContext implements Context
         $this->sendRunnerNotification(
             new Deployment($runStartedEvent->getRunUuid(), $deploymentRequest, $status)
         );
+    }
+
+    /**
+     * @return DeploymentRequest
+     */
+    private function getDeploymentRequest()
+    {
+        $requests = $this->traceablePipeClient->getRequests();
+        if (count($requests) == 0) {
+            throw new \RuntimeException('No pipe request found');
+        }
+
+        return current($requests);
     }
 }
