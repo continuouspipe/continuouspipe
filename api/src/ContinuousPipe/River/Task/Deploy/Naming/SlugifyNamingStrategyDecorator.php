@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
 use Cocur\Slugify\Slugify;
-use ContinuousPipe\Model\Environment;
 use Ramsey\Uuid\Uuid;
 
 class SlugifyNamingStrategyDecorator implements EnvironmentNamingStrategy

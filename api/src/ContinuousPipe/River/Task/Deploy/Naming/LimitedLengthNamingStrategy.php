@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
-use ContinuousPipe\Model\Environment;
 use Ramsey\Uuid\Uuid;
 
 class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy

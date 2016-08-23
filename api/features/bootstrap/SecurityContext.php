@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamNotFound;
@@ -97,6 +98,19 @@ class SecurityContext implements Context
         );
 
         $this->inMemoryAuthenticatorClient->addTeam($team);
+    }
+
+    /**
+     * @Given the team :team have the credentials of a cluster :cluster
+     */
+    public function theTeamHaveTheCredentialsOfACluster($team, $cluster)
+    {
+        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
+        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+
+        $bucket->getClusters()->add(new Kubernetes($cluster, '', 'v1', '', ''));
+
+        $this->inMemoryAuthenticatorClient->addBucket($bucket);
     }
 
     /**
