@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e08a40eb84674b3794099c77ba4199ab",
-    "content-hash": "853318876d893643c149d4e251f59e63",
+    "hash": "700d1011bbdb98c242c7e92c9a4f28b1",
+    "content-hash": "94e933ba2b81b50a4d68151d46298b8b",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -125,16 +125,16 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "2.2.1",
+            "version": "2.2.2",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
-                "reference": "d8b6ad881afaca509343f5914c5ce70d2266dacc"
+                "reference": "0a5c1c36124b63ab4e397ff094ef247f8fd2de03"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/d8b6ad881afaca509343f5914c5ce70d2266dacc",
-                "reference": "d8b6ad881afaca509343f5914c5ce70d2266dacc",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/0a5c1c36124b63ab4e397ff094ef247f8fd2de03",
+                "reference": "0a5c1c36124b63ab4e397ff094ef247f8fd2de03",
                 "shasum": ""
             },
             "require-dev": {
@@ -148,10 +148,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/model/tree/2.2.1",
+                "source": "https://github.com/continuouspipe/model/tree/2.2.2",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2016-06-12 13:31:09"
+            "time": "2016-08-23 16:04:15"
         },
         {
             "name": "continuous-pipe/security",
@@ -1322,6 +1322,7 @@
                 "rest",
                 "web service"
             ],
+            "abandoned": "guzzlehttp/guzzle",
             "time": "2015-03-18 18:23:50"
         },
         {
