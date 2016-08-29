@@ -4,7 +4,6 @@ namespace ContinuousPipe\Authenticator\Team\EventProducer;
 
 use ContinuousPipe\Authenticator\Team\Event\TeamSaved;
 use ContinuousPipe\Security\Team\Team;
-use ContinuousPipe\Security\Team\TeamNotFound;
 use ContinuousPipe\Security\Team\TeamRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -21,7 +20,7 @@ class TeamEventProducerRepository implements TeamRepository
     private $eventDispatcher;
 
     /**
-     * @param TeamRepository $decoratedRepository
+     * @param TeamRepository           $decoratedRepository
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(TeamRepository $decoratedRepository, EventDispatcherInterface $eventDispatcher)

@@ -102,19 +102,17 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
 
         try {
             $securityUser = $this->securityUserRepository->findOneByUsername($username);
+            $created = false;
         } catch (UserNotFound $e) {
             $securityUser = $this->createUserFromUsername($username);
-
-            $this->eventDispatcher->dispatch(UserCreated::EVENT_NAME, new UserCreated($securityUser->getUser()));
+            $created = true;
         }
 
-        // Get the user email if possible
-        $user = $securityUser->getUser();
-        if (null === $user->getEmail()) {
-            try {
-                $user->setEmail($this->getEmail($response));
-            } catch (EmailNotFoundException $e) {
-            }
+        $user = $this->fillUserEmail($response, $securityUser);
+
+        // Dispatch an event is the user was just created
+        if ($created) {
+            $this->eventDispatcher->dispatch(UserCreated::EVENT_NAME, new UserCreated($user));
         }
 
         // Update its GitHub token if needed
@@ -240,5 +238,25 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         } while ($this->teamRepository->exists($generatedTeamName) && (++$tries < 100));
 
         return $generatedTeamName;
+    }
+
+    /**
+     * @param UserResponseInterface $response
+     * @param SecurityUser          $securityUser
+     *
+     * @return User
+     */
+    private function fillUserEmail(UserResponseInterface $response, SecurityUser $securityUser)
+    {
+        $user = $securityUser->getUser();
+
+        if (null === $user->getEmail()) {
+            try {
+                $user->setEmail($this->getEmail($response));
+            } catch (EmailNotFoundException $e) {
+            }
+        }
+
+        return $user;
     }
 }

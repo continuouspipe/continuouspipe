@@ -77,6 +77,19 @@ class IntercomLibraryClientAdapter implements IntercomClient
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function mergeLeadIfExists(array $lead, array $user)
+    {
+        return $this->stdClassToArray(
+            $this->client->leads->convertLead([
+                'contact' => $lead,
+                'user' => $user,
+            ])
+        );
+    }
+
+    /**
      * @param \stdClass $object
      *
      * @return array

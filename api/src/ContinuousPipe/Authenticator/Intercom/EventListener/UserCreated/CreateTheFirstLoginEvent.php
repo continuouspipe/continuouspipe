@@ -45,11 +45,18 @@ class CreateTheFirstLoginEvent implements EventSubscriberInterface
     public function onUserCreated(UserCreated $event)
     {
         $user = $event->getUser();
+        $normalizedUser = $this->userNormalizer->normalize($user);
 
-        $this->intercomClient->createOrUpdateUser(
-            $this->userNormalizer->normalize($user)
-        );
+        try {
+            $this->intercomClient->mergeLeadIfExists(
+                ['email' => $user->getEmail()],
+                $normalizedUser
+            );
+        } catch (\Exception $e) {
+            // We don't care if the lead is not really merged.
+        }
 
+        $this->intercomClient->createOrUpdateUser($normalizedUser);
         $this->intercomClient->createEvent([
             'event_name' => 'first-login',
             'user_id' => $user->getUsername(),

@@ -31,4 +31,12 @@ interface IntercomClient
      * @return array
      */
     public function createEvent(array $event);
+
+    /**
+     * @param array $lead
+     * @param array $user
+     *
+     * @return array
+     */
+    public function mergeLeadIfExists(array $lead, array $user);
 }

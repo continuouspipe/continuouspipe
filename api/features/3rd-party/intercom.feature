@@ -23,11 +23,16 @@ Feature:
     When a user login with GitHub as "new-user"
     Then an intercom event "first-login" should be created
 
-  Scenario: Record the first login event when first login
+  Scenario: Do not record the first login when user already exists
     Given The user "existing-user" is in the white list
     And there is a user "existing-user"
     When a user login with GitHub as "existing-user"
     Then an intercom event "first-login" should not be created
+
+  Scenario: Remove the lead if it exists when first login
+    Given The user "new-user" is in the white list
+    When the user "new-user" with email "new-user@example.com" login
+    Then an intercom lead should be merged into the user "new-user@example.com"
 
   Scenario: Update user's companies when adding to a team
     Given there is a user "another"

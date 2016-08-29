@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\Authenticator\Invitation\EventListener\OnLoggedIn;
 
-use ContinuousPipe\Authenticator\Invitation\InvitationException;
 use ContinuousPipe\Authenticator\Invitation\InvitationToTeamMembershipTransformer;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
 use ContinuousPipe\Security\User\SecurityUser;

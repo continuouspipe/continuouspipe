@@ -4,7 +4,6 @@ namespace ContinuousPipe\Authenticator\Intercom\EventListener\TeamCreated;
 
 use ContinuousPipe\Authenticator\Event\TeamCreationEvent;
 use ContinuousPipe\Authenticator\Intercom\Client\IntercomClient;
-use ContinuousPipe\Authenticator\Team\Event\TeamSaved;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class RecordTeamSavedEvent implements EventSubscriberInterface

@@ -80,6 +80,20 @@ class IntercomContext implements Context
     }
 
     /**
+     * @Then an intercom lead should be merged into the user :email
+     */
+    public function anIntercomLeadShouldBeMergedIntoTheUser($email)
+    {
+        $matchingLeads = array_filter($this->traceableIntercomClient->getMergedLeads(), function(array $user) use ($email) {
+            return isset($user['email']) && $user['email'] == $email;
+        });
+
+        if (count($matchingLeads) == 0) {
+            throw new \RuntimeException('No matching merged lead found');
+        }
+    }
+
+    /**
      * @Then an intercom event :name should not be created
      */
     public function anIntercomEventShouldNotBeCreated($name)
