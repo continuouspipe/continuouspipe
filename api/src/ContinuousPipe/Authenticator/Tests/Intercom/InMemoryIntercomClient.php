@@ -41,4 +41,12 @@ class InMemoryIntercomClient implements IntercomClient
     {
         return $event;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function mergeLeadIfExists(array $lead, array $user)
+    {
+        return array_merge($lead, $user);
+    }
 }

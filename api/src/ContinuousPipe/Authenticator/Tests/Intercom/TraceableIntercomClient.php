@@ -32,6 +32,11 @@ class TraceableIntercomClient implements IntercomClient
     private $createdEvents = [];
 
     /**
+     * @var array[]
+     */
+    private $mergedLeads = [];
+
+    /**
      * @param IntercomClient $decoratedClient
      */
     public function __construct(IntercomClient $decoratedClient)
@@ -88,6 +93,18 @@ class TraceableIntercomClient implements IntercomClient
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function mergeLeadIfExists(array $lead, array $user)
+    {
+        $mergedLead = $this->decoratedClient->mergeLeadIfExists($lead, $user);
+
+        $this->mergedLeads[] = $mergedLead;
+
+        return $mergedLead;
+    }
+
+    /**
      * @return array[]
      */
     public function getCreatedLeads()
@@ -117,5 +134,13 @@ class TraceableIntercomClient implements IntercomClient
     public function getCreatedEvents()
     {
         return $this->createdEvents;
+    }
+
+    /**
+     * @return \array[]
+     */
+    public function getMergedLeads()
+    {
+        return $this->mergedLeads;
     }
 }

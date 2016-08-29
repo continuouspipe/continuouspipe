@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Authenticator\Intercom\EventListener\TeamMembershipUpdated;
 
 use ContinuousPipe\Authenticator\Intercom\Client\IntercomClient;
-use ContinuousPipe\Authenticator\Intercom\Normalizer\UserNormalizer;
 use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipEvent;
 use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipRemoved;
 use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipSaved;
@@ -22,7 +21,7 @@ class RecordAddingAndRemovingEvents implements EventSubscriberInterface
     private $teamMembershipRepository;
 
     /**
-     * @param IntercomClient $intercomClient
+     * @param IntercomClient           $intercomClient
      * @param TeamMembershipRepository $teamMembershipRepository
      */
     public function __construct(IntercomClient $intercomClient, TeamMembershipRepository $teamMembershipRepository)
