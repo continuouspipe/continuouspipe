@@ -24,6 +24,11 @@ tasks:
                 rabbitmq:
                     locked: true
 
+                    deployment_strategy:
+                        liveness_probe:
+                            type: tcp
+                            port: 5672
+
                 blackfire:
                     locked: true
 
@@ -39,9 +44,6 @@ tasks:
                                     key: ${WILDCARD_SSL_KEY}
 
                     specification:
-                        accessibility:
-                            from_external: true
-
                         environment_variables:
                             - name: AUTHENTICATOR_URL
                               value: http://authenticator.continuouspipe.io
@@ -69,6 +71,12 @@ tasks:
                               value: river
                             - name: DATABASE_PASSWORD
                               value: 138xHEqgD93lk
+                              
+                    deployment_strategy:
+                        liveness_probe:
+                            type: http
+                            port: 80
+                            path: /
 
                 worker:
                     specification:
@@ -103,8 +111,9 @@ tasks:
                               value: river
                             - name: DATABASE_PASSWORD
                               value: 138xHEqgD93lk
-#        filter:
-#            expression: code_reference.branch == 'master'
+
+        filter:
+            expression: code_reference.branch == 'master'
 
     migrations:
         run:
@@ -125,4 +134,3 @@ tasks:
 
         filter:
             expression: code_reference.branch == 'master'
-
