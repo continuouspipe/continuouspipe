@@ -125,7 +125,7 @@ class CreateComponentsHandler implements DeploymentHandler
                     $client, $context, $component
                 ));
 
-                $status = $this->createComponent($client, $component);
+                $status = $this->createComponent($context->getCluster(), $client, $component);
                 $componentStatus[$component->getName()] = $status;
 
                 $this->eventDispatcher->dispatch(AfterCreatingComponent::NAME, new AfterCreatingComponent(
@@ -152,14 +152,15 @@ class CreateComponentsHandler implements DeploymentHandler
     /**
      * Create a component.
      *
+     * @param Kubernetes      $cluster
      * @param NamespaceClient $client
      * @param Component       $component
      *
      * @return ComponentCreationStatus
      */
-    private function createComponent(NamespaceClient $client, Component $component)
+    private function createComponent(Kubernetes $cluster, NamespaceClient $client, Component $component)
     {
-        $objects = $this->componentTransformer->getElementListFromComponent($component);
+        $objects = $this->componentTransformer->getElementListFromComponent($component, $cluster);
         $creationStatus = new ComponentCreationStatus();
 
         foreach ($objects as $object) {

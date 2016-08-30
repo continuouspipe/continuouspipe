@@ -20,11 +20,13 @@
         <service id="kubernetes.transformer.ingress_factory" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\Ingress\Factory\IngressFactory">
             <argument type="service" id="kubernetes.naming_strategy.identifier" />
         </service>
+        <service id="kubernetes.transformer.deployment_factory" class="ContinuousPipe\Adapter\Kubernetes\Transformer\DeploymentFactory" />
         <service id="kubernetes.transformer.component" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer">
             <argument type="service" id="kubernetes.transformer.pod" />
             <argument type="service" id="kubernetes.transformer.service" />
             <argument type="service" id="kubernetes.transformer.replication_controller_factory" />
             <argument type="service" id="kubernetes.transformer.ingress_factory" />
+            <argument type="service" id="kubernetes.transformer.deployment_factory" />
         </service>
         <service id="kubernetes.transformer.environment" class="ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer">
             <argument type="service" id="kubernetes.transformer.component" />
@@ -105,6 +107,7 @@
         <service id="pipe.adapter.kubernetes.object_deployer.service" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\ServiceObjectDeployer" />
         <service id="pipe.adapter.kubernetes.object_deployer.secret" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\SecretObjectDeployer" />
         <service id="pipe.adapter.kubernetes.object_deployer.ingress" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\IngressObjectDeployer" />
+        <service id="pipe.adapter.kubernetes.object_deployer.deployment" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\DeploymentObjectDeployer" />
         <service id="pipe.adapter.kubernetes.object_deployer.replication_controller" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\ReplicationControllerObjectDeployer" />
         <service id="pipe.adapter.kubernetes.object_deployer" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\ChainObjectDeployer">
             <argument type="collection">
@@ -112,6 +115,7 @@
                 <argument type="service" id="pipe.adapter.kubernetes.object_deployer.service" />
                 <argument type="service" id="pipe.adapter.kubernetes.object_deployer.secret" />
                 <argument type="service" id="pipe.adapter.kubernetes.object_deployer.ingress" />
+                <argument type="service" id="pipe.adapter.kubernetes.object_deployer.deployment" />
                 <argument type="service" id="pipe.adapter.kubernetes.object_deployer.replication_controller" />
             </argument>
         </service>
