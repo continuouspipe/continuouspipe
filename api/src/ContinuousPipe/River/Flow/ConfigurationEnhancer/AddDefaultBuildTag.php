@@ -72,16 +72,16 @@ class AddDefaultBuildTag implements ConfigurationEnhancer
      */
     private function getDefaultImageTag(CodeReference $codeReference, $namingStrategy)
     {
-        if ($namingStrategy == 'sha1') {
-            return $codeReference->getCommitSha();
+        if ($namingStrategy == 'branch') {
+            $tag = $codeReference->getBranch();
+            if ($tag && !preg_match('#^'.self::DOCKER_TAG_REGEX.'$#', $tag)) {
+                $tag = (new Slugify())->slugify($tag);
+            }
+
+            return $tag;
         }
 
-        $tag = $codeReference->getBranch();
-        if ($tag && !preg_match('#^'.self::DOCKER_TAG_REGEX.'$#', $tag)) {
-            $tag = (new Slugify())->slugify($tag);
-        }
-
-        return $tag;
+        return $codeReference->getCommitSha();
     }
 
     /**
