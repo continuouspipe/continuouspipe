@@ -59,10 +59,18 @@ class TideConfigurationContext implements Context
      */
     public function theConfigurationOfTheTideIsGeneratedForTheBranch($branch)
     {
+        $this->theConfigurationOfTheTideIsGeneratedForTheBranchAndTheCommit($branch, 'sha1');
+    }
+
+    /**
+     * @When the configuration of the tide is generated for the branch :branch and the commit :sha1
+     */
+    public function theConfigurationOfTheTideIsGeneratedForTheBranchAndTheCommit($branch, $sha1)
+    {
         $flow = $this->flowContext->createFlow();
         $this->configuration = $this->tideConfigurationFactory->getConfiguration($flow, new CodeReference(
             $flow->getContext()->getCodeRepository(),
-            'sha1',
+            $sha1,
             $branch
         ));
     }

@@ -24,7 +24,7 @@ Feature:
                             source:
                                 from_service: api
     """
-    When the configuration of the tide is generated for the branch "my-feature"
+    When the configuration of the tide is generated for the branch "my-feature" and the commit "de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3"
     Then the generated configuration should contain at least:
     """
     tasks:
@@ -33,7 +33,7 @@ Feature:
                 services:
                     api:
                         image: foo/bar
-                        tag: my-feature
+                        tag: de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3
         deploy:
             deploy:
                 cluster: foo
@@ -42,12 +42,12 @@ Feature:
                         specification:
                             source:
                                 image: foo/bar
-                                tag: my-feature
+                                tag: de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3
                     worker:
                         specification:
                             source:
                                 image: foo/bar
-                                tag: my-feature
+                                tag: de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3
     """
 
   Scenario: I can explicitly defines the source of a component from the built
@@ -66,7 +66,8 @@ Feature:
         images:
             build:
                 services:
-                    api: ~
+                    api:
+                        naming_strategy: branch
 
         deploy:
             deploy:
@@ -139,7 +140,7 @@ Feature:
                                 - name: FOO
                                   value: BAR
     """
-    When a tide is started for the branch "my-feature"
+    When a tide is started for the branch "my-feature" and commit "de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3"
     Then the configuration of the tide should contain at least:
     """
     tasks:
@@ -148,7 +149,7 @@ Feature:
                 services:
                     api:
                         image: foo/bar
-                        tag: my-feature
+                        tag: de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3
         deploy:
             deploy:
                 cluster: foo
@@ -157,12 +158,12 @@ Feature:
                         specification:
                             source:
                                 image: foo/bar
-                                tag: my-feature
+                                tag: de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3
                     worker:
                         specification:
                             source:
                                 image: foo/bar
-                                tag: my-feature
+                                tag: de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3
     """
 
   Scenario: It creates the configuration with the full qualified name of the image
@@ -187,7 +188,7 @@ Feature:
                 services:
                     api: ~
     """
-    When a tide is started for the branch "my-feature"
+    When a tide is started for the branch "my-feature" and commit "de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3"
     Then the configuration of the tide should contain at least:
     """
     tasks:
@@ -196,7 +197,7 @@ Feature:
                 services:
                     api:
                         image: grc.io/foo/bar
-                        tag: my-feature
+                        tag: de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3
         deploy:
             deploy:
                 cluster: foo
@@ -205,7 +206,7 @@ Feature:
                         specification:
                             source:
                                 image: grc.io/foo/bar
-                                tag: my-feature
+                                tag: de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3
     """
 
   Scenario: The image name is configured in the build
@@ -231,7 +232,7 @@ Feature:
             deploy:
                 cluster: fra-01
     """
-    When a tide is started for the branch "master"
+    When a tide is started for the branch "master" and commit "de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3"
     Then the configuration of the tide should contain at least:
     """
     tasks:
@@ -240,7 +241,7 @@ Feature:
                 services:
                     app:
                         image: docker.io/inviqasession/cp-website
-                        tag: master
+                        tag: de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3
         deploy:
             deploy:
                 cluster: fra-01
@@ -249,7 +250,7 @@ Feature:
                         specification:
                             source:
                                 image: docker.io/inviqasession/cp-website
-                                tag: master
+                                tag: de3ad3af0a7be847aa6fae2c14caa39eb5c1bee3
     """
 
   Scenario: The image name is configured in the build
