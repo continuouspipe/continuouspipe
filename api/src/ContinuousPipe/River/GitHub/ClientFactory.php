@@ -25,7 +25,7 @@ interface ClientFactory
      *
      * @throws UserCredentialsNotFound
      *
-     * @deprecated Uses `createClientFromBucketUuid` instead.
+     * @deprecated Uses `createClientFromBucketUuid` instead
      */
     public function createClientFromBucket(Bucket $credentialsBucket);
 

@@ -12,6 +12,7 @@ use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\TaskQueued;
+use ContinuousPipe\River\Tide\Configuration\WildcardObject;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -130,22 +131,25 @@ class DeployTask extends EventDrivenTask
         /** @var DeploymentSuccessful[] $deploymentSuccessfulEvents */
         $deploymentSuccessfulEvents = $this->getEventsOfType(DeploymentSuccessful::class);
         if (count($deploymentSuccessfulEvents) == 0) {
-            return [];
+            $services = new WildcardObject([
+                'created' => false,
+                'updated' => false,
+                'deleted' => false,
+            ]);
+        } else {
+            $componentStatuses = $deploymentSuccessfulEvents[0]->getDeployment()->getComponentStatuses();
+            $services = new ArrayObject(array_map(function (ComponentStatus $status) {
+                return json_decode(json_encode([
+                    'created' => $status->isCreated(),
+                    'updated' => $status->isUpdated(),
+                    'deleted' => $status->isDeleted(),
+                ]));
+            }, $componentStatuses));
         }
 
-        $componentStatuses = $deploymentSuccessfulEvents[0]->getDeployment()->getComponentStatuses();
-        $services = array_map(function (ComponentStatus $status) {
-            return json_decode(json_encode([
-                'created' => $status->isCreated(),
-                'updated' => $status->isUpdated(),
-                'deleted' => $status->isDeleted(),
-            ]));
-        }, $componentStatuses);
-
-        $view = new \stdClass();
-        $view->services = new ArrayObject($services);
-
-        return $view;
+        return new ArrayObject([
+            'services' => $services,
+        ]);
     }
 
     /**

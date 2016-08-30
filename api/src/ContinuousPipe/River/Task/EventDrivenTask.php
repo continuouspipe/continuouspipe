@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
+use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 
 abstract class EventDrivenTask implements Task
 {
@@ -133,6 +134,6 @@ abstract class EventDrivenTask implements Task
      */
     public function getExposedContext()
     {
-        return [];
+        return new ArrayObject([]);
     }
 }

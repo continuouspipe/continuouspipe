@@ -272,3 +272,32 @@ Feature:
     When a tide is started for the branch "foo"
     And the build task succeed
     Then the deploy task should be started
+
+  Scenario: I can refer to a skipped deployed task and it resolves to false
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    mysql:
+                        specification:
+                            source:
+                                image: mysql
+
+            filter:
+                expression: 'code_reference.branch == "master"'
+
+        fixtures:
+            run:
+                cluster: foo
+                image: busybox
+                commands:
+                    - foo
+
+            filter:
+                expression: tasks.deployment.services.mysql.created
+    """
+    When a tide is started for the branch "my/feature"
+    Then the tide should be successful

@@ -23,7 +23,7 @@ class FlowCreationRequest extends FlowUpdateRequest
     /**
      * @JMS\Type("string")
      *
-     * @deprecated Should be removed, as using only by `FlowController:deprecatedFromRepositoryAction`.
+     * @deprecated Should be removed, as using only by `FlowController:deprecatedFromRepositoryAction`
      *
      * @var string
      */
