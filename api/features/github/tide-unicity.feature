@@ -67,14 +67,10 @@ Feature:
             filter:
                 expression: '"Ready for QA" in pull_request.labels'
     """
-    Given the pull request #1 is synchronized with head "feature/dc-labels" and the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9"
-    And the tide starts
-    And the tide is successful
-    And the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9" is pushed to the branch "feature/dc-labels"
+    When the pull request #1 is opened with head "feature/super-labels" and the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9"
+    And the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9" is pushed to the branch "feature/super-labels"
     And the pull request #1 have the label "Ready for QA"
-    And the pull request #1 is labeled
-    And the second tide starts
+    And the pull request #1 is labeled with head "feature/super-labels" and the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9"
     And the pull request #1 have the labels "Ready for QA,Dev approved"
-    When the pull request #1 is labeled
-    And the second tide starts
+    When the pull request #1 is labeled with head "feature/super-labels" and the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9"
     Then only 2 tide should be created

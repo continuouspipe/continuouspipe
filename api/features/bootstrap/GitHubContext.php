@@ -248,6 +248,21 @@ class GitHubContext implements Context
     }
 
     /**
+     * @When the pull request #:number is labeled with head :branch and the commit :sha
+     */
+    public function thePullRequestIsLabeledWithHeadAndTheCommand($number, $branch, $sha)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents['number'] = $number;
+        $contents['action'] = 'labeled';
+        $contents['pull_request']['head']['ref'] = $branch;
+        $contents['pull_request']['head']['label'] = $branch;
+        $contents['pull_request']['head']['sha'] = $sha;
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
      * @Given the pull request #:number have the label :label
      */
     public function thePullRequestHaveTheLabel($number, $label)
