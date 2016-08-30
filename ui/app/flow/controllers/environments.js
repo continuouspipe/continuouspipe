@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowEnvironmentsController', function($scope, $remoteResource, TideRepository, EnvironmentRepository, flow) {
+    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, TideRepository, EnvironmentRepository, flow) {
         $scope.flow = flow;
 
         var loadEnvironments = function() {
@@ -25,8 +25,7 @@ angular.module('continuousPipeRiver')
 
                     loadEnvironments();
                 }, function (error) {
-                    var message = ((error || {}).data || {}).message || "An unknown error occured while deleting the environment";
-                    swal("Error !", message, "error");
+                    swal("Error !", $http.getError(error) || "An unknown error occured while deleting the environment", "error");
                 });
             });
         };

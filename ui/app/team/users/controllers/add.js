@@ -1,12 +1,11 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamAddUserController', function($scope, $state, TeamMembershipRepository, InvitationRepository, team) {
+    .controller('TeamAddUserController', function($scope, $state, $http, TeamMembershipRepository, InvitationRepository, team) {
         $scope.team = team;
 
         var handleError = function(error) {
-            var message = ((error || {}).data || {}).message || "An unknown error occured while create the team";
-            return swal("Error !", message, "error");
+            return swal("Error !", $http.getError(error) || "An unknown error occured while create the team", "error");
         };
 
         $scope.addMembership = function(membership) {

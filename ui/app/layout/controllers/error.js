@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ErrorController', function($scope, $errorContext) {
+    .controller('ErrorController', function($scope, $errorContext, $http) {
     	$scope.error = $errorContext.get();
-        $scope.message = (($scope.error || {}).data || {}).message;
+        $scope.message = $http.getError($scope.error);
     });

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamUsersController', function($scope, $remoteResource, TeamMembershipRepository, TeamRepository, InvitationRepository, team) {
+    .controller('TeamUsersController', function($scope, $remoteResource, $http, TeamMembershipRepository, TeamRepository, InvitationRepository, team) {
         var load = function() {
             $scope.membersStatus = null;
             $remoteResource.load('membersStatus', TeamRepository.getMembersStatus(team.slug)).then(function (membersStatus) {
@@ -10,8 +10,7 @@ angular.module('continuousPipeRiver')
         };
 
         var handleError = function(error) {
-            var message = ((error || {}).data || {}).message || "An unknown error occured while create the team";
-            swal("Error !", message, "error");
+            swal("Error !", $http.getError(error) || "An unknown error occured while create the team", "error");
         };
 
         $scope.removeMembership = function(membership) {

@@ -8,7 +8,7 @@ angular.module('continuousPipeRiver')
             $scope.tides = tides;
         });
     })
-    .controller('FlowCreateTideController', function($scope, $state, TideRepository, flow) {
+    .controller('FlowCreateTideController', function($scope, $state, $http, TideRepository, flow) {
         $scope.flow = flow;
 
         $scope.create = function(tide) {
@@ -20,8 +20,7 @@ angular.module('continuousPipeRiver')
                     uuid: flow.uuid
                 });
             }, function(error) {
-                var message = ((error || {}).data || {}).message || "An unknown error occured while creating a tide";
-                swal("Error !", message, "error");
+                swal("Error !", $http.getError(error) || "An unknown error occured while creating a tide", "error");
             })['finally'](function() {
                 $scope.isLoading = false;
             });

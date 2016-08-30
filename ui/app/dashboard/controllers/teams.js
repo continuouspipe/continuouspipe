@@ -6,7 +6,7 @@ angular.module('continuousPipeRiver')
             $scope.teams = teams;
         });
     })
-    .controller('CreateTeamController', function($scope, $state, Slug, TeamRepository) {
+    .controller('CreateTeamController', function($scope, $state, $http, Slug, TeamRepository) {
         $scope.$watch('team.name', function(name, previous) {
             if ($scope.team && (!$scope.team.slug || $scope.team.slug == Slug.slugify(previous))) {
                 $scope.team.slug = Slug.slugify(name);
@@ -18,8 +18,7 @@ angular.module('continuousPipeRiver')
             TeamRepository.create(team).then(function() {
                 $state.go('flows', {team: team.slug});
             }, function(error) {
-                var message = ((error || {}).data || {}).message || "An unknown error occured while create the team";
-                swal("Error !", message, "error");
+                swal("Error !", $http.getError(error) || "An unknown error occured while create the team", "error");
             })['finally'](function() {
                 $scope.isLoading = false;
             });

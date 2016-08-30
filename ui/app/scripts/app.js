@@ -41,7 +41,7 @@ angular
         $mdThemingProvider.theme('blue');
     })
     // We need to inject it at least once to have automatic tracking
-    .run(function(Analytics, $rootScope) {
+    .run(function(Analytics, $rootScope, $http) {
         $rootScope.$on('user_context.user_updated', function(event, user) {
             window.Intercom("boot", {
                 app_id: "i0yqsxbt",
@@ -51,5 +51,11 @@ angular
                 hide_default_launcher: true
             });
         });
+
+        $http.getError = function(error) {
+            var body = (error || {}).data || {};
+
+            return body.message || body.error;
+        };
     })
 ;

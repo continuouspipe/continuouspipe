@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamClustersController', function($scope, $remoteResource, ClusterRepository, team) {
+    .controller('TeamClustersController', function($scope, $remoteResource, $http, ClusterRepository, team) {
         var controller = this;
 
         this.loadClusters = function() {
@@ -24,8 +24,8 @@ angular.module('continuousPipeRiver')
                     swal("Deleted!", "Cluster successfully deleted.", "success");
 
                     controller.loadClusters();
-                }, function() {
-                    swal("Error !", "An unknown error occurred while deleting cluster", "error");
+                }, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting cluster", "error");
                 });
             });
         };

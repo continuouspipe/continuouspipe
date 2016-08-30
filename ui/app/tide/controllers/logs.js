@@ -25,8 +25,7 @@ angular.module('continuousPipeRiver')
         $scope.cancel = function() {
             $scope.isLoading = true;
             TideRepository.cancel(tide).then(function() {}, function(error) {
-                var message = ((error || {}).data || {}).message || "An unknown error occured while cancelling the tide";
-                swal("Error !", message, "error");
+                swal("Error !", $http.getError(error) || "An unknown error occured while cancelling the tide", "error");
             })['finally'](function() {
                 $scope.isLoading = false;
             });
@@ -44,8 +43,7 @@ angular.module('continuousPipeRiver')
                     tideUuid: created.uuid
                 });
             }, function(error) {
-                var message = ((error || {}).data || {}).message || "An unknown error occured while creating the tide";
-                swal("Error !", message, "error");
+                swal("Error !", $http.getError(error) || "An unknown error occured while creating the tide", "error");
             })['finally'](function() {
                 $scope.isLoading = false;
             });

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('CreateFlowController', function($scope, $state, $remoteResource, WizardRepository, RegistryCredentialsRepository, ClusterRepository, FlowRepository, team, user) {
+    .controller('CreateFlowController', function($scope, $state, $remoteResource, $http, WizardRepository, RegistryCredentialsRepository, ClusterRepository, FlowRepository, team, user) {
         $scope.user = user;
         $scope.wizard = {
             step: 0,
@@ -169,8 +169,7 @@ angular.module('continuousPipeRiver')
             promise.then(function(flow) {
                 $state.go('flow.tides', {uuid: flow.uuid});
             }, function(error) {
-                var message = ((error || {}).data || {}).message || "An unknown error occured while creating the flow";
-                swal("Error !", message, "error");
+                swal("Error !", $http.getError(error) || "An unknown error occured while creating the flow", "error");
             })['finally'](function() {
                 $scope.isLoading = false;
             });

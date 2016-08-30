@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamGitHubTokensController', function($scope, $remoteResource, GitHubTokensRepository) {
+    .controller('TeamGitHubTokensController', function($scope, $remoteResource, $http, GitHubTokensRepository) {
         var controller = this;
 
         this.loadTokens = function() {
@@ -24,8 +24,8 @@ angular.module('continuousPipeRiver')
                     swal("Deleted!", "GitHub token successfully deleted.", "success");
 
                     controller.loadTokens();
-                }, function() {
-                    swal("Error !", "An unknown error occured while deleting token", "error");
+                }, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occured while deleting token", "error");
                 });
             });
         };

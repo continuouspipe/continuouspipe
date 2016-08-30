@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowConfigurationController', function($scope, $remoteResource, $mdToast, $state, TideRepository, EnvironmentRepository, FlowRepository, flow) {
+    .controller('FlowConfigurationController', function($scope, $remoteResource, $mdToast, $state, $http, TideRepository, EnvironmentRepository, FlowRepository, flow) {
         $scope.aceOption = {
             mode: 'yaml'
         };
@@ -17,8 +17,7 @@ angular.module('continuousPipeRiver')
                     .parent($('md-content.configuration-content'))
                 );
             }, function(error) {
-                var message = ((error || {}).data || {}).message || "An unknown error occured while creating flow";
-                swal("Error !", message, "error");
+                swal("Error !", $http.getError(error) || "An unknown error occured while creating flow", "error");
             })['finally'](function() {
                 $scope.isLoading = false;
             });
@@ -38,8 +37,8 @@ angular.module('continuousPipeRiver')
                     swal("Deleted!", "Cluster successfully deleted.", "success");
 
                     $state.go('flows');
-                }, function() {
-                    swal("Error !", "An unknown error occurred while deleting the flow", "error");
+                }, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the flow", "error");
                 });
             });
         };
