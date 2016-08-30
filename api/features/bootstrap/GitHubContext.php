@@ -250,16 +250,32 @@ class GitHubContext implements Context
     /**
      * @Given the pull request #:number have the label :label
      */
-    public function thePullRequestHaveTheTag($number, $label)
+    public function thePullRequestHaveTheLabel($number, $label)
     {
-        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod, $headers) use ($number, $label) {
+        $this->thePullRequestHaveTheLabels($number, $label);
+    }
+
+    /**
+     * @Given the pull request #:number have the labels :labelsString
+     */
+    public function thePullRequestHaveTheLabels($number, $labelsString)
+    {
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod, $headers) use ($number, $labelsString) {
             if ($httpMethod == 'GET' && preg_match('#/issues/'.$number.'/labels$#', $path)) {
+                $labels = array_map(function($label) use ($path) {
+                    return [
+                        'url' => $path.'/'.urlencode($label),
+                        'name' => $label,
+                        'color' => 'ffffff',
+                    ];
+                }, explode(',', $labelsString));
+
                 return new \Guzzle\Http\Message\Response(
                     200,
                     [
                         'Content-Type' => 'application/json',
                     ],
-                    '[{"url": "'.$path.'/'.urlencode($label).'","name": "'.$label.'","color": "f29513"}]'
+                    json_encode($labels)
                 );
             }
         });

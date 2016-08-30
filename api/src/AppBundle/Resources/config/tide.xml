@@ -84,11 +84,14 @@
         </service>
 
         <service id="river.tide.task_runner" class="ContinuousPipe\River\Task\StartTaskRunner" />
+        <service id="river.task_filter.expression_language_filter_evaluator" class="ContinuousPipe\River\Filter\ExpressionLanguageFilterEvaluator">
+            <argument type="service" id="river.task_filter.context_factory" />
+        </service>
         <service id="river.tide.task_runner.filter_tasks"
                  class="ContinuousPipe\River\Filter\TaskRunner\FilterDecorator"
                  decorates="river.tide.task_runner">
             <argument type="service" id="river.tide.task_runner.filter_tasks.inner" />
-            <argument type="service" id="river.task_filter.context_factory" />
+            <argument type="service" id="river.task_filter.expression_language_filter_evaluator" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="logger" />
         </service>

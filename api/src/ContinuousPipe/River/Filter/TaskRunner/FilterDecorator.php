@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Filter\TaskRunner;
 
-use ContinuousPipe\River\Filter\ContextFactory;
+use ContinuousPipe\River\Filter\FilterEvaluator;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Task\TaskRunnerException;
@@ -11,8 +11,6 @@ use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideConfigurationException;
 use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 class FilterDecorator implements TaskRunner
 {
@@ -22,9 +20,9 @@ class FilterDecorator implements TaskRunner
     private $taskRunner;
 
     /**
-     * @var ContextFactory
+     * @var FilterEvaluator
      */
-    private $contextFactory;
+    private $filterEvaluator;
 
     /**
      * @var MessageBus
@@ -38,14 +36,14 @@ class FilterDecorator implements TaskRunner
 
     /**
      * @param TaskRunner      $taskRunner
-     * @param ContextFactory  $contextFactory
+     * @param FilterEvaluator $filterEvaluator
      * @param MessageBus      $eventBus
      * @param LoggerInterface $logger
      */
-    public function __construct(TaskRunner $taskRunner, ContextFactory $contextFactory, MessageBus $eventBus, LoggerInterface $logger)
+    public function __construct(TaskRunner $taskRunner, FilterEvaluator $filterEvaluator, MessageBus $eventBus, LoggerInterface $logger)
     {
         $this->taskRunner = $taskRunner;
-        $this->contextFactory = $contextFactory;
+        $this->filterEvaluator = $filterEvaluator;
         $this->eventBus = $eventBus;
         $this->logger = $logger;
     }
@@ -90,45 +88,6 @@ class FilterDecorator implements TaskRunner
             return false;
         }
 
-        $context = $this->contextFactory->create($tide);
-
-        return !$this->testFilter($configuration['filter'], $context->asArray());
-    }
-
-    /**
-     * @param array $filter
-     * @param array $context
-     *
-     * @return bool
-     *
-     * @throws TideConfigurationException
-     */
-    private function testFilter(array $filter, array $context)
-    {
-        $expression = $filter['expression'];
-        $language = new ExpressionLanguage();
-
-        try {
-            $evaluated = $language->evaluate($expression, $context);
-        } catch (SyntaxError $e) {
-            throw new TideConfigurationException(sprintf(
-                'The expression provided ("%s") is not valid: %s',
-                $expression,
-                $e->getMessage()
-            ), $e->getCode(), $e);
-        } catch (\InvalidArgumentException $e) {
-            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
-        } catch (\RuntimeException $e) {
-            throw new TideConfigurationException('The filter seems to be wrong, we will investigate', $e->getCode(), $e);
-        }
-
-        if (!is_bool($evaluated)) {
-            throw new TideConfigurationException(sprintf(
-                'Expression "%s" is not valid as it do not return a boolean',
-                $expression
-            ));
-        }
-
-        return $evaluated;
+        return !$this->filterEvaluator->evaluates($tide, $configuration['filter']);
     }
 }
