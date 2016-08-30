@@ -7,7 +7,11 @@ angular.module('continuousPipeRiver')
         };
     })
     .run(function($rootScope, $aside) {
+        var asAsideByDefault = $(window).width() >= 960;
+
         $rootScope.$on('$stateChangeSuccess', function(event, toState) {
-            $aside.set(toState.aside === true);
+            if (asAsideByDefault) {
+                $aside.set(toState.aside === true);
+            }
         });
     });
