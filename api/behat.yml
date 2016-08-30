@@ -71,7 +71,6 @@ default:
         filters:
             tags: "~@wip"
 
-
 smoke:
     suites:
         application:

@@ -7,5 +7,6 @@
     <services>
         <service id="river.repository.flow" class="ContinuousPipe\River\Tests\Repository\InMemoryFlowRepository" />
         <service id="river.view.tide_repository" class="ContinuousPipe\River\Tests\View\InMemoryTideRepository" />
+        <service id="river.tide.filter.filter_hash_repository" class="ContinuousPipe\River\Tests\Repository\InMemoryFilterHashRepository" />
     </services>
 </container>
