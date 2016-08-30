@@ -67,4 +67,21 @@ class DeploymentContext implements Context
             throw new \RuntimeException('Not matching rollbacks found');
         }
     }
+
+    /**
+     * @Then the deployment :deploymentName should be created
+     */
+    public function theDeploymentShouldBeCreated($deploymentName)
+    {
+        $matchingCreated = array_filter($this->traceableDeploymentRepository->getCreated(), function(Deployment $deployment) use ($deploymentName) {
+            return $deployment->getMetadata()->getName() == $deploymentName;
+        });
+
+        if (count($matchingCreated) == 0) {
+            throw new \RuntimeException(sprintf(
+                'No created deployment named "%s" found',
+                $deploymentName
+            ));
+        }
+    }
 }

@@ -8,14 +8,19 @@ use Kubernetes\Client\Repository\DeploymentRepository;
 class TraceableDeploymentRepository implements DeploymentRepository
 {
     /**
+     * @var DeploymentRepository
+     */
+    private $decoratedRepository;
+
+    /**
      * @var Deployment\DeploymentRollback[]
      */
     private $rolledBackDeployments = [];
 
     /**
-     * @var DeploymentRepository
+     * @var Deployment[]
      */
-    private $decoratedRepository;
+    private $createdDeployments = [];
 
     /**
      * @param DeploymentRepository $decoratedRepository
@@ -38,7 +43,11 @@ class TraceableDeploymentRepository implements DeploymentRepository
      */
     public function create(Deployment $deployment)
     {
-        return $this->decoratedRepository->create($deployment);
+        $created = $this->decoratedRepository->create($deployment);
+
+        $this->createdDeployments[] = $created;
+
+        return $created;
     }
 
     /**
@@ -75,5 +84,13 @@ class TraceableDeploymentRepository implements DeploymentRepository
     public function getRolledBackDeployments()
     {
         return $this->rolledBackDeployments;
+    }
+
+    /**
+     * @return \Kubernetes\Client\Model\Deployment[]
+     */
+    public function getCreated()
+    {
+        return $this->createdDeployments;
     }
 }

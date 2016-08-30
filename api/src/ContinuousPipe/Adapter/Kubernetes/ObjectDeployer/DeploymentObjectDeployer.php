@@ -23,4 +23,21 @@ class DeploymentObjectDeployer extends AbstractObjectDeployer
     {
         return $namespaceClient->getDeploymentRepository();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function create(NamespaceClient $namespaceClient, KubernetesObject $object)
+    {
+        $deployment = $this->getRepository($namespaceClient, $object)->create($object);
+
+        // In order to migrate to deployments, also delete the existing replication controller
+        $replicationControllerRepository = $namespaceClient->getReplicationControllerRepository();
+        $replicationControllers = $replicationControllerRepository->findByLabels($deployment->getMetadata()->getLabelsAsAssociativeArray());
+        foreach ($replicationControllers as $replicationController) {
+            $replicationControllerRepository->delete($replicationController);
+        }
+
+        return $deployment;
+    }
 }

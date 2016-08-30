@@ -31,3 +31,13 @@ Feature:
     And the deployment should be failed
     And the deployment "app" should be rolled-back
     And the deployment "mysql" should be rolled-back
+
+  Scenario: It should remove the existing replication controller if it exists
+    Given the specification come from the template "simple-app"
+    And there is an existing replication-controller named "app" labelled "component-identifier=app"
+    And the pods of the deployment "app" will be running after creation
+    And the pods of the deployment "mysql" will be running after creation
+    When I send the built deployment request
+    Then the deployment request should be successfully created
+    And the replication controller "app" should be deleted
+    And the deployment "app" should be created

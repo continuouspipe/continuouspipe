@@ -91,6 +91,29 @@ class ReplicationControllerContext implements Context
     }
 
     /**
+     * @Given there is an existing replication-controller named :name labelled :labelsString
+     */
+    public function thereIsAnExistingReplicationControllerNamedMatching($name, $labelsString)
+    {
+        $labels = [];
+        foreach (explode(',', $labelsString) as $keyValuePairString) {
+            list($key, $value) = explode('=', $keyValuePairString);
+
+            $labels[$key] = $value;
+        }
+
+        $this->replicationControllerRepository->create(new ReplicationController(
+            new ObjectMetadata($name, KeyValueObjectList::fromAssociativeArray($labels, Label::class)),
+            new ReplicationControllerSpecification(1, $labels,
+                new PodTemplateSpecification(
+                    new ObjectMetadata($name),
+                    new PodSpecification([], [])
+                )
+            )
+        ));
+    }
+
+    /**
      * @Given I have an existing replication controller :name with :replicas replicas
      */
     public function iHaveAnExistingReplicationControllerWithReplicas($name, $replicas)
