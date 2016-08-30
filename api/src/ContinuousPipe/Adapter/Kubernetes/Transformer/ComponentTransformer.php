@@ -4,7 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\Transformer;
 
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointFactory;
 use ContinuousPipe\Model\Component;
-use Kubernetes\Client\Model\KubernetesObject;
+use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 
 class ComponentTransformer
 {
@@ -24,29 +24,34 @@ class ComponentTransformer
      * @var EndpointFactory
      */
     private $endpointFactory;
+    /**
+     * @var DeploymentFactory
+     */
+    private $deploymentFactory;
 
     /**
      * @param PodTransformer               $podTransformer
      * @param ServiceTransformer           $serviceTransformer
      * @param ReplicationControllerFactory $replicationControllerFactory
      * @param EndpointFactory              $endpointFactory
+     * @param DeploymentFactory            $deploymentFactory
      */
-    public function __construct(PodTransformer $podTransformer, ServiceTransformer $serviceTransformer, ReplicationControllerFactory $replicationControllerFactory, EndpointFactory $endpointFactory)
+    public function __construct(PodTransformer $podTransformer, ServiceTransformer $serviceTransformer, ReplicationControllerFactory $replicationControllerFactory, EndpointFactory $endpointFactory, DeploymentFactory $deploymentFactory)
     {
         $this->podTransformer = $podTransformer;
         $this->serviceTransformer = $serviceTransformer;
         $this->replicationControllerFactory = $replicationControllerFactory;
         $this->endpointFactory = $endpointFactory;
+        $this->deploymentFactory = $deploymentFactory;
     }
 
     /**
-     * @param Component $component
+     * @param Component  $component
+     * @param Kubernetes $cluster
      *
-     * @throws TransformationException
-     *
-     * @return KubernetesObject[]
+     * @return \Kubernetes\Client\Model\KubernetesObject[]
      */
-    public function getElementListFromComponent(Component $component)
+    public function getElementListFromComponent(Component $component, Kubernetes $cluster = null)
     {
         $objects = [];
         $pod = $this->podTransformer->getPodFromComponent($component);
@@ -59,10 +64,12 @@ class ComponentTransformer
             $objects = array_merge($objects, $this->endpointFactory->createObjectsFromEndpoint($component, $endpoint));
         }
 
-        if ($this->needsAReplicationController($component)) {
-            $objects[] = $this->replicationControllerFactory->createFromComponentPod($component, $pod);
-        } else {
+        if (!$this->isScalable($component)) {
             $objects[] = $pod;
+        } elseif ($this->supportsDeployment($cluster)) {
+            $objects[] = $this->deploymentFactory->createFromComponentPod($component, $pod);
+        } else {
+            $objects[] = $this->replicationControllerFactory->createFromComponentPod($component, $pod);
         }
 
         return $objects;
@@ -91,10 +98,29 @@ class ComponentTransformer
      *
      * @return bool
      */
-    private function needsAReplicationController(Component $component)
+    private function isScalable(Component $component)
     {
         $scalabilityConfiguration = $component->getSpecification()->getScalability();
 
         return $scalabilityConfiguration->isEnabled();
+    }
+
+    /**
+     * @param Kubernetes $cluster
+     *
+     * @return bool
+     */
+    private function supportsDeployment(Kubernetes $cluster = null)
+    {
+        if (null === $cluster) {
+            return false;
+        }
+
+        $version = $cluster->getVersion();
+        if (substr($version, 0, 1) == 'v') {
+            $version = substr($version, 1);
+        }
+
+        return version_compare($version, '1.2') >= 0;
     }
 }

@@ -13,7 +13,6 @@ use ContinuousPipe\Pipe\Event\PublicEndpointsReady;
 use Kubernetes\Client\Model\KubernetesObject;
 use LogStream\Log;
 use LogStream\LoggerFactory;
-use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
 
 class WaitPublicServicesEndpoints

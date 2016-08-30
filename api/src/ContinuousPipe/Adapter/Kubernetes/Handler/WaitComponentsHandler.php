@@ -13,6 +13,7 @@ use ContinuousPipe\Pipe\Promise\PromiseBuilder;
 use ContinuousPipe\Pipe\View\ComponentStatus;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Exception\PodNotFound;
+use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodStatus;
@@ -95,6 +96,8 @@ class WaitComponentsHandler implements DeploymentHandler
                 $promises[] = $this->waitOneReplicationControllerPodRunning($loop, $client, $logger, $object);
             } elseif ($object instanceof Pod) {
                 $promises[] = $this->waitPodRunningAndReady($loop, $client, $logger, $object);
+            } elseif ($object instanceof Deployment) {
+                $promises[] = $this->waitDeploymentFinished($loop, $client, $logger, $object);
             }
         }
 
@@ -174,6 +177,50 @@ class WaitComponentsHandler implements DeploymentHandler
             ->then(function () use ($logger) {
                 $logger->updateStatus(Log::SUCCESS);
             }, function (\Exception $e) use ($logger, $replicationController) {
+                $logger->updateStatus(Log::FAILURE);
+                $logger->child(new Text($e->getMessage()));
+
+                throw $e;
+            })
+        ;
+    }
+
+    /**
+     * @param NamespaceClient $client
+     * @param Deployment      $deployment
+     *
+     * @return React\Promise\Promise
+     */
+    private function waitDeploymentFinished(React\EventLoop\LoopInterface $loop, NamespaceClient $client, Logger $logger, Deployment $deployment)
+    {
+        $logger = $logger->child(new Text(sprintf('Rolling update of component "%s"', $deployment->getMetadata()->getName())));
+        $logger->updateStatus(Log::RUNNING);
+
+        return (new PromiseBuilder($loop))
+            ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $logger, $deployment) {
+                $foundDeployment = $client->getDeploymentRepository()->findOneByName($deployment->getMetadata()->getName());
+                $status = $foundDeployment->getStatus();
+
+                if (null === $status) {
+                    return $logger->child(new Text('Deployment is not started yet'));
+                }
+
+                $logger->child(new Text(sprintf(
+                    '%d/%d available replicas - %d updated',
+                    $status->getAvailableReplicas(),
+                    $status->getReplicas(),
+                    $status->getUpdatedReplicas()
+                )));
+
+                if ($status->getAvailableReplicas() == $status->getReplicas()) {
+                    $deferred->resolve($deployment);
+                }
+            })
+            ->withTimeout($this->timeout)
+            ->getPromise()
+            ->then(function () use ($logger) {
+                $logger->updateStatus(Log::SUCCESS);
+            }, function (\Exception $e) use ($logger, $deployment) {
                 $logger->updateStatus(Log::FAILURE);
                 $logger->child(new Text($e->getMessage()));
 

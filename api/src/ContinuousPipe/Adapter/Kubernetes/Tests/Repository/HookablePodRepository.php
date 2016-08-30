@@ -21,6 +21,11 @@ class HookablePodRepository implements PodRepository
     /**
      * @var callable[]
      */
+    private $foundByLabelsHooks = [];
+
+    /**
+     * @var callable[]
+     */
     private $createdHooks = [];
 
     /**
@@ -49,7 +54,13 @@ class HookablePodRepository implements PodRepository
      */
     public function findByLabels(array $labels)
     {
-        return $this->repository->findByLabels($labels);
+        $found = $this->repository->findByLabels($labels);
+
+        foreach ($this->foundByLabelsHooks as $hook) {
+            $found = $hook($labels, $found);
+        }
+
+        return $found;
     }
 
     /**
@@ -148,5 +159,13 @@ class HookablePodRepository implements PodRepository
     public function addDeletedHook(callable $hook)
     {
         $this->deletedHooks[] = $hook;
+    }
+
+    /**
+     * @param callable $hook
+     */
+    public function addFoundByLabelsHook(callable $hook)
+    {
+        $this->foundByLabelsHooks[] = $hook;
     }
 }

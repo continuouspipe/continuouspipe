@@ -62,7 +62,7 @@ class HttpClientFactory implements KubernetesClientFactory
 
     /**
      * @param Cluster\Kubernetes $cluster
-     * 
+     *
      * @return string
      */
     private function getClusterVersion(Cluster\Kubernetes $cluster)
