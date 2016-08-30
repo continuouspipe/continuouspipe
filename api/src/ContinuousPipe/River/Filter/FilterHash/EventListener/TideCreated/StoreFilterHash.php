@@ -6,6 +6,7 @@ use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Filter\FilterHash\FilterHashEvaluator;
 use ContinuousPipe\River\Filter\FilterHash\FilterHashRepository;
 use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\TideConfigurationException;
 
 class StoreFilterHash
 {
@@ -40,8 +41,13 @@ class StoreFilterHash
     public function notify(TideCreated $event)
     {
         $tide = $this->tideRepository->find($event->getTideUuid());
-        $hash = $this->filterHashEvaluator->evaluates($tide);
 
-        $this->filterHashRepository->save($hash);
+        try {
+            $hash = $this->filterHashEvaluator->evaluates($tide);
+            $this->filterHashRepository->save($hash);
+        } catch (TideConfigurationException $e) {
+            // If the configuration is not correct, then we shouldn't even store
+            // the hash anyway...
+        }
     }
 }

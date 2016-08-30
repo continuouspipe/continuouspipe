@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Filter\FilterHash;
 
 use ContinuousPipe\River\Filter\FilterEvaluator;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\TideConfigurationException;
 
 class FilterHashEvaluator
 {
@@ -22,6 +23,8 @@ class FilterHashEvaluator
 
     /**
      * @param Tide $tide
+     *
+     * @throws TideConfigurationException
      *
      * @return FilterHash
      */
@@ -46,7 +49,13 @@ class FilterHashEvaluator
         $filters = [];
 
         if (array_key_exists('filter', $configuration)) {
-            $filters[] = $configuration['filter'];
+            $filters[] = [
+                'expression' => $configuration['filter'],
+            ];
+        }
+
+        if (!array_key_exists('tasks', $configuration)) {
+            return $filters;
         }
 
         foreach ($configuration['tasks'] as $taskName => $task) {
