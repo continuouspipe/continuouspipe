@@ -207,9 +207,13 @@ EOF;
      */
     public function theSecondTideStarts()
     {
-        $tides = $this->viewTideRepository->findLastByFlow($this->flowContext->getCurrentFlow(), 1);
+        $flow = $this->flowContext->getCurrentFlow();
+        $tides = $this->viewTideRepository->findLastByFlow($flow, 1);
         if (count($tides) == 0) {
-            throw new \RuntimeException('Found not tide UUID, and no tide in flow');
+            throw new \RuntimeException(sprintf(
+                'Found not tide in flow %s',
+                $flow->getUuid()
+            ));
         }
 
         $this->tideUuid = $tides[0]->getUuid();
@@ -1264,10 +1268,14 @@ EOF;
     private function getTideUuid()
     {
         if (null === $this->tideUuid) {
-            $tides = $this->viewTideRepository->findLastByFlow($this->flowContext->getCurrentFlow(), 1);
+            $flow = $this->flowContext->getCurrentFlow();
+            $tides = $this->viewTideRepository->findLastByFlow($flow, 1);
 
             if (count($tides) == 0) {
-                throw new \RuntimeException('Found not tide UUID, and no tide in flow');
+                throw new \RuntimeException(sprintf(
+                    'Found no local tide UUID, and no tide in flow %s',
+                    $flow->getUuid()
+                ));
             }
 
             $this->tideUuid = $tides[0]->getUuid();

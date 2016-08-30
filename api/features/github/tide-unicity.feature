@@ -53,3 +53,24 @@ Feature:
     Then only 2 tide should be created
     And the build task of the first tide should be skipped
     And the build task of the second tide should be running
+
+  @smoke
+  Scenario: Rerun tide only if the filter value changed
+    Given there is 1 application images in the repository
+    And I have a flow with the following configuration:
+    """
+    tasks:
+        images:
+            build:
+                services: []
+
+            filter:
+                expression: '"Ready for QA" in pull_request.labels'
+    """
+    When the pull request #1 is opened with head "feature/super-labels" and the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9"
+    And the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9" is pushed to the branch "feature/super-labels"
+    And the pull request #1 have the label "Ready for QA"
+    And the pull request #1 is labeled with head "feature/super-labels" and the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9"
+    And the pull request #1 have the labels "Ready for QA,Dev approved"
+    When the pull request #1 is labeled with head "feature/super-labels" and the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9"
+    Then only 2 tide should be created

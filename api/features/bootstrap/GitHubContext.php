@@ -248,18 +248,49 @@ class GitHubContext implements Context
     }
 
     /**
+     * @When the pull request #:number is labeled with head :branch and the commit :sha
+     */
+    public function thePullRequestIsLabeledWithHeadAndTheCommand($number, $branch, $sha)
+    {
+        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents['number'] = $number;
+        $contents['action'] = 'labeled';
+        $contents['pull_request']['head']['ref'] = $branch;
+        $contents['pull_request']['head']['label'] = $branch;
+        $contents['pull_request']['head']['sha'] = $sha;
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
      * @Given the pull request #:number have the label :label
      */
-    public function thePullRequestHaveTheTag($number, $label)
+    public function thePullRequestHaveTheLabel($number, $label)
     {
-        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod, $headers) use ($number, $label) {
+        $this->thePullRequestHaveTheLabels($number, $label);
+    }
+
+    /**
+     * @Given the pull request #:number have the labels :labelsString
+     */
+    public function thePullRequestHaveTheLabels($number, $labelsString)
+    {
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod, $headers) use ($number, $labelsString) {
             if ($httpMethod == 'GET' && preg_match('#/issues/'.$number.'/labels$#', $path)) {
+                $labels = array_map(function($label) use ($path) {
+                    return [
+                        'url' => $path.'/'.urlencode($label),
+                        'name' => $label,
+                        'color' => 'ffffff',
+                    ];
+                }, explode(',', $labelsString));
+
                 return new \Guzzle\Http\Message\Response(
                     200,
                     [
                         'Content-Type' => 'application/json',
                     ],
-                    '[{"url": "'.$path.'/'.urlencode($label).'","name": "'.$label.'","color": "f29513"}]'
+                    json_encode($labels)
                 );
             }
         });

@@ -14,7 +14,7 @@ use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
 
 /**
- * @deprecated To be moved under `ContinuousPipe\River\Environment` namespace.
+ * @deprecated To be moved under `ContinuousPipe\River\Environment` namespace
  */
 class EnvironmentClient implements DeployedEnvironmentRepository
 {

@@ -84,11 +84,14 @@
         </service>
 
         <service id="river.tide.task_runner" class="ContinuousPipe\River\Task\StartTaskRunner" />
+        <service id="river.task_filter.expression_language_filter_evaluator" class="ContinuousPipe\River\Filter\ExpressionLanguageFilterEvaluator">
+            <argument type="service" id="river.task_filter.context_factory" />
+        </service>
         <service id="river.tide.task_runner.filter_tasks"
                  class="ContinuousPipe\River\Filter\TaskRunner\FilterDecorator"
                  decorates="river.tide.task_runner">
             <argument type="service" id="river.tide.task_runner.filter_tasks.inner" />
-            <argument type="service" id="river.task_filter.context_factory" />
+            <argument type="service" id="river.task_filter.expression_language_filter_evaluator" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="logger" />
         </service>
@@ -145,9 +148,28 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
         </service>
 
+        <!-- Filters -->
+        <service id="river.tide.filter.filter_hash_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\FilterHash\DoctrineFilterHashRepository">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+        <service id="river.tide.filter.filter_hash_evaluator" class="ContinuousPipe\River\Filter\FilterHash\FilterHashEvaluator">
+            <argument type="service" id="river.task_filter.expression_language_filter_evaluator" />
+        </service>
+        <service id="river.tide.filter.filter_hash.tide_created.store_filter_hash" class="ContinuousPipe\River\Filter\FilterHash\EventListener\TideCreated\StoreFilterHash">
+            <argument type="service" id="river.repository.tide"/>
+            <argument type="service" id="river.tide.filter.filter_hash_repository"/>
+            <argument type="service" id="river.tide.filter.filter_hash_evaluator"/>
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated" />
+        </service>
+
         <!-- Tide start voters -->
         <service id="river.tide.start_voter.filter_configuration" class="ContinuousPipe\River\Tide\StartVoter\FilterConfigurationVoter" />
-        <service id="river.tide.start_voter.context_changed" class="ContinuousPipe\River\Tide\StartVoter\ContextChangedVoter" />
+        <service id="river.tide.start_voter.filter_hash_changed" class="ContinuousPipe\River\Tide\StartVoter\FilterHashChangedVoter">
+            <argument type="service" id="river.tide.filter.filter_hash_evaluator"/>
+            <argument type="service" id="river.view.tide_repository"/>
+            <argument type="service" id="river.tide.filter.filter_hash_repository"/>
+        </service>
         <service id="river.tide.start_voter.tide_already_created" class="ContinuousPipe\River\Tide\StartVoter\TideAlreadyCreatedVoter">
             <argument type="service" id="river.view.tide_repository" />
         </service>
@@ -155,7 +177,7 @@
         <service id="river.tide.start_voter.context" class="ContinuousPipe\River\Tide\StartVoter\AffirmativeVoter">
             <argument type="collection">
                 <argument type="service" id="river.tide.start_voter.tide_already_created" />
-                <argument type="service" id="river.tide.start_voter.context_changed" />
+                <argument type="service" id="river.tide.start_voter.filter_hash_changed" />
             </argument>
         </service>
         <service id="river.tide.start_voter" class="ContinuousPipe\River\Tide\StartVoter\UnanimousVoter">

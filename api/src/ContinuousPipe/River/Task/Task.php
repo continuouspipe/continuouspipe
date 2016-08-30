@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 
 interface Task
 {
@@ -67,7 +68,7 @@ interface Task
     public function getContext();
 
     /**
-     * @return array
+     * @return ArrayObject
      */
     public function getExposedContext();
 }
