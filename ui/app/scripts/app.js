@@ -44,9 +44,11 @@ angular
     .run(function(Analytics, $rootScope) {
         $rootScope.$on('user_context.user_updated', function(event, user) {
             window.Intercom("boot", {
-                app_id: "jzwmwqmf",
+                app_id: "i0yqsxbt",
                 user_id: user.username,
-                email: user.email
+                email: user.email,
+                custom_launcher_selector: '#contact-us-launcher',
+                hide_default_launcher: true
             });
         });
     })
