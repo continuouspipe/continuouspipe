@@ -59,6 +59,9 @@
         <service id="pipe.adapter.kubernetes.traceable.ingress_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableIngressRepository">
             <argument type="service" id="pipe.adapter.kubernetes.hookable.ingress_repository" />
         </service>
+        <service id="pipe.adapter.kubernetes.traceable.deployment_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableDeploymentRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.deployment_repository" />
+        </service>
 
         <service id="pipe.adapter.kubernetes.namespace_client" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedRepositoriesNamespaceClient">
             <argument type="service" id="pipe.adapter.kubernetes.traceable.pod_repository" />
@@ -68,7 +71,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.traceable.service_account_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.traceable.persistent_volume_claim_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.traceable.ingress_repository" />
-            <argument type="service" id="pipe.adapter.kubernetes.hookable.deployment_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.deployment_repository" />
         </service>
 
         <service id="pipe.adapter.kubernetes.adapter" class="ContinuousPipe\Adapter\Kubernetes\Tests\InjectedRepositoriesAdapter">

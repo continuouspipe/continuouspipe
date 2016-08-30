@@ -88,6 +88,14 @@ class HookableDeploymentRepository implements DeploymentRepository
     /**
      * {@inheritdoc}
      */
+    public function rollback(Deployment\DeploymentRollback $deploymentRollback)
+    {
+        return $this->repository->rollback($deploymentRollback);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function exists($name)
     {
         return $this->repository->exists($name);

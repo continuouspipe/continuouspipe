@@ -49,4 +49,21 @@ class InMemoryDeploymentRepository implements DeploymentRepository
 
         return $deployment;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rollback(Deployment\DeploymentRollback $deploymentRollback)
+    {
+        $name = $deploymentRollback->getName();
+
+        if (!array_key_exists($name, $this->deployments)) {
+            throw new DeploymentNotFound(sprintf(
+                'Deployment named "%s" is not found',
+                $name
+            ));
+        }
+
+        return $deploymentRollback;
+    }
 }

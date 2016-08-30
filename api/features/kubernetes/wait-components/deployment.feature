@@ -21,3 +21,13 @@ Feature:
     When I send the built deployment request
     Then the deployment request should be successfully created
     And the deployment "app" should have at least 1 available replica
+
+  Scenario: It should rollback the deployment if it fails
+    Given the specification come from the template "simple-app"
+    And the pods of the deployment "app" will be pending after creation
+    And the pods of the deployment "mysql" will be running after creation
+    When I send the built deployment request
+    Then the deployment request should be successfully created
+    And the deployment should be failed
+    And the deployment "app" should be rolled-back
+    And the deployment "mysql" should be rolled-back

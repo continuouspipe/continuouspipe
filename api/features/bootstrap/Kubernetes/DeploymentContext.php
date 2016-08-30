@@ -3,6 +3,7 @@
 namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableDeploymentRepository;
 use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Repository\DeploymentRepository;
 
@@ -12,12 +13,18 @@ class DeploymentContext implements Context
      * @var DeploymentRepository
      */
     private $deploymentRepository;
+    /**
+     * @var TraceableDeploymentRepository
+     */
+    private $traceableDeploymentRepository;
 
     /**
+     * @param TraceableDeploymentRepository $traceableDeploymentRepository
      * @param DeploymentRepository $deploymentRepository
      */
-    public function __construct(DeploymentRepository $deploymentRepository)
+    public function __construct(TraceableDeploymentRepository $traceableDeploymentRepository, DeploymentRepository $deploymentRepository)
     {
+        $this->traceableDeploymentRepository = $traceableDeploymentRepository;
         $this->deploymentRepository = $deploymentRepository;
     }
 
@@ -44,6 +51,20 @@ class DeploymentContext implements Context
                 $availableReplicas,
                 $status->getAvailableReplicas()
             ));
+        }
+    }
+
+    /**
+     * @Then the deployment :deploymentName should be rolled-back
+     */
+    public function theDeploymentShouldBeRolledBack($deploymentName)
+    {
+        $matchingRollbacks = array_filter($this->traceableDeploymentRepository->getRolledBackDeployments(), function(Deployment\DeploymentRollback $deploymentRollback) use ($deploymentName) {
+            return $deploymentRollback->getName() == $deploymentName;
+        });
+
+        if (count($matchingRollbacks) == 0) {
+            throw new \RuntimeException('Not matching rollbacks found');
         }
     }
 }

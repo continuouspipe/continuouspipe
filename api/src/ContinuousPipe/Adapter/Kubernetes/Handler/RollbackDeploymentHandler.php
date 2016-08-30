@@ -11,8 +11,11 @@ use ContinuousPipe\Pipe\EventBus\EventStore;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Pipe\View\ComponentStatus;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
+use Kubernetes\Client\Exception\DeploymentNotFound;
 use Kubernetes\Client\Exception\ReplicationControllerNotFound;
 use Kubernetes\Client\Exception\ServiceNotFound;
+use Kubernetes\Client\Model\Deployment\DeploymentRollback;
+use Kubernetes\Client\Model\Deployment\RollbackConfiguration;
 use Rhumsaa\Uuid\Uuid;
 
 class RollbackDeploymentHandler implements DeploymentHandler
@@ -37,6 +40,9 @@ class RollbackDeploymentHandler implements DeploymentHandler
         $this->clientFactory = $clientFactory;
     }
 
+    /**
+     * @param RollbackDeploymentCommand $command
+     */
     public function handle(RollbackDeploymentCommand $command)
     {
         $context = $command->getContext();
@@ -45,6 +51,43 @@ class RollbackDeploymentHandler implements DeploymentHandler
             return;
         }
 
+        $this->rollbackUpdatedOrCreatedDeployments($context, $componentsCreatedEvent);
+        $this->removeCreatedServicesAndReplicationControllers($componentsCreatedEvent, $context);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(DeploymentContext $context)
+    {
+        return $context->getCluster() instanceof Kubernetes;
+    }
+
+    /**
+     * @param Uuid $deploymentUuid
+     *
+     * @return ComponentsCreated
+     */
+    private function getComponentsCreatedEvent(Uuid $deploymentUuid)
+    {
+        $events = $this->eventStore->findByDeploymentUuid($deploymentUuid);
+        $matchingEvents = array_filter($events, function (DeploymentEvent $event) {
+            return $event instanceof ComponentsCreated;
+        });
+
+        if (0 === count($matchingEvents)) {
+            return;
+        }
+
+        return current($matchingEvents);
+    }
+
+    /**
+     * @param $componentsCreatedEvent
+     * @param $context
+     */
+    private function removeCreatedServicesAndReplicationControllers(ComponentsCreated $componentsCreatedEvent, DeploymentContext $context)
+    {
         $createdComponentNames = array_keys(array_filter($componentsCreatedEvent->getComponentStatuses(), function (ComponentStatus $status) {
             return $status->isCreated();
         }));
@@ -73,29 +116,27 @@ class RollbackDeploymentHandler implements DeploymentHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @param DeploymentContext $context
+     * @param ComponentsCreated $componentsCreatedEvent
      */
-    public function supports(DeploymentContext $context)
+    private function rollbackUpdatedOrCreatedDeployments(DeploymentContext $context, ComponentsCreated $componentsCreatedEvent)
     {
-        return $context->getCluster() instanceof Kubernetes;
-    }
+        $createdComponentNames = array_keys(array_filter($componentsCreatedEvent->getComponentStatuses(), function (ComponentStatus $status) {
+            return $status->isCreated() || $status->isUpdated();
+        }));
 
-    /**
-     * @param Uuid $deploymentUuid
-     *
-     * @return ComponentsCreated
-     */
-    private function getComponentsCreatedEvent(Uuid $deploymentUuid)
-    {
-        $events = $this->eventStore->findByDeploymentUuid($deploymentUuid);
-        $matchingEvents = array_filter($events, function (DeploymentEvent $event) {
-            return $event instanceof ComponentsCreated;
-        });
+        $client = $this->clientFactory->get($context);
+        $deploymentsRepository = $client->getDeploymentRepository();
 
-        if (0 === count($matchingEvents)) {
-            return;
+        foreach ($createdComponentNames as $componentName) {
+            try {
+                $deployment = $deploymentsRepository->findOneByName($componentName);
+                $deploymentsRepository->rollback(new DeploymentRollback(
+                    $deployment->getMetadata()->getName(),
+                    new RollbackConfiguration(0)
+                ));
+            } catch (DeploymentNotFound $e) {
+            }
         }
-
-        return current($matchingEvents);
     }
 }
