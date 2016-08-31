@@ -265,6 +265,7 @@ class DeployTaskFactory implements TaskFactory
             ->children()
                 ->booleanNode('locked')->defaultFalse()->end()
                 ->booleanNode('attached')->defaultFalse()->end()
+                ->booleanNode('reset')->defaultFalse()->end()
                 ->append($this->getProbeNode('liveness_probe'))
                 ->append($this->getProbeNode('readiness_probe'))
             ->end();

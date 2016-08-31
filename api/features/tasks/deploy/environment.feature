@@ -346,3 +346,19 @@ Feature:
     And the component "image0" should request "2Gi" of memory
     And the component "image0" should be limited to "3Gi" of memory
 
+  Scenario: I can ask a container to be reset
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        deployment_strategy:
+                            reset: true
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the component "image0" should be reset across deployments

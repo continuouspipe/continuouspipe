@@ -379,6 +379,17 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the component :name should be reset across deployments
+     */
+    public function theComponentShouldBeResetAcrossDeployments($name)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        if (!$component->getDeploymentStrategy()->isReset()) {
+            throw new \RuntimeException('Not deployed as reset');
+        }
+    }
+
+    /**
      * @Then the name of the environment on which the task was run should be :name
      */
     public function theNameOfTheEnvironmentOnWhichTheTaskWasRunShouldBe($name)
