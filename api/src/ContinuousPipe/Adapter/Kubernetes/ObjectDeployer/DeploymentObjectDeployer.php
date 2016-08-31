@@ -2,12 +2,25 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\ObjectDeployer;
 
+use ContinuousPipe\Model\Component\DeploymentStrategy;
 use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\NamespaceClient;
 
 class DeploymentObjectDeployer extends AbstractObjectDeployer
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function deploy(NamespaceClient $namespaceClient, KubernetesObject $object, DeploymentStrategy $deploymentStrategy = null)
+    {
+        if (null !== $deploymentStrategy && $deploymentStrategy->isReset()) {
+            $this->deleteDeploymentsPod($namespaceClient, $object);
+        }
+
+        return parent::deploy($namespaceClient, $object, $deploymentStrategy);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -39,5 +52,19 @@ class DeploymentObjectDeployer extends AbstractObjectDeployer
         }
 
         return $deployment;
+    }
+
+    /**
+     * @param NamespaceClient $namespaceClient
+     * @param Deployment $deployment
+     */
+    private function deleteDeploymentsPod(NamespaceClient $namespaceClient, Deployment $deployment)
+    {
+        $podRepository = $namespaceClient->getPodRepository();
+        $matchingPods = $podRepository->findByLabels($deployment->getSpecification()->getSelector());
+
+        foreach ($matchingPods as $pod) {
+            $podRepository->delete($pod);
+        }
     }
 }
