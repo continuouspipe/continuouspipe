@@ -24,12 +24,7 @@ class AddDefaultBuildTag implements ConfigurationEnhancer
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $taskPathsAndTypes = $this->getTaskPathsAndType($configs);
-        $enhancedConfig = [];
-
-        // Initialize paths else it will break the configuration order
-        foreach ($taskPathsAndTypes as $path => $type) {
-            $propertyAccessor->setValue($enhancedConfig, $path, []);
-        }
+        $enhancedConfig = $this->getEmptyConfiguration($configs);
 
         // Get all the build task paths
         $buildPaths = array_filter($taskPathsAndTypes, function ($type) {

@@ -17,7 +17,7 @@ class AddDefaultValues implements ConfigurationEnhancer
     public function enhance(Flow $flow, CodeReference $codeReference, array $configs)
     {
         $defaults = $this->getDefaultValues($configs);
-        $defaultConfiguration = [];
+        $defaultConfiguration = $this->getEmptyConfiguration($configs);
 
         if (!empty($defaults)) {
             $propertyAccessor = PropertyAccess::createPropertyAccessor();

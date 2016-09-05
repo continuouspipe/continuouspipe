@@ -18,7 +18,7 @@ class DeployBuiltImagesByDefault implements ConfigurationEnhancer
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $taskPathsAndTypes = $this->getTaskPathsAndType($configs);
-        $enhancedConfig = [];
+        $enhancedConfig = $this->getEmptyConfiguration($configs);
 
         // Initialize paths else it will break the configuration order
         foreach ($taskPathsAndTypes as $path => $type) {

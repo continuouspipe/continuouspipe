@@ -42,6 +42,9 @@ Feature:
     Then the generated configuration should contain at least:
     """
     tasks:
+        images:
+            build: {}
+
         first:
             deploy:
                 environment:
@@ -136,6 +139,9 @@ Feature:
     Then the generated configuration should contain at least:
     """
     tasks:
+        images:
+            build: {}
+
         first:
             deploy:
                 cluster: foo

@@ -35,6 +35,30 @@ trait TaskLocator
     }
 
     /**
+     * @param array $configs
+     *
+     * @return array
+     */
+    private function getEmptyConfiguration(array $configs)
+    {
+        $configuration = [
+            'tasks' => [],
+        ];
+
+        foreach ($configs as $config) {
+            if (!array_key_exists('tasks', $config)) {
+                continue;
+            }
+
+            foreach ($config['tasks'] as $name => $task) {
+                $configuration['tasks'][$name] = [];
+            }
+        }
+
+        return $configuration;
+    }
+
+    /**
      * @param array  $configs
      * @param string $path
      *
