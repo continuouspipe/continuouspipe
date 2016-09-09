@@ -33,7 +33,7 @@ class GetImageNameFromBuiltServices implements ConfigurationEnhancer
         $paths = $this->expandSelector($configs, $this->configuration['selector']);
 
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
-        $enhancedConfiguration = [];
+        $enhancedConfiguration = $this->getEmptyConfiguration($configs);
 
         foreach ($paths as $path) {
             $values = $this->getValuesAtPath($configs, $path);

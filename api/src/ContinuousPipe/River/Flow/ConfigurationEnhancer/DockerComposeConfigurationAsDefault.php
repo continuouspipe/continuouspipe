@@ -38,7 +38,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
         }
 
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
-        $enhancedConfig = [];
+        $enhancedConfig = $this->getEmptyConfiguration($configs);
 
         foreach ($this->getTaskPathsAndType($configs) as $path => $taskType) {
             // Initialize paths else it will break the configuration order
