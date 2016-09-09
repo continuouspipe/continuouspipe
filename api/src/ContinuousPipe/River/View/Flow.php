@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Yaml\Yaml;
 
@@ -17,6 +18,11 @@ class Flow
      * @var CodeRepository
      */
     private $repository;
+
+    /**
+     * @var Team
+     */
+    private $team;
 
     /**
      * @var string
@@ -40,6 +46,7 @@ class Flow
         $view = new self();
         $view->uuid = $flowContext->getFlowUuid();
         $view->repository = $flowContext->getCodeRepository();
+        $view->team = $flowContext->getTeam();
         $view->ymlConfiguration = Yaml::dump($flowContext->getConfiguration());
 
         return $view;
