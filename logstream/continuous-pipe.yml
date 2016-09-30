@@ -30,10 +30,17 @@ tasks:
                               value: https://api.logstream.continuouspipe.io
 
                 api:
-                    specification:
-                        accessibility:
-                            from_external: true
+                    endpoints:
+                        -
+                            name: api-https
+                            type: NodePort
+                            ssl_certificates:
+                                -
+                                    name: continuouspipeio
+                                    cert: ${WILDCARD_SSL_CERT}
+                                    key: ${WILDCARD_SSL_KEY}
 
+                    specification:
                         environment_variables:
                             - name: SENTRY_DSN
                               value: http://22dc66c5a4d44fa29a4fde743816c1e7:f0b9a26df73f4c2299d163034bc84324@sentry.tools.sroze.io/13
