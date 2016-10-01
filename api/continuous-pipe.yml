@@ -20,6 +20,9 @@ tasks:
     production:
         deploy:
             cluster: ${CLUSTER}
+            environment:
+                name: '"river-" ~ code_reference.branch'
+                
             services:
                 rabbitmq:
                     locked: true
@@ -118,6 +121,8 @@ tasks:
     migrations:
         run:
             cluster: ${CLUSTER}
+            environment:
+                name: '"river-" ~ code_reference.branch'
             image:
                 from_service: api
             commands:
