@@ -10,6 +10,9 @@ tasks:
     deploy:
         deploy:
             cluster: ${CLUSTER}
+            environment:
+                name: '"logstream-" ~ code_reference.branch'
+
             services:
                 frontend:
                     endpoints:
