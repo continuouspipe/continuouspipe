@@ -9,7 +9,7 @@ tasks:
 
     deploy:
         deploy:
-            cluster: gke
+            cluster: ${CLUSTER}
             services:
                 frontend:
                     endpoints:
