@@ -7,7 +7,9 @@ use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
+use Psr\Log\LoggerInterface;
 
 class DoctrineTeamMembershipRepository implements TeamMembershipRepository
 {
@@ -17,11 +19,18 @@ class DoctrineTeamMembershipRepository implements TeamMembershipRepository
     private $entityManager;
 
     /**
-     * @param EntityManager $entityManager
+     * @var LoggerInterface
      */
-    public function __construct(EntityManager $entityManager)
+    private $logger;
+
+    /**
+     * @param EntityManager $entityManager
+     * @param LoggerInterface $logger
+     */
+    public function __construct(EntityManager $entityManager, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -53,8 +62,16 @@ class DoctrineTeamMembershipRepository implements TeamMembershipRepository
      */
     public function save(TeamMembership $membership)
     {
-        $this->entityManager->persist($membership);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($membership);
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException $e) {
+            $this->logger->warning('Team membership already saved, ignoring.', [
+                'username' => $membership->getUser()->getUsername(),
+                'team' => $membership->getTeam()->getSlug(),
+                'permissions' => $membership->getPermissions(),
+            ]);
+        }
     }
 
     /**

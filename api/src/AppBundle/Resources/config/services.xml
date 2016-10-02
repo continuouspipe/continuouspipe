@@ -13,6 +13,7 @@
         </service>
         <service id="app.repository.team_membership" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineTeamMembershipRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="logger" />
         </service>
         <service id="app.repository.team_membership.event_producer_decorator"
                  class="ContinuousPipe\Authenticator\TeamMembership\EventProducer\TeamMembershipEventProducerRepository"

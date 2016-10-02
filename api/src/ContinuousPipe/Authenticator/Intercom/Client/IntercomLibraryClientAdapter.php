@@ -99,7 +99,7 @@ class IntercomLibraryClientAdapter implements IntercomClient
         if (null === $object) {
             return null;
         }
-        
+
         return json_decode(json_encode($object), true);
     }
 }
