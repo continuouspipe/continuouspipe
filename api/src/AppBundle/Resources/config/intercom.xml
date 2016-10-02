@@ -26,6 +26,7 @@
         <service id="app.intercom.invitation.user_logged_in.create_or_update_user" class="ContinuousPipe\Authenticator\Intercom\EventListener\UserLoggedIn\CreateOrUpdateUser">
             <argument type="service" id="app.intercom.client" />
             <argument type="service" id="app.intercom.user_normalizer" />
+            <argument type="service" id="logger" />
 
             <tag name="kernel.event_subscriber" />
         </service>
