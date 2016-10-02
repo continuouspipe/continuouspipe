@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Intercom\Client;
 
+use GuzzleHttp\Exception\RequestException;
 use Intercom\IntercomClient as IntercomLibraryClient;
 
 class IntercomLibraryClientAdapter implements IntercomClient
@@ -32,9 +33,13 @@ class IntercomLibraryClientAdapter implements IntercomClient
      */
     public function createLead(array $lead)
     {
-        return $this->stdClassToArray(
-            $this->client->leads->create($lead)
-        );
+        try {
+            return $this->stdClassToArray(
+                $this->client->leads->create($lead)
+            );
+        } catch (RequestException $e) {
+            throw new IntercomException('Unable to create a lead', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -49,7 +54,11 @@ class IntercomLibraryClientAdapter implements IntercomClient
             ];
         }
 
-        return $this->client->messages->create($message);
+        try {
+            return $this->client->messages->create($message);
+        } catch (RequestException $e) {
+            throw new IntercomException('Unable to send a message', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -57,9 +66,13 @@ class IntercomLibraryClientAdapter implements IntercomClient
      */
     public function createOrUpdateUser(array $user)
     {
-        return $this->stdClassToArray(
-            $this->client->users->create($user)
-        );
+        try {
+            return $this->stdClassToArray(
+                $this->client->users->create($user)
+            );
+        } catch (RequestException $e) {
+            throw new IntercomException('Unable to create or update a user', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -71,9 +84,13 @@ class IntercomLibraryClientAdapter implements IntercomClient
             $event['created_at'] = time();
         }
 
-        return $this->stdClassToArray(
-            $this->client->events->create($event)
-        );
+        try {
+            return $this->stdClassToArray(
+                $this->client->events->create($event)
+            );
+        } catch (RequestException $e) {
+            throw new IntercomException('Unable to create an event', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -81,12 +98,16 @@ class IntercomLibraryClientAdapter implements IntercomClient
      */
     public function mergeLeadIfExists(array $lead, array $user)
     {
-        return $this->stdClassToArray(
-            $this->client->leads->convertLead([
-                'contact' => $lead,
-                'user' => $user,
-            ])
-        );
+        try {
+            return $this->stdClassToArray(
+                $this->client->leads->convertLead([
+                    'contact' => $lead,
+                    'user' => $user,
+                ])
+            );
+        } catch (RequestException $e) {
+            throw new IntercomException('Unable to merge lead', $e->getCode(), $e);
+        }
     }
 
     /**

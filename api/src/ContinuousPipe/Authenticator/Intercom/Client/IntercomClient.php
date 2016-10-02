@@ -7,12 +7,16 @@ interface IntercomClient
     /**
      * @param array $lead
      *
+     * @throws IntercomException
+     *
      * @return array
      */
     public function createLead(array $lead);
 
     /**
      * @param array $message
+     *
+     * @throws IntercomException
      *
      * @return array
      */
@@ -21,12 +25,16 @@ interface IntercomClient
     /**
      * @param array $user
      *
+     * @throws IntercomException
+     *
      * @return array
      */
     public function createOrUpdateUser(array $user);
 
     /**
      * @param array $event
+     *
+     * @throws IntercomException
      *
      * @return array
      */
@@ -35,6 +43,8 @@ interface IntercomClient
     /**
      * @param array $lead
      * @param array $user
+     *
+     * @throws IntercomException
      *
      * @return array
      */
