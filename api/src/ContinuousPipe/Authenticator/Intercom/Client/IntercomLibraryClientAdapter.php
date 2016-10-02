@@ -94,8 +94,12 @@ class IntercomLibraryClientAdapter implements IntercomClient
      *
      * @return array
      */
-    private function stdClassToArray(\stdClass $object)
+    private function stdClassToArray(\stdClass $object = null)
     {
+        if (null === $object) {
+            return null;
+        }
+        
         return json_decode(json_encode($object), true);
     }
 }
