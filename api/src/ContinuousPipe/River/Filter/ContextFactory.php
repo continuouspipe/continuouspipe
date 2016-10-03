@@ -102,7 +102,7 @@ class ContextFactory
         if (null !== ($event = $context->getCodeRepositoryEvent()) && $event instanceof PullRequestEvent) {
             $pullRequest = $event->getEvent()->getPullRequest();
         } else {
-            $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference(
+            $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReferenceAndBucketContainer(
                 $context->getCodeReference(),
                 $context->getTeam()
             );

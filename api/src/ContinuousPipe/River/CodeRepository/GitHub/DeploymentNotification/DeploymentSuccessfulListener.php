@@ -43,7 +43,8 @@ class DeploymentSuccessfulListener
     public function notify(DeploymentSuccessful $deploymentSuccessful)
     {
         $tide = $this->tideRepository->find($deploymentSuccessful->getTideUuid());
-        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($tide->getCodeReference(), $tide->getTeam());
+
+        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($tide->getFlow(), $tide->getCodeReference());
 
         foreach ($pullRequests as $pullRequest) {
             $codeRepository = $tide->getCodeReference()->getRepository();
