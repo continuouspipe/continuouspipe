@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Tide\Status;
 
 use ContinuousPipe\River\CodeRepository\CodeStatusException;
-use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\View\Tide;
 
 interface CodeStatusUpdater
 {

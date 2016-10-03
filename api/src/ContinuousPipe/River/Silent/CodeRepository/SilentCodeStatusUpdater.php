@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Silent\CodeRepository;
 
 use ContinuousPipe\River\Tide\Status\CodeStatusUpdater;
-use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\Tide\Status\Status;
 
 class SilentCodeStatusUpdater implements CodeStatusUpdater
@@ -42,7 +42,7 @@ class SilentCodeStatusUpdater implements CodeStatusUpdater
      */
     private function isSilent(Tide $tide)
     {
-        $configuration = $tide->getContext()->getConfiguration();
+        $configuration = $tide->getConfiguration();
 
         return array_key_exists('silent', $configuration) && $configuration['silent'];
     }

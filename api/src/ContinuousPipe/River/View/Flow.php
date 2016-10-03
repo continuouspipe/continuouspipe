@@ -73,4 +73,20 @@ class Flow
     {
         return $this->uuid;
     }
+
+    /**
+     * @return CodeRepository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
+
+    /**
+     * @return Team
+     */
+    public function getTeam()
+    {
+        return $this->team;
+    }
 }

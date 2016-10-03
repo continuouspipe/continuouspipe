@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\GitHub;
 
+use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\Security\Credentials\Bucket;
 use Github\Client;
 use ContinuousPipe\Security\User\User;
@@ -29,6 +30,15 @@ interface ClientFactory
      * @deprecated Uses `createClientFromBucketUuid` instead
      */
     public function createClientFromBucket(Bucket $credentialsBucket);
+
+    /**
+     * @param Flow $flow
+     *
+     * @throws UserCredentialsNotFound
+     *
+     * @return Client
+     */
+    public function createClientForFlow(Flow $flow);
 
     /**
      * @param Uuid $bucketUuid

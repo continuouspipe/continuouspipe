@@ -11,10 +11,9 @@
         </service>
 
         <service id="river.code_repository.status.tide_listener" class="ContinuousPipe\River\CodeRepository\Status\EventListener\TideStatusListener">
-            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.code_status_updater" />
             <argument type="service" id="log_stream.logger_factory" />
-            <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.time_resolver" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>

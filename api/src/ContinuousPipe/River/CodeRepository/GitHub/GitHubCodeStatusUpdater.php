@@ -6,9 +6,8 @@ use ContinuousPipe\River\CodeRepository\CodeStatusException;
 use ContinuousPipe\River\Tide\Status\CodeStatusUpdater;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
-use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\Tide\Status\Status;
-use ContinuousPipe\River\TideContext;
 use GuzzleHttp\Exception\RequestException;
 
 class GitHubCodeStatusUpdater implements CodeStatusUpdater
@@ -40,15 +39,13 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
      */
     public function update(Tide $tide, Status $status)
     {
-        $tideContext = $tide->getContext();
-
         try {
-            $client = $this->gitHubClientFactory->createClientFromBucketUuid($tideContext->getTeam()->getBucketUuid());
+            $client = $this->gitHubClientFactory->createClientForFlow($tide->getFlow());
         } catch (UserCredentialsNotFound $e) {
             throw new CodeStatusException('Unable to update code status, no valid GitHub credentials in bucket', $e->getCode(), $e);
         }
 
-        $repository = $tideContext->getCodeRepository();
+        $repository = $tide->getCodeReference()->getRepository();
 
         if (!$repository instanceof GitHubCodeRepository) {
             throw new CodeStatusException(sprintf(
@@ -62,7 +59,7 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
             $statusParameters = [
                 'state' => $status->getState(),
                 'context' => self::GITHUB_CONTEXT,
-                'target_url' => $this->generateTideUrl($tideContext),
+                'target_url' => $this->generateTideUrl($tide),
             ];
 
             if (null !== $status->getDescription()) {
@@ -81,18 +78,18 @@ class GitHubCodeStatusUpdater implements CodeStatusUpdater
     }
 
     /**
-     * @param TideContext $tideContext
+     * @param Tide $tide
      *
      * @return string
      */
-    private function generateTideUrl(TideContext $tideContext)
+    private function generateTideUrl(Tide $tide)
     {
         return sprintf(
             '%s/team/%s/%s/%s/logs',
             $this->getUiBaseUrl(),
-            $tideContext->getTeam()->getSlug(),
-            (string) $tideContext->getFlowUuid(),
-            (string) $tideContext->getTideUuid()
+            $tide->getTeam()->getSlug(),
+            (string) $tide->getFlow()->getUuid(),
+            (string) $tide->getUuid()
         );
     }
 

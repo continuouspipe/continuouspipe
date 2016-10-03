@@ -54,7 +54,7 @@ class CommentPullRequestDeploymentNotifier implements PullRequestDeploymentNotif
         $tide = $this->tideRepository->find($deploymentSuccessful->getTideUuid());
 
         try {
-            $client = $this->gitHubClientFactory->createClientFromBucketUuid($tide->getTeam()->getBucketUuid());
+            $client = $this->gitHubClientFactory->createClientForFlow($tide->getFlow());
         } catch (UserCredentialsNotFound $e) {
             throw new NotificationException('No valid GitHub credentials in bucket', $e->getCode(), $e);
         }

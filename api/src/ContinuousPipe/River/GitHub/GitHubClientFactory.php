@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River\GitHub;
 
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
+use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -9,8 +11,9 @@ use Github\Client;
 use ContinuousPipe\Security\User\User;
 use Github\HttpClient\HttpClientInterface;
 use GitHub\Integration\Installation;
+use GitHub\Integration\InstallationNotFound;
+use GitHub\Integration\InstallationRepository;
 use GitHub\Integration\InstallationTokenResolver;
-use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -37,17 +40,24 @@ class GitHubClientFactory implements ClientFactory
     private $installationTokenResolver;
 
     /**
+     * @var InstallationRepository
+     */
+    private $installationRepository;
+
+    /**
      * @param TokenStorageInterface $tokenStorage
      * @param HttpClientInterface $githubHttpClient
      * @param BucketRepository $bucketRepository
      * @param InstallationTokenResolver $installationTokenResolver
+     * @param InstallationRepository $installationRepository
      */
-    public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient, BucketRepository $bucketRepository, InstallationTokenResolver $installationTokenResolver)
+    public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient, BucketRepository $bucketRepository, InstallationTokenResolver $installationTokenResolver, InstallationRepository $installationRepository)
     {
         $this->tokenStorage = $tokenStorage;
         $this->githubHttpClient = $githubHttpClient;
         $this->bucketRepository = $bucketRepository;
         $this->installationTokenResolver = $installationTokenResolver;
+        $this->installationRepository = $installationRepository;
     }
 
     /**
@@ -117,5 +127,33 @@ class GitHubClientFactory implements ClientFactory
         ]);
 
         return $client;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createClientForFlow(Flow $flow)
+    {
+        $repository = $flow->getRepository();
+
+        // If the repository is not a GitHub code repository, creates the client
+        // from the team bucket UUID
+        if (!$repository instanceof GitHubCodeRepository) {
+            return $this->createClientFromBucketUuid(
+                $flow->getTeam()->getBucketUuid()
+            );
+        }
+
+        try {
+            $installation = $this->installationRepository->findByAccount(
+                $repository->getGitHubRepository()->getOwner()->getLogin()
+            );
+        } catch (InstallationNotFound $e) {
+            return $this->createClientFromBucketUuid(
+                $flow->getTeam()->getBucketUuid()
+            );
+        }
+
+        return $this->createClientFromInstallation($installation);
     }
 }

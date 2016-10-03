@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Tests\CodeRepository\Status;
 
 use ContinuousPipe\River\Tide\Status\CodeStatusUpdater;
-use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\Tide\Status\Status;
 use Ramsey\Uuid\Uuid;
 

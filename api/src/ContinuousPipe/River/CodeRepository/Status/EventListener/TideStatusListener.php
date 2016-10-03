@@ -8,10 +8,9 @@ use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\TideSuccessful;
-use ContinuousPipe\River\Repository\TideRepository;
-use ContinuousPipe\River\View\TideRepository as TideViewRepository;
 use ContinuousPipe\River\Tide\Status\Status;
-use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\River\View\TimeResolver;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -34,11 +33,6 @@ class TideStatusListener
     private $loggerFactory;
 
     /**
-     * @var TideViewRepository
-     */
-    private $tideViewRepository;
-
-    /**
      * @var TimeResolver
      */
     private $timeResolver;
@@ -47,15 +41,13 @@ class TideStatusListener
      * @param TideRepository     $tideRepository
      * @param CodeStatusUpdater  $codeStatusUpdater
      * @param LoggerFactory      $loggerFactory
-     * @param TideViewRepository $tideViewRepository
      * @param TimeResolver       $timeResolver
      */
-    public function __construct(TideRepository $tideRepository, CodeStatusUpdater $codeStatusUpdater, LoggerFactory $loggerFactory, TideViewRepository $tideViewRepository, TimeResolver $timeResolver)
+    public function __construct(TideRepository $tideRepository, CodeStatusUpdater $codeStatusUpdater, LoggerFactory $loggerFactory, TimeResolver $timeResolver)
     {
         $this->tideRepository = $tideRepository;
         $this->codeStatusUpdater = $codeStatusUpdater;
         $this->loggerFactory = $loggerFactory;
-        $this->tideViewRepository = $tideViewRepository;
         $this->timeResolver = $timeResolver;
     }
 
@@ -69,7 +61,7 @@ class TideStatusListener
         try {
             $this->updateTideStatus($event, $tide);
         } catch (CodeStatusException $e) {
-            $logger = $this->loggerFactory->from($tide->getContext()->getLog());
+            $logger = $this->loggerFactory->fromId($tide->getLogId());
             $logger->child(new Text($e->getMessage()));
         }
     }
@@ -100,10 +92,8 @@ class TideStatusListener
      */
     private function getDurationString(Tide $tide)
     {
-        $view = $this->tideViewRepository->find($tide->getUuid());
-
-        if ($view->getStartDate() !== null) {
-            $duration = $this->timeResolver->resolve()->getTimestamp() - $view->getStartDate()->getTimestamp();
+        if ($tide->getStartDate() !== null) {
+            $duration = $this->timeResolver->resolve()->getTimestamp() - $tide->getStartDate()->getTimestamp();
 
             return gmdate('i\m s\s', $duration);
         }
