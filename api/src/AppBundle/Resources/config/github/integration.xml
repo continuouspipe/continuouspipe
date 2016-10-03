@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="github.integration.openssl_key_loader" class="Lexik\Bundle\JWTAuthenticationBundle\Services\OpenSSLKeyLoader">
+            <argument>%github_integration.private_key_path%</argument>
+            <argument />
+            <argument />
+        </service>
+
+        <service id="github.integration.jwt_encoder" class="Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoder">
+            <argument type="service" id="github.integration.openssl_key_loader"/>
+        </service>
+
+        <service id="river.integration.guzzle_http_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+
+        <service id="github.integration.api_installation_repository" class="GitHub\Integration\ApiInstallationRepository">
+            <argument type="service" id="river.integration.guzzle_http_client" />
+            <argument type="service" id="github.integration.jwt_encoder" />
+            <argument type="service" id="jms_serializer" />
+            <argument>%github_integration.id%</argument>
+        </service>
+
+        <service id="github.integration.installation_repository" alias="github.integration.api_installation_repository" />
+    </services>
+</container>

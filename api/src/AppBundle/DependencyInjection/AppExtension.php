@@ -28,6 +28,7 @@ class AppExtension extends Extension
         $loader->load('logging.xml');
         $loader->load('silent.xml');
         $loader->load('queue.xml');
+        $loader->load('alerts.xml');
         $loader->load('security.xml');
         $loader->load('build/task.xml');
         $loader->load('build/handlers.xml');
@@ -42,5 +43,6 @@ class AppExtension extends Extension
         $loader->load('analytics/keen.xml');
         $loader->load('recover/timed-out-tides.xml');
         $loader->load('recover/cancel.xml');
+        $loader->load('github/integration.xml');
     }
 }

@@ -19,5 +19,8 @@
         <service id="river.github.client_factory" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\TestClientFactory">
             <argument type="service" id="river.github.http_client" />
         </service>
+
+        <service id="github.integration.in_memory_installation_repository" class="GitHub\Integration\InMemoryInstallationRepository" />
+        <service id="github.integration.installation_repository" alias="github.integration.in_memory_installation_repository" />
     </services>
 </container>
