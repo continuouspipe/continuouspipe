@@ -45,11 +45,11 @@ class GitHubClientFactory implements ClientFactory
     private $installationRepository;
 
     /**
-     * @param TokenStorageInterface $tokenStorage
-     * @param HttpClientInterface $githubHttpClient
-     * @param BucketRepository $bucketRepository
+     * @param TokenStorageInterface     $tokenStorage
+     * @param HttpClientInterface       $githubHttpClient
+     * @param BucketRepository          $bucketRepository
      * @param InstallationTokenResolver $installationTokenResolver
-     * @param InstallationRepository $installationRepository
+     * @param InstallationRepository    $installationRepository
      */
     public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient, BucketRepository $bucketRepository, InstallationTokenResolver $installationTokenResolver, InstallationRepository $installationRepository)
     {

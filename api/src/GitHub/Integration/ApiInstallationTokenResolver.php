@@ -29,10 +29,10 @@ class ApiInstallationTokenResolver implements InstallationTokenResolver
     private $integrationId;
 
     /**
-     * @param Client $httpClient
+     * @param Client              $httpClient
      * @param JWTEncoderInterface $jwtEncoder
      * @param SerializerInterface $serializer
-     * @param int $integrationId
+     * @param int                 $integrationId
      */
     public function __construct(Client $httpClient, JWTEncoderInterface $jwtEncoder, SerializerInterface $serializer, $integrationId)
     {
@@ -55,11 +55,11 @@ class ApiInstallationTokenResolver implements InstallationTokenResolver
             'iss' => $this->integrationId,
         ]);
 
-        $response = $this->httpClient->post('https://api.github.com/installations/' . $installation->getId() . '/access_tokens', [
+        $response = $this->httpClient->post('https://api.github.com/installations/'.$installation->getId().'/access_tokens', [
             'headers' => [
                 'Accept' => 'application/vnd.github.machine-man-preview+json',
-                'Authorization' => 'Bearer ' . $jwt,
-            ]
+                'Authorization' => 'Bearer '.$jwt,
+            ],
         ]);
 
         return $this->serializer->deserialize($response->getBody()->getContents(), InstallationToken::class, 'json');

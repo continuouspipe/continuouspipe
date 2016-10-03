@@ -2,8 +2,11 @@
 
 namespace ContinuousPipe\River\Tests\CodeRepository;
 
+use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
+use ContinuousPipe\River\CodeRepository\InvalidRepositoryAddress;
+use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class FakeFileSystemResolver implements FileSystemResolver
@@ -24,7 +27,15 @@ class FakeFileSystemResolver implements FileSystemResolver
     /**
      * {@inheritdoc}
      */
-    public function getFileSystem(CodeReference $codeReference, BucketContainer $bucketContainer)
+    public function getFileSystem(Flow $flow, CodeReference $codeReference)
+    {
+        return new PredictiveFileSystem($this->files);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFileSystemWithBucketContainer(CodeReference $codeReference, BucketContainer $bucketContainer)
     {
         return new PredictiveFileSystem($this->files);
     }

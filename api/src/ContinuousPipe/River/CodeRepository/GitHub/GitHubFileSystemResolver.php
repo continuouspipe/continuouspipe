@@ -2,9 +2,12 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
+use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\InvalidRepositoryAddress;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
@@ -32,10 +35,22 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
     /**
      * {@inheritdoc}
      */
-    public function getFileSystem(CodeReference $codeReference, BucketContainer $bucketContainer)
+    public function getFileSystemWithBucketContainer(CodeReference $codeReference, BucketContainer $bucketContainer)
     {
         return new CodeRepository\GitHubRelativeFileSystem(
             $this->gitHubClientFactory->createClientFromBucketUuid($bucketContainer->getBucketUuid()),
+            $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
+            $codeReference->getCommitSha()
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFileSystem(Flow $flow, CodeReference $codeReference)
+    {
+        return new CodeRepository\GitHubRelativeFileSystem(
+            $this->gitHubClientFactory->createClientForFlow($flow),
             $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
             $codeReference->getCommitSha()
         );

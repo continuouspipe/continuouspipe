@@ -28,9 +28,9 @@ class InstallationToken
     private $onBehalfOf;
 
     /**
-     * @param string $token
+     * @param string             $token
      * @param \DateTimeInterface $expiresAt
-     * @param string|null $onBehalfOf
+     * @param string|null        $onBehalfOf
      */
     public function __construct($token, \DateTimeInterface $expiresAt, $onBehalfOf = null)
     {

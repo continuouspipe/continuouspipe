@@ -15,6 +15,7 @@ use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Tide\Request\TideCreationRequest;
+use ContinuousPipe\River\View\Flow as FlowView;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Ramsey\Uuid\Uuid;
@@ -82,7 +83,7 @@ class TideFactory
         $context = $flow->getContext();
         $repository = $context->getCodeRepository();
         if (null == ($sha1 = $creationRequest->getSha1())) {
-            $sha1 = $this->commitResolver->getHeadCommitOfBranch($context->getTeam(), $repository, $creationRequest->getBranch());
+            $sha1 = $this->commitResolver->getHeadCommitOfBranch(FlowView::fromFlow($flow), $creationRequest->getBranch());
         }
 
         return $this->createFromCodeReference($flow, new CodeReference(

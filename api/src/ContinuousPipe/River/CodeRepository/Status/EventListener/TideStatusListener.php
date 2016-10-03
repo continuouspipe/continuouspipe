@@ -38,10 +38,10 @@ class TideStatusListener
     private $timeResolver;
 
     /**
-     * @param TideRepository     $tideRepository
-     * @param CodeStatusUpdater  $codeStatusUpdater
-     * @param LoggerFactory      $loggerFactory
-     * @param TimeResolver       $timeResolver
+     * @param TideRepository    $tideRepository
+     * @param CodeStatusUpdater $codeStatusUpdater
+     * @param LoggerFactory     $loggerFactory
+     * @param TimeResolver      $timeResolver
      */
     public function __construct(TideRepository $tideRepository, CodeStatusUpdater $codeStatusUpdater, LoggerFactory $loggerFactory, TimeResolver $timeResolver)
     {

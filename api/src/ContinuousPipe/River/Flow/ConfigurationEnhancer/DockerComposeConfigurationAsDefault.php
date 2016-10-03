@@ -7,6 +7,7 @@ use ContinuousPipe\River\CodeRepository\DockerCompose\ComponentsResolver;
 use ContinuousPipe\River\CodeRepository\DockerCompose\DockerComposeComponent;
 use ContinuousPipe\River\CodeRepository\DockerCompose\ResolveException;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\View\Flow as FlowView;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
@@ -32,7 +33,7 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
     public function enhance(Flow $flow, CodeReference $codeReference, array $configs)
     {
         try {
-            $dockerComposeComponents = $this->componentsResolver->resolve($codeReference, $flow->getContext()->getTeam());
+            $dockerComposeComponents = $this->componentsResolver->resolve(FlowView::fromFlow($flow), $codeReference);
         } catch (ResolveException $e) {
             return $configs;
         }

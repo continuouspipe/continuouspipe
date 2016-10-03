@@ -26,7 +26,7 @@ class FlowInstallationNotFound implements AlertsRepository
 
     /**
      * @param InstallationRepository $installationRepository
-     * @param ClientFactory $clientFactory
+     * @param ClientFactory          $clientFactory
      */
     public function __construct(InstallationRepository $installationRepository, ClientFactory $clientFactory)
     {
@@ -65,7 +65,6 @@ class FlowInstallationNotFound implements AlertsRepository
                     new AlertAction('link', 'Configure', 'https://github.com/integration/continuouspipe')
                 );
             }
-
         } catch (InstallationNotFound $e) {
             $alerts[] = new Alert(
                 'github-integration-not-found',

@@ -29,10 +29,10 @@ class ApiInstallationRepository implements InstallationRepository
     private $integrationId;
 
     /**
-     * @param Client $client
+     * @param Client              $client
      * @param JWTEncoderInterface $jwtEncoder
      * @param SerializerInterface $serializer
-     * @param int $integrationId
+     * @param int                 $integrationId
      */
     public function __construct(Client $client, JWTEncoderInterface $jwtEncoder, SerializerInterface $serializer, $integrationId)
     {
@@ -58,7 +58,7 @@ class ApiInstallationRepository implements InstallationRepository
         $response = $this->client->get('https://api.github.com/integration/installations', [
             'headers' => [
                 'Accept' => 'application/vnd.github.machine-man-preview',
-                'Authorization' => 'Bearer ' . $jwt,
+                'Authorization' => 'Bearer '.$jwt,
             ],
         ]);
 
@@ -70,7 +70,7 @@ class ApiInstallationRepository implements InstallationRepository
      */
     public function findByAccount($account)
     {
-        $matchingInstallations = array_filter($this->findAll(), function(Installation $installation) use ($account) {
+        $matchingInstallations = array_filter($this->findAll(), function (Installation $installation) use ($account) {
             return $installation->getAccount()->getLogin() == $account;
         });
 

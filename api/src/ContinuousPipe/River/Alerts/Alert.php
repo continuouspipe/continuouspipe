@@ -25,10 +25,10 @@ class Alert
     private $date;
 
     /**
-     * @param string $type
-     * @param string $message
+     * @param string             $type
+     * @param string             $message
      * @param \DateTimeInterface $date
-     * @param AlertAction $action
+     * @param AlertAction        $action
      */
     public function __construct($type, $message, \DateTimeInterface $date, AlertAction $action)
     {
