@@ -74,6 +74,8 @@ tasks:
                               value: river
                             - name: DATABASE_PASSWORD
                               value: 138xHEqgD93lk
+                            - name: TIDEWAYS_API_KEY
+                              value: ${TIDEWAYS_API_KEY}
                               
                     deployment_strategy:
                         readiness_probe:
@@ -114,6 +116,15 @@ tasks:
                               value: river
                             - name: DATABASE_PASSWORD
                               value: 138xHEqgD93lk
+                            - name: TIDEWAYS_API_KEY
+                              value: ${TIDEWAYS_API_KEY}
+
+                tideways:
+                    specification:
+                        resources:
+                            limits:
+                                cpu: 50m
+                                memory: 100Mi
 
         filter:
             expression: code_reference.branch == 'master'
