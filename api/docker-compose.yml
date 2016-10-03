@@ -63,3 +63,8 @@ blackfire:
         - BLACKFIRE_SERVER_TOKEN=8dfcfac46dd73b2d9b786451120e59b54c4e493fa8db4564662f9156bf0d82ff
     expose:
         - 8707
+
+tideways:
+    image: docker.io/sroze/tideways
+    expose:
+        - 9135
