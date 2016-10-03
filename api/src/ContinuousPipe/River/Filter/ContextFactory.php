@@ -7,11 +7,13 @@ use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\Event\GitHub\PullRequestEvent;
 use ContinuousPipe\River\Filter\View\TaskListView;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
+use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
-use ContinuousPipe\River\TideContext;
 use ContinuousPipe\River\GitHub\ClientFactory;
+use ContinuousPipe\River\TideContext;
+use ContinuousPipe\River\View\Flow;
 use GitHub\WebHook\Model\PullRequest;
 use Psr\Log\LoggerInterface;
 
@@ -33,15 +35,22 @@ class ContextFactory
     private $pullRequestResolver;
 
     /**
+     * @var FlowRepository
+     */
+    private $flowRepository;
+
+    /**
      * @param ClientFactory       $gitHubClientFactory
      * @param LoggerInterface     $logger
      * @param PullRequestResolver $pullRequestResolver
+     * @param FlowRepository      $flowRepository
      */
-    public function __construct(ClientFactory $gitHubClientFactory, LoggerInterface $logger, PullRequestResolver $pullRequestResolver)
+    public function __construct(ClientFactory $gitHubClientFactory, LoggerInterface $logger, PullRequestResolver $pullRequestResolver, FlowRepository $flowRepository)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->logger = $logger;
         $this->pullRequestResolver = $pullRequestResolver;
+        $this->flowRepository = $flowRepository;
     }
 
     /**
@@ -98,13 +107,14 @@ class ContextFactory
     {
         $context = $tide->getContext();
         $repository = $context->getCodeRepository();
+        $flow = Flow::fromFlow($this->flowRepository->find($context->getFlowUuid()));
 
         if (null !== ($event = $context->getCodeRepositoryEvent()) && $event instanceof PullRequestEvent) {
             $pullRequest = $event->getEvent()->getPullRequest();
         } else {
-            $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReferenceAndBucketContainer(
-                $context->getCodeReference(),
-                $context->getTeam()
+            $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference(
+                $flow,
+                $context->getCodeReference()
             );
 
             $pullRequest = count($matchingPullRequests) > 0 ? current($matchingPullRequests) : null;
@@ -121,30 +131,30 @@ class ContextFactory
         return new ArrayObject([
             'number' => $pullRequest->getNumber(),
             'state' => $pullRequest->getState(),
-            'labels' => $this->getPullRequestLabelNames($context, $repository, $pullRequest),
+            'labels' => $this->getPullRequestLabelNames($flow, $context, $repository, $pullRequest),
         ]);
     }
 
     /**
-     * @param TideContext $tideContext
-     * @param PullRequest $pullRequest
+     * @param Flow           $flow
+     * @param TideContext    $context
+     * @param CodeRepository $codeRepository
+     * @param PullRequest    $pullRequest
      *
      * @return array
      */
-    private function getPullRequestLabelNames(TideContext $tideContext, CodeRepository $codeRepository, PullRequest $pullRequest)
+    private function getPullRequestLabelNames(Flow $flow, TideContext $context, CodeRepository $codeRepository, PullRequest $pullRequest)
     {
         if (!$codeRepository instanceof CodeRepository\GitHub\GitHubCodeRepository) {
             return [];
         }
 
-        $user = $tideContext->getUser();
-
         try {
-            $client = $this->gitHubClientFactory->createClientFromBucketUuid($tideContext->getTeam()->getBucketUuid());
+            $client = $this->gitHubClientFactory->createClientForFlow($flow);
         } catch (UserCredentialsNotFound $e) {
             $this->logger->warning('Unable to get pull-request labels, credentials not found', [
                 'exception' => $e,
-                'user' => $user,
+                'user' => $context->getUser(),
             ]);
 
             return [];

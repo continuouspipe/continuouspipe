@@ -56,7 +56,7 @@ class RepositoryComponentsResolver implements ComponentsResolver
 
     /**
      * @param RelativeFileSystem $fileSystem
-     * @param CodeReference $codeReference
+     * @param CodeReference      $codeReference
      *
      * @return array
      */

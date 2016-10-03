@@ -7,7 +7,6 @@ use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\View\Flow;
-use ContinuousPipe\Security\Credentials\BucketContainer;
 use Github\Client;
 use GitHub\WebHook\Model\PullRequest;
 use JMS\Serializer\Serializer;
@@ -32,16 +31,6 @@ class GitHubPullRequestResolver implements PullRequestResolver
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->serializer = $serializer;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findPullRequestWithHeadReferenceAndBucketContainer(CodeReference $codeReference, BucketContainer $bucketContainer)
-    {
-        $client = $this->gitHubClientFactory->createClientFromBucketUuid($bucketContainer->getBucketUuid());
-
-        return $this->findPullRequestFromClient($client, $codeReference);
     }
 
     /**
@@ -73,7 +62,7 @@ class GitHubPullRequestResolver implements PullRequestResolver
     }
 
     /**
-     * @param Client $client
+     * @param Client        $client
      * @param CodeReference $codeReference
      *
      * @return array
@@ -91,7 +80,7 @@ class GitHubPullRequestResolver implements PullRequestResolver
         );
 
         $jsonEncoded = json_encode($rawPullRequests);
-        $pullRequests = $this->serializer->deserialize($jsonEncoded, 'array<' . PullRequest::class . '>', 'json');
+        $pullRequests = $this->serializer->deserialize($jsonEncoded, 'array<'.PullRequest::class.'>', 'json');
 
         return array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
             return $codeReference->getCommitSha() == $pullRequest->getHead()->getSha1();

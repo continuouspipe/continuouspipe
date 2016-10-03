@@ -2,10 +2,8 @@
 
 namespace ContinuousPipe\River\Tests\CodeRepository;
 
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
-use ContinuousPipe\River\CodeRepository\InvalidRepositoryAddress;
 use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 

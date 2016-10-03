@@ -12,8 +12,8 @@ interface FileSystemResolver
     /**
      * Get file system for the given code repository and reference.
      *
-     * @param Flow $flow
-     * @param CodeReference   $codeReference
+     * @param Flow          $flow
+     * @param CodeReference $codeReference
      *
      * @return RelativeFileSystem
      *

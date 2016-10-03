@@ -2,8 +2,6 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
-use ContinuousPipe\River\CodeRepository\InvalidRepositoryAddress;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
