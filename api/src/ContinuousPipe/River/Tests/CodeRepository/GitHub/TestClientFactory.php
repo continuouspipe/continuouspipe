@@ -7,6 +7,7 @@ use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\User\User;
 use Github\Client;
 use Github\HttpClient\HttpClientInterface;
+use GitHub\Integration\Installation;
 use Ramsey\Uuid\Uuid;
 
 class TestClientFactory implements ClientFactory
@@ -52,6 +53,14 @@ class TestClientFactory implements ClientFactory
      * {@inheritdoc}
      */
     public function createClientForCurrentUser()
+    {
+        return new Client($this->httpClient);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createClientFromInstallation(Installation $installation)
     {
         return new Client($this->httpClient);
     }

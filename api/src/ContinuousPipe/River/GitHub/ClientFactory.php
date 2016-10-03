@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\GitHub;
 use ContinuousPipe\Security\Credentials\Bucket;
 use Github\Client;
 use ContinuousPipe\Security\User\User;
+use GitHub\Integration\Installation;
 use Ramsey\Uuid\Uuid;
 
 interface ClientFactory
@@ -42,4 +43,11 @@ interface ClientFactory
      * @return Client
      */
     public function createClientForCurrentUser();
+
+    /**
+     * @param Installation $installation
+     *
+     * @return Client
+     */
+    public function createClientFromInstallation(Installation $installation);
 }
