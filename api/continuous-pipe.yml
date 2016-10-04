@@ -126,6 +126,21 @@ tasks:
                                 cpu: 50m
                                 memory: 100Mi
 
+                redis:
+                    deployment_strategy:
+                        readiness_probe:
+                            type: tcp
+                            port: 6379
+
+                    specification:
+                        resources:
+                            requests:
+                                cpu: 50m
+                                memory: 100Mi
+                            limits:
+                                cpu: 250m
+                                memory: 250Mi
+
         filter:
             expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'
 
