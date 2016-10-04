@@ -6,7 +6,7 @@
 
     <services>
         <service id="river.time_resolver" class="ContinuousPipe\River\Infrastructure\InMemory\NativeTimeResolver" />
-        <service id="river.tide.saga" class="ContinuousPipe\River\TideSaga">
+        <service id="river.tide.saga.apply_tide_events" class="ContinuousPipe\River\ApplyTideEvents">
             <argument type="service" id="event_bus" />
             <argument type="service" id="river.repository.tide" />
         </service>
