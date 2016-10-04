@@ -7,7 +7,7 @@
     <services>
         <service id="river.handler.build_image" class="ContinuousPipe\River\Task\Build\Handler\BuildImageHandler">
             <argument type="service" id="builder.client" />
-            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="router" />
             <argument type="service" id="logger" />
@@ -17,7 +17,7 @@
         <service id="river.handler.build_images" class="ContinuousPipe\River\Task\Build\Handler\BuildImagesHandler">
             <argument type="service" id="simple_bus.command_bus" />
             <argument type="service" id="simple_bus.event_bus" />
-            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="builder.build_request_creator" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="logger" />

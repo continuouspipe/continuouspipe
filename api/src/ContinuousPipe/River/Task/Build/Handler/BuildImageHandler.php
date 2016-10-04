@@ -9,10 +9,9 @@ use ContinuousPipe\Builder\LogStreamLogging;
 use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\Repository\TideNotFound;
-use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\River\Task\Build\Command\BuildImageCommand;
 use ContinuousPipe\River\Task\Build\Event\BuildStarted;
-use LogStream\LoggerFactory;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
@@ -78,7 +77,7 @@ class BuildImageHandler
         }
 
         $buildRequest = $this->getBuildRequestWithNotificationConfiguration($tideUuid, $command->getBuildRequest(), $command->getLogId());
-        $build = $this->builderClient->build($buildRequest, $tide->getContext()->getUser());
+        $build = $this->builderClient->build($buildRequest, $tide->getUser());
 
         $this->eventBus->handle(new BuildStarted($tideUuid, $build));
     }

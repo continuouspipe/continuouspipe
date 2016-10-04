@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Task\Build\Handler;
 use ContinuousPipe\Builder\BuilderException;
 use ContinuousPipe\Builder\BuildRequestCreator;
 use ContinuousPipe\River\Repository\TideNotFound;
-use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\River\Task\Build\Command\BuildImageCommand;
 use ContinuousPipe\River\Task\Build\Command\BuildImagesCommand;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
@@ -81,13 +81,11 @@ class BuildImagesHandler
             return;
         }
 
-        $tideContext = $tide->getContext();
-
         try {
             $buildRequests = $this->buildRequestCreator->createBuildRequests(
-                $tideContext->getCodeReference(),
+                $tide->getCodeReference(),
                 $command->getConfiguration(),
-                $tideContext->getTeam()->getBucketUuid()
+                $tide->getTeam()->getBucketUuid()
             );
         } catch (BuilderException $e) {
             $logger->child(new Text($e->getMessage()));

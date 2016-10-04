@@ -5,6 +5,9 @@
     "autoload": {
         "psr-4": { "": "src/" }
     },
+    "autoload-dev": {
+        "psr-4": { "": "tests/" }
+    },
     "require": {
         "php": ">=5.3.9",
         "symfony/symfony": "~2.8.0",
@@ -36,7 +39,9 @@
         "keen-io/keen-io": "~2.5",
         "knplabs/knp-paginator-bundle": "^2.5",
         "doctrine/doctrine-cache-bundle": "~1.3.0",
-        "rhumsaa/uuid": "^2.8"
+        "rhumsaa/uuid": "^2.8",
+        "predis/predis": "^1.1",
+        "malkusch/lock": "^1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -86,7 +91,8 @@
                 "logstream_url": "LOGSTREAM_URL",
                 "logstream_frontend_url": "LOGSTREAM_FRONTEND_URL",
                 "keen_project_id": "KEEN_PROJECT_ID",
-                "keen_write_key": "KEEN_WRITE_KEY"
+                "keen_write_key": "KEEN_WRITE_KEY",
+                "redis_host": "REDIS_HOST"
             }
         }]
     },
