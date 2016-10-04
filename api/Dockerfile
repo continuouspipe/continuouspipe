@@ -2,8 +2,9 @@ FROM docker.io/inviqasession/cp-river-base:v8
 
 # Apache & PHP configuration
 RUN a2enmod rewrite
-ADD docker/apache-vhost.conf /etc/apache2/sites-enabled/default.conf
-ADD docker/php.ini /usr/local/etc/php/php.ini
+ADD docker/apache/vhost.conf /etc/apache2/sites-enabled/000-default.conf
+ADD docker/php/php.ini /etc/php/7.0/apache2/php.ini
+ADD docker/php/php.ini /etc/php/7.0/cli/php.ini
 
 # Add the application
 ADD . /app

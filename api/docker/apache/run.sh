@@ -11,4 +11,4 @@ if [ -n "$TIDEWAYS_API_KEY" ]; then
 fi
 
 # Start Apache with the right permissions
-/app/docker/start_safe_perms -DFOREGROUND
+/app/docker/apache/start_safe_perms -DFOREGROUND
