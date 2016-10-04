@@ -5,6 +5,9 @@
     "autoload": {
         "psr-4": { "": "src/" }
     },
+    "autoload-dev": {
+        "psr-4": { "": "tests/" }
+    },
     "require": {
         "php": ">=5.3.9",
         "symfony/symfony": "~2.8.0",
@@ -37,8 +40,8 @@
         "knplabs/knp-paginator-bundle": "^2.5",
         "doctrine/doctrine-cache-bundle": "~1.3.0",
         "rhumsaa/uuid": "^2.8",
-        "snc/redis-bundle": "^2.0",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "malkusch/lock": "^1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

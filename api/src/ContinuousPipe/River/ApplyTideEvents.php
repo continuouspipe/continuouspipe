@@ -6,6 +6,10 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Repository\TideRepository;
 use SimpleBus\Message\Bus\MessageBus;
 
+/**
+ * A new tide-related event is received, we'll apply it to the tide and then
+ * dispatch newly created events if there's any.
+ */
 class ApplyTideEvents implements TideSaga
 {
     /**
@@ -29,10 +33,7 @@ class ApplyTideEvents implements TideSaga
     }
 
     /**
-     * A new tide-related event is received, we'll apply it to the tide and then
-     * dispatch newly created events if there's any.
-     *
-     * @param TideEvent $event
+     * {@inheritdoc}
      */
     public function notify(TideEvent $event)
     {

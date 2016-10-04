@@ -23,7 +23,6 @@ class AppKernel extends Kernel
             new FOS\RestBundle\FOSRestBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
             new Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\ToleranceBundle(),
-            new Snc\RedisBundle\SncRedisBundle(),
             new LogStream\LogStreamBundle(),
             new WorkerBundle\WorkerBundle(),
             new AdminBundle\AdminBundle(),
