@@ -29,10 +29,10 @@ class RabbitMqHttpClient
 
     /**
      * @param ClientInterface $httpClient
-     * @param string $hostname
-     * @param int $port
-     * @param string $user
-     * @param string $password
+     * @param string          $hostname
+     * @param int             $port
+     * @param string          $user
+     * @param string          $password
      */
     public function __construct(ClientInterface $httpClient, $hostname, $port, $user, $password)
     {
@@ -57,8 +57,8 @@ class RabbitMqHttpClient
         $response = $this->httpClient->get($url, [
             'auth' => [
                 $this->user,
-                $this->password
-            ]
+                $this->password,
+            ],
         ]);
 
         return $response->json();

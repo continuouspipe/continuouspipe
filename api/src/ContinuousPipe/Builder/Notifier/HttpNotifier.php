@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Builder\Notifier;
 
 use ContinuousPipe\Builder\Build;
-use ContinuousPipe\Builder\HttpNotification;
 use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Notifier;
 use GuzzleHttp\Client;
@@ -33,7 +32,7 @@ class HttpNotifier implements Notifier
 
     /**
      * @param Notification $notification
-     * @param Build            $build
+     * @param Build        $build
      *
      * @throws NotificationException
      */

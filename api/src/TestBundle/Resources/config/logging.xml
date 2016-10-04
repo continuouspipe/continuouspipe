@@ -14,7 +14,13 @@
             <argument type="service" id="log_stream.tree.log_normalizer" />
         </service>
 
+        <service id="builder.notifier.retry.waiter" class="Tolerance\Waiter\NullWaiter" />
         <service id="builder.http_notifier" class="ContinuousPipe\Builder\Notifier\NullNotifier" />
+        <service id="builder.notifier.hookable"
+                 class="ContinuousPipe\Builder\Notifier\HookableNotifier"
+                 decorates="builder.http_notifier">
+            <argument type="service" id="builder.notifier.hookable.inner" />
+        </service>
         <service id="builder.notifier.traceable"
                  class="ContinuousPipe\Builder\Notifier\TraceableNotifier"
                  decorates="builder.notifier">

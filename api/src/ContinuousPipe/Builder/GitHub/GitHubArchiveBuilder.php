@@ -10,7 +10,6 @@ use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use GuzzleHttp\Exception\ClientException;
 use LogStream\Logger;
-use LogStream\Node\Text;
 
 class GitHubArchiveBuilder implements ArchiveBuilder
 {

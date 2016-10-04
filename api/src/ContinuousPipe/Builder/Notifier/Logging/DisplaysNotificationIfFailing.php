@@ -23,7 +23,7 @@ class DisplaysNotificationIfFailing implements Notifier
     private $loggerFactory;
 
     /**
-     * @param Notifier $decoratedNotifier
+     * @param Notifier           $decoratedNotifier
      * @param BuildLoggerFactory $loggerFactory
      */
     public function __construct(Notifier $decoratedNotifier, BuildLoggerFactory $loggerFactory)
@@ -42,8 +42,6 @@ class DisplaysNotificationIfFailing implements Notifier
         } catch (Notifier\NotificationException $e) {
             $logger = $this->loggerFactory->forBuild($build);
             $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
-
-            throw $e;
         }
     }
 }

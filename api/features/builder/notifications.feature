@@ -32,3 +32,28 @@ Feature:
     """
     Then the build should be successful
     And the notification should be sent
+
+
+  Scenario: It notify if asked
+    Given the notification will fail the first 2 times
+    When I send the following build request:
+    """
+    {
+      "image": {
+        "name": "sroze/php-example",
+        "tag": "continuous"
+      },
+      "repository": {
+        "address": "fixtures://php-example",
+        "branch": "747850e8c821a443a7b5cee28a48581069049739"
+      },
+      "notification": {
+        "http": {
+          "address": "https://example.com"
+        }
+      },
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+    }
+    """
+    Then the build should be successful
+    And the notification should be sent

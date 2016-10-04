@@ -18,6 +18,13 @@
 
         <service id="builder.notifier" alias="builder.http_notifier" />
 
+        <service id="builder.notifier.retry.waiter" class="Tolerance\Waiter\SleepWaiter" />
+        <service id="builder.notifier.retry"
+                 class="ContinuousPipe\Builder\Notifier\RetryNotifier"
+                 decorates="builder.notifier">
+            <argument type="service" id="builder.notifier.retry.inner" />
+            <argument type="service" id="builder.notifier.retry.waiter" />
+        </service>
         <service id="builder.notifier.logging.displays_failing_notification"
                  class="ContinuousPipe\Builder\Notifier\Logging\DisplaysNotificationIfFailing"
                  decorates="builder.notifier">
