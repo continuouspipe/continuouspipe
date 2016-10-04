@@ -91,7 +91,8 @@
                 "logstream_url": "LOGSTREAM_URL",
                 "logstream_frontend_url": "LOGSTREAM_FRONTEND_URL",
                 "keen_project_id": "KEEN_PROJECT_ID",
-                "keen_write_key": "KEEN_WRITE_KEY"
+                "keen_write_key": "KEEN_WRITE_KEY",
+                "redis_host": "REDIS_HOST"
             }
         }]
     },

@@ -2,6 +2,7 @@ build:
     image: docker.io/sroze/php-stack:7.0
     environment:
         - DATABASE_HOST=127.0.0.1
+        - REDIS_HOST=127.0.0.1
         - COMPOSER_HOME=/drone/composer-cache
 
     commands:
