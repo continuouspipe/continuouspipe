@@ -27,6 +27,9 @@ interface FileSystemResolver
      * @param CodeReference   $codeReference
      * @param BucketContainer $bucketContainer
      *
+     * @deprecated Being dependent on a Bucket container, this method is deprecated. Please
+     *             use the `getFileSystem` method.
+     *
      * @return RelativeFileSystem
      *
      * @throws InvalidRepositoryAddress
