@@ -3,12 +3,13 @@
 namespace ContinuousPipe\Builder\Notifier;
 
 use ContinuousPipe\Builder\Build;
-use ContinuousPipe\Builder\HttpNotification;
+use ContinuousPipe\Builder\Notification;
+use ContinuousPipe\Builder\Notifier;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\Serializer;
 
-class HttpNotifier
+class HttpNotifier implements Notifier
 {
     /**
      * @var Client
@@ -30,24 +31,26 @@ class HttpNotifier
     }
 
     /**
-     * @param HttpNotification $http
-     * @param Build            $build
-     *
-     * @return \GuzzleHttp\Message\ResponseInterface
+     * @param Notification $notification
+     * @param Build        $build
      *
      * @throws NotificationException
      */
-    public function notify(HttpNotification $http, Build $build)
+    public function notify(Notification $notification, Build $build)
     {
-        try {
-            return $this->httpClient->post($http->getAddress(), [
-                'body' => $this->serializer->serialize($build, 'json'),
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                ],
-            ]);
-        } catch (RequestException $e) {
-            throw new NotificationException($e->getMessage(), $e->getCode(), $e);
+        if ($http = $notification->getHttp()) {
+            {
+                try {
+                    $this->httpClient->post($http->getAddress(), [
+                        'body' => $this->serializer->serialize($build, 'json'),
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                        ],
+                    ]);
+                } catch (RequestException $e) {
+                    throw new NotificationException($e->getMessage(), $e->getCode(), $e);
+                }
+            }
         }
     }
 }

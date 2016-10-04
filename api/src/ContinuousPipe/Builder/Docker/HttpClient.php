@@ -131,10 +131,10 @@ class HttpClient implements Client
         $image = $request->getImage();
 
         $parameters = [
-            'q' => (integer) false,
+            'q' => (int) false,
             't' => $this->getImageName($image),
-            'nocache' => (integer) false,
-            'rm' => (integer) false,
+            'nocache' => (int) false,
+            'rm' => (int) false,
             'dockerfile' => $this->dockerfileResolver->getFilePath($request->getContext()),
             'Content-type' => 'application/tar',
             'X-Registry-Config' => $this->generateHttpRegistryConfig($request),

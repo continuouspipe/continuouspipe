@@ -16,9 +16,20 @@
             <argument type="service" id="jms_serializer"/>
         </service>
 
-        <service id="builder.notifier" class="ContinuousPipe\Builder\Notifier">
+        <service id="builder.notifier" alias="builder.http_notifier" />
+
+        <service id="builder.notifier.retry.waiter" class="Tolerance\Waiter\SleepWaiter" />
+        <service id="builder.notifier.retry"
+                 class="ContinuousPipe\Builder\Notifier\RetryNotifier"
+                 decorates="builder.notifier">
+            <argument type="service" id="builder.notifier.retry.inner" />
+            <argument type="service" id="builder.notifier.retry.waiter" />
+        </service>
+        <service id="builder.notifier.logging.displays_failing_notification"
+                 class="ContinuousPipe\Builder\Notifier\Logging\DisplaysNotificationIfFailing"
+                 decorates="builder.notifier">
+            <argument type="service" id="builder.notifier.logging.displays_failing_notification.inner" />
             <argument type="service" id="builder.build_logger_factory"/>
-            <argument type="service" id="builder.http_notifier"/>
         </service>
     </services>
 </container>

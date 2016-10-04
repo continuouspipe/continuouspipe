@@ -6,6 +6,9 @@ use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
 use ContinuousPipe\Builder\Image;
+use ContinuousPipe\Builder\Notifier\HookableNotifier;
+use ContinuousPipe\Builder\Notifier\NotificationException;
+use ContinuousPipe\Builder\Notifier\TraceableNotifier;
 use ContinuousPipe\Builder\Repository;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
@@ -38,20 +41,33 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     private $inMemoryAuthenticatorClient;
 
     /**
+     * @var TraceableNotifier
+     */
+    private $traceableNotifier;
+
+    /**
      * @var Response|null
      */
     private $response;
+    /**
+     * @var HookableNotifier
+     */
+    private $hookableNotifier;
 
     /**
      * @param Kernel $kernel
      * @param TraceableDockerClient $traceableDockerClient
      * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
+     * @param TraceableNotifier $traceableNotifier
+     * @param HookableNotifier $hookableNotifier
      */
-    public function __construct(Kernel $kernel, TraceableDockerClient $traceableDockerClient, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient)
+    public function __construct(Kernel $kernel, TraceableDockerClient $traceableDockerClient, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient, TraceableNotifier $traceableNotifier, HookableNotifier $hookableNotifier)
     {
         $this->kernel = $kernel;
         $this->traceableDockerClient = $traceableDockerClient;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
+        $this->traceableNotifier = $traceableNotifier;
+        $this->hookableNotifier = $hookableNotifier;
     }
 
     /**
@@ -229,5 +245,31 @@ EOF;
                 'Found no matching commits'
             ));
         }
+    }
+
+    /**
+     * @Then the notification should be sent
+     */
+    public function theNotificationShouldBeSent()
+    {
+        $notifications = $this->traceableNotifier->getNotifications();
+
+        if (count($notifications) == 0) {
+            throw new \RuntimeException('No notifications sent');
+        }
+    }
+
+    /**
+     * @Given the notification will fail the first :count times
+     */
+    public function theNotificationWillFailTheFirstTimes($count)
+    {
+        $this->hookableNotifier->addHook(function() use (&$count) {
+            if ($count-- > 0) {
+                throw new NotificationException('This intentionally failed');
+            }
+
+            return func_get_args();
+        });
     }
 }

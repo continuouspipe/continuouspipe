@@ -23,8 +23,8 @@ class RabbitMqCollector implements MetricCollector
 
     /**
      * @param RabbitMqHttpClient $rabbitMqClient
-     * @param string $vhost
-     * @param string $queueName
+     * @param string             $vhost
+     * @param string             $queueName
      */
     public function __construct(RabbitMqHttpClient $rabbitMqClient, $vhost, $queueName)
     {
