@@ -9,6 +9,9 @@ Feature:
     And the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
       | username | password | serverAddress | email                 |
       | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
+    And the bucket "00000000-0000-0000-0000-000000000000" contains the following github tokens:
+      | identifier | token |
+      | sroze      | 12345 |
 
   Scenario: It notify if asked
     When I send the following build request:

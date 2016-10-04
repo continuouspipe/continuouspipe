@@ -19,9 +19,22 @@
             <argument type="service" id="builder.dockerfile_command_extractor" />
         </service>
 
-        <service id="builder.archive_builder" class="ContinuousPipe\Builder\GitHub\GitHubArchiveBuilder">
+        <service id="builder.archive_builder.github" class="ContinuousPipe\Builder\GitHub\GitHubArchiveBuilder">
             <argument type="service" id="builder.github.remote_archive_locator" />
-            <argument type="service" id="builder.github.http_client_factory" />
+            <argument type="service" id="builder.github.http_client" />
+            <argument type="service" id="authenticator.bucket_repository" />
+        </service>
+
+        <service id="builder.archive_builder" class="ContinuousPipe\Builder\Archive\Builder\AdaptativeArchiveBuilder">
+            <argument type="collection">
+                <argument type="service" id="builder.archive_builder.github" />
+            </argument>
+        </service>
+
+        <service id="builder.archive_builder.inject_github_token"
+                 class="ContinuousPipe\Builder\GitHub\Archive\InjectGitHubTokenBuilderDecorator"
+                 decorates="builder.archive_builder">
+            <argument type="service" id="builder.archive_builder.inject_github_token.inner" />
             <argument type="service" id="authenticator.bucket_repository" />
         </service>
         <service id="builder.builder" class="ContinuousPipe\Builder\Docker\DockerBuilder">

@@ -6,8 +6,22 @@
 
     <services>
         <service id="builder.build_repository" class="ContinuousPipe\Builder\Tests\Infrastructure\InMemory\InMemoryBuildRepository" />
-        <service id="builder.archive_builder" class="ContinuousPipe\Builder\Tests\FixturesArchiveBuilder">
+        <service id="builder.archive_builder.fixtures" class="ContinuousPipe\Builder\Tests\FixturesArchiveBuilder">
             <argument>%kernel.root_dir%/../features/fixtures</argument>
+        </service>
+
+        <service id="builder.archive_builder" class="ContinuousPipe\Builder\Archive\Builder\AdaptativeArchiveBuilder">
+            <argument type="collection">
+                <argument type="service" id="builder.archive_builder.fixtures" />
+                <argument type="service" id="builder.archive_builder.github" />
+            </argument>
+        </service>
+
+        <service id="builder.archive_builder.traceable"
+                 class="ContinuousPipe\Builder\Article\TraceableArchiveBuilder"
+                 decorates="builder.archive_builder"
+                 decoration-priority="5">
+            <argument type="service" id="builder.archive_builder.traceable.inner" />
         </service>
     </services>
 </container>

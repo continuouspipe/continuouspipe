@@ -9,9 +9,7 @@
         <service id="builder.github.http_client" class="GuzzleHttp\Client">
             <tag name="csa_guzzle.client" />
         </service>
-        <service id="builder.github.http_client_factory" class="ContinuousPipe\Builder\GitHub\GitHubHttpClientFactory">
-            <argument type="service" id="builder.github.http_client" />
-        </service>
+
         <service id="builder.github.remote_archive_locator" class="ContinuousPipe\Builder\GitHub\RemoteArchiveLocator">
             <argument type="service" id="builder.github.repository_address_descriptor" />
         </service>

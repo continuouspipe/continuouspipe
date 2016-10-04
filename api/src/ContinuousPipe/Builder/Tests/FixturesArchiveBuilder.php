@@ -3,12 +3,12 @@
 namespace ContinuousPipe\Builder\Tests;
 
 use ContinuousPipe\Builder\Archive\ArchiveCreationException;
-use ContinuousPipe\Builder\ArchiveBuilder;
+use ContinuousPipe\Builder\Archive\Builder\ConditionalArchiveBuilder;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Tests\Archive\FileSystemArchive;
 use LogStream\Logger;
 
-class FixturesArchiveBuilder implements ArchiveBuilder
+class FixturesArchiveBuilder implements ConditionalArchiveBuilder
 {
     const ADDRESS_PREFIX = 'fixtures://';
 
@@ -49,5 +49,15 @@ class FixturesArchiveBuilder implements ArchiveBuilder
         }
 
         return new FileSystemArchive($fixturesDirectoryPath);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(BuildRequest $request)
+    {
+        $repositoryAddress = $request->getRepository()->getAddress();
+
+        return strpos($repositoryAddress, self::ADDRESS_PREFIX) !== false;
     }
 }

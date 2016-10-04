@@ -101,7 +101,7 @@ class BuildRequest
      */
     public function getContext()
     {
-        return $this->context;
+        return $this->context ?: new Context('', '');
     }
 
     /**
