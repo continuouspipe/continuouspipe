@@ -127,7 +127,7 @@ tasks:
                                 memory: 100Mi
 
         filter:
-            expression: code_reference.branch == 'master'
+            expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'
 
     migrations:
         run:
@@ -149,4 +149,4 @@ tasks:
                   value: 138xHEqgD93lk
 
         filter:
-            expression: code_reference.branch == 'master'
+            expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'
