@@ -26,28 +26,6 @@ Feature:
     And I send the built deployment request
     Then the replication controller "mysql" shouldn't be updated
 
-  Scenario: It creates only the pod as the component is not scalable
-    Given the pod "app" will run successfully
-    And the specification come from the template "attached-component"
-    When I send the built deployment request
-    Then the pod "app" should be created
-    And the service "app" should not be created
-    And the replication controller "app" should not be created
-
-  Scenario: It will fail the deployment if the pod exit with a status code different than 0
-    Given the pod "app" will fail with exit code 1
-    And the specification come from the template "attached-component"
-    When I send the built deployment request
-    And the deployment should be failed
-    And the pod "app" should be deleted
-
-  Scenario: If pod is successful then the deployment too
-    Given the pod "app" will run successfully
-    And the specification come from the template "attached-component"
-    When I send the built deployment request
-    And the deployment should be successful
-    And the pod "app" should be deleted
-
   Scenario: It creates the different probes successfully
     When I send a deployment request with the following components specification:
     """
