@@ -14,7 +14,7 @@ use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
 use ContinuousPipe\Pipe\Tests\Cluster\TestCluster;
-use ContinuousPipe\Pipe\Tests\Notification\TraceableNotifier;
+use ContinuousPipe\Pipe\Notification\TraceableNotifier;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;

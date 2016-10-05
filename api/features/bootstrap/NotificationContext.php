@@ -1,18 +1,18 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Pipe\Tests\Notification\TraceableNotifier;
+use ContinuousPipe\Pipe\Notification\TraceableNotifier;
 use ContinuousPipe\Pipe\View\Deployment;
 
 class NotificationContext implements Context
 {
     /**
-     * @var TraceableNotifier
+     * @var \ContinuousPipe\Pipe\Notification\TraceableNotifier
      */
     private $notifier;
 
     /**
-     * @param TraceableNotifier $notifier
+     * @param \ContinuousPipe\Pipe\Notification\TraceableNotifier $notifier
      */
     public function __construct(TraceableNotifier $notifier)
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Pipe\Tests\Notification;
+namespace ContinuousPipe\Pipe\Notification;
 
 use ContinuousPipe\Pipe\Notification\Notifier;
 use ContinuousPipe\Pipe\View\Deployment;
