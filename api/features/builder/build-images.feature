@@ -5,16 +5,16 @@ Feature:
 
   Background:
     Given I am authenticated
-
-  Scenario:
-    Given there is the bucket "00000000-0000-0000-0000-000000000000"
-    And the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
-      | username | password | serverAddress | email                 |
-      | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
+    And there is the bucket "00000000-0000-0000-0000-000000000000"
     And the bucket "00000000-0000-0000-0000-000000000000" contains the following github tokens:
       | identifier | token |
       | sroze      | 12345 |
 
+
+  Scenario:
+    Given the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
+      | username | password | serverAddress | email                 |
+      | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
     When I send the following build request:
     """
     {
