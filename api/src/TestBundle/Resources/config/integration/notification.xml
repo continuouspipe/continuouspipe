@@ -6,6 +6,14 @@
 
     <services>
         <service id="pipe.notification.notifier" class="ContinuousPipe\Pipe\Notification\NullNotifier" />
+
+        <service id="pipe.notification.notifier.hookable"
+                 class="ContinuousPipe\Pipe\Notification\HookableNotifier"
+                 decorates="pipe.notification.notifier"
+                 decoration-priority="5">
+            <argument type="service" id="pipe.notification.notifier.hookable.inner" />
+        </service>
+
         <service id="pipe.notification.notifier.traceable"
                  class="ContinuousPipe\Pipe\Notification\TraceableNotifier"
                  decorates="pipe.notification.notifier">

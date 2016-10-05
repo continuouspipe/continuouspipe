@@ -2,10 +2,9 @@
 
 namespace ContinuousPipe\Pipe\Notification;
 
-use ContinuousPipe\Pipe\Notification\Notifier;
 use ContinuousPipe\Pipe\View\Deployment;
 
-class TraceableNotifier implements Notifier
+class HookableNotifier implements Notifier
 {
     /**
      * @var Notifier
@@ -13,9 +12,9 @@ class TraceableNotifier implements Notifier
     private $decoratedNotifier;
 
     /**
-     * @var array
+     * @var callable[]
      */
-    private $notifications = [];
+    private $hooks = [];
 
     /**
      * @param Notifier $decoratedNotifier
@@ -30,19 +29,18 @@ class TraceableNotifier implements Notifier
      */
     public function notify($address, Deployment $deployment)
     {
-        $this->decoratedNotifier->notify($address, $deployment);
+        foreach ($this->hooks as $hook) {
+            $hook();
+        }
 
-        $this->notifications[] = [
-            'address' => $address,
-            'deployment' => $deployment,
-        ];
+        return $this->decoratedNotifier->notify($address, $deployment);
     }
 
     /**
-     * @return array
+     * @param callable $hook
      */
-    public function getNotifications()
+    public function addHook(callable $hook)
     {
-        return $this->notifications;
+        $this->hooks[] = $hook;
     }
 }
