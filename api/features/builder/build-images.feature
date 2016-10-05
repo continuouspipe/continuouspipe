@@ -5,13 +5,16 @@ Feature:
 
   Background:
     Given I am authenticated
+    And there is the bucket "00000000-0000-0000-0000-000000000000"
+    And the bucket "00000000-0000-0000-0000-000000000000" contains the following github tokens:
+      | identifier | token |
+      | sroze      | 12345 |
+
 
   Scenario:
-    Given there is the bucket "00000000-0000-0000-0000-000000000000"
-    And the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
-    | username | password | serverAddress | email                 |
-    | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
-
+    Given the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
+      | username | password | serverAddress | email                 |
+      | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
     When I send the following build request:
     """
     {
@@ -31,7 +34,6 @@ Feature:
     And the image "sroze/php-example:continuous" should be pushed
 
   Scenario: The build should fail without Docker Registry credentials
-    Given there is the bucket "00000000-0000-0000-0000-000000000000"
     When I send the following build request:
     """
     {

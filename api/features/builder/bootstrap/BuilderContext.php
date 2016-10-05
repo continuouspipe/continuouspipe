@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Builder\Article\TraceableArchiveBuilder;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
 use ContinuousPipe\Builder\Image;
@@ -53,6 +54,10 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var HookableNotifier
      */
     private $hookableNotifier;
+    /**
+     * @var TraceableArchiveBuilder
+     */
+    private $traceableArchiveBuilder;
 
     /**
      * @param Kernel $kernel
@@ -60,14 +65,16 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
      * @param TraceableNotifier $traceableNotifier
      * @param HookableNotifier $hookableNotifier
+     * @param TraceableArchiveBuilder $traceableArchiveBuilder
      */
-    public function __construct(Kernel $kernel, TraceableDockerClient $traceableDockerClient, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient, TraceableNotifier $traceableNotifier, HookableNotifier $hookableNotifier)
+    public function __construct(Kernel $kernel, TraceableDockerClient $traceableDockerClient, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient, TraceableNotifier $traceableNotifier, HookableNotifier $hookableNotifier, TraceableArchiveBuilder $traceableArchiveBuilder)
     {
         $this->kernel = $kernel;
         $this->traceableDockerClient = $traceableDockerClient;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->traceableNotifier = $traceableNotifier;
         $this->hookableNotifier = $hookableNotifier;
+        $this->traceableArchiveBuilder = $traceableArchiveBuilder;
     }
 
     /**
@@ -271,5 +278,20 @@ EOF;
 
             return func_get_args();
         });
+    }
+
+    /**
+     * @Then the archive should be downloaded using the token :token
+     */
+    public function theArchiveShouldBeDownloadedUsingTheToken($token)
+    {
+        $requests = $this->traceableArchiveBuilder->getRequests();
+        $matchingRequests = array_filter($requests, function(BuildRequest $request) use ($token) {
+            return $request->getRepository()->getToken() == $token;
+        });
+
+        if (count($matchingRequests) == 0) {
+            throw new \RuntimeException('No matching request with this token');
+        }
     }
 }

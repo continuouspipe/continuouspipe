@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
+use ContinuousPipe\Security\Credentials\GitHubToken;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
@@ -61,6 +62,18 @@ class SecurityContext implements Context
 
         foreach ($table->getHash() as $row) {
             $bucket->getDockerRegistries()->add(new DockerRegistry($row['username'], $row['password'], $row['email'], $row['serverAddress']));
+        }
+    }
+
+    /**
+     * @Given the bucket :uuid contains the following github tokens:
+     */
+    public function theBucketContainsTheFollowingGithubTokens($uuid, TableNode $table)
+    {
+        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid(Uuid::fromString($uuid));
+
+        foreach ($table->getHash() as $row) {
+            $bucket->getGitHubTokens()->add(new GitHubToken($row['identifier'], $row['token']));
         }
     }
 }

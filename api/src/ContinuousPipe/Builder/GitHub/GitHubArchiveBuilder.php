@@ -5,38 +5,38 @@ namespace ContinuousPipe\Builder\GitHub;
 use ContinuousPipe\Builder\Archive\ArchiveCreationException;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
-use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use LogStream\Logger;
 
 class GitHubArchiveBuilder implements ArchiveBuilder
 {
     /**
-     * @var GitHubHttpClientFactory
-     */
-    private $gitHubHttpClientFactory;
-
-    /**
      * @var RemoteArchiveLocator
      */
     private $remoteArchiveLocator;
+
     /**
      * @var BucketRepository
      */
     private $bucketRepository;
 
     /**
-     * @param RemoteArchiveLocator    $remoteArchiveLocator
-     * @param GitHubHttpClientFactory $gitHubHttpClientFactory
-     * @param BucketRepository        $bucketRepository
+     * @var Client
      */
-    public function __construct(RemoteArchiveLocator $remoteArchiveLocator, GitHubHttpClientFactory $gitHubHttpClientFactory, BucketRepository $bucketRepository)
+    private $githubClient;
+
+    /**
+     * @param RemoteArchiveLocator $remoteArchiveLocator
+     * @param Client               $githubClient
+     * @param BucketRepository     $bucketRepository
+     */
+    public function __construct(RemoteArchiveLocator $remoteArchiveLocator, Client $githubClient, BucketRepository $bucketRepository)
     {
-        $this->gitHubHttpClientFactory = $gitHubHttpClientFactory;
         $this->remoteArchiveLocator = $remoteArchiveLocator;
         $this->bucketRepository = $bucketRepository;
+        $this->githubClient = $githubClient;
     }
 
     /**
@@ -44,27 +44,19 @@ class GitHubArchiveBuilder implements ArchiveBuilder
      */
     public function getArchive(BuildRequest $buildRequest, Logger $logger)
     {
-        try {
-            $bucket = $this->bucketRepository->find($buildRequest->getCredentialsBucket());
-        } catch (BucketNotFound $e) {
-            throw new ArchiveCreationException('Credentials bucket not found', $e->getCode(), $e);
-        }
+        $repository = $buildRequest->getRepository();
+        $archiveUrl = $this->remoteArchiveLocator->getArchiveUrl($repository);
+
+        // This `githubClient` should probably be created by a factory instead of being injected
+        $this->githubClient->setDefaultOption('auth', [$repository->getToken(), 'x-oauth-basic']);
+        $packer = new ArchivePacker($this->githubClient);
 
         try {
-            $httpClient = $this->gitHubHttpClientFactory->createFromBucket($bucket);
-        } catch (CredentialsNotFound $e) {
-            throw new ArchiveCreationException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        $archiveUrl = $this->remoteArchiveLocator->getArchiveUrl($buildRequest->getRepository());
-
-        $packer = new ArchivePacker($httpClient);
-        try {
-            $article = $packer->createFromUrl($buildRequest->getContext(), $archiveUrl);
+            $archive = $packer->createFromUrl($buildRequest->getContext(), $archiveUrl);
         } catch (ClientException $e) {
             throw new ArchiveCreationException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return $article;
+        return $archive;
     }
 }
