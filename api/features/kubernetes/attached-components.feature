@@ -35,4 +35,3 @@ Feature:
     When I send the built deployment request
     And the deployment should be successful
     And the pod "app" should be deleted
-

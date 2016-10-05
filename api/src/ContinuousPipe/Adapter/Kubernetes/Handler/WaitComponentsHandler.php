@@ -94,8 +94,6 @@ class WaitComponentsHandler implements DeploymentHandler
         foreach ($objects as $object) {
             if ($object instanceof ReplicationController) {
                 $promises[] = $this->waitOneReplicationControllerPodRunning($loop, $client, $logger, $object);
-            } elseif ($object instanceof Pod) {
-                $promises[] = $this->waitPodRunningAndReady($loop, $client, $logger, $object);
             } elseif ($object instanceof Deployment) {
                 $promises[] = $this->waitDeploymentFinished($loop, $client, $logger, $object);
             }
@@ -111,42 +109,6 @@ class WaitComponentsHandler implements DeploymentHandler
         });
 
         $loop->run();
-    }
-
-    /**
-     * @param Pod $pod
-     *
-     * @return React\Promise\Promise
-     */
-    private function waitPodRunningAndReady(React\EventLoop\LoopInterface $loop, NamespaceClient $client, Logger $logger, Pod $pod)
-    {
-        $podName = $pod->getMetadata()->getName();
-
-        $logger = $logger->child(new Text(sprintf('Waiting pod "%s" to be running and ready', $podName)));
-
-        return (new PromiseBuilder($loop))
-            ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $podName) {
-                try {
-                    $pod = $client->getPodRepository()->findOneByName($podName);
-                } catch (PodNotFound $e) {
-                    return $deferred->resolve();
-                }
-
-                if ($this->isPodRunningAndReady($pod)) {
-                    $deferred->resolve($pod);
-                }
-            })
-            ->withTimeout($this->timeout)
-            ->getPromise()
-            ->then(function () use ($logger) {
-                $logger->updateStatus(Log::SUCCESS);
-            }, function (\Exception $e) use ($logger) {
-                $logger->updateStatus(Log::FAILURE);
-                $logger->child(new Text($e->getMessage()));
-
-                throw $e;
-            })
-        ;
     }
 
     /**
