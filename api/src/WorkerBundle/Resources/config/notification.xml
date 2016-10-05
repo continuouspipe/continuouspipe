@@ -12,6 +12,12 @@
             <argument type="service" id="pipe.notification.http_notifier.http_client" />
             <argument type="service" id="jms_serializer" />
         </service>
+        <service id="pipe.notification.notifier.retry"
+                 class="ContinuousPipe\Pipe\Notification\RetryNotifier"
+                 decorates="pipe.notification.notifier">
+            <argument type="service" id="pipe.notification.notifier.retry.inner" />
+            <argument type="service" id="tolerance.waiter" />
+        </service>
         <service id="pipe.notification.deployment_status_listener" class="ContinuousPipe\Pipe\Notification\Listener\DeploymentStatusListener">
             <argument type="service" id="pipe.notification.notifier" />
             <argument type="service" id="pipe.deployment_logger_factory" />

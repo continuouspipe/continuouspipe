@@ -1,7 +1,9 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Pipe\Tests\Notification\TraceableNotifier;
+use ContinuousPipe\Pipe\Notification\HookableNotifier;
+use ContinuousPipe\Pipe\Notification\NotificationException;
+use ContinuousPipe\Pipe\Notification\TraceableNotifier;
 use ContinuousPipe\Pipe\View\Deployment;
 
 class NotificationContext implements Context
@@ -9,22 +11,42 @@ class NotificationContext implements Context
     /**
      * @var TraceableNotifier
      */
-    private $notifier;
+    private $traceableNotifier;
+    /**
+     * @var HookableNotifier
+     */
+    private $hookableNotifier;
 
     /**
-     * @param TraceableNotifier $notifier
+     * @param TraceableNotifier $traceableNotifier
+     * @param HookableNotifier $hookableNotifier
      */
-    public function __construct(TraceableNotifier $notifier)
+    public function __construct(TraceableNotifier $traceableNotifier, HookableNotifier $hookableNotifier)
     {
-        $this->notifier = $notifier;
+        $this->traceableNotifier = $traceableNotifier;
+        $this->hookableNotifier = $hookableNotifier;
+    }
+
+    /**
+     * @Given the first notification will fail
+     */
+    public function theFirstNotificationWillFail()
+    {
+        $count = 0;
+        $this->hookableNotifier->addHook(function() use (&$count) {
+            if ($count++ == 0) {
+                throw new NotificationException('It failed, yay!');
+            }
+        });
     }
 
     /**
      * @Then one notification should be sent back
+     * @Then one notification should be successfully sent
      */
     public function oneNotificationShouldBeSentBack()
     {
-        $notifications = $this->notifier->getNotifications();
+        $notifications = $this->traceableNotifier->getNotifications();
         if (1 != count($notifications)) {
             throw new \RuntimeException(sprintf('Expecting 1 notifications, found %s', count($notifications)));
         }
@@ -97,7 +119,7 @@ class NotificationContext implements Context
      */
     private function getNotification()
     {
-        $notifications = $this->notifier->getNotifications();
+        $notifications = $this->traceableNotifier->getNotifications();
         if (0 == count($notifications)) {
             throw new \RuntimeException('Expecting 1 or more notifications, found 0');
         }
