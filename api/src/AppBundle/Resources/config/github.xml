@@ -116,6 +116,13 @@
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.tide.start_voter" />
 
+        </service>
+
+        <service id="river.listener.github.locked.eventually_create_and_start_tide"
+                 class="ContinuousPipe\River\Tide\Concurrency\EventListener\GitHub\LockTheStartDecisionOfATide">
+            <argument type="service" id="river.listener.github.eventually_create_and_start_tide" />
+            <argument type="service" id="river.tide.concurrency.locker" />
+
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\CodePushed"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestOpened"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestSynchronized"/>
