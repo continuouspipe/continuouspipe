@@ -154,6 +154,7 @@
         </service>
         <service id="river.tide.concurrency.locker.predis_locker" class="ContinuousPipe\River\Tide\Concurrency\Lock\PredisMutexLocker">
             <argument type="service" id="river.tide.concurrency.locker.predis_client" />
+            <argument>%locker_timeout%</argument>
         </service>
         <service id="river.tide.concurrency.locker" alias="river.tide.concurrency.locker.predis_locker" />
         <service id="river.tide.concurrency.lock_tide_while_saga"
