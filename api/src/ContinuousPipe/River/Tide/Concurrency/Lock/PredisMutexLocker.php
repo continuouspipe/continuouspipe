@@ -13,11 +13,18 @@ class PredisMutexLocker implements Locker
     private $client;
 
     /**
-     * @param Client $client
+     * @var int
      */
-    public function __construct(Client $client)
+    private $timeout;
+
+    /**
+     * @param Client $client
+     * @param int $timeout
+     */
+    public function __construct(Client $client, $timeout)
     {
         $this->client = $client;
+        $this->timeout = $timeout;
     }
 
     /**
@@ -25,7 +32,7 @@ class PredisMutexLocker implements Locker
      */
     public function lock($name, callable $callable)
     {
-        $mutex = new PredisMutex([$this->client], $name);
+        $mutex = new PredisMutex([$this->client], $name, $this->timeout);
 
         return $mutex->synchronized($callable);
     }
