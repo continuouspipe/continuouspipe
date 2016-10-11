@@ -136,7 +136,7 @@ class BuildTaskFactory implements TaskFactory
                 $service['tag'],
                 $service['build_directory'],
                 $service['docker_file_path'],
-                $this->flattenEnvironmentVariables($service['environment'])
+                $this->flattenEnvironmentVariables($service['environment'] ?: [])
             );
         }, $services);
     }
