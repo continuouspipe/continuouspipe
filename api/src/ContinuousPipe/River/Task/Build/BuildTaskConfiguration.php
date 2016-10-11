@@ -8,13 +8,6 @@ use JMS\Serializer\Annotation as JMS;
 class BuildTaskConfiguration
 {
     /**
-     * @JMS\Type("array<string, string>")
-     *
-     * @var array
-     */
-    private $environment;
-
-    /**
      * @JMS\Type("array<string, ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration>")
      *
      * @var ServiceConfiguration[]
@@ -22,21 +15,11 @@ class BuildTaskConfiguration
     private $services;
 
     /**
-     * @param array $environment
-     * @param array $services
+     * @param ServiceConfiguration[] $services
      */
-    public function __construct(array $environment, array $services)
+    public function __construct(array $services)
     {
-        $this->environment = $environment;
         $this->services = $services;
-    }
-
-    /**
-     * @return array
-     */
-    public function getEnvironment()
-    {
-        return $this->environment;
     }
 
     /**

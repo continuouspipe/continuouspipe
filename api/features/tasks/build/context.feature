@@ -30,7 +30,7 @@ Feature:
     And the build should be started with Dockerfile path "./foo/Dockerfile-bar" in the context
     And the build should be started with the image name "sroze/image"
 
-  Scenario:
+  Scenario: Build environment variables
     Given there is 1 application images in the repository
     When a tide is started with a build task that have the following environment variables:
       | name | value |
@@ -38,3 +38,37 @@ Feature:
     Then the build should be started with the following environment variables:
       | name | value |
       | FOO  | BAR   |
+
+  Scenario: Build environment per service
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    first:
+                        image: sroze/image
+                        build_directory: ./sub-directory
+                        docker_file_path: ./foo/Dockerfile-bar
+                        environment:
+                            - name: FOO
+                              value: BAR
+                    second:
+                        image: sroze/image
+                        build_directory: ./sub-directory
+                        docker_file_path: ./foo/Dockerfile-bar
+                        environment:
+                            - name: FOO
+                              value: BAZ
+                            - name: BAR
+                              value: FOO
+
+    """
+    When a tide is started
+    Then the first build should be started with the following environment variables:
+      | name | value |
+      | FOO  | BAR   |
+    And the second build should be started with the following environment variables:
+      | name | value |
+      | FOO  | BAZ   |
+      | BAR  | FOO   |

@@ -375,10 +375,24 @@ class BuildContext implements Context
 
     /**
      * @Then the build should be started with the following environment variables:
+     * @Then the first build should be started with the following environment variables:
      */
     public function theBuildShouldBeStartedWithTheFollowingEnvironmentVariables(TableNode $environs)
     {
-        $buildStartedEvent = $this->getBuildStartedEvents()[0];
+        $this->assertBuildIsStartedWithTheFollowingEnvironmentVariables(0, $environs);
+    }
+
+    /**
+     * @Then the second build should be started with the following environment variables:
+     */
+    public function theSecondBuildShouldBeStartedWithTheFollowingEnvironmentVariables(TableNode $environs)
+    {
+        $this->assertBuildIsStartedWithTheFollowingEnvironmentVariables(1, $environs);
+    }
+
+    private function assertBuildIsStartedWithTheFollowingEnvironmentVariables($index, TableNode $environs)
+    {
+        $buildStartedEvent = $this->getBuildStartedEvents()[$index];
         $request = $buildStartedEvent->getBuild()->getRequest();
         $environment = $request->getEnvironment();
 
