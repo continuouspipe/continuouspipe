@@ -35,17 +35,26 @@ class ServiceConfiguration
     private $tag;
 
     /**
+     * @JMS\Type("array<string, string>")
+     *
+     * @var array
+     */
+    private $environment;
+
+    /**
      * @param string $image
      * @param string $tag
      * @param string $buildDirectory
      * @param string $dockerFilePath
+     * @param array  $environment
      */
-    public function __construct($image, $tag, $buildDirectory, $dockerFilePath)
+    public function __construct($image, $tag, $buildDirectory, $dockerFilePath, array $environment)
     {
         $this->image = $image;
         $this->buildDirectory = $buildDirectory;
         $this->dockerFilePath = $dockerFilePath;
         $this->tag = $tag;
+        $this->environment = $environment;
     }
 
     /**
@@ -78,5 +87,13 @@ class ServiceConfiguration
     public function getDockerFilePath()
     {
         return $this->dockerFilePath;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
     }
 }

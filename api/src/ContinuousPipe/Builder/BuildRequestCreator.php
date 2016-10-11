@@ -49,7 +49,7 @@ class BuildRequestCreator
                     $service->getBuildDirectory()
                 ),
                 null, null,
-                $configuration->getEnvironment(),
+                $service->getEnvironment(),
                 $credentialsBucketUuid
             );
         }

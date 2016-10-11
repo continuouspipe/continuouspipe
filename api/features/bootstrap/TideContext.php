@@ -734,7 +734,8 @@ EOF;
         $this->aTideIsStartedWithTasks([
             [
                 'build' => [
-                    'environment' => $environ->getHash()
+                    'environment' => $environ->getHash(),
+                    'services' => ['image0' => []]
                 ]
             ]
         ]);
