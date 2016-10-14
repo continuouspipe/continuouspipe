@@ -72,7 +72,13 @@ class DeleteRelatedEnvironment
             $targets = $this->getTideTargets($tide);
 
             foreach ($targets as $target) {
-                $this->client->deleteEnvironment($target, $tide->getTeam(), $tide->getUser());
+                try {
+                    $this->client->deleteEnvironment($target, $tide->getTeam(), $tide->getUser());
+                } catch (\Exception $e) {
+                    $this->systemLogger->warning($e->getMessage(), [
+                        'target' => $target,
+                    ]);
+                }
             }
         }
     }
