@@ -17,6 +17,7 @@ use ContinuousPipe\River\View;
 use GitHub\WebHook\Event\PullRequestEvent;
 use GitHub\WebHook\Event\PushEvent;
 use GitHub\WebHook\Event\StatusEvent;
+use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
 class GitHubWebHookHandler
@@ -42,21 +43,29 @@ class GitHubWebHookHandler
     private $flowRepository;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param CodeReferenceResolver $codeReferenceResolver
      * @param MessageBus            $eventBus
      * @param View\TideRepository   $tideViewRepository
      * @param FlowRepository        $flowRepository
+     * @param LoggerInterface       $logger
      */
     public function __construct(
         CodeReferenceResolver $codeReferenceResolver,
         MessageBus $eventBus,
         View\TideRepository $tideViewRepository,
-        FlowRepository $flowRepository
+        FlowRepository $flowRepository,
+        LoggerInterface $logger
     ) {
         $this->codeReferenceResolver = $codeReferenceResolver;
         $this->eventBus = $eventBus;
         $this->tideViewRepository = $tideViewRepository;
         $this->flowRepository = $flowRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -121,7 +130,16 @@ class GitHubWebHookHandler
             return;
         }
 
-        $codeReference = $this->codeReferenceResolver->fromStatusEvent($event);
+        try {
+            $codeReference = $this->codeReferenceResolver->fromStatusEvent($event);
+        } catch (\InvalidArgumentException $e) {
+            $this->logger->warning($e->getMessage(), [
+                'event' => $event,
+            ]);
+
+            return;
+        }
+
         $tides = $this->tideViewRepository->findByCodeReference($codeReference);
 
         foreach ($tides as $tide) {

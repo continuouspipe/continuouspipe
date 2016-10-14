@@ -49,6 +49,8 @@ class CodeReferenceResolver
      *
      * @param StatusEvent $event
      *
+     * @throws \InvalidArgumentException
+     *
      * @return CodeReference
      */
     public function fromStatusEvent(StatusEvent $event)

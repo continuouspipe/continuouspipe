@@ -76,6 +76,7 @@
             <argument type="service" id="event_bus" />
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="logger" />
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent" />
         </service>
