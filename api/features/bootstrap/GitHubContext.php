@@ -514,7 +514,7 @@ class GitHubContext implements Context
             'HTTP_X_GITHUB_DELIVERY' => '1234',
         ], $contents));
 
-        if (200 !== $this->response->getStatusCode()) {
+        if (!in_array($this->response->getStatusCode(), [200, 204, 201])) {
             echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
                 'Expected status code %d, but got %d',

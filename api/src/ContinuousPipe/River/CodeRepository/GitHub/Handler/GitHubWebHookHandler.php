@@ -1,7 +1,10 @@
 <?php
 
-namespace ContinuousPipe\River\CodeRepository\GitHub;
+namespace ContinuousPipe\River\CodeRepository\GitHub\Handler;
 
+use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
+use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeStatusUpdater;
 use ContinuousPipe\River\Event\GitHub\BranchDeleted;
 use ContinuousPipe\River\Event\GitHub\CodePushed;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
@@ -9,14 +12,14 @@ use ContinuousPipe\River\Event\GitHub\PullRequestOpened;
 use ContinuousPipe\River\Event\GitHub\PullRequestSynchronized;
 use ContinuousPipe\River\Event\GitHub\StatusUpdated;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View;
 use GitHub\WebHook\Event\PullRequestEvent;
 use GitHub\WebHook\Event\PushEvent;
 use GitHub\WebHook\Event\StatusEvent;
-use GitHub\WebHook\GitHubRequest;
 use SimpleBus\Message\Bus\MessageBus;
 
-class WebHookHandler
+class GitHubWebHookHandler
 {
     /**
      * @var CodeReferenceResolver
@@ -34,29 +37,36 @@ class WebHookHandler
     private $tideViewRepository;
 
     /**
+     * @var FlowRepository
+     */
+    private $flowRepository;
+
+    /**
      * @param CodeReferenceResolver $codeReferenceResolver
      * @param MessageBus            $eventBus
      * @param View\TideRepository   $tideViewRepository
+     * @param FlowRepository        $flowRepository
      */
     public function __construct(
         CodeReferenceResolver $codeReferenceResolver,
         MessageBus $eventBus,
-        View\TideRepository $tideViewRepository
+        View\TideRepository $tideViewRepository,
+        FlowRepository $flowRepository
     ) {
         $this->codeReferenceResolver = $codeReferenceResolver;
         $this->eventBus = $eventBus;
         $this->tideViewRepository = $tideViewRepository;
+        $this->flowRepository = $flowRepository;
     }
 
     /**
-     * @param Flow          $flow
-     * @param GitHubRequest $gitHubRequest
-     *
-     * @return array
+     * @param HandleGitHubEvent $command
      */
-    public function handle(Flow $flow, GitHubRequest $gitHubRequest)
+    public function handle(HandleGitHubEvent $command)
     {
-        $event = $gitHubRequest->getEvent();
+        $event = $command->getEvent();
+        $flow = $this->flowRepository->find($command->getFlowUuid());
+
         if ($event instanceof PushEvent) {
             $this->handlePushEvent($flow, $event);
         } elseif ($event instanceof PullRequestEvent) {
@@ -64,10 +74,6 @@ class WebHookHandler
         } elseif ($event instanceof StatusEvent) {
             $this->handleStatusEvent($event);
         }
-
-        return [
-            'flow' => $flow,
-        ];
     }
 
     /**

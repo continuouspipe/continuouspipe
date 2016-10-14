@@ -20,7 +20,7 @@ class LockTheStartDecisionOfATide
 
     /**
      * @param EventuallyCreateAndStartTide $eventuallyCreateAndStartTideListener
-     * @param Locker $locker
+     * @param Locker                       $locker
      */
     public function __construct(EventuallyCreateAndStartTide $eventuallyCreateAndStartTideListener, Locker $locker)
     {
