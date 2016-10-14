@@ -68,10 +68,16 @@
         </service>
 
         <service id="river.github.code_reference_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver" />
-        <service id="river.github.web_hook_handler" class="ContinuousPipe\River\CodeRepository\GitHub\WebHookHandler">
+        <service id="river.github.serializer.github_event_handler" class="ContinuousPipe\River\CodeRepository\GitHub\Serializer\GitHubEventSeralizerHandler">
+            <tag name="jms_serializer.subscribing_handler" />
+        </service>
+        <service id="river.github.web_hook_handler" class="ContinuousPipe\River\CodeRepository\GitHub\Handler\GitHubWebHookHandler">
             <argument type="service" id="river.github.code_reference_resolver" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.repository.flow" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent" />
         </service>
 
         <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\GitHubPullRequestResolver">

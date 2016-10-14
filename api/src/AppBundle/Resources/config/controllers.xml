@@ -25,7 +25,7 @@
             <argument type="service" id="authenticator.team_repository" />
         </service>
         <service id="app.controller.github_webhook" class="AppBundle\Controller\GitHubWebHookController">
-            <argument type="service" id="river.github.web_hook_handler" />
+            <argument type="service" id="command_bus" />
         </service>
 
         <service id="app.controller.builder_notification" class="AppBundle\Controller\BuilderNotificationController">

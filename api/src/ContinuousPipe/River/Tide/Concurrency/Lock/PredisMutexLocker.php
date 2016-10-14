@@ -19,7 +19,7 @@ class PredisMutexLocker implements Locker
 
     /**
      * @param Client $client
-     * @param int $timeout
+     * @param int    $timeout
      */
     public function __construct(Client $client, $timeout)
     {
