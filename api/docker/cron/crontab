@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+* * * * * root /app/docker/cron/run-every-x-seconds.sh 5 /app/docker/cron/collect.sh

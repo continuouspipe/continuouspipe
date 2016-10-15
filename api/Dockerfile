@@ -6,6 +6,9 @@ ADD docker/apache/vhost.conf /etc/apache2/sites-enabled/000-default.conf
 ADD docker/php/php.ini /etc/php/7.0/apache2/php.ini
 ADD docker/php/php.ini /etc/php/7.0/cli/php.ini
 
+# Crontab configuration
+COPY docker/cron/crontab /etc/crontab
+
 # Add the application
 ADD . /app
 WORKDIR /app

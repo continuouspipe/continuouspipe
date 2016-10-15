@@ -141,6 +141,17 @@ tasks:
                                 cpu: 250m
                                 memory: 250Mi
 
+                cron:
+                    specification:
+                        source:
+                            from_service: api
+
+                        accessibility:
+                            from_cluster: false
+
+                        command:
+                            - /app/docker/cron/run.sh
+
         filter:
             expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'
 

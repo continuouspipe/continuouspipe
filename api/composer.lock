@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "38e971ea199246dc9a96452596968f94",
-    "content-hash": "b8fafa3e37ba9e1a9d7ea722f982e891",
+    "hash": "cdfce60b55ef4411a6115cc5ea2e0a33",
+    "content-hash": "67ed5e5da7e52f5518eb952cafe4e01c",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -4942,16 +4942,16 @@
         },
         {
             "name": "tolerance/tolerance",
-            "version": "0.3.1",
+            "version": "dev-feature/metrics",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Tolerance/Tolerance.git",
-                "reference": "51d609f1cbd9155b63b9afc23a41b34cd2824525"
+                "reference": "0971a922aadc94345d0f67b6e682a9daee7e6e75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/51d609f1cbd9155b63b9afc23a41b34cd2824525",
-                "reference": "51d609f1cbd9155b63b9afc23a41b34cd2824525",
+                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/0971a922aadc94345d0f67b6e682a9daee7e6e75",
+                "reference": "0971a922aadc94345d0f67b6e682a9daee7e6e75",
                 "shasum": ""
             },
             "require": {
@@ -4985,7 +4985,7 @@
                 "MIT"
             ],
             "description": "Fault tolerance library and micro-services helpers",
-            "time": "2016-06-17 13:20:25"
+            "time": "2016-10-15 15:07:16"
         },
         {
             "name": "twig/twig",
@@ -6194,7 +6194,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "csa/guzzle-bundle": 0
+        "csa/guzzle-bundle": 0,
+        "tolerance/tolerance": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
