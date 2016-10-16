@@ -22,6 +22,8 @@ class AppKernel extends Kernel
             new Nelmio\CorsBundle\NelmioCorsBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+            new JMS\AopBundle\JMSAopBundle(),
+            new Beberlei\Bundle\MetricsBundle\BeberleiMetricsBundle(),
             new Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\ToleranceBundle(),
             new LogStream\LogStreamBundle(),
             new WorkerBundle\WorkerBundle(),

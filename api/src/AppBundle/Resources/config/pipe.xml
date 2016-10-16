@@ -8,11 +8,16 @@
         <service id="river.pipe_client.guzzle_client" class="GuzzleHttp\Client">
             <tag name="csa_guzzle.client" />
         </service>
+
         <service id="river.pipe_client" class="ContinuousPipe\Pipe\HttpPipeClient">
             <argument type="service" id="river.pipe_client.guzzle_client" />
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
             <argument>%pipe_base_url%</argument>
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="start,deleteEnvironment,getEnvironments,getEnvironmentsLabelled"
+                 runner="tolerance.operation_runners.pipe" />
         </service>
         <service id="river.pipe.cluster_identifier_resolver" class="ContinuousPipe\River\Pipe\ClusterIdentifierResolver" />
 
