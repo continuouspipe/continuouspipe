@@ -4,6 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\PrivateImages;
 
 use Cocur\Slugify\Slugify;
 use ContinuousPipe\Pipe\DeploymentContext;
+use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\User\User;
 use Kubernetes\Client\Model\ObjectMetadata;
@@ -41,7 +42,7 @@ class SecretFactory
     public function createDockerRegistrySecret(DeploymentContext $deploymentContext)
     {
         $credentialsBucketUuid = $deploymentContext->getDeployment()->getRequest()->getCredentialsBucket();
-        $bucket = $this->bucketRepository->find($credentialsBucketUuid);
+        $bucket = $this->bucketRepository->find(UuidTransformer::transform($credentialsBucketUuid));
 
         $dockerCfgFileContents = $this->dockerCfgFileGenerator->generate($bucket);
 

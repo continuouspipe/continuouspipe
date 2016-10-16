@@ -170,7 +170,7 @@ class DeploymentContext implements Context
                         'http://foo/bar'
                     )
                 ),
-                new User('sroze@inviqa.com', Uuid::uuid1())
+                new User('sroze@inviqa.com', \Ramsey\Uuid\Uuid::uuid1())
             )
         );
 

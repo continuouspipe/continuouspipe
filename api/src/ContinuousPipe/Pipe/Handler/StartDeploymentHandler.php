@@ -10,6 +10,7 @@ use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\DeploymentStarted;
 use ContinuousPipe\Pipe\Logging\DeploymentLoggerFactory;
+use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
@@ -103,7 +104,7 @@ class StartDeploymentHandler
     private function getCluster(Uuid $bucketUuid, $clusterIdentifier)
     {
         try {
-            $bucket = $this->bucketRepository->find($bucketUuid);
+            $bucket = $this->bucketRepository->find(UuidTransformer::transform($bucketUuid));
         } catch (BucketNotFound $e) {
             throw new ClusterNotFound('The credentials bucket is not found', $e->getCode(), $e);
         }
