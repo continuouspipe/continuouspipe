@@ -44,6 +44,10 @@
         </service>
         <service id="river.github.http_client" class="GitHub\WebHook\Guzzle\Guzzle4HttpClient">
             <argument type="service" id="river.github.guzzle_http_client" />
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="get,post,patch,put,delete,request"
+                 runner="tolerance.operation_runners.github" />
         </service>
         <service id="river.github.client_factory" class="ContinuousPipe\River\GitHub\GitHubClientFactory">
             <argument type="service" id="security.token_storage" />

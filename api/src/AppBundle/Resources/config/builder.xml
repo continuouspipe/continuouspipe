@@ -14,6 +14,10 @@
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
             <argument>%builder_base_url%</argument>
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="build"
+                 runner="tolerance.operation_runners.builder" />
         </service>
 
         <service id="builder.build_request_creator" class="ContinuousPipe\Builder\BuildRequestCreator">

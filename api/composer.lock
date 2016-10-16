@@ -4946,12 +4946,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Tolerance/Tolerance.git",
-                "reference": "0971a922aadc94345d0f67b6e682a9daee7e6e75"
+                "reference": "0960dbcf9a013a9850a41be3069bd2ecf0613845"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/0971a922aadc94345d0f67b6e682a9daee7e6e75",
-                "reference": "0971a922aadc94345d0f67b6e682a9daee7e6e75",
+                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/0960dbcf9a013a9850a41be3069bd2ecf0613845",
+                "reference": "0960dbcf9a013a9850a41be3069bd2ecf0613845",
                 "shasum": ""
             },
             "require": {
@@ -4963,6 +4963,7 @@
                 "sroze/tolerance": "self.version"
             },
             "require-dev": {
+                "beberlei/metrics": "^2.1",
                 "behat/behat": "~3.1.0rc1",
                 "behat/symfony2-extension": "^2.1",
                 "csa/guzzle-bundle": "~2.0@dev",
@@ -4985,7 +4986,7 @@
                 "MIT"
             ],
             "description": "Fault tolerance library and micro-services helpers",
-            "time": "2016-10-15 15:07:16"
+            "time": "2016-10-16 18:58:01"
         },
         {
             "name": "twig/twig",
@@ -5297,6 +5298,72 @@
     ],
     "packages-dev": [
         {
+            "name": "beberlei/metrics",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/beberlei/metrics.git",
+                "reference": "9dcb8d9a826bd8ca1c191456bc76628828e544ab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/beberlei/metrics/zipball/9dcb8d9a826bd8ca1c191456bc76628828e544ab",
+                "reference": "9dcb8d9a826bd8ca1c191456bc76628828e544ab",
+                "shasum": ""
+            },
+            "require": {
+                "psr/log": "~1.0"
+            },
+            "require-dev": {
+                "corley/influxdb-sdk": "^0.5.1",
+                "doctrine/dbal": "~2.0",
+                "kriswallsmith/buzz": "*",
+                "okitsu/zabbix-sender": "*@dev",
+                "symfony/config": "~2.3",
+                "symfony/dependency-injection": "~2.3",
+                "symfony/http-kernel": "~2.3"
+            },
+            "suggest": {
+                "corley/influxdb-sdk": "For InfluxDB integration",
+                "kriswallsmith/buzz": "For Librato integration",
+                "okitsu/zabbix-sender": "For zabbix integration"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Beberlei\\Metrics\\": "src/Beberlei/Metrics",
+                    "Beberlei\\Bundle\\MetricsBundle\\": "src/Beberlei/Bundle/MetricsBundle"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de",
+                    "role": "Project Founder"
+                },
+                {
+                    "name": "Grégoire Pineau",
+                    "email": "lyrixx@lyrixx.info",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Simple library to talk to metrics collector services.",
+            "keywords": [
+                "Metrics",
+                "logging"
+            ],
+            "time": "2016-09-19 12:54:41"
+        },
+        {
             "name": "behat/behat",
             "version": "v3.2.1",
             "source": {
@@ -5535,6 +5602,103 @@
                 "transliterator"
             ],
             "time": "2015-09-28 16:26:35"
+        },
+        {
+            "name": "jms/aop-bundle",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/schmittjoh/JMSAopBundle.git",
+                "reference": "78000d007e74283cc564a58e184d7f62548ad394"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/schmittjoh/JMSAopBundle/zipball/78000d007e74283cc564a58e184d7f62548ad394",
+                "reference": "78000d007e74283cc564a58e184d7f62548ad394",
+                "shasum": ""
+            },
+            "require": {
+                "jms/cg": "^1.1",
+                "php": ">=5.3.9",
+                "symfony/framework-bundle": "^2.3|^3.0"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "^2.7"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "JMS\\AopBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Johannes M. Schmitt",
+                    "email": "schmittjoh@gmail.com"
+                }
+            ],
+            "description": "Adds AOP capabilities to Symfony2",
+            "keywords": [
+                "annotations",
+                "aop"
+            ],
+            "time": "2015-12-09 16:30:46"
+        },
+        {
+            "name": "jms/cg",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/schmittjoh/cg-library.git",
+                "reference": "2152ea2c48f746a676debb841644ae64cae27835"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/schmittjoh/cg-library/zipball/2152ea2c48f746a676debb841644ae64cae27835",
+                "reference": "2152ea2c48f746a676debb841644ae64cae27835",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=4.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "CG\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache2"
+            ],
+            "authors": [
+                {
+                    "name": "Johannes M. Schmitt",
+                    "email": "schmittjoh@gmail.com"
+                }
+            ],
+            "description": "Toolset for generating PHP code",
+            "keywords": [
+                "code generation"
+            ],
+            "time": "2016-04-07 10:21:44"
         },
         {
             "name": "phpdocumentor/reflection-common",
