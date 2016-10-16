@@ -77,7 +77,6 @@ class EnvironmentController extends Controller
      */
     private function getCluster(Team $team, $clusterIdentifier)
     {
-        var_dump('uuid', $team->getBucketUuid());
         $bucket = $this->bucketRepository->find(UuidTransformer::transform($team->getBucketUuid()));
         $matchingClusters = $bucket->getClusters()->filter(function (Cluster $cluster) use ($clusterIdentifier) {
             return $cluster->getIdentifier() == $clusterIdentifier;
