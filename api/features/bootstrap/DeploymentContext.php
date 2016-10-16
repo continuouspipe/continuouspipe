@@ -11,6 +11,7 @@ use ContinuousPipe\Pipe\Event\DeploymentStarted;
 use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
 use ContinuousPipe\Pipe\EventBus\EventStore;
 use ContinuousPipe\Pipe\Tests\Cluster\TestCluster;
+use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\User\User;
@@ -170,7 +171,7 @@ class DeploymentContext implements Context
                         'http://foo/bar'
                     )
                 ),
-                new User('sroze@inviqa.com', Uuid::uuid1())
+                new User('sroze@inviqa.com', UuidTransformer::transform(Uuid::uuid1()))
             )
         );
 

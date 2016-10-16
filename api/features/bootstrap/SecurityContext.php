@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -49,7 +50,7 @@ class SecurityContext implements Context
         $clusterConfiguration = $table->getHash()[0];
         $cluster = $this->serializer->deserialize(json_encode($clusterConfiguration), Cluster::class, 'json');
 
-        $bucketUuid = Uuid::fromString($uuid);
+        $bucketUuid = UuidTransformer::transform(Uuid::fromString($uuid));
         try {
             $bucket = $this->bucketRepository->find($bucketUuid);
         } catch (BucketNotFound $e) {
@@ -66,13 +67,13 @@ class SecurityContext implements Context
      */
     public function theBucketOfTheTeamIsTheBucket($teamName, $bucketUuid)
     {
-        $uuid = Uuid::fromString($bucketUuid);
+        $uuid = UuidTransformer::transform(Uuid::fromString($bucketUuid));
 
         try {
             $team = $this->teamRepository->find($teamName);
             $team->setBucketUuid($uuid);
         } catch (TeamNotFound $e) {
-            $team = new Team($teamName, $uuid);
+            $team = new Team($teamName, $teamName, $uuid);
         }
 
         $this->teamRepository->save($team);

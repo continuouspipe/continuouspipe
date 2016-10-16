@@ -15,6 +15,7 @@ use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
 use ContinuousPipe\Pipe\Tests\Cluster\TestCluster;
 use ContinuousPipe\Pipe\Notification\TraceableNotifier;
+use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
@@ -139,7 +140,7 @@ class EnvironmentContext implements Context
      */
     public function sendDeploymentRequest($providerName, $environmentName, $template = 'simple-app')
     {
-        $bucket = new Bucket(Uuid::uuid1());
+        $bucket = new Bucket(UuidTransformer::transform(Uuid::uuid1()));
         $this->inMemoryAuthenticatorClient->addBucket($bucket);
 
         $simpleAppComposeContents = json_decode(file_get_contents(__DIR__.'/../fixtures/'.$template.'.json'), true);
