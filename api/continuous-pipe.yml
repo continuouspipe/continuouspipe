@@ -176,3 +176,8 @@ tasks:
 
         filter:
             expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'
+
+notifications:
+    inviqa_slack:
+        slack:
+            webhook_url: https://hooks.slack.com/services/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
