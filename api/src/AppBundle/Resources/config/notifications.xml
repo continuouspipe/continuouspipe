@@ -41,6 +41,10 @@
         </service>
         <service id="river.notifications.notifier.slack.http_notifier" class="ContinuousPipe\River\Notifications\Slack\HttpSlackNotifier">
             <argument type="service" id="slack.http_client" />
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="notify"
+                 runner="tolerance.operation_runners.slack" />
         </service>
         <service id="river.notifications.notifier.slack" alias="river.notifications.notifier.slack.http_notifier" />
 
