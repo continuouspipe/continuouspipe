@@ -76,6 +76,8 @@ class StatusFactory
     private function generateDescription(Tide $tide, TideEvent $event)
     {
         if ($event instanceof TideCreated) {
+            return 'Pending';
+        } elseif ($event instanceof TideStarted) {
             return 'Running';
         } elseif ($event instanceof TideSuccessful) {
             return sprintf('Successfully ran in %s', $this->getDurationString($tide));
