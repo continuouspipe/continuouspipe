@@ -23,7 +23,7 @@ default:
                     - @log_stream.client
                 - GitHubContext:
                     - @kernel
-                    - @river.fake.code_status_updater
+                    - @river.notifications.notifier.github.commit_status.traceable
                     - @river.github.pull_request_resolver
                     - @river.pipe_client
                     - @river.event_store
@@ -61,6 +61,8 @@ default:
                     - @kernel
                 - AnalyticsContext:
                     - @river.keen.client.traceable
+                - NotificationsContext:
+                    - @river.notifications.notifier.slack.traceable
 
     extensions:
         Behat\Symfony2Extension:
@@ -99,7 +101,7 @@ smoke:
                     - @river.time_resolver.predictable
                 - GitHubContext:
                     - @kernel
-                    - @river.fake.code_status_updater
+                    - @river.notifications.notifier.github.commit_status.traceable
                     - @river.github.pull_request_resolver
                     - @river.pipe_client
                     - @river.event_store
@@ -109,6 +111,8 @@ smoke:
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
+                - NotificationsContext:
+                    - @river.notifications.notifier.slack.traceable
 
     extensions:
         Behat\Symfony2Extension:

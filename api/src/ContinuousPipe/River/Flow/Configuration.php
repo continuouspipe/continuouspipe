@@ -35,6 +35,7 @@ class Configuration implements ConfigurationInterface
                 ->append($this->getTasksNode())
                 ->scalarNode('filter')->end()
                 ->booleanNode('silent')->defaultFalse()->end()
+                ->append($this->getNotificationsNode())
             ->end()
         ;
 
@@ -119,6 +120,32 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('environment')
                     ->children()
                         ->scalarNode('name')->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    private function getNotificationsNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('notifications');
+
+        $node
+            ->performNoDeepMerging()
+            ->prototype('array')
+                ->children()
+                    ->arrayNode('slack')
+                        ->children()
+                            ->scalarNode('webhook_url')->isRequired()->end()
+                        ->end()
+                    ->end()
+                    ->booleanNode('github_commit_status')->end()
+                    ->arrayNode('when')
+                        ->defaultValue(['success', 'failure', 'running', 'pending'])
+                        ->prototype('scalar')->end()
                     ->end()
                 ->end()
             ->end()

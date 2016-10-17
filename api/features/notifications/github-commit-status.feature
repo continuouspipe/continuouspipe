@@ -28,3 +28,16 @@ Feature:
     """
     Task "build" failed
     """
+
+  Scenario: I can disable the default GitHub commit status
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        - build: ~
+
+    notifications:
+        default:
+            github_commit_status: false
+    """
+    When a tide is started
+    Then the GitHub commit status should not be updated
