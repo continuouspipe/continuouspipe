@@ -445,6 +445,10 @@ class GitHubContext implements Context
      */
     public function aPullRequestIsCreatedWithHeadCommit($branch, $sha)
     {
+        $this->fakePullRequestResolver->willResolve([
+            new \GitHub\WebHook\Model\PullRequest(1, 1),
+        ]);
+
         $contents = file_get_contents(__DIR__.'/../fixtures/pull_request-created.json');
         $decoded = json_decode($contents, true);
         $decoded['pull_request']['head']['sha'] = $sha;

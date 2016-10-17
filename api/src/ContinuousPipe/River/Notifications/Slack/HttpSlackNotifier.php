@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Notifications\Slack;
 
+use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\Notifications\NotificationException;
 use ContinuousPipe\River\Notifications\NotificationNotSupported;
 use ContinuousPipe\River\Notifications\Notifier;
@@ -37,7 +38,7 @@ class HttpSlackNotifier implements Notifier
         $webHookUrl = $configuration['slack']['webhook_url'];
 
         $title = $status->getDescription();
-        $text = '';
+        $text = $this->getNotificationDescription($status);
         $color = $this->getColorFromStatus($status);
 
         try {
@@ -92,5 +93,22 @@ class HttpSlackNotifier implements Notifier
     public function supports(Tide $tide, Status $status, array $configuration)
     {
         return array_key_exists('slack', $configuration);
+    }
+
+    /**
+     * @param Status $status
+     *
+     * @return string
+     */
+    private function getNotificationDescription(Status $status)
+    {
+        $endpoints = $status->getPublicEndpoints();
+        if (count($endpoints) == 0) {
+            return 'No public endpoint available';
+        }
+
+        return implode("\n", array_map(function (PublicEndpoint $publicEndpoint) {
+            return sprintf('*%s*: %s', $publicEndpoint->getName(), $publicEndpoint->getAddress());
+        }, $endpoints));
     }
 }

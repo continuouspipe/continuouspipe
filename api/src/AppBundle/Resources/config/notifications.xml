@@ -8,6 +8,7 @@
         <service id="river.notifications.status_factory" class="ContinuousPipe\River\Notifications\StatusFactory">
             <argument type="service" id="river.time_resolver" />
             <argument type="service" id="logger" />
+            <argument type="service" id="river.event_store" />
             <argument>%river_ui_url%</argument>
         </service>
 
@@ -15,6 +16,7 @@
             <argument type="collection">
                 <argument type="service" id="river.notifications.notifier.slack" />
                 <argument type="service" id="river.notifications.notifier.github.commit_status" />
+                <argument type="service" id="river.notifications.notifier.github.pull_request" />
             </argument>
         </service>
 
@@ -53,6 +55,14 @@
             <argument type="service" id="river.github.client_factory" />
         </service>
         <service id="river.notifications.notifier.github.commit_status" alias="river.notifications.notifier.github.commit_status.http" />
+
+        <!-- GitHub Pull Request -->
+        <service id="river.notifications.notifier.github.pull_request" class="ContinuousPipe\River\Notifications\GitHub\PullRequest\GitHubPullRequestStatusNotifier">
+            <argument type="service" id="river.github.pull_request_resolver" />
+            <argument type="service" id="river.github.client_factory" />
+            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.view.tide_repository" />
+        </service>
 
         <!-- Logging stuff TO BE MOVED -->
         <service id="river.log_stream.archive_logs.handler.archive_flow_logs_handler" class="ContinuousPipe\River\LogStream\ArchiveLogs\Handler\ArchiveFlowLogsHandler">

@@ -143,6 +143,7 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                     ->booleanNode('github_commit_status')->end()
+                    ->booleanNode('github_pull_request')->end()
                     ->arrayNode('when')
                         ->defaultValue(['success', 'failure', 'running', 'pending'])
                         ->prototype('scalar')->end()

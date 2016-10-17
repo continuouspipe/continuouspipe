@@ -2,12 +2,9 @@
 
 namespace ContinuousPipe\River\EventListener\GitHub\PullRequestOpened;
 
-use ContinuousPipe\River\CodeRepository\GitHub\PullRequestDeploymentNotifier;
 use ContinuousPipe\River\Event\GitHub\PullRequestOpened;
-use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
-use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
-use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\Notifications\TideStatusListener;
 use ContinuousPipe\River\View\TideRepository;
 
 class CommentDeploymentEnvironmentEndpoints
@@ -18,9 +15,9 @@ class CommentDeploymentEnvironmentEndpoints
     private $tideRepository;
 
     /**
-     * @var PullRequestDeploymentNotifier
+     * @var TideStatusListener
      */
-    private $pullRequestDeploymentNotifier;
+    private $tideStatusListener;
 
     /**
      * @var EventStore
@@ -28,15 +25,15 @@ class CommentDeploymentEnvironmentEndpoints
     private $eventStore;
 
     /**
-     * @param TideRepository                $tideRepository
-     * @param PullRequestDeploymentNotifier $pullRequestDeploymentNotifier
-     * @param EventStore                    $eventStore
+     * @param TideRepository     $tideRepository
+     * @param TideStatusListener $tideStatusListener
+     * @param EventStore         $eventStore
      */
-    public function __construct(TideRepository $tideRepository, PullRequestDeploymentNotifier $pullRequestDeploymentNotifier, EventStore $eventStore)
+    public function __construct(TideRepository $tideRepository, TideStatusListener $tideStatusListener, EventStore $eventStore)
     {
         $this->tideRepository = $tideRepository;
-        $this->pullRequestDeploymentNotifier = $pullRequestDeploymentNotifier;
         $this->eventStore = $eventStore;
+        $this->tideStatusListener = $tideStatusListener;
     }
 
     /**
@@ -45,31 +42,14 @@ class CommentDeploymentEnvironmentEndpoints
     public function notify(PullRequestOpened $event)
     {
         $tides = $this->tideRepository->findByCodeReference($event->getCodeReference());
-        $gitHubEvent = $event->getEvent();
 
         foreach ($tides as $tide) {
-            $deploymentSuccessfulEvents = $this->getDeploymentSuccessfulEvents($tide);
-
-            foreach ($deploymentSuccessfulEvents as $deploymentSuccessfulEvent) {
-                $this->pullRequestDeploymentNotifier->notify($deploymentSuccessfulEvent, $gitHubEvent->getRepository(), $gitHubEvent->getPullRequest());
+            $events = $this->eventStore->findByTideUuid($tide->getUuid());
+            if (false === ($lastEvent = end($events))) {
+                continue;
             }
+
+            $this->tideStatusListener->notify($lastEvent);
         }
-    }
-
-    /**
-     * Get deployment successful events of a given tide.
-     *
-     * @param Tide $tide
-     *
-     * @return DeploymentSuccessful[]
-     */
-    private function getDeploymentSuccessfulEvents(Tide $tide)
-    {
-        $tideEvents = $this->eventStore->findByTideUuid($tide->getUuid());
-        $deploymentSuccessfulEvents = array_values(array_filter($tideEvents, function (TideEvent $event) {
-            return $event instanceof DeploymentSuccessful;
-        }));
-
-        return $deploymentSuccessfulEvents;
     }
 }
