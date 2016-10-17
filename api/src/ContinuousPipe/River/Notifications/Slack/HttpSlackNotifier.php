@@ -44,20 +44,22 @@ class HttpSlackNotifier implements Notifier
             $this->httpClient->post($webHookUrl, [
                 'json' => [
                     'attachments' => [
-                        'fallback' => $title,
-                        'color' => $color,
-                        'author_name' => 'ContinuousPipe',
-                        'author_link' => 'https://continuouspipe.io',
-                        'author_icon' => 'https://continuouspipe.io/logo.png',
-                        'title' => $title,
-                        'title_link' => $status->getUrl(),
-                        'text' => $text,
-                        'mrkdwn_in' => ['text'],
-                        'fields' => [
-                            [
-                                'title' => 'Branch',
-                                'value' => $tide->getCodeReference()->getBranch(),
-                                'short' => true,
+                        [
+                            'fallback' => $title,
+                            'color' => $color,
+                            'author_name' => 'ContinuousPipe',
+                            'author_link' => 'https://continuouspipe.io',
+                            'author_icon' => 'https://continuouspipe.io/logo.png',
+                            'title' => $title,
+                            'title_link' => $status->getUrl(),
+                            'text' => $text,
+                            'mrkdwn_in' => ['text'],
+                            'fields' => [
+                                [
+                                    'title' => 'Branch',
+                                    'value' => $tide->getCodeReference()->getBranch(),
+                                    'short' => true,
+                                ],
                             ],
                         ],
                     ],
