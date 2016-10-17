@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River\Tide\Status;
 
+use ContinuousPipe\Pipe\Client\PublicEndpoint;
+
 final class Status
 {
     const STATE_SUCCESS = 'success';
@@ -19,21 +21,29 @@ final class Status
      * @var string
      */
     private $description;
+
     /**
      * @var null|string
      */
     private $url;
 
     /**
-     * @param string $state
-     * @param string $description
-     * @param string $url
+     * @var PublicEndpoint[]
      */
-    public function __construct($state, $description = null, $url = null)
+    private $publicEndpoints;
+
+    /**
+     * @param string           $state
+     * @param string           $description
+     * @param string           $url
+     * @param PublicEndpoint[] $publicEndpoints
+     */
+    public function __construct($state, $description = null, $url = null, array $publicEndpoints = [])
     {
         $this->state = $state;
         $this->description = $description;
         $this->url = $url;
+        $this->publicEndpoints = $publicEndpoints;
     }
 
     /**
@@ -58,5 +68,13 @@ final class Status
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * @return PublicEndpoint[]
+     */
+    public function getPublicEndpoints()
+    {
+        return $this->publicEndpoints;
     }
 }

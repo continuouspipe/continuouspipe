@@ -26,7 +26,6 @@ class AppExtension extends Extension
         $loader->load('events.xml');
         $loader->load('tasks.xml');
         $loader->load('notifications.xml');
-        $loader->load('silent.xml');
         $loader->load('queue.xml');
         $loader->load('security.xml');
         $loader->load('build/task.xml');

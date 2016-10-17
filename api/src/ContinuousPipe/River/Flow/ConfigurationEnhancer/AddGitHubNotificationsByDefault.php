@@ -17,6 +17,7 @@ class AddGitHubNotificationsByDefault implements ConfigurationEnhancer
             'notifications' => [
                 'default' => [
                     'github_commit_status' => true,
+                    'github_pull_request' => true,
                 ],
             ],
         ];

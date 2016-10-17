@@ -2,11 +2,14 @@
 
 namespace ContinuousPipe\River\Notifications;
 
+use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Event\TideSuccessful;
+use ContinuousPipe\River\EventBus\EventStore;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Tide\Status\Status;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TimeResolver;
@@ -25,6 +28,11 @@ class StatusFactory
     private $logger;
 
     /**
+     * @var EventStore
+     */
+    private $eventStore;
+
+    /**
      * @var string
      */
     private $uiBaseUrl;
@@ -32,12 +40,14 @@ class StatusFactory
     /**
      * @param TimeResolver    $timeResolver
      * @param LoggerInterface $logger
+     * @param EventStore      $eventStore
      * @param string          $uiBaseUrl
      */
-    public function __construct(TimeResolver $timeResolver, LoggerInterface $logger, $uiBaseUrl)
+    public function __construct(TimeResolver $timeResolver, LoggerInterface $logger, EventStore $eventStore, $uiBaseUrl)
     {
         $this->timeResolver = $timeResolver;
         $this->logger = $logger;
+        $this->eventStore = $eventStore;
         $this->uiBaseUrl = $uiBaseUrl;
     }
 
@@ -64,7 +74,29 @@ class StatusFactory
             $status = Status::STATE_UNKNOWN;
         }
 
-        return new Status($status, $description, $url);
+        return new Status($status, $description, $url, $this->getPublicEndpoints($tide, $event));
+    }
+
+    /**
+     * @param Tide      $tide
+     * @param TideEvent $event
+     *
+     * @return PublicEndpoint[]
+     */
+    private function getPublicEndpoints(Tide $tide, TideEvent $event)
+    {
+        $tideEvents = $this->eventStore->findByTideUuid($tide->getUuid());
+        $tideEvents[] = $event;
+
+        $deploymentSuccessfulEvents = array_values(array_filter($tideEvents, function (TideEvent $event) {
+            return $event instanceof DeploymentSuccessful;
+        }));
+
+        $endpoints = array_reduce($deploymentSuccessfulEvents, function ($endpoints, DeploymentSuccessful $deploymentSuccessful) {
+            return array_merge($endpoints, $deploymentSuccessful->getDeployment()->getPublicEndpoints());
+        }, []);
+
+        return $endpoints;
     }
 
     /**
