@@ -134,7 +134,7 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('notifications');
 
         $node
-            ->performNoDeepMerging()
+            ->useAttributeAsKey('name')
             ->prototype('array')
                 ->children()
                     ->arrayNode('slack')

@@ -10,8 +10,9 @@ Feature:
         - {build: {services: []}}
 
     notifications:
-        - slack:
-              webhook_url: https://hooks.slack.com/services/1/2/3
+        my_notification:
+            slack:
+                webhook_url: https://hooks.slack.com/services/1/2/3
     """
     When a tide is started for the branch "my/branch"
     And the tide is successful
@@ -26,8 +27,9 @@ Feature:
         - {build: {services: []}}
 
     notifications:
-        - slack:
-              webhook_url: https://hooks.slack.com/services/1/2/3
+        my_notification:
+            slack:
+                webhook_url: https://hooks.slack.com/services/1/2/3
     """
     When a tide is started for the branch "my/branch"
     And the tide failed
@@ -40,10 +42,11 @@ Feature:
         - {build: {services: []}}
 
     notifications:
-        - slack:
-              webhook_url: https://hooks.slack.com/services/1/2/3
-          when:
-              - failure
+        my_notification:
+            slack:
+                webhook_url: https://hooks.slack.com/services/1/2/3
+            when:
+                - failure
     """
     When a tide is started for the branch "my/branch"
     And the tide is successful
@@ -56,10 +59,11 @@ Feature:
         - {build: {services: []}}
 
     notifications:
-        - slack:
-              webhook_url: https://hooks.slack.com/services/1/2/3
-          when:
-              - failure
+        my_notification:
+            slack:
+                webhook_url: https://hooks.slack.com/services/1/2/3
+            when:
+                - failure
     """
     When a tide is started for the branch "my/branch"
     And the tide failed
@@ -72,10 +76,29 @@ Feature:
         - {build: {services: []}}
 
     notifications:
-        - slack:
-              webhook_url: https://hooks.slack.com/services/1/2/3
-          when:
-              - running
+        my_notification:
+            slack:
+                webhook_url: https://hooks.slack.com/services/1/2/3
+            when:
+                - running
     """
     When a tide is started for the branch "my/branch"
     Then a Slack running notification should have been sent
+
+  Scenario: The default GitHub commit status should still be configured
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        - {build: {services: []}}
+
+    notifications:
+        my_notification:
+            slack:
+                webhook_url: https://hooks.slack.com/services/1/2/3
+            when:
+                - success
+    """
+    When a tide is started for the branch "my/branch"
+    And the tide is successful
+    Then a Slack success notification should have been sent
+    And the GitHub commit status should be "success"

@@ -66,9 +66,20 @@ class HttpSlackNotifier implements Notifier
         }
     }
 
+    /**
+     * @param Status $status
+     *
+     * @return string
+     */
     private function getColorFromStatus(Status $status)
     {
-        return '#36a64f';
+        if ($status->getState() == Status::STATE_SUCCESS) {
+            return '#36a64f';
+        } elseif ($status->getState() == Status::STATE_FAILURE) {
+            return '#e01765';
+        }
+
+        return '#70CADB';
     }
 
     /**
