@@ -74,17 +74,20 @@ class StatusFactory
             $status = Status::STATE_UNKNOWN;
         }
 
-        return new Status($status, $description, $url, $this->getPublicEndpoints($tide));
+        return new Status($status, $description, $url, $this->getPublicEndpoints($tide, $event));
     }
 
     /**
-     * @param Tide $tide
+     * @param Tide      $tide
+     * @param TideEvent $event
      *
      * @return PublicEndpoint[]
      */
-    private function getPublicEndpoints(Tide $tide)
+    private function getPublicEndpoints(Tide $tide, TideEvent $event)
     {
         $tideEvents = $this->eventStore->findByTideUuid($tide->getUuid());
+        $tideEvents[] = $event;
+
         $deploymentSuccessfulEvents = array_values(array_filter($tideEvents, function (TideEvent $event) {
             return $event instanceof DeploymentSuccessful;
         }));

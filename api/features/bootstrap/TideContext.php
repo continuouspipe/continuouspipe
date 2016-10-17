@@ -4,6 +4,8 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\CodeReference;
@@ -679,9 +681,19 @@ EOF;
 
         /** @var DeploymentStarted $deploymentStarted */
         $deploymentStarted = current($deploymentStartedEvents);
+        $startedDeployment = $deploymentStarted->getDeployment();
+
         $this->eventBus->handle(new DeploymentSuccessful(
             $this->getCurrentTideUuid(),
-            $deploymentStarted->getDeployment()
+            new Deployment(
+                $startedDeployment->getUuid(),
+                $startedDeployment->getRequest(),
+                Deployment::STATUS_SUCCESS,
+                array_merge($startedDeployment->getPublicEndpoints(), [
+                    new PublicEndpoint('fake', '1.2.3.4'),
+                ]),
+                $startedDeployment->getComponentStatuses()
+            )
         ));
     }
 

@@ -60,6 +60,8 @@ class GitHubPullRequestStatusNotifier implements Notifier
     {
         if (!in_array($status->getState(), [Status::STATE_SUCCESS, Status::STATE_FAILURE])) {
             return;
+        } elseif (count($status->getPublicEndpoints()) == 0) {
+            return;
         }
 
         if (!array_key_exists('github_pull_request', $configuration)) {

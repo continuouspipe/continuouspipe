@@ -194,9 +194,19 @@ class DeployContext implements Context
      */
     public function theDeploymentSucceed()
     {
+        $startedDeployment = $this->getDeployment();
+
         $this->eventBus->handle(new DeploymentSuccessful(
             $this->tideContext->getCurrentTideUuid(),
-            $this->getDeployment()
+            new Deployment(
+                $startedDeployment->getUuid(),
+                $startedDeployment->getRequest(),
+                Deployment::STATUS_SUCCESS,
+                array_merge($startedDeployment->getPublicEndpoints(), [
+                    new PublicEndpoint('fake', '1.2.3.4'),
+                ]),
+                $startedDeployment->getComponentStatuses()
+            )
         ));
     }
 
