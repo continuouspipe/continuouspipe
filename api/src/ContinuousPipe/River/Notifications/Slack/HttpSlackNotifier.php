@@ -30,7 +30,7 @@ class HttpSlackNotifier implements Notifier
      */
     public function notify(Tide $tide, Status $status, array $configuration)
     {
-        if (array_key_exists('slack', $configuration)) {
+        if (!array_key_exists('slack', $configuration)) {
             throw new NotificationNotSupported('This notifier only supports Slack notifications');
         }
 
