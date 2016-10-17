@@ -27,13 +27,12 @@ class GitHubCommitStatusNotifier implements Notifier
     private $gitHubStateResolver;
 
     /**
-     * @param ClientFactory       $gitHubClientFactory
-     * @param GitHubStateResolver $gitHubStateResolver
+     * @param ClientFactory $gitHubClientFactory
      */
-    public function __construct(ClientFactory $gitHubClientFactory, GitHubStateResolver $gitHubStateResolver)
+    public function __construct(ClientFactory $gitHubClientFactory)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
-        $this->gitHubStateResolver = $gitHubStateResolver;
+        $this->gitHubStateResolver = new GitHubStateResolver();
     }
 
     /**
