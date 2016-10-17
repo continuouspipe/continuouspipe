@@ -29,6 +29,7 @@ class AppTestExtension extends Extension
         $loader->load('integration/pipe.xml');
         $loader->load('integration/runner.xml');
         $loader->load('integration/keen.xml');
+        $loader->load('integration/notifications.xml');
 
         $loader->load('queue.xml');
     }

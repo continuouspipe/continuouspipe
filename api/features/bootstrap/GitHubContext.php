@@ -7,6 +7,8 @@ use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\EventBus\EventStore;
+use ContinuousPipe\River\Notifications\GitHub\CommitStatus\GitHubStateResolver;
+use ContinuousPipe\River\Notifications\TraceableNotifier;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\TestHttpClient;
 use ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
@@ -35,11 +37,6 @@ class GitHubContext implements Context
     private $kernel;
 
     /**
-     * @var FakeCodeStatusUpdater
-     */
-    private $fakeCodeStatusUpdater;
-
-    /**
      * @var FakePullRequestResolver
      */
     private $fakePullRequestResolver;
@@ -60,23 +57,27 @@ class GitHubContext implements Context
      * @var TestHttpClient
      */
     private $gitHubHttpClient;
+    /**
+     * @var TraceableNotifier
+     */
+    private $gitHubTraceableNotifier;
 
     /**
      * @param Kernel $kernel
-     * @param FakeCodeStatusUpdater $fakeCodeStatusUpdater
+     * @param TraceableNotifier $gitHubTraceableNotifier
      * @param FakePullRequestResolver $fakePullRequestResolver
      * @param TraceableClient $traceableClient
      * @param EventStore $eventStore
      * @param TestHttpClient $gitHubHttpClient
      */
-    public function __construct(Kernel $kernel, FakeCodeStatusUpdater $fakeCodeStatusUpdater, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore, TestHttpClient $gitHubHttpClient)
+    public function __construct(Kernel $kernel, TraceableNotifier $gitHubTraceableNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore, TestHttpClient $gitHubHttpClient)
     {
-        $this->fakeCodeStatusUpdater = $fakeCodeStatusUpdater;
         $this->kernel = $kernel;
         $this->fakePullRequestResolver = $fakePullRequestResolver;
         $this->traceableClient = $traceableClient;
         $this->eventStore = $eventStore;
         $this->gitHubHttpClient = $gitHubHttpClient;
+        $this->gitHubTraceableNotifier = $gitHubTraceableNotifier;
     }
 
     /**
@@ -109,11 +110,10 @@ class GitHubContext implements Context
      */
     public function theGitHubCommitStatusShouldBe($status)
     {
-        $foundStatus = $this->fakeCodeStatusUpdater->getStatusForTideUuid(
-            $this->tideContext->getCurrentTideUuid()
-        );
+        $foundStatus = $this->getLastGitHubNotification();
+        $foundState = (new GitHubStateResolver())->fromStatus($foundStatus);
 
-        if ($status !== $foundStatus->getState()) {
+        if ($status !== $foundState) {
             throw new \RuntimeException(sprintf(
                 'Found status "%s" instead of expected "%s"',
                 $foundStatus->getState(),
@@ -123,14 +123,23 @@ class GitHubContext implements Context
     }
 
     /**
+     * @Then the GitHub commit status should not be updated
+     */
+    public function theGitHubCommitStatusShouldNotBeUpdated()
+    {
+        $notifications = $this->gitHubTraceableNotifier->getNotifications();
+
+        if (count($notifications) > 0) {
+            throw new \RuntimeException('Found GitHub status notification(s)');
+        }
+    }
+
+    /**
      * @Then the GitHub commit status description should be:
      */
     public function theGithubCommitStatusDescriptionShouldBeTaskFailed(PyStringNode $string)
     {
-        $foundStatus = $this->fakeCodeStatusUpdater->getStatusForTideUuid(
-            $this->tideContext->getCurrentTideUuid()
-        );
-
+        $foundStatus = $this->getLastGitHubNotification();
         $description = $string->getRaw();
 
         if ($description !== $foundStatus->getDescription()) {
@@ -147,9 +156,7 @@ class GitHubContext implements Context
      */
     public function theGitHubCommitStatusShouldNotBeSet()
     {
-        if ($this->fakeCodeStatusUpdater->hasStatusForTideUuid(
-            $this->tideContext->getCurrentTideUuid()
-        )) {
+        if (count($this->gitHubTraceableNotifier->getNotifications()) !== 0) {
             throw new \RuntimeException('Expected no status for tide');
         }
     }
@@ -529,5 +536,18 @@ class GitHubContext implements Context
             $uuid = $json['uuid'];
             $this->tideContext->setCurrentTideUuid(\Ramsey\Uuid\Uuid::fromString($uuid));
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getLastGitHubNotification()
+    {
+        $notifications = $this->gitHubTraceableNotifier->getNotifications();
+        if (count($notifications) == 0) {
+            throw new \RuntimeException('No notification found');
+        }
+
+        return $notifications[count($notifications) - 1];
     }
 }

@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\CodeRepository\GitHub\Handler;
 
 use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
 use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
-use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeStatusUpdater;
 use ContinuousPipe\River\Event\GitHub\BranchDeleted;
 use ContinuousPipe\River\Event\GitHub\CodePushed;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
@@ -12,6 +11,7 @@ use ContinuousPipe\River\Event\GitHub\PullRequestOpened;
 use ContinuousPipe\River\Event\GitHub\PullRequestSynchronized;
 use ContinuousPipe\River\Event\GitHub\StatusUpdated;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Notifications\GitHub\CommitStatus\GitHubCommitStatusNotifier;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View;
 use GitHub\WebHook\Event\PullRequestEvent;
@@ -126,7 +126,7 @@ class GitHubWebHookHandler
      */
     private function handleStatusEvent(StatusEvent $event)
     {
-        if ($event->getContext() == GitHubCodeStatusUpdater::GITHUB_CONTEXT) {
+        if ($event->getContext() == GitHubCommitStatusNotifier::GITHUB_CONTEXT) {
             return;
         }
 

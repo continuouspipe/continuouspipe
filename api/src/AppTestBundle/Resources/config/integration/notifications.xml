@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Slack -->
+        <service id="river.notifications.notifier.slack.http_notifier" class="ContinuousPipe\River\Notifications\NullSlackNotifier" />
+        <service id="river.notifications.notifier.slack.traceable"
+                 class="ContinuousPipe\River\Notifications\TraceableNotifier"
+                 decorates="river.notifications.notifier.slack">
+            <argument type="service" id="river.notifications.notifier.slack.traceable.inner" />
+        </service>
+
+        <!-- GitHub -->
+        <service id="river.notifications.notifier.github.commit_status.http" class="ContinuousPipe\River\Notifications\NullGitHubNotifier" />
+        <service id="river.notifications.notifier.github.commit_status.traceable"
+                 class="ContinuousPipe\River\Notifications\TraceableNotifier"
+                 decorates="river.notifications.notifier.github.commit_status">
+            <argument type="service" id="river.notifications.notifier.github.commit_status.traceable.inner" />
+        </service>
+    </services>
+</container>

@@ -10,10 +10,6 @@ Feature:
     silent: true
     """
 
-  Scenario: No GitHub commit status
-    When a tide is started with a build task
-    Then the GitHub commit status should not be set
-
   Scenario: No comment on PR
     When a tide is started with a deploy task
     And the pull-request #1 contains the tide-related commit

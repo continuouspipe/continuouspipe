@@ -235,6 +235,11 @@ tolerance:
                 publisher: tolerance.metrics.publisher.statsd
                 namespace: river.outgoing.github
 
+        slack:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.slack
+
     metrics:
         collectors:
             -
