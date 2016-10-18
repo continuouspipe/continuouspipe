@@ -6,6 +6,7 @@ use ContinuousPipe\Model\Component;
 use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\ContainerStatus;
+use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
@@ -39,12 +40,43 @@ class ComponentTransformer
             $replicationControllerName,
             new Component\Specification(
                 $this->getComponentSource($containers[0]),
-                $this->getComponentAccessibility($namespaceClient, $replicationController),
+                $this->getComponentAccessibility($namespaceClient, $replicationController->getMetadata()->getName()),
                 new Component\Scalability(true, $replicationController->getSpecification()->getReplicas())
             ),
             [],
             [],
-            $this->getComponentStatus($namespaceClient, $replicationController),
+            $this->getReplicationControllerStatus($namespaceClient, $replicationController),
+            new Component\DeploymentStrategy(null, null, false, false)
+        );
+    }
+
+    /**
+     * @param NamespaceClient $namespaceClient
+     * @param Deployment      $deployment
+     *
+     * @return Component
+     */
+    public function getComponentFromDeployment(NamespaceClient $namespaceClient, Deployment $deployment)
+    {
+        $name = $deployment->getMetadata()->getName();
+        $replicas = $deployment->getSpecification()->getReplicas();
+
+        $containers = $deployment->getSpecification()->getTemplate()->getPodSpecification()->getContainers();
+        if (0 === count($containers)) {
+            throw new \InvalidArgumentException('No container found in deployment\'s specification');
+        }
+
+        return new Component(
+            $name,
+            $name,
+            new Component\Specification(
+                $this->getComponentSource($containers[0]),
+                $this->getComponentAccessibility($namespaceClient, $name),
+                new Component\Scalability(true, $replicas)
+            ),
+            [],
+            [],
+            $this->getDeploymentStatus($namespaceClient, $deployment),
             new Component\DeploymentStrategy(null, null, false, false)
         );
     }
@@ -68,17 +100,15 @@ class ComponentTransformer
     }
 
     /**
-     * @param NamespaceClient       $namespaceClient
-     * @param ReplicationController $replicationController
+     * @param NamespaceClient $namespaceClient
+     * @param string          $serviceName
      *
      * @return Component\Accessibility
      */
-    private function getComponentAccessibility(NamespaceClient $namespaceClient, ReplicationController $replicationController)
+    private function getComponentAccessibility(NamespaceClient $namespaceClient, $serviceName)
     {
         try {
-            $service = $namespaceClient->getServiceRepository()->findOneByName(
-                $replicationController->getMetadata()->getName()
-            );
+            $service = $namespaceClient->getServiceRepository()->findOneByName($serviceName);
 
             $externalService = $service->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER;
 
@@ -94,12 +124,14 @@ class ComponentTransformer
      *
      * @return Component\Status
      */
-    private function getComponentStatus(NamespaceClient $namespaceClient, ReplicationController $replicationController)
+    private function getReplicationControllerStatus(NamespaceClient $namespaceClient, ReplicationController $replicationController)
     {
         $pods = $namespaceClient->getPodRepository()->findByReplicationController($replicationController)->getPods();
         $healthyPods = $this->filterHealthyPods($pods);
+        $serviceName = $replicationController->getMetadata()->getName();
+        $replicas = $replicationController->getSpecification()->getReplicas();
 
-        if (count($healthyPods) == $replicationController->getSpecification()->getReplicas()) {
+        if (count($healthyPods) == $replicas) {
             $status = Component\Status::HEALTHY;
         } elseif (count($healthyPods) > 0) {
             $status = Component\Status::WARNING;
@@ -107,21 +139,46 @@ class ComponentTransformer
             $status = Component\Status::UNHEALTHY;
         }
 
-        return new Component\Status($status, $this->getComponentPublicEndpoints($namespaceClient, $replicationController));
+        return new Component\Status($status, $this->getComponentPublicEndpoints($namespaceClient, $serviceName));
     }
 
     /**
-     * @param NamespaceClient       $namespaceClient
-     * @param ReplicationController $replicationController
+     * @param NamespaceClient $namespaceClient
+     * @param Deployment      $deployment
+     *
+     * @return Component\Status
+     */
+    private function getDeploymentStatus(NamespaceClient $namespaceClient, Deployment $deployment)
+    {
+        $pods = $namespaceClient->getPodRepository()->findByLabels(
+            $deployment->getSpecification()->getSelector()
+        )->getPods();
+
+        $healthyPods = $this->filterHealthyPods($pods);
+        $serviceName = $deployment->getMetadata()->getName();
+        $replicas = $deployment->getSpecification()->getReplicas();
+
+        if (count($healthyPods) == $replicas) {
+            $status = Component\Status::HEALTHY;
+        } elseif (count($healthyPods) > 0) {
+            $status = Component\Status::WARNING;
+        } else {
+            $status = Component\Status::UNHEALTHY;
+        }
+
+        return new Component\Status($status, $this->getComponentPublicEndpoints($namespaceClient, $serviceName));
+    }
+
+    /**
+     * @param NamespaceClient $namespaceClient
+     * @param string          $serviceName
      *
      * @return array
      */
-    private function getComponentPublicEndpoints(NamespaceClient $namespaceClient, ReplicationController $replicationController)
+    private function getComponentPublicEndpoints(NamespaceClient $namespaceClient, $serviceName)
     {
         try {
-            $service = $namespaceClient->getServiceRepository()->findOneByName(
-                $replicationController->getMetadata()->getName()
-            );
+            $service = $namespaceClient->getServiceRepository()->findOneByName($serviceName);
         } catch (ServiceNotFound $e) {
             return [];
         }

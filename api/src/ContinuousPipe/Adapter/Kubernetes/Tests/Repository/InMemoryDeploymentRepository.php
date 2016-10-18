@@ -4,11 +4,20 @@ namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
 use Kubernetes\Client\Exception\DeploymentNotFound;
 use Kubernetes\Client\Model\Deployment;
+use Kubernetes\Client\Model\DeploymentList;
 use Kubernetes\Client\Repository\DeploymentRepository;
 
 class InMemoryDeploymentRepository implements DeploymentRepository
 {
     private $deployments = [];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findAll()
+    {
+        return DeploymentList::fromDeployments($this->deployments);
+    }
 
     /**
      * {@inheritdoc}
