@@ -24,7 +24,7 @@ class RetryNotifier implements Notifier
 
     /**
      * @param Notifier $notifier
-     * @param Waiter $waiter
+     * @param Waiter   $waiter
      */
     public function __construct(Notifier $notifier, Waiter $waiter)
     {
@@ -50,7 +50,7 @@ class RetryNotifier implements Notifier
             $waitStrategy
         );
 
-        return $runner->run(new Callback(function() use ($address, $deployment) {
+        return $runner->run(new Callback(function () use ($address, $deployment) {
             $this->notifier->notify($address, $deployment);
         }));
     }

@@ -56,7 +56,7 @@ class DeploymentObjectDeployer extends AbstractObjectDeployer
 
     /**
      * @param NamespaceClient $namespaceClient
-     * @param Deployment $deployment
+     * @param Deployment      $deployment
      */
     private function deleteDeploymentsPod(NamespaceClient $namespaceClient, Deployment $deployment)
     {

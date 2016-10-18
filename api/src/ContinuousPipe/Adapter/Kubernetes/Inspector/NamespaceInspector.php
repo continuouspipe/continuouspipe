@@ -39,6 +39,15 @@ class NamespaceInspector
             }
         }
 
+        $deployments = $namespaceClient->getDeploymentRepository()->findAll();
+        foreach ($deployments as $deployment) {
+            try {
+                $components[] = $this->reverseComponentTransformer->getComponentFromDeployment($namespaceClient, $deployment);
+            } catch (\InvalidArgumentException $e) {
+                continue;
+            }
+        }
+
         return $components;
     }
 }

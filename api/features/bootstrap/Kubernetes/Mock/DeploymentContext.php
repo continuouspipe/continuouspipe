@@ -77,12 +77,13 @@ class DeploymentContext implements Context
 
     /**
      * @Given the pods of the deployment :deploymentName will become running later
+     * @Given the pods of the deployments will be running after creation
      */
-    public function thePodsOfTheDeploymentWillBecomeRunningLater($deploymentName)
+    public function thePodsOfTheDeploymentWillBecomeRunningLater($deploymentName = null)
     {
         $callCount = 0;
         $this->hookableDeploymentRepository->addFoundByNameHook(function($name, Deployment $deployment) use ($deploymentName, &$callCount) {
-            if ($name != $deploymentName) {
+            if (null !== $deploymentName && $name != $deploymentName) {
                 return $deployment;
             }
 
@@ -125,7 +126,7 @@ class DeploymentContext implements Context
                     new PodStatus(PodStatus::PHASE_RUNNING, '10.240.162.87', '10.132.1.47', [
                         new PodStatusCondition('Ready', true)
                     ], [
-                        new ContainerStatus($pod->getMetadata()->getName(), 1, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, false)
+                        new ContainerStatus($pod->getMetadata()->getName(), 1, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, true)
                     ])
                 );
             }, $pods->getPods());
@@ -135,12 +136,24 @@ class DeploymentContext implements Context
     }
 
     /**
+     * @Given pods are :status for the deployment :name
+     */
+    public function podsArePendingForTheDeployment($status, $name)
+    {
+        $this->podsAreForTheDeployment(
+            $this->deploymentRepository->findOneByName($name),
+            $status,
+            $status == 'running'
+        );
+    }
+
+    /**
      * @param Deployment $deployment
      * @param string $podStatus
      *
      * @return Deployment
      */
-    private function podsAreForTheDeployment(Deployment $deployment, $podStatus)
+    private function podsAreForTheDeployment(Deployment $deployment, $podStatus, $ready = true)
     {
         $this->removeDeploymentsPods($deployment);
 
@@ -152,7 +165,7 @@ class DeploymentContext implements Context
             $status = new PodStatus($podStatus, '10.240.162.87', '10.132.1.47', [
                 new PodStatusCondition('Ready', true)
             ], [
-                new ContainerStatus($name, 1, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, true)
+                new ContainerStatus($name, 1, 'docker://ec0041d2f4d9ad598ce6dae9146e351ac1e315da944522d1ca140c5d2cafd97e', null, $ready)
             ]);
 
             $this->podRepository->create(new Pod(

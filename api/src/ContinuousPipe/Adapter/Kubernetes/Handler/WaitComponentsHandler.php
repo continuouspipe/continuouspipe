@@ -12,7 +12,6 @@ use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Pipe\Promise\PromiseBuilder;
 use ContinuousPipe\Pipe\View\ComponentStatus;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
-use Kubernetes\Client\Exception\PodNotFound;
 use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
