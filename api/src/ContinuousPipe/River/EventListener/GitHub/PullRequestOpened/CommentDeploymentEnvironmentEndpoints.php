@@ -41,7 +41,7 @@ class CommentDeploymentEnvironmentEndpoints
      */
     public function notify(PullRequestOpened $event)
     {
-        $tides = $this->tideRepository->findByCodeReference($event->getCodeReference());
+        $tides = $this->tideRepository->findByCodeReference($event->getFlow()->getUuid(), $event->getCodeReference());
 
         foreach ($tides as $tide) {
             $events = $this->eventStore->findByTideUuid($tide->getUuid());

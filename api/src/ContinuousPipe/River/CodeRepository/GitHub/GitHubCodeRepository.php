@@ -4,10 +4,13 @@ namespace ContinuousPipe\River\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeRepository;
 use GitHub\WebHook\Model\Repository;
+use JMS\Serializer\Annotation as JMS;
 
 class GitHubCodeRepository implements CodeRepository
 {
     /**
+     * @JMS\Type("GitHub\WebHook\Model\Repository")
+     *
      * @var Repository
      */
     private $repository;

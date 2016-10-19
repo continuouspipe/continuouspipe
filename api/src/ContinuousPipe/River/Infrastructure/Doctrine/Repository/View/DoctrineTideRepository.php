@@ -92,9 +92,10 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByCodeReference(CodeReference $codeReference)
+    public function findByCodeReference(Uuid $flowUuid, CodeReference $codeReference)
     {
         $dtos = $this->getEntityRepository()->findBy([
+            'flow' => (string) $flowUuid,
             'tide.codeReference.sha1' => $codeReference->getCommitSha(),
             'tide.codeReference.branch' => $codeReference->getBranch(),
         ]);

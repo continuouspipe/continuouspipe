@@ -6,6 +6,7 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\River\Command\DeleteEnvironments;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\CodeReference;
@@ -1093,6 +1094,29 @@ EOF;
     }
 
     /**
+     * @Then the environment deletion should be delayed
+     */
+    public function theEnvironmentDeletionShouldBePostponed()
+    {
+        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $matchingMessages = array_filter($messages, function($message) {
+            return $message instanceof DeleteEnvironments;
+        });
+
+        if (count($matchingMessages) == 0) {
+            throw new \RuntimeException('No delayed message found');
+        }
+    }
+
+    /**
+     * @Given there is a pending tide created for branch :branch and commit :commit
+     */
+    public function thereIsATideCreatedForBranchAndCommit($branch, $commit)
+    {
+        $this->aTideIsCreatedForBranchAndCommitWithADeployTask($branch, $commit);
+    }
+
+    /**
      * @Given the tide :uuid is running and timed out
      */
     public function theTideIsRunningAndTimedOut($uuid)
@@ -1192,8 +1216,9 @@ EOF;
      */
     private function getTideByCodeReference($branch, $sha1)
     {
-        $codeRepository = $this->flowContext->getCurrentFlow()->getContext()->getCodeRepository();
-        $tides = $this->viewTideRepository->findByCodeReference(new CodeReference($codeRepository, $sha1, $branch));
+        $flow = $this->flowContext->getCurrentFlow();
+        $codeRepository = $flow->getContext()->getCodeRepository();
+        $tides = $this->viewTideRepository->findByCodeReference($flow->getUuid(), new CodeReference($codeRepository, $sha1, $branch));
 
         if (count($tides) != 1) {
             throw new \RuntimeException(sprintf(
