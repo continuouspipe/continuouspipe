@@ -79,6 +79,31 @@ Feature:
     """
     Then the deployment "app" should be rolling updated with maximum 1 unavailable pods
 
+  Scenario: The surge is going to be 1 by default
+    When I send a deployment request with the following components specification:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "accessibility": {
+            "from_cluster": true,
+            "from_external": false
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 5
+          }
+        }
+      }
+    ]
+    """
+    Then the deployment "app" should be rolling updated with maximum 1 surge pods
+
   Scenario: It will rolling-update with the specified max-available and max-surge parameters
     When I send a deployment request with the following components specification:
     """

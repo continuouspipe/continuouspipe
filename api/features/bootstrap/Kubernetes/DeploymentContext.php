@@ -74,7 +74,7 @@ class DeploymentContext implements Context
         $foundMaxSurge = $deployment->getSpecification()->getStrategy()->getRollingUpdate()->getMaxSurge();
 
         if ($foundMaxSurge != $count) {
-            throw new \RuntimeException(sprintf('Found %d surge pods instead'));
+            throw new \RuntimeException(sprintf('Found %d surge pods instead', $foundMaxSurge));
         }
     }
 

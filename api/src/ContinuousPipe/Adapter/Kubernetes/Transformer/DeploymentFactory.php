@@ -44,6 +44,10 @@ class DeploymentFactory
         $maxUnavailable = $component->getDeploymentStrategy()->getMaxUnavailable();
         $maxSurge = $component->getDeploymentStrategy()->getMaxSurge();
 
+        if (!is_int($maxSurge) && empty($maxSurge)) {
+            $maxSurge = 1;
+        }
+        
         if (null === $maxUnavailable) {
             $volumes = $component->getSpecification()->getVolumes();
 
