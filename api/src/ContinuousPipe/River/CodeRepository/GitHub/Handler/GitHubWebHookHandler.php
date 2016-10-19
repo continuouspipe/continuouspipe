@@ -81,7 +81,7 @@ class GitHubWebHookHandler
         } elseif ($event instanceof PullRequestEvent) {
             $this->handlePullRequestEvent($flow, $event);
         } elseif ($event instanceof StatusEvent) {
-            $this->handleStatusEvent($event);
+            $this->handleStatusEvent($flow, $event);
         }
     }
 
@@ -122,9 +122,10 @@ class GitHubWebHookHandler
     }
 
     /**
+     * @param Flow        $flow
      * @param StatusEvent $event
      */
-    private function handleStatusEvent(StatusEvent $event)
+    private function handleStatusEvent(Flow $flow, StatusEvent $event)
     {
         if ($event->getContext() == GitHubCommitStatusNotifier::GITHUB_CONTEXT) {
             return;
@@ -140,7 +141,7 @@ class GitHubWebHookHandler
             return;
         }
 
-        $tides = $this->tideViewRepository->findByCodeReference($codeReference);
+        $tides = $this->tideViewRepository->findByCodeReference($flow->getUuid(), $codeReference);
 
         foreach ($tides as $tide) {
             $this->eventBus->handle(new StatusUpdated(

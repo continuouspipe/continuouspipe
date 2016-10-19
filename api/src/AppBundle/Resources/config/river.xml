@@ -15,6 +15,20 @@
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Command\StartTideCommand" />
         </service>
 
+        <service id="river.handler.delete_environments" class="ContinuousPipe\River\Handler\DeleteEnvironmentsHandler">
+            <argument type="service" id="river.pipe_client" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
+            <argument type="service" id="river.pipe.cluster_identifier_resolver" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.queue.delayed_command_bus"/>
+            <argument>%retry_interval%</argument>
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Command\DeleteEnvironments" />
+        </service>
+
+
         <!-- Event subscribers -->
         <service id="river.listener.start_tide_when_validated" class="ContinuousPipe\River\EventListener\StartTideWhenValidatedListener">
             <argument type="service" id="simple_bus.command_bus" />

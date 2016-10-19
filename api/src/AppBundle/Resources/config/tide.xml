@@ -133,6 +133,7 @@
         <service id="river.tide.concurrency_manager" class="ContinuousPipe\River\Tide\Concurrency\ViewRepositoryBasedConcurrencyManager">
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.queue.delayed_command_bus" />
+            <argument>%retry_interval%</argument>
         </service>
 
         <service id="river.tide.concurrency.run_pending_tides_handler" class="ContinuousPipe\River\Tide\Concurrency\Handler\RunPendingTidesHandler">
