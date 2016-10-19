@@ -461,6 +461,22 @@ body {
             color: $running-dark-color;
         }
     }
+
+    .alerts-container {
+        background: #FF5722;
+        color: #fff;
+        padding: 0 0 0 20px;
+
+        h2 {
+            font-size: 16px;
+        }
+
+        button {
+            height: 30px;
+            line-height: 30px;
+            margin: 4px;
+        }
+    }
 }
 
 $loader-color: rgb(66, 133, 244);
