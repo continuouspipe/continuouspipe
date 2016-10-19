@@ -27,7 +27,34 @@ class DeploymentFactory
                     $pod->getMetadata(),
                     $pod->getSpecification()
                 ),
-                $replicas
+                $replicas,
+                null,
+                $this->getDeploymentStrategy($component)
+            )
+        );
+    }
+
+    /**
+     * @param Component $component
+     *
+     * @return Deployment\DeploymentStrategy
+     */
+    private function getDeploymentStrategy(Component $component)
+    {
+        $maxUnavailable = $component->getDeploymentStrategy()->getMaxUnavailable();
+        $maxSurge = $component->getDeploymentStrategy()->getMaxSurge();
+
+        if (null === $maxUnavailable) {
+            $volumes = $component->getSpecification()->getVolumes();
+
+            $maxUnavailable = count($volumes) == 0 ? 0 : 1;
+        }
+
+        return new Deployment\DeploymentStrategy(
+            Deployment\DeploymentStrategy::TYPE_ROLLING_UPDATE,
+            new Deployment\RollingUpdateDeployment(
+                $maxUnavailable,
+                $maxSurge
             )
         );
     }
