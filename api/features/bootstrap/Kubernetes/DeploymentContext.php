@@ -55,6 +55,30 @@ class DeploymentContext implements Context
     }
 
     /**
+     * @Then the deployment :deployment should be rolling updated with maximum :count unavailable pods
+     */
+    public function theDeploymentShouldBeRollingUpdatedWithMaximumUnavailablePods(Deployment $deployment, $count)
+    {
+        $foundMaxUnavailable = $deployment->getSpecification()->getStrategy()->getRollingUpdate()->getMaxUnavailable();
+
+        if ($foundMaxUnavailable != $count) {
+            throw new \RuntimeException(sprintf('Found %d unavailable pods instead', $foundMaxUnavailable));
+        }
+    }
+
+    /**
+     * @Then the deployment :deployment should be rolling updated with maximum :count surge pods
+     */
+    public function theDeploymentShouldBeRollingUpdatedWithMaximumSurgePods(Deployment $deployment, $count)
+    {
+        $foundMaxSurge = $deployment->getSpecification()->getStrategy()->getRollingUpdate()->getMaxSurge();
+
+        if ($foundMaxSurge != $count) {
+            throw new \RuntimeException(sprintf('Found %d surge pods instead'));
+        }
+    }
+
+    /**
      * @Then the deployment :deploymentName should be rolled-back
      */
     public function theDeploymentShouldBeRolledBack($deploymentName)
