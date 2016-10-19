@@ -47,6 +47,9 @@
 
             <tag name="csa_guzzle.client" />
         </service>
+        <service id="pipe.adapter.kubernetes.jms_serializer.rolling_update_deployment_handler" class="Kubernetes\Client\Serializer\JmsSerializerRollingUpdateDeploymentHandler">
+            <tag name="jms_serializer.subscribing_handler" />
+        </service>
         <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\HttpClientFactory">
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="pipe.adapter.kubernetes.guzzle_client" />

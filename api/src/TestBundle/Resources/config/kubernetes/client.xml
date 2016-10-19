@@ -14,7 +14,9 @@
         <service id="pipe.adapter.kubernetes.in_memory.service_account_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryServiceAccountRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.persistent_volume_claim_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryPersistentVolumeClaimRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.ingress_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryIngressRepository" />
-        <service id="pipe.adapter.kubernetes.in_memory.deployment_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryDeploymentRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.deployment_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryDeploymentRepository">
+            <argument type="service" id="jms_serializer" />
+        </service>
 
         <service id="pipe.adapter.kubernetes.hookable.service_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_repository" />
