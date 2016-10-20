@@ -2,6 +2,7 @@
 
 namespace GitHub\WebHook\Event;
 
+use GitHub\WebHook\AbstractEvent;
 use GitHub\WebHook\Event;
 use GitHub\WebHook\Model\Branch;
 use GitHub\WebHook\Model\Commit;
@@ -9,7 +10,7 @@ use GitHub\WebHook\Model\Repository;
 use GitHub\WebHook\Model\User;
 use JMS\Serializer\Annotation as JMS;
 
-class StatusEvent implements Event
+class StatusEvent extends AbstractEvent
 {
     /**
      * @JMS\Type("string")

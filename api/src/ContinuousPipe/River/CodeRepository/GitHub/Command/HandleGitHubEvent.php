@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub\Command;
 
-use ContinuousPipe\River\CodeRepository\GitHub\Serializer\WrappedGitHubEvent;
 use GitHub\WebHook\Event;
 use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
@@ -17,7 +16,7 @@ class HandleGitHubEvent
     private $flowUuid;
 
     /**
-     * @JMS\Type("ContinuousPipe\River\CodeRepository\GitHub\Serializer\WrappedGitHubEvent")
+     * @JMS\Type("GitHub\WebHook\AbstractEvent")
      *
      * @var Event
      */
@@ -30,7 +29,7 @@ class HandleGitHubEvent
     public function __construct(Uuid $flowUuid, Event $event)
     {
         $this->flowUuid = $flowUuid;
-        $this->event = new WrappedGitHubEvent($event);
+        $this->event = $event;
     }
 
     /**
@@ -38,10 +37,6 @@ class HandleGitHubEvent
      */
     public function getEvent(): Event
     {
-        if ($this->event instanceof WrappedGitHubEvent) {
-            return $this->event->getEvent();
-        }
-
         return $this->event;
     }
 
