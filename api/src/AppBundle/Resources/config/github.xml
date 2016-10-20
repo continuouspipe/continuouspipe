@@ -58,9 +58,6 @@
         <service id="river.github.repository_address_descriptor" class="ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor" />
 
         <service id="river.github.code_reference_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver" />
-        <service id="river.github.serializer.github_event_handler" class="ContinuousPipe\River\CodeRepository\GitHub\Serializer\GitHubEventSeralizerHandler">
-            <tag name="jms_serializer.subscribing_handler" />
-        </service>
         <service id="river.github.web_hook_handler" class="ContinuousPipe\River\CodeRepository\GitHub\Handler\GitHubWebHookHandler">
             <argument type="service" id="river.github.code_reference_resolver" />
             <argument type="service" id="event_bus" />

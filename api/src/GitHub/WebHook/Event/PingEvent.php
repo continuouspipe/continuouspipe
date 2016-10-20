@@ -2,12 +2,12 @@
 
 namespace GitHub\WebHook\Event;
 
-use GitHub\WebHook\Event;
+use GitHub\WebHook\AbstractEvent;
 use GitHub\WebHook\Model\Repository;
 use GitHub\WebHook\Model\User;
 use JMS\Serializer\Annotation as JMS;
 
-class PingEvent implements Event
+class PingEvent extends AbstractEvent
 {
     /**
      * @var Repository

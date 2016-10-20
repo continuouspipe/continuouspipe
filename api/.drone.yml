@@ -11,6 +11,7 @@ build:
 
         # Domain tests
         - bin/phpspec run
+        - bin/phpunit -c app
         - bin/behat -fprogress
 
         # Smoke tests
