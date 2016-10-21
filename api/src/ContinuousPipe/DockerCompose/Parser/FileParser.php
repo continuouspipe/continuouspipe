@@ -2,8 +2,10 @@
 
 namespace ContinuousPipe\DockerCompose\Parser;
 
+use ContinuousPipe\DockerCompose\DockerComposeException;
 use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 class FileParser
 {
@@ -25,6 +27,7 @@ class FileParser
      * @param string             $filePath
      *
      * @throws FileNotFound
+     * @throws DockerComposeException
      *
      * @return array
      */
@@ -32,6 +35,10 @@ class FileParser
     {
         $contents = $fileSystem->getContents($filePath);
 
-        return $this->parser->parse($contents);
+        try {
+            return $this->parser->parse($contents);
+        } catch (ParseException $e) {
+            throw new DockerComposeException('Unable to parse the file "' . $filePath . '": ' . $e->getMessage(), $e->getCode(), $e);
+        }
     }
 }
