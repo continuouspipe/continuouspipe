@@ -18,6 +18,7 @@ use ContinuousPipe\Authenticator\WhiteList\WhiteList;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use ContinuousPipe\Authenticator\GitHub\EmailNotFoundException;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
@@ -63,18 +64,23 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
-     * @param SecurityUserRepository   $securityUserRepository
-     * @param UserDetails              $userDetails
-     * @param WhiteList                $whiteList
-     * @param BucketRepository         $bucketRepository
+     * @param SecurityUserRepository $securityUserRepository
+     * @param UserDetails $userDetails
+     * @param WhiteList $whiteList
+     * @param BucketRepository $bucketRepository
      * @param TeamMembershipRepository $teamMembershipRepository
-     * @param TeamRepository           $teamRepository
-     * @param TeamCreator              $teamCreator
+     * @param TeamRepository $teamRepository
+     * @param TeamCreator $teamCreator
      * @param EventDispatcherInterface $eventDispatcher
+     * @param LoggerInterface $logger
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, TeamCreator $teamCreator, EventDispatcherInterface $eventDispatcher)
+    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, TeamCreator $teamCreator, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger)
     {
         $this->securityUserRepository = $securityUserRepository;
         $this->userDetails = $userDetails;
@@ -84,6 +90,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $this->teamRepository = $teamRepository;
         $this->teamCreator = $teamCreator;
         $this->eventDispatcher = $eventDispatcher;
+        $this->logger = $logger;
     }
 
     /**
@@ -94,6 +101,10 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $gitHubResponse = $response->getResponse();
         $username = $gitHubResponse['login'];
         if (!$this->whiteList->contains($username)) {
+            $this->logger->warning('User is not in whitelist', [
+                'username' => $username,
+            ]);
+
             throw new InsufficientAuthenticationException(sprintf(
                 'User "%s" is not in the white list, yet? :)',
                 $username
