@@ -8,7 +8,8 @@ RUN apt-get update \
 
 # Install prerequisites build tools
 RUN apt-get install -y ruby ruby-dev build-essential git \
-  && gem install compass \
+  && gem install --no-rdoc --no-ri sass -v 3.4.22 \
+  && gem install --no-rdoc --no-ri compass \
   && npm install -g grunt-cli bower
 
 # Build the application
