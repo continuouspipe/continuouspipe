@@ -3,7 +3,6 @@
 namespace GitHub\WebHook\Event;
 
 use GitHub\WebHook\AbstractEvent;
-use GitHub\WebHook\Event;
 use GitHub\WebHook\Model\Commit;
 use GitHub\WebHook\Model\CommitUser;
 use GitHub\WebHook\Model\Repository;
@@ -94,17 +93,18 @@ class PushEvent extends AbstractEvent
 
     /**
      * PushEvent constructor.
-     * @param string $reference
-     * @param string $before
-     * @param string $after
-     * @param bool $created
-     * @param bool $deleted
-     * @param bool $forced
+     *
+     * @param string                         $reference
+     * @param string                         $before
+     * @param string                         $after
+     * @param bool                           $created
+     * @param bool                           $deleted
+     * @param bool                           $forced
      * @param \GitHub\WebHook\Model\Commit[] $commits
-     * @param Commit $headCommit
-     * @param Repository $repository
-     * @param CommitUser $pusher
-     * @param User $sender
+     * @param Commit                         $headCommit
+     * @param Repository                     $repository
+     * @param CommitUser                     $pusher
+     * @param User                           $sender
      */
     public function __construct(
         $reference = null,

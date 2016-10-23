@@ -38,7 +38,7 @@ class FileParser
         try {
             return $this->parser->parse($contents);
         } catch (ParseException $e) {
-            throw new DockerComposeException('Unable to parse the file "' . $filePath . '": ' . $e->getMessage(), $e->getCode(), $e);
+            throw new DockerComposeException('Unable to parse the file "'.$filePath.'": '.$e->getMessage(), $e->getCode(), $e);
         }
     }
 }

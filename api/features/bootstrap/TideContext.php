@@ -14,6 +14,7 @@ use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideCreated;
+use ContinuousPipe\River\LogStream\ArchiveLogs\Command\ArchiveTideCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\TimedOutTideRepository;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
@@ -1101,6 +1102,21 @@ EOF;
         $messages = $this->tracedDelayedMessageProducer->getMessages();
         $matchingMessages = array_filter($messages, function($message) {
             return $message instanceof DeleteEnvironments;
+        });
+
+        if (count($matchingMessages) == 0) {
+            throw new \RuntimeException('No delayed message found');
+        }
+    }
+
+    /**
+     * @Then the tide log archive command should be delayed
+     */
+    public function theTideLogArchiveCommandShouldBeDelayed()
+    {
+        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $matchingMessages = array_filter($messages, function($message) {
+            return $message instanceof ArchiveTideCommand;
         });
 
         if (count($matchingMessages) == 0) {
