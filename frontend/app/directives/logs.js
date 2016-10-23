@@ -21,8 +21,8 @@ angular.module('logstream')
                     $scope.displayChildrenOf[logId] = !$scope.displayChildrenOf[logId];
                 };
 
-                var loadArchive = function (parent) {
-                    if (!parent || !parent.archived) {
+                var loadArchive = function () {
+                    if (!$scope.parent || !$scope.parent.archived) {
                         return;
                     }
 
@@ -35,10 +35,16 @@ angular.module('logstream')
                     });
                 };
 
+                $scope.$watch('parent.archived', function(archived) {
+                    if (archived) {
+                        loadArchive();
+                    }
+                });
+
                 if ($scope.parent.$loaded) {
                     $scope.parent.$loaded().then(loadArchive);
                 } else {
-                    loadArchive($scope.parent);
+                    loadArchive();
                 }
             }],
             compile: function(element) {
