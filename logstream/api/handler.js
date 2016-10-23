@@ -1,4 +1,10 @@
 var HttpHandlerFactory = function(LogsCollection) {
+    var redirect = function(request, response) {
+        response.writeHead(200, {"Content-Type": "text/html"});
+        response.write('<html><head><meta http-equiv="refresh" content="0; url=https://continuouspipe.io" /></head></html>');
+        response.end();
+    };
+
     var getRequestBody = function(request, callback) {
         var fullBody = '';
 
@@ -90,6 +96,7 @@ var HttpHandlerFactory = function(LogsCollection) {
                 request.logId = matches[1];
             },
             routes = [
+            {url: /^\/$/, method: 'GET', handler: redirect},
             {url: /^\/v1\/logs$/, method: 'POST', handler: createLog},
             {url: /^\/v1\/logs\/(.+)/, method: 'PATCH', handler: patchLog, parameterMapping: matchFirstArgumentAsLogId},
             {url: /^\/v1\/logs\/(.+)/, method: 'GET', handler: getLog, parameterMapping: matchFirstArgumentAsLogId},

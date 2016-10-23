@@ -24,22 +24,16 @@ tasks:
                                     name: continuouspipeio
                                     cert: ${WILDCARD_SSL_CERT}
                                     key: ${WILDCARD_SSL_KEY}
-                                    
+
                     specification:
                         environment_variables:
                             - name: LOG_STREAM_API_URL
                               value: https://api.logstream.continuouspipe.io
 
                 api:
-                    endpoints:
-                        -
-                            name: api-https
-                            type: NodePort
-                            ssl_certificates:
-                                -
-                                    name: continuouspipeio
-                                    cert: ${WILDCARD_SSL_CERT}
-                                    key: ${WILDCARD_SSL_KEY}
+                    specification:
+                        accessibility:
+                            from_external: true
 
                     specification:
                         environment_variables:

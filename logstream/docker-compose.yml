@@ -13,6 +13,7 @@ api:
     build: api
     expose:
         - 443
+        - 80
     environment:
         PORT: 443
         FIREBASE_APP: continuous-pipe
