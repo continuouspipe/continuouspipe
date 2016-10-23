@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Pipe\Listener\PublicEndpointsFinalised;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component\EnvironmentVariable;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Pipe\Event\PublicEndpointsFinalised;
@@ -40,7 +41,7 @@ class InjectPublicEndpointsAsVariable
     private function getServiceEnvironmentVariableForEndpoint(PublicEndpoint $endpoint)
     {
         return new EnvironmentVariable(
-            sprintf('SERVICE_%s_PUBLIC_ENDPOINT', strtoupper($endpoint->getName())),
+            sprintf('SERVICE_%s_PUBLIC_ENDPOINT', $this->getEndpointName($endpoint)),
             $endpoint->getAddress()
         );
     }
@@ -53,7 +54,7 @@ class InjectPublicEndpointsAsVariable
     private function getEndpointEnvironmentVariableForEndpoint(PublicEndpoint $endpoint)
     {
         return new EnvironmentVariable(
-            sprintf('ENDPOINT_%s_PUBLIC_ENDPOINT', strtoupper($endpoint->getName())),
+            sprintf('ENDPOINT_%s_PUBLIC_ENDPOINT', $this->getEndpointName($endpoint)),
             $endpoint->getAddress()
         );
     }
@@ -79,5 +80,17 @@ class InjectPublicEndpointsAsVariable
         }
 
         return $replacedVariables;
+    }
+
+    /**
+     * @param PublicEndpoint $endpoint
+     *
+     * @return string
+     */
+    private function getEndpointName(PublicEndpoint $endpoint)
+    {
+        $name = (new Slugify('/([^A-Za-z0-9])+/'))->slugify($endpoint->getName(), '_');
+
+        return strtoupper($name);
     }
 }
