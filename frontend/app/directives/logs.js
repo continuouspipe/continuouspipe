@@ -148,4 +148,18 @@ angular.module('logstream')
                 };
             }
         }
-    });
+    })
+    .directive('tooltip', function(){
+        return {
+            restrict: 'A',
+            scope: {
+                tooltip: '@'
+            },
+            link: function(scope, element) {
+                $(element).tooltip({
+                    title: scope.tooltip
+                });
+            }
+        };
+    })
+;

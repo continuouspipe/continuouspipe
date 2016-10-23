@@ -1,0 +1,47 @@
+<div class="pods" ng-controller="LogsPodsController">
+	<div class="pods-container">
+		<div class="pod" ng-repeat="pod in log.pods" ng-class="getPodClasses(log.deployment, pod)">
+			<p class="name" data-tooltip="{{ pod.name }}">{{ pod.name }}</p>
+			<p class="image" data-tooltip="{{ pod.containers[0].image }}">{{ pod.containers[0].image }}</p>
+			<p class="creation-timestamp" data-tooltip="{{ pod.creationTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}">{{ pod.creationTimestamp | timeAgo }}</p>
+			<p class="status">{{ pod.status.phase }}</p>
+		</div>
+	</div>
+
+	<div class="legend">
+		<div class="legend-row">
+			<div class="legend-container pod-ready"></div>
+			<span>Ready</span>
+		</div>
+
+		<div class="legend-row">
+			<div class="legend-container pod-running"></div>
+			<span>Running</span>
+		</div>
+
+		<div class="legend-row">
+			<div class="legend-container pod-pending"></div>
+			<span>Pending</span>
+		</div>
+
+		<div class="legend-row">
+			<div class="legend-container pod-failed"></div>
+			<span>Failed</span>
+		</div>
+
+		<div class="legend-row">
+			<div class="legend-container pod-terminating"></div>
+			<span>Terminating</span>
+		</div>
+
+		<div class="legend-row">
+			<div class="legend-container pod-new-generation"></div>
+			<span>New generation</span>
+		</div>
+
+		<div class="legend-row">
+			<div class="legend-container pod-previous-generation"></div>
+			<span>Previous generation</span>
+		</div>
+	</div>
+</div>
