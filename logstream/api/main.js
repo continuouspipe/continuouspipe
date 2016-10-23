@@ -1,4 +1,5 @@
 var http2 = require('http2'),
+    http = require('http'),
     fs = require('fs'),
     LogsCollection = require('./collections/logs.js'),
     HandlerFactory = require('./handler'),
@@ -40,3 +41,8 @@ var handler = HandlerFactory(
 );
 
 http2.createServer(options, handler).listen(port);
+http.createServer(function(request, response) {
+    response.writeHead(200, {"Content-Type": "text/html"});
+    response.write('<html><head><meta http-equiv="refresh" content="0; url=https://continuouspipe.io" /></head></html>');
+    response.end();
+}).listen(80);
