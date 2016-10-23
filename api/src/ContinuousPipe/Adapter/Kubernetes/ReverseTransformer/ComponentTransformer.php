@@ -151,7 +151,7 @@ class ComponentTransformer
     private function getDeploymentStatus(NamespaceClient $namespaceClient, Deployment $deployment)
     {
         $pods = $namespaceClient->getPodRepository()->findByLabels(
-            $deployment->getSpecification()->getSelector()
+            $deployment->getSpecification()->getSelector()->getMatchLabels()
         )->getPods();
 
         $healthyPods = $this->filterHealthyPods($pods);

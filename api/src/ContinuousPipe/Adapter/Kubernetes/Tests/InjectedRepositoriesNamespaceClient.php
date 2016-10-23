@@ -4,6 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\Tests;
 
 use Kubernetes\Client\NamespaceClient;
 use Kubernetes\Client\Repository\DeploymentRepository;
+use Kubernetes\Client\Repository\EventRepository;
 use Kubernetes\Client\Repository\IngressRepository;
 use Kubernetes\Client\Repository\PersistentVolumeClaimRepository;
 use Kubernetes\Client\Repository\PodRepository;
@@ -55,6 +56,11 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
     private $deploymentRepository;
 
     /**
+     * @var EventRepository
+     */
+    private $eventRepository;
+
+    /**
      * @param PodRepository                   $podRepository
      * @param ServiceRepository               $serviceRepository
      * @param ReplicationControllerRepository $replicationControllerRepository
@@ -63,8 +69,9 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
      * @param PersistentVolumeClaimRepository $persistentVolumeClaimRepository
      * @param IngressRepository               $ingressRepository
      * @param DeploymentRepository            $deploymentRepository
+     * @param EventRepository                 $eventRepository
      */
-    public function __construct(PodRepository $podRepository, ServiceRepository $serviceRepository, ReplicationControllerRepository $replicationControllerRepository, SecretRepository $secretRepository, ServiceAccountRepository $serviceAccountRepository, PersistentVolumeClaimRepository $persistentVolumeClaimRepository, IngressRepository $ingressRepository, DeploymentRepository $deploymentRepository)
+    public function __construct(PodRepository $podRepository, ServiceRepository $serviceRepository, ReplicationControllerRepository $replicationControllerRepository, SecretRepository $secretRepository, ServiceAccountRepository $serviceAccountRepository, PersistentVolumeClaimRepository $persistentVolumeClaimRepository, IngressRepository $ingressRepository, DeploymentRepository $deploymentRepository, EventRepository $eventRepository)
     {
         $this->podRepository = $podRepository;
         $this->serviceRepository = $serviceRepository;
@@ -74,6 +81,7 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
         $this->persistentVolumeClaimRepository = $persistentVolumeClaimRepository;
         $this->ingressRepository = $ingressRepository;
         $this->deploymentRepository = $deploymentRepository;
+        $this->eventRepository = $eventRepository;
     }
 
     /**
@@ -138,5 +146,13 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
     public function getDeploymentRepository()
     {
         return $this->deploymentRepository;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEventRepository()
+    {
+        return $this->eventRepository;
     }
 }

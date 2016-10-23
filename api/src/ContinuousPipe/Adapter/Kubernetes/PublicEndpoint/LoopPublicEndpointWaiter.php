@@ -5,6 +5,8 @@ namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint;
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
+use ContinuousPipe\Pipe\Promise\PromiseBuilder;
+use JMS\Serializer\SerializerInterface;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\LoadBalancerStatus;
@@ -13,24 +15,23 @@ use Kubernetes\Client\NamespaceClient;
 use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
+use LogStream\Node\Complex;
 use LogStream\Node\Text;
-use Tolerance\Waiter\Waiter;
+use React;
 
 class LoopPublicEndpointWaiter implements PublicEndpointWaiter
 {
     /**
-     * Number of second between each loop.
+     * The timeout per public endpoint.
      *
      * @var int
      */
-    const LOOP_WAIT = 10;
+    const LOOP_TIMEOUT = 300;
 
     /**
-     * Number of maximum tries to wait a public endpoint.
-     *
      * @var int
      */
-    const LOOP_MAX_RETRY = 30;
+    const LOOP_INTERVAL = 1;
 
     /**
      * @var DeploymentClientFactory
@@ -43,20 +44,20 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
     private $loggerFactory;
 
     /**
-     * @var Waiter
+     * @var SerializerInterface
      */
-    private $waiter;
+    private $serializer;
 
     /**
      * @param DeploymentClientFactory $clientFactory
      * @param LoggerFactory           $loggerFactory
-     * @param Waiter                  $waiter
+     * @param SerializerInterface     $serializer
      */
-    public function __construct(DeploymentClientFactory $clientFactory, LoggerFactory $loggerFactory, Waiter $waiter)
+    public function __construct(DeploymentClientFactory $clientFactory, LoggerFactory $loggerFactory, SerializerInterface $serializer)
     {
         $this->clientFactory = $clientFactory;
         $this->loggerFactory = $loggerFactory;
-        $this->waiter = $waiter;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -64,31 +65,27 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
      * @param KubernetesObject  $object
      * @param Log               $log
      *
-     * @return PublicEndpoint
+     * @return React\Promise\PromiseInterface
      *
      * @throws EndpointNotFound
      */
-    public function waitEndpoint(DeploymentContext $context, KubernetesObject $object, Log $log)
+    public function waitEndpoint(React\EventLoop\LoopInterface $loop, DeploymentContext $context, KubernetesObject $object, Log $log)
     {
         $objectName = $object->getMetadata()->getName();
         $logger = $this->loggerFactory->from($log)->child(new Text('Waiting public endpoint of service '.$objectName));
         $client = $this->clientFactory->get($context);
 
-        try {
-            $logger->updateStatus(Log::RUNNING);
+        $logger->updateStatus(Log::RUNNING);
 
-            $endpoint = $this->waitPublicEndpoint($client, $object, $logger);
-
-            $logger->child(new Text(sprintf('Found public endpoint "%s": %s', $endpoint->getName(), $endpoint->getAddress())));
+        return $this->waitPublicEndpoint($loop, $client, $object, $logger)->then(function (PublicEndpoint $endpoint) use ($logger) {
             $logger->updateStatus(Log::SUCCESS);
-        } catch (EndpointNotFound $e) {
-            $logger->child(new Text($e->getMessage()));
+
+            return $endpoint;
+        }, function (EndpointNotFound $e) use ($logger) {
             $logger->updateStatus(Log::FAILURE);
 
-            throw new EndpointNotFound($e->getMessage(), $e->getCode(), $e);
-        }
-
-        return $endpoint;
+            throw $e;
+        });
     }
 
     /**
@@ -96,24 +93,53 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
      * @param KubernetesObject $object
      * @param Logger           $logger
      *
-     * @return PublicEndpoint
-     *
-     * @throws EndpointNotFound
+     * @return React\Promise\PromiseInterface
      */
-    private function waitPublicEndpoint(NamespaceClient $namespaceClient, KubernetesObject $object, Logger $logger)
+    private function waitPublicEndpoint(React\EventLoop\LoopInterface $loop, NamespaceClient $namespaceClient, KubernetesObject $object, Logger $logger)
     {
-        $attempts = 0;
-        do {
-            try {
-                return $this->getPublicEndpoint($namespaceClient, $object);
-            } catch (EndpointNotFound $e) {
-                $logger->child(new Text($e->getMessage()));
-            }
+        $statusLogger = $logger->child(new Text('No public endpoint found yet.'));
 
-            $this->waiter->wait(self::LOOP_WAIT);
-        } while (++$attempts < self::LOOP_MAX_RETRY);
+        // Get endpoint status
+        $publicEndpointStatusPromise = (new PromiseBuilder($loop))
+            ->retry(self::LOOP_INTERVAL, function (React\Promise\Deferred $deferred) use ($namespaceClient, $object, $statusLogger) {
+                try {
+                    $endpoint = $this->getPublicEndpoint($namespaceClient, $object);
 
-        throw new EndpointNotFound('Attempted too many times.');
+                    $statusLogger->update(new Text('Found endpoint: '.$endpoint->getAddress()));
+
+                    $deferred->resolve($endpoint);
+                } catch (EndpointNotFound $e) {
+                    $statusLogger->update(new Text($e->getMessage()));
+                }
+            })
+            ->withTimeout(self::LOOP_TIMEOUT)
+            ->getPromise()
+        ;
+
+        // Get objects' events
+        $eventsLogger = $logger->child(new Complex('events'));
+        $updateEvents = function () use ($namespaceClient, $object, $eventsLogger) {
+            $eventList = $namespaceClient->getEventRepository()->findByObject($object);
+
+            $events = $eventList->getEvents();
+            $eventsLogger->update(new Complex('events', [
+                'events' => json_decode($this->serializer->serialize($events, 'json'), true),
+            ]));
+        };
+
+        $timer = $loop->addPeriodicTimer(self::LOOP_INTERVAL, $updateEvents);
+
+        return $publicEndpointStatusPromise->then(function (PublicEndpoint $endpoint) use ($timer, $updateEvents) {
+            $timer->cancel();
+            $updateEvents();
+
+            return $endpoint;
+        }, function ($reason) use ($timer, $updateEvents) {
+            $timer->cancel();
+            $updateEvents();
+
+            throw $reason;
+        });
     }
 
     /**

@@ -110,7 +110,7 @@ class DeploymentContext implements Context
             }
 
             // If the selector is different, then do nothing
-            if ($labels != $deployment->getSpecification()->getSelector()) {
+            if ($labels != $deployment->getSpecification()->getSelector()->getMatchLabels()) {
                 return $pods;
             }
 
@@ -169,7 +169,7 @@ class DeploymentContext implements Context
             ]);
 
             $this->podRepository->create(new Pod(
-                new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector, Label::class)),
+                new ObjectMetadata($name.'-'.$i, KeyValueObjectList::fromAssociativeArray($selector->getMatchLabels(), Label::class)),
                 $deployment->getSpecification()->getTemplate()->getPodSpecification(),
                 $status
             ));
@@ -193,7 +193,7 @@ class DeploymentContext implements Context
     public function removeDeploymentsPods(Deployment $deployment)
     {
         $selector = $deployment->getSpecification()->getSelector();
-        $pods = $this->podRepository->findByLabels($selector);
+        $pods = $this->podRepository->findByLabels($selector->getMatchLabels());
 
         foreach ($pods as $pod) {
             $this->podRepository->delete($pod);

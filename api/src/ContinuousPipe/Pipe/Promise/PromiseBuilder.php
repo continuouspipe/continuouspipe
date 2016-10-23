@@ -46,7 +46,7 @@ class PromiseBuilder
     {
         $deferred = new Deferred();
 
-        // Each, 1 second, get the pod status
+        // Each, $interval second, call the callable
         $timer = $this->loop->addPeriodicTimer($interval, function (Timer $timer) use ($deferred, $callable) {
             $callable($deferred, $timer);
         });
