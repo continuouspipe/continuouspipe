@@ -96,7 +96,7 @@ var HttpHandlerFactory = function(LogsCollection) {
                 request.logId = matches[1];
             },
             routes = [
-            {url: /^$/, method: 'GET', handler: redirect},
+            {url: /^\/$/, method: 'GET', handler: redirect},
             {url: /^\/v1\/logs$/, method: 'POST', handler: createLog},
             {url: /^\/v1\/logs\/(.+)/, method: 'PATCH', handler: patchLog, parameterMapping: matchFirstArgumentAsLogId},
             {url: /^\/v1\/logs\/(.+)/, method: 'GET', handler: getLog, parameterMapping: matchFirstArgumentAsLogId},
