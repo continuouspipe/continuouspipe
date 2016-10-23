@@ -1,0 +1,25 @@
+<div class="events">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>First seen</th>
+				<th>Last seen</th>
+				<th>Message</th>
+				<th>Count</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tbody>
+				<tr ng-if="!log.events || !log.events.length">
+					<td colspan="4">No events yet.</td>
+				</td>
+				<tr ng-repeat="event in log.events">
+					<td>{{ event.firstTimestamp | timeAgo }}</td>
+					<td>{{ event.lastTimestamp | timeAgo }}</td>
+					<td>{{ event.message }}</td>
+					<td>{{ event.count }}</td>
+				</tr>
+			</tbody>
+		</tbody>
+	</table>
+</div>
