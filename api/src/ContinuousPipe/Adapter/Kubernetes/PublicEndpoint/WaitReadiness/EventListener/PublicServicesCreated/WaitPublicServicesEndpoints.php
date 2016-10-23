@@ -14,6 +14,7 @@ use Kubernetes\Client\Model\KubernetesObject;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
+use React;
 
 class WaitPublicServicesEndpoints
 {
@@ -78,12 +79,30 @@ class WaitPublicServicesEndpoints
      * @param Log                $log
      *
      * @return \ContinuousPipe\Pipe\Environment\PublicEndpoint[]
+     *
+     * @throws \Exception
      */
     private function waitEndpoints(DeploymentContext $context, array $objects, Log $log)
     {
+        $loop = React\EventLoop\Factory::create();
+
+        $waitPromises = array_map(function (KubernetesObject $object) use ($loop, $context, $log) {
+            return $this->waiter->waitEndpoint($loop, $context, $object, $log);
+        }, $objects);
+
         $endpoints = [];
-        foreach ($objects as $object) {
-            $endpoints[] = $this->waiter->waitEndpoint($context, $object, $log);
+        $exception = null;
+
+        React\Promise\all($waitPromises)->then(function (array $foundEndpoints) use (&$endpoints) {
+            $endpoints = $foundEndpoints;
+        }, function (EndpointNotFound $e) use (&$exception) {
+            $exception = $e;
+        });
+
+        $loop->run();
+
+        if ($exception instanceof \Exception) {
+            throw $exception;
         }
 
         return $endpoints;

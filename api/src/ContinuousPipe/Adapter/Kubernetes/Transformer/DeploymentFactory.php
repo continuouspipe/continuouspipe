@@ -47,7 +47,7 @@ class DeploymentFactory
         if (!is_int($maxSurge) && empty($maxSurge)) {
             $maxSurge = 1;
         }
-        
+
         if (null === $maxUnavailable) {
             $volumes = $component->getSpecification()->getVolumes();
 

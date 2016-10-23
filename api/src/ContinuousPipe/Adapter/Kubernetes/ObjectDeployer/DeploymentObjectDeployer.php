@@ -61,7 +61,7 @@ class DeploymentObjectDeployer extends AbstractObjectDeployer
     private function deleteDeploymentsPod(NamespaceClient $namespaceClient, Deployment $deployment)
     {
         $podRepository = $namespaceClient->getPodRepository();
-        $matchingPods = $podRepository->findByLabels($deployment->getSpecification()->getSelector());
+        $matchingPods = $podRepository->findByLabels($deployment->getSpecification()->getSelector()->getMatchLabels());
 
         foreach ($matchingPods as $pod) {
             $podRepository->delete($pod);
