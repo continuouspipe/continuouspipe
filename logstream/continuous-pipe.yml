@@ -24,7 +24,7 @@ tasks:
                                     name: continuouspipeio
                                     cert: ${WILDCARD_SSL_CERT}
                                     key: ${WILDCARD_SSL_KEY}
-                                    
+
                     specification:
                         environment_variables:
                             - name: LOG_STREAM_API_URL
