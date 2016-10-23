@@ -4,6 +4,7 @@
 			<tr>
 				<th>First seen</th>
 				<th>Last seen</th>
+				<th>Reason</th>
 				<th>Message</th>
 				<th>Count</th>
 			</tr>
@@ -16,6 +17,7 @@
 				<tr ng-repeat="event in log.events">
 					<td>{{ event.firstTimestamp | timeAgo }}</td>
 					<td>{{ event.lastTimestamp | timeAgo }}</td>
+					<td>{{ event.reason }}</td>
 					<td>{{ event.message }}</td>
 					<td>{{ event.count }}</td>
 				</tr>
