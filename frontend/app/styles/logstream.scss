@@ -118,6 +118,90 @@ body {
                 padding: 10px;
             }
         }
+
+        &.type-pods {
+            div.pods-container {
+                padding: 0 10px;
+
+                .pod-new-generation, .pod-previous-generation {
+                    border-width: 10px;
+                    border-style: solid;
+                }
+
+                div.pod {
+                    margin: 0 10px 10px 0;
+                    display: inline-block;
+                    border-radius: 10px;
+                    width: 150px;
+                    height: 115px;
+                    padding: 10px;
+
+                    p {
+                        font-size: 11px;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        margin-bottom: 5px;
+                    }
+
+                    .name {
+                        font-weight: bold;
+                    }
+                    .creation-timestamp {
+                        font-style: italic;
+                    }
+                }
+            }
+
+            div.legend {
+                padding: 10px 10px 0 10px;
+                margin-top: 10px;
+                border-top: 1px solid #ccc;
+
+                div.legend-row {
+                    display: inline-block;
+                    margin-right: 10px;
+
+                    div.legend-container {
+                        display: inline-block;
+                        width: 20px;
+                        height: 20px;
+                        vertical-align: bottom;
+                    }
+
+                    .pod-new-generation, .pod-previous-generation {
+                        border-width: 4px;
+                        border-style: solid;
+                    }
+                }
+            }
+
+            .pod-terminating {
+                background: #0D3C55;
+            }
+            .pod-ready {
+                background: #8ACC77;
+            }
+            .pod-running {
+                background: #1395BA;
+            }
+            .pod-pending {
+                background: #F16C20;
+            }
+            .pod-failed {
+                background: #C02E1D;
+            }
+            .pod-unknown {
+                background: white;
+            }
+
+            .pod-new-generation {
+                border-color: #8ACC77;
+            }
+            .pod-previous-generation {
+                border-color: #97C4E2;
+            }
+        }
     }
 }
 
