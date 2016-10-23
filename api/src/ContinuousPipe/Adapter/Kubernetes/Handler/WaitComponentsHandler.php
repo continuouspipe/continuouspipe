@@ -12,6 +12,7 @@ use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Pipe\Promise\PromiseBuilder;
 use ContinuousPipe\Pipe\View\ComponentStatus;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
+use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
@@ -22,6 +23,7 @@ use Kubernetes\Client\NamespaceClient;
 use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
+use LogStream\Node\Complex;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
 use React;
@@ -126,7 +128,11 @@ class WaitComponentsHandler implements DeploymentHandler
                 $pods = $client->getPodRepository()->findByReplicationController($replicationController);
 
                 $runningPods = array_filter($pods->getPods(), function (Pod $pod) {
-                    return $this->isPodRunningAndReady($pod);
+                    if (null === ($status = $pod->getStatus())) {
+                        return false;
+                    }
+
+                    return $this->isPodRunningAndReady($status);
                 });
 
                 if (count($runningPods) > 0) {
@@ -157,16 +163,20 @@ class WaitComponentsHandler implements DeploymentHandler
         $logger = $logger->child(new Text(sprintf('Rolling update of component "%s"', $deployment->getMetadata()->getName())));
         $logger->updateStatus(Log::RUNNING);
 
-        return (new PromiseBuilder($loop))
-            ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $logger, $deployment) {
+        // Display status of the deployment
+        $statusLogger = $logger->child(new Text('Deployment is starting'));
+        $deploymentStatusPromise = (new PromiseBuilder($loop))
+            ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $statusLogger, $deployment, $statusLogger) {
                 $foundDeployment = $client->getDeploymentRepository()->findOneByName($deployment->getMetadata()->getName());
                 $status = $foundDeployment->getStatus();
 
                 if (null === $status) {
-                    return $logger->child(new Text('Deployment is not started yet'));
+                    $statusLogger->update(new Text('Deployment is not started yet'));
+
+                    return;
                 }
 
-                $logger->child(new Text(sprintf(
+                $statusLogger->update(new Text(sprintf(
                     '%d/%d available replicas - %d updated',
                     $status->getAvailableReplicas(),
                     $status->getReplicas(),
@@ -179,11 +189,35 @@ class WaitComponentsHandler implements DeploymentHandler
             })
             ->withTimeout($this->timeout)
             ->getPromise()
-            ->then(function () use ($logger) {
+        ;
+
+        // Display the status of the pods related to this deployment
+        $podsLogger = $logger->child(new Complex('pods'));
+        $updatePodStatuses = function () use ($client, $deployment, $podsLogger) {
+            $podsFoundByLabel = $client->getPodRepository()->findByLabels($deployment->getSpecification()->getSelector()->getMatchLabels());
+
+            $podsLogger->update(new Complex('pods', [
+                'deployment' => $this->normalizeDeployment($deployment),
+                'pods' => array_map(function(Pod $pod) {
+                    return $this->normalizePod($pod);
+                }, $podsFoundByLabel->getPods()),
+            ]));
+        };
+
+        $updatePodStatusesTimer = $loop->addPeriodicTimer(1, $updatePodStatuses);
+
+        return $deploymentStatusPromise
+            ->then(function () use ($logger, $updatePodStatusesTimer, $updatePodStatuses) {
+                $updatePodStatusesTimer->cancel();
+                $updatePodStatuses();
+
                 $logger->updateStatus(Log::SUCCESS);
-            }, function (\Exception $e) use ($logger, $deployment) {
+            }, function (\Exception $e) use ($logger, $statusLogger, $updatePodStatusesTimer, $updatePodStatuses) {
+                $updatePodStatusesTimer->cancel();
+                $updatePodStatuses();
+
                 $logger->updateStatus(Log::FAILURE);
-                $logger->child(new Text($e->getMessage()));
+                $statusLogger->update(new Text($e->getMessage()));
 
                 throw $e;
             })
@@ -223,14 +257,12 @@ class WaitComponentsHandler implements DeploymentHandler
     }
 
     /**
-     * @param Pod $pod
+     * @param PodStatus $status
      *
      * @return bool
      */
-    protected function isPodRunningAndReady(Pod $pod)
+    protected function isPodRunningAndReady(PodStatus $status)
     {
-        $status = $pod->getStatus();
-
         if ($status->getPhase() != PodStatus::PHASE_RUNNING) {
             return false;
         }
@@ -246,5 +278,67 @@ class WaitComponentsHandler implements DeploymentHandler
         }
 
         return $readyCondition->isStatus();
+    }
+
+    /**
+     * @param Deployment $deployment
+     *
+     * @return array
+     */
+    private function normalizeDeployment(Deployment $deployment)
+    {
+        $specification = $deployment->getSpecification();
+        $containers = $specification->getTemplate()->getPodSpecification()->getContainers();
+
+        return [
+            'replicas' => $specification->getReplicas(),
+            'containers' => array_map(function(Container $container) {
+                return $this->normalizeContainer($container);
+            }, $containers),
+        ];
+    }
+
+    /**
+     * @param Pod $pod
+     *
+     * @return array
+     */
+    private function normalizePod(Pod $pod)
+    {
+        return [
+            'name' => $pod->getMetadata()->getName(),
+            'creationTimestamp' => $pod->getMetadata()->getCreationTimestamp(),
+            'deletionTimestamp' => $pod->getMetadata()->getDeletionTimestamp(),
+            'containers' => array_map(function(Container $container) {
+                return $this->normalizeContainer($container);
+            }, $pod->getSpecification()->getContainers()),
+            'status' => null !== $pod->getStatus() ? $this->normalizePodStatus($pod->getStatus()) : null,
+        ];
+    }
+
+    /**
+     * @param Container $container
+     *
+     * @return array
+     */
+    private function normalizeContainer(Container $container)
+    {
+        return [
+            'name' => $container->getName(),
+            'image' => $container->getImage(),
+        ];
+    }
+
+    /**
+     * @param PodStatus $status
+     *
+     * @return array
+     */
+    private function normalizePodStatus(PodStatus $status)
+    {
+        return [
+            'phase' => $status->getPhase(),
+            'ready' => $this->isPodRunningAndReady($status),
+        ];
     }
 }
