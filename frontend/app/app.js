@@ -9,6 +9,7 @@ angular
         'ngTouch',
         'firebase',
         'RecursionHelper',
+        'yaru22.angular-timeago',
         'config'
     ])
     .config(function ($routeProvider) {
