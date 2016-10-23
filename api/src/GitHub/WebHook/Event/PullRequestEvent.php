@@ -3,7 +3,6 @@
 namespace GitHub\WebHook\Event;
 
 use GitHub\WebHook\AbstractEvent;
-use GitHub\WebHook\Event;
 use GitHub\WebHook\Model\PullRequest;
 use GitHub\WebHook\Model\Repository;
 use GitHub\WebHook\Model\User;

@@ -3,7 +3,6 @@
 namespace GitHub\WebHook\Event;
 
 use GitHub\WebHook\AbstractEvent;
-use GitHub\WebHook\Event;
 use GitHub\WebHook\Model\Branch;
 use GitHub\WebHook\Model\Commit;
 use GitHub\WebHook\Model\Repository;
