@@ -2,27 +2,12 @@ tasks:
     images:
         build: ~
 
-    canary:
-        deploy:
-            cluster: fra-01 
-            services:
-                ui:
-                    specification:
-                        environment_variables:
-                            - name: AUTHENTICATOR_API_URL
-                              value: authenticator.continuouspipe.io
-                            - name: LOG_STREAM_URL
-                              value: logstream.continuouspipe.io
-                            - name: PIPE_API_URL
-                              value: pipe.continuouspipe.io
-                            - name: RIVER_API_URL
-                              value: river.continuouspipe.io
-        filter:
-            expression: code_reference.branch != 'master'
-
     production:
         deploy:
-            cluster: gke
+            cluster: ${CLUSTER}
+            environment:
+                name: '"ui-" ~ code_reference.branch'
+
             services:
                 ui:
                     endpoints:
@@ -45,6 +30,3 @@ tasks:
                               value: pipe.continuouspipe.io
                             - name: RIVER_API_URL
                               value: river.continuouspipe.io
-
-        filter:
-            expression: code_reference.branch == 'master'

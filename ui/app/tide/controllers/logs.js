@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TideLogsController', function(TideRepository, TideSummaryRepository, $scope, $state, flow, tide, summary) {
+    .controller('TideLogsController', function(TideRepository, TideSummaryRepository, $scope, $state, $http, flow, tide, summary) {
         $scope.tide = tide;
         $scope.summary = summary;
 
