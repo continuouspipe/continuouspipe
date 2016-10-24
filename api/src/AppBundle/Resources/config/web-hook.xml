@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.web_hooks.http_client" class="ContinuousPipe\River\WebHook\NullWebHookClient" />
+        <service id="river.web_hooks.client" alias="river.web_hooks.http_client" />
+
+        <service id="river.task.web_hook_factory" class="ContinuousPipe\River\Task\WebHook\WebHookTaskFactory">
+            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="command_bus" />
+
+            <tag name="river.task_factory" task="web_hook" />
+        </service>
+
+        <service id="river.task.web_hook.send_web_hook" class="ContinuousPipe\River\Task\WebHook\Handler\SendWebHookHandler">
+            <argument type="service" id="river.web_hooks.client" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\WebHook\Command\SendWebHook" />
+        </service>
+
+    </services>
+</container>
