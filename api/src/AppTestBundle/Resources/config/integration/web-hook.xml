@@ -11,5 +11,10 @@
                  decorates="river.web_hooks.client">
             <argument type="service" id="river.web_hooks.client.traceable.inner" />
         </service>
+        <service id="river.web_hooks.client.hookable"
+                 class="ContinuousPipe\River\WebHook\HookableWebHookClient"
+                 decorates="river.web_hooks.client">
+            <argument type="service" id="river.web_hooks.client.hookable.inner" />
+        </service>
     </services>
 </container>

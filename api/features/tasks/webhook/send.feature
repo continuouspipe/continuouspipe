@@ -37,3 +37,25 @@ Feature:
       | app  | 1.2.3.4  |
     Then a web-hook should be sent to "http://example.com/another-webhook"
     And the web-hook should contain the deployed environment "app" that have the address "1.2.3.4"
+
+  Scenario: If the web-hook succeed, it succeed the task and therefore the tide
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        - web_hook:
+              url: https://example.com/my-webhook
+    """
+    When a tide is started for the branch "master"
+    Then a web-hook should be sent to "https://example.com/my-webhook"
+    And the tide should be successful
+
+  Scenario: If the web-hook failed, it fails the task and therefore the tide
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        - web_hook:
+              url: https://example.com/my-webhook
+    """
+    And the web-hook will fail
+    When a tide is started for the branch "master"
+    And the tide should be failed

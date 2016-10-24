@@ -4,8 +4,10 @@ namespace Task;
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\River\WebHook\HookableWebHookClient;
 use ContinuousPipe\River\WebHook\TraceableWebHookClient;
 use ContinuousPipe\River\WebHook\WebHook;
+use ContinuousPipe\River\WebHook\WebHookException;
 
 class WebHookContext implements Context
 {
@@ -15,11 +17,28 @@ class WebHookContext implements Context
     private $traceableWebHookClient;
 
     /**
-     * @param TraceableWebHookClient $traceableWebHookClient
+     * @var HookableWebHookClient
      */
-    public function __construct(TraceableWebHookClient $traceableWebHookClient)
+    private $hookableWebHookClient;
+
+    /**
+     * @param TraceableWebHookClient $traceableWebHookClient
+     * @param HookableWebHookClient $hookableWebHookClient
+     */
+    public function __construct(TraceableWebHookClient $traceableWebHookClient, HookableWebHookClient $hookableWebHookClient)
     {
         $this->traceableWebHookClient = $traceableWebHookClient;
+        $this->hookableWebHookClient = $hookableWebHookClient;
+    }
+
+    /**
+     * @Given the web-hook will fail
+     */
+    public function theWebHookWillFail()
+    {
+        $this->hookableWebHookClient->addHook(function() {
+            throw new WebHookException('This is planned to fail');
+        });
     }
 
     /**
