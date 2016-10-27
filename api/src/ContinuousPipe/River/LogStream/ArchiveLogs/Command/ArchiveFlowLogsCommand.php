@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 class ArchiveFlowLogsCommand
 {
     /**
-     * @JMS\Type("ContinuousPipe\River\LogStream\ArchiveLogs\Command\ArchiveFlowLogsCommand")
+     * @JMS\Type("Ramsey\Uuid\Uuid")
      *
      * @var Uuid
      */

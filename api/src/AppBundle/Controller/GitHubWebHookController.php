@@ -2,12 +2,13 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\River\CodeRepository\GitHub\WebHookHandler;
+use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
 use ContinuousPipe\River\Flow;
 use GitHub\WebHook\GitHubRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
+use SimpleBus\Message\Bus\MessageBus;
 
 /**
  * @Route(service="app.controller.github_webhook")
@@ -15,16 +16,16 @@ use FOS\RestBundle\Controller\Annotations\View;
 class GitHubWebHookController
 {
     /**
-     * @var WebHookHandler
+     * @var MessageBus
      */
-    private $webHookHandler;
+    private $commandBus;
 
     /**
-     * @param WebHookHandler $webHookHandler
+     * @param MessageBus $commandBus
      */
-    public function __construct(WebHookHandler $webHookHandler)
+    public function __construct(MessageBus $commandBus)
     {
-        $this->webHookHandler = $webHookHandler;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -35,6 +36,9 @@ class GitHubWebHookController
      */
     public function payloadAction(Flow $flow, GitHubRequest $request)
     {
-        return $this->webHookHandler->handle($flow, $request);
+        $this->commandBus->handle(new HandleGitHubEvent(
+            $flow->getUuid(),
+            $request->getEvent()
+        ));
     }
 }

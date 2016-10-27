@@ -126,6 +126,32 @@ tasks:
                                 cpu: 50m
                                 memory: 100Mi
 
+                redis:
+                    deployment_strategy:
+                        readiness_probe:
+                            type: tcp
+                            port: 6379
+
+                    specification:
+                        resources:
+                            requests:
+                                cpu: 50m
+                                memory: 100Mi
+                            limits:
+                                cpu: 250m
+                                memory: 250Mi
+
+                cron:
+                    specification:
+                        source:
+                            from_service: api
+
+                        accessibility:
+                            from_cluster: false
+
+                        command:
+                            - /app/docker/cron/run.sh
+
         filter:
             expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'
 
@@ -150,3 +176,8 @@ tasks:
 
         filter:
             expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'
+
+notifications:
+    inviqa_slack:
+        slack:
+            webhook_url: https://hooks.slack.com/services/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

@@ -44,6 +44,10 @@
         </service>
         <service id="river.github.http_client" class="GitHub\WebHook\Guzzle\Guzzle4HttpClient">
             <argument type="service" id="river.github.guzzle_http_client" />
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="get,post,patch,put,delete,request"
+                 runner="tolerance.operation_runners.github" />
         </service>
         <service id="river.github.client_factory" class="ContinuousPipe\River\GitHub\GitHubClientFactory">
             <argument type="service" id="security.token_storage" />
@@ -55,37 +59,20 @@
 
         <service id="river.github.repository_address_descriptor" class="ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor" />
 
-        <service id="river.github.pull_request_deployment_notifier" class="ContinuousPipe\River\CodeRepository\GitHub\CommentPullRequestDeploymentNotifier">
-            <argument type="service" id="river.github.client_factory" />
-            <argument type="service" id="river.event_store" />
-            <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="authenticator.bucket_repository" />
-        </service>
-
-        <service id="river.recover.notification.pull_request_deployment_notifier"
-                 class="ContinuousPipe\River\Recover\Notification\PullRequest\OptionalPullRequestDeploymentNotifier"
-                 decorates="river.github.pull_request_deployment_notifier">
-            <argument type="service" id="river.recover.notification.pull_request_deployment_notifier.inner" />
-            <argument type="service" id="logger" />
-        </service>
-
         <service id="river.github.code_reference_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver" />
-        <service id="river.github.web_hook_handler" class="ContinuousPipe\River\CodeRepository\GitHub\WebHookHandler">
+        <service id="river.github.web_hook_handler" class="ContinuousPipe\River\CodeRepository\GitHub\Handler\GitHubWebHookHandler">
             <argument type="service" id="river.github.code_reference_resolver" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="logger" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent" />
         </service>
 
         <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\GitHubPullRequestResolver">
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="jms_serializer" />
-        </service>
-        <service id="river.github.notification.deployment_successful_listener" class="ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\DeploymentSuccessfulListener">
-            <argument type="service" id="river.github.pull_request_resolver" />
-            <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.github.pull_request_deployment_notifier" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful"/>
         </service>
         <service id="river.commit_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCommitResolver">
             <argument type="service" id="river.github.client_factory" />
@@ -94,19 +81,14 @@
 
         <service id="river.listener.github.pull_request.comment_deployment_environment_endpoints" class="ContinuousPipe\River\EventListener\GitHub\PullRequestOpened\CommentDeploymentEnvironmentEndpoints">
             <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.github.pull_request_deployment_notifier" />
+            <argument type="service" id="river.notifications.tide_listener" />
             <argument type="service" id="river.event_store" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestOpened"/>
         </service>
 
         <service id="river.listener.github.pull_request.delete_related_environment" class="ContinuousPipe\River\EventListener\GitHub\BranchDeleted\DeleteRelatedEnvironment">
-            <argument type="service" id="river.pipe_client" />
-            <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
-            <argument type="service" id="river.pipe.cluster_identifier_resolver" />
-            <argument type="service" id="logger" />
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="command_bus" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\BranchDeleted" />
         </service>
@@ -117,6 +99,13 @@
             <argument type="service" id="river.task_filter.context_factory" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.tide.start_voter" />
+
+        </service>
+
+        <service id="river.listener.github.locked.eventually_create_and_start_tide"
+                 class="ContinuousPipe\River\Tide\Concurrency\EventListener\GitHub\LockTheStartDecisionOfATide">
+            <argument type="service" id="river.listener.github.eventually_create_and_start_tide" />
+            <argument type="service" id="river.tide.concurrency.locker" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\CodePushed"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestOpened"/>

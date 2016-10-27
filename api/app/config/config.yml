@@ -148,9 +148,6 @@ log_stream:
     url: %logstream_url%
     strict_ssl: false
 
-tolerance:
-    request_identifier: ~
-
 old_sound_rabbit_mq:
     connections:
         default:
@@ -168,7 +165,7 @@ old_sound_rabbit_mq:
     producers:
         asynchronous_commands:
             connection:       default
-            exchange_options: { name: 'river_commands', type: direct }
+            exchange_options: { name: %rabbitmq_queue_name%, type: direct }
 
 simple_bus_rabbit_mq_bundle_bridge:
     commands:
@@ -177,6 +174,7 @@ simple_bus_rabbit_mq_bundle_bridge:
         producer_service_id: old_sound_rabbit_mq.asynchronous_commands_producer
 
 simple_bus_asynchronous:
+    object_serializer_service_id: river.jms_serializer.object_serializer
     commands:
         logging: ~
 
@@ -192,3 +190,87 @@ knp_paginator:
         distinct: true
     template:
         pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig
+
+beberlei_metrics:
+    collectors:
+        statsd:
+            type: statsd
+            host: %statsd_host%
+            port: %statsd_port%
+            prefix: %statsd_prefix%.
+
+tolerance:
+    aop:
+        enabled: true
+
+        wrappers:
+            - class: "ContinuousPipe\Security\Authenticator\HttpAuthenticatorClient"
+              methods:
+                  - getUserByUsername
+                  - findBucketByUuid
+                  - findTeamBySlug
+                  - findAllTeams
+              runner: tolerance.operation_runners.authenticator
+
+    operation_runners:
+        default:
+            callback: ~
+
+        builder:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.builder
+
+        pipe:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.pipe
+
+        authenticator:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.authenticator
+
+        github:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.github
+
+        slack:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.slack
+
+    metrics:
+        collectors:
+            -
+                type: rabbitmq
+                namespace: river.queue
+                options:
+                    host: %rabbitmq_host%
+                    port: %rabbitmq_management_port%
+                    username: %rabbitmq_user%
+                    password: %rabbitmq_password%
+                    vhost: %rabbitmq_vhost%
+                    queue: %rabbitmq_queue_name%
+
+        publishers:
+            hosted_graphite:
+                type: hosted_graphite
+                options:
+                    server: %hosted_graphite_server%
+                    port: %hosted_graphite_port%
+                    api_key: %hosted_graphite_api_key%
+
+            statsd:
+                type: beberlei
+                options:
+                    service: beberlei_metrics.collector.statsd
+                    auto_flush: true
+
+        command:
+            publisher: tolerance.metrics.publisher.hosted_graphite
+
+        request:
+            namespace: river.api.http.request
+            publisher: tolerance.metrics.publisher.statsd

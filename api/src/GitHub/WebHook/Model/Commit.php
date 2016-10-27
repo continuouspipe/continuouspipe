@@ -85,6 +85,14 @@ class Commit
     private $filesModified;
 
     /**
+     * @param string $id
+     */
+    public function __construct($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @return string
      */
     public function getId()

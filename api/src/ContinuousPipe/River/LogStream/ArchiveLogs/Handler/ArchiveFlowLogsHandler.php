@@ -4,11 +4,10 @@ namespace ContinuousPipe\River\LogStream\ArchiveLogs\Handler;
 
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\LogStream\ArchiveLogs\Command\ArchiveFlowLogsCommand;
+use ContinuousPipe\River\LogStream\ArchiveLogs\Command\ArchiveTideCommand;
 use ContinuousPipe\River\LogStream\ArchiveLogs\Event\TideLogsArchived;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
-use LogStream\Client;
-use LogStream\Tree\TreeLog;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -20,11 +19,6 @@ class ArchiveFlowLogsHandler
     private $tideRepository;
 
     /**
-     * @var Client
-     */
-    private $logStreamClient;
-
-    /**
      * @var EventStore
      */
     private $eventStore;
@@ -32,20 +26,18 @@ class ArchiveFlowLogsHandler
     /**
      * @var MessageBus
      */
-    private $eventBus;
+    private $commandBus;
 
     /**
      * @param TideRepository $tideRepository
-     * @param Client         $logStreamClient
      * @param EventStore     $eventStore
-     * @param MessageBus     $eventBus
+     * @param MessageBus     $commandBus
      */
-    public function __construct(TideRepository $tideRepository, Client $logStreamClient, EventStore $eventStore, MessageBus $eventBus)
+    public function __construct(TideRepository $tideRepository, EventStore $eventStore, MessageBus $commandBus)
     {
         $this->tideRepository = $tideRepository;
-        $this->logStreamClient = $logStreamClient;
         $this->eventStore = $eventStore;
-        $this->eventBus = $eventBus;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -56,14 +48,7 @@ class ArchiveFlowLogsHandler
         $tides = $this->getArchivableTides($command->getFlowUuid());
 
         foreach ($tides as $tide) {
-            try {
-                $this->logStreamClient->archive(TreeLog::fromId($tide->getLogId()));
-                $this->eventBus->handle(new TideLogsArchived($tide->getUuid()));
-            } catch (Client\ClientException $e) {
-                if ($e->getMessage() == 'Found status 404') {
-                    $this->eventBus->handle(new TideLogsArchived($tide->getUuid()));
-                }
-            }
+            $this->commandBus->handle(new ArchiveTideCommand($tide->getUuid(), $tide->getLogId()));
         }
     }
 

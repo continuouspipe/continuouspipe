@@ -2,19 +2,27 @@
 
 namespace ContinuousPipe\River;
 
+use JMS\Serializer\Annotation as JMS;
+
 class CodeReference
 {
     /**
+     * @JMS\Type("ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository")
+     *
      * @var CodeRepository
      */
     private $codeRepository;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $sha1;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var null|string
      */
     private $branch;

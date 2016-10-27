@@ -4,6 +4,9 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\River\Command\DeleteEnvironments;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\CodeReference;
@@ -11,6 +14,7 @@ use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideCreated;
+use ContinuousPipe\River\LogStream\ArchiveLogs\Command\ArchiveTideCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\TimedOutTideRepository;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
@@ -679,9 +683,19 @@ EOF;
 
         /** @var DeploymentStarted $deploymentStarted */
         $deploymentStarted = current($deploymentStartedEvents);
+        $startedDeployment = $deploymentStarted->getDeployment();
+
         $this->eventBus->handle(new DeploymentSuccessful(
             $this->getCurrentTideUuid(),
-            $deploymentStarted->getDeployment()
+            new Deployment(
+                $startedDeployment->getUuid(),
+                $startedDeployment->getRequest(),
+                Deployment::STATUS_SUCCESS,
+                array_merge($startedDeployment->getPublicEndpoints(), [
+                    new PublicEndpoint('fake', '1.2.3.4'),
+                ]),
+                $startedDeployment->getComponentStatuses()
+            )
         ));
     }
 
@@ -734,7 +748,8 @@ EOF;
         $this->aTideIsStartedWithTasks([
             [
                 'build' => [
-                    'environment' => $environ->getHash()
+                    'environment' => $environ->getHash(),
+                    'services' => ['image0' => []]
                 ]
             ]
         ]);
@@ -1080,6 +1095,44 @@ EOF;
     }
 
     /**
+     * @Then the environment deletion should be delayed
+     */
+    public function theEnvironmentDeletionShouldBePostponed()
+    {
+        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $matchingMessages = array_filter($messages, function($message) {
+            return $message instanceof DeleteEnvironments;
+        });
+
+        if (count($matchingMessages) == 0) {
+            throw new \RuntimeException('No delayed message found');
+        }
+    }
+
+    /**
+     * @Then the tide log archive command should be delayed
+     */
+    public function theTideLogArchiveCommandShouldBeDelayed()
+    {
+        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $matchingMessages = array_filter($messages, function($message) {
+            return $message instanceof ArchiveTideCommand;
+        });
+
+        if (count($matchingMessages) == 0) {
+            throw new \RuntimeException('No delayed message found');
+        }
+    }
+
+    /**
+     * @Given there is a pending tide created for branch :branch and commit :commit
+     */
+    public function thereIsATideCreatedForBranchAndCommit($branch, $commit)
+    {
+        $this->aTideIsCreatedForBranchAndCommitWithADeployTask($branch, $commit);
+    }
+
+    /**
      * @Given the tide :uuid is running and timed out
      */
     public function theTideIsRunningAndTimedOut($uuid)
@@ -1179,8 +1232,9 @@ EOF;
      */
     private function getTideByCodeReference($branch, $sha1)
     {
-        $codeRepository = $this->flowContext->getCurrentFlow()->getContext()->getCodeRepository();
-        $tides = $this->viewTideRepository->findByCodeReference(new CodeReference($codeRepository, $sha1, $branch));
+        $flow = $this->flowContext->getCurrentFlow();
+        $codeRepository = $flow->getContext()->getCodeRepository();
+        $tides = $this->viewTideRepository->findByCodeReference($flow->getUuid(), new CodeReference($codeRepository, $sha1, $branch));
 
         if (count($tides) != 1) {
             throw new \RuntimeException(sprintf(

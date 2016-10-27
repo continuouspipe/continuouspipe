@@ -53,15 +53,24 @@ class BuildTaskFactory implements TaskFactory
         $node = $builder->root('build');
 
         $node
+            ->beforeNormalization()
+                ->ifArray()
+                ->then(function (array $configuration) {
+                    if (array_key_exists('environment', $configuration)
+                        && array_key_exists('services', $configuration)) {
+                        foreach ($configuration['services'] as $name => $service) {
+                            if (!array_key_exists('environment', $service)) {
+                                $configuration['services'][$name]['environment'] = $configuration['environment'];
+                            }
+                        }
+
+                        unset($configuration['environment']);
+                    }
+
+                    return $configuration;
+                })
+            ->end()
             ->children()
-                ->arrayNode(BuildContext::ENVIRONMENT_KEY)
-                    ->prototype('array')
-                        ->children()
-                            ->scalarNode('name')->isRequired()->end()
-                            ->scalarNode('value')->isRequired()->end()
-                        ->end()
-                    ->end()
-                ->end()
                 ->arrayNode('services')
                     ->isRequired()
                     ->useAttributeAsKey('name')
@@ -75,6 +84,14 @@ class BuildTaskFactory implements TaskFactory
                                 ->values(['branch', 'sha1'])
                                 ->defaultValue('branch')
                             ->end()
+                            ->arrayNode(BuildContext::ENVIRONMENT_KEY)
+                                ->prototype('array')
+                                    ->children()
+                                        ->scalarNode('name')->isRequired()->end()
+                                        ->scalarNode('value')->isRequired()->end()
+                                    ->end()
+                                ->end()
+                            ->end()
                         ->end()
                     ->end()
                 ->end()
@@ -87,7 +104,6 @@ class BuildTaskFactory implements TaskFactory
     private function createConfiguration(array $configuration)
     {
         return new BuildTaskConfiguration(
-            $this->flattenEnvironmentVariables($configuration['environment']),
             $this->createServiceConfiguration($configuration['services'])
         );
     }
@@ -119,7 +135,8 @@ class BuildTaskFactory implements TaskFactory
                 $service['image'],
                 $service['tag'],
                 $service['build_directory'],
-                $service['docker_file_path']
+                $service['docker_file_path'],
+                $this->flattenEnvironmentVariables($service['environment'] ?: [])
             );
         }, $services);
     }

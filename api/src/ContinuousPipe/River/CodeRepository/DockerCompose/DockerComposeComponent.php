@@ -93,7 +93,17 @@ class DockerComposeComponent implements \JsonSerializable
      */
     public function getDockerfilePath()
     {
-        return array_key_exists('dockerfile', $this->parsed) ? $this->parsed['dockerfile'] : '';
+        if (array_key_exists('dockerfile', $this->parsed)) {
+            return $this->parsed['dockerfile'];
+        }
+
+        if (array_key_exists('build', $this->parsed) && is_array($this->parsed['build'])) {
+            if (array_key_exists('dockerfile', $this->parsed['build'])) {
+                return $this->parsed['build']['dockerfile'];
+            }
+        }
+
+        return '';
     }
 
     /**
@@ -101,7 +111,17 @@ class DockerComposeComponent implements \JsonSerializable
      */
     public function getBuildDirectory()
     {
-        return array_key_exists('build', $this->parsed) ? $this->parsed['build'] : '.';
+        if (array_key_exists('build', $this->parsed)) {
+            if (is_string($this->parsed['build'])) {
+                return $this->parsed['build'];
+            }
+
+            if (array_key_exists('context', $this->parsed['build'])) {
+                return $this->parsed['build']['context'];
+            }
+        }
+
+        return '';
     }
 
     /**

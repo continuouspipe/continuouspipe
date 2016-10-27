@@ -5,6 +5,7 @@ namespace Task;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Extension\ReverseProxy\ReverseProxyExtension;
 use ContinuousPipe\Pipe\Client\ComponentStatus;
@@ -105,6 +106,7 @@ class DeployContext implements Context
 
     /**
      * @Given the service :name was created with the public address :address
+     * @Given the component :name was created with the public address :address
      */
     public function theServiceWasCreatedWithThePublicAddress($name, $address)
     {
@@ -194,9 +196,37 @@ class DeployContext implements Context
      */
     public function theDeploymentSucceed()
     {
+        return $this->theDeploymentSucceedWithTheFollowingAdditionalEndpoints([
+            new PublicEndpoint('fake', '1.2.3.4'),
+        ]);
+    }
+
+    /**
+     * @When the deployment succeed with the following public address:
+     */
+    public function theDeploymentSucceedWithTheFollowingPublicAddress(TableNode $table)
+    {
+        return $this->theDeploymentSucceedWithTheFollowingAdditionalEndpoints(array_map(function(array $row) {
+            return new PublicEndpoint($row['name'], $row['address']);
+        }, $table->getHash()));
+    }
+
+    /**
+     * @param PublicEndpoint[] $endpoints
+     */
+    private function theDeploymentSucceedWithTheFollowingAdditionalEndpoints(array $endpoints)
+    {
+        $startedDeployment = $this->getDeployment();
+
         $this->eventBus->handle(new DeploymentSuccessful(
             $this->tideContext->getCurrentTideUuid(),
-            $this->getDeployment()
+            new Deployment(
+                $startedDeployment->getUuid(),
+                $startedDeployment->getRequest(),
+                Deployment::STATUS_SUCCESS,
+                array_merge($startedDeployment->getPublicEndpoints(), $endpoints),
+                $startedDeployment->getComponentStatuses()
+            )
         ));
     }
 

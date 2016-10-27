@@ -6,10 +6,11 @@
 
     <services>
         <service id="river.time_resolver" class="ContinuousPipe\River\Infrastructure\InMemory\NativeTimeResolver" />
-        <service id="river.tide.saga" class="ContinuousPipe\River\TideSaga">
+        <service id="river.tide.saga.apply_tide_events" class="ContinuousPipe\River\ApplyTideEvents">
             <argument type="service" id="event_bus" />
             <argument type="service" id="river.repository.tide" />
         </service>
+        <service id="river.tide.saga" alias="river.tide.saga.apply_tide_events" />
 
         <service id="river.event_bus.middleware.tide_saga_apply" class="ContinuousPipe\River\EventBus\TideSagaApplyMiddleware">
             <argument type="service" id="service_container" />
@@ -31,6 +32,7 @@
         <service id="river.tide.configuration_enhancer.add_default_build_tag" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\AddDefaultBuildTag" />
         <service id="river.tide.configuration_enhancer.deploy_built_images" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\DeployBuiltImagesByDefault" />
         <service id="river.tide.configuration_enhancer.add_default_values" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\AddDefaultValues" />
+        <service id="river.tide.configuration_enhancer.add_github_notifications" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\AddGitHubNotificationsByDefault" />
         <service id="river.tide.configuration_enhancer.run.get_images_name_from_built_services" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\GetImageNameFromBuiltServices">
             <argument type="collection">
                 <argument type="string" key="selector">[tasks][*][run]</argument>
@@ -53,6 +55,7 @@
             <argument type="collection">
                 <argument type="service" id="river.tide.configuration_enhancer.unnamed_tasks" />
                 <argument type="service" id="river.docker_compose.configuration_enhancer" />
+                <argument type="service" id="river.tide.configuration_enhancer.add_github_notifications" />
                 <argument type="service" id="river.tide.configuration_enhancer.add_default_build_tag" />
                 <argument type="service" id="river.tide.configuration_enhancer.deploy_built_images" />
                 <argument type="service" id="river.tide.configuration_enhancer.add_default_values" />
@@ -131,6 +134,7 @@
         <service id="river.tide.concurrency_manager" class="ContinuousPipe\River\Tide\Concurrency\ViewRepositoryBasedConcurrencyManager">
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.queue.delayed_command_bus" />
+            <argument>%retry_interval%</argument>
         </service>
 
         <service id="river.tide.concurrency.run_pending_tides_handler" class="ContinuousPipe\River\Tide\Concurrency\Handler\RunPendingTidesHandler">
@@ -147,6 +151,21 @@
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
+        </service>
+
+        <service id="river.tide.concurrency.locker.predis_client" class="Predis\Client">
+            <argument>redis://%redis_host%</argument>
+        </service>
+        <service id="river.tide.concurrency.locker.predis_locker" class="ContinuousPipe\River\Tide\Concurrency\Lock\PredisMutexLocker">
+            <argument type="service" id="river.tide.concurrency.locker.predis_client" />
+            <argument>%locker_timeout%</argument>
+        </service>
+        <service id="river.tide.concurrency.locker" alias="river.tide.concurrency.locker.predis_locker" />
+        <service id="river.tide.concurrency.lock_tide_while_saga"
+                 class="ContinuousPipe\River\Tide\Concurrency\Saga\LockTideWhileSaga"
+                 decorates="river.tide.saga">
+            <argument type="service" id="river.tide.concurrency.lock_tide_while_saga.inner" />
+            <argument type="service" id="river.tide.concurrency.locker" />
         </service>
 
         <!-- Filters -->

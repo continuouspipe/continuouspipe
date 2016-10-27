@@ -56,14 +56,16 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByCodeReference(CodeReference $codeReference)
+    public function findByCodeReference(Uuid $flowUuid, CodeReference $codeReference)
     {
         $codeReferenceIdentifier = $this->getCodeReferenceIdentifier($codeReference);
         if (!array_key_exists($codeReferenceIdentifier, $this->tideByCodeReference)) {
             return [];
         }
 
-        return $this->tideByCodeReference[$codeReferenceIdentifier];
+        return array_values(array_filter($this->tideByCodeReference[$codeReferenceIdentifier], function (Tide $tide) use ($flowUuid) {
+            return $tide->getFlow()->getUuid() == $flowUuid;
+        }));
     }
 
     /**

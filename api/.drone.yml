@@ -2,6 +2,7 @@ build:
     image: docker.io/sroze/php-stack:7.0
     environment:
         - DATABASE_HOST=127.0.0.1
+        - REDIS_HOST=127.0.0.1
         - COMPOSER_HOME=/drone/composer-cache
 
     commands:
@@ -10,6 +11,7 @@ build:
 
         # Domain tests
         - bin/phpspec run
+        - bin/phpunit -c app
         - bin/behat -fprogress
 
         # Smoke tests
@@ -28,3 +30,6 @@ compose:
             - MYSQL_DATABASE=river
             - MYSQL_USER=river
             - MYSQL_PASSWORD=river
+
+    redis:
+        image: redis:alpine

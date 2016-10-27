@@ -81,7 +81,8 @@ class FilterHashChangedVoter implements TideStartVoter
      */
     private function getFilterHashesFromOtherTides(Tide $tide)
     {
-        $otherTides = $this->tideRepository->findByCodeReference($tide->getContext()->getCodeReference());
+        $tideContext = $tide->getContext();
+        $otherTides = $this->tideRepository->findByCodeReference($tideContext->getFlowUuid(), $tideContext->getCodeReference());
         $hashes = [];
 
         foreach ($otherTides as $tide) {

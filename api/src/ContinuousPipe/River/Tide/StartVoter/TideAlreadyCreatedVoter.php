@@ -25,7 +25,8 @@ class TideAlreadyCreatedVoter implements TideStartVoter
      */
     public function vote(Tide $tide, Tide\Configuration\ArrayObject $context)
     {
-        $matchingTides = $this->tideRepository->findByCodeReference($tide->getContext()->getCodeReference());
+        $tideContext = $tide->getContext();
+        $matchingTides = $this->tideRepository->findByCodeReference($tideContext->getFlowUuid(), $tideContext->getCodeReference());
 
         return count($matchingTides) == 0;
     }

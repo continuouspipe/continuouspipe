@@ -2,13 +2,13 @@
 
 namespace GitHub\WebHook\Event;
 
-use GitHub\WebHook\Event;
+use GitHub\WebHook\AbstractEvent;
 use GitHub\WebHook\Model\PullRequest;
 use GitHub\WebHook\Model\Repository;
 use GitHub\WebHook\Model\User;
 use JMS\Serializer\Annotation as JMS;
 
-class PullRequestEvent implements Event
+class PullRequestEvent extends AbstractEvent
 {
     const ACTION_OPENED = 'opened';
     const ACTION_CLOSED = 'closed';

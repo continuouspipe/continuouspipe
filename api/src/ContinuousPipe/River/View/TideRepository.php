@@ -29,11 +29,12 @@ interface TideRepository
     public function findLastByFlow(Flow $flow, $limit);
 
     /**
+     * @param Uuid          $flowUuid
      * @param CodeReference $codeReference
      *
      * @return Tide[]
      */
-    public function findByCodeReference(CodeReference $codeReference);
+    public function findByCodeReference(Uuid $flowUuid, CodeReference $codeReference);
 
     /**
      * Find all the tides of a given flow for the given branch. So we can record the comments.

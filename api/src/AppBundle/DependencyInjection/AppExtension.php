@@ -25,11 +25,12 @@ class AppExtension extends Extension
         $loader->load('tide.xml');
         $loader->load('events.xml');
         $loader->load('tasks.xml');
-        $loader->load('logging.xml');
-        $loader->load('silent.xml');
+        $loader->load('notifications.xml');
         $loader->load('queue.xml');
         $loader->load('alerts.xml');
         $loader->load('security.xml');
+        $loader->load('logstream.xml');
+        $loader->load('web-hook.xml');
         $loader->load('build/task.xml');
         $loader->load('build/handlers.xml');
         $loader->load('build/logging.xml');
