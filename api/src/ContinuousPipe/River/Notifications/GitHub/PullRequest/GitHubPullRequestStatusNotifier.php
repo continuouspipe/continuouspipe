@@ -87,7 +87,7 @@ class GitHubPullRequestStatusNotifier implements Notifier
         // Remove previous comments
         $this->removePreviousComments($client, $gitHubRepository, $tide);
 
-        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($tide->getCodeReference(), $tide->getTeam());
+        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($tide->getFlow(), $tide->getCodeReference());
 
         foreach ($pullRequests as $pullRequest) {
             // Create the new comment
