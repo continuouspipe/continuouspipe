@@ -58,4 +58,4 @@ Feature:
     """
     And the web-hook will fail
     When a tide is started for the branch "master"
-    And the tide should be failed
+    Then the tide should be failed
