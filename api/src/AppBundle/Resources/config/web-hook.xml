@@ -4,8 +4,13 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.web_hooks.http_client" class="ContinuousPipe\River\WebHook\NullWebHookClient" />
-        <service id="river.web_hooks.client" alias="river.web_hooks.http_client" />
+        <service id="river.web_hooks.http_client" class="GuzzleHttp\Client" />
+        <service id="river.web_hooks.http" class="ContinuousPipe\River\WebHook\HttpWebHookClient">
+            <argument type="service" id="river.web_hooks.http_client" />
+            <argument type="service" id="jms_serializer" />
+        </service>
+
+        <service id="river.web_hooks.client" alias="river.web_hooks.http" />
 
         <service id="river.task.web_hook_factory" class="ContinuousPipe\River\Task\WebHook\WebHookTaskFactory">
             <argument type="service" id="log_stream.logger_factory" />
