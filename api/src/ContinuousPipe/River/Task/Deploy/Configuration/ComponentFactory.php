@@ -69,7 +69,7 @@ class ComponentFactory
         if (!array_key_exists('endpoints', $configuration)) {
             return [];
         }
-        
+
         $jsonEncodedEndpoints = json_encode($configuration['endpoints']);
 
         return $this->serializer->deserialize($jsonEncodedEndpoints, sprintf('array<%s>', Component\Endpoint::class), 'json');

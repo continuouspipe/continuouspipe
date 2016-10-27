@@ -63,6 +63,9 @@ default:
                     - @river.keen.client.traceable
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
+                - Task\WebHookContext:
+                    - @river.web_hooks.client.traceable
+                    - @river.web_hooks.client.hookable
 
     extensions:
         Behat\Symfony2Extension:
