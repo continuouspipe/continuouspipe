@@ -289,6 +289,29 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the component :name should be deployed with the following environment variables:
+     */
+    public function theComponentShouldBeDeployedWithTheFollowingEnvironmentVariables($name, TableNode $table)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $foundEnvironmentVariablesAsHash = [];
+        foreach ($component->getSpecification()->getEnvironmentVariables() as $environmentVariable) {
+            $foundEnvironmentVariablesAsHash[$environmentVariable->getName()] = $environmentVariable->getValue();
+        }
+
+        foreach ($table->getHash() as $row) {
+            if (!array_key_exists($row['name'], $foundEnvironmentVariablesAsHash)) {
+                throw new \RuntimeException(sprintf('Variable "%s" not found in %s', $row['name'], implode(array_keys($foundEnvironmentVariablesAsHash))));
+            }
+
+            $foundValue = $foundEnvironmentVariablesAsHash[$row['name']];
+            if ($foundValue != $row['value']) {
+                throw new \RuntimeException(sprintf('Found value "%s" instead of "%s" for the variable "%s"', $foundValue, $row['value'], $row['name']));
+            }
+        }
+    }
+
+    /**
      * @Then the endpoint :endpointName of the component :name should be deployed with :count SSL certificate
      */
     public function theEndpointOfTheComponentShouldBeDeployedWithSslCertificate($endpointName, $name, $count)
@@ -546,6 +569,6 @@ class RunContext implements Context
             throw new \RuntimeException('No pipe request found');
         }
 
-        return current($requests);
+        return end($requests);
     }
 }

@@ -6,6 +6,7 @@ use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory;
+use ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\DeploymentRequestEnhancer;
 use ContinuousPipe\River\Task\Run\RunTaskConfiguration;
 use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\View\Tide;
@@ -24,13 +25,20 @@ class DeploymentRequestFactory
     private $targetEnvironmentFactory;
 
     /**
-     * @param UrlGeneratorInterface    $urlGenerator
-     * @param TargetEnvironmentFactory $targetEnvironmentFactory
+     * @var DeploymentRequestEnhancer
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory)
+    private $deploymentRequestEnhancer;
+
+    /**
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param TargetEnvironmentFactory $targetEnvironmentFactory
+     * @param DeploymentRequestEnhancer $deploymentRequestEnhancer
+     */
+    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory, DeploymentRequestEnhancer $deploymentRequestEnhancer)
     {
         $this->urlGenerator = $urlGenerator;
         $this->targetEnvironmentFactory = $targetEnvironmentFactory;
+        $this->deploymentRequestEnhancer = $deploymentRequestEnhancer;
     }
 
     /**
@@ -44,7 +52,7 @@ class DeploymentRequestFactory
      */
     public function createDeploymentRequest(Tide $tide, TaskDetails $taskDetails, RunTaskConfiguration $configuration)
     {
-        return new DeploymentRequest(
+        $request = new DeploymentRequest(
             $this->targetEnvironmentFactory->create($tide, $configuration),
             new DeploymentRequest\Specification([
                 $this->createComponent(
@@ -57,6 +65,11 @@ class DeploymentRequestFactory
                 $taskDetails->getLogId()
             ),
             $tide->getTeam()->getBucketUuid()
+        );
+
+        return $this->deploymentRequestEnhancer->enhance(
+            $tide,
+            $request
         );
     }
 

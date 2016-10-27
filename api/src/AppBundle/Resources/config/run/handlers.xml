@@ -8,6 +8,7 @@
         <service id="river.task.run.deployment_request_factory" class="ContinuousPipe\River\Task\Run\RunRequest\DeploymentRequestFactory">
             <argument type="service" id="router" />
             <argument type="service" id="river.pipe.target_environment_factory" />
+            <argument type="service" id="river.pipe.deployment_request_enhancer" />
         </service>
 
         <service id="river.task.run.handler.start_run" class="ContinuousPipe\River\Task\Run\Handler\StartRunHandler">
