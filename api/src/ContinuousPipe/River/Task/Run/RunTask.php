@@ -69,7 +69,6 @@ class RunTask extends EventDrivenTask
         $this->context->setTaskLog($log);
         $this->newEvents[] = TaskQueued::fromContext($this->context);
 
-        $this->addDeploymentEnvironmentVariables();
         $this->commandBus->handle(new StartRunCommand(
             $this->context->getTideUuid(),
             new TaskDetails($this->context->getTaskId(), $log->getId()),
@@ -127,36 +126,5 @@ class RunTask extends EventDrivenTask
     private function getRunStartedEvent()
     {
         return $this->getEventsOfType(RunStarted::class)[0];
-    }
-
-    /**
-     * Add the environment variables that come from the last deployment in the
-     * task configuration.
-     */
-    private function addDeploymentEnvironmentVariables()
-    {
-        /** @var DeploymentSuccessful[] $events */
-        $events = $this->getEventsOfType(DeploymentSuccessful::class);
-        $publicEndpointMappings = array_reduce($events, function ($carry, DeploymentSuccessful $event) {
-            foreach ($event->getDeployment()->getPublicEndpoints() as $publicEndpoint) {
-                $serviceName = $publicEndpoint->getName();
-                $environName = sprintf('SERVICE_%s_PUBLIC_ENDPOINT', strtoupper($serviceName));
-
-                $carry[$environName] = $publicEndpoint->getAddress();
-            }
-
-            return $carry;
-        }, []);
-
-        foreach ($publicEndpointMappings as $name => $address) {
-            $this->configuration->addEnvironmentVariable($name, $address);
-        }
-
-        $this->configuration->setEnvironmentVariables(
-            ReplaceEnvironmentVariableValues::replaceValues(
-                $this->configuration->getEnvironmentVariables(),
-                $publicEndpointMappings
-            )
-        );
     }
 }

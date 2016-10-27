@@ -42,6 +42,13 @@
             <argument type="service" id="river.pipe.target_environment_factory" />
         </service>
 
+        <service id="river.task.deploy.deployment_request_factory.enhanced"
+                 class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\EnhancedDeploymentRequestFactory"
+                 decorates="river.task.deploy.deployment_request_factory">
+            <argument type="service" id="river.task.deploy.deployment_request_factory.enhanced.inner" />
+            <argument type="service" id="river.pipe.deployment_request_enhancer" />
+        </service>
+
         <service id="river.handler.start_deploy" class="ContinuousPipe\River\Task\Deploy\Handler\StartDeploymentHandler">
             <argument type="service" id="river.task.deploy.deployment_request_factory" />
             <argument type="service" id="river.pipe_client" />

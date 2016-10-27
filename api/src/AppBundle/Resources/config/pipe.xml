@@ -24,5 +24,11 @@
         <service id="river.pipe.target_environment_factory" class="ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory">
             <argument type="service" id="river.task.deploy.naming.environment_strategy" />
         </service>
+
+        <service id="river.pipe.deployment_request_enhancer.replace_deployed_endpoints" class="ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\ReplaceDeployedEndpointsVariables">
+            <argument type="service" id="river.event_store" />
+        </service>
+
+        <service id="river.pipe.deployment_request_enhancer" alias="river.pipe.deployment_request_enhancer.replace_deployed_endpoints" />
     </services>
 </container>
