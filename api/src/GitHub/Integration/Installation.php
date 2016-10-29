@@ -21,6 +21,16 @@ class Installation
     private $account;
 
     /**
+     * @param int                 $id
+     * @param InstallationAccount $account
+     */
+    public function __construct($id, InstallationAccount $account)
+    {
+        $this->id = $id;
+        $this->account = $account;
+    }
+
+    /**
      * @return int
      */
     public function getId()

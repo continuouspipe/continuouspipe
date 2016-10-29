@@ -32,4 +32,12 @@ class InMemoryInstallationRepository implements InstallationRepository
 
         return current($matchingInstallations);
     }
+
+    /**
+     * @param Installation $installation
+     */
+    public function save(Installation $installation)
+    {
+        $this->installations[$installation->getId()] = $installation;
+    }
 }

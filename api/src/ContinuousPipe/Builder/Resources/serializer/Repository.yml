@@ -4,3 +4,5 @@ ContinuousPipe\Builder\Repository:
             type: string
         branch:
             type: string
+        token:
+            type: string

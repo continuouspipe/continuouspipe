@@ -36,6 +36,20 @@ class InstallationAccount
     private $avatarUrl;
 
     /**
+     * @param int    $id
+     * @param string $login
+     * @param string $description
+     * @param string $avatarUrl
+     */
+    public function __construct($id, $login, $description = null, $avatarUrl = null)
+    {
+        $this->id = $id;
+        $this->login = $login;
+        $this->description = $description;
+        $this->avatarUrl = $avatarUrl;
+    }
+
+    /**
      * @return int
      */
     public function getId()
