@@ -58,15 +58,15 @@ class PredisCachedInstallationRepository implements InstallationRepository
     {
         $key = 'github_installation_by_account_'.md5($account);
 
-        if (!empty($serializedInstallations = $this->client->get($key))) {
-            $installations = $this->serializer->deserialize($serializedInstallations, 'array<'.Installation::class.'>', 'json');
+        if (!empty($serializedInstallation = $this->client->get($key))) {
+            $installation = $this->serializer->deserialize($serializedInstallation, Installation::class, 'json');
         } else {
-            $installations = $this->decoratedRepository->findByAccount($account);
-            $serializedInstallations = $this->serializer->serialize($installations, 'json');
+            $installation = $this->decoratedRepository->findByAccount($account);
+            $serializedInstallation = $this->serializer->serialize($installation, 'json');
 
-            $this->client->setex($key, $this->expirationInSeconds, $serializedInstallations);
+            $this->client->setex($key, $this->expirationInSeconds, $serializedInstallation);
         }
 
-        return $installations;
+        return $installation;
     }
 }
