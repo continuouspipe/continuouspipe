@@ -28,7 +28,7 @@ interface FileSystemResolver
      * @param BucketContainer $bucketContainer
      *
      * @deprecated Being dependent on a Bucket container, this method is deprecated. Please
-     *             use the `getFileSystem` method.
+     *             use the `getFileSystem` method
      *
      * @return RelativeFileSystem
      *

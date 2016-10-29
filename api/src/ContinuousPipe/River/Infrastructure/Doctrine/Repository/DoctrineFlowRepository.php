@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository;
 
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
 use ContinuousPipe\River\Repository\FlowNotFound;
@@ -51,6 +52,11 @@ class DoctrineFlowRepository implements FlowRepository
             $dto->teamSlug = $flowContext->getTeam()->getSlug();
         }
 
+        if (empty($dto->repositoryType)) {
+            $dto->repositoryType = $flowContext->getCodeRepository()->getType();
+            $dto->repositoryIdentifier = $flowContext->getCodeRepository()->getIdentifier();
+        }
+
         $dto->context = $flowContext;
 
         $this->entityManager->persist($dto);
@@ -92,6 +98,21 @@ class DoctrineFlowRepository implements FlowRepository
         $dto = $this->getDtoByUuid($uuid);
 
         return $this->flowFromDto($dto);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByCodeRepository(CodeRepository $codeRepository)
+    {
+        $flowDtos = $this->getEntityRepository()->findBy([
+            'repositoryType' => $codeRepository->getType(),
+            'repositoryIdentifier' => $codeRepository->getIdentifier(),
+        ]);
+
+        return array_map(function (FlowDto $dto) {
+            return $this->flowFromDto($dto);
+        }, $flowDtos);
     }
 
     /**

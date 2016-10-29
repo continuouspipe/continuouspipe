@@ -46,4 +46,12 @@ class GitHubCodeRepository implements CodeRepository
     {
         return $this->repository->getUrl();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType()
+    {
+        return 'github';
+    }
 }

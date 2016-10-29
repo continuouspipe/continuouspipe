@@ -2,6 +2,8 @@
 
 namespace GitHub\WebHook;
 
+use GitHub\WebHook\Model\Repository;
+
 interface Event
 {
     /**
@@ -10,4 +12,11 @@ interface Event
      * @return string
      */
     public function getType();
+
+    /**
+     * Returns the repository related to this event.
+     *
+     * @return Repository
+     */
+    public function getRepository();
 }

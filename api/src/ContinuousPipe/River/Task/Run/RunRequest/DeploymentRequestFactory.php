@@ -30,8 +30,8 @@ class DeploymentRequestFactory
     private $deploymentRequestEnhancer;
 
     /**
-     * @param UrlGeneratorInterface $urlGenerator
-     * @param TargetEnvironmentFactory $targetEnvironmentFactory
+     * @param UrlGeneratorInterface     $urlGenerator
+     * @param TargetEnvironmentFactory  $targetEnvironmentFactory
      * @param DeploymentRequestEnhancer $deploymentRequestEnhancer
      */
     public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory, DeploymentRequestEnhancer $deploymentRequestEnhancer)

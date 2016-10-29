@@ -28,8 +28,10 @@
             <argument type="service" id="validator" />
             <argument type="service" id="authenticator.team_repository" />
         </service>
-        <service id="app.controller.github_webhook" class="AppBundle\Controller\GitHubWebHookController">
+        <service id="app.controller.github" class="AppBundle\Controller\GitHubController">
             <argument type="service" id="command_bus" />
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="logger" />
         </service>
 
         <service id="app.controller.builder_notification" class="AppBundle\Controller\BuilderNotificationController">

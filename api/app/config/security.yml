@@ -33,6 +33,7 @@ security:
     access_control:
         # TODO: Secure with GitHub IPs
         - { path: ^/web-hook/github/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/github/integration/webhook$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
         # TODO: Secure with local IPs
         - { path: ^/builder/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }

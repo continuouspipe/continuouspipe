@@ -19,7 +19,7 @@ class HttpWebHookClient implements WebHookClient
     private $serializer;
 
     /**
-     * @param ClientInterface $client
+     * @param ClientInterface     $client
      * @param SerializerInterface $serializer
      */
     public function __construct(ClientInterface $client, SerializerInterface $serializer)

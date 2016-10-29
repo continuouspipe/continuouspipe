@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Task\Run;
 
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\Run\Command\StartRunCommand;

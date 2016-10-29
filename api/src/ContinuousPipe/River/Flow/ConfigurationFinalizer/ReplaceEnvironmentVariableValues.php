@@ -80,7 +80,7 @@ class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
 
     /**
      * @param string $value
-     * @param array $mapping
+     * @param array  $mapping
      *
      * @return string
      */

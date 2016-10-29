@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Repository;
 
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
@@ -43,4 +44,11 @@ interface FlowRepository
      * @return Flow
      */
     public function find(Uuid $uuid);
+
+    /**
+     * @param CodeRepository $codeRepository
+     *
+     * @return Flow[]
+     */
+    public function findByCodeRepository(CodeRepository $codeRepository);
 }

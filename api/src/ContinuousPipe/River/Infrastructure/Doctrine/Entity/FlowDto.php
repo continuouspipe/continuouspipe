@@ -39,4 +39,18 @@ class FlowDto
      * @var string
      */
     public $teamSlug;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     *
+     * @var string
+     */
+    public $repositoryType;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     *
+     * @var string
+     */
+    public $repositoryIdentifier;
 }

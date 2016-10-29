@@ -564,7 +564,13 @@ EOF;
     private function createFlowContext(Uuid $uuid = null, array $configuration = [], Team $team = null)
     {
         return $this->createFlowContextWithCodeRepository(new CodeRepository\GitHub\GitHubCodeRepository(
-            new Repository(new \GitHub\WebHook\Model\User('foo'), 'foo', 'bar')
+            new Repository(
+                new \GitHub\WebHook\Model\User('sroze'),
+                'docker-php-example',
+                'https://github.com/sroze/docker-php-example',
+                false,
+                37856553
+            )
         ), $uuid, $configuration, $team);
     }
 

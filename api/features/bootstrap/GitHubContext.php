@@ -341,7 +341,9 @@ class GitHubContext implements Context
         $decoded['context'] = $context;
         $decoded['state'] = $state;
 
-        $this->sendWebHook('status', json_encode($decoded));
+        try {
+            $this->sendWebHook('status', json_encode($decoded));
+        } catch (\RuntimeException $e) {}
     }
 
     /**
@@ -518,18 +520,16 @@ class GitHubContext implements Context
      */
     private function sendWebHook($type, $contents)
     {
-        $flowUuid = $this->flowContext->getCurrentUuid();
-        $this->response = $this->kernel->handle(Request::create('/web-hook/github/'.$flowUuid, 'POST', [], [], [], [
+        $this->response = $this->kernel->handle(Request::create('/github/integration/webhook', 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_X_GITHUB_EVENT' => $type,
             'HTTP_X_GITHUB_DELIVERY' => '1234',
         ], $contents));
 
-        if (!in_array($this->response->getStatusCode(), [200, 204, 201])) {
+        if (!in_array($this->response->getStatusCode(), [200, 202, 204, 201])) {
             echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
-                'Expected status code %d, but got %d',
-                200,
+                'Unexpected status code %d',
                 $this->response->getStatusCode()
             ));
         }
