@@ -5,6 +5,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\WaitReadiness\EventLi
 use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointNotFound;
+use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointObjectVoter;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointWaiter;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
@@ -34,15 +35,22 @@ class WaitPublicServicesEndpoints
     private $loggerFactory;
 
     /**
-     * @param MessageBus           $eventBus
-     * @param PublicEndpointWaiter $waiter
-     * @param LoggerFactory        $loggerFactory
+     * @var PublicEndpointObjectVoter
      */
-    public function __construct(MessageBus $eventBus, PublicEndpointWaiter $waiter, LoggerFactory $loggerFactory)
+    private $publicEndpointObjectVoter;
+
+    /**
+     * @param MessageBus                $eventBus
+     * @param PublicEndpointWaiter      $waiter
+     * @param LoggerFactory             $loggerFactory
+     * @param PublicEndpointObjectVoter $publicEndpointObjectVoter
+     */
+    public function __construct(MessageBus $eventBus, PublicEndpointWaiter $waiter, LoggerFactory $loggerFactory, PublicEndpointObjectVoter $publicEndpointObjectVoter)
     {
         $this->eventBus = $eventBus;
         $this->waiter = $waiter;
         $this->loggerFactory = $loggerFactory;
+        $this->publicEndpointObjectVoter = $publicEndpointObjectVoter;
     }
 
     /**
@@ -117,7 +125,7 @@ class WaitPublicServicesEndpoints
     {
         $objects = array_merge($status->getCreated(), $status->getUpdated(), $status->getIgnored());
         $objects = array_filter($objects, function (KubernetesObject $object) {
-            return !$object->getMetadata()->getLabelList()->hasKey('source-of-ingress');
+            return $this->publicEndpointObjectVoter->isPublicEndpointObject($object);
         });
 
         return array_values($objects);
