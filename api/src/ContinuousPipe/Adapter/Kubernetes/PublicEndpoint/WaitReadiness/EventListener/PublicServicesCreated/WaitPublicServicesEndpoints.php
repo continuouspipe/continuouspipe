@@ -73,9 +73,9 @@ class WaitPublicServicesEndpoints
 
             if (count($status->getCreated()) > 0) {
                 $this->eventBus->handle(new PublicEndpointsCreated($context, $endpoints));
+            } else {
+                $this->eventBus->handle(new PublicEndpointsReady($context, $endpoints));
             }
-
-            $this->eventBus->handle(new PublicEndpointsReady($context, $endpoints));
         } catch (EndpointNotFound $e) {
             $this->eventBus->handle(new DeploymentFailed($context));
         }
