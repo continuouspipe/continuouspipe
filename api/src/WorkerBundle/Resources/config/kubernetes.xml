@@ -86,8 +86,19 @@
             <argument type="service" id="event_bus" />
             <argument type="service" id="pipe.adapter.kubernetes.service_waiter" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="kubernetes.public_endpoint.public_service_voter"/>
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated" />
+        </service>
+
+        <service id="pipe.cloud_flare.client.api" class="ContinuousPipe\CloudFlare\CloudFlareApiClient" />
+        <service id="pipe.cloud_flare.client" alias="pipe.cloud_flare.client.api" />
+        <service id="pipe.adapter.kubernetes.listener.public_endpoint_created.apply_transformations" class="ContinuousPipe\Adapter\Kubernetes\Listener\PublicEndpointsCreated\ApplyPublicEndpointsTransformations">
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="pipe.cloud_flare.client" />
+            <argument type="service" id="log_stream.logger_factory" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsCreated" />
         </service>
 
         <!-- Synchronous event listeners -->

@@ -198,7 +198,7 @@ class WaitComponentsHandler implements DeploymentHandler
 
             $podsLogger->update(new Complex('pods', [
                 'deployment' => $this->normalizeDeployment($deployment),
-                'pods' => array_map(function(Pod $pod) {
+                'pods' => array_map(function (Pod $pod) {
                     return $this->normalizePod($pod);
                 }, $podsFoundByLabel->getPods()),
             ]));
@@ -292,7 +292,7 @@ class WaitComponentsHandler implements DeploymentHandler
 
         return [
             'replicas' => $specification->getReplicas(),
-            'containers' => array_map(function(Container $container) {
+            'containers' => array_map(function (Container $container) {
                 return $this->normalizeContainer($container);
             }, $containers),
         ];
@@ -309,7 +309,7 @@ class WaitComponentsHandler implements DeploymentHandler
             'name' => $pod->getMetadata()->getName(),
             'creationTimestamp' => $pod->getMetadata()->getCreationTimestamp(),
             'deletionTimestamp' => $pod->getMetadata()->getDeletionTimestamp(),
-            'containers' => array_map(function(Container $container) {
+            'containers' => array_map(function (Container $container) {
                 return $this->normalizeContainer($container);
             }, $pod->getSpecification()->getContainers()),
             'status' => null !== $pod->getStatus() ? $this->normalizePodStatus($pod->getStatus()) : null,

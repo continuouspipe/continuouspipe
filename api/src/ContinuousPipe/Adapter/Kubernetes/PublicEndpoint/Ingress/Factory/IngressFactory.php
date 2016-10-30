@@ -38,26 +38,39 @@ class IngressFactory implements EndpointFactory
      */
     public function createObjectsFromEndpoint(Component $component, Endpoint $endpoint)
     {
-        $service = $this->createService($component, $endpoint);
+        if (null === ($type = $endpoint->getType())) {
+            $type = count($endpoint->getSslCertificates()) > 0 ? ServiceSpecification::TYPE_CLUSTER_IP : ServiceSpecification::TYPE_LOAD_BALANCER;
+        }
 
-        $sslCertificatesSecrets = array_map(function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
-            return $this->createSslCertificateSecret($endpoint, $sslCertificate);
-        }, $endpoint->getSslCertificates());
+        $service = $this->createService($component, $endpoint, $type);
 
-        $ingress = $this->createIngress($component, $service, $sslCertificatesSecrets);
+        if ($type !== ServiceSpecification::TYPE_LOAD_BALANCER) {
+            $service->getMetadata()->getLabelList()->add(
+                new Label('source-of-ingress', $endpoint->getName())
+            );
 
-        return array_merge($sslCertificatesSecrets, [$service, $ingress]);
+            $sslCertificatesSecrets = array_map(function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
+                return $this->createSslCertificateSecret($endpoint, $sslCertificate);
+            }, $endpoint->getSslCertificates());
+
+            $ingress = $this->createIngress($component, $service, $sslCertificatesSecrets);
+
+            return array_merge($sslCertificatesSecrets, [$service, $ingress]);
+        }
+
+        return [$service];
     }
 
     /**
      * @param Component $component
      * @param Endpoint  $endpoint
+     * @param string    $type
      *
      * @return Service
      *
      * @throws TransformationException
      */
-    private function createService(Component $component, Endpoint $endpoint)
+    private function createService(Component $component, Endpoint $endpoint, string $type)
     {
         $ports = array_map(function (Component\Port $port) {
             return new ServicePort($port->getIdentifier(), $port->getPort(), $port->getProtocol());
@@ -67,12 +80,8 @@ class IngressFactory implements EndpointFactory
             throw new TransformationException('The component should expose at least one port');
         }
 
-        $type = $endpoint->getType() ?: ServiceSpecification::TYPE_CLUSTER_IP;
-
         $labels = $this->namingStrategy->getLabelsByComponent($component);
         $serviceSpecification = new ServiceSpecification($labels->toAssociativeArray(), $ports, $type);
-
-        $labels->add(new Label('source-of-ingress', $endpoint->getName()));
         $objectMetadata = new ObjectMetadata($endpoint->getName(), $labels);
         $service = new Service($objectMetadata, $serviceSpecification);
 
@@ -108,10 +117,13 @@ class IngressFactory implements EndpointFactory
      */
     private function createIngress(Component $component, Service $service, array $sslCertificatesSecrets)
     {
+        $labels = $this->namingStrategy->getLabelsByComponent($component);
+        $labels->add(new Label('service-type', $service->getSpecification()->getType()));
+
         return new Ingress(
             new ObjectMetadata(
                 $service->getMetadata()->getName(),
-                $this->namingStrategy->getLabelsByComponent($component)
+                $labels
             ),
             new IngressSpecification(
                 new IngressBackend(

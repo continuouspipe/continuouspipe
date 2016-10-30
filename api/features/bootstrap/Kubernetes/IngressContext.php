@@ -56,6 +56,21 @@ class IngressContext implements Context
     }
 
     /**
+     * @Then the ingress named :name should not be created
+     */
+    public function theIngressNamedShouldNotBeCreated($name)
+    {
+        $created = $this->traceableIngressRepository->getCreated();
+        $matchingIngresses = array_filter($created, function(Ingress $ingress) use ($name) {
+            return $ingress->getMetadata()->getName() == $name;
+        });
+
+        if (count($matchingIngresses) != 0) {
+            throw new \RuntimeException('Ingress found');
+        }
+    }
+
+    /**
      * @Then the ingress named :name should have :count SSL certificate
      */
     public function theIngressNamedShouldHaveSslCertificate($name, $count)

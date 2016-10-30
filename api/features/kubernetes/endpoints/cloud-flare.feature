@@ -1,7 +1,7 @@
 Feature:
-  In order to have a access to the deployed services
+  In order to have better endpoint addresses
   As a user
-  I want to be able to create ingresses
+  I want to be able to create DNS zone in CloudFlare for every endpoint
 
   Background:
     Given I am authenticated
@@ -10,51 +10,14 @@ Feature:
       | identifier | type       | address         | version | username | password |
       | my-cluster | kubernetes | https://1.2.3.4 | v1      | username | password |
     And I am building a deployment request
-    And the target environment name is "my-environment"
+    And the target environment name is "master"
     And the target cluster identifier is "my-cluster"
     And the credentials bucket is "00000000-0000-0000-0000-000000000000"
     And the pods of the replication controllers will be created successfully and running
 
-  Scenario: Creates an ingress with SSL
-    Given the ingress "https" will be created with the public DNS address "app.my.dns"
-    Given the components specification are:
-    """
-    [
-      {
-        "name": "app",
-        "identifier": "app",
-        "specification": {
-          "source": {
-            "image": "sroze\/php-example"
-          },
-          "scalability": {
-            "enabled": true,
-            "number_of_replicas": 1
-          },
-          "ports": [
-            {"identifier": "http", "port": 80, "protocol": "TCP"}
-          ]
-        },
-        "endpoints": [
-          {
-            "name": "https",
-            "ssl_certificates": [
-              {"name": "continuous-pipe", "cert": "...", "key": "..."}
-            ]
-          }
-        ]
-      }
-    ]
-    """
-    When I send the built deployment request
-    Then the service "https" should be created
-    And the service "https" should have the type "ClusterIP"
-    And the ingress named "https" should be created
-    And the ingress named "https" should have 1 SSL certificate
-    And the deployment should contain the endpoint "app.my.dns"
-
-  Scenario: Creates other type of services
-    Given the components specification are:
+  Scenario: It creates a A zone in CloudFlare
+    Given the service "http" will be created with the public IP "1.2.3.4"
+    And the components specification are:
     """
     [
       {
@@ -75,7 +38,14 @@ Feature:
         "endpoints": [
           {
             "name": "http",
-            "type": "NodePort"
+            "cloud_flare_zone": {
+              "zone_identifier": "1234531235",
+              "record_suffix": ".example.com",
+              "authentication": {
+                "email": "samuel@example.com",
+                "api_key": "foobar"
+              }
+            }
           }
         ]
       }
@@ -83,13 +53,44 @@ Feature:
     """
     When I send the built deployment request
     Then the service "http" should be created
-    And the service "http" should have the type "NodePort"
-    And the ingress named "http" should be created
+    And the CloudFlare zone "master.example.com" should have been created with the type A and the address "1.2.3.4"
 
-  Scenario: The existing services should also be waited and their endpoints fetched
-    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app"
-    And the service "app" will be created with the public IP "1.2.3.4"
-    When the specification come from the template "simple-app-public"
-    And I send the built deployment request
-    Then the service "app" should not be updated
-    And the deployment should contain the endpoint "1.2.3.4"
+  Scenario: It creates a DNS zone in CloudFlare
+    Given the service "http" will be created with the public DNS address "112345.elb.aws.com"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "cloud_flare_zone": {
+              "zone_identifier": "1234531235",
+              "record_suffix": "-myapp.example.com",
+              "authentication": {
+                "email": "samuel@example.com",
+                "api_key": "foobar"
+              }
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the service "http" should be created
+    And the CloudFlare zone "master-myapp.example.com" should have been created with the type CNAME and the address "112345.elb.aws.com"

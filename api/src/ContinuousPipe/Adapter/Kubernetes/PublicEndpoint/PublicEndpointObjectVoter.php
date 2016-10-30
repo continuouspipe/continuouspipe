@@ -18,10 +18,14 @@ class PublicEndpointObjectVoter
      */
     public function isPublicEndpointObject(KubernetesObject $object)
     {
-        if ($object instanceof Ingress || $object->getMetadata()->getLabelList()->hasKey('source-of-ingress')) {
+        if ($object instanceof Ingress) {
             return true;
+        } elseif ($object instanceof Service) {
+            $serviceType = $object->getSpecification()->getType();
+        } else {
+            $serviceType = null;
         }
 
-        return $object instanceof Service && $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER;
+        return $serviceType == ServiceSpecification::TYPE_LOAD_BALANCER;
     }
 }

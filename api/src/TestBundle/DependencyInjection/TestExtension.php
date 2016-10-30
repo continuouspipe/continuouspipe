@@ -30,6 +30,7 @@ class TestExtension extends Extension
         $loader->load('integration/notification.xml');
         $loader->load('kubernetes/client.xml');
         $loader->load('integration/httplabs.xml');
+        $loader->load('integration/cloud-flare.xml');
 
         // Add in-memory stubs if not in smoke tests case
         if ($environment != 'smoke_test') {
