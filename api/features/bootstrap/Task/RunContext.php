@@ -316,12 +316,7 @@ class RunContext implements Context
      */
     public function theEndpointOfTheComponentShouldBeDeployedWithSslCertificate($endpointName, $name, $count)
     {
-        $component = $this->getDeployedComponentNamed($name);
-        /** @var Component\Endpoint $endpoint */
-        $endpoint = current(array_filter($component->getEndpoints(), function(Component\Endpoint $endpoint) use ($endpointName) {
-            return $endpoint->getName() == $endpointName;
-        }));
-
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
         $numberOfCertificates = count($endpoint->getSslCertificates());
 
         if ($numberOfCertificates != $count) {
@@ -330,6 +325,18 @@ class RunContext implements Context
                 $count,
                 $numberOfCertificates
             ));
+        }
+    }
+
+    /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with a CloudFlare DNS zone configuration
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithACloudflareDnsZoneConfiguration($endpointName, $name)
+    {
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
+
+        if (null === $endpoint->getCloudFlareZone()) {
+            throw new \RuntimeException('The CloudFlare configuration is null');
         }
     }
 
@@ -570,5 +577,25 @@ class RunContext implements Context
         }
 
         return end($requests);
+    }
+
+    /**
+     * @param string $name
+     * @param string $endpointName
+     *
+     * @return Component\Endpoint
+     */
+    private function getEndpointOfComponent($name, $endpointName)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $endpoint = current(array_filter($component->getEndpoints(), function (Component\Endpoint $endpoint) use ($endpointName) {
+            return $endpoint->getName() == $endpointName;
+        }));
+
+        if (false === $endpoint) {
+            throw new \RuntimeException('Endpoint not found');
+        }
+
+        return $endpoint;
     }
 }
