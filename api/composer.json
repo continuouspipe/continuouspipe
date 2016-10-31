@@ -29,7 +29,7 @@
         "raven/raven": "^0.12.1",
         "sroze/log-stream": "~0.3.1",
         "tolerance/tolerance": "dev-feature/metrics",
-        "continuous-pipe/model": "~2.2.6",
+        "continuous-pipe/model": "~2.2.7",
         "continuous-pipe/security": "~2.1.4",
         "simple-bus/rabbitmq-bundle-bridge": "~2.2.3",
         "simple-bus/jms-serializer-bundle-bridge": "^2.0",

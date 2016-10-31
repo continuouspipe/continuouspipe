@@ -321,7 +321,7 @@ class DeployTaskFactory implements TaskFactory
                     ->end()
                     ->arrayNode('cloud_flare_zone')
                         ->children()
-                            ->integerNode('zone_identifier')->isRequired()->end()
+                            ->scalarNode('zone_identifier')->isRequired()->end()
                             ->scalarNode('record_suffix')->isRequired()->end()
                             ->arrayNode('authentication')
                                 ->isRequired()
