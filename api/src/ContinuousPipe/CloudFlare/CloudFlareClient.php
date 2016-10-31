@@ -13,5 +13,5 @@ interface CloudFlareClient
      *
      * @throws CloudFlareException
      */
-    public function createRecord($zone, CloudFlareAuthentication $authentication, ZoneRecord $record);
+    public function createRecord(string $zone, CloudFlareAuthentication $authentication, ZoneRecord $record);
 }
