@@ -79,7 +79,7 @@ Feature:
           {
             "name": "http",
             "cloud_flare_zone": {
-              "zone_identifier": "1234531235",
+              "zone_identifier": "1234531235qwerty",
               "record_suffix": "-myapp.example.com",
               "authentication": {
                 "email": "samuel@example.com",

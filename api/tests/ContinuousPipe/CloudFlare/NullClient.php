@@ -9,7 +9,7 @@ class NullClient implements CloudFlareClient
     /**
      * {@inheritdoc}
      */
-    public function createRecord($zone, CloudFlareAuthentication $authentication, ZoneRecord $record)
+    public function createRecord(string $zone, CloudFlareAuthentication $authentication, ZoneRecord $record)
     {
     }
 }

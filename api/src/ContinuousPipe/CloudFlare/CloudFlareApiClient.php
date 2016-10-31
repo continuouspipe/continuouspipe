@@ -9,7 +9,7 @@ class CloudFlareApiClient implements CloudFlareClient
     /**
      * {@inheritdoc}
      */
-    public function createRecord($zone, CloudFlareAuthentication $authentication, ZoneRecord $record)
+    public function createRecord(string $zone, CloudFlareAuthentication $authentication, ZoneRecord $record)
     {
         try {
             $dns = new \Cloudflare\Zone\Dns($authentication->getEmail(), $authentication->getApiKey());
