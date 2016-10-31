@@ -75,7 +75,7 @@ Feature:
                             -
                                 name: http
                                 cloud_flare_zone:
-                                    zone_identifier: 123456
+                                    zone_identifier: 123456wertyu
                                     record_suffix: .example.com
 
                         specification:
