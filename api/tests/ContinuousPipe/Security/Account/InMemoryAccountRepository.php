@@ -12,7 +12,7 @@ class InMemoryAccountRepository implements AccountRepository
      */
     public function findByUsername(string $username)
     {
-        if (array_key_exists($username, $this->accountsByUsername)) {
+        if (!array_key_exists($username, $this->accountsByUsername)) {
             return [];
         }
 
@@ -24,7 +24,7 @@ class InMemoryAccountRepository implements AccountRepository
      */
     public function link(string $username, Account $account)
     {
-        if (array_key_exists($username, $this->accountsByUsername)) {
+        if (!array_key_exists($username, $this->accountsByUsername)) {
             $this->accountsByUsername[$username] = [];
         }
 
