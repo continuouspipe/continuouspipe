@@ -1,15 +1,29 @@
-{% extends "::base.html.twig" %}
-{% block body %}
-<h1>Welcome {{ user.email }} !</h1>
-<h2>Docker Registry accounts</h2>
-<ul>
-    {% for credentials in dockerRegistryCredentials %}
-    <li>
-        <a href="{{ path('credentials_docker_registry', {'serverAddress': credentials.serverAddress}) }}">
-            <strong>{{ credentials.serverAddress }}</strong> {{ credentials.username }}
-        </a>
-    </li>
+{% extends "::layout.html.twig" %}
+{% block content %}
+<div class="account-title">
+    #4B9E7C
+</div>
+<h1>My Account</h1>
+<h2>Connected accounts</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Type</th>
+        <th>User</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for account in accounts %}
+    <tr>
+        <td>{{ account.type }}</td>
+        <td>{{ account.username }}</td>
+        <td><a href="{{ path('unlink_account', {'accountUuid': account.uuid}) }}">Unlink</a></td>
+    </tr>
     {% endfor %}
-</ul>
-<a href="{{ path('credentials_docker_registry_add') }}">Create new credentials</a>
+    </tbody>
+</table>
+
+<a href="{{ hwi_oauth_login_url('github') }}">Connect a GitHub account</a>
+<a href="{{ hwi_oauth_login_url('google') }}">Connect a Google account</a>
 {% endblock %}

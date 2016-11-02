@@ -52,6 +52,11 @@
 
             <tag name="request.param_converter" converter="bucket" />
         </service>
+        <service id="request.param_converter.account" class="ContinuousPipe\Security\Request\ParamConverter\AccountParamConverter">
+            <argument type="service" id="app.repository.account" />
+
+            <tag name="request.param_converter" converter="account" />
+        </service>
 
         <!-- Security Voter -->
         <service id="security.access.team_voter"
