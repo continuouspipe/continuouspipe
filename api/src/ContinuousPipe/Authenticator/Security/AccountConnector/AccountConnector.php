@@ -54,8 +54,6 @@ class AccountConnector implements AccountConnectorInterface
             ]);
         }
 
-        var_dump('account', $account, 'refresh', $response->getRefreshToken(), 'access', $response->getAccessToken(), 'response', $response->getResponse());
-
         return $this->accountRepository->link($user->getUsername(), $account);
     }
 

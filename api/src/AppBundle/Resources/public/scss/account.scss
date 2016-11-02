@@ -1,0 +1,25 @@
+.account-container {
+    background: #efefef;
+    padding-bottom: 100px;
+
+    .account-title {
+        background: #4B9E7C;
+        height: 150px;
+
+        h1 {
+            color: #fff;
+            margin-top: 40px;
+        }
+    }
+    .account-content {
+        margin-top: -50px;
+        background: #fff;
+        padding: 20px;
+
+        .btn {
+            i {
+                margin-right: 10px;
+            }
+        }
+    }
+}

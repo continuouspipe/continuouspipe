@@ -1,11 +1,14 @@
-{% extends "::layout.html.twig" %}
-{% block content %}
-<div class="account-title">
-    #4B9E7C
-</div>
+{% extends "AppBundle:Account:layout.html.twig" %}
+{% block account_title %}
 <h1>My Account</h1>
+{% endblock %}
+{% block account_content %}
+<h2>Personal information</h2>
+<p><strong>Username:</strong> {{ user.username }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+
 <h2>Connected accounts</h2>
-<table>
+<table class="table table-bordered">
     <thead>
     <tr>
         <th>Type</th>
@@ -15,15 +18,21 @@
     </thead>
     <tbody>
     {% for account in accounts %}
-    <tr>
-        <td>{{ account.type }}</td>
-        <td>{{ account.username }}</td>
-        <td><a href="{{ path('unlink_account', {'accountUuid': account.uuid}) }}">Unlink</a></td>
-    </tr>
+        <tr>
+            <td><i class="cp-icon-{{ account.type }}"></i> {{ account.type }}</td>
+            <td>{{ account.username }}</td>
+            <td><a href="{{ path('unlink_account', {'accountUuid': account.uuid}) }}">Unlink</a></td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="3">No connected accounts.</td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>
 
-<a href="{{ hwi_oauth_login_url('github') }}">Connect a GitHub account</a>
-<a href="{{ hwi_oauth_login_url('google') }}">Connect a Google account</a>
+<p>
+    <a href="{{ hwi_oauth_login_url('github') }}" class="btn btn-default"><i class="cp-icon-google"></i> Connect a GitHub account</a>
+    <a href="{{ hwi_oauth_login_url('google') }}" class="btn btn-default"><i class="cp-icon-github"></i>Connect a Google account</a>
+</p>
 {% endblock %}

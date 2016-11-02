@@ -1,11 +1,12 @@
-{% extends 'HWIOAuthBundle::layout.html.twig' %}
+{% extends "AppBundle:Account:layout.html.twig" %}
+{% block account_title %}
+    <h1>Unlink an account</h1>
+{% endblock %}
+{% block account_content %}
+{{ form_start(form) }}
+{{ form_widget(form) }}
+<p>Are you sure you want to unlink the {{ account.type }} account "{{ account.username }}" ?</p>
 
-{% block hwi_oauth_content %}
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-
-        <p>Are you sure you want to unlink the {{ account.type }} account "{{ account.username }}" ?</p>
-
-        <button type="submit" class="btn btn-primary">Unlink</button>
-    {{ form_end(form) }}
-{% endblock hwi_oauth_content %}
+<button type="submit" class="btn btn-danger">Yes, unlink</button>
+{{ form_end(form) }}
+{% endblock %}
