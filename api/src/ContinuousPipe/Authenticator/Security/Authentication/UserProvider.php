@@ -56,14 +56,12 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      * @var TeamRepository
      */
     private $teamRepository;
-    /**
-     * @var TeamCreator
-     */
-    private $teamCreator;
+
     /**
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
+
     /**
      * @var LoggerInterface
      */
@@ -76,11 +74,10 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      * @param BucketRepository $bucketRepository
      * @param TeamMembershipRepository $teamMembershipRepository
      * @param TeamRepository $teamRepository
-     * @param TeamCreator $teamCreator
      * @param EventDispatcherInterface $eventDispatcher
      * @param LoggerInterface $logger
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, TeamCreator $teamCreator, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger)
+    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger)
     {
         $this->securityUserRepository = $securityUserRepository;
         $this->userDetails = $userDetails;
@@ -88,7 +85,6 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $this->bucketRepository = $bucketRepository;
         $this->teamMembershipRepository = $teamMembershipRepository;
         $this->teamRepository = $teamRepository;
-        $this->teamCreator = $teamCreator;
         $this->eventDispatcher = $eventDispatcher;
         $this->logger = $logger;
     }
@@ -130,12 +126,6 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $bucket = $this->bucketRepository->find($user->getBucketUuid());
         $this->updateUserGitHubTokenInBucket($bucket, $user, $response);
         $this->bucketRepository->save($bucket);
-
-        // Check that the user is part of a team and creates one if not
-        $memberships = $this->teamMembershipRepository->findByUser($user);
-        if (0 === $memberships->count()) {
-            $this->createUserTeam($user);
-        }
 
         // Save the user
         $this->securityUserRepository->save($securityUser);
@@ -216,19 +206,6 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         } else {
             $tokens->add(new GitHubToken($user->getUsername(), $response->getAccessToken()));
         }
-    }
-
-    /**
-     * @param User $user
-     *
-     * @return Team
-     */
-    private function createUserTeam(User $user)
-    {
-        $team = new Team($this->createTeamName($user->getUsername()), $user->getUsername());
-        $team = $this->teamCreator->create($team, $user);
-
-        return $team;
     }
 
     /**
