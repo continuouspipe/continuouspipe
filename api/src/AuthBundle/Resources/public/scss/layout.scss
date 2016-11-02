@@ -21,4 +21,19 @@ header.header {
         font-weight: bold;
         margin: 0;
     }
+
+    .account-links {
+        float: right;
+        line-height: 64px;
+        margin-right: 20px;
+
+        a {
+            margin: 10px;
+            color: #fff;
+            
+            &:hover {
+                text-decoration: none;
+            }
+        }
+    }
 }
