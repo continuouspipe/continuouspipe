@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Task\Deploy\DeploymentRequest;
 
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\DeploymentRequestEnhancer;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
@@ -22,7 +21,7 @@ class EnhancedDeploymentRequestFactory implements DeploymentRequestFactory
     private $decoratedFactory;
 
     /**
-     * @param DeploymentRequestFactory $decoratedFactory
+     * @param DeploymentRequestFactory  $decoratedFactory
      * @param DeploymentRequestEnhancer $deploymentRequestEnhancer
      */
     public function __construct(DeploymentRequestFactory $decoratedFactory, DeploymentRequestEnhancer $deploymentRequestEnhancer)

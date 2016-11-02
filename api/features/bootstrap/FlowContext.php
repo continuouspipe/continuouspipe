@@ -124,6 +124,17 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         return is_string($this->flowUuid) ? Uuid::fromString($this->flowUuid) : $this->flowUuid;
     }
 
+
+    /**
+     * @When I load the alerts of the flow :uuid
+     */
+    public function iLoadTheAlertsOfTheFlow($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create('/flows/'.$uuid.'/alerts'));
+
+        $this->assertResponseCode(200);
+    }
+
     /**
      * @Then the flow UUID should be :uuid
      */
@@ -313,6 +324,7 @@ EOF;
 
     /**
      * @Given I have a flow with UUID :uuid
+     * @Given there is a flow with UUID :uuid
      */
     public function iHaveAFlowWithUuid($uuid)
     {
@@ -477,6 +489,36 @@ EOF;
                 'Environment "%s" found',
                 $name
             ));
+        }
+    }
+
+    /**
+     * @Then I should see the :type alert
+     */
+    public function iShouldSeeTheAlert($type)
+    {
+        $alerts = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingAlerts = array_filter($alerts, function($alert) use ($type) {
+            return $alert['type'] == $type;
+        });
+
+        if (count($matchingAlerts) == 0) {
+            throw new \RuntimeException('No matching alert found');
+        }
+    }
+
+    /**
+     * @Then I should not see the :type alert
+     */
+    public function iShouldNotSeeTheAlert($type)
+    {
+        $alerts = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingAlerts = array_filter($alerts, function($alert) use ($type) {
+            return $alert['type'] == $type;
+        });
+
+        if (count($matchingAlerts) != 0) {
+            throw new \RuntimeException('Matching alert found');
         }
     }
 
