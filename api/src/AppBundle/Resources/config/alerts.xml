@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" class="ContinuousPipe\River\Alerts\TeamConfiguration\TeamDoNotHaveAnyClusterOrRegistry">
+            <argument type="service" id="authenticator.bucket_repository" />
+        </service>
+
+        <service id="river.alerts.repository" alias="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" />
+    </services>
+</container>

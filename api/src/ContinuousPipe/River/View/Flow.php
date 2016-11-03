@@ -73,4 +73,12 @@ class Flow
     {
         return $this->uuid;
     }
+
+    /**
+     * @return Team
+     */
+    public function getTeam(): Team
+    {
+        return $this->team;
+    }
 }

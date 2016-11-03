@@ -8,7 +8,7 @@ use ContinuousPipe\River\View\Tide;
 interface DeploymentRequestEnhancer
 {
     /**
-     * @param Tide $tide
+     * @param Tide              $tide
      * @param DeploymentRequest $deploymentRequest
      *
      * @return DeploymentRequest
