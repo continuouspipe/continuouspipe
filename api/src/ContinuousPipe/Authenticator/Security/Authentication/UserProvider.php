@@ -5,11 +5,9 @@ namespace ContinuousPipe\Authenticator\Security\Authentication;
 use ContinuousPipe\Authenticator\Security\Event\UserCreated;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
-use ContinuousPipe\Authenticator\Team\TeamCreator;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\GitHubToken;
-use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
@@ -68,14 +66,14 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     private $logger;
 
     /**
-     * @param SecurityUserRepository $securityUserRepository
-     * @param UserDetails $userDetails
-     * @param WhiteList $whiteList
-     * @param BucketRepository $bucketRepository
+     * @param SecurityUserRepository   $securityUserRepository
+     * @param UserDetails              $userDetails
+     * @param WhiteList                $whiteList
+     * @param BucketRepository         $bucketRepository
      * @param TeamMembershipRepository $teamMembershipRepository
-     * @param TeamRepository $teamRepository
+     * @param TeamRepository           $teamRepository
      * @param EventDispatcherInterface $eventDispatcher
-     * @param LoggerInterface $logger
+     * @param LoggerInterface          $logger
      */
     public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger)
     {

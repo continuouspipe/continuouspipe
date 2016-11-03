@@ -50,7 +50,7 @@ class DoctrineAccountRepository implements AccountRepository
 
         $links = $accountLinks->getQuery()->getResult();
 
-        return array_map(function(AccountLink $link) {
+        return array_map(function (AccountLink $link) {
             return $link->account;
         }, $links);
     }

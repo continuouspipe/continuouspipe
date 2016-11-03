@@ -31,6 +31,9 @@
         <service id="api.controller.me" class="ApiBundle\Controller\MeController">
             <argument type="service" id="app.repository.account" />
         </service>
+        <service id="api.controller.google" class="ApiBundle\Controller\GoogleController">
+            <argument type="service" id="google.project_repository" />
+        </service>
 
         <!-- Authentication -->
         <service id="api.api_key_repository" class="ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository">
@@ -118,5 +121,25 @@
 
             <tag name="validator.constraint_validator" alias="unique_team" />
         </service>
+
+        <!-- Google -->
+        <service id="google.http.http_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="google.http.token_resolver" class="ContinuousPipe\Google\Http\HttpTokenResolver">
+            <argument type="service" id="google.http.http_client" />
+            <argument type="service" id="jms_serializer" />
+            <argument>%google_client_id%</argument>
+            <argument>%google_client_secret%</argument>
+        </service>
+        <service id="google.token_resolver" alias="google.http.token_resolver" />
+        <service id="google.http.client_factory" class="ContinuousPipe\Google\Http\TokenClientFactory">
+            <argument type="service" id="google.token_resolver"/>
+        </service>
+        <service id="google.project_repository.http" class="ContinuousPipe\Google\Http\HttpProjectRepository">
+            <argument type="service" id="google.http.client_factory" />
+            <argument type="service" id="jms_serializer" />
+        </service>
+        <service id="google.project_repository" alias="google.project_repository.http" />
     </services>
 </container>

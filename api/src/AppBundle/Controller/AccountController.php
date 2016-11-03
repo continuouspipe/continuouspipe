@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\Authenticator\DockerRegistryCredentialsRepository;
 use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\AccountRepository;
 use ContinuousPipe\Security\User\User;
@@ -35,8 +34,8 @@ class AccountController
     private $urlGenerator;
 
     /**
-     * @param AccountRepository $accountRepository
-     * @param FormFactoryInterface $formFactory
+     * @param AccountRepository     $accountRepository
+     * @param FormFactoryInterface  $formFactory
      * @param UrlGeneratorInterface $urlGenerator
      */
     public function __construct(AccountRepository $accountRepository, FormFactoryInterface $formFactory, UrlGeneratorInterface $urlGenerator)

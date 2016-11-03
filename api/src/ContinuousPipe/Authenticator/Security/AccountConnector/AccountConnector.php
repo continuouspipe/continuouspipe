@@ -27,7 +27,7 @@ class AccountConnector implements AccountConnectorInterface
 
     /**
      * @param AccountRepository $accountRepository
-     * @param LoggerInterface $logger
+     * @param LoggerInterface   $logger
      */
     public function __construct(AccountRepository $accountRepository, LoggerInterface $logger)
     {
