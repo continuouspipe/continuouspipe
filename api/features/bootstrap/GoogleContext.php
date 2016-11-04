@@ -57,6 +57,16 @@ class GoogleContext implements Context
     }
 
     /**
+     * @Then I should be forbidden to see this account
+     */
+    public function iShouldBeForbiddenToSeeThisAccount()
+    {
+        if ($this->response->getStatusCode() != \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN) {
+            throw new \RuntimeException(sprintf('Expected status code %d but got %d', \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, $this->response->getStatusCode()));
+        }
+    }
+
+    /**
      * @Then I should see the project :projectId
      */
     public function iShouldSeeTheProject($projectId)
