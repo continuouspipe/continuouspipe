@@ -26,7 +26,7 @@ class PredefinedRequestMappingMiddleware
 
     public function __invoke()
     {
-        return function ($request, array $options) {
+        return function (RequestInterface $request, array $options) {
             foreach ($this->mappings as $mapping) {
                 if (!$this->matches($mapping, $request)) {
                     continue;
@@ -39,7 +39,10 @@ class PredefinedRequestMappingMiddleware
                     : \GuzzleHttp\Promise\promise_for($response);
             }
 
-            return new RejectedPromise(new RequestException('Not handled by the request mapping', $request));
+            return new RejectedPromise(new RequestException(
+                sprintf('%s %s: Not handled by the request mapping', $request->getMethod(), $request->getUri()),
+                $request
+            ));
         };
     }
 
@@ -63,6 +66,6 @@ class PredefinedRequestMappingMiddleware
             return false;
         }
 
-        return false !== preg_match($mapping['path'], $request->getUri()->getPath());
+        return 1 === preg_match($mapping['path'], $request->getUri()->getPath());
     }
 }

@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Controller;
 
+use ContinuousPipe\Google\ContainerEngineClusterRepository;
 use ContinuousPipe\Google\GoogleException;
 use ContinuousPipe\Google\ProjectRepository;
 use ContinuousPipe\Security\Account\Account;
@@ -26,11 +27,18 @@ class GoogleController
     private $projectRepository;
 
     /**
-     * @param ProjectRepository $projectRepository
+     * @var ContainerEngineClusterRepository
      */
-    public function __construct(ProjectRepository $projectRepository)
+    private $clusterRepository;
+
+    /**
+     * @param ProjectRepository                $projectRepository
+     * @param ContainerEngineClusterRepository $clusterRepository
+     */
+    public function __construct(ProjectRepository $projectRepository, ContainerEngineClusterRepository $clusterRepository)
     {
         $this->projectRepository = $projectRepository;
+        $this->clusterRepository = $clusterRepository;
     }
 
     /**
@@ -47,6 +55,27 @@ class GoogleController
 
         try {
             return $this->projectRepository->findAll($account);
+        } catch (GoogleException $e) {
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+            ], Response::HTTP_NOT_ACCEPTABLE);
+        }
+    }
+
+    /**
+     * @Route("/projects/{project}/clusters", methods={"GET"})
+     * @View
+     */
+    public function listClustersAction(Account $account, $project)
+    {
+        if (!$account instanceof GoogleAccount) {
+            return new JsonResponse([
+                'error' => 'The account is not a Google account',
+            ], Response::HTTP_NOT_ACCEPTABLE);
+        }
+
+        try {
+            return $this->clusterRepository->findAll($account, $project);
         } catch (GoogleException $e) {
             return new JsonResponse([
                 'error' => $e->getMessage(),

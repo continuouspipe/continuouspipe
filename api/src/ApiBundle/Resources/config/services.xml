@@ -33,6 +33,7 @@
         </service>
         <service id="api.controller.google" class="ApiBundle\Controller\GoogleController">
             <argument type="service" id="google.project_repository" />
+            <argument type="service" id="google.cluster_repository" />
         </service>
 
         <!-- Authentication -->
@@ -147,5 +148,10 @@
             <argument type="service" id="jms_serializer" />
         </service>
         <service id="google.project_repository" alias="google.project_repository.http" />
+        <service id="google.cluster_repository.http" class="ContinuousPipe\Google\Http\HttpContainerEngineClusterRepository">
+            <argument type="service" id="google.http.client_factory" />
+            <argument type="service" id="jms_serializer" />
+        </service>
+        <service id="google.cluster_repository" alias="google.cluster_repository.http" />
     </services>
 </container>
