@@ -9,6 +9,11 @@
     </div>
 </md-toolbar>
 <md-content flex id="content" class="card-grid">
+    <div class="zero-content-help" ng-if="teams.length == 0">
+        <i class="cp-icon-arrow-right-up top-right-arrow"></i>
+        <h3>No team yet, you should create one!</h3>
+        <p>A team is a logic group of different <em>flows</em>. It will help you to organise your different projects.</p>
+    </div>
     <remote-resource resource-name="teams">
         <md-card ng-repeat="team in teams">
             <md-card-header ui-sref="flows({team: team.slug})">

@@ -22,6 +22,10 @@ angular.module('continuousPipeRiver')
                             $scope.team = team;
                             $scope.flow = flow;
                         }
+                    },
+                    'alerts@': {
+                        templateUrl: 'flow/views/alerts.html',
+                        controller: 'FlowAlertsController'
                     }
                 },
                 aside: true

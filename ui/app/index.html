@@ -26,6 +26,7 @@
 <![endif]-->
 
 <md-toolbar layout="row" ui-view="header"></md-toolbar>
+<md-content layout="row" ui-view="alerts"></md-content>
 
 <div flex layout="row">
     <md-sidenav md-is-open="aside" md-is-locked-open="aside" class="sidebar" ui-view="aside"></md-sidenav>
@@ -75,6 +76,7 @@
 <script src="security/model/repository/team-repository.js"></script>
 <script src="security/model/repository/team-membership-repository.js"></script>
 <script src="security/model/repository/invitation-repository.js"></script>
+<script src="security/model/repository/google-repository.js"></script>
 <script src="security/routing.js"></script>
 
 <script src="dashboard/controllers/teams.js"></script>
@@ -91,7 +93,9 @@
 <script src="flow/controllers/tides.js"></script>
 <script src="flow/controllers/environments.js"></script>
 <script src="flow/controllers/configuration.js"></script>
+<script src="flow/controllers/alerts.js"></script>
 <script src="flow/models/repository/environment-repository.js"></script>
+<script src="flow/models/repository/alerts-repository.js"></script>
 <script src="flow/routing.js"></script>
 
 <script src="tide/routing.js"></script>
