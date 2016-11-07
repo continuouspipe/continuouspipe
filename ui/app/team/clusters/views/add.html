@@ -7,42 +7,83 @@
 </md-toolbar>
 <md-content flex id="content">
     <form name="clusterForm">
-        <md-subheader class="md-primary">Cluster details</md-subheader>
+        <md-subheader class="md-primary">Cluster basics</md-subheader>
         <div class="form-container">
-            <md-input-container class="md-block" flex-gt-xs>
-                <label>Cluster identifier</label>
-                <input ng-model="cluster.identifier" required />
-            </md-input-container>
             <md-radio-group ng-model="cluster.type">
-                <md-radio-button value="kubernetes" class="md-primary">My own Kubernetes cluster</md-radio-button>
-                <md-radio-button value="hosted" disabled="disabled">Hosted cluster <small>Contact us for an early access.</small></md-radio-button>
+                <md-radio-button value="gke">Google Container Engine</md-radio-button>
+                <md-radio-button value="kubernetes">My own Kubernetes cluster</md-radio-button>
             </md-radio-group>
         </div>
-        <md-subheader class="md-primary">Cluster address</md-subheader>
-        <div class="form-container">
+
+        <!-- Kubernetes cluster -->
+        <div class="form-container" ng-if="cluster.type == 'kubernetes'">
             <md-input-container class="md-block" flex-gt-xs>
-                <label>Address</label>
-                <input ng-model="cluster.address" required />
+                <label>Your cluster needs a name</label>
+                <input name="identifier" ng-model="cluster.identifier" ng-pattern="'([a-z0-9-_]+)'" ng-maxlength="255" required />
+
+                <div ng-messages="clusterForm.identifier.$error">
+                    <div ng-message="required">Name is required.</div>
+                    <div ng-message="pattern">The name should only contain letters, numbers and <ccode>-</code> or <code>_</code> characters.</div>
+                </div>
+            </md-input-container>
+        </div>
+
+        <md-subheader class="md-primary" ng-if="cluster.type == 'kubernetes'">Cluster address</md-subheader>
+        <div class="form-container" ng-if="cluster.type == 'kubernetes'">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Master's API endpoint</label>
+                <input ng-model="cluster.address" type="text" required placeholder="https://1.2.3.4" />
             </md-input-container>
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Version</label>
                 <md-select ng-model="cluster.version">
-                    <md-option>v1.1</md-option>
-                    <md-option>v1.2</md-option>
                     <md-option>v1.3</md-option>
                     <md-option>v1.4</md-option>
+                    <md-option>v1.5</md-option>
                 </md-select>
             </md-input-container>
         </div>
-        <md-subheader class="md-primary">Cluster credentials</md-subheader>
-        <div class="form-container">
+        <md-subheader class="md-primary" ng-if="cluster.type == 'kubernetes'">Cluster credentials</md-subheader>
+        <div class="form-container" ng-if="cluster.type == 'kubernetes'">
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Username</label>
-                <input ng-model="cluster.username" required />
+                <input ng-model="cluster.username" type="text" required />
             </md-input-container>
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Password</label>
-                <input ng-model="cluster.password" required />
+                <input ng-model="cluster.password" type="password" required />
+            </md-input-container>
+        </div>
+
+        <!-- Google Container Engine -->
+        <md-subheader class="md-primary" ng-if="cluster.type == 'gke'">Select your cluster</md-subheader>
+        <div class="form-container" ng-if="cluster.type == 'gke'">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Google account</label>
+                <md-select name="googleAccount" ng-model="cluster.gke.account" md-on-open="loadGoogleAccounts()" placeholder="Select the Google Account you want to use" required="required">
+                    <md-option ng-value="''" ng-if="googleAccounts.length == 0">No google account found.</md-option>
+                    <md-option ng-repeat="account in googleAccounts" ng-value="account">{{ account.name }} ({{ account.email }})</md-option>
+                </md-select>
+
+                <div ng-messages="clusterForm.googleAccount.$error"  role="alert">
+                    <div ng-message="required">No account selected. <a ng-href="{{ connectAccountUrl }}" target="_blank">Click here to connect an account.</a></div>
+                </div>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-xs ng-show="cluster.gke.account">
+                <label>Google Cloud project</label>
+                <md-select ng-model="cluster.gke.project" name="googleProject" md-on-open="loadGoogleProjects(cluster.gke.account)" placeholder="Select the project you want to use" required="required">
+                    <md-option ng-value="''" ng-if="googleProjects.length == 0">No Google Cloud project found</md-option>
+                    <md-option ng-repeat="project in googleProjects" ng-value="project">{{ project.name }} ({{ project.projectId }})</md-option>
+                </md-select>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-xs ng-show="cluster.gke.project">
+                <label>GKE cluster</label>
+                <md-select ng-model="cluster.gke.cluster" name="googleCluster" md-on-open="loadGoogleCluster(cluster.gke.account, cluster.gke.project)" placeholder="Select the cluster you want to use" required="required">
+                    <md-option ng-value="''" ng-if="googleClusters.length == 0">No Google Container Engine cluster found</md-option>
+                    <md-option ng-repeat="cluster in googleClusters" ng-value="cluster">{{ cluster.name }}</md-option>
+                </md-select>
             </md-input-container>
         </div>
     </form>

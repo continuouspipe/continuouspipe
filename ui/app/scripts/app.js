@@ -53,9 +53,16 @@ angular
         });
 
         $http.getError = function(error) {
-            var body = (error || {}).data || {};
+            var response = error || {};
+            var body = response.data || {};
+            var message = body.message || body.error;
 
-            return body.message || body.error;
+            if (!message && response.status == 400) {
+                // We are seeing a constraint violation list here, let's return the first one 
+                message = body[0] && body[0].message;
+            }
+
+            return message;
         };
     })
 ;

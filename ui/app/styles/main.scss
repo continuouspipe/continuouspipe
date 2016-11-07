@@ -183,7 +183,7 @@ body {
                 background: $content-background;
 
                 md-toolbar {
-                    z-index: 100;
+                    z-index: 85;
                 }
 
                 md-content {
@@ -194,7 +194,7 @@ body {
             }
 
             md-toolbar {
-                z-index: 200;
+                z-index: 84;
                 background: $inner-toolbar-background !important;
                 color: $inner-toolbar-color;
 
@@ -466,6 +466,11 @@ body {
         background: #FF5722;
         color: #fff;
         padding: 0 0 0 20px;
+
+        > span {
+            line-height: 45px;
+            padding-right: 10px;
+        }
 
         h2 {
             font-size: 16px;
