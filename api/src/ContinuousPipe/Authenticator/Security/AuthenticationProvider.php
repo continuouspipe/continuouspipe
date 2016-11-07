@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class AuthenticationProvider
 {
@@ -60,20 +61,34 @@ class AuthenticationProvider
             $callback = $this->defaultRedirectionUrl;
         }
 
+        if (null !== ($token = $this->tokenStorage->getToken())) {
+            $user = $token->getUser();
+
+            if ($user instanceof UserInterface) {
+                return $this->getSuccessfullyAuthenticatedResponse($request, $callback);
+            }
+        }
+
         $response = new RedirectResponse($this->router->generate('hwi_oauth_connect'));
         $response->headers->setCookie(new Cookie(self::COOKIE_CALLBACK_KEY, $callback));
 
         return $response;
     }
 
-    public function getSuccessfullyAuthenticatedResponse(Request $request)
+    /**
+     * @param Request $request
+     * @param string $callback
+     *
+     * @return RedirectResponse
+     */
+    public function getSuccessfullyAuthenticatedResponse(Request $request, string $callback = null)
     {
         $securityToken = $this->tokenStorage->getToken();
         $user = $securityToken->getUser();
         $jwtToken = $this->jwtManager->create($user);
 
-        if (null === ($callback = $request->cookies->get(self::COOKIE_CALLBACK_KEY))) {
-            $callback = $this->defaultRedirectionUrl;
+        if (null === $callback) {
+            $callback = $request->cookies->get(self::COOKIE_CALLBACK_KEY, $this->defaultRedirectionUrl);
         }
 
         $url = $callback.'?token='.$jwtToken;
