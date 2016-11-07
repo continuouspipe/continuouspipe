@@ -1,47 +1,49 @@
-html.login {
+html.login, html.login body {
     background: #232731;
+}
 
-    div.login-container {
-        max-width: 400px;
-        margin: auto;
-        margin-top: 50px;
-        color: #fff;
+div.login-container {
+    max-width: 400px;
+    margin: auto;
+    margin-top: 50px;
+    color: #fff;
 
-        p, h1, a {
+    p, h1, h3, a {
+        text-align: center;
+        font-family: Roboto,"Helvetica Neue",sans-serif;
+    }
+
+    h3 {
+        margin: 20px 0;
+        color: #b5b5b5;
+    }
+
+    i.cp-icon-logo {
+        font-size: 3em;
+    }
+
+    div.login-inner {
+        text-align: center;
+        padding-top: 30px;
+
+        p.login-error {
+            color: #e23d3d;
+        }
+
+        a.login-button {
+            margin-top: 20px;
+            display: inline-block;
+            border: 1px solid #fff;
+            background: #efefef;
+            padding: 10px 20px;
             text-align: center;
-            font-family: Roboto,"Helvetica Neue",sans-serif;
-        }
+            text-decoration: none;
+            border-radius: 5px;
+            color: #333;
 
-        h1 {
-            margin: 20px 0;
-            color: #b5b5b5;
-        }
-
-        i.cp-icon-logo {
-            font-size: 3em;
-        }
-
-        div.login-inner {
-            text-align: center;
-            padding-top: 30px;
-
-            p.login-error {
-                color: #e23d3d;
-            }
-
-            a.login-button {
-                margin-top: 20px;
-                display: inline-block;
-                border: 1px solid #fff;
-                background: #efefef;
-                padding: 10px 20px;
-                text-align: center;
-                text-decoration: none;
-                border-radius: 5px;
-                color: #333;
+            @media only screen and (max-device-width: 736px) {
+                font-size: 1.5em;
             }
         }
     }
-
-
 }
