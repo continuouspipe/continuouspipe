@@ -8,14 +8,14 @@ angular.module('continuousPipeRiver')
 
         this.findProjects = function(accountUuid) {
             return $resource(AUTHENTICATOR_API_URL+'/api/accounts/:uuid/google/projects').query({
-            	uuid: accountUuid
+                uuid: accountUuid
             }).$promise;
         };
 
-    	this.findClusters = function(accountUuid, projectId) {
-			return $resource(AUTHENTICATOR_API_URL+'/api/accounts/:uuid/google/projects/:projectId/clusters').query({
-            	uuid: accountUuid,
-            	projectId: projectId
+        this.findClusters = function(accountUuid, projectId) {
+            return $resource(AUTHENTICATOR_API_URL+'/api/accounts/:uuid/google/projects/:projectId/clusters').query({
+                uuid: accountUuid,
+                projectId: projectId
             }).$promise;
-    	};
+        };
     });

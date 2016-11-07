@@ -6,4 +6,8 @@ angular.module('continuousPipeRiver')
         $scope.redirectToLogout = function() {
     		window.location.href = AUTHENTICATOR_API_URL+'/logout';
         };
+
+        $scope.redirectToAccount = function() {
+    		window.location.href = AUTHENTICATOR_API_URL+'/account/';
+        };
     });
