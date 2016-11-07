@@ -5,6 +5,8 @@ namespace ContinuousPipe\Authenticator\Security\Authentication;
 use ContinuousPipe\Authenticator\Security\Event\UserCreated;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
+use ContinuousPipe\Security\Account\AccountRepository;
+use ContinuousPipe\Security\Account\GitHubAccount;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\GitHubToken;
@@ -13,6 +15,7 @@ use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use ContinuousPipe\Authenticator\WhiteList\WhiteList;
+use HWI\Bundle\OAuthBundle\Connect\AccountConnectorInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
 use ContinuousPipe\Authenticator\GitHub\EmailNotFoundException;
@@ -66,16 +69,27 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     private $logger;
 
     /**
-     * @param SecurityUserRepository   $securityUserRepository
-     * @param UserDetails              $userDetails
-     * @param WhiteList                $whiteList
-     * @param BucketRepository         $bucketRepository
-     * @param TeamMembershipRepository $teamMembershipRepository
-     * @param TeamRepository           $teamRepository
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param LoggerInterface          $logger
+     * @var AccountRepository
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger)
+    private $accountRepository;
+    /**
+     * @var AccountConnectorInterface
+     */
+    private $accountConnector;
+
+    /**
+     * @param SecurityUserRepository    $securityUserRepository
+     * @param UserDetails               $userDetails
+     * @param WhiteList                 $whiteList
+     * @param BucketRepository          $bucketRepository
+     * @param TeamMembershipRepository  $teamMembershipRepository
+     * @param TeamRepository            $teamRepository
+     * @param EventDispatcherInterface  $eventDispatcher
+     * @param LoggerInterface           $logger
+     * @param AccountRepository         $accountRepository
+     * @param AccountConnectorInterface $accountConnector
+     */
+    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger, AccountRepository $accountRepository, AccountConnectorInterface $accountConnector)
     {
         $this->securityUserRepository = $securityUserRepository;
         $this->userDetails = $userDetails;
@@ -85,6 +99,8 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $this->teamRepository = $teamRepository;
         $this->eventDispatcher = $eventDispatcher;
         $this->logger = $logger;
+        $this->accountRepository = $accountRepository;
+        $this->accountConnector = $accountConnector;
     }
 
     /**
@@ -127,6 +143,11 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
 
         // Save the user
         $this->securityUserRepository->save($securityUser);
+
+        // Link account if not found
+        if (!$this->userHasAlreadyLinkedGitHubAccount($user, $username)) {
+            $this->accountConnector->connect($securityUser, $response);
+        }
 
         return $securityUser;
     }
@@ -244,5 +265,28 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         }
 
         return $user;
+    }
+
+    /**
+     * @param User   $user
+     * @param string $username
+     *
+     * @return bool
+     */
+    private function userHasAlreadyLinkedGitHubAccount(User $user, string $username)
+    {
+        $accounts = $this->accountRepository->findByUsername($username);
+
+        foreach ($accounts as $account) {
+            if (!$account instanceof GitHubAccount) {
+                continue;
+            }
+
+            if ($account->getUsername() == $username) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

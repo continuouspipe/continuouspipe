@@ -117,6 +117,25 @@ class AccountsContext implements Context
         }
     }
 
+    /**
+     * @Then the user :username should be linked to a GitHub account with username :gitHubAccountUsername
+     */
+    public function theUserShouldBeLinkedToAGithubAccountWithUsername($username, $gitHubAccountUsername)
+    {
+        $accounts = $this->accountRepository->findByUsername($username);
+        $matchingAccounts = array_filter($accounts, function(Account $account) use ($gitHubAccountUsername) {
+            if (!$account instanceof GitHubAccount) {
+                return false;
+            }
+
+            return $account->getUsername() == $gitHubAccountUsername;
+        });
+
+        if (count($matchingAccounts) == 0) {
+            throw new \RuntimeException('Account is not found');
+        }
+    }
+
     private function findAccountInResponse(Response $response, $type, $uuid)
     {
         if ($response->getStatusCode() != 200) {

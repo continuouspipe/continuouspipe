@@ -164,7 +164,7 @@ class CredentialsBucketController
                     'A cluster with this identifier already exists in this team',
                     'The cluster {identifier} already exists in this team',
                     [
-                        'identifier' => $cluster->getIdentifier()
+                        'identifier' => $cluster->getIdentifier(),
                     ],
                     $bucket,
                     'identifier',
@@ -212,7 +212,7 @@ class CredentialsBucketController
      */
     private function bucketHasClusterIdentified(Bucket $bucket, string $clusterIdentifier)
     {
-        $clusters = $bucket->getClusters()->filter(function(Cluster $cluster) use ($clusterIdentifier) {
+        $clusters = $bucket->getClusters()->filter(function (Cluster $cluster) use ($clusterIdentifier) {
             return $cluster->getIdentifier() == $clusterIdentifier;
         });
 
