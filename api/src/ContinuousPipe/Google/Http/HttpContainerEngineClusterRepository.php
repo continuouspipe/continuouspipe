@@ -5,6 +5,7 @@ namespace ContinuousPipe\Google\Http;
 use ContinuousPipe\Google\ContainerEngineClusterList;
 use ContinuousPipe\Google\ContainerEngineClusterRepository;
 use ContinuousPipe\Security\Account\GoogleAccount;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use JMS\Serializer\SerializerInterface;
 
@@ -37,7 +38,7 @@ class HttpContainerEngineClusterRepository implements ContainerEngineClusterRepo
     {
         $client = $this->clientFactory->fromAccount($account);
 
-        $zones = $client->requestAsync('GET', 'https://www.googleapis.com/compute/beta/projects/'.$project.'/zones')
+        $zonesPromise = $client->requestAsync('GET', 'https://www.googleapis.com/compute/beta/projects/'.$project.'/zones')
             ->then(function (Response $response) {
                 $contents = $response->getBody()->getContents();
                 $json = \GuzzleHttp\json_decode($contents, true);
@@ -48,8 +49,13 @@ class HttpContainerEngineClusterRepository implements ContainerEngineClusterRepo
 
                 return $json['items'];
             })
-            ->wait()
         ;
+
+        try {
+            $zones = $zonesPromise->wait();
+        } catch (RequestException $e) {
+            throw GoogleHttpUtils::createGoogleExceptionFromRequestException($e);
+        }
 
         $clustersPromises = array_map(function (array $zone) use ($client, $project) {
             $url = sprintf(
@@ -67,7 +73,11 @@ class HttpContainerEngineClusterRepository implements ContainerEngineClusterRepo
             });
         }, $zones);
 
-        $results = \GuzzleHttp\Promise\unwrap($clustersPromises);
+        try {
+            $results = \GuzzleHttp\Promise\unwrap($clustersPromises);
+        } catch (RequestException $e) {
+            throw GoogleHttpUtils::createGoogleExceptionFromRequestException($e);
+        }
 
         return array_reduce($results, function (array $carry, array $clusters) {
             return array_merge($carry, $clusters);
