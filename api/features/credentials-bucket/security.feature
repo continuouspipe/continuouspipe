@@ -30,8 +30,8 @@ Feature:
       | serverAddress | username | password | email                 |
       | docker.io     | foo      | bar      | samuel.roze@gmail.com |
     And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
-      | identifier | type       | address         | username | password |
-      | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     |
+      | identifier | type       | address         | username | password | version |
+      | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.2    |
     When I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
     Then the "password" should be obfuscated in the list items
     When I ask the list of the docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000"
@@ -51,8 +51,8 @@ Feature:
       | serverAddress | username | password | email                 |
       | docker.io     | foo      | bar      | samuel.roze@gmail.com |
     And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
-      | identifier | type       | address         | username | password |
-      | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     |
+      | identifier | type       | address         | username | password | version |
+      | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4.3  |
     And I am not authenticated
     When I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000" with the API key "1234567890"
     Then the "password" should not be obfuscated in the list items
