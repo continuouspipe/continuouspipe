@@ -143,6 +143,14 @@
         <service id="google.http.client_factory" class="ContinuousPipe\Google\Http\TokenClientFactory">
             <argument type="service" id="google.token_resolver"/>
         </service>
+        <service id="google.token_resolver.cached"
+                 class="ContinuousPipe\Google\Cache\RedisCachedTokenResolver"
+                 decorates="google.token_resolver">
+            <argument type="service" id="google.token_resolver.cached.inner" />
+            <argument type="service" id="snc_redis.default_client"/>
+            <argument type="service" id="logger"/>
+            <argument>10</argument>
+        </service>
         <service id="google.project_repository.http" class="ContinuousPipe\Google\Http\HttpProjectRepository">
             <argument type="service" id="google.http.client_factory" />
             <argument type="service" id="jms_serializer" />

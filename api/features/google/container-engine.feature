@@ -10,6 +10,7 @@ Feature:
       | europe-west1-b |
       | europe-west1-c |
 
+  @smoke
   Scenario: I can list my Google Compute projects
     Given there is connected Google account "dd5d98a6-a11f-11e6-80f5-76304dec7eb7" for the user "samuel"
     And the Google account "dd5d98a6-a11f-11e6-80f5-76304dec7eb7" have the following Google Compute projects:

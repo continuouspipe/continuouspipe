@@ -27,6 +27,7 @@ class SmokeContext implements Context
         $connection = $this->entityManager->getConnection();
         $connection->executeUpdate('DELETE FROM team_membership');
         $connection->executeUpdate('DELETE FROM security_user');
+        $connection->executeUpdate('DELETE FROM account_link');
 
         $purger = new ORMPurger($this->entityManager);
         $purger->purge();
