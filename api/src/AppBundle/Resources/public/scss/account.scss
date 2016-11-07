@@ -21,5 +21,15 @@
                 margin-right: 10px;
             }
         }
+
+        h2 {
+            border-bottom: 1px solid #ccc;
+            color: #999;
+            margin: 40px 0 20px 0;
+
+            &:first-child {
+                margin-top: 0;
+            }
+        }
     }
 }
