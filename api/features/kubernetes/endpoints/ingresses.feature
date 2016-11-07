@@ -53,6 +53,40 @@ Feature:
     And the ingress named "https" should have 1 SSL certificate
     And the deployment should contain the endpoint "app.my.dns"
 
+  Scenario: Creates an ingress with the "ingress" type
+    Given the ingress "www" will be created with the public DNS address "app.my.dns"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "www",
+            "type": "ingress"
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the service "www" should be created
+    And the service "www" should have the type "NodePort"
+    And the ingress named "www" should be created
+
   Scenario: Creates other type of services
     Given the ingress "http" will be created with the public DNS address "app.my.dns"
     And the components specification are:

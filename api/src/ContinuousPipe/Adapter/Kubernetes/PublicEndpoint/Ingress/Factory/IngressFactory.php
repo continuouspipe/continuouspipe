@@ -42,6 +42,10 @@ class IngressFactory implements EndpointFactory
             $type = count($endpoint->getSslCertificates()) > 0 ? ServiceSpecification::TYPE_CLUSTER_IP : ServiceSpecification::TYPE_LOAD_BALANCER;
         }
 
+        if ($type == 'ingress') {
+            $type = ServiceSpecification::TYPE_NODE_PORT;
+        }
+
         $service = $this->createService($component, $endpoint, $type);
 
         if ($type !== ServiceSpecification::TYPE_LOAD_BALANCER) {
