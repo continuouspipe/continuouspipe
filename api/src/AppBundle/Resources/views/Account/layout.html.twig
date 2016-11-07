@@ -1,0 +1,14 @@
+{% extends "::layout.html.twig" %}
+{% block content %}
+    <div class="account-container">
+        <div class="account-title">
+            <div class="container">
+                {% block account_title %}{% endblock %}
+            </div>
+        </div>
+        <div class="account-content container">
+            {% block account_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
+

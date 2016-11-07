@@ -21,10 +21,9 @@ Feature:
     And the user "sroze" should exists
     And the bucket of the user "sroze" should contain the GitHub token "1234"
 
-  Scenario: A new user will have its own team with its name
+  Scenario: The GitHub account is linked when login-in with GitHub
     Given The user "sroze" is in the white list
-    When a user login with GitHub as "sroze"
+    When a login with GitHub as "sroze" with the token "1234"
     Then the authentication should be successful
     And the user "sroze" should exists
-    And the team "sroze" should exists
-    And the user "sroze" should be in the team "sroze"
+    And the user "sroze" should be linked to a GitHub account with username "sroze"

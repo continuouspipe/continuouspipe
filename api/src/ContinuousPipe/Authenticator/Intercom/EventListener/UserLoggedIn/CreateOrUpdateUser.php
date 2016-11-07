@@ -29,8 +29,8 @@ class CreateOrUpdateUser implements EventSubscriberInterface
     private $logger;
 
     /**
-     * @param IntercomClient $intercomClient
-     * @param UserNormalizer $userNormalizer
+     * @param IntercomClient  $intercomClient
+     * @param UserNormalizer  $userNormalizer
      * @param LoggerInterface $logger
      */
     public function __construct(IntercomClient $intercomClient, UserNormalizer $userNormalizer, LoggerInterface $logger)

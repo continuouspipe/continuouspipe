@@ -6,5 +6,9 @@
 
     <services>
         <service id="app.intercom.client" class="ContinuousPipe\Authenticator\Tests\Intercom\InMemoryIntercomClient" />
+        <service id="google.http.middleware.predictable_request_mapping" class="GuzzleHttp\PredefinedRequestMappingMiddleware" />
+        <service id="google.http.client_factory" class="ContinuousPipe\Google\Http\PredictableClientFactory">
+            <argument type="service" id="google.http.middleware.predictable_request_mapping" />
+        </service>
     </services>
 </container>

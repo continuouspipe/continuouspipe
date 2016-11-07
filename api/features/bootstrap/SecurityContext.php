@@ -10,6 +10,7 @@ use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use ContinuousPipe\Authenticator\WhiteList\WhiteList;
+use HWI\Bundle\OAuthBundle\OAuth\ResourceOwner\GitHubResourceOwner;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Ramsey\Uuid\Uuid;
@@ -52,6 +53,10 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
+    /**
+     * @var GitHubResourceOwner
+     */
+    private $gitHubResourceOwner;
 
     /**
      * @param UserProvider $userProvider
@@ -60,8 +65,9 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @param SecurityUserRepository $securityUserRepository
      * @param InMemoryApiKeyRepository $apiKeyRepository
      * @param EventDispatcherInterface $eventDispatcher
+     * @param GitHubResourceOwner $gitHubResourceOwner
      */
-    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository, InMemoryApiKeyRepository $apiKeyRepository, EventDispatcherInterface $eventDispatcher)
+    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository, InMemoryApiKeyRepository $apiKeyRepository, EventDispatcherInterface $eventDispatcher, GitHubResourceOwner $gitHubResourceOwner)
     {
         $this->userProvider = $userProvider;
         $this->whiteList = $whiteList;
@@ -69,6 +75,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
         $this->securityUserRepository = $securityUserRepository;
         $this->apiKeyRepository = $apiKeyRepository;
         $this->eventDispatcher = $eventDispatcher;
+        $this->gitHubResourceOwner = $gitHubResourceOwner;
     }
 
     /**
@@ -144,7 +151,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
     public function aLoginWithGithubAsWithTheToken($username, $token)
     {
         try {
-            $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken($token)));
+            $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken($token), null, $this->gitHubResourceOwner));
         } catch (\Exception $e) {
             $this->exception = $e;
         }
@@ -156,7 +163,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
     public function aUserLoginWithGithubAs($username)
     {
         try {
-            $user = $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken('1234567890')));
+            $user = $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken('1234567890'), null, $this->gitHubResourceOwner));
 
             $token = new JWTUserToken(['ROLE_USER']);
             $token->setUser($user);

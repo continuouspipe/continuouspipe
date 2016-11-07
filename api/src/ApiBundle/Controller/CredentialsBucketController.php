@@ -10,6 +10,8 @@ use ContinuousPipe\Security\Credentials\GitHubToken;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use FOS\RestBundle\View\View as FOSRestView;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -156,7 +158,23 @@ class CredentialsBucketController
      */
     public function createClusterAction(Bucket $bucket, Cluster $cluster)
     {
-        $violations = $this->validator->validate($cluster);
+        if ($this->bucketHasClusterIdentified($bucket, $cluster->getIdentifier())) {
+            $violations = new ConstraintViolationList([
+                new ConstraintViolation(
+                    'A cluster with this identifier already exists in this team',
+                    'The cluster {identifier} already exists in this team',
+                    [
+                        'identifier' => $cluster->getIdentifier(),
+                    ],
+                    $bucket,
+                    'identifier',
+                    $cluster->getIdentifier()
+                ),
+            ]);
+        } else {
+            $violations = $this->validator->validate($cluster);
+        }
+
         if (count($violations) > 0) {
             return FOSRestView::create($violations, 400);
         }
@@ -184,5 +202,20 @@ class CredentialsBucketController
         }
 
         $this->bucketRepository->save($bucket);
+    }
+
+    /**
+     * @param Bucket $bucket
+     * @param string $clusterIdentifier
+     *
+     * @return bool
+     */
+    private function bucketHasClusterIdentified(Bucket $bucket, string $clusterIdentifier)
+    {
+        $clusters = $bucket->getClusters()->filter(function (Cluster $cluster) use ($clusterIdentifier) {
+            return $cluster->getIdentifier() == $clusterIdentifier;
+        });
+
+        return $clusters->count() > 0;
     }
 }

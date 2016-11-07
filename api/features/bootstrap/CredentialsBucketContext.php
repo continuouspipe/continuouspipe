@@ -316,6 +316,14 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @Then the new cluster should not have been saved successfully
+     */
+    public function theNewClusterShouldNotHaveBeenSavedSuccessfully()
+    {
+        $this->assertResponseCodeIs($this->response, 400);
+    }
+
+    /**
      * @Then the list should not contain the access token :identifier
      */
     public function theListShouldNotContainTheAccessToken($identifier)

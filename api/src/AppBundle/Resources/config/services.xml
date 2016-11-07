@@ -24,6 +24,9 @@
         <service id="app.repository.credentials_bucket" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineCredentialsBucketRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
+        <service id="app.repository.account" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineAccountRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
         <service id="app.repository.team" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineTeamRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
@@ -43,9 +46,10 @@
             <argument type="service" id="app.repository.credentials_bucket" />
             <argument type="service" id="app.repository.team_membership" />
             <argument type="service" id="app.repository.team" />
-            <argument type="service" id="app.team_creator" />
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="logger" />
+            <argument type="service" id="app.repository.account" />
+            <argument type="service" id="app.security.account_connector" />
         </service>
         <service id="app.security.authentication_provider" class="ContinuousPipe\Authenticator\Security\AuthenticationProvider">
             <argument type="service" id="router" />
@@ -84,6 +88,11 @@
             <argument type="service" id="logger" />
 
             <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="app.security.account_connector" class="ContinuousPipe\Authenticator\Security\AccountConnector\AccountConnector">
+            <argument type="service" id="app.repository.account" />
+            <argument type="service" id="logger" />
         </service>
     </services>
 </container>

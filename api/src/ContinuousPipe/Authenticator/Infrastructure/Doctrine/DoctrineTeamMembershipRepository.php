@@ -24,7 +24,7 @@ class DoctrineTeamMembershipRepository implements TeamMembershipRepository
     private $logger;
 
     /**
-     * @param EntityManager $entityManager
+     * @param EntityManager   $entityManager
      * @param LoggerInterface $logger
      */
     public function __construct(EntityManager $entityManager, LoggerInterface $logger)
