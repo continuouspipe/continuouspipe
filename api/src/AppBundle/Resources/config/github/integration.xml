@@ -23,7 +23,7 @@
             <argument type="service" id="river.integration.guzzle_http_client" />
             <argument type="service" id="github.integration.jwt_encoder" />
             <argument type="service" id="jms_serializer" />
-            <argument type="service" id="river.github.client_factory"/>
+            <argument type="service" id="river.github.installation_client_factory" />
             <argument>%github_integration.id%</argument>
         </service>
 

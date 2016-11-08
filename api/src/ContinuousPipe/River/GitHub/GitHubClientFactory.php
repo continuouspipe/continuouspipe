@@ -13,7 +13,6 @@ use Github\HttpClient\HttpClientInterface;
 use GitHub\Integration\Installation;
 use GitHub\Integration\InstallationNotFound;
 use GitHub\Integration\InstallationRepository;
-use GitHub\Integration\InstallationTokenResolver;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -35,29 +34,29 @@ class GitHubClientFactory implements ClientFactory
     private $bucketRepository;
 
     /**
-     * @var InstallationTokenResolver
-     */
-    private $installationTokenResolver;
-
-    /**
      * @var InstallationRepository
      */
     private $installationRepository;
 
     /**
+     * @var InstallationClientFactory
+     */
+    private $installationClientFactory;
+
+    /**
      * @param TokenStorageInterface     $tokenStorage
      * @param HttpClientInterface       $githubHttpClient
      * @param BucketRepository          $bucketRepository
-     * @param InstallationTokenResolver $installationTokenResolver
      * @param InstallationRepository    $installationRepository
+     * @param InstallationClientFactory $installationClientFactory
      */
-    public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient, BucketRepository $bucketRepository, InstallationTokenResolver $installationTokenResolver, InstallationRepository $installationRepository)
+    public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient, BucketRepository $bucketRepository, InstallationRepository $installationRepository, InstallationClientFactory $installationClientFactory)
     {
         $this->tokenStorage = $tokenStorage;
         $this->githubHttpClient = $githubHttpClient;
         $this->bucketRepository = $bucketRepository;
-        $this->installationTokenResolver = $installationTokenResolver;
         $this->installationRepository = $installationRepository;
+        $this->installationClientFactory = $installationClientFactory;
     }
 
     /**
@@ -80,6 +79,14 @@ class GitHubClientFactory implements ClientFactory
         }
 
         return $this->createClientFromBucket($bucket);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createClientFromInstallation(Installation $installation)
+    {
+        return $this->installationClientFactory->createClientFromInstallation($installation);
     }
 
     /**
@@ -111,22 +118,6 @@ class GitHubClientFactory implements ClientFactory
         $securityUser = $this->tokenStorage->getToken()->getUser();
 
         return $this->createClientForUser($securityUser->getUser());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createClientFromInstallation(Installation $installation)
-    {
-        $token = $this->installationTokenResolver->get($installation);
-
-        $client = new Client($this->githubHttpClient);
-        $client->authenticate($token->getToken(), null, Client::AUTH_HTTP_TOKEN);
-        $client->setHeaders([
-            'Accept' => 'application/vnd.github.machine-man-preview+json',
-        ]);
-
-        return $client;
     }
 
     /**

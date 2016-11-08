@@ -7,7 +7,6 @@
     <services>
         <service id="river.alerts.on_runtime.github.flow_installation_not_found" class="ContinuousPipe\River\Alerts\OnRuntime\GitHub\FlowInstallationNotFound">
             <argument type="service" id="github.integration.installation_repository" />
-            <argument type="service" id="river.github.client_factory" />
         </service>
 
         <service id="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" class="ContinuousPipe\River\Alerts\TeamConfiguration\TeamDoNotHaveAnyClusterOrRegistry">

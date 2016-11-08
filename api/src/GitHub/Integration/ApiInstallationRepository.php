@@ -4,6 +4,7 @@ namespace GitHub\Integration;
 
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\GitHub\ClientFactory;
+use ContinuousPipe\River\GitHub\InstallationClientFactory;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\SerializerInterface;
@@ -27,7 +28,7 @@ class ApiInstallationRepository implements InstallationRepository
     private $serializer;
 
     /**
-     * @var ClientFactory
+     * @var InstallationClientFactory
      */
     private $clientFactory;
 
@@ -37,13 +38,13 @@ class ApiInstallationRepository implements InstallationRepository
     private $integrationId;
 
     /**
-     * @param Client              $client
-     * @param JWTEncoderInterface $jwtEncoder
-     * @param SerializerInterface $serializer
-     * @param ClientFactory       $clientFactory
-     * @param int                 $integrationId
+     * @param Client                    $client
+     * @param JWTEncoderInterface       $jwtEncoder
+     * @param SerializerInterface       $serializer
+     * @param InstallationClientFactory $clientFactory
+     * @param int                       $integrationId
      */
-    public function __construct(Client $client, JWTEncoderInterface $jwtEncoder, SerializerInterface $serializer, ClientFactory $clientFactory, $integrationId)
+    public function __construct(Client $client, JWTEncoderInterface $jwtEncoder, SerializerInterface $serializer, InstallationClientFactory $clientFactory, $integrationId)
     {
         $this->client = $client;
         $this->jwtEncoder = $jwtEncoder;
