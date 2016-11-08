@@ -507,6 +507,21 @@ EOF;
     }
 
     /**
+     * @Then I should not see the :type alert
+     */
+    public function iShouldNotSeeTheAlert($type)
+    {
+        $alerts = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingAlerts = array_filter($alerts, function($alert) use ($type) {
+            return $alert['type'] == $type;
+        });
+
+        if (count($matchingAlerts) != 0) {
+            throw new \RuntimeException('Matching alert found');
+        }
+    }
+
+    /**
      * @param Uuid $uuid
      * @param array $configuration
      * @return Flow

@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\Alerts\AlertsRepository;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\View\Flow as FlowView;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -37,6 +38,6 @@ class FlowAlertsController
      */
     public function getAction(Flow $flow)
     {
-        return $this->alertsRepository->findByFlow($flow);
+        return $this->alertsRepository->findByFlow(FlowView::fromFlow($flow));
     }
 }

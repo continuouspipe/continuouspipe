@@ -15,6 +15,9 @@
             <argument type="service" id="river.docker_compose.repository_components_resolver" />
             <argument type="service" id="river.commit_resolver" />
         </service>
+        <service id="app.controller.flow.alerts" class="AppBundle\Controller\FlowAlertsController">
+            <argument type="service" id="river.alerts.repository" />
+        </service>
 
         <service id="app.controller.flow.alerts" class="AppBundle\Controller\FlowAlertsController">
             <argument type="service" id="river.alerts.repository" />

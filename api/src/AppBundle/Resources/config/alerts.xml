@@ -10,6 +10,10 @@
             <argument type="service" id="river.github.client_factory" />
         </service>
 
-        <service id="river.alerts.repository" alias="river.alerts.on_runtime.github.flow_installation_not_found" />
+        <service id="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" class="ContinuousPipe\River\Alerts\TeamConfiguration\TeamDoNotHaveAnyClusterOrRegistry">
+            <argument type="service" id="authenticator.bucket_repository" />
+        </service>
+
+        <service id="river.alerts.repository" alias="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" />
     </services>
 </container>

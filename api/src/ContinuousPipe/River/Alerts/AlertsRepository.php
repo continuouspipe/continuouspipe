@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Alerts;
 
-use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\View\Flow;
 
 interface AlertsRepository
 {

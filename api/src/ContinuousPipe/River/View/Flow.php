@@ -77,7 +77,7 @@ class Flow
     /**
      * @return CodeRepository
      */
-    public function getRepository()
+    public function getRepository() : CodeRepository
     {
         return $this->repository;
     }
@@ -85,7 +85,7 @@ class Flow
     /**
      * @return Team
      */
-    public function getTeam()
+    public function getTeam(): Team
     {
         return $this->team;
     }

@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
+use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamNotFound;
@@ -109,6 +110,19 @@ class SecurityContext implements Context
         $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
 
         $bucket->getClusters()->add(new Kubernetes($cluster, '', 'v1', '', ''));
+
+        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+    }
+
+    /**
+     * @Given the team :team have the credentials of a Docker registry :registry
+     */
+    public function theTeamHaveTheCredentialsOfADockerRegistry($team, $registry)
+    {
+        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
+        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+
+        $bucket->getDockerRegistries()->add(new DockerRegistry('username', 'password', 'email@example.com', $registry));
 
         $this->inMemoryAuthenticatorClient->addBucket($bucket);
     }
