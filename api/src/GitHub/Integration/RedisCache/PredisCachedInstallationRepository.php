@@ -2,6 +2,7 @@
 
 namespace GitHub\Integration\RedisCache;
 
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use GitHub\Integration\Installation;
 use GitHub\Integration\InstallationRepository;
 use JMS\Serializer\SerializerInterface;
@@ -54,14 +55,14 @@ class PredisCachedInstallationRepository implements InstallationRepository
     /**
      * {@inheritdoc}
      */
-    public function findByAccount($account)
+    public function findByRepository(GitHubCodeRepository $codeRepository)
     {
-        $key = 'github_installation_by_account_'.md5($account);
+        $key = 'github_installation_by_repository_'.md5($codeRepository->getIdentifier().'_'.$codeRepository->getAddress());
 
         if (!empty($serializedInstallation = $this->client->get($key))) {
             $installation = $this->serializer->deserialize($serializedInstallation, Installation::class, 'json');
         } else {
-            $installation = $this->decoratedRepository->findByAccount($account);
+            $installation = $this->decoratedRepository->findByRepository($codeRepository);
             $serializedInstallation = $this->serializer->serialize($installation, 'json');
 
             $this->client->setex($key, $this->expirationInSeconds, $serializedInstallation);

@@ -24,7 +24,7 @@ class ChainAlertsRepository implements AlertsRepository
      */
     public function findByFlow(Flow $flow)
     {
-        return array_reduce($this->repositoryCollection, function(array $alerts, AlertsRepository $alertsRepository) use ($flow) {
+        return array_reduce($this->repositoryCollection, function (array $alerts, AlertsRepository $alertsRepository) use ($flow) {
             return array_merge($alerts, $alertsRepository->findByFlow($flow));
         }, []);
     }

@@ -2,7 +2,10 @@
 
 namespace GitHub\Integration;
 
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
+use ContinuousPipe\River\GitHub\ClientFactory;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\SerializerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 
@@ -24,6 +27,11 @@ class ApiInstallationRepository implements InstallationRepository
     private $serializer;
 
     /**
+     * @var ClientFactory
+     */
+    private $clientFactory;
+
+    /**
      * @var int
      */
     private $integrationId;
@@ -32,14 +40,16 @@ class ApiInstallationRepository implements InstallationRepository
      * @param Client              $client
      * @param JWTEncoderInterface $jwtEncoder
      * @param SerializerInterface $serializer
+     * @param ClientFactory       $clientFactory
      * @param int                 $integrationId
      */
-    public function __construct(Client $client, JWTEncoderInterface $jwtEncoder, SerializerInterface $serializer, $integrationId)
+    public function __construct(Client $client, JWTEncoderInterface $jwtEncoder, SerializerInterface $serializer, ClientFactory $clientFactory, $integrationId)
     {
         $this->client = $client;
         $this->jwtEncoder = $jwtEncoder;
         $this->serializer = $serializer;
         $this->integrationId = $integrationId;
+        $this->clientFactory = $clientFactory;
     }
 
     /**
@@ -68,16 +78,33 @@ class ApiInstallationRepository implements InstallationRepository
     /**
      * {@inheritdoc}
      */
-    public function findByAccount($account)
+    public function findByRepository(GitHubCodeRepository $codeRepository)
     {
-        $matchingInstallations = array_filter($this->findAll(), function (Installation $installation) use ($account) {
-            return $installation->getAccount()->getLogin() == $account;
+        $gitHubRepository = $codeRepository->getGitHubRepository();
+        $matchingInstallations = array_filter($this->findAll(), function (Installation $installation) use ($gitHubRepository) {
+            return $installation->getAccount()->getLogin() == $gitHubRepository->getOwner()->getLogin();
         });
 
         if (count($matchingInstallations) == 0) {
-            throw new InstallationNotFound(sprintf('No installation found on account "%s"', $account));
+            throw new InstallationNotFound('The GitHub integration is not installed');
         }
 
-        return current($matchingInstallations);
+        $failedInstallations = [];
+        foreach ($matchingInstallations as $installation) {
+            $client = $this->clientFactory->createClientFromInstallation($installation);
+
+            try {
+                $client->repo()->show(
+                    $gitHubRepository->getOwner()->getLogin(),
+                    $gitHubRepository->getName()
+                );
+
+                return $installation;
+            } catch (RequestException $e) {
+                $failedInstallations[] = $installation;
+            }
+        }
+
+        throw new InstallationNotFound('The GitHub integration do not have access to this repository');
     }
 }

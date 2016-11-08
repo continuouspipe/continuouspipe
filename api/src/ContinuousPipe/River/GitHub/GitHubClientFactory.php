@@ -145,9 +145,7 @@ class GitHubClientFactory implements ClientFactory
         }
 
         try {
-            $installation = $this->installationRepository->findByAccount(
-                $repository->getGitHubRepository()->getOwner()->getLogin()
-            );
+            $installation = $this->installationRepository->findByRepository($repository);
         } catch (InstallationNotFound $e) {
             return $this->createClientFromBucketUuid(
                 $flow->getTeam()->getBucketUuid()

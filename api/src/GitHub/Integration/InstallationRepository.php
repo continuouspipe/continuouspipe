@@ -2,6 +2,8 @@
 
 namespace GitHub\Integration;
 
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
+
 interface InstallationRepository
 {
     /**
@@ -10,11 +12,11 @@ interface InstallationRepository
     public function findAll();
 
     /**
-     * @param string $account
+     * @param GitHubCodeRepository $codeRepository
      *
      * @throws InstallationNotFound
      *
      * @return Installation
      */
-    public function findByAccount($account);
+    public function findByRepository(GitHubCodeRepository $codeRepository);
 }

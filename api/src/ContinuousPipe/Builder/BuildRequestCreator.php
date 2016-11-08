@@ -91,13 +91,12 @@ class BuildRequestCreator
         }
 
         try {
-            $installation = $this->installationRepository->findByAccount(
-                $codeRepository->getGitHubRepository()->getOwner()->getLogin()
-            );
+            $installation = $this->installationRepository->findByRepository($codeRepository);
         } catch (InstallationNotFound $e) {
-            $this->logger->warning('GitHub installation not found while creating a build', [
+            $this->logger->warning('GitHub installation not found while creating a build: {message}', [
                 'repository_identifier' => $codeRepository->getIdentifier(),
                 'repository_type' => $codeRepository->getType(),
+                'message' => $e->getMessage(),
             ]);
 
             return null;

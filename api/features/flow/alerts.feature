@@ -11,7 +11,7 @@ Feature:
 
   Scenario: The GitHub integration is not found
     When I load the alerts of the flow "00000000-0000-0000-0000-000000000000"
-    Then I should see the "github-integration-not-found" alert
+    Then I should see the "github-integration" alert
 
   Scenario: A team without any cluster should have an alert
     When I load the alerts of the flow "00000000-0000-0000-0000-000000000000"
