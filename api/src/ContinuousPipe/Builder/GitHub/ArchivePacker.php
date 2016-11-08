@@ -5,7 +5,9 @@ namespace ContinuousPipe\Builder\GitHub;
 use ContinuousPipe\Builder\Archive\ArchiveCreationException;
 use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Context;
+use ContinuousPipe\Builder\Repository;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
@@ -17,11 +19,18 @@ class ArchivePacker
     private $client;
 
     /**
-     * @param Client $client
+     * @var Repository
      */
-    public function __construct(Client $client)
+    private $repository;
+
+    /**
+     * @param Client     $client
+     * @param Repository $repository
+     */
+    public function __construct(Client $client, Repository $repository)
     {
         $this->client = $client;
+        $this->repository = $repository;
     }
 
     /**
@@ -38,10 +47,16 @@ class ArchivePacker
     {
         $archiveFile = $this->getTemporaryFilePath('gharchive');
 
-        // Download the file to the temporary archive file
-        $this->client->get($url, [
-            'save_to' => $archiveFile,
-        ]);
+        try {
+            $this->client->get($url, [
+                'save_to' => $archiveFile,
+                'headers' => [
+                    'Authorization' => 'token '.$this->repository->getToken(),
+                ],
+            ]);
+        } catch (RequestException $e) {
+            throw new ArchiveCreationException('Unable to download the code archive: '.$e->getMessage(), $e->getCode(), $e);
+        }
 
         // Extract the archive in a directory
         $archiveDirectory = $this->getArchiveDirectory($context, $archiveFile);

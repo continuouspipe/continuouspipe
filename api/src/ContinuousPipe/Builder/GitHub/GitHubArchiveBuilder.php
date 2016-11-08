@@ -13,11 +13,6 @@ use LogStream\Logger;
 class GitHubArchiveBuilder implements ArchiveBuilder
 {
     /**
-     * @var RemoteArchiveLocator
-     */
-    private $remoteArchiveLocator;
-
-    /**
      * @var BucketRepository
      */
     private $bucketRepository;
@@ -28,15 +23,20 @@ class GitHubArchiveBuilder implements ArchiveBuilder
     private $githubClient;
 
     /**
-     * @param RemoteArchiveLocator $remoteArchiveLocator
-     * @param Client               $githubClient
-     * @param BucketRepository     $bucketRepository
+     * @var RepositoryAddressDescriptor
      */
-    public function __construct(RemoteArchiveLocator $remoteArchiveLocator, Client $githubClient, BucketRepository $bucketRepository)
+    private $repositoryAddressDescriptor;
+
+    /**
+     * @param RepositoryAddressDescriptor $repositoryAddressDescriptor
+     * @param Client                      $githubClient
+     * @param BucketRepository            $bucketRepository
+     */
+    public function __construct(RepositoryAddressDescriptor $repositoryAddressDescriptor, Client $githubClient, BucketRepository $bucketRepository)
     {
-        $this->remoteArchiveLocator = $remoteArchiveLocator;
         $this->bucketRepository = $bucketRepository;
         $this->githubClient = $githubClient;
+        $this->repositoryAddressDescriptor = $repositoryAddressDescriptor;
     }
 
     /**
@@ -45,11 +45,21 @@ class GitHubArchiveBuilder implements ArchiveBuilder
     public function getArchive(BuildRequest $buildRequest, Logger $logger)
     {
         $repository = $buildRequest->getRepository();
-        $archiveUrl = $this->remoteArchiveLocator->getArchiveUrl($repository);
 
-        // This `githubClient` should probably be created by a factory instead of being injected
-        $this->githubClient->setDefaultOption('auth', [$repository->getToken(), 'x-oauth-basic']);
-        $packer = new ArchivePacker($this->githubClient);
+        try {
+            $description = $this->repositoryAddressDescriptor->getDescription($repository->getAddress());
+        } catch (InvalidRepositoryAddress $e) {
+            throw new ArchiveCreationException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        $archiveUrl = sprintf(
+            'https://api.github.com/repos/%s/%s/tarball/%s',
+            $description->getUsername(),
+            $description->getRepository(),
+            $repository->getBranch()
+        );
+
+        $packer = new ArchivePacker($this->githubClient, $repository);
 
         try {
             $archive = $packer->createFromUrl($buildRequest->getContext(), $archiveUrl);

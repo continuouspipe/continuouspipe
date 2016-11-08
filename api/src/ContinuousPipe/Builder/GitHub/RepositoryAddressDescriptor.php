@@ -24,6 +24,9 @@ class RepositoryAddressDescriptor
             return new RepositoryDescription($matches[1], $matches[2]);
         }
 
-        throw new InvalidRepositoryAddress();
+        throw new InvalidRepositoryAddress(sprintf(
+            'The address "%s" is not a valid repository address',
+            $address
+        ));
     }
 }
