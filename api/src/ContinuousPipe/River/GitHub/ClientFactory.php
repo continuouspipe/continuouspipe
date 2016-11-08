@@ -2,9 +2,11 @@
 
 namespace ContinuousPipe\River\GitHub;
 
+use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\Security\Credentials\Bucket;
 use Github\Client;
 use ContinuousPipe\Security\User\User;
+use GitHub\Integration\Installation;
 use Ramsey\Uuid\Uuid;
 
 interface ClientFactory
@@ -30,6 +32,15 @@ interface ClientFactory
     public function createClientFromBucket(Bucket $credentialsBucket);
 
     /**
+     * @param Flow $flow
+     *
+     * @throws UserCredentialsNotFound
+     *
+     * @return Client
+     */
+    public function createClientForFlow(Flow $flow);
+
+    /**
      * @param Uuid $bucketUuid
      *
      * @return Client
@@ -42,4 +53,11 @@ interface ClientFactory
      * @return Client
      */
     public function createClientForCurrentUser();
+
+    /**
+     * @param Installation $installation
+     *
+     * @return Client
+     */
+    public function createClientFromInstallation(Installation $installation);
 }

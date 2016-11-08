@@ -4,8 +4,10 @@ namespace ContinuousPipe\River\CodeRepository\DockerCompose;
 
 use ContinuousPipe\DockerCompose\DockerComposeException;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
+use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
+use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class RepositoryComponentsResolver implements ComponentsResolver
@@ -33,9 +35,33 @@ class RepositoryComponentsResolver implements ComponentsResolver
     /**
      * {@inheritdoc}
      */
-    public function resolve(CodeReference $codeReference, BucketContainer $bucketContainer)
+    public function resolve(Flow $flow, CodeReference $codeReference)
     {
-        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $bucketContainer);
+        return $this->resolveWithFilesystem(
+            $this->fileSystemResolver->getFileSystem($flow, $codeReference),
+            $codeReference
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function resolveByCodeReferenceAndBucket(CodeReference $codeReference, BucketContainer $bucketContainer)
+    {
+        return $this->resolveWithFilesystem(
+            $this->fileSystemResolver->getFileSystemWithBucketContainer($codeReference, $bucketContainer),
+            $codeReference
+        );
+    }
+
+    /**
+     * @param RelativeFileSystem $fileSystem
+     * @param CodeReference      $codeReference
+     *
+     * @return array
+     */
+    private function resolveWithFilesystem(RelativeFileSystem $fileSystem, CodeReference $codeReference)
+    {
         $dockerComposeComponents = [];
 
         try {

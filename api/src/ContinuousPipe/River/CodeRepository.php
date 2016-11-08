@@ -15,4 +15,9 @@ interface CodeRepository
      * @return string
      */
     public function getAddress();
+
+    /**
+     * @return string
+     */
+    public function getType();
 }

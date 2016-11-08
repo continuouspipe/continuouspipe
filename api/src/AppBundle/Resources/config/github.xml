@@ -49,10 +49,16 @@
                  methods="get,post,patch,put,delete,request"
                  runner="tolerance.operation_runners.github" />
         </service>
+        <service id="river.github.installation_client_factory" class="ContinuousPipe\River\GitHub\InstallationClientFactory">
+            <argument type="service" id="river.github.http_client" />
+            <argument type="service" id="github.integration.installation_token_resolver" />
+        </service>
         <service id="river.github.client_factory" class="ContinuousPipe\River\GitHub\GitHubClientFactory">
             <argument type="service" id="security.token_storage" />
             <argument type="service" id="river.github.http_client" />
             <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="github.integration.installation_repository" />
+            <argument type="service" id="river.github.installation_client_factory" />
         </service>
 
         <service id="river.github.repository_address_descriptor" class="ContinuousPipe\River\CodeRepository\RepositoryAddressDescriptor" />

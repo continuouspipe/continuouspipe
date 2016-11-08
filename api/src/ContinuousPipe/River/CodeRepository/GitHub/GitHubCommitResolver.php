@@ -7,7 +7,9 @@ use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
+use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
+use Github\Client;
 use GuzzleHttp\Exception\RequestException;
 
 class GitHubCommitResolver implements CommitResolver
@@ -35,7 +37,7 @@ class GitHubCommitResolver implements CommitResolver
     /**
      * {@inheritdoc}
      */
-    public function getHeadCommitOfBranch(BucketContainer $bucketContainer, CodeRepository $repository, $branch)
+    public function getLegacyHeadCommitOfBranch(BucketContainer $bucketContainer, CodeRepository $repository, $branch)
     {
         try {
             $client = $this->clientFactory->createClientFromBucketUuid($bucketContainer->getBucketUuid());
@@ -43,6 +45,30 @@ class GitHubCommitResolver implements CommitResolver
             throw new CommitResolverException('Unable to find GitHub credentials', $e->getCode(), $e);
         }
 
+        return $this->_getHeadCommit($client, $repository, $branch);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHeadCommitOfBranch(Flow $flow, $branch)
+    {
+        $client = $this->clientFactory->createClientForFlow($flow);
+
+        return $this->_getHeadCommit($client, $flow->getRepository(), $branch);
+    }
+
+    /**
+     * @param Client         $client
+     * @param CodeRepository $repository
+     * @param string$branch
+     *
+     * @return string
+     *
+     * @throws CommitResolverException
+     */
+    private function _getHeadCommit(Client $client, CodeRepository $repository, $branch)
+    {
         try {
             $description = $this->addressDescriptor->getDescription($repository->getAddress());
         } catch (CodeRepository\InvalidRepositoryAddress $e) {

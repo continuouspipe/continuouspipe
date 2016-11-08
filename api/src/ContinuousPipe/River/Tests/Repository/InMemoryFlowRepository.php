@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Tests\Repository;
 
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
@@ -59,5 +60,17 @@ class InMemoryFlowRepository implements FlowRepository
         }
 
         return $this->flowsByUuid[(string) $uuid];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByCodeRepository(CodeRepository $codeRepository)
+    {
+        $matchingFlows = array_filter($this->flowsByUuid, function (Flow $flow) use ($codeRepository) {
+            return $flow->getContext()->getCodeRepository()->getIdentifier() == $codeRepository->getIdentifier();
+        });
+
+        return array_values($matchingFlows);
     }
 }

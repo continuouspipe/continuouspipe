@@ -5,10 +5,21 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="river.alerts.on_runtime.github.flow_installation_not_found" class="ContinuousPipe\River\Alerts\OnRuntime\GitHub\FlowInstallationNotFound">
+            <argument type="service" id="github.integration.installation_repository" />
+        </service>
+
         <service id="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" class="ContinuousPipe\River\Alerts\TeamConfiguration\TeamDoNotHaveAnyClusterOrRegistry">
             <argument type="service" id="authenticator.bucket_repository" />
         </service>
 
-        <service id="river.alerts.repository" alias="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" />
+        <service id="river.alerts.chain" class="ContinuousPipe\River\Alerts\ChainAlertsRepository">
+            <argument type="collection">
+                <argument type="service" id="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" />
+                <argument type="service" id="river.alerts.on_runtime.github.flow_installation_not_found" />
+            </argument>
+        </service>
+
+        <service id="river.alerts.repository" alias="river.alerts.chain" />
     </services>
 </container>

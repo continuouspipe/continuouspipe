@@ -15,13 +15,20 @@ class Repository
     private $branch;
 
     /**
-     * @param string $address
-     * @param string $branch
+     * @var string|null
      */
-    public function __construct($address, $branch)
+    private $token;
+
+    /**
+     * @param string      $address
+     * @param string      $branch
+     * @param string|null $token
+     */
+    public function __construct($address, $branch, $token = null)
     {
         $this->address = $address;
         $this->branch = $branch;
+        $this->token = $token;
     }
 
     /**
@@ -38,5 +45,13 @@ class Repository
     public function getBranch()
     {
         return $this->branch;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getToken()
+    {
+        return $this->token;
     }
 }

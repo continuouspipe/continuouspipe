@@ -6,7 +6,8 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\Security\Credentials\BucketContainer;
+use ContinuousPipe\River\View\Flow;
+use Github\Client;
 use GitHub\WebHook\Model\PullRequest;
 use JMS\Serializer\Serializer;
 
@@ -35,25 +36,11 @@ class GitHubPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(CodeReference $codeReference, BucketContainer $bucketContainer)
+    public function findPullRequestWithHeadReference(Flow $flow, CodeReference $codeReference)
     {
-        $client = $this->gitHubClientFactory->createClientFromBucketUuid($bucketContainer->getBucketUuid());
-        $gitHubRepository = $this->getGitHubRepository($codeReference);
+        $client = $this->gitHubClientFactory->createClientForFlow($flow);
 
-        $rawPullRequests = $client->pullRequests()->all(
-            $gitHubRepository->getOwner()->getLogin(),
-            $gitHubRepository->getName(),
-            [
-                'state' => 'open',
-            ]
-        );
-
-        $jsonEncoded = json_encode($rawPullRequests);
-        $pullRequests = $this->serializer->deserialize($jsonEncoded, 'array<'.PullRequest::class.'>', 'json');
-
-        return array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
-            return $codeReference->getCommitSha() == $pullRequest->getHead()->getSha1();
-        }));
+        return $this->findPullRequestFromClient($client, $codeReference);
     }
 
     /**
@@ -72,5 +59,31 @@ class GitHubPullRequestResolver implements PullRequestResolver
         }
 
         return $repository->getGitHubRepository();
+    }
+
+    /**
+     * @param Client        $client
+     * @param CodeReference $codeReference
+     *
+     * @return array
+     */
+    private function findPullRequestFromClient(Client $client, CodeReference $codeReference)
+    {
+        $gitHubRepository = $this->getGitHubRepository($codeReference);
+
+        $rawPullRequests = $client->pullRequests()->all(
+            $gitHubRepository->getOwner()->getLogin(),
+            $gitHubRepository->getName(),
+            [
+                'state' => 'open',
+            ]
+        );
+
+        $jsonEncoded = json_encode($rawPullRequests);
+        $pullRequests = $this->serializer->deserialize($jsonEncoded, 'array<'.PullRequest::class.'>', 'json');
+
+        return array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
+            return $codeReference->getCommitSha() == $pullRequest->getHead()->getSha1();
+        }));
     }
 }

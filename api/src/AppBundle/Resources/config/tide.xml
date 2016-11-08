@@ -84,6 +84,7 @@
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="logger" />
             <argument type="service" id="river.github.pull_request_resolver" />
+            <argument type="service" id="river.repository.flow" />
         </service>
 
         <service id="river.tide.task_runner" class="ContinuousPipe\River\Task\StartTaskRunner" />
@@ -152,11 +153,11 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
         </service>
 
-        <service id="river.tide.concurrency.locker.predis_client" class="Predis\Client">
+        <service id="predis_client" class="Predis\Client">
             <argument>redis://%redis_host%</argument>
         </service>
         <service id="river.tide.concurrency.locker.predis_locker" class="ContinuousPipe\River\Tide\Concurrency\Lock\PredisMutexLocker">
-            <argument type="service" id="river.tide.concurrency.locker.predis_client" />
+            <argument type="service" id="predis_client" />
             <argument>%locker_timeout%</argument>
         </service>
         <service id="river.tide.concurrency.locker" alias="river.tide.concurrency.locker.predis_locker" />

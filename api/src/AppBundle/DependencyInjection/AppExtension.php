@@ -44,5 +44,6 @@ class AppExtension extends Extension
         $loader->load('analytics/keen.xml');
         $loader->load('recover/timed-out-tides.xml');
         $loader->load('recover/cancel.xml');
+        $loader->load('github/integration.xml');
     }
 }

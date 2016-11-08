@@ -75,6 +75,14 @@ class Flow
     }
 
     /**
+     * @return CodeRepository
+     */
+    public function getRepository() : CodeRepository
+    {
+        return $this->repository;
+    }
+
+    /**
      * @return Team
      */
     public function getTeam(): Team

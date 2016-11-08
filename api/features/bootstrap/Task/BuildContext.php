@@ -374,6 +374,24 @@ class BuildContext implements Context
     }
 
     /**
+     * @Then the build should be started with the repository token :token
+     */
+    public function theBuildShouldBeStartedWithTheRepositoryToken($token)
+    {
+        $buildStartedEvent = $this->getBuildStartedEvents()[0];
+        $request = $buildStartedEvent->getBuild()->getRequest();
+        $foundToken = $request->getRepository()->getToken();
+
+        if ($token != $foundToken) {
+            throw new \RuntimeException(sprintf(
+                'The token found is "%s" while expecting "%s"',
+                $foundToken,
+                $token
+            ));
+        }
+    }
+
+    /**
      * @Then the build should be started with the following environment variables:
      * @Then the first build should be started with the following environment variables:
      */

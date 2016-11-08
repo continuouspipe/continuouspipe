@@ -22,6 +22,8 @@
 
         <service id="builder.build_request_creator" class="ContinuousPipe\Builder\BuildRequestCreator">
             <argument type="service" id="logger" />
+            <argument type="service" id="github.integration.installation_repository" />
+            <argument type="service" id="github.integration.installation_token_resolver" />
         </service>
     </services>
 </container>

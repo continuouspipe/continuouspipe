@@ -15,6 +15,11 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestDeploymentNotifier;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
+use GitHub\Integration\InMemoryInstallationRepository;
+use GitHub\Integration\InMemoryInstallationTokenResolver;
+use GitHub\Integration\Installation;
+use GitHub\Integration\InstallationAccount;
+use GitHub\Integration\InstallationToken;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -61,6 +66,14 @@ class GitHubContext implements Context
      * @var TraceableNotifier
      */
     private $gitHubTraceableNotifier;
+    /**
+     * @var InMemoryInstallationRepository
+     */
+    private $inMemoryInstallationRepository;
+    /**
+     * @var InMemoryInstallationTokenResolver
+     */
+    private $inMemoryInstallationTokenResolver;
 
     /**
      * @param Kernel $kernel
@@ -69,8 +82,10 @@ class GitHubContext implements Context
      * @param TraceableClient $traceableClient
      * @param EventStore $eventStore
      * @param TestHttpClient $gitHubHttpClient
+     * @param InMemoryInstallationRepository $inMemoryInstallationRepository
+     * @param InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver
      */
-    public function __construct(Kernel $kernel, TraceableNotifier $gitHubTraceableNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore, TestHttpClient $gitHubHttpClient)
+    public function __construct(Kernel $kernel, TraceableNotifier $gitHubTraceableNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore, TestHttpClient $gitHubHttpClient, InMemoryInstallationRepository $inMemoryInstallationRepository, InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver)
     {
         $this->kernel = $kernel;
         $this->fakePullRequestResolver = $fakePullRequestResolver;
@@ -78,6 +93,8 @@ class GitHubContext implements Context
         $this->eventStore = $eventStore;
         $this->gitHubHttpClient = $gitHubHttpClient;
         $this->gitHubTraceableNotifier = $gitHubTraceableNotifier;
+        $this->inMemoryInstallationRepository = $inMemoryInstallationRepository;
+        $this->inMemoryInstallationTokenResolver = $inMemoryInstallationTokenResolver;
     }
 
     /**
@@ -87,6 +104,31 @@ class GitHubContext implements Context
     {
         $this->tideContext = $scope->getEnvironment()->getContext('TideContext');
         $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
+    }
+
+    /**
+     * @Given the GitHub account :account have the installation :installationIdentifier
+     */
+    public function theGithubAccountHaveTheInstallation($account, $installationIdentifier)
+    {
+        $this->inMemoryInstallationRepository->save(new Installation(
+            $installationIdentifier,
+            new InstallationAccount(
+                $installationIdentifier,
+                $account
+            )
+        ));
+    }
+
+    /**
+     * @Given the token of the GitHub installation :installationIdentifier is :token
+     */
+    public function theGithubInstallationTokenIs($installationIdentifier, $token)
+    {
+        $this->inMemoryInstallationTokenResolver->addToken(
+            $installationIdentifier,
+            new InstallationToken($token, new \DateTime('+1 hour'))
+        );
     }
 
     /**
@@ -341,7 +383,9 @@ class GitHubContext implements Context
         $decoded['context'] = $context;
         $decoded['state'] = $state;
 
-        $this->sendWebHook('status', json_encode($decoded));
+        try {
+            $this->sendWebHook('status', json_encode($decoded));
+        } catch (\RuntimeException $e) {}
     }
 
     /**
@@ -518,18 +562,16 @@ class GitHubContext implements Context
      */
     private function sendWebHook($type, $contents)
     {
-        $flowUuid = $this->flowContext->getCurrentUuid();
-        $this->response = $this->kernel->handle(Request::create('/web-hook/github/'.$flowUuid, 'POST', [], [], [], [
+        $this->response = $this->kernel->handle(Request::create('/github/integration/webhook', 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_X_GITHUB_EVENT' => $type,
             'HTTP_X_GITHUB_DELIVERY' => '1234',
         ], $contents));
 
-        if (!in_array($this->response->getStatusCode(), [200, 204, 201])) {
+        if (!in_array($this->response->getStatusCode(), [200, 202, 204, 201])) {
             echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
-                'Expected status code %d, but got %d',
-                200,
+                'Unexpected status code %d',
                 $this->response->getStatusCode()
             ));
         }

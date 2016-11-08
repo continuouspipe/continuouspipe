@@ -12,6 +12,7 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Exception\ExceptionInterface as YamlException;
 use Symfony\Component\Yaml\Yaml;
+use ContinuousPipe\River\View\Flow as FlowView;
 
 class ConfigurationFactory implements TideConfigurationFactory
 {
@@ -48,7 +49,7 @@ class ConfigurationFactory implements TideConfigurationFactory
     public function getConfiguration(Flow $flow, CodeReference $codeReference)
     {
         $flowContext = $flow->getContext();
-        $fileSystem = $this->fileSystemResolver->getFileSystem($codeReference, $flowContext->getTeam());
+        $fileSystem = $this->fileSystemResolver->getFileSystem(FlowView::fromFlow($flow), $codeReference);
 
         $configs = [
             $flowContext->getConfiguration(),

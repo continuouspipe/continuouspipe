@@ -40,14 +40,17 @@ class ComponentsController
      * @ParamConverter("repository", converter="code-repository", options={"identifier"="repository"})
      * @ParamConverter("user", converter="user")
      *
+     * @deprecated This should be not be part of the flow creation process, but from the
+     *             recommendation later when the flow is configured
+     *
      * @View
      */
     public function getAction(CodeRepository $repository, User $user, $branch)
     {
-        $sha1 = $this->commitResolver->getHeadCommitOfBranch($user, $repository, $branch);
+        $sha1 = $this->commitResolver->getLegacyHeadCommitOfBranch($user, $repository, $branch);
 
         try {
-            $components = $this->componentsResolver->resolve(
+            $components = $this->componentsResolver->resolveByCodeReferenceAndBucket(
                 new CodeReference($repository, $sha1, $branch),
                 $user
             );

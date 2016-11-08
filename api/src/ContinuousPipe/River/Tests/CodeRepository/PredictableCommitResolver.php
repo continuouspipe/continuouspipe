@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Tests\CodeRepository;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
+use ContinuousPipe\River\View\Flow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class PredictableCommitResolver implements CommitResolver
@@ -17,16 +18,17 @@ class PredictableCommitResolver implements CommitResolver
     /**
      * {@inheritdoc}
      */
-    public function getHeadCommitOfBranch(BucketContainer $bucketContainer, CodeRepository $repository, $branch)
+    public function getLegacyHeadCommitOfBranch(BucketContainer $bucketContainer, CodeRepository $repository, $branch)
     {
-        if (!array_key_exists($branch, $this->resolutions)) {
-            throw new CommitResolverException(sprintf(
-                'Unable to find predictable resolution of branch "%s"',
-                $branch
-            ));
-        }
+        return $this->getCommitByBranch($branch);
+    }
 
-        return $this->resolutions[$branch];
+    /**
+     * {@inheritdoc}
+     */
+    public function getHeadCommitOfBranch(Flow $flow, $branch)
+    {
+        return $this->getCommitByBranch($branch);
     }
 
     /**
@@ -36,5 +38,24 @@ class PredictableCommitResolver implements CommitResolver
     public function headOfBranchIs($branch, $sha1)
     {
         $this->resolutions[$branch] = $sha1;
+    }
+
+    /**
+     * @param $branch
+     *
+     * @return mixed
+     *
+     * @throws CommitResolverException
+     */
+    private function getCommitByBranch($branch)
+    {
+        if (!array_key_exists($branch, $this->resolutions)) {
+            throw new CommitResolverException(sprintf(
+                'Unable to find predictable resolution of branch "%s"',
+                $branch
+            ));
+        }
+
+        return $this->resolutions[$branch];
     }
 }
