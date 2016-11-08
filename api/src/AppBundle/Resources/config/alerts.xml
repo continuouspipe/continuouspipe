@@ -14,6 +14,13 @@
             <argument type="service" id="authenticator.bucket_repository" />
         </service>
 
-        <service id="river.alerts.repository" alias="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" />
+        <service id="river.alerts.chain" class="ContinuousPipe\River\Alerts\ChainAlertsRepository">
+            <argument type="collection">
+                <argument type="service" id="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" />
+                <argument type="service" id="river.alerts.on_runtime.github.flow_installation_not_found" />
+            </argument>
+        </service>
+
+        <service id="river.alerts.repository" alias="river.alerts.chain" />
     </services>
 </container>
