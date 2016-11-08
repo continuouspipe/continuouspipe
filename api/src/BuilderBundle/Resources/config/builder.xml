@@ -20,7 +20,7 @@
         </service>
 
         <service id="builder.archive_builder.github" class="ContinuousPipe\Builder\GitHub\GitHubArchiveBuilder">
-            <argument type="service" id="builder.github.remote_archive_locator" />
+            <argument type="service" id="builder.github.repository_address_descriptor" />
             <argument type="service" id="builder.github.http_client" />
             <argument type="service" id="authenticator.bucket_repository" />
         </service>
