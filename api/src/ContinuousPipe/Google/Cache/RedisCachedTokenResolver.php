@@ -84,8 +84,8 @@ class RedisCachedTokenResolver implements TokenResolver
     private function loadTokenFromCachedValue(string $cachedValue)
     {
         $json = \GuzzleHttp\json_decode($cachedValue);
-        if (!array_key_exists('token', $json)) {
-            throw new \InvalidArgumentException('The key `token` is not found in the loaded JSON');
+        if (!array_key_exists('access_token', $json)) {
+            throw new \InvalidArgumentException('The key `access_token` is not found in the loaded JSON');
         }
 
         $expirationDate = \DateTime::createFromFormat('U', $json['expiration_timestamp']);
