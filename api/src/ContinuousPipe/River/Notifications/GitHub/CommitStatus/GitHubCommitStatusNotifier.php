@@ -47,7 +47,7 @@ class GitHubCommitStatusNotifier implements Notifier
         }
 
         try {
-            $client = $this->gitHubClientFactory->createClientFromBucketUuid($tide->getTeam()->getBucketUuid());
+            $client = $this->gitHubClientFactory->createClientForFlow($tide->getFlow());
         } catch (UserCredentialsNotFound $e) {
             throw new NotificationException('Unable to update code status, no valid GitHub credentials in bucket', $e->getCode(), $e);
         }
