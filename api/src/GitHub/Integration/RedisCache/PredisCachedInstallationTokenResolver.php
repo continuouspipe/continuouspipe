@@ -43,18 +43,28 @@ class PredisCachedInstallationTokenResolver implements InstallationTokenResolver
     public function get(Installation $installation)
     {
         $key = 'github_installation_'.$installation->getId();
+
+        // This is done in order to have a cache safety threshold
+        $now = new \DateTime('+1min');
+
         if (!empty($serializedToken = $this->redisClient->get($key))) {
-            return $this->serializer->deserialize($serializedToken, InstallationToken::class, 'json');
+            /** @var InstallationToken $token */
+            $token = $this->serializer->deserialize($serializedToken, InstallationToken::class, 'json');
+
+            if ($token->getExpiresAt() > $now) {
+                return $token;
+            }
         }
 
         $token = $this->decoratedResolver->get($installation);
-        $expirationInSeconds = (new \DateTime('now'))->getTimestamp() - $token->getExpiresAt()->getTimestamp();
-        $expirationInSecondsWithSafetyThreshold = $expirationInSeconds - 60;
 
-        if ($expirationInSecondsWithSafetyThreshold > 0) {
+        $expirationDate = $token->getExpiresAt();
+        $expirationInSeconds = $expirationDate->getTimestamp() - $now->getTimestamp();
+
+        if ($expirationInSeconds > 0) {
             $serializedToken = $this->serializer->serialize($token, 'json');
 
-            $this->redisClient->setex($key, $expirationInSecondsWithSafetyThreshold, $serializedToken);
+            $this->redisClient->setex($key, $expirationInSeconds, $serializedToken);
         }
 
         return $token;
