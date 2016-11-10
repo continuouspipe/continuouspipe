@@ -1,0 +1,13 @@
+{
+  "name": "k8s-watcher",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Kubernetes Watcher",
+  "author": "Samuel ROZE <samuel.roze@gmail.com>",
+  "dependencies": {
+    "ajv": "^4.8.2",
+    "express": "^4.13.3",
+    "firebase": "^2.4.2",
+    "raven": "^0.12.0"
+  }
+}
