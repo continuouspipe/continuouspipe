@@ -1,19 +1,26 @@
 <div class="pods" ng-controller="LogsPodsController">
 	<div class="pods-container">
 		<div class="pod" ng-repeat="pod in log.pods" ng-class="getPodClasses(log.deployment, pod)">
-			<p class="name">
-		        <md-tooltip md-direction="top">{{ pod.name }}</md-tooltip>
-				{{ pod.name }}
-			</p>
-			<p class="image">
-		        <md-tooltip md-direction="top">{{ pod.containers[0].image }}</md-tooltip>
-				{{ pod.containers[0].image }}
-			</p>
-			<p class="creation-timestamp">
-		        <md-tooltip md-direction="top">{{ pod.creationTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
-		        {{ pod.creationTimestamp | timeAgo }}
-		    </p>
-			<p class="status">{{ pod.status.phase }}</p>
+			<div class="pod-header">
+				<span>Status:</span> <span class="status">{{ pod.status.phase }}</span>
+				<span class="generation-badge new" ng-if="isNewGeneration(log.deployment, pod)">New</span>
+				<span class="generation-badge old" ng-if="!isNewGeneration(log.deployment, pod)">Old</span>
+			</div>
+			<div class="pod-contents">
+				<p class="name">
+			        <md-tooltip md-direction="top">{{ pod.name }}</md-tooltip>
+					{{ pod.name }}
+				</p>
+				<p class="image">
+			        <md-tooltip md-direction="top">{{ pod.containers[0].image }}</md-tooltip>
+					{{ pod.containers[0].image }}
+				</p>
+				<hr />
+				<p class="creation-timestamp">
+			        <md-tooltip md-direction="top">{{ pod.creationTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+			        {{ pod.creationTimestamp | timeAgo }}
+			    </p>
+		    </div>
 		</div>
 	</div>
 
@@ -41,16 +48,6 @@
 		<div class="legend-row">
 			<div class="legend-container pod-terminating"></div>
 			<span>Terminating</span>
-		</div>
-
-		<div class="legend-row">
-			<div class="legend-container pod-new-generation"></div>
-			<span>New generation</span>
-		</div>
-
-		<div class="legend-row">
-			<div class="legend-container pod-previous-generation"></div>
-			<span>Previous generation</span>
 		</div>
 	</div>
 </div>

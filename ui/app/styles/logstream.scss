@@ -171,44 +171,82 @@ $text-rounds-radius: 20px;
             div.pods-container {
                 padding: 0 10px;
 
-                .pod-new-generation, .pod-previous-generation {
-                    border-width: 10px;
-                    border-style: solid;
-                }
-
                 div.pod {
                     margin: 0 10px 10px 0;
                     display: inline-block;
                     border-radius: 10px;
-                    width: 150px;
+                    width: 200px;
                     height: 115px;
                     padding: 10px;
 
-                    p {
+                    p, span {
                         font-size: 11px;
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         overflow: hidden;
-                        margin-bottom: 5px;
+                        color: #fff;
                     }
 
-                    .name {
-                        font-weight: bold;
+                    .pod-header {
+                        padding: 5px 7px 5px 10px;
+                        border-top-left-radius: 3px;
+                        border-top-right-radius: 3px;
+
+                        span {
+                            line-height: 20px;
+                        }
+
+                        .status {
+                            font-weight: bold;
+                        }
+
+                        .generation-badge {
+                            line-height: 13px;
+                            margin-top: 2px;
+                            float: right;
+                            background: #fff;
+                            color: #333;
+                            font-size: 9px;
+                            padding: 2px 5px;
+                            margin: 0;
+                        }
                     }
-                    .creation-timestamp {
-                        font-style: italic;
+
+                    .pod-contents {
+                        padding: 5px;
+                        border-bottom-left-radius: 3px;
+                        border-bottom-right-radius: 3px;
+
+                        p, span {
+                            margin: 5px;
+                        }
+
+                        .name {
+                            font-weight: bold;
+                        }
+
+                        hr {
+                            border: none;
+                            border-top: 1px solid rgba(255, 255, 255, 0.5);
+                            margin: 10px 5px;
+                        }
+
+                        .creation-timestamp {
+                            font-style: italic;
+                            color: rgba(255, 255, 255, 0.5);
+                        }
                     }
                 }
             }
 
             div.legend {
-                padding: 10px 10px 0 10px;
+                padding: 20px 10px 10px 20px;
                 margin-top: 10px;
                 border-top: 1px solid #ccc;
 
                 div.legend-row {
                     display: inline-block;
-                    margin-right: 10px;
+                    margin-right: 20px;
 
                     div.legend-container {
                         display: inline-block;
@@ -216,38 +254,67 @@ $text-rounds-radius: 20px;
                         height: 20px;
                         vertical-align: bottom;
                     }
-
-                    .pod-new-generation, .pod-previous-generation {
-                        border-width: 4px;
-                        border-style: solid;
-                    }
                 }
             }
 
+            $pod-terminating-header: #909090;
+            $pod-terminating-body: #606060;
+
+            $pod-pending-header: #EBBF4D;
+            $pod-pending-body: #E2A400;
+
+            $pod-running-header: #A2C4E8;
+            $pod-running-body: #7AAADE;
+
+            $pod-failed-header: #E4777C;
+            $pod-failed-body: #D93C44;
+
+            $pod-ready-header: #78B99E;
+            $pod-ready-body: #3E9B74;
+
             .pod-terminating {
-                background: #0D3C55;
-            }
-            .pod-ready {
-                background: #8ACC77;
-            }
-            .pod-running {
-                background: #1395BA;
-            }
-            .pod-pending {
-                background: #F16C20;
-            }
-            .pod-failed {
-                background: #C02E1D;
-            }
-            .pod-unknown {
-                background: white;
+                .pod-header {
+                    background: $pod-terminating-header;
+                }
+                .pod-contents, &.legend-container {
+                    background: $pod-terminating-body;
+                }
             }
 
-            .pod-new-generation {
-                border-color: #8ACC77;
+            .pod-ready {
+                .pod-header {
+                    background: $pod-ready-header;
+                }
+                .pod-contents, &.legend-container {
+                    background: $pod-ready-body;
+                }
             }
-            .pod-previous-generation {
-                border-color: #97C4E2;
+
+            .pod-running {
+                .pod-header {
+                    background: $pod-running-header;
+                }
+                .pod-contents, &.legend-container {
+                    background: $pod-running-body;
+                }
+            }
+
+            .pod-pending {
+                .pod-header {
+                    background: $pod-pending-header;
+                }
+                .pod-contents, &.legend-container {
+                    background: $pod-pending-body;
+                }
+            }
+
+            .pod-failed, .pod-unknown {
+                .pod-header {
+                    background: $pod-failed-header;
+                }
+                .pod-contents, &.legend-container {
+                    background: $pod-failed-body;
+                }
             }
         }
     }

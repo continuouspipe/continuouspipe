@@ -2,6 +2,10 @@
 
 angular.module('continuousPipeRiver')
     .controller('LogsPodsController', function($scope) {
+		$scope.isNewGeneration = function(deployment, pod) {
+			return deployment.containers[0].image == pod.containers[0].image;
+		};
+
     	$scope.getPodClasses = function(deployment, pod) {
     		var classes = [];
 			if (!pod.status) {
@@ -23,15 +27,6 @@ angular.module('continuousPipeRiver')
 				classes.push('pod-failed');
 			} else {
 				classes.push('pod-unknown');
-			}
-
-			// Is this pod a new or old one?
-			// pod-new-generation
-			// pod-previous-generation
-			if (deployment.containers[0].image == pod.containers[0].image) {
-				classes.push('pod-new-generation');
-			} else {
-				classes.push('pod-previous-generation');
 			}
 
 			return classes;
