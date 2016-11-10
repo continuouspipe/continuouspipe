@@ -24,7 +24,9 @@ angular
         'angular-google-analytics',
         'slugifier',
         'ui.ace',
-        'yaru22.angular-timeago'
+        'yaru22.angular-timeago',
+        'firebase',
+        'RecursionHelper'
     ])
     .config(function($urlRouterProvider, $breadcrumbProvider, $locationProvider, $mdThemingProvider, AnalyticsProvider) {
         $urlRouterProvider.otherwise('/');

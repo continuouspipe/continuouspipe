@@ -14,15 +14,16 @@
     "angular-resource": "~1.5.0",
     "angular-sanitize": "~1.5.0",
     "angular-slugify": "~1.0.1",
-    "angular-timeago": "~0.2.5",
+    "angular-timeago": "^0.4.3",
     "angular-touch": "~1.5.0",
     "angular-ui-ace": "~0.2.3",
     "angular-ui-router": "~0.2.14",
     "bootstrap": "^3.2.0",
-    "iframe-resizer": "~3.0.0",
     "js-yaml": "~3.4.2",
     "loaders.css": "~0.1.1",
-    "sweetalert": "~1.1.0"
+    "sweetalert": "~1.1.0",
+    "angular-recursion": "^1.0.5",
+    "angularfire": "^2.1.0"
   },
   "devDependencies": {
     "angular-mocks": "~1.5.0"
