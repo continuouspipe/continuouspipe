@@ -23,7 +23,8 @@
     "loaders.css": "~0.1.1",
     "sweetalert": "~1.1.0",
     "angular-recursion": "^1.0.5",
-    "angularfire": "^2.1.0"
+    "angularfire": "^2.1.0",
+    "ansi_up": "^1.3.0"
   },
   "devDependencies": {
     "angular-mocks": "~1.5.0"

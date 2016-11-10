@@ -15,8 +15,18 @@
 					<td colspan="4">No events yet.</td>
 				</td>
 				<tr ng-repeat="event in log.events">
-					<td>{{ event.firstTimestamp | timeAgo }}</td>
-					<td>{{ event.lastTimestamp | timeAgo }}</td>
+					<td>
+				        <span>
+				        	<md-tooltip md-direction="top">{{ event.firstTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+							{{ event.firstTimestamp | timeAgo }}
+						</span>
+					</td>
+					<td>
+				        <span>
+							<md-tooltip md-direction="top">{{ event.lastTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+							{{ event.lastTimestamp | timeAgo }}
+						</span>
+					</td>
 					<td>{{ event.reason }}</td>
 					<td>{{ event.message }}</td>
 					<td>{{ event.count }}</td>

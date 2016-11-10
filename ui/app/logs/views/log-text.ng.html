@@ -1,7 +1,7 @@
 <div class="content" ng-click="toggleChildrenDisplay(logId)">
-    <span ng-if="log.children && !displayChildrenOf[logId]" class="expand-icon glyphicon glyphicon-chevron-right"></span>
-    <span ng-if="log.children && displayChildrenOf[logId]" class="expand-icon glyphicon glyphicon-chevron-down"></span>
-    <i class="glyphicon glyphicon-cog glyphicon-spin status-icon" ng-if="log.status == 'running'"></i>
+    <i ng-if="log.children && !displayChildrenOf[logId]" class="material-icons expand-icon">keyboard_arrow_right</i>
+    <i ng-if="log.children && displayChildrenOf[logId]" class="material-icons expand-icon">keyboard_arrow_down</i>
+    <i ng-if="log.status == 'running'" class="material-icons glyphicon-spin status-icon running-icon">settings</i>
     <span ng-bind-html="log.contents"></span>
     <span ng-if="level == 2" class="duration" log-duration="log"></span>
 </div>
