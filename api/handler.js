@@ -114,7 +114,6 @@ var HttpHandlerFactory = function(queue, firebase) {
     	});
     };
 
-
     return function(request, response) {
         var matches,
             matchFirstArgumentAsLogId = function(request, matches) {

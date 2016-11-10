@@ -2,7 +2,7 @@ var k8s = require('kubernetes-client');
 
 module.exports = function(firebase) {
 	// Configuration
-	var timeout = 1000 * 60 * 30;
+	var timeout = 1000 * 60 * 5;
 
 	return function(job, done) {
 		var data = job.data,
