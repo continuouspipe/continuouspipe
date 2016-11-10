@@ -86,8 +86,9 @@ class WaitComponentsHandler implements DeploymentHandler
     public function handle(WaitComponentsCommand $command)
     {
         $objects = $this->getKubernetesObjectsToWait($command->getComponentStatuses());
-        $client = $this->clientFactory->get($command->getContext());
-        $logger = $this->loggerFactory->from($command->getContext()->getLog());
+        $deploymentContext = $command->getContext();
+        $client = $this->clientFactory->get($deploymentContext);
+        $logger = $this->loggerFactory->from($deploymentContext->getLog());
 
         $loop = React\EventLoop\Factory::create();
         $promises = [];
@@ -96,11 +97,10 @@ class WaitComponentsHandler implements DeploymentHandler
             if ($object instanceof ReplicationController) {
                 $promises[] = $this->waitOneReplicationControllerPodRunning($loop, $client, $logger, $object);
             } elseif ($object instanceof Deployment) {
-                $promises[] = $this->waitDeploymentFinished($loop, $client, $logger, $object);
+                $promises[] = $this->waitDeploymentFinished($loop, $deploymentContext, $client, $logger, $object);
             }
         }
 
-        $deploymentContext = $command->getContext();
         React\Promise\all($promises)->then(function () use ($deploymentContext) {
             $deploymentUuid = $deploymentContext->getDeployment()->getUuid();
 
@@ -153,12 +153,15 @@ class WaitComponentsHandler implements DeploymentHandler
     }
 
     /**
+     * @param React\EventLoop\LoopInterface $loop
+     * @param DeploymentContext $deploymentContext
      * @param NamespaceClient $client
-     * @param Deployment      $deployment
+     * @param Logger $logger
+     * @param Deployment $deployment
      *
      * @return React\Promise\Promise
      */
-    private function waitDeploymentFinished(React\EventLoop\LoopInterface $loop, NamespaceClient $client, Logger $logger, Deployment $deployment)
+    private function waitDeploymentFinished(React\EventLoop\LoopInterface $loop, DeploymentContext $deploymentContext, NamespaceClient $client, Logger $logger, Deployment $deployment)
     {
         $logger = $logger->child(new Text(sprintf('Rolling update of component "%s"', $deployment->getMetadata()->getName())));
         $logger->updateStatus(Log::RUNNING);
@@ -193,11 +196,11 @@ class WaitComponentsHandler implements DeploymentHandler
 
         // Display the status of the pods related to this deployment
         $podsLogger = $logger->child(new Complex('pods'));
-        $updatePodStatuses = function () use ($client, $deployment, $podsLogger) {
+        $updatePodStatuses = function () use ($client, $deployment, $podsLogger, $deploymentContext) {
             $podsFoundByLabel = $client->getPodRepository()->findByLabels($deployment->getSpecification()->getSelector()->getMatchLabels());
 
             $podsLogger->update(new Complex('pods', [
-                'deployment' => $this->normalizeDeployment($deployment),
+                'deployment' => $this->normalizeDeployment($deploymentContext, $deployment),
                 'pods' => array_map(function (Pod $pod) {
                     return $this->normalizePod($pod);
                 }, $podsFoundByLabel->getPods()),
@@ -281,16 +284,21 @@ class WaitComponentsHandler implements DeploymentHandler
     }
 
     /**
+     * @param DeploymentContext $deploymentContext
      * @param Deployment $deployment
      *
      * @return array
      */
-    private function normalizeDeployment(Deployment $deployment)
+    private function normalizeDeployment(DeploymentContext $deploymentContext, Deployment $deployment)
     {
         $specification = $deployment->getSpecification();
         $containers = $specification->getTemplate()->getPodSpecification()->getContainers();
 
         return [
+            'environment' => [
+                'identifier' => $deploymentContext->getEnvironment()->getIdentifier(),
+                'cluster' => $deploymentContext->getCluster()->getIdentifier(),
+            ],
             'replicas' => $specification->getReplicas(),
             'containers' => array_map(function (Container $container) {
                 return $this->normalizeContainer($container);
