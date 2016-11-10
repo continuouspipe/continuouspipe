@@ -86,7 +86,9 @@ var HttpHandlerFactory = function(queue, firebase) {
 
 			// If the `logId` is not given, create one
 			if (!data.logId) {
-				data.logId = firebase.child('logs').push().key();
+				data.logId = firebase.child('logs').push({
+					'type': 'container',
+				}).key();
 				console.log('Create log "' + data.logId + '"');
 				data.removeLog = true;
 			}

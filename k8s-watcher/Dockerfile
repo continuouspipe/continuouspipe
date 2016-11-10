@@ -9,4 +9,4 @@ RUN npm install
 # Bundle app source
 COPY . /app
 
-CMD ["node", "/app/main.js"]
+CMD ["node", "/app/api.js"]
