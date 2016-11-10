@@ -110,7 +110,7 @@ var HttpHandlerFactory = function(queue, firebase) {
 	            		'jobId': job.id
 		            }));
 	        	}
-			});
+			}).removeOnComplete(true).save();
     	});
     };
 
