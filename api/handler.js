@@ -1,7 +1,7 @@
 var ajv = require('ajv')();
 
 
-var HttpHandlerFactory = function(LogsCollection) {
+var HttpHandlerFactory = function(queue, firebase) {
     var redirect = function(request, response) {
         response.writeHead(200, {"Content-Type": "text/html"});
         response.write('<html><head><meta http-equiv="refresh" content="0; url=https://continuouspipe.io" /></head></html>');
@@ -84,9 +84,31 @@ var HttpHandlerFactory = function(LogsCollection) {
             	return;
 			}
 
-			console.log('watch', data);
+			// If the `logId` is not given, create one
+			if (!data.logId) {
+				data.logId = firebase.child('logs').push().key();
+				console.log('Create log "' + data.logId + '"');
+				data.removeLog = true;
+			}
 
+			if (undefined === data.removeLog) {
+				data.removeLog = false;
+			}
 
+			var job = queue.create('logs', data).save(function(error) {
+				response.setHeader('Content-Type', 'application/json');
+
+				if (error) {
+		            response.writeHead(500);
+		            response.end(JSON.stringify(error));
+	        	} else {
+		            response.writeHead(200);
+		            response.end(JSON.stringify({
+	            		'logId': data.logId,
+	            		'jobId': job.id
+		            }));
+	        	}
+			});
     	});
     };
 

@@ -1,0 +1,25 @@
+api:
+    build: .
+    command: /app/api.js
+    links:
+        - redis
+    expose:
+        - 80
+    environment:
+        PORT: 80
+        SENTRY_DSN: http://c6f81870b55f41d482a8300ec7ff0d42@sentry.tools.sroze.io/15
+        REDIS_HOST: redis
+        FIREBASE_APP: continuous-pipe
+
+worker:
+    build: .
+    command: /app/worker.js
+    links:
+        - redis
+    environment:
+        SENTRY_DSN: http://c6f81870b55f41d482a8300ec7ff0d42@sentry.tools.sroze.io/15
+        REDIS_HOST: redis
+        FIREBASE_APP: continuous-pipe
+
+redis:
+    image: redis
