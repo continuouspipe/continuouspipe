@@ -13,8 +13,9 @@
     <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
     <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.css">
     <!-- endbuild -->
-    <!-- build:css(.tmp) styles/main.css -->
+    <!-- build:css(.tmp) styles/application.css -->
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/logstream.css">
     <!-- endbuild -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
@@ -50,12 +51,14 @@
 <script src="bower_components/angular-resource/angular-resource.js"></script>
 <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
 <script src="bower_components/angular-slugify/angular-slugify.js"></script>
-<script src="bower_components/angular-timeago/src/timeAgo.js"></script>
+<script src="bower_components/angular-timeago/dist/angular-timeago.js"></script>
 <script src="bower_components/angular-touch/angular-touch.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-<script src="bower_components/iframe-resizer/src/iframeResizer.js"></script>
-<script src="bower_components/iframe-resizer/src/iframeResizer.contentWindow.js"></script>
 <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+<script src="bower_components/angular-recursion/angular-recursion.js"></script>
+<script src="bower_components/firebase/firebase.js"></script>
+<script src="bower_components/angularfire/dist/angularfire.js"></script>
+<script src="bower_components/ansi_up/ansi_up.js"></script>
 <!-- endbower -->
 <script src="bower_components/ace-builds/src-min-noconflict/ace.js"></script>
 <script src="bower_components/angular-ui-ace/ui-ace.js"></script>
@@ -100,11 +103,14 @@
 
 <script src="tide/routing.js"></script>
 <script src="tide/controllers/logs.js"></script>
-<script src="tide/directives/log-frame.js"></script>
 <script src="tide/models/repository/tide-repository.js"></script>
 <script src="tide/filters/httpify.js"></script>
 <script src="tide/filters/tide-status-class.js"></script>
 <script src="tide/filters/first-upper-case.js"></script>
+
+<script src="logs/controllers/logs.js"></script>
+<script src="logs/directives/logs.js"></script>
+<script src="logs/services/log-finder.js"></script>
 
 <script src="team/routing.js"></script>
 <script src="team/layout/filters/join.js"></script>

@@ -438,7 +438,7 @@ module.exports = function (grunt) {
         constants: {
           RIVER_API_URL: '//'+(process.env.RIVER_API_URL || 'river_api.docker/app_dev.php'),
           AUTHENTICATOR_API_URL: '//'+(process.env.AUTHENTICATOR_API_URL || 'authenticator_app.docker/app_dev.php'),
-          LOG_STREAM_URL: '//'+(process.env.LOG_STREAM_URL || 'logstream-frontend.docker'),
+          LOG_STREAM_API_URL: 'https://'+(process.env.LOG_STREAM_API_URL || 'logstream-api.docker'),
           PIPE_API_URL: '//'+(process.env.PIPE_API_URL || 'pipe_api.docker/app_dev.php')
         }
       }

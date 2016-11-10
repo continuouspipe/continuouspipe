@@ -3,8 +3,6 @@
 angular.module('continuousPipeRiver')
     .controller('FlowAlertsController', function($scope, $state, AlertsRepository, flow) {
         AlertsRepository.findByFlow(flow).then(function(alerts) {
-            console.log(alerts);
-            
             $scope.alerts = alerts;
         });
 
