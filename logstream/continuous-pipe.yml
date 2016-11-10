@@ -2,8 +2,6 @@ tasks:
     images:
         build:
             services:
-                frontend:
-                    image: docker.io/sroze/logstream-frontend
                 api:
                     image: docker.io/sroze/logstream-api
 
@@ -14,22 +12,6 @@ tasks:
                 name: '"logstream-" ~ code_reference.branch'
 
             services:
-                frontend:
-                    endpoints:
-                        -
-                            name: https
-                            type: NodePort
-                            ssl_certificates:
-                                -
-                                    name: continuouspipeio
-                                    cert: ${WILDCARD_SSL_CERT}
-                                    key: ${WILDCARD_SSL_KEY}
-
-                    specification:
-                        environment_variables:
-                            - name: LOG_STREAM_API_URL
-                              value: https://api.logstream.continuouspipe.io
-
                 api:
                     specification:
                         accessibility:

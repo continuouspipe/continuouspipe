@@ -1,6 +1,0 @@
-<div class="log"
-     ng-repeat="(logId, log) in parent.children"
-     ng-class="['type-'+log.type, 'status-'+log.status, log.children ? 'has-children' : 'no-children', 'level-'+level]"
-     ng-include="'views/logs/log-'+log.type+'.ng.html'">
-
-</div>
