@@ -1,20 +1,19 @@
-
 <md-dialog aria-label="Logs of {{ pod.name }}">
-  <form ng-cloak>
-    <md-toolbar>
-      <div class="md-toolbar-tools">
-        <h2>Logs of {{ pod.name }}</h2>
-        <span flex></span>
-        <md-button class="md-icon-button" ng-click="close()">
-          <md-icon class="material-icons" aria-label="Close dialog">clear</md-icon>
-        </md-button>
-      </div>
-    </md-toolbar>
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Logs of {{ pod.name }}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="close()">
+                    <md-icon class="material-icons" aria-label="Close dialog">clear</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
 
-    <md-dialog-content>
-        <remote-resource resource-name="log">
-            <logs parent="log" level="1" class="log-container in-popup"></logs>
-        </remote-resource>   
-    </md-dialog-content>
-  </form>
+        <md-dialog-content>
+            <remote-resource resource-name="log">
+                <logs parent="log" level="1" class="log-container in-popup"></logs>
+            </remote-resource>   
+        </md-dialog-content>
+    </form>
 </md-dialog>

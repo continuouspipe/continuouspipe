@@ -15,7 +15,7 @@ angular.module('continuousPipeRiver')
                             return flow;
                         }, function(error) {
                             return $q.reject(error);
-                        });s
+                        });
                     }
                 },
                 views: {

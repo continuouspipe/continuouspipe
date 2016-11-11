@@ -2,52 +2,52 @@
 
 angular.module('continuousPipeRiver')
     .controller('LogsPodsController', function($scope, $mdDialog) {
-		$scope.isNewGeneration = function(deployment, pod) {
-			return deployment.containers[0].image == pod.containers[0].image;
-		};
+        $scope.isNewGeneration = function(deployment, pod) {
+            return deployment.containers[0].image == pod.containers[0].image;
+        };
 
-    	$scope.getPodClasses = function(deployment, pod) {
-    		var classes = [];
-			if (!pod.status) {
-				return classes;
-			}
+        $scope.getPodClasses = function(deployment, pod) {
+            var classes = [];
+            if (!pod.status) {
+                return classes;
+            }
 
-			// Add the pod status labels
-			if (pod.deletionTimestamp) {
-				classes.push('pod-terminating');
-			} else if (pod.status.phase == 'Pending') {
-				classes.push('pod-pending');
-			} else if (pod.status.phase == 'Running') {
-				if (pod.status.ready) {
-					classes.push('pod-ready');
-				} else {
-					classes.push('pod-running');
-				}
-			} else if (pod.status.phase == 'Failed') {
-				classes.push('pod-failed');
-			} else {
-				classes.push('pod-unknown');
-			}
+            // Add the pod status labels
+            if (pod.deletionTimestamp) {
+                classes.push('pod-terminating');
+            } else if (pod.status.phase == 'Pending') {
+                classes.push('pod-pending');
+            } else if (pod.status.phase == 'Running') {
+                if (pod.status.ready) {
+                    classes.push('pod-ready');
+                } else {
+                    classes.push('pod-running');
+                }
+            } else if (pod.status.phase == 'Failed') {
+                classes.push('pod-failed');
+            } else {
+                classes.push('pod-unknown');
+            }
 
-			return classes;
-    	};
+            return classes;
+        };
 
-    	$scope.liveStreamPod = function(deployment, pod) {
-			var dialogScope = $scope.$new();
-			dialogScope.pod = pod;
-			dialogScope.environment = deployment.environment;
+        $scope.liveStreamPod = function(deployment, pod) {
+            var dialogScope = $scope.$new();
+            dialogScope.pod = pod;
+            dialogScope.environment = deployment.environment;
 
-			$mdDialog.show({
-			    controller: 'LogsPodController',
-			    templateUrl: 'logs/views/pod/logs.html',
-			    parent: angular.element(document.body),
-			    clickOutsideToClose: true,
-			    fullscreen: true,
-			    scope: dialogScope
-		    }).then(function(answer) {
-		      	$scope.status = 'You said the information was "' + answer + '".';
-		    }, function() {
-		      	$scope.status = 'You cancelled the dialog.';
-		    });
-    	};
+            $mdDialog.show({
+                controller: 'LogsPodController',
+                templateUrl: 'logs/views/pod/logs.html',
+                parent: angular.element(document.body),
+                clickOutsideToClose: true,
+                fullscreen: true,
+                scope: dialogScope
+            }).then(function(answer) {
+                $scope.status = 'You said the information was "' + answer + '".';
+            }, function() {
+                $scope.status = 'You cancelled the dialog.';
+            });
+        };
     });
