@@ -10,9 +10,9 @@ app(function(queue, firebase, statsd) {
         ('failedCount')
         ('delayedCount')
         (function(error, stats) {
-            for (var metric in ['inactiveCount', 'completeCount', 'activeCount', 'failedCount', 'delayedCount']) {
-                statsd.gauge(metric, stats[key]);
-            }
+            ['inactiveCount', 'completeCount', 'activeCount', 'failedCount', 'delayedCount'].forEach(function(metric) {
+                statsd.gauge(metric, stats[metric]);
+            });
         });
     }, 5000);
 });

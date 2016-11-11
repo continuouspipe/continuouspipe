@@ -24,7 +24,7 @@ tasks:
                             - name: STATSD_PORT
                               value: 8125
                             - name: STATSD_PREFIX
-                              value: eeea7603-a2d5-4d51-adc4-0c3f8f042b28.k8s-watcher
+                              value: eeea7603-a2d5-4d51-adc4-0c3f8f042b28.k8s-watcher.
 
                     deployment_strategy:
                         readiness_probe:

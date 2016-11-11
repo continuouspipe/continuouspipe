@@ -51,6 +51,9 @@ module.exports = function(callback) {
         prefix: process.env.STATSD_PREFIX,
     });
 
+    statsd.socket.on('error', function(error) {
+        return console.error("[statsd] Error in socket: ", error);
+    });
 
     callback(queue, firebase, statsd);
 };
