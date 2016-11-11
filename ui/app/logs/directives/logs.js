@@ -9,7 +9,7 @@ angular.module('continuousPipeRiver')
             },
             templateUrl: 'logs/views/logs.ng.html',
             controller: ['$scope', function ($scope) {
-                $scope.follow = true;
+                $scope.follow = false;
                 $scope.displayChildrenOf = [];
                 $scope.shouldDisplayChildrenOf = function(logId) {
                     return $scope.level == 1 || $scope.displayChildrenOf[logId];
