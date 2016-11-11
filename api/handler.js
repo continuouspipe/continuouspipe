@@ -1,7 +1,7 @@
 var ajv = require('ajv')();
 
 
-var HttpHandlerFactory = function(queue, firebase) {
+var HttpHandlerFactory = function(queue, firebase, statsd) {
     var redirect = function(request, response) {
         response.writeHead(200, {"Content-Type": "text/html"});
         response.write('<html><head><meta http-equiv="refresh" content="0; url=https://continuouspipe.io" /></head></html>');
@@ -36,82 +36,82 @@ var HttpHandlerFactory = function(queue, firebase) {
     };
 
     var watchLogs = function(request, response) {
-    	var schema = {
-			"properties": {
-			    "cluster": {
-			      	"type": "object",
-			      	"properties": {
-				        "address": {
-				          	"type": "string"
-				        },
-				        "version": {
-				          	"type": "string"
-				        },
-				        "username": {
-				          	"type": "string"
-				        },
-				        "password": {
-				          	"type": "string"
-				        }
-			      	},
-			      	"required": [
-				        "address",
-				        "version",
-				        "username",
-				        "password"
-			      	]
-			    },
-			    "namespace": {
-			      	"type": "string"
-			    },
-			    "pod": {
-			      	"type": "string"
-			    }
-		  	},
-		  	"required": [
-			    "cluster",
-			    "namespace",
-			    "pod"
-		  	]
-    	};
+        var schema = {
+            "properties": {
+                "cluster": {
+                      "type": "object",
+                      "properties": {
+                        "address": {
+                              "type": "string"
+                        },
+                        "version": {
+                              "type": "string"
+                        },
+                        "username": {
+                              "type": "string"
+                        },
+                        "password": {
+                              "type": "string"
+                        }
+                      },
+                      "required": [
+                        "address",
+                        "version",
+                        "username",
+                        "password"
+                      ]
+                },
+                "namespace": {
+                      "type": "string"
+                },
+                "pod": {
+                      "type": "string"
+                }
+              },
+              "required": [
+                "cluster",
+                "namespace",
+                "pod"
+              ]
+        };
 
-    	getRequestJson(request, response, function(data) {
-			if (!ajv.validate(schema, data)) {
-	           	response.setHeader('Content-Type', 'application/json');
-	            response.writeHead(400);
-	            response.end(JSON.stringify(ajv.errors));
+        getRequestJson(request, response, function(data) {
+            if (!ajv.validate(schema, data)) {
+                response.setHeader('Content-Type', 'application/json');
+                response.writeHead(400);
+                response.end(JSON.stringify(ajv.errors));
 
-            	return;
-			}
+                return;
+            }
 
-			// If the `logId` is not given, create one
-			if (!data.logId) {
-				data.logId = firebase.child('logs').push({
-					'type': 'container',
-				}).key();
-				console.log('Create log "' + data.logId + '"');
-				data.removeLog = true;
-			}
+            statsd.increment('api.http.watch_logs');
 
-			if (undefined === data.removeLog) {
-				data.removeLog = false;
-			}
+            // If the `logId` is not given, create one
+            if (!data.logId) {
+                data.logId = firebase.child('logs').push({'type': 'container'}).key();
+                console.log('Created log "' + data.logId + '"');
+                data.removeLog = true;
+            }
 
-			var job = queue.create('logs', data).save(function(error) {
-				response.setHeader('Content-Type', 'application/json');
+            if (undefined === data.removeLog) {
+                data.removeLog = false;
+            }
 
-				if (error) {
-		            response.writeHead(500);
-		            response.end(JSON.stringify(error));
-	        	} else {
-		            response.writeHead(200);
-		            response.end(JSON.stringify({
-	            		'logId': data.logId,
-	            		'jobId': job.id
-		            }));
-	        	}
-			}).removeOnComplete(true).save();
-    	});
+            var job = queue.create('logs', data).save(function(error) {
+                response.setHeader('Content-Type', 'application/json');
+
+                if (error) {
+                    response.writeHead(500);
+                    response.end(JSON.stringify(error));
+                } else {
+                    response.writeHead(200);
+                    response.end(JSON.stringify({
+                        'logId': data.logId,
+                        'jobId': job.id
+                    }));
+                }
+            }).removeOnComplete(true).save();
+        });
     };
 
     return function(request, response) {
@@ -121,9 +121,9 @@ var HttpHandlerFactory = function(queue, firebase) {
             },
             routes = [
                 {url: /^\/$/, method: 'GET', handler: redirect},
-            	{url: /^\/v1\/watch\/logs$/, method: 'POST', handler: watchLogs},
-        	]
-    	;
+                {url: /^\/v1\/watch\/logs$/, method: 'POST', handler: watchLogs},
+            ]
+        ;
 
         for (var i = 0; i < routes.length; i++) {
             var route = routes[i];
