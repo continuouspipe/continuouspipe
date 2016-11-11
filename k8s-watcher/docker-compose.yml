@@ -1,6 +1,6 @@
 api:
     build: .
-    command: node /app/api.js
+    command: [node, /app/api.js]
     links:
         - redis
     expose:
@@ -16,7 +16,7 @@ api:
 
 worker:
     build: .
-    command: node /app/worker.js
+    command: [node, /app/worker.js]
     links:
         - redis
     environment:
