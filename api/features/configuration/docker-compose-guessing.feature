@@ -615,3 +615,40 @@ Feature:
                                 image: sroze/my-image
                             command: [ node, /app/worker.js ]
     """
+
+
+  Scenario: It fills all the deploy tasks
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    api:
+                        specification:
+                            ports:
+                                - 80
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        build: .
+        labels:
+            com.continuouspipe.image-name: sroze/my-image
+            com.continuouspipe.visibility: public
+        expose:
+            - 8080
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        first:
+            deploy:
+                services:
+                    api:
+                        specification:
+                            ports:
+                                - port: 80
+    """

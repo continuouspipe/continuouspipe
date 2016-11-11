@@ -173,6 +173,7 @@ class DeployTaskFactory implements TaskFactory
                                     ->end()
                                     ->append(Configuration::getEnvironmentVariablesNode())
                                     ->arrayNode('ports')
+                                        ->performNoDeepMerging()
                                         ->prototype('array')
                                             ->beforeNormalization()
                                                 ->ifTrue(function ($value) {
