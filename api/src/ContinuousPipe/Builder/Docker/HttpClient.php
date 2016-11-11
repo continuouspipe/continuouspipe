@@ -138,6 +138,7 @@ class HttpClient implements Client
             'dockerfile' => $this->dockerfileResolver->getFilePath($request->getContext()),
             'Content-type' => 'application/tar',
             'X-Registry-Config' => $this->generateHttpRegistryConfig($request),
+            'pull' => (int) true,
         ];
 
         $environment = $request->getEnvironment();
