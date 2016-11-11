@@ -2,13 +2,18 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Request\WatchRequest;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\Credentials\Cluster;
+use ContinuousPipe\Watcher\Watcher;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @Route(service="app.controller.flow_environment")
@@ -21,11 +26,25 @@ class FlowEnvironmentController
     private $environmentClient;
 
     /**
-     * @param Flow\EnvironmentClient $environmentClient
+     * @var BucketRepository
      */
-    public function __construct(Flow\EnvironmentClient $environmentClient)
+    private $bucketRepository;
+
+    /**
+     * @var Watcher
+     */
+    private $watcher;
+
+    /**
+     * @param Flow\EnvironmentClient $environmentClient
+     * @param BucketRepository       $bucketRepository
+     * @param Watcher                $watcher
+     */
+    public function __construct(Flow\EnvironmentClient $environmentClient, BucketRepository $bucketRepository, Watcher $watcher)
     {
         $this->environmentClient = $environmentClient;
+        $this->watcher = $watcher;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -50,5 +69,30 @@ class FlowEnvironmentController
         $environment = new DeployedEnvironment($name, $request->query->get('cluster'));
 
         $this->environmentClient->delete($flow, $environment);
+    }
+
+    /**
+     * @Route("/flows/{uuid}/environments/watch", methods={"POST"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @ParamConverter("watchRequest", converter="fos_rest.request_body")
+     * @Security("is_granted('READ', flow)")
+     * @View
+     */
+    public function watchAction(Flow $flow, WatchRequest $watchRequest)
+    {
+        $bucket = $this->bucketRepository->find($flow->getContext()->getTeam()->getBucketUuid());
+        $clusters = $bucket->getClusters()->filter(function (Cluster $cluster) use ($watchRequest) {
+            return $cluster->getIdentifier() == $watchRequest->getCluster();
+        });
+
+        if ($clusters->count() != 1) {
+            throw new BadRequestHttpException(sprintf('Expected one cluster found %d', $clusters->count()));
+        }
+
+        return $this->watcher->logs(
+            $clusters->first(),
+            $watchRequest->getEnvironment(),
+            $watchRequest->getPod()
+        );
     }
 }

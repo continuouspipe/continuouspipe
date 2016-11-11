@@ -58,6 +58,8 @@
         </service>
         <service id="app.controller.flow_environment" class="AppBundle\Controller\FlowEnvironmentController">
             <argument type="service" id="river.flow.environment_client" />
+            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="river.k8s_watcher" />
         </service>
 
         <!-- Param converters -->
