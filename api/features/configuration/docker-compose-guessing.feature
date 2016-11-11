@@ -578,3 +578,77 @@ Feature:
                         build_directory: .
                         docker_file_path: docker/style-guide/Dockerfile
     """
+
+  Scenario: The commands in CP's configuration overrides the ones in docker-compose.yml
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        kube:
+            deploy:
+                cluster: foo
+                services:
+                    service1:
+                        specification:
+                            source:
+                                image: sroze/my-image
+                            command:
+                                - node
+                                - /app/worker.js
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    service1:
+        build: .
+        command: /app/api.sh
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        kube:
+            deploy:
+                cluster: foo
+                services:
+                    service1:
+                        specification:
+                            source:
+                                image: sroze/my-image
+                            command: [ node, /app/worker.js ]
+    """
+
+
+  Scenario: It fills all the deploy tasks
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    api:
+                        specification:
+                            ports:
+                                - 80
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        build: .
+        labels:
+            com.continuouspipe.image-name: sroze/my-image
+            com.continuouspipe.visibility: public
+        expose:
+            - 8080
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        first:
+            deploy:
+                services:
+                    api:
+                        specification:
+                            ports:
+                                - port: 80
+    """
