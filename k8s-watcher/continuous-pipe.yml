@@ -46,6 +46,9 @@ tasks:
                                 cpu: 250m
                                 memory: 250Mi
 
+                        ports:
+                            - 6379
+
                 worker:
                     specification:
                         environment_variables:
