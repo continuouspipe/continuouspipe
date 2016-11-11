@@ -28,7 +28,6 @@
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Command\DeleteEnvironments" />
         </service>
 
-
         <!-- Event subscribers -->
         <service id="river.listener.start_tide_when_validated" class="ContinuousPipe\River\EventListener\StartTideWhenValidatedListener">
             <argument type="service" id="simple_bus.command_bus" />

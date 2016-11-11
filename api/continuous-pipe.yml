@@ -47,7 +47,7 @@ tasks:
                                     key: ${WILDCARD_SSL_KEY}
 
                     specification:
-                        environment_variables:
+                        environment_variables: &ENV
                             - name: AUTHENTICATOR_URL
                               value: http://authenticator.continuouspipe.io
                             - name: LOGSTREAM_URL
@@ -76,7 +76,9 @@ tasks:
                               value: 138xHEqgD93lk
                             - name: TIDEWAYS_API_KEY
                               value: ${TIDEWAYS_API_KEY}
-                              
+                            - name: K8S_WATCHER_URL
+                              value: https://api.k8s-watcher-master.svc.cluster.local
+
                     deployment_strategy:
                         readiness_probe:
                             type: http
@@ -90,34 +92,7 @@ tasks:
                         source:
                             from_service: api
                         environment_variables:
-                            - name: AUTHENTICATOR_URL
-                              value: http://authenticator.continuouspipe.io
-                            - name: LOGSTREAM_URL
-                              value: https://api.logstream.continuouspipe.io
-                            - name: LOGSTREAM_FRONTEND_URL
-                              value: http://logstream.continuouspipe.io
-                            - name: BUILDER_URL
-                              value: ${BUILDER_URL}
-                            - name: PIPE_URL
-                              value: http://pipe.continuouspipe.io
-                            - name: RIVER_URL
-                              value: river.continuouspipe.io
-                            - name: RIVER_UI_URL
-                              value: https://ui.continuouspipe.io
-                            - name: KEEN_PROJECT_ID
-                              value: ${KEEN_PROJECT_ID}
-                            - name: KEEN_WRITE_KEY
-                              value: ${KEEN_WRITE_KEY}
-                            - name: SENTRY_DSN
-                              value: http://a28df8b25bdb4b8eb1b335849fa7daad:9401ad376e8b4c54b0a1138bb8093b2c@sentry.tools.sroze.io/10
-                            - name: DATABASE_HOST
-                              value: 104.155.7.25
-                            - name: DATABASE_USER
-                              value: river
-                            - name: DATABASE_PASSWORD
-                              value: 138xHEqgD93lk
-                            - name: TIDEWAYS_API_KEY
-                              value: ${TIDEWAYS_API_KEY}
+                            <<: *ENV
 
                 tideways:
                     specification:
@@ -167,12 +142,7 @@ tasks:
                 - php app/console doctrine:migrations:migrate --no-interaction
 
             environment_variables:
-                - name: DATABASE_HOST
-                  value: 104.155.7.25
-                - name: DATABASE_USER
-                  value: river
-                - name: DATABASE_PASSWORD
-                  value: 138xHEqgD93lk
+                <<: *ENV
 
         filter:
             expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'
