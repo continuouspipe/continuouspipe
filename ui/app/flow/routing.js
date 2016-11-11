@@ -8,8 +8,14 @@ angular.module('continuousPipeRiver')
                 parent: 'team',
                 url: '/:uuid',
                 resolve: {
-                    flow: function($stateParams, FlowRepository) {
-                        return FlowRepository.find($stateParams.uuid);
+                    flow: function($stateParams, FlowRepository, $flowContext) {
+                        return FlowRepository.find($stateParams.uuid).then(function(flow) {
+                            $flowContext.setCurrentFlow(flow);
+
+                            return flow;
+                        }, function(error) {
+                            return $q.reject(error);
+                        });s
                     }
                 },
                 views: {

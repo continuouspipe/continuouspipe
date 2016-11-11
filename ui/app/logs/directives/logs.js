@@ -4,7 +4,8 @@ angular.module('continuousPipeRiver')
             restrict: 'E',
             scope: {
                 parent: '=',
-                level: '@'
+                level: '@',
+                scope: '@'
             },
             templateUrl: 'logs/views/logs.ng.html',
             controller: ['$scope', function ($scope) {
@@ -26,7 +27,9 @@ angular.module('continuousPipeRiver')
                         return;
                     }
 
-                    $http.get($scope.parent.archive).then(function (response) {
+                    $http.get($scope.parent.archive, {
+                        skipAuthorization: true
+                    }).then(function (response) {
                         $scope.parent = response.data;
                     }, function (error) {
                         $scope.parent.children = [
@@ -96,8 +99,16 @@ angular.module('continuousPipeRiver')
     .directive('followScroll', function() {
         return {
             link: function(scope, element, attributes) {
-                var scrollToTheBottom = function() {
+                var doScrollToBottom = function(element) {
                     element.scrollTop(element[0].scrollHeight);
+                };
+                var scrollToTheBottom = function() {
+                    var dialog = $('md-dialog-content');
+                    if (dialog.length) {
+                        doScrollToBottom(dialog);
+                    }
+
+                    doScrollToBottom(element);
                 };
 
                 scope.$watch(attributes.followScroll, function(follow) {

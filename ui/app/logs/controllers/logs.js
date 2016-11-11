@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('LogsPodsController', function($scope) {
+    .controller('LogsPodsController', function($scope, $mdDialog) {
 		$scope.isNewGeneration = function(deployment, pod) {
 			return deployment.containers[0].image == pod.containers[0].image;
 		};
@@ -30,5 +30,24 @@ angular.module('continuousPipeRiver')
 			}
 
 			return classes;
+    	};
+
+    	$scope.liveStreamPod = function(deployment, pod) {
+			var dialogScope = $scope.$new();
+			dialogScope.pod = pod;
+			dialogScope.environment = deployment.environment;
+
+			$mdDialog.show({
+			    controller: 'LogsPodController',
+			    templateUrl: 'logs/views/pod/logs.html',
+			    parent: angular.element(document.body),
+			    clickOutsideToClose: true,
+			    fullscreen: true,
+			    scope: dialogScope
+		    }).then(function(answer) {
+		      	$scope.status = 'You said the information was "' + answer + '".';
+		    }, function() {
+		      	$scope.status = 'You cancelled the dialog.';
+		    });
     	};
     });

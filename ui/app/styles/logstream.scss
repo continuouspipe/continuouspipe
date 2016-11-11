@@ -11,7 +11,6 @@ $text-rounds-radius: 20px;
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 14px;
     line-height: 1.42857143;
-
     padding: 30px;
 
     code, pre {
@@ -235,6 +234,20 @@ $text-rounds-radius: 20px;
                             font-style: italic;
                             color: rgba(255, 255, 255, 0.5);
                         }
+
+                        .logs-button {
+                            float: right;
+                            margin: 0;
+                            padding: 0;
+                            min-height: 20px;
+
+                            &, md-icon {
+                                height: 20px;
+                                width: 20px;
+                                line-height: 20px;
+                                color: #fff;
+                            }
+                        }
                     }
                 }
             }
@@ -315,6 +328,18 @@ $text-rounds-radius: 20px;
                 .pod-contents, &.legend-container {
                     background: $pod-failed-body;
                 }
+            }
+        }
+    }
+
+    &.in-popup {
+        padding: 0;
+
+        .log.type-raw {
+            position: inherit;
+
+            pre {
+                max-height: inherit;
             }
         }
     }

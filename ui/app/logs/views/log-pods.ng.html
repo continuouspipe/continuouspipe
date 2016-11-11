@@ -16,10 +16,16 @@
 					{{ pod.containers[0].image }}
 				</p>
 				<hr />
-				<p class="creation-timestamp">
-			        <md-tooltip md-direction="top">{{ pod.creationTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
-			        {{ pod.creationTimestamp | timeAgo }}
-			    </p>
+				<div>
+					<md-button class="md-icon-button logs-button" ng-click="liveStreamPod(log.deployment, pod)">
+						<md-tooltip md-direction="top">Live-stream logs</md-tooltip>
+						<md-icon class="material-icons">playlist_play</md-icon>
+					</md-button>
+					<p class="creation-timestamp">
+				        <md-tooltip md-direction="top">{{ pod.creationTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+				        {{ pod.creationTimestamp | timeAgo }}
+				    </p>
+				</div>
 		    </div>
 		</div>
 	</div>
