@@ -616,7 +616,6 @@ Feature:
                             command: [ node, /app/worker.js ]
     """
 
-
   Scenario: It fills all the deploy tasks
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
@@ -651,4 +650,38 @@ Feature:
                         specification:
                             ports:
                                 - port: 80
+    """
+
+  Scenario: The Docker-Compose commands are used
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        kube:
+            deploy:
+                cluster: foo
+                services:
+                    service1:
+                        specification:
+                            source:
+                                image: sroze/my-image
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    service1:
+        build: .
+        command: [node, "/app/api.js"]
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        kube:
+            deploy:
+                cluster: foo
+                services:
+                    service1:
+                        specification:
+                            source:
+                                image: sroze/my-image
+                            command: [ node, /app/api.js ]
     """
