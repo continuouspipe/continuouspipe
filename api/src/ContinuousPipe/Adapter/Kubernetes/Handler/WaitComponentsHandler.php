@@ -154,10 +154,10 @@ class WaitComponentsHandler implements DeploymentHandler
 
     /**
      * @param React\EventLoop\LoopInterface $loop
-     * @param DeploymentContext $deploymentContext
-     * @param NamespaceClient $client
-     * @param Logger $logger
-     * @param Deployment $deployment
+     * @param DeploymentContext             $deploymentContext
+     * @param NamespaceClient               $client
+     * @param Logger                        $logger
+     * @param Deployment                    $deployment
      *
      * @return React\Promise\Promise
      */
@@ -285,7 +285,7 @@ class WaitComponentsHandler implements DeploymentHandler
 
     /**
      * @param DeploymentContext $deploymentContext
-     * @param Deployment $deployment
+     * @param Deployment        $deployment
      *
      * @return array
      */

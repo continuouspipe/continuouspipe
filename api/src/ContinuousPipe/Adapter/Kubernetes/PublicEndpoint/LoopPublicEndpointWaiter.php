@@ -5,12 +5,14 @@ namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint;
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpointPort;
 use ContinuousPipe\Pipe\Promise\PromiseBuilder;
 use JMS\Serializer\SerializerInterface;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\LoadBalancerStatus;
 use Kubernetes\Client\Model\Service;
+use Kubernetes\Client\Model\ServicePort;
 use Kubernetes\Client\NamespaceClient;
 use LogStream\Log;
 use LogStream\Logger;
@@ -161,13 +163,17 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
             throw new EndpointNotFound('No ingress found');
         }
 
+        $ports = $this->getPorts($object);
+
+        var_dump($ports, $object);
+
         foreach ($ingresses as $ingress) {
             if ($hostname = $ingress->getHostname()) {
-                return new PublicEndpoint($name, $hostname);
+                return new PublicEndpoint($name, $hostname, $ports);
             }
 
             if ($ip = $ingress->getIp()) {
-                return new PublicEndpoint($name, $ip);
+                return new PublicEndpoint($name, $ip, $ports);
             }
         }
 
@@ -199,5 +205,31 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         }
 
         return $status->getLoadBalancer();
+    }
+
+    /**
+     * @param KubernetesObject $object
+     *
+     * @return array
+     */
+    private function getPorts(KubernetesObject $object)
+    {
+        if ($object instanceof Service) {
+            return array_map(function (ServicePort $servicePort) {
+                return new PublicEndpointPort(
+                    $servicePort->getPort(),
+                    $servicePort->getProtocol()
+                );
+            }, $object->getSpecification()->getPorts());
+        } elseif ($object instanceof Ingress) {
+            return [
+                new PublicEndpointPort(
+                    $object->getSpecification()->getBackend()->getServicePort(),
+                    PublicEndpointPort::PROTOCOL_TCP
+                ),
+            ];
+        }
+
+        throw new EndpointNotFound('Unable to get the exposed ports from the '.get_class($object));
     }
 }

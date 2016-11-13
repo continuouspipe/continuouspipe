@@ -15,13 +15,20 @@ class PublicEndpoint
     private $address;
 
     /**
-     * @param string $name
-     * @param string $address
+     * @var array|PublicEndpointPort[]
      */
-    public function __construct($name, $address)
+    private $ports = [];
+
+    /**
+     * @param string               $name
+     * @param string               $address
+     * @param PublicEndpointPort[] $ports
+     */
+    public function __construct(string $name, string $address, array $ports = [])
     {
         $this->name = $name;
         $this->address = $address;
+        $this->ports = $ports;
     }
 
     /**
@@ -38,5 +45,13 @@ class PublicEndpoint
     public function getAddress()
     {
         return $this->address;
+    }
+
+    /**
+     * @return array|PublicEndpointPort[]
+     */
+    public function getPorts()
+    {
+        return $this->ports;
     }
 }

@@ -120,7 +120,8 @@ class ApplyPublicEndpointsTransformations
 
             $publicEndpoint = new PublicEndpoint(
                 $publicEndpoint->getName(),
-                $recordName
+                $recordName,
+                $publicEndpoint->getPorts()
             );
         } catch (CloudFlareException $e) {
             $logger->child(new Text('Error: '.$e->getMessage()));

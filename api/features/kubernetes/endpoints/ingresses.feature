@@ -128,3 +128,12 @@ Feature:
     And I send the built deployment request
     Then the service "app" should not be updated
     And the deployment should contain the endpoint "1.2.3.4"
+
+  Scenario: It returns the port number of existing services
+    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app"
+    And the service "app" will be created with the public IP "1.2.3.4"
+    When the specification come from the template "simple-app-public"
+    And I send the built deployment request
+    Then the service "app" should not be updated
+    And the deployment should contain the endpoint "1.2.3.4"
+    And the deployment endpoint "1.2.3.4" should have the port "80"

@@ -94,3 +94,44 @@ Feature:
     When I send the built deployment request
     Then the service "http" should be created
     And the CloudFlare zone "master-myapp.example.com" should have been created with the type CNAME and the address "112345.elb.aws.com"
+
+  Scenario: It still returns the port in the endpoints
+    Given the service "http" will be created with the public DNS address "112345.elb.aws.com"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "cloud_flare_zone": {
+              "zone_identifier": "1234531235qwerty",
+              "record_suffix": "-myapp.example.com",
+              "authentication": {
+                "email": "samuel@example.com",
+                "api_key": "foobar"
+              }
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the service "http" should be created
+    And the CloudFlare zone "master-myapp.example.com" should have been created with the type CNAME and the address "112345.elb.aws.com"
+    And the deployment endpoint "master-myapp.example.com" should have the port "80"
