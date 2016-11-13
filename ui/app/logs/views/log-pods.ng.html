@@ -1,53 +1,59 @@
 <div class="pods" ng-controller="LogsPodsController">
-	<div class="pods-container">
-		<div class="pod" ng-repeat="pod in log.pods" ng-class="getPodClasses(log.deployment, pod)">
-			<div class="pod-header">
-				<span>Status:</span> <span class="status">{{ pod.status.phase }}</span>
-				<span class="generation-badge new" ng-if="isNewGeneration(log.deployment, pod)">New</span>
-				<span class="generation-badge old" ng-if="!isNewGeneration(log.deployment, pod)">Old</span>
-			</div>
-			<div class="pod-contents">
-				<p class="name">
-			        <md-tooltip md-direction="top">{{ pod.name }}</md-tooltip>
-					{{ pod.name }}
-				</p>
-				<p class="image">
-			        <md-tooltip md-direction="top">{{ pod.containers[0].image }}</md-tooltip>
-					{{ pod.containers[0].image }}
-				</p>
-				<hr />
-				<p class="creation-timestamp">
-			        <md-tooltip md-direction="top">{{ pod.creationTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
-			        {{ pod.creationTimestamp | timeAgo }}
-			    </p>
-		    </div>
-		</div>
-	</div>
+    <div class="pods-container">
+        <div class="pod" ng-repeat="pod in log.pods" ng-class="getPodClasses(log.deployment, pod)">
+            <div class="pod-header">
+                <span>Status:</span> <span class="status">{{ pod.status.phase }}</span>
+                <span class="generation-badge new" ng-if="isNewGeneration(log.deployment, pod)">New</span>
+                <span class="generation-badge old" ng-if="!isNewGeneration(log.deployment, pod)">Old</span>
+            </div>
+            <div class="pod-contents">
+                <p class="name">
+                    <md-tooltip md-direction="top">{{ pod.name }}</md-tooltip>
+                    {{ pod.name }}
+                </p>
+                <p class="image">
+                    <md-tooltip md-direction="top">{{ pod.containers[0].image }}</md-tooltip>
+                    {{ pod.containers[0].image }}
+                </p>
+                <hr />
+                <div>
+                    <md-button class="md-icon-button logs-button" ng-click="liveStreamPod(log.deployment, pod)">
+                        <md-tooltip md-direction="top">Live-stream logs</md-tooltip>
+                        <md-icon class="material-icons">playlist_play</md-icon>
+                    </md-button>
+                    <p class="creation-timestamp">
+                        <md-tooltip md-direction="top">{{ pod.creationTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+                        {{ pod.creationTimestamp | timeAgo }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<div class="legend">
-		<div class="legend-row">
-			<div class="legend-container pod-ready"></div>
-			<span>Ready</span>
-		</div>
+    <div class="legend">
+        <div class="legend-row">
+            <div class="legend-container pod-ready"></div>
+            <span>Ready</span>
+        </div>
 
-		<div class="legend-row">
-			<div class="legend-container pod-running"></div>
-			<span>Running</span>
-		</div>
+        <div class="legend-row">
+            <div class="legend-container pod-running"></div>
+            <span>Running</span>
+        </div>
 
-		<div class="legend-row">
-			<div class="legend-container pod-pending"></div>
-			<span>Pending</span>
-		</div>
+        <div class="legend-row">
+            <div class="legend-container pod-pending"></div>
+            <span>Pending</span>
+        </div>
 
-		<div class="legend-row">
-			<div class="legend-container pod-failed"></div>
-			<span>Failed</span>
-		</div>
+        <div class="legend-row">
+            <div class="legend-container pod-failed"></div>
+            <span>Failed</span>
+        </div>
 
-		<div class="legend-row">
-			<div class="legend-container pod-terminating"></div>
-			<span>Terminating</span>
-		</div>
-	</div>
+        <div class="legend-row">
+            <div class="legend-container pod-terminating"></div>
+            <span>Terminating</span>
+        </div>
+    </div>
 </div>
