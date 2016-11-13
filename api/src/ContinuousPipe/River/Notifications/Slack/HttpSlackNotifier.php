@@ -6,6 +6,7 @@ use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\Notifications\NotificationException;
 use ContinuousPipe\River\Notifications\NotificationNotSupported;
 use ContinuousPipe\River\Notifications\Notifier;
+use ContinuousPipe\River\Pipe\PublicEndpoint\PublicEndpointWriter;
 use ContinuousPipe\River\Tide\Status\Status;
 use ContinuousPipe\River\View\Tide;
 use GuzzleHttp\Client;
@@ -19,11 +20,18 @@ class HttpSlackNotifier implements Notifier
     private $httpClient;
 
     /**
-     * @param Client $httpClient
+     * @var PublicEndpointWriter
      */
-    public function __construct(Client $httpClient)
+    private $publicEndpointWriter;
+
+    /**
+     * @param Client               $httpClient
+     * @param PublicEndpointWriter $publicEndpointWriter
+     */
+    public function __construct(Client $httpClient, PublicEndpointWriter $publicEndpointWriter)
     {
         $this->httpClient = $httpClient;
+        $this->publicEndpointWriter = $publicEndpointWriter;
     }
 
     /**
@@ -108,7 +116,7 @@ class HttpSlackNotifier implements Notifier
         }
 
         return implode("\n", array_map(function (PublicEndpoint $publicEndpoint) {
-            return sprintf('*%s*: %s', $publicEndpoint->getName(), $publicEndpoint->getAddress());
+            return sprintf('*%s*: %s', $publicEndpoint->getName(), $this->publicEndpointWriter->writeAddress($publicEndpoint));
         }, $endpoints));
     }
 }

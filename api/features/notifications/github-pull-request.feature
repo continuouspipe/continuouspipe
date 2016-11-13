@@ -26,3 +26,19 @@ Feature:
     When the deployment succeed
     Then the addresses of the environment should be commented on the pull-request
     And the comment "1234" should have been deleted
+
+  Scenario: The addresses should be prefixed by the protocol
+    Given there is 1 application images in the repository
+    And a tide is started with a deploy task
+    And the service "image0" was created with the following public endpoints:
+      | name | address | ports |
+      | www  | 1.2.3.4 | 80    |
+      | foo  | 1.2.3.4 | 443   |
+      | bar  | 1.2.3.6 | 23    |
+      | solr | a.b.com | 8983  |
+    And the pull-request #1 contains the tide-related commit
+    When the deployment succeed
+    Then the address "http://1.2.3.4" should be commented on the pull-request
+    And the address "https://1.2.3.4" should be commented on the pull-request
+    And the address "ftp://1.2.3.6" should be commented on the pull-request
+    And the address "a.b.com:8983" should be commented on the pull-request
