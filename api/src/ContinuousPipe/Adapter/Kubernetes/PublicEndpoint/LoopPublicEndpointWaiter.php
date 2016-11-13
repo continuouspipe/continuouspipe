@@ -165,8 +165,6 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
 
         $ports = $this->getPorts($object);
 
-        var_dump($ports, $object);
-
         foreach ($ingresses as $ingress) {
             if ($hostname = $ingress->getHostname()) {
                 return new PublicEndpoint($name, $hostname, $ports);
