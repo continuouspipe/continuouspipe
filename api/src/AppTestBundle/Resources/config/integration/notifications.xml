@@ -6,7 +6,9 @@
 
     <services>
         <!-- Slack -->
-        <service id="river.notifications.notifier.slack.http_notifier" class="ContinuousPipe\River\Notifications\NullSlackNotifier" />
+        <service id="slack.http_client" class="GuzzleHttp\Client">
+            <factory class="ContinuousPipe\River\Notifications\NullHttpClientFactory" method="create" />
+        </service>
         <service id="river.notifications.notifier.slack.traceable"
                  class="ContinuousPipe\River\Notifications\TraceableNotifier"
                  decorates="river.notifications.notifier.slack">
