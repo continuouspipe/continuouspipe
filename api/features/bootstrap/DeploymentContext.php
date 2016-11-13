@@ -5,6 +5,7 @@ use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpointPort;
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\DeploymentStarted;
@@ -279,20 +280,43 @@ class DeploymentContext implements Context
 
     /**
      * @Then the deployment should contain the endpoint :endpoint
+     *
+     * @return PublicEndpoint
      */
     public function theDeploymentShouldContainTheEndpoint($endpoint)
     {
         $deployment = $this->deploymentRepository->find(self::$deploymentUuid);
-        $endpoints = array_map(function(PublicEndpoint $publicEndpoint) {
-            return $publicEndpoint->getAddress();
-        }, $deployment->getPublicEndpoints());
+        $found = [];
+        $matchingEndpoints = array_filter($deployment->getPublicEndpoints(), function(PublicEndpoint $publicEndpoint) use ($endpoint, &$found) {
+            $found[] = $publicEndpoint->getAddress();
 
-        if (!in_array($endpoint, $endpoints)) {
+            return $publicEndpoint->getAddress() == $endpoint;
+        });
+
+        if (0 == count($matchingEndpoints)) {
             throw new \RuntimeException(sprintf(
-                'Endpoint "%s" not found in %s',
+                'Endpoint "%s" not found (found %s)',
                 $endpoint,
-                implode(', ', $endpoints)
+                implode(',', $found)
             ));
+        }
+
+        return current($matchingEndpoints);
+    }
+
+    /**
+     * @Then the deployment endpoint :endpoint should have the port :port
+     */
+    public function theDeploymentEndpointShouldHaveThePort($endpoint, $port)
+    {
+        $endpoint = $this->theDeploymentShouldContainTheEndpoint($endpoint);
+
+        $ports = array_map(function(PublicEndpointPort $port) {
+            return $port->getNumber();
+        }, $endpoint->getPorts());
+
+        if (!in_array($port, $ports)) {
+            throw new \RuntimeException(sprintf('Port not found (found %s)', implode(',', $ports)));
         }
     }
 
