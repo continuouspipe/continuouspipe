@@ -12,6 +12,7 @@ use ContinuousPipe\Pipe\Client\ComponentStatus;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Client\PublicEndpointPort;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
@@ -110,13 +111,35 @@ class DeployContext implements Context
      */
     public function theServiceWasCreatedWithThePublicAddress($name, $address)
     {
+        $this->theServiceWasCreatedWithTheFollowingPublicEndpoints(
+            $name,
+            new TableNode([
+                ['name', 'address'],
+                [$name, $address]
+            ])
+        );
+    }
+
+    /**
+     * @Given the service :name was created with the following public endpoints:
+     */
+    public function theServiceWasCreatedWithTheFollowingPublicEndpoints($name, TableNode $table)
+    {
         $this->deployment = $this->getDeployment();
         $componentStatuses = $this->deployment->getComponentStatuses() ?: [];
         $componentStatuses[$name] = new ComponentStatus(true, false, false);
         $publicEndpoints = $this->deployment->getPublicEndpoints() ?: [];
 
-        if ($address !== null) {
-            $publicEndpoints[] = new PublicEndpoint($name, $address);
+        foreach ($table->getHash() as $row) {
+            if (array_key_exists('ports', $row)) {
+                $ports = array_map(function (string $port) {
+                    return new PublicEndpointPort((int)$port, PublicEndpointPort::PROTOCOL_TCP);
+                }, explode(',', $row['ports']));
+            } else {
+                $ports = [];
+            }
+
+            $publicEndpoints[] = new PublicEndpoint($row['name'], $row['address'], $ports);
         }
 
         $this->deployment = new Deployment(

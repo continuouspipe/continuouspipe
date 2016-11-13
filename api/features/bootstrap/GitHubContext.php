@@ -444,6 +444,27 @@ class GitHubContext implements Context
     }
 
     /**
+     * @Then the address :address should be commented on the pull-request
+     */
+    public function theAddressShouldBeCommentedOnThePullRequest($address)
+    {
+        $requests = $this->gitHubHttpClient->getRequests();
+        $matchingRequests = array_filter($requests, function(array $request) {
+            return $request['method'] == 'POST' && preg_match('#repos/([a-z0-9-]+)/([a-z0-9-]+)/issues/\d+/comments#i', $request['path']);
+        });
+
+        $matchingComments = array_filter($matchingRequests, function(array $request) use ($address) {
+            $comment = \GuzzleHttp\json_decode($request['body'], true)['body'];
+
+            return strpos($comment, $address) !== false;
+        });
+
+        if (count($matchingComments) == 0) {
+            throw new \RuntimeException('No comment containing this address found');
+        }
+    }
+
+    /**
      * @Then the addresses of the environment should not be commented on the pull-request
      */
     public function theAddressesOfTheEnvironmentShouldNotBeCommentedOnThePullRequest()

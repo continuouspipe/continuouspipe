@@ -11,6 +11,7 @@ use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\River\Notifications\NotificationException;
 use ContinuousPipe\River\Notifications\NotificationNotSupported;
 use ContinuousPipe\River\Notifications\Notifier;
+use ContinuousPipe\River\Pipe\PublicEndpoint\PublicEndpointWriter;
 use ContinuousPipe\River\Tide\Status\Status;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
@@ -40,17 +41,24 @@ class GitHubPullRequestStatusNotifier implements Notifier
     private $tideRepository;
 
     /**
-     * @param PullRequestResolver $pullRequestResolver
-     * @param ClientFactory       $gitHubClientFactory
-     * @param EventStore          $eventStore
-     * @param TideRepository      $tideRepository
+     * @var PublicEndpointWriter
      */
-    public function __construct(PullRequestResolver $pullRequestResolver, ClientFactory $gitHubClientFactory, EventStore $eventStore, TideRepository $tideRepository)
+    private $publicEndpointWriter;
+
+    /**
+     * @param PullRequestResolver  $pullRequestResolver
+     * @param ClientFactory        $gitHubClientFactory
+     * @param EventStore           $eventStore
+     * @param TideRepository       $tideRepository
+     * @param PublicEndpointWriter $publicEndpointWriter
+     */
+    public function __construct(PullRequestResolver $pullRequestResolver, ClientFactory $gitHubClientFactory, EventStore $eventStore, TideRepository $tideRepository, PublicEndpointWriter $publicEndpointWriter)
     {
         $this->pullRequestResolver = $pullRequestResolver;
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->eventStore = $eventStore;
         $this->tideRepository = $tideRepository;
+        $this->publicEndpointWriter = $publicEndpointWriter;
     }
 
     /**
@@ -118,7 +126,7 @@ class GitHubPullRequestStatusNotifier implements Notifier
 
         $contents = 'The environment has been successfully deployed, here is the list of public endpoints:'.PHP_EOL;
         foreach ($publicEndpoints as $endpoint) {
-            $contents .= '- **'.$endpoint->getName().'**: http://'.$endpoint->getAddress().PHP_EOL;
+            $contents .= '- **'.$endpoint->getName().'**: '.$this->publicEndpointWriter->writeAddress($endpoint).PHP_EOL;
         }
 
         return $contents;

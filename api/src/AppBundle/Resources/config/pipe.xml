@@ -30,5 +30,7 @@
         </service>
 
         <service id="river.pipe.deployment_request_enhancer" alias="river.pipe.deployment_request_enhancer.replace_deployed_endpoints" />
+
+        <service id="river.pipe.public_endpoint_writer" class="ContinuousPipe\River\Pipe\PublicEndpoint\PublicEndpointWriter" />
     </services>
 </container>
