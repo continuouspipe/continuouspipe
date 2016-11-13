@@ -2,17 +2,23 @@
 
 namespace ContinuousPipe\Pipe\Client;
 
+use JMS\Serializer\Annotation as JMS;
+
 class PublicEndpointPort
 {
     const PROTOCOL_TCP = 'tcp';
     const PROTOCOL_UDP = 'udp';
 
     /**
+     * @JMS\Type("integer")
+     *
      * @var int
      */
     private $number;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $protocol;
