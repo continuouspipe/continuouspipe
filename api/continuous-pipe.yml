@@ -77,7 +77,7 @@ tasks:
                             - name: TIDEWAYS_API_KEY
                               value: ${TIDEWAYS_API_KEY}
                             - name: K8S_WATCHER_URL
-                              value: https://api.k8s-watcher-master.svc.cluster.local
+                              value: http://api.k8s-watcher-master.svc.cluster.local
 
                     deployment_strategy:
                         readiness_probe:
