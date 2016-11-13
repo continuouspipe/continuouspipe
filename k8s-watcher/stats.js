@@ -10,6 +10,8 @@ app(function(queue, firebase, statsd) {
         ('failedCount')
         ('delayedCount')
         (function(error, stats) {
+            console.log('Send metrics', stats);
+            
             ['inactiveCount', 'completeCount', 'activeCount', 'failedCount', 'delayedCount'].forEach(function(metric) {
                 statsd.gauge(metric, stats[metric]);
             });
