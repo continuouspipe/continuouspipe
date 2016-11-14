@@ -11,6 +11,7 @@
 angular
     .module('continuousPipeRiver', [
         'config',
+        'ngRaven',
         'ngAnimate',
         'ngMessages',
         'ngSanitize',
