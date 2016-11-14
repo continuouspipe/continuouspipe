@@ -39,7 +39,7 @@ angular.module('continuousPipeRiver')
 
             $mdDialog.show({
                 controller: 'LogsPodController',
-                templateUrl: 'logs/views/pod/logs.html',
+                templateUrl: 'logs/views/dialogs/pod.html',
                 parent: angular.element(document.body),
                 clickOutsideToClose: true,
                 fullscreen: true,

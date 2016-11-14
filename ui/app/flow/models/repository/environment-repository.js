@@ -8,6 +8,8 @@ angular.module('continuousPipeRiver')
             }
         });
 
+        this.podResource = $resource(RIVER_API_URL+'/flows/:uuid/environments/:name/pods');
+
         this.findByFlow = function(flow) {
             return this.resource.query({uuid: flow.uuid}).$promise;
         };
