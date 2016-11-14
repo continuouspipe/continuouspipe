@@ -4,10 +4,14 @@ namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
 use Kubernetes\Client\Exception\IngressNotFound;
 use Kubernetes\Client\Model\Ingress;
+use Kubernetes\Client\Model\IngressList;
 use Kubernetes\Client\Repository\IngressRepository;
 
 class InMemoryIngressRepository implements IngressRepository
 {
+    /**
+     * @var Ingress[]
+     */
     private $ingresses = [];
 
     /**
@@ -46,5 +50,25 @@ class InMemoryIngressRepository implements IngressRepository
     public function update(Ingress $ingress)
     {
         $this->ingresses[$ingress->getMetadata()->getName()] = $ingress;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByLabels(array $labels)
+    {
+        $ingresses = array_values(array_filter($this->ingresses, function (Ingress $ingress) use ($labels) {
+            $ingressLabels = $ingress->getMetadata()->getLabelsAsAssociativeArray();
+
+            foreach ($labels as $key => $value) {
+                if (!array_key_exists($key, $ingressLabels) || $ingressLabels[$key] != $value) {
+                    return false;
+                }
+            }
+
+            return true;
+        }));
+
+        return IngressList::fromIngresses($ingresses);
     }
 }

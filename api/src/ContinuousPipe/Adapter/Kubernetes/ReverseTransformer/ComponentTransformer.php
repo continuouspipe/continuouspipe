@@ -8,10 +8,12 @@ use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\Deployment;
+use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
+use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServiceSpecification;
 use Kubernetes\Client\NamespaceClient;
 use Symfony\Component\PropertyAccess\Exception\ExceptionInterface;
@@ -132,7 +134,7 @@ class ComponentTransformer
             $pods = $namespaceClient->getPodRepository()->findByReplicationController($object)->getPods();
             $serviceName = $object->getMetadata()->getName();
             $replicas = $object->getSpecification()->getReplicas();
-        } else if ($object instanceof Deployment) {
+        } elseif ($object instanceof Deployment) {
             $pods = $namespaceClient->getPodRepository()->findByLabels(
                 $object->getSpecification()->getSelector()->getMatchLabels()
             )->getPods();
@@ -168,9 +170,7 @@ class ComponentTransformer
      */
     private function getComponentPublicEndpoints(NamespaceClient $namespaceClient, $serviceName)
     {
-        try {
-            $service = $namespaceClient->getServiceRepository()->findOneByName($serviceName);
-        } catch (ServiceNotFound $e) {
+        if (null === ($serviceOrIngress = $this->getServiceOrIngress($namespaceClient, $serviceName))) {
             return [];
         }
 
@@ -181,7 +181,7 @@ class ComponentTransformer
             $ingressesPath = 'status.loadBalancer.ingresses';
 
             /** @var LoadBalancerIngress[] $ingresses */
-            $ingresses = $accessor->getValue($service, $ingressesPath);
+            $ingresses = $accessor->getValue($serviceOrIngress, $ingressesPath);
             if (!is_array($ingresses)) {
                 throw new UnexpectedTypeException($ingresses, new PropertyPath($ingressesPath), 0);
             }
@@ -220,13 +220,13 @@ class ComponentTransformer
      */
     private function getContainerStatuses(array $pods)
     {
-        return array_map(function(Pod $pod) {
+        return array_map(function (Pod $pod) {
             $status = $pod->getStatus();
 
             return new Component\Status\ContainerStatus(
                 $pod->getMetadata()->getName(),
                 $this->isPodHealthy($pod) ? Status::HEALTHY : Status::UNHEALTHY,
-                array_reduce($status->getContainerStatuses() ?: [], function($count, ContainerStatus $status) {
+                array_reduce($status->getContainerStatuses() ?: [], function ($count, ContainerStatus $status) {
                     return $count + $status->getRestartCount();
                 }, 0)
             );
@@ -249,5 +249,30 @@ class ComponentTransformer
         return array_reduce($status->getContainerStatuses(), function ($ready, ContainerStatus $containerStatus) {
             return $ready && $containerStatus->isReady();
         }, true);
+    }
+
+    /**
+     * @param NamespaceClient $namespaceClient
+     * @param string          $serviceName
+     *
+     * @return Service|Ingress|null
+     */
+    private function getServiceOrIngress(NamespaceClient $namespaceClient, $serviceName)
+    {
+        try {
+            $service = $namespaceClient->getServiceRepository()->findOneByName($serviceName);
+
+            if ($service->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER) {
+                return $service;
+            }
+        } catch (ServiceNotFound $e) {
+        }
+
+        $ingresses = $namespaceClient->getIngressRepository()->findByLabels(['component-identifier' => $serviceName])->getIngresses();
+        if ($ingress = current($ingresses)) {
+            return $ingress;
+        }
+
+        return null;
     }
 }

@@ -265,6 +265,8 @@ class EnvironmentContext implements Context
         $component = $this->getComponentFromListResponse($name);
 
         if ($endpoint != $component['status']['public_endpoints'][0]) {
+            var_dump($component['status']);
+
             throw new \RuntimeException('Public endpoint was not found');
         }
     }

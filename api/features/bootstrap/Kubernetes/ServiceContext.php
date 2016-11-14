@@ -45,7 +45,7 @@ class ServiceContext implements Context
     public function theServiceWillBeCreatedWithThePublicEndpoint($name, $address)
     {
         $this->hookableServiceRepository->addFindOneByNameHooks(function(Service $service) use ($name, $address) {
-            if ($service->getMetadata()->getName() == $name) {
+            if ($service->getMetadata()->getName() == $name && $service->getStatus() === null) {
                 $service = new Service(
                     $service->getMetadata(),
                     $service->getSpecification(),
