@@ -47,3 +47,7 @@ Feature:
     Given the service "app" have the public hostname "foo.bar.dns"
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should contain the public endpoint "foo.bar.dns"
+
+  Scenario: It returns the status of the containers
+    When I request the environment list of the cluster "my-cluster" of the team "my-team"
+    Then the status of the component "app" should contain container "app-1"
