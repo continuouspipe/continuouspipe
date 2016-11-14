@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
 use Kubernetes\Client\Model\Ingress;
+use Kubernetes\Client\Model\IngressList;
 use Kubernetes\Client\Repository\IngressRepository;
 
 class HookableIngressRepository implements IngressRepository
@@ -31,12 +32,21 @@ class HookableIngressRepository implements IngressRepository
     public function findOneByName($name)
     {
         $ingress = $this->decoratedRepository->findOneByName($name);
-
-        foreach ($this->findOneByNameHooks as $hook) {
-            $ingress = $hook($ingress);
-        }
+        $ingress = $this->applyHooks($ingress);
 
         return $ingress;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByLabels(array $labels)
+    {
+        $found = $this->decoratedRepository->findByLabels($labels);
+
+        return IngressList::fromIngresses(array_map(function (Ingress $ingress) {
+            return $this->applyHooks($ingress);
+        }, $found->getIngresses()));
     }
 
     /**
@@ -69,5 +79,19 @@ class HookableIngressRepository implements IngressRepository
     public function addFindOneByNameHooks(callable $hook)
     {
         $this->findOneByNameHooks[] = $hook;
+    }
+
+    /**
+     * @param Ingress $ingress
+     *
+     * @return Ingress
+     */
+    private function applyHooks(Ingress $ingress)
+    {
+        foreach ($this->findOneByNameHooks as $hook) {
+            $ingress = $hook($ingress);
+        }
+
+        return $ingress;
     }
 }

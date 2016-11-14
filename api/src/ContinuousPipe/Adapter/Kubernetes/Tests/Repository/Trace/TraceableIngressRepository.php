@@ -36,6 +36,14 @@ class TraceableIngressRepository implements IngressRepository
     /**
      * {@inheritdoc}
      */
+    public function findByLabels(array $labels)
+    {
+        return $this->decoratedRepository->findByLabels($labels);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function create(Ingress $ingress)
     {
         $created = $this->decoratedRepository->create($ingress);
