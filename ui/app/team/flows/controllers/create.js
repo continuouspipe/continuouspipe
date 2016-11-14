@@ -32,6 +32,10 @@ angular.module('continuousPipeRiver')
 
             FlowRepository.createFromRepositoryAndTeam(team, $scope.wizard.repository).then(function(flow) {
                 $state.go('flow.tides', {uuid: flow.uuid});
+
+                Intercom('trackEvent', 'created-flow', {
+                    flow: flow
+                });
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occured while creating the flow", "error");
             })['finally'](function() {

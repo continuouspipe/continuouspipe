@@ -17,6 +17,10 @@ angular.module('continuousPipeRiver')
             $scope.isLoading = true;
             TeamRepository.create(team).then(function() {
                 $state.go('flows', {team: team.slug});
+
+                Intercom('trackEvent', 'created-team', {
+                    team: team
+                });
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occured while create the team", "error");
             })['finally'](function() {

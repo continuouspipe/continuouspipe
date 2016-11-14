@@ -16,6 +16,10 @@ angular.module('continuousPipeRiver')
                     .hideDelay(3000)
                     .parent($('md-content.configuration-content'))
                 );
+
+                Intercom('trackEvent', 'updated-configuration', {
+                    flow: flow.uuid
+                });
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occured while creating flow", "error");
             })['finally'](function() {
@@ -37,6 +41,10 @@ angular.module('continuousPipeRiver')
                     swal("Deleted!", "Cluster successfully deleted.", "success");
 
                     $state.go('flows');
+
+                    Intercom('trackEvent', 'deleted-flow', {
+                        flow: flow.uuid
+                    });
                 }, function(error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the flow", "error");
                 });
