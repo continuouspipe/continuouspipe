@@ -270,6 +270,23 @@ class EnvironmentContext implements Context
     }
 
     /**
+     * @Then the status of the component :component should contain container :containerName
+     */
+    public function theStatusOfTheComponentShouldContainContainer($name, $containerName)
+    {
+        $component = $this->getComponentFromListResponse($name);
+        $matchingContainers = array_filter($component['status']['containers'], function(array $container) use ($containerName) {
+            return $container['identifier'] = $containerName;
+        });
+
+        if (count($matchingContainers) == 0) {
+            var_dump($component['status']['containers']);
+
+            throw new \RuntimeException('Found no matching container');
+        }
+    }
+
+    /**
      * @Then the status of the component :name should be :status
      */
     public function theStatusOfTheComponentShouldBe($name, $status)

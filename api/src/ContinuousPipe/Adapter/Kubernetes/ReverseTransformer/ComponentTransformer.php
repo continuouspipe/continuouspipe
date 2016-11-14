@@ -3,10 +3,12 @@
 namespace ContinuousPipe\Adapter\Kubernetes\ReverseTransformer;
 
 use ContinuousPipe\Model\Component;
+use ContinuousPipe\Model\Status;
 use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\Deployment;
+use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
@@ -45,7 +47,7 @@ class ComponentTransformer
             ),
             [],
             [],
-            $this->getReplicationControllerStatus($namespaceClient, $replicationController),
+            $this->getComponentStatus($namespaceClient, $replicationController),
             new Component\DeploymentStrategy(null, null, false, false)
         );
     }
@@ -76,7 +78,7 @@ class ComponentTransformer
             ),
             [],
             [],
-            $this->getDeploymentStatus($namespaceClient, $deployment),
+            $this->getComponentStatus($namespaceClient, $deployment),
             new Component\DeploymentStrategy(null, null, false, false)
         );
     }
@@ -119,17 +121,29 @@ class ComponentTransformer
     }
 
     /**
-     * @param NamespaceClient       $namespaceClient
-     * @param ReplicationController $replicationController
+     * @param NamespaceClient                  $namespaceClient
+     * @param ReplicationController|Deployment $object
      *
      * @return Component\Status
      */
-    private function getReplicationControllerStatus(NamespaceClient $namespaceClient, ReplicationController $replicationController)
+    private function getComponentStatus(NamespaceClient $namespaceClient, KubernetesObject $object)
     {
-        $pods = $namespaceClient->getPodRepository()->findByReplicationController($replicationController)->getPods();
+        if ($object instanceof ReplicationController) {
+            $pods = $namespaceClient->getPodRepository()->findByReplicationController($object)->getPods();
+            $serviceName = $object->getMetadata()->getName();
+            $replicas = $object->getSpecification()->getReplicas();
+        } else if ($object instanceof Deployment) {
+            $pods = $namespaceClient->getPodRepository()->findByLabels(
+                $object->getSpecification()->getSelector()->getMatchLabels()
+            )->getPods();
+
+            $serviceName = $object->getMetadata()->getName();
+            $replicas = $object->getSpecification()->getReplicas();
+        } else {
+            throw new \InvalidArgumentException(sprintf('Unable to get status from object %s', get_class($object)));
+        }
+
         $healthyPods = $this->filterHealthyPods($pods);
-        $serviceName = $replicationController->getMetadata()->getName();
-        $replicas = $replicationController->getSpecification()->getReplicas();
 
         if (count($healthyPods) == $replicas) {
             $status = Component\Status::HEALTHY;
@@ -139,34 +153,11 @@ class ComponentTransformer
             $status = Component\Status::UNHEALTHY;
         }
 
-        return new Component\Status($status, $this->getComponentPublicEndpoints($namespaceClient, $serviceName));
-    }
-
-    /**
-     * @param NamespaceClient $namespaceClient
-     * @param Deployment      $deployment
-     *
-     * @return Component\Status
-     */
-    private function getDeploymentStatus(NamespaceClient $namespaceClient, Deployment $deployment)
-    {
-        $pods = $namespaceClient->getPodRepository()->findByLabels(
-            $deployment->getSpecification()->getSelector()->getMatchLabels()
-        )->getPods();
-
-        $healthyPods = $this->filterHealthyPods($pods);
-        $serviceName = $deployment->getMetadata()->getName();
-        $replicas = $deployment->getSpecification()->getReplicas();
-
-        if (count($healthyPods) == $replicas) {
-            $status = Component\Status::HEALTHY;
-        } elseif (count($healthyPods) > 0) {
-            $status = Component\Status::WARNING;
-        } else {
-            $status = Component\Status::UNHEALTHY;
-        }
-
-        return new Component\Status($status, $this->getComponentPublicEndpoints($namespaceClient, $serviceName));
+        return new Component\Status(
+            $status,
+            $this->getComponentPublicEndpoints($namespaceClient, $serviceName),
+            $this->getContainerStatuses($pods)
+        );
     }
 
     /**
@@ -218,15 +209,45 @@ class ComponentTransformer
     private function filterHealthyPods(array $pods)
     {
         return array_filter($pods, function (Pod $pod) {
-            if (null === ($status = $pod->getStatus())) {
-                return false;
-            } elseif (count($status->getContainerStatuses()) === 0) {
-                return false;
-            }
-
-            return array_reduce($status->getContainerStatuses(), function ($ready, ContainerStatus $containerStatus) {
-                return $ready && $containerStatus->isReady();
-            }, true);
+            return $this->isPodHealthy($pod);
         });
+    }
+
+    /**
+     * @param Pod[] $pods
+     *
+     * @return Component\Status\ContainerStatus[]
+     */
+    private function getContainerStatuses(array $pods)
+    {
+        return array_map(function(Pod $pod) {
+            $status = $pod->getStatus();
+
+            return new Component\Status\ContainerStatus(
+                $pod->getMetadata()->getName(),
+                $this->isPodHealthy($pod) ? Status::HEALTHY : Status::UNHEALTHY,
+                array_reduce($status->getContainerStatuses() ?: [], function($count, ContainerStatus $status) {
+                    return $count + $status->getRestartCount();
+                }, 0)
+            );
+        }, $pods);
+    }
+
+    /**
+     * @param Pod $pod
+     *
+     * @return bool
+     */
+    private function isPodHealthy(Pod $pod)
+    {
+        if (null === ($status = $pod->getStatus())) {
+            return false;
+        } elseif (count($status->getContainerStatuses()) === 0) {
+            return false;
+        }
+
+        return array_reduce($status->getContainerStatuses(), function ($ready, ContainerStatus $containerStatus) {
+            return $ready && $containerStatus->isReady();
+        }, true);
     }
 }
