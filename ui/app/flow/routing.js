@@ -8,7 +8,7 @@ angular.module('continuousPipeRiver')
                 parent: 'team',
                 url: '/:uuid',
                 resolve: {
-                    flow: function($stateParams, FlowRepository, $flowContext) {
+                    flow: function($stateParams, FlowRepository, $flowContext, $q) {
                         return FlowRepository.find($stateParams.uuid).then(function(flow) {
                             $flowContext.setCurrentFlow(flow);
 
