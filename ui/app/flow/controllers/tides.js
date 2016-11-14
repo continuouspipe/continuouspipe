@@ -19,6 +19,11 @@ angular.module('continuousPipeRiver')
                 $state.go('flow.tides', {
                     uuid: flow.uuid
                 });
+
+                Intercom('trackEvent', 'created-tide', {
+                    flow: flow.uuid,
+                    tide: tide
+                });
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occured while creating a tide", "error");
             })['finally'](function() {

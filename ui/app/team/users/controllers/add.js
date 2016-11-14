@@ -14,6 +14,11 @@ angular.module('continuousPipeRiver')
                 $scope.team.$get({slug: team.slug});
 
                 $state.go('users', {team: team.slug});
+
+                Intercom('trackEvent', 'added-user-to-team', {
+                    user: membership.user.username,
+                    team: team.slug
+                });
             }, function(error) {
                 if (error.status != 404) {
                     return handleError(error);
@@ -31,6 +36,11 @@ angular.module('continuousPipeRiver')
                         swal("Invited!", "User successfully invited.", "success");
 
                         $state.go('users', {team: team.slug});
+
+                        Intercom('trackEvent', 'invited-user-to-team', {
+                            email: membership.user.username,
+                            team: team.slug
+                        });
                     }, function(error) {
                         handleError(error);
                     });

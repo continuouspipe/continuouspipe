@@ -59,11 +59,15 @@
 <script src="bower_components/firebase/firebase.js"></script>
 <script src="bower_components/angularfire/dist/angularfire.js"></script>
 <script src="bower_components/ansi_up/ansi_up.js"></script>
+<script src="bower_components/raven-js/dist/raven.js"></script>
 <!-- endbower -->
+<script src="bower_components/raven-js/dist/plugins/angular.js"></script>
 <script src="bower_components/ace-builds/src-min-noconflict/ace.js"></script>
 <script src="bower_components/angular-ui-ace/ui-ace.js"></script>
 <script src="bower_components/js-yaml/dist/js-yaml.js"></script>
 <!-- endbuild -->
+
+<script>Raven.config('http://cca81e898c654780baac3dfae5c67cc3@sentry.tools.sroze.io/16').addPlugin(Raven.Plugins.Angular).install();</script>
 
 <script src="scripts/config.js"></script>
 

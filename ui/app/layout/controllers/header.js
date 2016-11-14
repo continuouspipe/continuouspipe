@@ -4,10 +4,14 @@ angular.module('continuousPipeRiver')
     .controller('HeaderController', function($scope, AUTHENTICATOR_API_URL, user) {
         $scope.user = user;
         $scope.redirectToLogout = function() {
-    		window.location.href = AUTHENTICATOR_API_URL+'/logout';
+            Intercom('trackEvent', 'logged-out', {});
+
+            window.location.href = AUTHENTICATOR_API_URL+'/logout';
         };
 
         $scope.redirectToAccount = function() {
-    		window.location.href = AUTHENTICATOR_API_URL+'/account/';
+            Intercom('trackEvent', 'opened-account', {});
+
+            window.location.href = AUTHENTICATOR_API_URL+'/account/';
         };
     });

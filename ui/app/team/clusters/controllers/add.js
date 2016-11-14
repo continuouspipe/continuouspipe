@@ -14,14 +14,21 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.create = function(cluster) {
+            var source = 'manual';
             if (cluster.type == 'gke') {
                 cluster = clusterFromGkeCluster(cluster.gke.cluster);
+                source = 'gke';
             }
 
             $scope.isLoading = true;
 
             ClusterRepository.create(cluster).then(function() {
                 $state.go('clusters');
+
+                Intercom('trackEvent', 'added-cluster', {
+                    cluster: cluster,
+                    source: source
+                });
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occured while creating cluster", "error");
             })['finally'](function() {
