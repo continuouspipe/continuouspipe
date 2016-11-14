@@ -38,7 +38,7 @@ angular.module('continuousPipeRiver')
                 closeOnConfirm: false
             }, function() {
                 FlowRepository.remove(flow).then(function() {
-                    swal("Deleted!", "Cluster successfully deleted.", "success");
+                    swal("Deleted!", "Flow successfully deleted.", "success");
 
                     $state.go('flows');
 

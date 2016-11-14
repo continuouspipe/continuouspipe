@@ -6,12 +6,12 @@ angular.module('continuousPipeRiver')
         $scope.redirectToLogout = function() {
             Intercom('trackEvent', 'logged-out', {});
 
-    		window.location.href = AUTHENTICATOR_API_URL+'/logout';
+            window.location.href = AUTHENTICATOR_API_URL+'/logout';
         };
 
         $scope.redirectToAccount = function() {
             Intercom('trackEvent', 'opened-account', {});
 
-    		window.location.href = AUTHENTICATOR_API_URL+'/account/';
+            window.location.href = AUTHENTICATOR_API_URL+'/account/';
         };
     });
