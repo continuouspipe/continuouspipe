@@ -13,7 +13,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use ContinuousPipe\Watcher\WatcherException;
 
 /**
  * @Route(service="app.controller.flow_environment")
@@ -89,10 +91,17 @@ class FlowEnvironmentController
             throw new BadRequestHttpException(sprintf('Expected one cluster found %d', $clusters->count()));
         }
 
-        return $this->watcher->logs(
-            $clusters->first(),
-            $watchRequest->getEnvironment(),
-            $watchRequest->getPod()
-        );
+        try {
+            return $this->watcher->logs(
+                $clusters->first(),
+                $watchRequest->getEnvironment(),
+                $watchRequest->getPod()
+            );
+        } catch (WatcherException $e) {
+            return new JsonResponse([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ], $e->getCode());
+        }
     }
 }
