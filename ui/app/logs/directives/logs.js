@@ -157,6 +157,10 @@ angular.module('continuousPipeRiver')
                         displayDifference(Date.parse(log.runningAt), Date.parse(finishAt));
                     }
                 };
+
+                scope.$on('$destroy', function() {
+                    interval && clearInterval(interval);
+                });
             }
         }
     })
