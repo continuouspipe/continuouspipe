@@ -1,4 +1,4 @@
-var k8s = require('kubernetes-client');
+var k8s = require('../k8s');
 
 module.exports = function(firebase) {
     // Configuration
@@ -7,17 +7,7 @@ module.exports = function(firebase) {
     return function(job, done) {
         var data = job.data,
             log = firebase.child('logs').child(data.logId).child('children'),
-            client = new k8s.Core({
-                url: data.cluster.address,
-                version: data.cluster.version,
-                auth: {
-                    user: data.cluster.username,
-                    pass: data.cluster.password
-                },
-                request: {
-                    strictSSL: false
-                }
-            }),
+            client = k8s.createClientFromCluster(data.cluster),
 
             raw = log.push({
                 type: 'raw',

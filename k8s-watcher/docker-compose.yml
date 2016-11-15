@@ -3,6 +3,8 @@ api:
     command: [node, /app/api.js]
     links:
         - redis
+    volumes:
+        - .:/app
     expose:
         - 80
     environment:
@@ -19,6 +21,8 @@ worker:
     command: [node, /app/worker.js]
     links:
         - redis
+    volumes:
+        - .:/app
     environment:
         SENTRY_DSN: http://c6f81870b55f41d482a8300ec7ff0d42@sentry.tools.sroze.io/15
         REDIS_HOST: redis
