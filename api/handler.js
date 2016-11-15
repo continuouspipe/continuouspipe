@@ -1,5 +1,5 @@
-var ajv = require('ajv')();
-
+var ajv = require('ajv')(),
+    k8s = require('../k8s')
 
 var HttpHandlerFactory = function(queue, firebase, statsd) {
     var redirect = function(request, response) {
@@ -84,33 +84,48 @@ var HttpHandlerFactory = function(queue, firebase, statsd) {
                 return;
             }
 
+            var client = k8s.createClientFromCluster(data.cluster);
+            client.ns(data.namespace).po.get(data.pod, function(error, pod) {
+                if (error) {
+                    response.writeHead(400);
+                    response.end(JSON.stringify({
+                        code: error.code, 
+                        message: error.toString()
+                    }));
+
+                    return;
+                }
+
+                // If the `logId` is not given, create one
+                if (!data.logId) {
+                    data.logId = firebase.child('logs').push({'type': 'container'}).key();
+                    console.log('Created log "' + data.logId + '"');
+                    data.removeLog = true;
+                }
+
+                if (undefined === data.removeLog) {
+                    data.removeLog = false;
+                }
+
+                var job = queue.create('logs', data).save(function(error) {
+                    response.setHeader('Content-Type', 'application/json');
+
+                    if (error) {
+                        response.writeHead(500);
+                        response.end(JSON.stringify(error));
+                    } else {
+                        response.writeHead(200);
+                        response.end(JSON.stringify({
+                            'logId': data.logId,
+                            'jobId': job.id
+                        }));
+                    }
+                }).removeOnComplete(true).save();
+            });
+
             statsd.increment('api.http.watch_logs');
 
-            // If the `logId` is not given, create one
-            if (!data.logId) {
-                data.logId = firebase.child('logs').push({'type': 'container'}).key();
-                console.log('Created log "' + data.logId + '"');
-                data.removeLog = true;
-            }
-
-            if (undefined === data.removeLog) {
-                data.removeLog = false;
-            }
-
-            var job = queue.create('logs', data).save(function(error) {
-                response.setHeader('Content-Type', 'application/json');
-
-                if (error) {
-                    response.writeHead(500);
-                    response.end(JSON.stringify(error));
-                } else {
-                    response.writeHead(200);
-                    response.end(JSON.stringify({
-                        'logId': data.logId,
-                        'jobId': job.id
-                    }));
-                }
-            }).removeOnComplete(true).save();
+            
         });
     };
 
