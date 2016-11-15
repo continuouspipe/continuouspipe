@@ -70,6 +70,8 @@
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="jms_serializer" />
+            <argument>%endpoint.wait.timeout%</argument>
+            <argument>%endpoint.wait.interval%</argument>
         </service>
         <service id="pipe.adapter.kubernetes.component.attacher" class="ContinuousPipe\Adapter\Kubernetes\Component\ComponentAttacher">
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />

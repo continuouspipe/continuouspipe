@@ -86,6 +86,7 @@ Feature:
     Then the service "www" should be created
     And the service "www" should have the type "NodePort"
     And the ingress named "www" should be created
+    And the deployment should be successful
 
   Scenario: Creates other type of services
     Given the ingress "http" will be created with the public DNS address "app.my.dns"
@@ -137,3 +138,35 @@ Feature:
     Then the service "app" should not be updated
     And the deployment should contain the endpoint "1.2.3.4"
     And the deployment endpoint "1.2.3.4" should have the port "80"
+
+  Scenario: It fails if the ingress do not have an address
+    Given the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "www",
+            "type": "ingress"
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the ingress named "www" should be created
+    And the deployment should be failed

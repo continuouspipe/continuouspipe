@@ -24,18 +24,6 @@ use React;
 class LoopPublicEndpointWaiter implements PublicEndpointWaiter
 {
     /**
-     * The timeout per public endpoint.
-     *
-     * @var int
-     */
-    const LOOP_TIMEOUT = 300;
-
-    /**
-     * @var int
-     */
-    const LOOP_INTERVAL = 1;
-
-    /**
      * @var DeploymentClientFactory
      */
     private $clientFactory;
@@ -49,17 +37,29 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
      * @var SerializerInterface
      */
     private $serializer;
+    /**
+     * @var int
+     */
+    private $endpointTimeout;
+    /**
+     * @var int
+     */
+    private $endpointInterval;
 
     /**
      * @param DeploymentClientFactory $clientFactory
      * @param LoggerFactory           $loggerFactory
      * @param SerializerInterface     $serializer
+     * @param int                     $endpointTimeout
+     * @param int                     $endpointInterval
      */
-    public function __construct(DeploymentClientFactory $clientFactory, LoggerFactory $loggerFactory, SerializerInterface $serializer)
+    public function __construct(DeploymentClientFactory $clientFactory, LoggerFactory $loggerFactory, SerializerInterface $serializer, int $endpointTimeout, int $endpointInterval)
     {
         $this->clientFactory = $clientFactory;
         $this->loggerFactory = $loggerFactory;
         $this->serializer = $serializer;
+        $this->endpointTimeout = $endpointTimeout;
+        $this->endpointInterval = $endpointInterval;
     }
 
     /**
@@ -103,7 +103,7 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
 
         // Get endpoint status
         $publicEndpointStatusPromise = (new PromiseBuilder($loop))
-            ->retry(self::LOOP_INTERVAL, function (React\Promise\Deferred $deferred) use ($namespaceClient, $object, $statusLogger) {
+            ->retry($this->endpointInterval, function (React\Promise\Deferred $deferred) use ($namespaceClient, $object, $statusLogger) {
                 try {
                     $endpoint = $this->getPublicEndpoint($namespaceClient, $object);
 
@@ -114,7 +114,7 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
                     $statusLogger->update(new Text($e->getMessage()));
                 }
             })
-            ->withTimeout(self::LOOP_TIMEOUT)
+            ->withTimeout($this->endpointTimeout)
             ->getPromise()
         ;
 
@@ -129,7 +129,7 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
             ]));
         };
 
-        $timer = $loop->addPeriodicTimer(self::LOOP_INTERVAL, $updateEvents);
+        $timer = $loop->addPeriodicTimer($this->endpointInterval, $updateEvents);
 
         return $publicEndpointStatusPromise->then(function (PublicEndpoint $endpoint) use ($timer, $updateEvents) {
             $timer->cancel();
@@ -139,6 +139,10 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         }, function ($reason) use ($timer, $updateEvents) {
             $timer->cancel();
             $updateEvents();
+
+            if ($reason instanceof React\Promise\Timer\TimeoutException) {
+                $reason = new EndpointNotFound('Endpoint still not found. Timed-out.');
+            }
 
             throw $reason;
         });
