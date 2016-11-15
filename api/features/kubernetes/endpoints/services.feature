@@ -81,3 +81,34 @@ Feature:
     And the service "http" should have the type "LoadBalancer"
     And the ingress named "http" should not be created
     And the deployment endpoint "1.2.3.4" should have the port "80"
+
+  Scenario: It fails the deployment if the service address is not resolved
+    Given the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http"
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the service "http" should be created
+    And the deployment should be failed
