@@ -4,6 +4,7 @@ namespace ContinuousPipe\Watcher;
 
 use ContinuousPipe\Security\Credentials\Cluster;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Exception\RequestException;
 use LogStream\Tree\TreeLog;
 
@@ -48,15 +49,44 @@ class HttpWatcher implements Watcher
                 ],
             ]);
         } catch (RequestException $e) {
-            throw new WatcherException('Unable to connect to the watcher', $e->getCode(), $e);
+            if ($response = $e->getResponse()) {
+                $json = $this->getJson($response);
+
+                if (array_key_exists('message', $json)) {
+                    $message = $json['message'];
+                }
+                if (array_key_exists('code', $json)) {
+                    $code = (int) $json['code'];
+
+                    if ($code == 404) {
+                        $message = sprintf('The pod "%s" is not found. It might have been already replaced by another one or has been deleted.', $pod);
+                    }
+                }
+            }
+
+            throw new WatcherException(
+                isset($message) ? $message : 'Unable to connect to the watcher', 
+                isset($code) ? $code : $e->getCode(), 
+                $e
+            );
         }
 
-        try {
-            $json = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-        } catch (\InvalidArgumentException $e) {
-            throw new WatcherException('The response is not a JSON as expected');
-        }
+        $json = $this->getJson($response);
 
         return TreeLog::fromId($json['logId']);
+    }
+
+    /**
+     * @return ResponseInterface $response
+     * 
+     * @return array
+     */
+    private function getJson(ResponseInterface $response)
+    {
+        try {
+            return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+        } catch (\InvalidArgumentException $e) {
+            throw new WatcherException('The response is not a JSON as expected', 500);
+        }
     }
 }
