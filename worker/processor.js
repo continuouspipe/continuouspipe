@@ -5,8 +5,10 @@ module.exports = function(firebase) {
     var timeout = 1000 * 60 * 5;
 
     return function(job, done) {
+        console.log('run job', job.id, job.zid, job.workerId);
+
         var data = job.data,
-            log = firebase.child('logs').child(data.logId).child('children'),
+            log = firebase.child('logs').child(data.logId),
             client = k8s.createClientFromCluster(data.cluster);
 
         // Create the raw log
@@ -18,7 +20,7 @@ module.exports = function(firebase) {
         var rawChildren = raw.child('children');
 
         // Add the raw reference
-        log.push({
+        log.child('children').push({
             type: 'raw',
             path: '/raws/' + raw.key()
         });
@@ -26,6 +28,8 @@ module.exports = function(firebase) {
         // Timeout the stream read
         var timeoutIdentifier = setTimeout(function(){
             console.log('[' + job.id + '] Destroying read stream after timeout');
+
+            log.update({'timedOut': true});
 
             stream.destroy();
             finish();
@@ -49,7 +53,7 @@ module.exports = function(firebase) {
             done();
         };
 
-        console.log('[' + job.id + '] Processing', data);
+        console.log('[' + job.id + '] Processing cluster ', data.cluster.address, ' namespace ', data.namespace, 'pod', data.pod);
 
         var stream = client.ns(data.namespace).po.log({name: data.pod, qs:{ follow: true } });
         stream.on('data', function(chunk) {
@@ -62,17 +66,32 @@ module.exports = function(firebase) {
         stream.on('close', function() {
             console.log('[' + job.id + '] Stream was closed');
 
+            rawChildren.push({
+                type: 'text',
+                contents: '[stream closed]'
+            });
+
             finish();
         });
 
         stream.on('error', function(error) {
             console.log('[' + job.id + '] Stream was errored', error);
 
+            rawChildren.push({
+                type: 'text',
+                contents: '[stream error]'
+            });
+
             finish();
         });
 
         stream.on('end', function(result) {
             console.log('[' + job.id + '] Stream was ended', result);
+
+            rawChildren.push({
+                type: 'text',
+                contents: '[stream ended]'
+            });
 
             finish();
         });
