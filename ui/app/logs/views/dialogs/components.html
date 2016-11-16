@@ -1,4 +1,4 @@
-<md-dialog>
+<md-dialog aria-label="Logs of {{ component.name }}" class="logs-dialog">
     <form>
         <md-toolbar>
           <div class="md-toolbar-tools">
@@ -10,7 +10,7 @@
           </div>
         </md-toolbar>
         <md-dialog-content>
-            <md-tabs md-dynamic-height md-border-bottom>
+            <md-tabs md-border-bottom>
                 <md-tab ng-repeat="pod in component.status.containers"
                         label="{{ pod.identifier }}">
                     <pod-logs environment="environment" pod="pod"></pod-logs>

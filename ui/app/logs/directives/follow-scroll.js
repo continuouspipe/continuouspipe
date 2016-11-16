@@ -11,6 +11,11 @@ angular.module('continuousPipeRiver')
                         doScrollToBottom(dialog);
                     }
 
+                    var tab = $('md-tab-content.md-active > div');
+                    if (tab.length) {
+                        doScrollToBottom(tab);
+                    }
+
                     doScrollToBottom(element);
                 };
 
