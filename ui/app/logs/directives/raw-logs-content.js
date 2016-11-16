@@ -42,7 +42,7 @@ angular.module('continuousPipeRiver')
                                         sanitizedValue = encode(record.contents),
                                         html = ansi_up.ansi_to_html(sanitizedValue);
 
-                                    $(element).append(html);
+                                    $(element).append(html).trigger('updated-html');
                                 }
                             });
                         }

@@ -16,12 +16,13 @@ angular.module('continuousPipeRiver')
                     })).then(function(response) {
                         $scope.log = LogFinder.find(response.data.identifier);
 
-                        var lastChildren = [];
-                        $scope.log.$watch(function(event) {
-//                            $scope.timedOut = !$scope.log.children;
+                        var unwatch = $scope.log.$watch(function(event) {
+                            $scope.timedOut = $scope.timedOut || $scope.log.timedOut;
 
-                            if ($scope.log.children) {
-                                lastChildren = [];
+                            if ($scope.log.status == 'finished') {
+                                $scope.log.$destroy();
+
+                                unwatch();
                             }
                         });
                     });
