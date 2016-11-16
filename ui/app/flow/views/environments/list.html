@@ -6,31 +6,34 @@
         </h2>
     </div>
 </md-toolbar>
-<md-content flex id="content" class="card-grid large">
+<md-content flex id="content" class="card-grid half environment-grid">
     <remote-resource resource-name="environments">
-        <md-card ng-repeat="environment in environments">
-            <md-card-header>
+        <md-card ng-repeat="environment in environments" ng-class="{'collapsed': !environment.expanded}">
+            <md-card-header ng-click="environment.expanded = !environment.expanded;">
                 <md-card-avatar>
-                    <md-icon class="md-avatar-icon"><i class="material-icons">transform</i></md-icon>
+                    <md-icon class="md-avatar-icon">
+                        <i class="material-icons" ng-show="!environment.expanded">chevron_right</i>
+                        <i class="material-icons" ng-show="environment.expanded">expand_more</i>
+                    </md-icon>
                 </md-card-avatar>
                 <md-card-header-text>
                     <span class="md-title">{{ environment.identifier }}</span>
-                    <span class="md-subhead">{{ environment.components.length }} components</span>
+                    <span class="md-subhead">Status: <span class="status-text" ng-class="{'status-success': environment.status == 'healthy', 'status-failure': environment.status == 'unhealthy', 'status-running': environment.status === 'unknown'}">{{ environment.status }}</span></span>
                 </md-card-header-text>
 
-                <md-button class="md-raised md-warn"
-                           ng-click="delete(environment)"
-                           ng-disabled="isLoading">
-                    Delete
+                <md-button class="md-raised md-primary"
+                           ng-repeat="endpoint in environment.endpoints"
+                           ng-click="openEndpoint(endpoint)">
+                    Open <code>{{ endpoint.name }}</code>
                 </md-button>
             </md-card-header>
 
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Component name</th>
-                    <th>Endpoint</th>
+                    <th>Component</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -38,19 +41,26 @@
                     <td colspan="3">No components found.</td>
                 </tr>
                 <tr ng-repeat="component in environment.components">
-                    <td>{{ component.name }}</td>
-                    <td>
-                        <ul ng-show="component.status.public_endpoints.length" class="m-0 p-l-10">
-                            <li ng-repeat="endpoint in component.status.public_endpoints">
-                                <a href="http://{{ endpoint }}">{{ endpoint }}</a>
-                            </li>
-                        </ul>
-                        <em ng-show="!component.status.public_endpoints.length">None</em>
-                    </td>
+                    <td><strong>{{ component.name }}</strong></td>
                     <td class="status-text" ng-class="{'status-success': component.status.status == 'healthy', 'status-failure': component.status.status == 'unhealthy', 'status-running': component.status.status === 'unknown'}">{{ component.status.status }}</td>
+                    <td>
+                        <md-button class="md-icon-button logs-button" ng-click="liveStreamComponent(environment, component)">
+                            <md-tooltip md-direction="top">Live-stream logs</md-tooltip>
+                            <md-icon class="material-icons">playlist_play</md-icon>
+                        </md-button>
+                    </td>
                 </tr>
                 </tbody>
             </table>
+
+            <md-card-actions layout="row" layout-align="end center">
+                <md-button class="md-warn"
+                           ng-click="delete(environment)"
+                           ng-disabled="isLoading">
+                   <md-icon class="material-icons">delete</md-icon>
+                    Delete
+                </md-button>
+            </md-card-actions>
         </md-card>
     </remote-resource>
 </md-content>

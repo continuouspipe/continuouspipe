@@ -1,0 +1,21 @@
+<md-dialog aria-label="Logs of {{ component.name }}" class="logs-dialog">
+    <form>
+        <md-toolbar>
+          <div class="md-toolbar-tools">
+            <h2>Logs of component <code>{{ component.name }}</code></h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="close()">
+                <md-icon class="material-icons" aria-label="Close dialog">clear</md-icon>
+            </md-button>
+          </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <md-tabs md-border-bottom>
+                <md-tab ng-repeat="pod in component.status.containers"
+                        label="{{ pod.identifier }}">
+                    <pod-logs environment="environment" pod="pod"></pod-logs>
+                </md-tab>
+            </md-tabs>
+        </md-dialog-content>
+    </form>
+</md-dialog>

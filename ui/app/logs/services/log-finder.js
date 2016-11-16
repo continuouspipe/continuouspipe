@@ -7,8 +7,16 @@ angular.module('continuousPipeRiver')
 		});
 
 		this.find = function(identifier) {
-			var root = firebase.database().ref().child('logs');
+			return $firebaseObject(this.getReference(identifier));
+		};
 
-			return $firebaseObject(root.child(identifier));
+		this.getReference = function(identifier) {
+			var root = firebase.database().ref();
+
+			if (identifier.substr(0, 1) != '/') {
+				root = root.child('logs');
+			}
+
+			return root.child(identifier);
 		};
 	});

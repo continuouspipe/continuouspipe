@@ -38,8 +38,8 @@ angular.module('continuousPipeRiver')
             dialogScope.environment = deployment.environment;
 
             $mdDialog.show({
-                controller: 'LogsPodController',
-                templateUrl: 'logs/views/pod/logs.html',
+                controller: 'LogsDialogController',
+                templateUrl: 'logs/views/dialogs/pod.html',
                 parent: angular.element(document.body),
                 clickOutsideToClose: true,
                 fullscreen: true,

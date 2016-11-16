@@ -345,6 +345,36 @@ $text-rounds-radius: 20px;
     }
 }
 
+md-dialog.logs-dialog {
+    @media only screen and (min-width: 600px) {
+        min-width: 600px;
+        width: 80%;
+        height: 80%;
+    }
+
+    > form {
+        flex: 1;
+
+        > md-dialog-content {
+            flex: 1;
+            display: flex;
+
+            > md-tabs {
+                flex: 1;
+            }
+        }
+    }
+
+    md-tab-content {
+        display: flex;
+
+        > div {
+            flex: 1;
+            overflow: scroll;
+        }
+    }
+}
+
 // Animations
 .glyphicon-spin {
     -webkit-animation: spin 2000ms infinite linear;
