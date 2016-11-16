@@ -55,7 +55,8 @@ module.exports = function(firebase) {
 
         console.log('[' + job.id + '] Processing cluster ', data.cluster.address, ' namespace ', data.namespace, 'pod', data.pod);
 
-        var stream = client.ns(data.namespace).po.log({name: data.pod, qs:{ follow: true } });
+        var lines = data.limit !== undefined ? data.limit : 1000;
+        var stream = client.ns(data.namespace).po.log({name: data.pod, qs:{ follow: true, tailLines: lines } });
         stream.on('data', function(chunk) {
             rawChildren.push({
                 type: 'text',
