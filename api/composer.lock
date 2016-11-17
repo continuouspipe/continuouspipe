@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f51b557460e00bc86b7118344315a91b",
-    "content-hash": "25c0dec0d8e4c0ba2f36cf6e08935094",
+    "hash": "1236acedb7eb9292f54c21e7dff957a8",
+    "content-hash": "f81977b1244c780fc611e4963b561a2a",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3791,16 +3791,16 @@
         },
         {
             "name": "simple-bus/rabbitmq-bundle-bridge",
-            "version": "v2.2.4",
+            "version": "dev-allow-the-producer-interface",
             "source": {
                 "type": "git",
-                "url": "https://github.com/SimpleBus/RabbitMQBundleBridge.git",
-                "reference": "1d8d4c7df0f81b126eb619dabc8df6514f1fa303"
+                "url": "https://github.com/sroze/RabbitMQBundleBridge.git",
+                "reference": "fd5a6fe5fd8aa8e45da96c523591c552442518b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/RabbitMQBundleBridge/zipball/1d8d4c7df0f81b126eb619dabc8df6514f1fa303",
-                "reference": "1d8d4c7df0f81b126eb619dabc8df6514f1fa303",
+                "url": "https://api.github.com/repos/sroze/RabbitMQBundleBridge/zipball/fd5a6fe5fd8aa8e45da96c523591c552442518b5",
+                "reference": "fd5a6fe5fd8aa8e45da96c523591c552442518b5",
                 "shasum": ""
             },
             "require": {
@@ -3827,11 +3827,19 @@
                     "SimpleBus\\RabbitMQBundleBridge\\": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "SimpleBus\\RabbitMQBundleBridge\\Tests\\": "tests"
+                }
+            },
             "license": [
                 "MIT"
             ],
             "authors": [
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
+                },
                 {
                     "name": "Matthias Noback",
                     "email": "matthiasnoback@gmail.com",
@@ -3841,13 +3849,16 @@
             "description": "Use OldSoundRabbitMQBundle with SimpleBus/AsynchronousBundle",
             "homepage": "http://github.com/SimpleBus/RabbitMQBundleBridge",
             "keywords": [
+                "RabbitMQ",
                 "command bus",
                 "event bus",
                 "message bus",
-                "messages",
-                "rabbitmq"
+                "messages"
             ],
-            "time": "2016-02-18 21:32:58"
+            "support": {
+                "source": "https://github.com/sroze/RabbitMQBundleBridge/tree/allow-the-producer-interface"
+            },
+            "time": "2016-11-16 20:40:22"
         },
         {
             "name": "simple-bus/serialization",
@@ -4942,16 +4953,16 @@
         },
         {
             "name": "tolerance/tolerance",
-            "version": "dev-feature/metrics",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Tolerance/Tolerance.git",
-                "reference": "0960dbcf9a013a9850a41be3069bd2ecf0613845"
+                "reference": "094c9fa2254cf2dc467fd0656830bf492e49443a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/0960dbcf9a013a9850a41be3069bd2ecf0613845",
-                "reference": "0960dbcf9a013a9850a41be3069bd2ecf0613845",
+                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/094c9fa2254cf2dc467fd0656830bf492e49443a",
+                "reference": "094c9fa2254cf2dc467fd0656830bf492e49443a",
                 "shasum": ""
             },
             "require": {
@@ -4969,10 +4980,11 @@
                 "csa/guzzle-bundle": "~2.0@dev",
                 "jms/aop-bundle": "^1.2",
                 "jms/serializer-bundle": "^1.1",
-                "oldsound/rabbitmq-bundle": "^1.8",
+                "php-amqplib/rabbitmq-bundle": "^1.8",
                 "phpspec/phpspec": "~2.5",
                 "phpunit/phpunit": "^5.1",
                 "ruflin/elastica": "^3.0",
+                "simple-bus/rabbitmq-bundle-bridge": "^3.0",
                 "symfony/symfony": "~2.8|~3.0"
             },
             "type": "library",
@@ -4986,7 +4998,7 @@
                 "MIT"
             ],
             "description": "Fault tolerance library and micro-services helpers",
-            "time": "2016-10-16 18:58:01"
+            "time": "2016-11-17 18:03:42"
         },
         {
             "name": "twig/twig",
@@ -7063,7 +7075,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 0,
-        "tolerance/tolerance": 20
+        "tolerance/tolerance": 20,
+        "simple-bus/rabbitmq-bundle-bridge": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

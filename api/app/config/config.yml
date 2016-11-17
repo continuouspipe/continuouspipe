@@ -216,6 +216,11 @@ tolerance:
         default:
             callback: ~
 
+        null_placeholdered:
+            placeholder:
+                value: ~
+                logger: logger
+
         builder:
             success_failure_metrics:
                 publisher: tolerance.metrics.publisher.statsd
@@ -240,6 +245,11 @@ tolerance:
             success_failure_metrics:
                 publisher: tolerance.metrics.publisher.statsd
                 namespace: river.outgoing.slack
+
+
+        buffered:
+            buffered:
+                runner: tolerance.operation_runners.null_placeholdered
 
     metrics:
         collectors:
@@ -274,3 +284,15 @@ tolerance:
         request:
             namespace: river.api.http.request
             publisher: tolerance.metrics.publisher.statsd
+
+    tracer:
+        service_name: River
+        operation_runner: tolerance.operation_runners.buffered
+
+        zipkin:
+            http:
+                base_url: %zipkin_base_url%
+
+        rabbitmq:
+            consumers:
+                - simple_bus.rabbit_mq_bundle_bridge.commands_consumer
