@@ -20,6 +20,7 @@ class SimpleBusConsumeCommand extends ContainerAwareCommand
             ->setName('simple-bus:consume')
             ->addArgument('message', InputArgument::REQUIRED)
             ->addOption('consumer', 'c', InputOption::VALUE_REQUIRED, 'Service ID of the consumer', 'simple_bus.rabbit_mq_bundle_bridge.commands_consumer')
+            ->addOption('with-headers', 'w', InputOption::VALUE_NONE, 'The message includes the headers')
         ;
     }
 
@@ -28,14 +29,32 @@ class SimpleBusConsumeCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // Get body from `rabbitmq-cli-consumer`
-        $body = base64_decode($input->getArgument('message'));
-        $message = new AMQPMessage($body);
+        $message = $this->getMessage($input);
 
         // Get consumer
         $consumer = $this->getContainer()->get($input->getOption('consumer'));
         $consumed = $consumer->execute($message);
 
         return $consumed ? 0 : 1;
+    }
+
+    /**
+     * @param InputInterface $input
+     *
+     * @return AMQPMessage
+     */
+    protected function getMessage(InputInterface $input)
+    {
+        $message = base64_decode($input->getArgument('message'));
+
+        if ($input->getOption('with-headers')) {
+            $json = json_decode($message, true);
+
+            $message = new AMQPMessage($json['body'], $json['properties']);
+        } else {
+            $message = new AMQPMessage($message);
+        }
+
+        return $message;
     }
 }

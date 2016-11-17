@@ -51,7 +51,7 @@ RUN apt-get update && \
     && \
 
 # Install rabbitmq-cli-consumer
-    wget https://github.com/ricbra/rabbitmq-cli-consumer/releases/download/1.1.0/rabbitmq-cli-consumer-linux-amd64.tar.gz && \
+    wget https://github.com/ricbra/rabbitmq-cli-consumer/releases/download/1.4.2/rabbitmq-cli-consumer-linux-amd64.tar.gz && \
     tar -xzf rabbitmq-cli-consumer-linux-amd64.tar.gz && \
     mv rabbitmq-cli-consumer /usr/bin/rabbitmq-cli-consumer && \
     chmod +x /usr/bin/rabbitmq-cli-consumer && \
