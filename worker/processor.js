@@ -40,11 +40,14 @@ module.exports = function(firebase) {
             log.update({'status': 'finished'});
 
             if (data.removeLog) {
-                console.log('[' + job.id + '] Removing log "' + data.logId + '"');
-                console.log('[' + job.id + '] Removing raw log "' + raw.key() + '"');
+                console.log('[' + job.id + '] Scheduling removal of the log');
+                setTimeout(function() {
+                    console.log('[' + job.id + '] Removing log "' + data.logId + '"');
+                    console.log('[' + job.id + '] Removing raw log "' + raw.key() + '"');
 
-                log.remove();
-                raw.remove();
+                    log.remove();
+                    raw.remove();
+                }, 1000);
             }
 
             console.log('[' + job.id + '] Processed');
