@@ -60,7 +60,7 @@ module.exports = function(firebase) {
             name: data.pod, 
             qs: {
                 follow: true, 
-                previous: true,
+                previous: data.previous || false,
                 tailLines: lines
             }
         });
