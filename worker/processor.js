@@ -51,20 +51,23 @@ module.exports = function(firebase) {
 
         // Allow to finish the stream
         var finish = function() {
-            log.update({'status': 'finished'});
-
             cancelEvents();
             cancelLogs();
 
+            // Wait 1 second to allow the content to flush
+            setTimeout(function() {
+                log.update({'status': 'finished'});                
+            }, 1000);
+
             if (data.removeLog) {
-                console.log('[' + job.id + '] Scheduling removal of the log');
+                console.log('[' + job.id + '] Scheduling removal of the log in 5 seconds');
                 setTimeout(function() {
                     console.log('[' + job.id + '] Removing log "' + data.logId + '"');
                     console.log('[' + job.id + '] Removing raw log "' + raw.key() + '"');
 
                     log.remove();
                     raw.remove();
-                }, 1000);
+                }, 5000);
             }
 
             console.log('[' + job.id + '] Processed');
