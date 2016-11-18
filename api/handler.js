@@ -112,7 +112,7 @@ var HttpHandlerFactory = function(queue, firebase, statsd) {
                     data.previous = true;
                 }
 
-                var job = queue.create('logs', data).save(function(error) {
+                var job = queue.create('logs', data).removeOnComplete(true).save(function(error) {
                     response.setHeader('Content-Type', 'application/json');
 
                     if (error) {
@@ -125,7 +125,7 @@ var HttpHandlerFactory = function(queue, firebase, statsd) {
                             'jobId': job.id
                         }));
                     }
-                }).removeOnComplete(true).save();
+                });
             });
 
             statsd.increment('api.http.watch_logs');
