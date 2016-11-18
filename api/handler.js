@@ -129,8 +129,6 @@ var HttpHandlerFactory = function(queue, firebase, statsd) {
             });
 
             statsd.increment('api.http.watch_logs');
-
-            
         });
     };
 
