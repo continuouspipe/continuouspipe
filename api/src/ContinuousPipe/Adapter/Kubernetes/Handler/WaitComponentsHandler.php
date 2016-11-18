@@ -16,6 +16,7 @@ use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
+use Kubernetes\Client\Model\PodSpecification;
 use Kubernetes\Client\Model\PodStatus;
 use Kubernetes\Client\Model\PodStatusCondition;
 use Kubernetes\Client\Model\ReplicationController;
@@ -36,7 +37,8 @@ class WaitComponentsHandler implements DeploymentHandler
     const DEFAULT_COMPONENT_CHECK_INTERVAL = 2.5;
 
     /**
-     * Half an hour timeout for a component to be ready.
+     * The default timeout is 30 minutes for a deployment.
+     *
      */
     const DEFAULT_COMPONENT_TIMEOUT = 1800;
 
@@ -123,6 +125,10 @@ class WaitComponentsHandler implements DeploymentHandler
         $logger = $logger->child(new Text(sprintf('Waiting at least one pod of RC "%s" to be running', $replicationController->getMetadata()->getName())));
         $logger->updateStatus(Log::RUNNING);
 
+        $timeout = $this->getDeploymentTimeout(
+            $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()
+        );
+
         return (new PromiseBuilder($loop))
             ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $replicationController) {
                 $pods = $client->getPodRepository()->findByReplicationController($replicationController);
@@ -139,7 +145,7 @@ class WaitComponentsHandler implements DeploymentHandler
                     $deferred->resolve($pods);
                 }
             })
-            ->withTimeout($this->timeout)
+            ->withTimeout($timeout)
             ->getPromise()
             ->then(function () use ($logger) {
                 $logger->updateStatus(Log::SUCCESS);
@@ -165,6 +171,8 @@ class WaitComponentsHandler implements DeploymentHandler
     {
         $logger = $logger->child(new Text(sprintf('Rolling update of component "%s"', $deployment->getMetadata()->getName())));
         $logger->updateStatus(Log::RUNNING);
+
+        $timeout = $this->getDeploymentTimeout($deployment->getSpecification()->getTemplate()->getPodSpecification());
 
         // Display status of the deployment
         $statusLogger = $logger->child(new Text('Deployment is starting'));
@@ -348,5 +356,36 @@ class WaitComponentsHandler implements DeploymentHandler
             'phase' => $status->getPhase(),
             'ready' => $this->isPodRunningAndReady($status),
         ];
+    }
+
+    /**
+     * @param PodSpecification $podSpecification
+     *
+     * @return int
+     */
+    private function getDeploymentTimeout(PodSpecification $podSpecification)
+    {
+        $containers = $podSpecification->getContainers();
+        if (count($containers) == 0) {
+            return $this->timeout;
+        }
+
+        $timeoutPerContainer = array_map(function(Container $container) {
+            if (null === ($probe = $container->getReadinessProbe())) {
+                return $this->timeout;
+            }
+
+            $initialDelay = $probe->getInitialDelaySeconds();
+            $periodSeconds = $probe->getPeriodSeconds();
+            $failureThreshold = $probe->getFailureThreshold();
+
+            if (null === $initialDelay || null === $periodSeconds || null == $failureThreshold) {
+                return $this->timeout;
+            }
+
+            return 60 + $initialDelay + $periodSeconds * $failureThreshold;
+        }, $podSpecification->getContainers());
+
+        return max($timeoutPerContainer);
     }
 }
