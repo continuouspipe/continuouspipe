@@ -377,13 +377,13 @@ class WaitComponentsHandler implements DeploymentHandler
 
             $initialDelay = $probe->getInitialDelaySeconds();
             $periodSeconds = $probe->getPeriodSeconds();
-            $successThreshold = $probe->getSuccessThreshold();
+            $failureThreshold = $probe->getFailureThreshold();
 
-            if (null === $initialDelay || null === $periodSeconds || null == $successThreshold) {
+            if (null === $initialDelay || null === $periodSeconds || null == $failureThreshold) {
                 return $this->timeout;
             }
 
-            return 60 + $initialDelay + $periodSeconds * $successThreshold;
+            return 60 + $initialDelay + $periodSeconds * $failureThreshold;
         }, $podSpecification->getContainers());
 
         return max($timeoutPerContainer);
