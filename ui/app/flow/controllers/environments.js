@@ -84,7 +84,7 @@ angular.module('continuousPipeRiver')
             dialogScope.component = component;
 
             $mdDialog.show({
-                controller: 'LogsDialogController',
+                controller: 'LogsComponentDialogController',
                 templateUrl: 'logs/views/dialogs/components.html',
                 parent: angular.element(document.body),
                 clickOutsideToClose: true,

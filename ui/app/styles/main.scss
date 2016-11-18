@@ -217,31 +217,31 @@ body {
                 }
             }
         }
+    }
 
-        .zero-content-help {
-            background: #fff;
-            border-radius: 10px;
-            margin: 30px;
-            padding: 50px;
-            position: relative;
-            text-align: center;
+    .zero-content-help {
+        background: #fff;
+        border-radius: 10px;
+        margin: 30px;
+        padding: 50px;
+        position: relative;
+        text-align: center;
 
-            i.top-right-arrow {
-                position: absolute;
-                font-size: 200px;
-                right: 40px;
-                top: -35px;
-            }
+        i.top-right-arrow {
+            position: absolute;
+            font-size: 200px;
+            right: 40px;
+            top: -35px;
+        }
 
-            h3 {
-                color: #aaa;
-            }
-            p {
-                color: #ccc;
+        h3 {
+            color: #aaa;
+        }
+        p {
+            color: #ccc;
 
-                a {
-                    color: #999;
-                }
+            a {
+                color: #999;
             }
         }
     }
