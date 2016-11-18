@@ -198,7 +198,7 @@ class WaitComponentsHandler implements DeploymentHandler
                     $deferred->resolve($deployment);
                 }
             })
-            ->withTimeout($this->timeout)
+            ->withTimeout($timeout)
             ->getPromise()
         ;
 
