@@ -60,3 +60,27 @@ Feature:
       | BAZ                         | BAR     |
       | SERVICE_BAR_PUBLIC_ENDPOINT | 1.2.3.4 |
       | PUBLIC_ADDRESS              | 1.2.3.4 |
+
+  Scenario: A zero string variable should be deployed as 0 string environment
+    Given I have a flow with the following configuration:
+    """
+    environment_variables:
+        - { name: MIGRATION_BRANCH, value: 0 }
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        testing:
+            run:
+                cluster: foo
+                commands:
+                    - echo foo
+                image: busybox
+                environment_variables:
+                    - name: MIGRATION_BRANCH
+                      value: ${MIGRATION_BRANCH}
+    """
+    When a tide is started
+    Then the commands should be run with the following environment variables:
+      | name                        | value   |
+      | MIGRATION_BRANCH            | 0       |
