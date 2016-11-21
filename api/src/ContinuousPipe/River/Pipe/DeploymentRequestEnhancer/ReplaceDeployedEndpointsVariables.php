@@ -43,9 +43,11 @@ class ReplaceDeployedEndpointsVariables implements DeploymentRequestEnhancer
 
         foreach ($deploymentRequest->getSpecification()->getComponents() as $component) {
             $replacedVariables = array_map(function (EnvironmentVariable $environmentVariable) use ($publicEndpointMappings) {
+                $value = $environmentVariable->getValue();
+
                 return new EnvironmentVariable(
                     $environmentVariable->getName(),
-                    ReplaceEnvironmentVariableValues::replaceVariables($environmentVariable->getValue() ?: '', $publicEndpointMappings)
+                    ReplaceEnvironmentVariableValues::replaceVariables(null === $value ? '' : (string) $value, $publicEndpointMappings)
                 );
             }, $component->getSpecification()->getEnvironmentVariables());
 
