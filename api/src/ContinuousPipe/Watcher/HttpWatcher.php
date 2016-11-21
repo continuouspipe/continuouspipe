@@ -65,8 +65,8 @@ class HttpWatcher implements Watcher
             }
 
             throw new WatcherException(
-                isset($message) ? $message : 'Unable to connect to the watcher', 
-                isset($code) ? $code : $e->getCode(), 
+                isset($message) ? $message : 'Unable to connect to the watcher',
+                isset($code) ? $code : $e->getCode(),
                 $e
             );
         }
@@ -78,7 +78,6 @@ class HttpWatcher implements Watcher
 
     /**
      * @return ResponseInterface $response
-     * 
      * @return array
      */
     private function getJson(ResponseInterface $response)

@@ -68,6 +68,9 @@ default:
                 - Task\WebHookContext:
                     - @river.web_hooks.client.traceable
                     - @river.web_hooks.client.hookable
+                - ClusterHealthContext:
+                    - @river.k8s_health_checker.http.guzzle_client
+                    - @kernel
 
     extensions:
         Behat\Symfony2Extension:

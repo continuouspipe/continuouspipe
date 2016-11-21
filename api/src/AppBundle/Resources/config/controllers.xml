@@ -19,8 +19,9 @@
             <argument type="service" id="river.alerts.repository" />
         </service>
 
-        <service id="app.controller.flow.alerts" class="AppBundle\Controller\FlowAlertsController">
-            <argument type="service" id="river.alerts.repository" />
+        <service id="app.controller.cluster" class="AppBundle\Controller\ClusterController">
+            <argument type="service" id="river.k8s_health_checker" />
+            <argument type="service" id="authenticator.bucket_repository" />
         </service>
 
         <service id="app.controller.flow" class="AppBundle\Controller\FlowController">

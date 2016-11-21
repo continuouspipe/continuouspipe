@@ -95,7 +95,8 @@
                 "keen_write_key": "KEEN_WRITE_KEY",
                 "redis_host": "REDIS_HOST",
                 "k8s_watcher_url": "K8S_WATCHER_URL",
-                "zipkin_base_url": "ZIPKIN_BASE_URL"
+                "zipkin_base_url": "ZIPKIN_BASE_URL",
+                "k8s_health_checker_url": "K8S_HEALTH_CHECKER_URL"
             }
         }]
     },
