@@ -12,7 +12,9 @@ use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\TideConfigurationException;
 use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
@@ -280,15 +282,19 @@ class DeployTaskFactory implements TaskFactory
         $builder = new TreeBuilder();
         $node = $builder->root($name);
 
-        $node
+        $children = $node
             ->children()
-                ->scalarNode('type')->defaultValue('http')->end()
-                ->integerNode('initial_delay_seconds')->end()
-                ->integerNode('timeout_seconds')->end()
-                ->integerNode('period_seconds')->end()
-                ->integerNode('success_threshold')->end()
-                ->integerNode('failure_threshold')->end()
-                ->integerNode('port')->end()
+                ->scalarNode('type')->defaultValue('http')->end();
+
+        $this->integerOrString($children, 'initial_delay_seconds');
+        $this->integerOrString($children, 'timeout_seconds');
+        $this->integerOrString($children, 'period_seconds');
+        $this->integerOrString($children, 'success_threshold');
+        $this->integerOrString($children, 'failure_threshold');
+        $this->integerOrString($children, 'port');
+
+        $children
+                ->scalarNode('initial_delay_seconds')->end()
                 ->scalarNode('path')->end()
                 ->scalarNode('host')->end()
                 ->scalarNode('scheme')->end()
@@ -385,5 +391,26 @@ class DeployTaskFactory implements TaskFactory
         } catch (\InvalidArgumentException $e) {
             throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * @param NodeBuilder $children
+     * @param string $name
+     */
+    private function integerOrString(NodeBuilder $children, $name)
+    {
+        $children
+            ->variableNode($name)
+                ->validate()
+                ->always(function ($v) {
+                    if (is_string($v) || is_int($v)) {
+                        return (int) $v;
+                    }
+
+                    throw new InvalidTypeException();
+                })
+                ->end()
+            ->end()
+        ;
     }
 }

@@ -332,3 +332,27 @@ Feature:
     When a tide is started
     Then the component "image0" should be deployed
     And the component "image0" should be reset across deployments
+
+  Scenario: HTTP Probes value configuration from variables
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    environment_variables:
+        - name: INITIAL_DELAY
+          value: 5
+
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        deployment_strategy:
+                            readiness_probe:
+                                initial_delay_seconds: ${INITIAL_DELAY}
+                                type: tcp
+                                port: 80
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the readiness probe of the component "image0" should be a tcp probe on port 80
