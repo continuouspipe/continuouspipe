@@ -78,6 +78,8 @@ tasks:
                               value: ${TIDEWAYS_API_KEY}
                             - name: K8S_WATCHER_URL
                               value: http://api.k8s-watcher-master.svc.cluster.local
+                            - name: K8S_HEALTH_CHECKER_URL
+                              value: http://app.chc-master.svc.cluster.local
                             - name: ZIPKIN_BASE_URL
                               value: http://zipkin.zipkin-master.svc.cluster.local:9411
 

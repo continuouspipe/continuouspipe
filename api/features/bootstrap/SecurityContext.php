@@ -103,13 +103,15 @@ class SecurityContext implements Context
 
     /**
      * @Given the team :team have the credentials of a cluster :cluster
+     * @Given the team :team have the credentials of a cluster :cluster with address :address
      */
-    public function theTeamHaveTheCredentialsOfACluster($team, $cluster)
+    public function theTeamHaveTheCredentialsOfACluster($team, $cluster, $address = null)
     {
         $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
         $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+        $address = $address ?: 'https://1.2.3.4';
 
-        $bucket->getClusters()->add(new Kubernetes($cluster, '', 'v1', '', ''));
+        $bucket->getClusters()->add(new Kubernetes($cluster, $address, 'v1', '', ''));
 
         $this->inMemoryAuthenticatorClient->addBucket($bucket);
     }
