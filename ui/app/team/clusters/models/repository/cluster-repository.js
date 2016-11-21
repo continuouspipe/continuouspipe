@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('ClusterRepository', function($resource, $teamContext, AUTHENTICATOR_API_URL) {
+    .service('ClusterRepository', function($resource, $teamContext, AUTHENTICATOR_API_URL, RIVER_API_URL) {
         this.resource = $resource(AUTHENTICATOR_API_URL+'/api/bucket/:bucket/clusters/:identifier');
 
         var getBucketUuid = function() {
@@ -18,5 +18,12 @@ angular.module('continuousPipeRiver')
 
         this.create = function(cluster) {
             return this.resource.save({bucket: getBucketUuid()}, cluster).$promise;
+        };
+
+        this.findProblems = function(team, cluster) {
+            return $resource(RIVER_API_URL+'/teams/:team/clusters/:cluster/health').query({
+                team: team.slug,
+                cluster: cluster.identifier
+            }).$promise;
         };
     });
