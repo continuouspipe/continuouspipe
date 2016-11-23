@@ -37,18 +37,22 @@ class InvitationContext implements Context
 
     /**
      * @Given the user with email :email was invited to join the team :team
+     * @Given the user with email :email was invited to join the team :team with the UUID :uuid
      */
-    public function theUserWithEmailWasInvitedToJoinTheTeam($email, $team)
+    public function theUserWithEmailWasInvitedToJoinTheTeam($email, $team, $uuid = null)
     {
-        $this->userInvitationRepository->save(new UserInvitation(Uuid::uuid4(), $email, $team, [], new \DateTime()));
+        $uuid = null === $uuid ? Uuid::uuid4() : Uuid::fromString($uuid);
+        $this->userInvitationRepository->save(new UserInvitation($uuid, $email, $team, [], new \DateTime()));
     }
 
     /**
      * @Given the user with email :email was invited to be administrator of the team :team
+     * @Given the user with email :email was invited to be administrator of the team :team with the UUID :uuid
      */
-    public function theUserWithEmailWasInvitedToBeAdministratorOfTheTeam($email, $team)
+    public function theUserWithEmailWasInvitedToBeAdministratorOfTheTeam($email, $team, $uuid = null)
     {
-        $this->userInvitationRepository->save(new UserInvitation(Uuid::uuid4(), $email, $team, ['ADMIN'], new \DateTime()));
+        $uuid = null === $uuid ? Uuid::uuid4() : Uuid::fromString($uuid);
+        $this->userInvitationRepository->save(new UserInvitation($uuid, $email, $team, ['ADMIN'], new \DateTime()));
     }
 
     /**
@@ -106,6 +110,18 @@ class InvitationContext implements Context
         $this->response = $this->kernel->handle(Request::create($url, 'GET'));
 
         $this->assertResponseStatusCode($this->response, Response::HTTP_OK);
+    }
+
+    /**
+     * @When the user open the link of the invitation :uuid
+     */
+    public function theUserOpenTheLinkOfTheInvitation($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create('/account/invitation/'.$uuid.'/accept', 'GET', [], [
+            'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
+        ]));
+
+        $this->assertResponseStatusCode($this->response, Response::HTTP_FOUND);
     }
 
     /**

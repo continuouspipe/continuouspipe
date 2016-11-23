@@ -16,6 +16,8 @@ use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserTo
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\SecurityEvents;
@@ -57,6 +59,10 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @var GitHubResourceOwner
      */
     private $gitHubResourceOwner;
+    /**
+     * @var KernelInterface
+     */
+    private $kernel;
 
     /**
      * @param UserProvider $userProvider
@@ -67,7 +73,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @param EventDispatcherInterface $eventDispatcher
      * @param GitHubResourceOwner $gitHubResourceOwner
      */
-    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository, InMemoryApiKeyRepository $apiKeyRepository, EventDispatcherInterface $eventDispatcher, GitHubResourceOwner $gitHubResourceOwner)
+    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository, InMemoryApiKeyRepository $apiKeyRepository, EventDispatcherInterface $eventDispatcher, GitHubResourceOwner $gitHubResourceOwner, KernelInterface $kernel)
     {
         $this->userProvider = $userProvider;
         $this->whiteList = $whiteList;
@@ -76,6 +82,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
         $this->apiKeyRepository = $apiKeyRepository;
         $this->eventDispatcher = $eventDispatcher;
         $this->gitHubResourceOwner = $gitHubResourceOwner;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -175,11 +182,31 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Given the user :username with email :email is authenticated on its account
+     */
+    public function theUserWithEmailIsAuthenticatedOnItsAccount($username, $email)
+    {
+        $user = new User($username, Uuid::uuid4(), ['ROLE_USER']);
+        $user->setEmail($email);
+
+        $token = new OAuthToken('1234');
+        $token->setUser(new SecurityUser($user));
+        $token->setAuthenticated(true);
+
+        $session = $this->kernel->getContainer()->get('session');
+        $session->set('_security_main', serialize($token));
+        $session->save();
+
+        $this->tokenStorage->setToken($token);
+    }
+
+    /**
      * @When the user :username with email :email login
      */
     public function theUserWithEmailLogin($username, $email)
     {
         $roles = ['ROLE_USER'];
+
         $user = new User($username, Uuid::uuid4(), $roles);
         $user->setEmail($email);
         $token = new JWTUserToken($roles);

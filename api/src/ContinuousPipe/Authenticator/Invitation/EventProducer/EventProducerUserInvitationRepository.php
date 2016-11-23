@@ -6,6 +6,7 @@ use ContinuousPipe\Authenticator\Invitation\Event\UserInvited;
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
 use ContinuousPipe\Security\Team\Team;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class EventProducerUserInvitationRepository implements UserInvitationRepository
@@ -64,5 +65,13 @@ class EventProducerUserInvitationRepository implements UserInvitationRepository
     public function findByTeam(Team $team)
     {
         return $this->decoratedRepository->findByTeam($team);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByUuid(UuidInterface $uuid)
+    {
+        return $this->decoratedRepository->findByUuid($uuid);
     }
 }

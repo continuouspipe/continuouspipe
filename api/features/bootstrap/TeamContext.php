@@ -452,6 +452,22 @@ class TeamContext implements Context
     }
 
     /**
+     * @Then the user :username should not be in the team :slug
+     */
+    public function theUserShouldNotBeInTheTeam($username, $slug)
+    {
+        $team = $this->teamRepository->find($slug);
+        $memberships = $this->teamMembershipRepository->findByTeam($team);
+        $matchingMemberships = $memberships->filter(function(TeamMembership $membership) use ($username) {
+            return $membership->getUser()->getUsername() == $username;
+        });
+
+        if (0 != $matchingMemberships->count()) {
+            throw new \RuntimeException('Found matching membership');
+        }
+    }
+
+    /**
      * @param Response $response
      * @param int $statusCode
      */

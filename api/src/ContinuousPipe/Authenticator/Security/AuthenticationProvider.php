@@ -77,7 +77,7 @@ class AuthenticationProvider
 
     /**
      * @param Request $request
-     * @param string $callback
+     * @param string  $callback
      *
      * @return RedirectResponse
      */

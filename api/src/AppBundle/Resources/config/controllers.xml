@@ -10,5 +10,10 @@
             <argument type="service" id="form.factory" />
             <argument type="service" id="router" />
         </service>
+
+        <service id="app.controller.invitation" class="AppBundle\Controller\InvitationController">
+            <argument type="service" id="app.repository.user_invitation" />
+            <argument type="service" id="app.invitation.invitation_to_team_membership_transformer" />
+        </service>
     </services>
 </container>
