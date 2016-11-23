@@ -107,11 +107,6 @@ var HttpHandlerFactory = function(queue, firebase, statsd) {
                     data.removeLog = false;
                 }
 
-                if (pod.status && pod.status.phase != 'Running') {
-                    console.log('Pod', data.pod, 'is not running, will load previous logs');
-                    data.previous = true;
-                }
-
                 var job = queue.create('logs', data).removeOnComplete(true).save(function(error) {
                     response.setHeader('Content-Type', 'application/json');
 

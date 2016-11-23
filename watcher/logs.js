@@ -7,55 +7,90 @@ module.exports = function(firebase) {
      * 
      */
     return function(client, target, log, done) {
-        var lines = target.limit !== undefined ? target.limit : 1000;
-        var stream = client.ns(target.namespace).po.log({
-            name: target.pod, 
-            qs: {
-                follow: true, 
-                previous: target.previous || false,
-                tailLines: lines
+        var stream = null,
+            retryTimeout = null;
+
+        var streamLog = function(pod) {
+            if (pod.status && pod.status.phase != 'Running') {
+                console.log('Pod', data.pod, 'is not running, will load previous logs');
+                data.previous = true;
             }
-        });
-        
-        stream.on('data', function(chunk) {
-            log.push({
-                type: 'text',
-                contents: chunk.toString(),
+
+            var lines = target.limit !== undefined ? target.limit : 1000;
+            
+            stream = client.ns(target.namespace).po.log({
+                name: target.pod, 
+                qs: {
+                    follow: true, 
+                    previous: target.previous || false,
+                    tailLines: lines
+                }
             });
-        });
-
-        stream.on('close', function() {
-            log.push({
-                type: 'text',
-                contents: '[stream closed]'
-            });
-
-            done();
-        });
-
-        stream.on('error', function(error) {
-            log.push({
-                type: 'text',
-                contents: '[stream error]'
+            
+            stream.on('data', function(chunk) {
+                log.push({
+                    type: 'text',
+                    contents: chunk.toString(),
+                });
             });
 
-            done();
-        });
+            stream.on('close', function() {
+                log.push({
+                    type: 'text',
+                    contents: '[stream closed]'
+                });
 
-        stream.on('end', function(result) {
-            log.push({
-                type: 'text',
-                contents: '[stream ended]'
+                done();
             });
 
-            done();
-        });
+            stream.on('error', function(error) {
+                log.push({
+                    type: 'text',
+                    contents: '[stream error]'
+                });
+
+                done();
+            });
+
+            stream.on('end', function(result) {
+                log.push({
+                    type: 'text',
+                    contents: '[stream ended]'
+                });
+
+                done();
+            });
+        };
+
+        var tryStream = function() {
+            client.ns(target.namespace).po.get(target.pod, function(error, pod) {
+                if (error) {
+                    console.log('Unable to get pod', target.pod, ':', error, '. Retrying in 1 second.');
+
+                    retryTimeout = setTimeout(function() {
+                        tryStream();
+                    }, 1000);
+
+                    return;
+                }
+
+                streamLog(pod);
+            });
+        };
+
+        tryStream();
 
         return function() {
             try {
-                stream.destroy();
+                if (stream) {
+                    stream.destroy();
+                }
             } catch (e) {
                 // Ignore if we can't destroy the stream.
+            }
+
+            if (retryTimeout) {
+                clearTimeout(retryTimeout);
             }
         };
     };
