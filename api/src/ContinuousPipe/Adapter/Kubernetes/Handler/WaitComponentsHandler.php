@@ -38,7 +38,6 @@ class WaitComponentsHandler implements DeploymentHandler
 
     /**
      * The default timeout is 30 minutes for a deployment.
-     *
      */
     const DEFAULT_COMPONENT_TIMEOUT = 1800;
 
@@ -370,7 +369,7 @@ class WaitComponentsHandler implements DeploymentHandler
             return $this->timeout;
         }
 
-        $timeoutPerContainer = array_map(function(Container $container) {
+        $timeoutPerContainer = array_map(function (Container $container) {
             if (null === ($probe = $container->getReadinessProbe())) {
                 return $this->timeout;
             }

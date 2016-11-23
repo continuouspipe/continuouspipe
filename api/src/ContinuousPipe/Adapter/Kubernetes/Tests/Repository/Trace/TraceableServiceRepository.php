@@ -46,6 +46,14 @@ class TraceableServiceRepository implements ServiceRepository
     /**
      * {@inheritdoc}
      */
+    public function findByLabels(array $labels)
+    {
+        return $this->repository->findByLabels($labels);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findOneByName($name)
     {
         return $this->repository->findOneByName($name);
