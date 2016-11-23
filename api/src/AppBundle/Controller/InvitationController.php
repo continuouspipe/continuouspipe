@@ -46,7 +46,7 @@ class InvitationController
         try {
             $invitation = $this->userInvitationRepository->findByUuid(Uuid::fromString($uuid));
         } catch (InvitationNotFound $e) {
-            throw new NotFoundHttpException($e->getMessage(), $e->getCode(), $e);
+            throw new NotFoundHttpException($e->getMessage(), $e);
         }
 
         $this->invitationToTeamMembershipTransformer->transformInvitation(
