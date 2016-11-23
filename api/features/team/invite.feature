@@ -8,22 +8,11 @@ Feature:
     And there is a team "my-team"
     And the user "samuel" is administrator of the team "my-team"
     And The user "invited" is in the white list
+    And there is a user "invited"
 
   Scenario: I can invite a user to a team
     When I invite the user "user@example.com" to the team "my-team"
     Then the invitation for the user "user@example.com" should be created
-
-  @smoke
-  Scenario: Transforms invitations when login-in
-    Given the user with email "user@example.com" was invited to join the team "my-team"
-    When the user "invited" with email "user@example.com" login
-    Then the user "invited" should be in the team "my-team"
-
-  Scenario: Invite a user to be administrator of a team
-    Given the user with email "user@example.com" was invited to be administrator of the team "my-team"
-    When the user "invited" with email "user@example.com" login
-    Then the user "invited" should be in the team "my-team"
-    And the user "invited" should be administrator of the team "my-team"
 
   Scenario: List the invitations and their status
     Given the user with email "user@example.com" was invited to be administrator of the team "my-team"
@@ -41,3 +30,22 @@ Feature:
     When I request the status of members for the team "my-team"
     Then I should see the invitation for the user with email "user@example.com" in the member status
     And I should see the user "samuel" in the member status
+
+  @smoke
+  Scenario: Transforms the invitation with another account
+    Given the user with email "user@company.com" was invited to join the team "my-team" with the UUID "11111111-0000-0000-0000-000000000000"
+    And the user "invited" with email "another-email@example.com" is authenticated on its account
+    When the user open the link of the invitation "11111111-0000-0000-0000-000000000000"
+    Then the user "invited" should be in the team "my-team"
+
+  Scenario: Transforms the invitation as an administrator
+    Given the user with email "user@example.com" was invited to be administrator of the team "my-team" with the UUID "11111111-0000-0000-0000-000000000000"
+    And the user "invited" with email "user@example.com" is authenticated on its account
+    When the user open the link of the invitation "11111111-0000-0000-0000-000000000000"
+    Then the user "invited" should be in the team "my-team"
+    And the user "invited" should be administrator of the team "my-team"
+
+  Scenario: Do not transforms invitations when login-in
+    Given the user with email "user@example.com" was invited to join the team "my-team"
+    When the user "invited" with email "user@example.com" login
+    Then the user "invited" should not be in the team "my-team"

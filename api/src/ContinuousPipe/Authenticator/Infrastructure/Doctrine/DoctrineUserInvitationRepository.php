@@ -2,10 +2,12 @@
 
 namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine;
 
+use ContinuousPipe\Authenticator\Invitation\InvitationNotFound;
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
 use ContinuousPipe\Security\Team\Team;
 use Doctrine\ORM\EntityManager;
+use Ramsey\Uuid\UuidInterface;
 
 class DoctrineUserInvitationRepository implements UserInvitationRepository
 {
@@ -20,6 +22,18 @@ class DoctrineUserInvitationRepository implements UserInvitationRepository
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByUuid(UuidInterface $uuid)
+    {
+        if (null === ($invitation = $this->getRepository()->find((string) $uuid))) {
+            throw new InvitationNotFound(sprintf('Invitation "%s" is not found', (string) $uuid));
+        }
+
+        return $invitation;
     }
 
     /**

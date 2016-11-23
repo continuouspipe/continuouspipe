@@ -6,6 +6,7 @@ use ContinuousPipe\Authenticator\Intercom\Client\IntercomClient;
 use ContinuousPipe\Authenticator\Invitation\Event\UserInvited;
 use ContinuousPipe\Security\Team\TeamRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Templating\EngineInterface;
 
 class CreateLeadAndStartConversation implements EventSubscriberInterface
@@ -26,15 +27,22 @@ class CreateLeadAndStartConversation implements EventSubscriberInterface
     private $templatingEngine;
 
     /**
-     * @param IntercomClient  $intercomClient
-     * @param TeamRepository  $teamRepository
-     * @param EngineInterface $templatingEngine
+     * @var UrlGeneratorInterface
      */
-    public function __construct(IntercomClient $intercomClient, TeamRepository $teamRepository, EngineInterface $templatingEngine)
+    private $urlGenerator;
+
+    /**
+     * @param IntercomClient $intercomClient
+     * @param TeamRepository $teamRepository
+     * @param EngineInterface $templatingEngine
+     * @param UrlGeneratorInterface $urlGenerator
+     */
+    public function __construct(IntercomClient $intercomClient, TeamRepository $teamRepository, EngineInterface $templatingEngine, UrlGeneratorInterface $urlGenerator)
     {
         $this->intercomClient = $intercomClient;
         $this->teamRepository = $teamRepository;
         $this->templatingEngine = $templatingEngine;
+        $this->urlGenerator = $urlGenerator;
     }
 
     /**
@@ -72,6 +80,9 @@ class CreateLeadAndStartConversation implements EventSubscriberInterface
             'body' => $this->templatingEngine->render('@intercom/user_invited.html.twig', [
                 'team' => $team,
                 'invitation' => $invitation,
+                'accept_invitation_url' => $this->urlGenerator->generate('accept_invitation', [
+                    'uuid' => (string) $invitation->getUuid(),
+                ])
             ]),
             'to' => [
                 'type' => 'contact',

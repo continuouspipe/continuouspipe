@@ -8,6 +8,7 @@ use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\Team\TeamNotFound;
 use ContinuousPipe\Security\Team\TeamRepository;
+use ContinuousPipe\Security\User\User;
 use ContinuousPipe\Security\User\UserRepository;
 
 class InvitationToTeamMembershipTransformer
@@ -44,18 +45,12 @@ class InvitationToTeamMembershipTransformer
      *
      * @return TeamMembership
      */
-    public function transformInvitation(UserInvitation $invitation)
+    public function transformInvitation(UserInvitation $invitation, User $user)
     {
         try {
             $team = $this->teamRepository->find($invitation->getTeamSlug());
         } catch (TeamNotFound $e) {
             throw new InvitationException('Team is not found', $e->getCode(), $e);
-        }
-
-        try {
-            $user = $this->userRepository->findOneByEmail($invitation->getUserEmail())->getUser();
-        } catch (UserNotFound $e) {
-            throw new InvitationException('User is not found', $e->getCode(), $e);
         }
 
         $membership = new TeamMembership($team, $user, $invitation->getPermissions());

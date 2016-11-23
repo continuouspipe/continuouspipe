@@ -3,9 +3,19 @@
 namespace ContinuousPipe\Authenticator\Invitation;
 
 use ContinuousPipe\Security\Team\Team;
+use Ramsey\Uuid\UuidInterface;
 
 interface UserInvitationRepository
 {
+    /**
+     * @param UuidInterface $uuid
+     *
+     * @throws InvitationNotFound
+     *
+     * @return UserInvitation
+     */
+    public function findByUuid(UuidInterface $uuid);
+
     /**
      * @param string $email
      *
