@@ -25,6 +25,26 @@ class InMemoryServiceRepository implements ServiceRepository
     /**
      * {@inheritdoc}
      */
+    public function findByLabels(array $labels)
+    {
+        $services = array_values(array_filter($this->services, function (Service $service) use ($labels) {
+            $serviceLabels = $service->getMetadata()->getLabelsAsAssociativeArray();
+
+            foreach ($labels as $key => $value) {
+                if (!array_key_exists($key, $serviceLabels) || $serviceLabels[$key] != $value) {
+                    return false;
+                }
+            }
+
+            return true;
+        }));
+
+        return ServiceList::fromServices($services);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findOneByName($name)
     {
         if (!array_key_exists($name, $this->services)) {

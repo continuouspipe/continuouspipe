@@ -1,4 +1,7 @@
 Feature:
+  In order to have access to my environments easily
+  As a user
+  I want to be able to see the deployed endpoints
 
   Background:
     Given I am authenticated
@@ -38,6 +41,40 @@ Feature:
             "ssl_certificates": [
               {"name": "continuous-pipe", "cert": "...", "key": "..."}
             ]
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the deployment should be successful
+    And the deployment should contain the endpoint "app.my.dns"
+    When I request the environment list of the cluster "my-cluster" of the team "my-team"
+    Then the status of the component "app" should contain the public endpoint "app.my.dns"
+
+  Scenario: Creates a service endpoint
+    Given the service "www" will be created with the public DNS address "app.my.dns"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "www"
           }
         ]
       }

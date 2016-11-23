@@ -132,19 +132,16 @@ class ComponentTransformer
     {
         if ($object instanceof ReplicationController) {
             $pods = $namespaceClient->getPodRepository()->findByReplicationController($object)->getPods();
-            $serviceName = $object->getMetadata()->getName();
-            $replicas = $object->getSpecification()->getReplicas();
         } elseif ($object instanceof Deployment) {
             $pods = $namespaceClient->getPodRepository()->findByLabels(
                 $object->getSpecification()->getSelector()->getMatchLabels()
             )->getPods();
-
-            $serviceName = $object->getMetadata()->getName();
-            $replicas = $object->getSpecification()->getReplicas();
         } else {
             throw new \InvalidArgumentException(sprintf('Unable to get status from object %s', get_class($object)));
         }
 
+        $componentName = $object->getMetadata()->getName();
+        $replicas = $object->getSpecification()->getReplicas();
         $healthyPods = $this->filterHealthyPods($pods);
 
         if (count($healthyPods) == $replicas) {
@@ -157,45 +154,43 @@ class ComponentTransformer
 
         return new Component\Status(
             $status,
-            $this->getComponentPublicEndpoints($namespaceClient, $serviceName),
+            $this->getComponentPublicEndpoints($namespaceClient, $componentName),
             $this->getContainerStatuses($pods)
         );
     }
 
     /**
      * @param NamespaceClient $namespaceClient
-     * @param string          $serviceName
+     * @param string          $componentName
      *
      * @return array
      */
-    private function getComponentPublicEndpoints(NamespaceClient $namespaceClient, $serviceName)
+    private function getComponentPublicEndpoints(NamespaceClient $namespaceClient, $componentName)
     {
-        if (null === ($serviceOrIngress = $this->getServiceOrIngress($namespaceClient, $serviceName))) {
-            return [];
-        }
-
-        $accessor = PropertyAccess::createPropertyAccessor();
         $publicEndpoints = [];
+        $accessor = PropertyAccess::createPropertyAccessor();
 
-        try {
-            $ingressesPath = 'status.loadBalancer.ingresses';
+        foreach ($this->getServicesAndIngress($namespaceClient, $componentName) as $serviceOrIngress) {
+            try {
+                $ingressesPath = 'status.loadBalancer.ingresses';
 
-            /** @var LoadBalancerIngress[] $ingresses */
-            $ingresses = $accessor->getValue($serviceOrIngress, $ingressesPath);
-            if (!is_array($ingresses)) {
-                throw new UnexpectedTypeException($ingresses, new PropertyPath($ingressesPath), 0);
-            }
-
-            foreach ($ingresses as $ingress) {
-                if ($hostname = $ingress->getHostname()) {
-                    $publicEndpoints[] = $hostname;
+                /** @var LoadBalancerIngress[] $ingresses */
+                $ingresses = $accessor->getValue($serviceOrIngress, $ingressesPath);
+                if (!is_array($ingresses)) {
+                    throw new UnexpectedTypeException($ingresses, new PropertyPath($ingressesPath), 0);
                 }
 
-                if ($ip = $ingress->getIp()) {
-                    $publicEndpoints[] = $ip;
+                foreach ($ingresses as $ingress) {
+                    if ($hostname = $ingress->getHostname()) {
+                        $publicEndpoints[] = $hostname;
+                    }
+
+                    if ($ip = $ingress->getIp()) {
+                        $publicEndpoints[] = $ip;
+                    }
                 }
+            } catch (ExceptionInterface $e) {
             }
-        } catch (ExceptionInterface $e) {
         }
 
         return $publicEndpoints;
@@ -253,26 +248,19 @@ class ComponentTransformer
 
     /**
      * @param NamespaceClient $namespaceClient
-     * @param string          $serviceName
+     * @param string          $componentName
      *
-     * @return Service|Ingress|null
+     * @return Service|Ingress|null[]
      */
-    private function getServiceOrIngress(NamespaceClient $namespaceClient, $serviceName)
+    private function getServicesAndIngress(NamespaceClient $namespaceClient, $componentName)
     {
-        try {
-            $service = $namespaceClient->getServiceRepository()->findOneByName($serviceName);
+        $labels = [
+            'component-identifier' => $componentName,
+        ];
 
-            if ($service->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER) {
-                return $service;
-            }
-        } catch (ServiceNotFound $e) {
-        }
-
-        $ingresses = $namespaceClient->getIngressRepository()->findByLabels(['component-identifier' => $serviceName])->getIngresses();
-        if ($ingress = current($ingresses)) {
-            return $ingress;
-        }
-
-        return null;
+        return array_merge(
+            $namespaceClient->getServiceRepository()->findByLabels($labels)->getServices(),
+            $namespaceClient->getIngressRepository()->findByLabels($labels)->getIngresses()
+        );
     }
 }

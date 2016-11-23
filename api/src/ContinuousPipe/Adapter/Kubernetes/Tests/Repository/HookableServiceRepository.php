@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
 use Kubernetes\Client\Model\Service;
+use Kubernetes\Client\Model\ServiceList;
 use Kubernetes\Client\Repository\ServiceRepository;
 
 class HookableServiceRepository implements ServiceRepository
@@ -45,6 +46,20 @@ class HookableServiceRepository implements ServiceRepository
         }
 
         return $service;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByLabels(array $labels)
+    {
+        return ServiceList::fromServices(array_map(function (Service $service) {
+            foreach ($this->findOneByNameHooks as $hook) {
+                $service = $hook($service);
+            }
+
+            return $service;
+        }, $this->repository->findByLabels($labels)->getServices()));
     }
 
     /**
