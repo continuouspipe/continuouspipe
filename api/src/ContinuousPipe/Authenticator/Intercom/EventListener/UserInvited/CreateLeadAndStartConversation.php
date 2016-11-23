@@ -32,9 +32,9 @@ class CreateLeadAndStartConversation implements EventSubscriberInterface
     private $urlGenerator;
 
     /**
-     * @param IntercomClient $intercomClient
-     * @param TeamRepository $teamRepository
-     * @param EngineInterface $templatingEngine
+     * @param IntercomClient        $intercomClient
+     * @param TeamRepository        $teamRepository
+     * @param EngineInterface       $templatingEngine
      * @param UrlGeneratorInterface $urlGenerator
      */
     public function __construct(IntercomClient $intercomClient, TeamRepository $teamRepository, EngineInterface $templatingEngine, UrlGeneratorInterface $urlGenerator)
@@ -82,7 +82,7 @@ class CreateLeadAndStartConversation implements EventSubscriberInterface
                 'invitation' => $invitation,
                 'accept_invitation_url' => $this->urlGenerator->generate('accept_invitation', [
                     'uuid' => (string) $invitation->getUuid(),
-                ])
+                ]),
             ]),
             'to' => [
                 'type' => 'contact',

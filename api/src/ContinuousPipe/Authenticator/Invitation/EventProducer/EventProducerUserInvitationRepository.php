@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Authenticator\Invitation\EventProducer;
 
 use ContinuousPipe\Authenticator\Invitation\Event\UserInvited;
-use ContinuousPipe\Authenticator\Invitation\InvitationNotFound;
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
 use ContinuousPipe\Security\Team\Team;

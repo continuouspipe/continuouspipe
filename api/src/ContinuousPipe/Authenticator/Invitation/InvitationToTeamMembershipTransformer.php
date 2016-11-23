@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Authenticator\Invitation;
 
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
-use ContinuousPipe\Security\Authenticator\UserNotFound;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\Team\TeamNotFound;

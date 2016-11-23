@@ -121,7 +121,6 @@ class InvitationContext implements Context
             'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
         ]));
 
-        echo $this->response->getContent();
         $this->assertResponseStatusCode($this->response, Response::HTTP_FOUND);
     }
 

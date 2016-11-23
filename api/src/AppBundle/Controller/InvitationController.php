@@ -4,11 +4,9 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\Authenticator\Invitation\InvitationNotFound;
 use ContinuousPipe\Authenticator\Invitation\InvitationToTeamMembershipTransformer;
-use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use ContinuousPipe\Security\User\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -30,7 +28,7 @@ class InvitationController
     private $invitationToTeamMembershipTransformer;
 
     /**
-     * @param UserInvitationRepository $userInvitationRepository
+     * @param UserInvitationRepository              $userInvitationRepository
      * @param InvitationToTeamMembershipTransformer $invitationToTeamMembershipTransformer
      */
     public function __construct(UserInvitationRepository $userInvitationRepository, InvitationToTeamMembershipTransformer $invitationToTeamMembershipTransformer)
@@ -59,7 +57,7 @@ class InvitationController
         $this->userInvitationRepository->delete($invitation);
 
         return new RedirectResponse(
-            'https://ui.continuoupipe.io/team/' . $invitation->getTeamSlug() . '/flows'
+            'https://ui.continuoupipe.io/team/'.$invitation->getTeamSlug().'/flows'
         );
     }
 }
