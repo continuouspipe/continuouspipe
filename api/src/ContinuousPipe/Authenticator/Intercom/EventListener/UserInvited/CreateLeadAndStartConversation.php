@@ -82,7 +82,7 @@ class CreateLeadAndStartConversation implements EventSubscriberInterface
                 'invitation' => $invitation,
                 'accept_invitation_url' => $this->urlGenerator->generate('accept_invitation', [
                     'uuid' => (string) $invitation->getUuid(),
-                ]),
+                ], UrlGeneratorInterface::ABSOLUTE_URL),
             ]),
             'to' => [
                 'type' => 'contact',
