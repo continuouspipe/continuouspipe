@@ -57,7 +57,7 @@ class InvitationController
         $this->userInvitationRepository->delete($invitation);
 
         return new RedirectResponse(
-            'https://ui.continuoupipe.io/team/'.$invitation->getTeamSlug().'/flows'
+            'https://ui.continuouspipe.io/team/'.$invitation->getTeamSlug().'/flows'
         );
     }
 }
