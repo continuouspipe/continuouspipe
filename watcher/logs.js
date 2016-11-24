@@ -10,7 +10,7 @@ module.exports = function(firebase) {
         var stream = null,
             retryTimeout = null;
 
-        var streamLog = function(pod) {
+        var streamLog = function(pod, callback) {
             var previous = false;
 
             if (pod.status && pod.status.phase != 'Running') {
@@ -18,7 +18,8 @@ module.exports = function(firebase) {
                 previous = true;
             }
 
-            var lines = target.limit !== undefined ? target.limit : 1000;
+            var lines = target.limit !== undefined ? target.limit : 1000,
+                hasData = false;
             
             stream = client.ns(target.namespace).po.log({
                 name: pod.metadata.name, 
@@ -30,6 +31,8 @@ module.exports = function(firebase) {
             });
             
             stream.on('data', function(chunk) {
+                hasData = true;
+
                 log.push({
                     type: 'text',
                     contents: chunk.toString(),
@@ -37,12 +40,14 @@ module.exports = function(firebase) {
             });
 
             stream.on('close', function() {
-                log.push({
-                    type: 'text',
-                    contents: '[stream closed]'
-                });
+                if (hasData) {
+                    log.push({
+                        type: 'text',
+                        contents: '[stream closed]'
+                    });
+                }
 
-                done();
+                callback(hasData);
             });
 
             stream.on('error', function(error) {
@@ -51,17 +56,25 @@ module.exports = function(firebase) {
                     contents: '[stream error]'
                 });
 
-                done();
+                callback(hasData);
             });
 
             stream.on('end', function(result) {
-                log.push({
-                    type: 'text',
-                    contents: '[stream ended]'
-                });
+                if (hasData) {
+                    log.push({
+                        type: 'text',
+                        contents: '[stream ended]'
+                    });
+                }
 
-                done();
+                callback(hasData);
             });
+        };
+
+        var retryStream = function() {
+            retryTimeout = setTimeout(function() {
+                tryStream();
+            }, 1000);
         };
 
         var tryStream = function() {
@@ -69,14 +82,14 @@ module.exports = function(firebase) {
                 if (error) {
                     console.log('Unable to get pod', target.pod, ':', error, '. Retrying in 1 second.');
 
-                    retryTimeout = setTimeout(function() {
-                        tryStream();
-                    }, 1000);
-
+                    retryStream();
+                    
                     return;
                 }
 
-                streamLog(pod);
+                streamLog(pod, function(hasData) {
+                    retryStream();
+                });
             });
         };
 
