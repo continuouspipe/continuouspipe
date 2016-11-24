@@ -11,18 +11,20 @@ module.exports = function(firebase) {
             retryTimeout = null;
 
         var streamLog = function(pod) {
+            var previous = false;
+
             if (pod.status && pod.status.phase != 'Running') {
-                console.log('Pod', data.pod, 'is not running, will load previous logs');
-                data.previous = true;
+                console.log('Pod', pod.metadata.name, 'is not running, will load previous logs');
+                previous = true;
             }
 
             var lines = target.limit !== undefined ? target.limit : 1000;
             
             stream = client.ns(target.namespace).po.log({
-                name: target.pod, 
+                name: pod.metadata.name, 
                 qs: {
                     follow: true, 
-                    previous: target.previous || false,
+                    previous: previous,
                     tailLines: lines
                 }
             });
