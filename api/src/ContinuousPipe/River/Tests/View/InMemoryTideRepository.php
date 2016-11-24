@@ -6,6 +6,7 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\View\TideList;
 use ContinuousPipe\River\View\TideRepository;
 use Ramsey\Uuid\Uuid;
 
@@ -135,6 +136,14 @@ class InMemoryTideRepository implements TideRepository
         return array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) use ($branch) {
             return $tide->getCodeReference()->getBranch() == $branch && $tide->getStatus() == Tide::STATUS_PENDING;
         }));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findAll()
+    {
+        return new InMemoryTideList($this->tides);
     }
 
     /**

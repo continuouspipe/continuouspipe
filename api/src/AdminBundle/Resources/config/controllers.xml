@@ -23,6 +23,11 @@
             <argument>%logstream_frontend_url%</argument>
         </service>
 
+        <service id="admin.controller.last_tides" class="AdminBundle\Controller\LastTidesController">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="knp_paginator" />
+        </service>
+
         <service id="admin.twig_extension" class="AdminBundle\Twig\AdminExtension" public="false">
             <tag name="twig.extension" />
         </service>

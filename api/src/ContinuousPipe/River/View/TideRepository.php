@@ -88,4 +88,11 @@ interface TideRepository
      * @return Tide
      */
     public function find(Uuid $uuid);
+
+    /**
+     * Find all tides.
+     *
+     * @return TideList
+     */
+    public function findAll();
 }
