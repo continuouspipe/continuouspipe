@@ -40,6 +40,22 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
+    public function findAll()
+    {
+        $queryBuilder = $this
+            ->getEntityRepository()
+            ->createQueryBuilder('dto')
+            ->orderBy('dto.tide.creationDate', 'DESC')
+        ;
+
+        return new DoctrineTideList($queryBuilder, function (TideDto $dto) {
+            return $this->dtoToTide($dto);
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findByFlowUuid(Uuid $uuid)
     {
         $queryBuilder = $this
