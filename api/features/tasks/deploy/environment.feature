@@ -356,3 +356,20 @@ Feature:
     When a tide is started
     Then the component "image0" should be deployed
     And the readiness probe of the component "image0" should be a tcp probe on port 80
+
+  Scenario: Service name with dashes in its name gets deployed:
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    my-database:
+                        specification:
+                            source:
+                                image: mysql
+    """
+    When a tide is started
+    Then the component "my-database" should be deployed
