@@ -72,6 +72,7 @@ class BuildTaskFactory implements TaskFactory
             ->end()
             ->children()
                 ->arrayNode('services')
+                    ->normalizeKeys(false)
                     ->isRequired()
                     ->useAttributeAsKey('name')
                     ->prototype('array')
