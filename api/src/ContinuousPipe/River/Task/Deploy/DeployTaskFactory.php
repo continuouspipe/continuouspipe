@@ -92,6 +92,7 @@ class DeployTaskFactory implements TaskFactory
                     ->end()
                 ->end()
                 ->arrayNode('services')
+                    ->normalizeKeys(false)
                     ->isRequired()
                     ->useAttributeAsKey('name')
                     ->prototype('array')
