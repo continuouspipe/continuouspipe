@@ -13,6 +13,7 @@ use ContinuousPipe\Pipe\Promise\PromiseBuilder;
 use ContinuousPipe\Pipe\View\ComponentStatus;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Model\Container;
+use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
@@ -277,17 +278,11 @@ class WaitComponentsHandler implements DeploymentHandler
             return false;
         }
 
-        /** @var PodStatusCondition $readyCondition */
-        $readyCondition = current(array_filter($status->getConditions(), function (PodStatusCondition $condition) {
-            return $condition->getType() == 'Ready';
-        }));
+        $allContainersAreReady = array_reduce($status->getContainerStatuses(), function(bool $allAreReady, ContainerStatus $containerStatus) {
+            return $allAreReady && $containerStatus->isReady();
+        }, true);
 
-        if ($readyCondition === false) {
-            // No Ready condition found so... let's skip.
-            return true;
-        }
-
-        return $readyCondition->isStatus();
+        return $allContainersAreReady;
     }
 
     /**
