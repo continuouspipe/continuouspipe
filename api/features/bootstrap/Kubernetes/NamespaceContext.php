@@ -8,6 +8,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
 use ContinuousPipe\Adapter\Kubernetes\PrivateImages\SecretFactory;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableNamespaceRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceAccountRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryServiceAccountRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository;
@@ -21,6 +22,7 @@ use ContinuousPipe\Pipe\Tests\MessageBus\TraceableMessageBus;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\User;
+use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Exception\NamespaceNotFound;
 use Kubernetes\Client\Exception\ServiceAccountNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
@@ -28,6 +30,7 @@ use Kubernetes\Client\Model\LocalObjectReference;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Model\ServiceAccount;
+use Kubernetes\Client\Model\Status;
 use LogStream\LoggerFactory;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
@@ -74,6 +77,10 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      * @var HookableServiceAccountRepository
      */
     private $hookableServiceAccountRepository;
+    /**
+     * @var HookableNamespaceRepository
+     */
+    private $hookableNamespaceRepository;
 
     /**
      * @param TraceableNamespaceRepository $namespaceRepository
@@ -84,6 +91,7 @@ class NamespaceContext implements Context, SnippetAcceptingContext
      * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
      * @param InMemoryServiceAccountRepository $inMemoryServiceAccountRepository
      * @param HookableServiceAccountRepository $hookableServiceAccountRepository
+     * @param HookableNamespaceRepository $hookableNamespaceRepository
      */
     public function __construct(
         TraceableNamespaceRepository $namespaceRepository,
@@ -93,7 +101,8 @@ class NamespaceContext implements Context, SnippetAcceptingContext
         LoggerFactory $loggerFactory,
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         InMemoryServiceAccountRepository $inMemoryServiceAccountRepository,
-        HookableServiceAccountRepository $hookableServiceAccountRepository
+        HookableServiceAccountRepository $hookableServiceAccountRepository,
+        HookableNamespaceRepository $hookableNamespaceRepository
     )
     {
         $this->namespaceRepository = $namespaceRepository;
@@ -104,6 +113,7 @@ class NamespaceContext implements Context, SnippetAcceptingContext
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->inMemoryServiceAccountRepository = $inMemoryServiceAccountRepository;
         $this->hookableServiceAccountRepository = $hookableServiceAccountRepository;
+        $this->hookableNamespaceRepository = $hookableNamespaceRepository;
     }
 
     /**
@@ -139,6 +149,25 @@ class NamespaceContext implements Context, SnippetAcceptingContext
         }
 
         return $namespace;
+    }
+
+    /**
+     * @Given the namespace :name is in deletion
+     */
+    public function theNamespaceIsInDeletion($name)
+    {
+        $this->hookableNamespaceRepository->addDeleteHooks(function(KubernetesNamespace $namespace) use ($name) {
+            if ($namespace->getMetadata()->getName() != $name) {
+                return $namespace;
+            }
+
+            throw new ClientError(new Status(
+                'Failure',
+                'Operation cannot be fulfilled on namespaces "'.$name.'": The system is ensuring all content is removed from this namespace.  Upon completion, this namespace will automatically be purged by the system.',
+                '',
+                409
+            ));
+        });
     }
 
     /**

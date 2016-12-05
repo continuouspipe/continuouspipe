@@ -7,10 +7,13 @@ use ContinuousPipe\Adapter\EnvironmentNotFound;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Model\Environment;
 use Kubernetes\Client\Client;
+use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Exception\NamespaceNotFound;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\Label;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class KubernetesEnvironmentClient implements EnvironmentClient
 {
@@ -25,13 +28,20 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     private $namespaceInspector;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param Client             $client
      * @param NamespaceInspector $namespaceInspector
+     * @param LoggerInterface    $logger
      */
-    public function __construct(Client $client, NamespaceInspector $namespaceInspector)
+    public function __construct(Client $client, NamespaceInspector $namespaceInspector, LoggerInterface $logger)
     {
         $this->client = $client;
         $this->namespaceInspector = $namespaceInspector;
+        $this->logger = $logger;
     }
 
     /**
@@ -82,9 +92,21 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     public function delete(Environment $environment)
     {
         $namespaceRepository = $this->getNamespaceRepository();
-        $namespaceRepository->delete(
-            $namespaceRepository->findOneByName($environment->getIdentifier())
-        );
+
+        try {
+            $namespaceRepository->delete(
+                $namespaceRepository->findOneByName($environment->getIdentifier())
+            );
+        } catch (ClientError $e) {
+            if ($e->getStatus()->getCode() != Response::HTTP_CONFLICT) {
+                throw $e;
+            }
+
+            $this->logger->warning('The delete request returned a conflict exception; ignoring.', [
+                'message' => $e->getMessage(),
+                'environment' => $environment->getIdentifier(),
+            ]);
+        }
     }
 
     /**

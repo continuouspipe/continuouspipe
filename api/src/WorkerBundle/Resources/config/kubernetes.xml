@@ -57,6 +57,7 @@
         <service id="pipe.adapter.kubernetes.environment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\KubernetesEnvironmentClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
             <argument type="service" id="kubernetes.inspector.namespace" />
+            <argument type="service" id="logger" />
         </service>
         <service id="pipe.adapter.kubernetes" class="ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter">
             <argument type="service" id="pipe.adapter.kubernetes.environment_client_factory" />

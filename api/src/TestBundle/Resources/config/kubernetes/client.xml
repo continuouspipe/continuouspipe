@@ -19,6 +19,9 @@
             <argument type="service" id="jms_serializer" />
         </service>
 
+        <service id="pipe.adapter.kubernetes.hookable.namespace_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableNamespaceRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.namespace_repository" />
+        </service>
         <service id="pipe.adapter.kubernetes.hookable.service_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_repository" />
         </service>
@@ -39,7 +42,7 @@
         </service>
 
         <service id="pipe.adapter.kubernetes.traceable.namespace_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository">
-            <argument type="service" id="pipe.adapter.kubernetes.in_memory.namespace_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.namespace_repository" />
         </service>
         <service id="pipe.adapter.kubernetes.traceable.replication_controller_repository" class="ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableReplicationControllerRepository">
             <argument type="service" id="pipe.adapter.kubernetes.hookable.replication_controller_repository" />
