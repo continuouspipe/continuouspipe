@@ -56,7 +56,7 @@ class ComponentTransformer
 
         if (null === $image) {
             throw new TransformException(sprintf(
-                'The component "%s" do not have any image',
+                'The component "%s" does not have an image',
                 $identifier
             ));
         }
