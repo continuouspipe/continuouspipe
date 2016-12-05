@@ -88,7 +88,9 @@ module.exports = function(firebase) {
                 }
 
                 streamLog(pod, function(hasData) {
-                    retryStream();
+                    if (!hasData) {
+                        retryStream();
+                    }
                 });
             });
         };
