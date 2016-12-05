@@ -134,6 +134,21 @@ class EnvironmentContext implements Context
     }
 
     /**
+     * @Then the namespace :namespace should be deleted successfully
+     */
+    public function theNamespaceShouldBeDeletedSuccessfully($namespace)
+    {
+        if (!in_array($this->response->getStatusCode(), [200, 204])) {
+            echo $this->response->getContent();
+
+            throw new \RuntimeException(sprintf(
+                'Expected the status code 200 or 204 but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
      * @param string $providerName
      * @param string $environmentName
      * @param string $template

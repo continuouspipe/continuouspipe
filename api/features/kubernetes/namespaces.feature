@@ -26,6 +26,12 @@ Feature:
     When I delete the environment named "foo" of the cluster "my-cluster" of the team "my-team"
     Then the namespace "foo" should be deleted
 
+  Scenario: Delete an environment should delete the namespace
+    Given I have a namespace "foo"
+    And the namespace "foo" is in deletion
+    When I delete the environment named "foo" of the cluster "my-cluster" of the team "my-team"
+    Then the namespace "foo" should be deleted successfully
+
   Scenario: Update namespace' service account after creating namespace
     When I send the built deployment request
     Then a docker registry secret should be created

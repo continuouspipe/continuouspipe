@@ -7,6 +7,7 @@ use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Security\Credentials\Cluster;
+use Psr\Log\LoggerInterface;
 
 class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 {
@@ -21,13 +22,20 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
     private $namespaceInspector;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param KubernetesClientFactory $clientFactory
      * @param NamespaceInspector      $namespaceInspector
+     * @param LoggerInterface         $logger
      */
-    public function __construct(KubernetesClientFactory $clientFactory, NamespaceInspector $namespaceInspector)
+    public function __construct(KubernetesClientFactory $clientFactory, NamespaceInspector $namespaceInspector, LoggerInterface $logger)
     {
         $this->clientFactory = $clientFactory;
         $this->namespaceInspector = $namespaceInspector;
+        $this->logger = $logger;
     }
 
     /**
@@ -41,7 +49,8 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
 
         return new KubernetesEnvironmentClient(
             $this->clientFactory->getByCluster($cluster),
-            $this->namespaceInspector
+            $this->namespaceInspector,
+            $this->logger
         );
     }
 }
