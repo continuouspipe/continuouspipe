@@ -208,7 +208,7 @@ class RunContext implements Context
         $component = $this->getDeployedComponentNamed($name);
 
         if (null === ($deploymentStrategy = $component->getDeploymentStrategy())) {
-            throw new \RuntimeException('The component do not have any deployment strategy');
+            throw new \RuntimeException('The component does not have a deployment strategy');
         }
 
         if (!$deploymentStrategy->isAttached()) {
