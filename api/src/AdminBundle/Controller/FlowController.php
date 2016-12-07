@@ -76,7 +76,7 @@ class FlowController
     {
         $this->commandBus->handle(new ArchiveFlowLogsCommand($flow->getUuid()));
 
-        $this->session->getFlashBag()->add('success', 'Flow\'s tides\' logs successfully archived');
+        $this->session->getFlashBag()->add('success', 'FlatFlow\'s tides\' logs successfully archived');
 
         return new RedirectResponse(
             $this->urlGenerator->generate('admin_tides', [

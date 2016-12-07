@@ -7,7 +7,7 @@ use ContinuousPipe\River\CodeRepository\DockerCompose\ComponentsResolver;
 use ContinuousPipe\River\CodeRepository\DockerCompose\DockerComposeComponent;
 use ContinuousPipe\River\CodeRepository\DockerCompose\ResolveException;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\View\Flow as FlowView;
+use ContinuousPipe\River\Flow\Projections\FlatFlow as FlowView;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer

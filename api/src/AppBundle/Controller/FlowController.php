@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\Event\BeforeFlowSave;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\View\Flow as FlowView;
+use ContinuousPipe\River\Flow\Projections\FlatFlow as FlowView;
 use ContinuousPipe\River\FlowFactory;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View\TideRepository;

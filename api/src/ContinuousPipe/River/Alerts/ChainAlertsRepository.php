@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Alerts;
 
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 class ChainAlertsRepository implements AlertsRepository
 {
@@ -22,7 +22,7 @@ class ChainAlertsRepository implements AlertsRepository
     /**
      * {@inheritdoc}
      */
-    public function findByFlow(Flow $flow)
+    public function findByFlow(FlatFlow $flow)
     {
         return array_reduce($this->repositoryCollection, function (array $alerts, AlertsRepository $alertsRepository) use ($flow) {
             return array_merge($alerts, $alertsRepository->findByFlow($flow));

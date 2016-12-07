@@ -205,7 +205,7 @@ class DoctrineTideRepository implements TideRepository
 
         $tide = Tide::create(
             Uuid::fromString($tideDto->getUuid()),
-            \ContinuousPipe\River\View\Flow::fromFlow($flow),
+            Flow\Projections\FlatFlow::fromFlow($flow),
             $wrappedTide->getCodeReference(),
             TreeLog::fromId($wrappedTide->getLogId()),
             $wrappedTide->getTeam(),

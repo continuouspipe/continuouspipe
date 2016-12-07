@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\View\EventListener;
 
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Repository\FlowRepository;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\River\View\TimeResolver;
@@ -46,7 +46,7 @@ class TideCreatedListener
 
         $view = Tide::create(
             $event->getTideUuid(),
-            Flow::fromFlow($flow),
+            FlatFlow::fromFlow($flow),
             $tideContext->getCodeReference(),
             $tideContext->getLog(),
             $tideContext->getTeam(),

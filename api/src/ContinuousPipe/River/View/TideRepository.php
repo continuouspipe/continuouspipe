@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Repository\TideNotFound;
 use Ramsey\Uuid\Uuid;
 
@@ -21,7 +22,7 @@ interface TideRepository
     /**
      * Find last `$limit` tides of this flow.
      *
-     * @param Flow $flow
+     * @param FlatFlow $flow
      * @param int  $limit
      *
      * @return Tide[]

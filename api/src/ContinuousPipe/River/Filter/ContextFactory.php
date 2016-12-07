@@ -13,7 +13,7 @@ use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\TideContext;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use GitHub\WebHook\Model\PullRequest;
 use Psr\Log\LoggerInterface;
 
@@ -107,7 +107,7 @@ class ContextFactory
     {
         $context = $tide->getContext();
         $repository = $context->getCodeRepository();
-        $flow = Flow::fromFlow($this->flowRepository->find($context->getFlowUuid()));
+        $flow = FlatFlow::fromFlow($this->flowRepository->find($context->getFlowUuid()));
 
         if (null !== ($event = $context->getCodeRepositoryEvent()) && $event instanceof PullRequestEvent) {
             $pullRequest = $event->getEvent()->getPullRequest();
@@ -136,14 +136,14 @@ class ContextFactory
     }
 
     /**
-     * @param Flow           $flow
+     * @param FlatFlow           $flow
      * @param TideContext    $context
      * @param CodeRepository $codeRepository
      * @param PullRequest    $pullRequest
      *
      * @return array
      */
-    private function getPullRequestLabelNames(Flow $flow, TideContext $context, CodeRepository $codeRepository, PullRequest $pullRequest)
+    private function getPullRequestLabelNames(FlatFlow $flow, TideContext $context, CodeRepository $codeRepository, PullRequest $pullRequest)
     {
         if (!$codeRepository instanceof CodeRepository\GitHub\GitHubCodeRepository) {
             return [];

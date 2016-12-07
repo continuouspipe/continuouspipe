@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\Alerts\AlertsRepository;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\View\Flow as FlowView;
+use ContinuousPipe\River\Flow\Projections\FlatFlow as FlowView;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;

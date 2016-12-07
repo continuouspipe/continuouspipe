@@ -1,13 +1,14 @@
 <?php
 
-namespace ContinuousPipe\River\View;
+namespace ContinuousPipe\River\Flow\Projections;
 
 use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Yaml\Yaml;
 
-class Flow
+class FlatFlow
 {
     /**
      * @var Uuid
@@ -37,7 +38,7 @@ class Flow
     /**
      * @param \ContinuousPipe\River\Flow $flow
      *
-     * @return Flow
+     * @return FlatFlow
      */
     public static function fromFlow(\ContinuousPipe\River\Flow $flow)
     {
@@ -56,7 +57,7 @@ class Flow
      * @param \ContinuousPipe\River\Flow $flow
      * @param Tide[]                     $tides
      *
-     * @return Flow
+     * @return FlatFlow
      */
     public static function fromFlowAndTides(\ContinuousPipe\River\Flow $flow, array $tides)
     {

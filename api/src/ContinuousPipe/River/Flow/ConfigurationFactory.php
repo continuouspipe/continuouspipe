@@ -12,7 +12,7 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Exception\ExceptionInterface as YamlException;
 use Symfony\Component\Yaml\Yaml;
-use ContinuousPipe\River\View\Flow as FlowView;
+use ContinuousPipe\River\Flow\Projections\FlatFlow as FlowView;
 
 class ConfigurationFactory implements TideConfigurationFactory
 {

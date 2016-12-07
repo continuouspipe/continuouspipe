@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Tests\CodeRepository;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class PredictableCommitResolver implements CommitResolver
@@ -26,7 +26,7 @@ class PredictableCommitResolver implements CommitResolver
     /**
      * {@inheritdoc}
      */
-    public function getHeadCommitOfBranch(Flow $flow, $branch)
+    public function getHeadCommitOfBranch(FlatFlow $flow, $branch)
     {
         return $this->getCommitByBranch($branch);
     }

@@ -141,7 +141,7 @@ class DoctrineFlowRepository implements FlowRepository
         $dto = $this->getEntityRepository()->find((string) $uuid);
         if (null === $dto) {
             throw new FlowNotFound(sprintf(
-                'Flow with UUID %s is not found',
+                'FlatFlow with UUID %s is not found',
                 (string) $uuid
             ));
         }

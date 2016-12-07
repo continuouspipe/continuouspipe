@@ -2,14 +2,14 @@
 
 namespace ContinuousPipe\River\Alerts;
 
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 interface AlertsRepository
 {
     /**
-     * @param Flow $flow
+     * @param FlatFlow $flow
      *
      * @return Alert[]
      */
-    public function findByFlow(Flow $flow);
+    public function findByFlow(FlatFlow $flow);
 }

@@ -7,7 +7,7 @@ use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class RepositoryComponentsResolver implements ComponentsResolver
@@ -35,7 +35,7 @@ class RepositoryComponentsResolver implements ComponentsResolver
     /**
      * {@inheritdoc}
      */
-    public function resolve(Flow $flow, CodeReference $codeReference)
+    public function resolve(FlatFlow $flow, CodeReference $codeReference)
     {
         return $this->resolveWithFilesystem(
             $this->fileSystemResolver->getFileSystem($flow, $codeReference),

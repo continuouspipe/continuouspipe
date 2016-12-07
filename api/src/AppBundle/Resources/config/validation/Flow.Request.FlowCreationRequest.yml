@@ -1,4 +1,4 @@
-ContinuousPipe\River\Flow\Request\FlowCreationRequest:
+ContinuousPipe\River\FlatFlow\Request\FlowCreationRequest:
     properties:
         repository:
             - NotBlank: ~

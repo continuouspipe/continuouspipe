@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Tests\CodeRepository\GitHub;
 
 use ContinuousPipe\River\GitHub\ClientFactory;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\User\User;
 use Github\Client;
@@ -69,7 +69,7 @@ class TestClientFactory implements ClientFactory
     /**
      * {@inheritdoc}
      */
-    public function createClientForFlow(Flow $flow)
+    public function createClientForFlow(FlatFlow $flow)
     {
         return new Client($this->httpClient);
     }
