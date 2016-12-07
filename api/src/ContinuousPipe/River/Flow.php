@@ -3,6 +3,8 @@
 namespace ContinuousPipe\River;
 
 use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
+use Ramsey\Uuid\UuidInterface;
 
 class Flow
 {
@@ -27,35 +29,28 @@ class Flow
         return $this->context;
     }
 
-    /**
-     * @return \Ramsey\Uuid\Uuid
-     */
-    public function getUuid()
+    public function getUuid() : UuidInterface
     {
-        return $this->getContext()->getFlowUuid();
+        return $this->context->getFlowUuid();
     }
 
-    /**
-     * @return Team
-     */
     public function getTeam() : Team
     {
         return $this->context->getTeam();
     }
 
-    /**
-     * @return array
-     */
     public function getConfiguration() : array
     {
         return $this->context->getConfiguration() ?: [];
     }
 
-    /**
-     * @return CodeRepository
-     */
     public function getCodeRepository() : CodeRepository
     {
         return $this->context->getCodeRepository();
+    }
+
+    public function getUser() : User
+    {
+        return $this->context->getUser();
     }
 }

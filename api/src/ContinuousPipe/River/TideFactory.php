@@ -115,13 +115,9 @@ class TideFactory
         }
 
         $tideContext = TideContext::createTide(
-            FlowContext::createFlow(
-                $flow->getUuid(),
-                $flow->getTeam(),
-                $flow->getUser(),
-                $flow->getRepository(),
-                $flow->getConfiguration()
-            ),
+            $flow->getUuid(),
+            $flow->getTeam(),
+            $flow->getUser(),
             $tideUuid,
             $codeReference,
             $log,

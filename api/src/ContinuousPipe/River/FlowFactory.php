@@ -64,13 +64,11 @@ class FlowFactory
      */
     public function fromUpdateRequest(Flow $flow, FlowUpdateRequest $updateRequest)
     {
-        $context = $flow->getContext();
-
         return new Flow(FlowContext::createFlow(
             $flow->getUuid(),
-            $context->getTeam(),
-            $context->getUser(),
-            $context->getCodeRepository(),
+            $flow->getTeam(),
+            $flow->getUser(),
+            $flow->getCodeRepository(),
             $this->parseConfiguration($updateRequest)
         ));
     }

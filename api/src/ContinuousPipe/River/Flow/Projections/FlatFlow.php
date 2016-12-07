@@ -54,15 +54,13 @@ class FlatFlow
      */
     public static function fromFlow(\ContinuousPipe\River\Flow $flow)
     {
-        $flowContext = $flow->getContext();
-
         $view = new self();
-        $view->uuid = $flowContext->getFlowUuid();
-        $view->repository = $flowContext->getCodeRepository();
-        $view->team = $flowContext->getTeam();
-        $view->configuration = $flowContext->getConfiguration() ?: [];
+        $view->uuid = $flow->getUuid();
+        $view->repository = $flow->getCodeRepository();
+        $view->team = $flow->getTeam();
+        $view->configuration = $flow->getConfiguration() ?: [];
         $view->ymlConfiguration = Yaml::dump($view->configuration);
-        $view->user = $flowContext->getUser();
+        $view->user = $flow->getUser();
 
         return $view;
     }
