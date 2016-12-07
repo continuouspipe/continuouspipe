@@ -10,8 +10,8 @@ interface PullRequestResolver
     /**
      * Get the pull request which have this head commit.
      *
-     * @param \ContinuousPipe\River\Flow\Projections\FlatFlow          $flow
-     * @param CodeReference $codeReference
+     * @param \ContinuousPipe\River\Flow\Projections\FlatFlow $flow
+     * @param CodeReference                                   $codeReference
      *
      * @return \GitHub\WebHook\Model\PullRequest[]
      */

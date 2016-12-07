@@ -37,7 +37,7 @@ class FlowSecurityVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        return $subject instanceof Flow || $subject instanceof Tide;
+        return $subject instanceof Flow || $subject instanceof Tide || $subject instanceof Flow\Projections\FlatFlow;
     }
 
     /**
@@ -89,7 +89,7 @@ class FlowSecurityVoter extends Voter
      */
     private function extractTeam($subject)
     {
-        if ($subject instanceof Flow || $subject instanceof Tide) {
+        if ($subject instanceof Flow || $subject instanceof Tide || $subject instanceof Flow\Projections\FlatFlow) {
             return $subject->getTeam();
         }
 

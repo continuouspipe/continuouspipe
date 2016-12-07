@@ -9,13 +9,12 @@ use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\TideValidated;
-use ContinuousPipe\River\Repository\FlowRepository;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Tide\Request\TideCreationRequest;
-use ContinuousPipe\River\Flow\Projections\FlatFlow as FlowView;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Ramsey\Uuid\Uuid;
@@ -31,11 +30,6 @@ class TideFactory
      * @var TaskFactoryRegistry
      */
     private $taskFactoryRegistry;
-
-    /**
-     * @var FlowRepository
-     */
-    private $flowRepository;
 
     /**
      * @var TideConfigurationFactory
@@ -55,34 +49,32 @@ class TideFactory
     /**
      * @param LoggerFactory            $loggerFactory
      * @param TaskFactoryRegistry      $taskFactoryRegistry
-     * @param FlowRepository           $flowRepository
      * @param TideConfigurationFactory $configurationFactory
      * @param CommitResolver           $commitResolver
      * @param TaskRunner               $taskRunner
      */
-    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, FlowRepository $flowRepository, TideConfigurationFactory $configurationFactory, CommitResolver $commitResolver, TaskRunner $taskRunner)
+    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, TideConfigurationFactory $configurationFactory, CommitResolver $commitResolver, TaskRunner $taskRunner)
     {
         $this->loggerFactory = $loggerFactory;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
-        $this->flowRepository = $flowRepository;
         $this->configurationFactory = $configurationFactory;
         $this->commitResolver = $commitResolver;
         $this->taskRunner = $taskRunner;
     }
 
     /**
-     * @param Flow                $flow
+     * @param FlatFlow            $flow
      * @param TideCreationRequest $creationRequest
      *
      * @throws CommitResolverException
      *
      * @return Tide
      */
-    public function createFromCreationRequest(Flow $flow, TideCreationRequest $creationRequest)
+    public function createFromCreationRequest(FlatFlow $flow, TideCreationRequest $creationRequest)
     {
-        $repository = $flow->getCodeRepository();
+        $repository = $flow->getRepository();
         if (null == ($sha1 = $creationRequest->getSha1())) {
-            $sha1 = $this->commitResolver->getHeadCommitOfBranch(FlowView::fromFlow($flow), $creationRequest->getBranch());
+            $sha1 = $this->commitResolver->getHeadCommitOfBranch($flow, $creationRequest->getBranch());
         }
 
         return $this->createFromCodeReference($flow, new CodeReference(
@@ -93,14 +85,14 @@ class TideFactory
     }
 
     /**
-     * @param Flow                $flow
+     * @param FlatFlow            $flow
      * @param CodeReference       $codeReference
      * @param CodeRepositoryEvent $codeRepositoryEvent
      * @param Uuid                $tideUuid
      *
      * @return Tide
      */
-    public function createFromCodeReference(Flow $flow, CodeReference $codeReference, CodeRepositoryEvent $codeRepositoryEvent = null, Uuid $tideUuid = null)
+    public function createFromCodeReference(FlatFlow $flow, CodeReference $codeReference, CodeRepositoryEvent $codeRepositoryEvent = null, Uuid $tideUuid = null)
     {
         $log = $this->loggerFactory->create()->getLog();
         $tideUuid = $tideUuid ?: Uuid::uuid1();
@@ -123,7 +115,13 @@ class TideFactory
         }
 
         $tideContext = TideContext::createTide(
-            $flow->getContext(),
+            FlowContext::createFlow(
+                $flow->getUuid(),
+                $flow->getTeam(),
+                $flow->getUser(),
+                $flow->getRepository(),
+                $flow->getConfiguration()
+            ),
             $tideUuid,
             $codeReference,
             $log,

@@ -102,7 +102,6 @@
         <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.task_factory_registry" />
-            <argument type="service" id="river.repository.flow" />
             <argument type="service" id="river.tide_configuration_factory" />
             <argument type="service" id="river.commit_resolver" />
             <argument type="service" id="river.tide.task_runner" />

@@ -23,8 +23,8 @@ interface CommitResolver
     public function getLegacyHeadCommitOfBranch(BucketContainer $bucketContainer, CodeRepository $repository, $branch);
 
     /**
-     * @param FlatFlow   $flow
-     * @param string $branch
+     * @param FlatFlow $flow
+     * @param string   $branch
      *
      * @throws CommitResolverException
      *

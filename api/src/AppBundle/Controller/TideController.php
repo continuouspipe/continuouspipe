@@ -94,11 +94,11 @@ class TideController
      * Get tide by flow.
      *
      * @Route("/flows/{uuid}/tides", methods={"GET"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
      * @Security("is_granted('READ', flow)")
      * @View
      */
-    public function findByFlowAction(Request $request, Flow $flow)
+    public function findByFlowAction(Request $request, Flow\Projections\FlatFlow $flow)
     {
         /** @var SlidingPagination $paginated */
         $paginated = $this->paginator->paginate(
@@ -114,12 +114,12 @@ class TideController
      * Get tide by flow.
      *
      * @Route("/flows/{uuid}/tides", methods={"POST"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
      * @ParamConverter("creationRequest", converter="fos_rest.request_body")
      * @Security("is_granted('CREATE_TIDE', flow)")
      * @View(statusCode=201)
      */
-    public function createAction(Flow $flow, TideCreationRequest $creationRequest)
+    public function createAction(Flow\Projections\FlatFlow $flow, TideCreationRequest $creationRequest)
     {
         $errors = $this->validator->validate($creationRequest);
         if ($errors->count() > 0) {

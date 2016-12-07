@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Flow\Projections;
 
-use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
 use Ramsey\Uuid\UuidInterface;
 

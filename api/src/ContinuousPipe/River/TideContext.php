@@ -42,6 +42,7 @@ class TideContext extends FlowContext
     public static function createTide(FlowContext $flowContext, Uuid $tideUuid, CodeReference $codeReference, Log $log, array $configuration, CodeRepositoryEvent $codeRepositoryEvent = null)
     {
         $context = new self($flowContext);
+
         $context->set(self::TIDE_UUID_KEY, $tideUuid);
         $context->set(self::CODE_REFERENCE_KEY, $codeReference);
         $context->set(self::TIDE_LOG_KEY, $log);

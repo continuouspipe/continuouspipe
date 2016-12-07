@@ -3,8 +3,8 @@
 namespace ContinuousPipe\River\Flow\ConfigurationEnhancer;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Flow\ConfigurationEnhancer;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -28,7 +28,7 @@ class GetImageNameFromBuiltServices implements ConfigurationEnhancer
     /**
      * {@inheritdoc}
      */
-    public function enhance(Flow $flow, CodeReference $codeReference, array $configs)
+    public function enhance(FlatFlow $flow, CodeReference $codeReference, array $configs)
     {
         $paths = $this->expandSelector($configs, $this->configuration['selector']);
 

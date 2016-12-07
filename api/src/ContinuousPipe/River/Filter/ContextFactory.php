@@ -136,7 +136,7 @@ class ContextFactory
     }
 
     /**
-     * @param FlatFlow           $flow
+     * @param FlatFlow       $flow
      * @param TideContext    $context
      * @param CodeRepository $codeRepository
      * @param PullRequest    $pullRequest

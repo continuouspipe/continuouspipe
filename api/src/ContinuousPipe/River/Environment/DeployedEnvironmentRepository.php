@@ -2,24 +2,24 @@
 
 namespace ContinuousPipe\River\Environment;
 
-use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 interface DeployedEnvironmentRepository
 {
     /**
      * Find the deployed environments of this flow.
      *
-     * @param Flow $flow
+     * @param FlatFlow $flow
      *
      * @return DeployedEnvironment[]
      */
-    public function findByFlow(Flow $flow);
+    public function findByFlow(FlatFlow $flow);
 
     /**
      * Delete a deployed environment.
      *
-     * @param Flow                $flow
+     * @param FlatFlow            $flow
      * @param DeployedEnvironment $environment
      */
-    public function delete(Flow $flow, DeployedEnvironment $environment);
+    public function delete(FlatFlow $flow, DeployedEnvironment $environment);
 }

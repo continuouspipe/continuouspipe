@@ -56,10 +56,10 @@ class TideController
     /**
      * @Route("/teams/{team}/flows/{flow}/tides", name="admin_tides")
      * @ParamConverter("team", converter="team", options={"slug"="team"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="flow"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="flow", "flat"=true})
      * @Template
      */
-    public function listAction(Team $team, Flow $flow, Request $request)
+    public function listAction(Team $team, Flow\Projections\FlatFlow $flow, Request $request)
     {
         return [
             'team' => $team,
@@ -75,10 +75,10 @@ class TideController
     /**
      * @Route("/teams/{team}/flows/{flow}/tides/{uuid}", name="admin_tide")
      * @ParamConverter("team", converter="team", options={"slug"="team"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="flow"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="flow", "flat"=true})
      * @Template
      */
-    public function showAction(Team $team, Flow $flow, $uuid)
+    public function showAction(Team $team, Flow\Projections\FlatFlow $flow, $uuid)
     {
         $tideUuid = Uuid::fromString($uuid);
         $tide = $this->tideRepository->find($tideUuid);

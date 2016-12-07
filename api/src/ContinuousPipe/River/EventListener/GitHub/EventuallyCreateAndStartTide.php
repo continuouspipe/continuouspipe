@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\EventListener\GitHub;
 
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
 use ContinuousPipe\River\Filter\ContextFactory;
+use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Tide\StartVoter\TideStartVoter;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideFactory;
@@ -37,21 +38,27 @@ class EventuallyCreateAndStartTide
      * @var ContextFactory
      */
     private $contextFactory;
+    /**
+     * @var FlatFlowRepository
+     */
+    private $flatFlowRepository;
 
     /**
-     * @param TideFactory    $tideFactory
-     * @param MessageBus     $eventBus
-     * @param ContextFactory $contextFactory
-     * @param LoggerFactory  $loggerFactory
-     * @param TideStartVoter $tideStartVoter
+     * @param TideFactory        $tideFactory
+     * @param MessageBus         $eventBus
+     * @param ContextFactory     $contextFactory
+     * @param LoggerFactory      $loggerFactory
+     * @param TideStartVoter     $tideStartVoter
+     * @param FlatFlowRepository $flatFlowRepository
      */
-    public function __construct(TideFactory $tideFactory, MessageBus $eventBus, ContextFactory $contextFactory, LoggerFactory $loggerFactory, TideStartVoter $tideStartVoter)
+    public function __construct(TideFactory $tideFactory, MessageBus $eventBus, ContextFactory $contextFactory, LoggerFactory $loggerFactory, TideStartVoter $tideStartVoter, FlatFlowRepository $flatFlowRepository)
     {
         $this->tideFactory = $tideFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
         $this->tideStartVoter = $tideStartVoter;
         $this->contextFactory = $contextFactory;
+        $this->flatFlowRepository = $flatFlowRepository;
     }
 
     /**
@@ -60,7 +67,7 @@ class EventuallyCreateAndStartTide
     public function notify(CodeRepositoryEvent $event)
     {
         $tide = $this->tideFactory->createFromCodeReference(
-            $event->getFlow(),
+            $this->flatFlowRepository->find($event->getFlowUuid()),
             $event->getCodeReference(),
             $event
         );

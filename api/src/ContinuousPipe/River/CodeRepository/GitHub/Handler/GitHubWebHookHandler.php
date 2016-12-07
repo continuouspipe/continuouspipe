@@ -10,7 +10,6 @@ use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
 use ContinuousPipe\River\Event\GitHub\PullRequestOpened;
 use ContinuousPipe\River\Event\GitHub\PullRequestSynchronized;
 use ContinuousPipe\River\Event\GitHub\StatusUpdated;
-use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Notifications\GitHub\CommitStatus\GitHubCommitStatusNotifier;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View;
@@ -18,6 +17,7 @@ use GitHub\WebHook\Event\PullRequestEvent;
 use GitHub\WebHook\Event\PushEvent;
 use GitHub\WebHook\Event\StatusEvent;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\UuidInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
 class GitHubWebHookHandler
@@ -74,58 +74,57 @@ class GitHubWebHookHandler
     public function handle(HandleGitHubEvent $command)
     {
         $event = $command->getEvent();
-        $flow = $this->flowRepository->find($command->getFlowUuid());
 
         if ($event instanceof PushEvent) {
-            $this->handlePushEvent($flow, $event);
+            $this->handlePushEvent($command->getFlowUuid(), $event);
         } elseif ($event instanceof PullRequestEvent) {
-            $this->handlePullRequestEvent($flow, $event);
+            $this->handlePullRequestEvent($command->getFlowUuid(), $event);
         } elseif ($event instanceof StatusEvent) {
-            $this->handleStatusEvent($flow, $event);
+            $this->handleStatusEvent($command->getFlowUuid(), $event);
         }
     }
 
     /**
-     * @param Flow      $flow
-     * @param PushEvent $event
+     * @param UuidInterface $flowUuid
+     * @param PushEvent     $event
      *
      * @return \ContinuousPipe\River\View\Tide|null
      */
-    private function handlePushEvent(Flow $flow, PushEvent $event)
+    private function handlePushEvent(UuidInterface $flowUuid, PushEvent $event)
     {
         $codeReference = $this->codeReferenceResolver->fromPushEvent($event);
 
         if ($event->isDeleted()) {
-            $this->eventBus->handle(new BranchDeleted($flow, $codeReference));
+            $this->eventBus->handle(new BranchDeleted($flowUuid, $codeReference));
         } elseif ($codeReference->getCommitSha() !== null) {
-            $this->eventBus->handle(new CodePushed($flow, $event, $codeReference));
+            $this->eventBus->handle(new CodePushed($flowUuid, $event, $codeReference));
         }
     }
 
     /**
-     * @param Flow             $flow
+     * @param UuidInterface    $flowUuid
      * @param PullRequestEvent $event
      */
-    private function handlePullRequestEvent(Flow $flow, PullRequestEvent $event)
+    private function handlePullRequestEvent(UuidInterface $flowUuid, PullRequestEvent $event)
     {
         $codeReference = $this->codeReferenceResolver->fromPullRequestEvent($event);
 
         if ($event->getAction() == PullRequestEvent::ACTION_OPENED) {
-            $this->eventBus->handle(new PullRequestOpened($flow, $codeReference, $event));
+            $this->eventBus->handle(new PullRequestOpened($flowUuid, $codeReference, $event));
         } elseif ($event->getAction() == PullRequestEvent::ACTION_CLOSED) {
-            $this->eventBus->handle(new PullRequestClosed($flow, $codeReference, $event));
+            $this->eventBus->handle(new PullRequestClosed($flowUuid, $codeReference, $event));
         } elseif ($event->getAction() == PullRequestEvent::ACTION_SYNCHRONIZED) {
-            $this->eventBus->handle(new PullRequestSynchronized($flow, $codeReference, $event));
+            $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $event));
         } elseif ($event->getAction() == PullRequestEvent::ACTION_LABELED) {
-            $this->eventBus->handle(new PullRequestSynchronized($flow, $codeReference, $event));
+            $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $event));
         }
     }
 
     /**
-     * @param Flow        $flow
-     * @param StatusEvent $event
+     * @param UuidInterface $flowUuid
+     * @param StatusEvent   $event
      */
-    private function handleStatusEvent(Flow $flow, StatusEvent $event)
+    private function handleStatusEvent(UuidInterface $flowUuid, StatusEvent $event)
     {
         if ($event->getContext() == GitHubCommitStatusNotifier::GITHUB_CONTEXT) {
             return;
@@ -141,7 +140,7 @@ class GitHubWebHookHandler
             return;
         }
 
-        $tides = $this->tideViewRepository->findByCodeReference($flow->getUuid(), $codeReference);
+        $tides = $this->tideViewRepository->findByCodeReference($flowUuid, $codeReference);
 
         foreach ($tides as $tide) {
             $this->eventBus->handle(new StatusUpdated(

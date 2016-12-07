@@ -79,7 +79,7 @@ class Tide
      * Create a new tide representation.
      *
      * @param Uuid          $uuid
-     * @param FlatFlow          $flow
+     * @param FlatFlow      $flow
      * @param CodeReference $codeReference
      * @param Log           $log
      * @param Team          $team

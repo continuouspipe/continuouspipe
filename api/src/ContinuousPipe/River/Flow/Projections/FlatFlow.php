@@ -5,7 +5,9 @@ namespace ContinuousPipe\River\Flow\Projections;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class FlatFlow
@@ -26,9 +28,19 @@ class FlatFlow
     private $team;
 
     /**
+     * @var User
+     */
+    private $user;
+
+    /**
      * @var string
      */
     private $ymlConfiguration;
+
+    /**
+     * @var array
+     */
+    private $configuration;
 
     /**
      * @var Tide[]
@@ -48,7 +60,9 @@ class FlatFlow
         $view->uuid = $flowContext->getFlowUuid();
         $view->repository = $flowContext->getCodeRepository();
         $view->team = $flowContext->getTeam();
-        $view->ymlConfiguration = Yaml::dump($flowContext->getConfiguration());
+        $view->configuration = $flowContext->getConfiguration() ?: [];
+        $view->ymlConfiguration = Yaml::dump($view->configuration);
+        $view->user = $flowContext->getUser();
 
         return $view;
     }
@@ -67,27 +81,28 @@ class FlatFlow
         return $view;
     }
 
-    /**
-     * @return Uuid
-     */
-    public function getUuid()
+    public function getUuid() : UuidInterface
     {
         return $this->uuid;
     }
 
-    /**
-     * @return CodeRepository
-     */
     public function getRepository() : CodeRepository
     {
         return $this->repository;
     }
 
-    /**
-     * @return Team
-     */
     public function getTeam(): Team
     {
         return $this->team;
+    }
+
+    public function getConfiguration() : array
+    {
+        return $this->configuration;
+    }
+
+    public function getUser() : User
+    {
+        return $this->user;
     }
 }

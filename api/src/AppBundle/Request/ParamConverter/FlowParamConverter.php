@@ -22,7 +22,7 @@ class FlowParamConverter implements ParamConverterInterface
     private $flatFlowRepository;
 
     /**
-     * @param FlowRepository $flowRepository
+     * @param FlowRepository     $flowRepository
      * @param FlatFlowRepository $flatFlowRepository
      */
     public function __construct(FlowRepository $flowRepository, FlatFlowRepository $flatFlowRepository)

@@ -4,7 +4,8 @@ namespace AppBundle\Controller;
 
 use AppBundle\Request\WatchRequest;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
-use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\EnvironmentClient;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Watcher\Watcher;
@@ -19,11 +20,12 @@ use ContinuousPipe\Watcher\WatcherException;
 
 /**
  * @Route(service="app.controller.flow_environment")
+ * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
  */
 class FlowEnvironmentController
 {
     /**
-     * @var Flow\EnvironmentClient
+     * @var EnvironmentClient
      */
     private $environmentClient;
 
@@ -38,11 +40,11 @@ class FlowEnvironmentController
     private $watcher;
 
     /**
-     * @param Flow\EnvironmentClient $environmentClient
-     * @param BucketRepository       $bucketRepository
-     * @param Watcher                $watcher
+     * @param EnvironmentClient $environmentClient
+     * @param BucketRepository  $bucketRepository
+     * @param Watcher           $watcher
      */
-    public function __construct(Flow\EnvironmentClient $environmentClient, BucketRepository $bucketRepository, Watcher $watcher)
+    public function __construct(EnvironmentClient $environmentClient, BucketRepository $bucketRepository, Watcher $watcher)
     {
         $this->environmentClient = $environmentClient;
         $this->watcher = $watcher;
@@ -51,22 +53,20 @@ class FlowEnvironmentController
 
     /**
      * @Route("/flows/{uuid}/environments", methods={"GET"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @Security("is_granted('READ', flow)")
      * @View
      */
-    public function listAction(Flow $flow)
+    public function listAction(FlatFlow $flow)
     {
         return $this->environmentClient->findByFlow($flow);
     }
 
     /**
      * @Route("/flows/{uuid}/environments/{name}", methods={"DELETE"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @Security("is_granted('DELETE', flow)")
      * @View
      */
-    public function deleteAction(Flow $flow, Request $request, $name)
+    public function deleteAction(FlatFlow $flow, Request $request, $name)
     {
         $environment = new DeployedEnvironment($name, $request->query->get('cluster'));
 
@@ -75,12 +75,11 @@ class FlowEnvironmentController
 
     /**
      * @Route("/flows/{uuid}/environments/watch", methods={"POST"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @ParamConverter("watchRequest", converter="fos_rest.request_body")
      * @Security("is_granted('READ', flow)")
      * @View
      */
-    public function watchAction(Flow $flow, WatchRequest $watchRequest)
+    public function watchAction(FlatFlow $flow, WatchRequest $watchRequest)
     {
         $bucket = $this->bucketRepository->find($flow->getTeam()->getBucketUuid());
         $clusters = $bucket->getClusters()->filter(function (Cluster $cluster) use ($watchRequest) {

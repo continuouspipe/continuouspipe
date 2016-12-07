@@ -12,6 +12,7 @@ use ContinuousPipe\River\View\TideRepository;
 use Doctrine\ORM\EntityManager;
 use LogStream\Tree\TreeLog;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class DoctrineTideRepository implements TideRepository
 {
@@ -74,10 +75,10 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findLastByFlow(Flow $flow, $limit)
+    public function findLastByFlowUuid(UuidInterface $flowUuid, $limit)
     {
         $dtos = $this->getEntityRepository()->findBy([
-            'flow' => (string) $flow->getUuid(),
+            'flow' => (string) $flowUuid,
         ], [
             'tide.creationDate' => 'DESC',
         ], $limit);

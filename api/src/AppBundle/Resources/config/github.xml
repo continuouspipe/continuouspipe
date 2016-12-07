@@ -103,7 +103,7 @@
             <argument type="service" id="river.task_filter.context_factory" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.tide.start_voter" />
-
+            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
         </service>
 
         <service id="river.listener.github.locked.eventually_create_and_start_tide"

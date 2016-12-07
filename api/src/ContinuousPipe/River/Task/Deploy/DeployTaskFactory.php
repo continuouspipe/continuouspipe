@@ -396,7 +396,7 @@ class DeployTaskFactory implements TaskFactory
 
     /**
      * @param NodeBuilder $children
-     * @param string $name
+     * @param string      $name
      */
     private function integerOrString(NodeBuilder $children, $name)
     {

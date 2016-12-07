@@ -16,4 +16,3 @@ interface FlatFlowRepository
      */
     public function find(UuidInterface $uuid);
 }
-

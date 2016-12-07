@@ -9,7 +9,7 @@ use ContinuousPipe\Security\Credentials\BucketContainer;
 interface ComponentsResolver
 {
     /**
-     * @param FlatFlow          $flow
+     * @param FlatFlow      $flow
      * @param CodeReference $codeReference
      *
      * @throws ResolveException

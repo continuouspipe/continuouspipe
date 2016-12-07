@@ -12,7 +12,7 @@ interface FileSystemResolver
     /**
      * Get file system for the given code repository and reference.
      *
-     * @param FlatFlow          $flow
+     * @param FlatFlow      $flow
      * @param CodeReference $codeReference
      *
      * @return RelativeFileSystem

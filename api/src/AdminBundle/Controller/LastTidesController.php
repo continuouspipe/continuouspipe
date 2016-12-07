@@ -2,14 +2,9 @@
 
 namespace AdminBundle\Controller;
 
-use ContinuousPipe\River\EventBus\EventStore;
-use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\TideRepository;
-use ContinuousPipe\Security\Team\Team;
-use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,8 +25,8 @@ class LastTidesController
     private $paginator;
 
     /**
-     * @param TideRepository     $tideRepository
-     * @param string             $logStreamUrl
+     * @param TideRepository $tideRepository
+     * @param string         $logStreamUrl
      */
     public function __construct(TideRepository $tideRepository, PaginatorInterface $paginator)
     {

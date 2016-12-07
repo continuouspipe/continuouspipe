@@ -49,11 +49,11 @@ class GitHubController
 
     /**
      * @Route("/web-hook/github/{uuid}", methods={"POST"}, name="web_hook_github")
-     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
      * @ParamConverter("request", converter="githubRequest")
      * @View
      */
-    public function flowWebHookAction(Flow $flow, GitHubRequest $request)
+    public function flowWebHookAction(Flow\Projections\FlatFlow $flow, GitHubRequest $request)
     {
         $this->commandBus->handle(new HandleGitHubEvent(
             $flow->getUuid(),

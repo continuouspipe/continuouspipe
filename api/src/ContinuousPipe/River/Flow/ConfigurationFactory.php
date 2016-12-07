@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
-use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
@@ -12,7 +12,6 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Exception\ExceptionInterface as YamlException;
 use Symfony\Component\Yaml\Yaml;
-use ContinuousPipe\River\Flow\Projections\FlatFlow as FlowView;
 
 class ConfigurationFactory implements TideConfigurationFactory
 {
@@ -46,9 +45,9 @@ class ConfigurationFactory implements TideConfigurationFactory
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration(Flow $flow, CodeReference $codeReference)
+    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference)
     {
-        $fileSystem = $this->fileSystemResolver->getFileSystem(FlowView::fromFlow($flow), $codeReference);
+        $fileSystem = $this->fileSystemResolver->getFileSystem($flow, $codeReference);
 
         $configs = [
             $flow->getConfiguration(),

@@ -34,7 +34,7 @@ class LockTheStartDecisionOfATide
     public function notify(CodeRepositoryEvent $event)
     {
         $this->locker->lock(
-            sprintf('flow-'.(string) $event->getFlow()->getUuid()),
+            sprintf('flow-'.(string) $event->getFlowUuid()),
             function () use ($event) {
                 return $this->eventuallyCreateAndStartTideListener->notify($event);
             }

@@ -7,8 +7,8 @@ use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\ClusterNotFound;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
 use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
-use ContinuousPipe\River\Flow;
 use ContinuousPipe\Security\Authenticator\UserContext;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
@@ -55,7 +55,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     /**
      * {@inheritdoc}
      */
-    public function findByFlow(Flow $flow)
+    public function findByFlow(FlatFlow $flow)
     {
         $environments = [];
 
@@ -84,7 +84,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     /**
      * {@inheritdoc}
      */
-    public function delete(Flow $flow, DeployedEnvironment $environment)
+    public function delete(FlatFlow $flow, DeployedEnvironment $environment)
     {
         $this->pipeClient->deleteEnvironment(
             new Client\DeploymentRequest\Target(
@@ -97,11 +97,11 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     }
 
     /**
-     * @param Flow $flow
+     * @param FlatFlow $flow
      *
      * @return string[]
      */
-    private function findClusterIdentifiers(Flow $flow)
+    private function findClusterIdentifiers(FlatFlow $flow)
     {
         $teamBucketUuid = $flow->getTeam()->getBucketUuid();
         $credentialsBucket = $this->bucketRepository->find($teamBucketUuid);
@@ -114,12 +114,12 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     /**
      * Find environments labelled by the flow UUID.
      *
-     * @param Flow   $flow
-     * @param string $clusterIdentifier
+     * @param FlatFlow $flow
+     * @param string   $clusterIdentifier
      *
      * @return Environment[]
      */
-    private function findEnvironmentsLabelledByFlow(Flow $flow, $clusterIdentifier)
+    private function findEnvironmentsLabelledByFlow(FlatFlow $flow, $clusterIdentifier)
     {
         return $this->pipeClient->getEnvironmentsLabelled(
             $clusterIdentifier,

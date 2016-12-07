@@ -27,7 +27,7 @@ class DeleteRelatedEnvironment
     public function notify(BranchDeleted $event)
     {
         $this->commandBus->handle(new DeleteEnvironments(
-            $event->getFlow()->getUuid(),
+            $event->getFlowUuid(),
             $event->getCodeReference()
         ));
     }

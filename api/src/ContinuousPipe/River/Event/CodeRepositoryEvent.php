@@ -3,14 +3,14 @@
 namespace ContinuousPipe\River\Event;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
+use Ramsey\Uuid\UuidInterface;
 
 interface CodeRepositoryEvent
 {
     /**
-     * @return Flow
+     * @return UuidInterface
      */
-    public function getFlow();
+    public function getFlowUuid();
 
     /**
      * @return CodeReference

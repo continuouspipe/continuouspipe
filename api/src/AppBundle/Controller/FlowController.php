@@ -119,7 +119,7 @@ class FlowController
     public function listAction(Team $team)
     {
         return array_map(function (Flow $flow) {
-            $lastTides = $this->tideRepository->findLastByFlow($flow, 1);
+            $lastTides = $this->tideRepository->findLastByFlowUuid($flow->getUuid(), 1);
 
             return FlowView::fromFlowAndTides($flow, $lastTides);
         }, $this->flowRepository->findByTeam($team));
