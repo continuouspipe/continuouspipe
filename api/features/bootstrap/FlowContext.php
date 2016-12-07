@@ -159,6 +159,34 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
+     * @Given the flow configuration version is :arg1
+     */
+    public function theFlowConfigurationVersionIs($arg1)
+    {
+    }
+
+    /**
+     * @When I request the flow configuration
+     */
+    public function iRequestTheFlowConfiguration()
+    {
+        $this->response = $this->kernel->handle(Request::create('/flows/'.$this->flowUuid.'/configuration'));
+    }
+
+    /**
+     * @When I update the flow to the version :version and the following configuration:
+     */
+    public function iUpdateTheFlowToTheVersionAndTheFollowingConfiguration($version, PyStringNode $string)
+    {
+        $this->response = $this->kernel->handle(Request::create('/flows/'.$this->flowUuid.'/configuration', 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], json_encode([
+            'version' => (int) $version,
+            'yaml' => $string->getRaw()
+        ])));
+    }
+
+    /**
      * @When I send a flow creation request for the team :team with the following parameters:
      */
     public function iSendAFlowCreationRequestForTheTeamWithTheFollowingParameters($team, TableNode $parameters)
@@ -302,7 +330,7 @@ EOF;
     public function theStoredConfigurationIsNotEmpty()
     {
         $flow = $this->flowRepository->find(Uuid::fromString($this->flowUuid));
-        $configuration = $flow->getContext()->getConfiguration();
+        $configuration = $flow->getConfiguration();
 
         if (empty($configuration)) {
             throw new \RuntimeException('Found empty configuration while expecting it to be saved');
@@ -519,6 +547,38 @@ EOF;
         if (count($matchingAlerts) != 0) {
             throw new \RuntimeException('Matching alert found');
         }
+    }
+
+    /**
+     * @Then the configuration should be:
+     */
+    public function theConfigurationShouldBe(PyStringNode $string)
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then the flow configuration version should be :arg1
+     */
+    public function theFlowConfigurationVersionShouldBe($arg1)
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then the flow configuration should be saved successfully
+     */
+    public function theFlowConfigurationShouldBeSavedSuccessfully()
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then the flow configuration update should be rejected
+     */
+    public function theFlowConfigurationUpdateShouldBeRejected()
+    {
+        throw new PendingException();
     }
 
     /**

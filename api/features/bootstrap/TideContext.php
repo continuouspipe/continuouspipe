@@ -1233,7 +1233,7 @@ EOF;
     private function getTideByCodeReference($branch, $sha1)
     {
         $flow = $this->flowContext->getCurrentFlow();
-        $codeRepository = $flow->getContext()->getCodeRepository();
+        $codeRepository = $flow->getCodeRepository();
         $tides = $this->viewTideRepository->findByCodeReference($flow->getUuid(), new CodeReference($codeRepository, $sha1, $branch));
 
         if (count($tides) != 1) {
@@ -1310,7 +1310,7 @@ EOF;
         return $this->tideFactory->createFromCodeReference(
             $flow,
             new CodeReference(
-                $flow->getContext()->getCodeRepository(),
+                $flow->getCodeRepository(),
                 $sha,
                 $branch
             ),

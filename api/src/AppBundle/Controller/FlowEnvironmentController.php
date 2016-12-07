@@ -82,7 +82,7 @@ class FlowEnvironmentController
      */
     public function watchAction(Flow $flow, WatchRequest $watchRequest)
     {
-        $bucket = $this->bucketRepository->find($flow->getContext()->getTeam()->getBucketUuid());
+        $bucket = $this->bucketRepository->find($flow->getTeam()->getBucketUuid());
         $clusters = $bucket->getClusters()->filter(function (Cluster $cluster) use ($watchRequest) {
             return $cluster->getIdentifier() == $watchRequest->getCluster();
         });

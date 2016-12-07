@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\Security\Team\Team;
+
 class Flow
 {
     /**
@@ -31,5 +33,29 @@ class Flow
     public function getUuid()
     {
         return $this->getContext()->getFlowUuid();
+    }
+
+    /**
+     * @return Team
+     */
+    public function getTeam() : Team
+    {
+        return $this->context->getTeam();
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfiguration() : array
+    {
+        return $this->context->getConfiguration() ?: [];
+    }
+
+    /**
+     * @return CodeRepository
+     */
+    public function getCodeRepository() : CodeRepository
+    {
+        return $this->context->getCodeRepository();
     }
 }

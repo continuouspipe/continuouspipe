@@ -91,7 +91,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
                 $environment->getIdentifier(),
                 $environment->getCluster()
             ),
-            $flow->getContext()->getTeam(),
+            $flow->getTeam(),
             $this->userContext->getCurrent()
         );
     }
@@ -103,7 +103,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
      */
     private function findClusterIdentifiers(Flow $flow)
     {
-        $teamBucketUuid = $flow->getContext()->getTeam()->getBucketUuid();
+        $teamBucketUuid = $flow->getTeam()->getBucketUuid();
         $credentialsBucket = $this->bucketRepository->find($teamBucketUuid);
 
         return $credentialsBucket->getClusters()->map(function (Cluster $cluster) {
@@ -123,7 +123,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     {
         return $this->pipeClient->getEnvironmentsLabelled(
             $clusterIdentifier,
-            $flow->getContext()->getTeam(),
+            $flow->getTeam(),
             $this->userContext->getCurrent(),
             [
                 'flow' => (string) $flow->getUuid(),

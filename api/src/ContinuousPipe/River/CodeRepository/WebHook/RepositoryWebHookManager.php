@@ -51,7 +51,7 @@ class RepositoryWebHookManager
      */
     public function configureWebHookForFlow(Flow $flow)
     {
-        $codeRepository = $flow->getContext()->getCodeRepository();
+        $codeRepository = $flow->getCodeRepository();
         if (!$codeRepository instanceof CodeRepository\GitHub\GitHubCodeRepository) {
             throw new \RuntimeException(sprintf(
                 'Repository of type "%s" not supported for webhook configuration',

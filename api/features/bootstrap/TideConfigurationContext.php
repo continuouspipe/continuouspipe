@@ -49,7 +49,7 @@ class TideConfigurationContext implements Context
     {
         $flow = $this->flowContext->createFlow();
         $this->configuration = $this->tideConfigurationFactory->getConfiguration($flow, new CodeReference(
-            $flow->getContext()->getCodeRepository(),
+            $flow->getCodeRepository(),
             'sha1'
         ));
     }
@@ -69,7 +69,7 @@ class TideConfigurationContext implements Context
     {
         $flow = $this->flowContext->createFlow();
         $this->configuration = $this->tideConfigurationFactory->getConfiguration($flow, new CodeReference(
-            $flow->getContext()->getCodeRepository(),
+            $flow->getCodeRepository(),
             $sha1,
             $branch
         ));

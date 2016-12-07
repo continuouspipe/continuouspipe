@@ -89,9 +89,7 @@ class FlowSecurityVoter extends Voter
      */
     private function extractTeam($subject)
     {
-        if ($subject instanceof Flow) {
-            return $subject->getContext()->getTeam();
-        } elseif ($subject instanceof Tide) {
+        if ($subject instanceof Flow || $subject instanceof Tide) {
             return $subject->getTeam();
         }
 

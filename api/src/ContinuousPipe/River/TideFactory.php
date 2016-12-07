@@ -80,8 +80,7 @@ class TideFactory
      */
     public function createFromCreationRequest(Flow $flow, TideCreationRequest $creationRequest)
     {
-        $context = $flow->getContext();
-        $repository = $context->getCodeRepository();
+        $repository = $flow->getCodeRepository();
         if (null == ($sha1 = $creationRequest->getSha1())) {
             $sha1 = $this->commitResolver->getHeadCommitOfBranch(FlowView::fromFlow($flow), $creationRequest->getBranch());
         }
