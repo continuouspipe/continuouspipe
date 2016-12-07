@@ -16,6 +16,9 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="security.user_repository" />
         </service>
+        <service id="river.flow.projections.flat_flow_repository" class="ContinuousPipe\River\Flow\Projections\FromFlowAggregateFlatFlowRepository">
+            <argument type="service" id="river.repository.flow" />
+        </service>
         <service id="river.code_repository.webhook_manager" class="ContinuousPipe\River\CodeRepository\WebHook\RepositoryWebHookManager">
             <argument type="service" id="repository_river.github.webhook_manager" />
             <argument type="service" id="router" />

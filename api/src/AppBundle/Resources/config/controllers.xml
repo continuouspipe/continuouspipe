@@ -72,6 +72,7 @@
 
         <service id="app.request.param_converter.flow" class="AppBundle\Request\ParamConverter\FlowParamConverter">
             <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
 
             <tag name="request.param_converter" converter="flow" />
         </service>

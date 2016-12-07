@@ -70,9 +70,9 @@ class FlowController
     /**
      * @Route("/teams/{team}/flows/{flow}/archive-logs", methods={"POST"}, name="admin_tides_archive_logs")
      * @ParamConverter("team", converter="team", options={"slug"="team"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="flow"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="flow", "flat"=true})
      */
-    public function archiveLogsAction(Team $team, Flow $flow)
+    public function archiveLogsAction(Team $team, Flow\Projections\FlatFlow $flow)
     {
         $this->commandBus->handle(new ArchiveFlowLogsCommand($flow->getUuid()));
 

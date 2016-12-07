@@ -2,6 +2,7 @@
 
 namespace AppBundle\Request\ParamConverter;
 
+use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Repository\FlowRepository;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -16,11 +17,18 @@ class FlowParamConverter implements ParamConverterInterface
     private $flowRepository;
 
     /**
-     * @param FlowRepository $flowRepository
+     * @var FlatFlowRepository
      */
-    public function __construct(FlowRepository $flowRepository)
+    private $flatFlowRepository;
+
+    /**
+     * @param FlowRepository $flowRepository
+     * @param FlatFlowRepository $flatFlowRepository
+     */
+    public function __construct(FlowRepository $flowRepository, FlatFlowRepository $flatFlowRepository)
     {
         $this->flowRepository = $flowRepository;
+        $this->flatFlowRepository = $flatFlowRepository;
     }
 
     /**
@@ -28,11 +36,17 @@ class FlowParamConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
-        $identifierKey = $configuration->getOptions()['identifier'];
+        $options = $configuration->getOptions();
+        $identifierKey = $options['identifier'];
         $identifier = $request->get($identifierKey);
 
         $uuid = Uuid::fromString($identifier);
-        $flow = $this->flowRepository->find($uuid);
+
+        if (isset($options['flat'])) {
+            $flow = $this->flatFlowRepository->find($uuid);
+        } else {
+            $flow = $this->flowRepository->find($uuid);
+        }
 
         $request->attributes->set($configuration->getName(), $flow);
     }
