@@ -5,10 +5,10 @@
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="ContinuousPipe\River\Flow\Projections\FlatFlow">
-        <id name="uuid" />
+        <id name="uuid" type="uuid" />
         <field name="configuration" type="json_array" />
 
-        <embedded name="repository" class="ContinuousPipe\River\AbstractCodeRepository" />
+        <embedded name="repository" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository" />
         <embedded name="team" class="ContinuousPipe\Security\Team\Team" />
         <embedded name="user" class="ContinuousPipe\Security\User\User" />
     </entity>

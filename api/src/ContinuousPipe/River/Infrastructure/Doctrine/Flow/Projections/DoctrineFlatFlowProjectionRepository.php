@@ -8,6 +8,7 @@ use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\Security\Team\Team;
 use Doctrine\ORM\EntityManager;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
@@ -43,7 +44,7 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
     public function findByTeam(Team $team) : array
     {
         return $this->getRepository()->findBy([
-            'team' => $team,
+            'team.slug' => $team->getSlug(),
         ]);
     }
 
@@ -53,7 +54,7 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
     public function findByCodeRepository(CodeRepository $repository) : array
     {
         return $this->getRepository()->findBy([
-            'repository' => $repository,
+            'repository.identifier' => $repository->getIdentifier(),
         ]);
     }
 

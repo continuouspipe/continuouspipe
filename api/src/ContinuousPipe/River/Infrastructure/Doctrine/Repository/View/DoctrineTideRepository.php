@@ -4,6 +4,9 @@ namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository\View;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
+use ContinuousPipe\River\FlowContext;
+use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\View\TideDto;
 use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository;
 use ContinuousPipe\River\Repository\FlowRepository;
@@ -25,18 +28,18 @@ class DoctrineTideRepository implements TideRepository
     private $entityManager;
 
     /**
-     * @var DoctrineFlowRepository
+     * @var FlatFlowRepository
      */
-    private $doctrineFlowRepository;
+    private $flowRepository;
 
     /**
      * @param EntityManager  $entityManager
-     * @param FlowRepository $doctrineFlowRepository
+     * @param FlatFlowRepository $flowRepository
      */
-    public function __construct(EntityManager $entityManager, FlowRepository $doctrineFlowRepository)
+    public function __construct(EntityManager $entityManager, FlatFlowRepository $flowRepository)
     {
         $this->entityManager = $entityManager;
-        $this->doctrineFlowRepository = $doctrineFlowRepository;
+        $this->flowRepository = $flowRepository;
     }
 
     /**
@@ -98,7 +101,23 @@ class DoctrineTideRepository implements TideRepository
             $dto = $this->findDto($tide->getUuid());
             $dto->merge($tide);
         } catch (TideNotFound $e) {
-            $flowDto = $this->doctrineFlowRepository->getDtoByUuid($tide->getFlow()->getUuid());
+            $flow = $this->flowRepository->find($tide->getFlow()->getUuid());
+
+            $flowDto = new FlowDto();
+            $flowDto->context = FlowContext::createFlow(
+                $flow->getUuid(),
+                $flow->getTeam(),
+                $flow->getUser(),
+                $flow->getRepository(),
+                $flow->getConfiguration()
+            );
+            $flowDto->repositoryIdentifier = $flow->getRepository()->getIdentifier();
+            $flowDto->repositoryType = $flow->getRepository()->getType();
+            $flowDto->teamSlug = $flow->getTeam()->getSlug();
+            $flowDto->userUsername = $flow->getUser()->getUsername();
+            $flowDto->uuid = $flow->getUuid()->toString();
+
+            $flowDto = $this->entityManager->merge($flowDto);
 
             $dto = TideDto::fromTide($tide, $flowDto);
         }
@@ -203,11 +222,13 @@ class DoctrineTideRepository implements TideRepository
     private function dtoToTide(TideDto $tideDto)
     {
         $wrappedTide = $tideDto->getTide();
-        $flow = $this->doctrineFlowRepository->flowFromDto($tideDto->getFlow());
+        $flow = $this->flowRepository->find(Uuid::fromString(
+            $tideDto->getFlow()->uuid
+        ));
 
         $tide = Tide::create(
             Uuid::fromString($tideDto->getUuid()),
-            Flow\Projections\FlatFlow::fromFlow($flow),
+            $flow,
             $wrappedTide->getCodeReference(),
             TreeLog::fromId($wrappedTide->getLogId()),
             $wrappedTide->getTeam(),

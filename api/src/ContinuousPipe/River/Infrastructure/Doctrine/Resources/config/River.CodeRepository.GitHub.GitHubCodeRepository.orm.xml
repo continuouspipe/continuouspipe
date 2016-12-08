@@ -5,6 +5,7 @@
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <embeddable name="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository">
+        <field name="identifier" type="string" />
         <field name="address" type="string" />
         <field name="organisation" type="string" />
         <field name="name" type="string" />
