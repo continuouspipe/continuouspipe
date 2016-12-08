@@ -7,7 +7,7 @@ use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
 
 /**
- * @deprecated This should be removed by the Flow aggregate.
+ * @deprecated This should be removed by the Flow aggregate
  */
 class FlowContext implements Context
 {

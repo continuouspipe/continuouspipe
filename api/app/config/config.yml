@@ -66,7 +66,7 @@ doctrine:
         types:
             b64Object: ContinuousPipe\River\Infrastructure\Doctrine\Type\Base64Object
             datetime: ContinuousPipe\River\Infrastructure\Doctrine\Type\UTCDateTimeType
-            uuid: Ramsey\Uuid\Doctrine\UuidType
+            uuid:  Ramsey\Uuid\Doctrine\UuidType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"

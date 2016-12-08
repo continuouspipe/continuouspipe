@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Flow\Request;
 
 use JMS\Serializer\Annotation as JMS;
 
-class FlowCreationRequest extends FlowUpdateRequest
+class FlowCreationRequest
 {
     /**
      * @JMS\Type("string")

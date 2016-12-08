@@ -9,6 +9,7 @@ api:
         - blackfire
         - tideways
         - redis
+        - eventstore
     environment:
         - SENTRY_DSN=http://88f4608cec7f48cfbea4113626266785:ad54b9d69c984fc69e3933a961f434c2@sentry.tools.sroze.io/9
         - RIVER_UI_URL=http://ui_ui.docker
@@ -32,6 +33,7 @@ worker:
         - rabbitmq
         - redis
         - tideways
+        - eventstore
     expose:
         - 80
     environment:
@@ -78,3 +80,13 @@ redis:
     image: redis:alpine
     expose:
         - 6379
+
+eventstore:
+    image: docker.io/eventstore/eventstore:release-3.8.1
+    environment:
+        - EVENTSTORE_RUN_PROJECTIONS=None
+    expose:
+        - 1111
+        - 1112
+        - 2113
+        - 2114

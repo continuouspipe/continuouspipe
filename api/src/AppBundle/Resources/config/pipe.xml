@@ -26,7 +26,7 @@
         </service>
 
         <service id="river.pipe.deployment_request_enhancer.replace_deployed_endpoints" class="ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\ReplaceDeployedEndpointsVariables">
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
         </service>
 
         <service id="river.pipe.deployment_request_enhancer" alias="river.pipe.deployment_request_enhancer.replace_deployed_endpoints" />

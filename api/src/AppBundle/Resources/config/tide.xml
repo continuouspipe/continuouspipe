@@ -19,12 +19,12 @@
         </service>
 
         <service id="river.repository.tide" class="ContinuousPipe\River\Repository\EventBusTideRepository">
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="river.tide_factory" />
         </service>
 
         <service id="river.tide_summary_creator" class="ContinuousPipe\River\Tide\TideSummaryCreator">
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="river.repository.tide" />
         </service>
 
@@ -109,7 +109,7 @@
 
         <service id="river.view.tide_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\View\DoctrineTideRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.repository.flow.deprecated.doctrine" />
         </service>
 
         <service id="river.view.listener.tide_created" class="ContinuousPipe\River\View\EventListener\TideCreatedListener">

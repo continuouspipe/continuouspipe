@@ -66,6 +66,37 @@ final class Flow
     }
 
     /**
+     * @param UuidInterface  $uuid
+     * @param Team           $team
+     * @param User           $user
+     * @param CodeRepository $codeRepository
+     *
+     * @return Flow
+     */
+    public static function create(UuidInterface $uuid, Team $team, User $user, CodeRepository $codeRepository)
+    {
+        $event = new FlowCreated($uuid, $team, $user, $codeRepository);
+
+        $flow = self::fromEvents([$event]);
+        $flow->raise($event);
+
+        return $flow;
+    }
+
+    /**
+     * @param array $configuration
+     */
+    public function update(array $configuration)
+    {
+        $this->raise(
+            new FlowConfigurationUpdated(
+                $this->uuid,
+                $configuration
+            )
+        );
+    }
+
+    /**
      * @param FlowCreated $event
      */
     public function applyFlowCreated(FlowCreated $event)

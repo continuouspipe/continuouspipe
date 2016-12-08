@@ -6,25 +6,34 @@ use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class FlowCreated implements FlowEvent
 {
     /**
+     * @JMS\Type("uuid")
+     *
      * @var UuidInterface
      */
     private $flowUuid;
 
     /**
+     * @JMS\Type("ContinuousPipe\Security\Team\Team")
+     *
      * @var Team
      */
     private $team;
 
     /**
+     * @JMS\Type("ContinuousPipe\Security\User\User")
+     *
      * @var User
      */
     private $user;
 
     /**
+     * @JMS\Type("ContinuousPipe\River\AbstractCodeRepository")
+     *
      * @var CodeRepository
      */
     private $codeRepository;

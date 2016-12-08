@@ -5,8 +5,8 @@
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <embeddable name="ContinuousPipe\Security\Team\Team">
-        <id name="slug" type="string" />
-        <field name="name" type="string" />
+        <field name="slug" type="string" />
+        <field name="name" type="string" nullable="true" />
         <field name="bucketUuid" type="uuid" />
     </embeddable>
 </doctrine-mapping>

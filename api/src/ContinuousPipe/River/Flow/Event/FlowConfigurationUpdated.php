@@ -3,15 +3,20 @@
 namespace ContinuousPipe\River\Flow\Event;
 
 use Ramsey\Uuid\UuidInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class FlowConfigurationUpdated implements FlowEvent
 {
     /**
+     * @JMS\Type("uuid")
+     *
      * @var UuidInterface
      */
     private $flowUuid;
 
     /**
+     * @JMS\Type("array")
+     *
      * @var array
      */
     private $configuration;

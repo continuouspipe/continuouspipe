@@ -5,8 +5,8 @@
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <embeddable name="ContinuousPipe\Security\User\User">
-        <id name="username" type="string" />
-        <field name="email" type="string" />
+        <field name="username" type="string" />
+        <field name="email" type="string" nullable="true" />
         <field name="bucketUuid" type="uuid" />
         <field name="roles" type="json_array" />
     </embeddable>

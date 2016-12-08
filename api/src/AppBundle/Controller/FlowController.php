@@ -85,9 +85,7 @@ class FlowController
             return \FOS\RestBundle\View\View::create($errors->get(0), 400);
         }
 
-        $flow = $this->flowFactory->fromCreationRequest($team, $creationRequest);
-
-        return FlowView::fromFlow($flow);
+        return $this->flowFactory->fromCreationRequest($team, $creationRequest);
     }
 
     /**
@@ -130,9 +128,7 @@ class FlowController
      */
     public function updateAction(Flow $flow, Flow\Request\FlowUpdateRequest $updateRequest)
     {
-        $flow = $this->flowFactory->update($flow, $updateRequest);
-
-        return FlowView::fromFlow($flow);
+        return $this->flowFactory->update($flow, $updateRequest);
     }
 
     /**

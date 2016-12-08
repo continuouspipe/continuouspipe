@@ -10,6 +10,6 @@
             <discriminator-mapping value="github" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository" />
         </discriminator-map>
 
-        <id name="identifier" />
+        <field name="identifier" />
     </embeddable>
 </doctrine-mapping>

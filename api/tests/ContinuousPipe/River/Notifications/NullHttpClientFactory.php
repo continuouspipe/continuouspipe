@@ -3,29 +3,29 @@
 namespace ContinuousPipe\River\Notifications;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 
 class NullHttpClientFactory
 {
     public static function create()
     {
-        $client = new Client();
+        $handler = HandlerStack::create(
+            new MockHandler([
+                new Response(200, ['X-Foo' => 'Bar']),
+                new Response(200, ['X-Foo' => 'Bar']),
+                new Response(200, ['X-Foo' => 'Bar']),
+                new Response(200, ['X-Foo' => 'Bar']),
+                new Response(200, ['X-Foo' => 'Bar']),
+                new Response(200, ['X-Foo' => 'Bar']),
+                new Response(200, ['X-Foo' => 'Bar']),
+                new Response(200, ['X-Foo' => 'Bar']),
+            ])
+        );
 
-        $mock = new Mock([
-            new Response(200, ['X-Foo' => 'Bar']),
-            new Response(200, ['X-Foo' => 'Bar']),
-            new Response(200, ['X-Foo' => 'Bar']),
-            new Response(200, ['X-Foo' => 'Bar']),
-            new Response(200, ['X-Foo' => 'Bar']),
-            new Response(200, ['X-Foo' => 'Bar']),
-            new Response(200, ['X-Foo' => 'Bar']),
-            new Response(200, ['X-Foo' => 'Bar']),
+        return new Client([
+            'handler' => $handler,
         ]);
-
-        // Add the mock subscriber to the client.
-        $client->getEmitter()->attach($mock);
-
-        return $client;
     }
 }

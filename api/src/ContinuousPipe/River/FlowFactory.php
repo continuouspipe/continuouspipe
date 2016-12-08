@@ -2,11 +2,11 @@
 
 namespace ContinuousPipe\River;
 
-use ContinuousPipe\River\Event\BeforeFlowSave;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Flow\Request\FlowCreationRequest;
 use ContinuousPipe\River\Flow\Request\FlowUpdateRequest;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
-use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Authenticator\UserContext;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
@@ -24,33 +24,35 @@ class FlowFactory
      * @var CodeRepositoryRepository
      */
     private $codeRepositoryRepository;
+
     /**
      * @var MessageBus
      */
     private $eventBus;
+
     /**
-     * @var FlowRepository
+     * @var FlatFlowRepository
      */
-    private $flowRepository;
+    private $flatFlowRepository;
 
     /**
      * @param UserContext              $userContext
      * @param CodeRepositoryRepository $codeRepositoryRepository
      * @param MessageBus               $eventBus
-     * @param FlowRepository           $flowRepository
+     * @param FlatFlowRepository       $flatFlowRepository
      */
-    public function __construct(UserContext $userContext, CodeRepositoryRepository $codeRepositoryRepository, MessageBus $eventBus, FlowRepository $flowRepository)
+    public function __construct(UserContext $userContext, CodeRepositoryRepository $codeRepositoryRepository, MessageBus $eventBus, FlatFlowRepository $flatFlowRepository)
     {
         $this->userContext = $userContext;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
         $this->eventBus = $eventBus;
-        $this->flowRepository = $flowRepository;
+        $this->flatFlowRepository = $flatFlowRepository;
     }
 
     /**
      * @param FlowCreationRequest $creationRequest
      *
-     * @return Flow
+     * @return FlatFlow
      */
     public function fromCreationRequest(Team $team, FlowCreationRequest $creationRequest)
     {
@@ -60,40 +62,37 @@ class FlowFactory
             $uuid = Uuid::uuid1();
         }
 
-        $flowContext = FlowContext::createFlow(
+        $flow = Flow::create(
             $uuid,
             $team,
             $this->userContext->getCurrent(),
-            $this->codeRepositoryRepository->findByIdentifier($creationRequest->getRepository()),
-            $this->parseConfiguration($creationRequest)
+            $this->codeRepositoryRepository->findByIdentifier($creationRequest->getRepository())
         );
 
-        $flow = Flow::fromContext($flowContext);
-        $this->eventBus->handle(new BeforeFlowSave($flow));
-        $flow = $this->flowRepository->save($flow);
+        foreach ($flow->raisedEvents() as $event) {
+            $this->eventBus->handle($event);
+        }
 
-        return $flow;
+        return $this->flatFlowRepository->find($uuid);
     }
 
     /**
      * @param Flow              $flow
      * @param FlowUpdateRequest $updateRequest
      *
-     * @return Flow
+     * @return FlatFlow
      */
     public function update(Flow $flow, FlowUpdateRequest $updateRequest)
     {
-        $flow = Flow::fromContext(FlowContext::createFlow(
-            $flow->getUuid(),
-            $flow->getTeam(),
-            $flow->getUser(),
-            $flow->getCodeRepository(),
+        $flow->update(
             $this->parseConfiguration($updateRequest)
-        ));
+        );
 
-        $this->flowRepository->save($flow);
+        foreach ($flow->raisedEvents() as $event) {
+            $this->eventBus->handle($event);
+        }
 
-        return $flow;
+        return $this->flatFlowRepository->find($flow->getUuid());
     }
 
     /**

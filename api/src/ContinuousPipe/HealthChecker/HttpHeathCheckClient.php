@@ -46,7 +46,7 @@ final class HttpHeathCheckClient implements HealthCheckerClient
         }
 
         try {
-            $response = $this->httpClient->post($this->baseUrl.'/diagnose-cluster', [
+            $response = $this->httpClient->request('post', $this->baseUrl.'/diagnose-cluster', [
                 'json' => [
                     'address' => $cluster->getAddress(),
                     'username' => $cluster->getUsername(),

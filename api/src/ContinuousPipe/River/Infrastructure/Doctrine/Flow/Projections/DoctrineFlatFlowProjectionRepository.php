@@ -53,7 +53,7 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
     public function findByCodeRepository(CodeRepository $repository) : array
     {
         return $this->getRepository()->findBy([
-            'repositroy' => $repository,
+            'repository' => $repository,
         ]);
     }
 
@@ -73,6 +73,8 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
      */
     public function save(FlatFlow $flow)
     {
+        $flow = $this->entityManager->merge($flow);
+
         $this->entityManager->persist($flow);
         $this->entityManager->flush($flow);
     }

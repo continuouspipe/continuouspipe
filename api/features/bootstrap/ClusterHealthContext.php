@@ -2,19 +2,14 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use GuzzleHttp\Client;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Stream\Stream;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class ClusterHealthContext implements Context
 {
-    /**
-     * @var Client
-     */
-    private $clusterHealthCheckHttpClient;
 
     /**
      * @var KernelInterface
@@ -22,13 +17,19 @@ class ClusterHealthContext implements Context
     private $kernel;
 
     /**
+     * @var HandlerStack
+     */
+    private $httpHandlerStack;
+
+    /**
      * @var \Symfony\Component\HttpFoundation\Response|null
      */
     private $response;
 
-    public function __construct(Client $clusterHealthCheckHttpClient, KernelInterface $kernel)
+
+    public function __construct(HandlerStack $httpHandlerStack, KernelInterface $kernel)
     {
-        $this->clusterHealthCheckHttpClient = $clusterHealthCheckHttpClient;
+        $this->httpHandlerStack = $httpHandlerStack;
         $this->kernel = $kernel;
     }
 
@@ -37,8 +38,8 @@ class ClusterHealthContext implements Context
      */
     public function theClusterWithTheAddressWillHaveTheFollowingProblems($address, TableNode $table)
     {
-        $this->clusterHealthCheckHttpClient->getEmitter()->attach(new Mock([
-            new Response(200, [], Stream::factory(json_encode($table->getHash())))
+        $this->httpHandlerStack->setHandler(new MockHandler([
+            new Response(200, [], json_encode($table->getHash())),
         ]));
     }
 

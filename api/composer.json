@@ -30,7 +30,7 @@
         "sroze/log-stream": "~0.3.1",
         "tolerance/tolerance": "dev-master",
         "continuous-pipe/model": "~2.2.8",
-        "continuous-pipe/security": "~2.1.4",
+        "continuous-pipe/security": "~2.2.1",
         "simple-bus/rabbitmq-bundle-bridge": "dev-allow-the-producer-interface",
         "simple-bus/jms-serializer-bundle-bridge": "^2.0",
         "knplabs/github-api": "^1.5",
@@ -42,7 +42,12 @@
         "rhumsaa/uuid": "^2.8",
         "predis/predis": "^1.1",
         "malkusch/lock": "^1.0",
-        "ramsey/uuid-doctrine": "^1.2"
+        "ramsey/uuid-doctrine": "^1.2",
+        "guzzlehttp/guzzle": "~6.0",
+        "beberlei/metrics": "^2.3",
+        "jms/aop-bundle": "^1.2",
+        "dbellettini/eventstore-client": "^0.8.0",
+        "mhujer/jms-serializer-uuid-bundle": "^1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -97,7 +102,8 @@
                 "redis_host": "REDIS_HOST",
                 "k8s_watcher_url": "K8S_WATCHER_URL",
                 "zipkin_base_url": "ZIPKIN_BASE_URL",
-                "k8s_health_checker_url": "K8S_HEALTH_CHECKER_URL"
+                "k8s_health_checker_url": "K8S_HEALTH_CHECKER_URL",
+                "event_store_host": "EVENT_STORE_HOST"
             }
         }]
     },

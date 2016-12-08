@@ -11,7 +11,6 @@ use ContinuousPipe\River\Event\GitHub\PullRequestOpened;
 use ContinuousPipe\River\Event\GitHub\PullRequestSynchronized;
 use ContinuousPipe\River\Event\GitHub\StatusUpdated;
 use ContinuousPipe\River\Notifications\GitHub\CommitStatus\GitHubCommitStatusNotifier;
-use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\View;
 use GitHub\WebHook\Event\PullRequestEvent;
 use GitHub\WebHook\Event\PushEvent;
@@ -38,11 +37,6 @@ class GitHubWebHookHandler
     private $tideViewRepository;
 
     /**
-     * @var FlowRepository
-     */
-    private $flowRepository;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -51,20 +45,17 @@ class GitHubWebHookHandler
      * @param CodeReferenceResolver $codeReferenceResolver
      * @param MessageBus            $eventBus
      * @param View\TideRepository   $tideViewRepository
-     * @param FlowRepository        $flowRepository
      * @param LoggerInterface       $logger
      */
     public function __construct(
         CodeReferenceResolver $codeReferenceResolver,
         MessageBus $eventBus,
         View\TideRepository $tideViewRepository,
-        FlowRepository $flowRepository,
         LoggerInterface $logger
     ) {
         $this->codeReferenceResolver = $codeReferenceResolver;
         $this->eventBus = $eventBus;
         $this->tideViewRepository = $tideViewRepository;
-        $this->flowRepository = $flowRepository;
         $this->logger = $logger;
     }
 

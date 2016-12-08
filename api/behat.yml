@@ -8,7 +8,7 @@ default:
                 - TideContext:
                     - @command_bus
                     - @event_bus
-                    - @river.event_store
+                    - @river.tide_event_store
                     - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
@@ -26,7 +26,7 @@ default:
                     - @river.notifications.notifier.github.commit_status.traceable
                     - @river.github.pull_request_resolver
                     - @river.pipe_client
-                    - @river.event_store
+                    - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory
@@ -38,11 +38,12 @@ default:
                     - @river.pipe_client.fake
                     - @river.pipe_client
                     - @authenticator.team_repository
+                    - @event_bus
                 - Task\BuildContext:
-                    - @river.event_store
+                    - @river.tide_event_store
                     - @event_bus
                 - Task\DeployContext:
-                    - @river.event_store
+                    - @river.tide_event_store
                     - @event_bus
                     - @river.pipe_client
                     - @river.task.deploy.naming.environment_strategy
@@ -69,7 +70,7 @@ default:
                     - @river.web_hooks.client.traceable
                     - @river.web_hooks.client.hookable
                 - ClusterHealthContext:
-                    - @river.k8s_health_checker.http.guzzle_client
+                    - @river.k8s_health_checker.http.guzzle_client.stack
                     - @kernel
 
     extensions:
@@ -96,10 +97,11 @@ smoke:
                     - @river.pipe_client.fake
                     - @river.pipe_client
                     - @authenticator.team_repository
+                    - @event_bus
                 - TideContext:
                     - @command_bus
                     - @event_bus
-                    - @river.event_store
+                    - @river.tide_event_store
                     - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
@@ -112,7 +114,7 @@ smoke:
                     - @river.notifications.notifier.github.commit_status.traceable
                     - @river.github.pull_request_resolver
                     - @river.pipe_client
-                    - @river.event_store
+                    - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory

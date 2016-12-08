@@ -12,18 +12,53 @@
             <argument type="service" id="authenticator.bucket_repository" />
         </service>
 
-        <service id="river.repository.flow" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository">
+        <service id="river.repository.flow.deprecated.doctrine" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="security.user_repository" />
         </service>
-        <service id="river.flow.projections.flat_flow_repository" class="ContinuousPipe\River\Flow\Projections\FromFlowAggregateFlatFlowRepository">
+
+        <service id="river.event_store.http_adapter" class="ContinuousPipe\River\EventStore\HttpEventStoreAdapter">
+            <argument type="service" id="jms_serializer.serializer"/>
+            <argument>%event_store_host%</argument>
+        </service>
+
+        <service id="river.event_store" alias="river.event_store.http_adapter" />
+
+        <service id="river.repository.flow.event_based" class="ContinuousPipe\River\Flow\EventBasedFlowRepository">
+            <argument type="service" id="river.event_store.http_adapter" />
+        </service>
+
+        <service id="river.repository.flow" alias="river.repository.flow.event_based" />
+
+        <service id="river.flow.projections.flat_flow_repository.from_aggregate" class="ContinuousPipe\River\Flow\Projections\FromFlowAggregateFlatFlowRepository">
             <argument type="service" id="river.repository.flow" />
         </service>
+
+        <service id="river.flow.projections.flat_flow_repository.doctrine" class="ContinuousPipe\River\Infrastructure\Doctrine\Flow\Projections\DoctrineFlatFlowProjectionRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="river.flow.projections.flat_flow_repository" alias="river.flow.projections.flat_flow_repository.doctrine" />
+
         <service id="river.flow_factory" class="ContinuousPipe\River\FlowFactory">
             <argument type="service" id="security.user_context" />
             <argument type="service" id="repository_river.code_repository_repository" />
             <argument type="service" id="event_bus"/>
-            <argument type="service" id="river.repository.flow"/>
+            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
+        </service>
+
+        <service id="river.flow.projections.flat_flow.save_on_event" class="ContinuousPipe\River\Flow\Projections\Generation\SaveFlatFlowOnFlowEvent">
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.repository.flow" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated" />
+        </service>
+
+        <service id="river.event_bus.middleware.flow_event_store" class="ContinuousPipe\River\Flow\Event\Storage\StoreFlowEventsMiddleware">
+            <argument type="service" id="river.event_store" />
+
+            <tag name="event_bus_middleware" priority="10" />
         </service>
     </services>
 </container>

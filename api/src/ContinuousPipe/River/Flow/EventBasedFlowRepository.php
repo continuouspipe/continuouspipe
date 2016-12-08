@@ -3,20 +3,37 @@
 namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\EventStore\EventStore;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
 
 class EventBasedFlowRepository implements FlowRepository
 {
+    private $eventStore;
+
+    public function __construct(EventStore $eventStore)
+    {
+        $this->eventStore = $eventStore;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function find(Uuid $uuid)
     {
-        // TODO: Find from events. If not found, then ask the "legacy" flow DTO, create and
-        // store events from them.
+        $events = $this->eventStore->read(EventStream::fromUuid($uuid));
+
+        if (0 === count($events)) {
+            throw new FlowNotFound(sprintf(
+                'No flow "%s" found',
+                (string) $uuid
+            ));
+        }
+
+        return Flow::fromEvents($events);
     }
 
     /**
