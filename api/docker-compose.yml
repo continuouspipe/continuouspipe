@@ -86,7 +86,4 @@ eventstore:
     environment:
         - EVENTSTORE_RUN_PROJECTIONS=None
     expose:
-        - 1111
-        - 1112
         - 2113
-        - 2114
