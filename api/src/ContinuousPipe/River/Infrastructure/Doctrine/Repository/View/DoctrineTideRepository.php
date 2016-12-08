@@ -6,6 +6,7 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\View\TideDto;
 use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository;
+use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
@@ -29,10 +30,10 @@ class DoctrineTideRepository implements TideRepository
     private $doctrineFlowRepository;
 
     /**
-     * @param EntityManager          $entityManager
-     * @param DoctrineFlowRepository $doctrineFlowRepository
+     * @param EntityManager  $entityManager
+     * @param FlowRepository $doctrineFlowRepository
      */
-    public function __construct(EntityManager $entityManager, DoctrineFlowRepository $doctrineFlowRepository)
+    public function __construct(EntityManager $entityManager, FlowRepository $doctrineFlowRepository)
     {
         $this->entityManager = $entityManager;
         $this->doctrineFlowRepository = $doctrineFlowRepository;

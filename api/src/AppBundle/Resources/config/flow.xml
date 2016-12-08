@@ -30,8 +30,11 @@
 
         <service id="river.repository.flow" alias="river.repository.flow.event_based" />
 
-        <service id="river.flow.projections.flat_flow_repository.from_aggregate" class="ContinuousPipe\River\Flow\Projections\FromFlowAggregateFlatFlowRepository">
-            <argument type="service" id="river.repository.flow" />
+        <service id="river.flow.migrations.to_event_sourced.delegate_to_doctrine_flow_repository_if_not_found"
+                 class="ContinuousPipe\River\Flow\Migrations\ToEventSourced\DelegateIfNotFoundFlowRepository"
+                 decorates="river.repository.flow">
+            <argument type="service" id="river.flow.migrations.to_event_sourced.delegate_to_doctrine_flow_repository_if_not_found.inner" />
+            <argument type="service" id="river.repository.flow.deprecated.doctrine" />
         </service>
 
         <service id="river.flow.projections.flat_flow_repository.doctrine" class="ContinuousPipe\River\Infrastructure\Doctrine\Flow\Projections\DoctrineFlatFlowProjectionRepository">
@@ -39,6 +42,13 @@
         </service>
 
         <service id="river.flow.projections.flat_flow_repository" alias="river.flow.projections.flat_flow_repository.doctrine" />
+
+        <service id="river.flow.projections.flat_flow_repository.from_aggregate"
+                 class="ContinuousPipe\River\Flow\Migrations\ToEventSourced\FromFlowAggregateFlatFlowRepository"
+                 decorates="river.flow.projections.flat_flow_repository">
+            <argument type="service" id="river.flow.projections.flat_flow_repository.from_aggregate.inner" />
+            <argument type="service" id="river.repository.flow" />
+        </service>
 
         <service id="river.flow_factory" class="ContinuousPipe\River\FlowFactory">
             <argument type="service" id="security.user_context" />
