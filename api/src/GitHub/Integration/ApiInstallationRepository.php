@@ -81,9 +81,8 @@ class ApiInstallationRepository implements InstallationRepository
      */
     public function findByRepository(GitHubCodeRepository $codeRepository)
     {
-        $gitHubRepository = $codeRepository->getGitHubRepository();
-        $matchingInstallations = array_filter($this->findAll(), function (Installation $installation) use ($gitHubRepository) {
-            return $installation->getAccount()->getLogin() == $gitHubRepository->getOwner()->getLogin();
+        $matchingInstallations = array_filter($this->findAll(), function (Installation $installation) use ($codeRepository) {
+            return $installation->getAccount()->getLogin() == $codeRepository->getOrganisation();
         });
 
         if (count($matchingInstallations) == 0) {
@@ -96,8 +95,8 @@ class ApiInstallationRepository implements InstallationRepository
 
             try {
                 $client->repo()->show(
-                    $gitHubRepository->getOwner()->getLogin(),
-                    $gitHubRepository->getName()
+                    $codeRepository->getOrganisation(),
+                    $codeRepository->getName()
                 );
 
                 return $installation;

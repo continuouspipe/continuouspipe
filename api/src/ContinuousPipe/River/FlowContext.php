@@ -6,6 +6,9 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * @deprecated This should be removed by the Flow aggregate.
+ */
 class FlowContext implements Context
 {
     const CODE_REPOSITORY_KEY = 'codeRepository';

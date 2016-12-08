@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryNotFound;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
@@ -86,7 +87,7 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
 
         $repository = $this->serializer->deserialize($rawRepository, Repository::class, 'json');
 
-        return new GitHubCodeRepository($repository);
+        return GitHubCodeRepository::fromRepository($repository);
     }
 
     /**
@@ -109,7 +110,7 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
         );
 
         return array_map(function (Repository $repository) {
-            return new GitHubCodeRepository($repository);
+            return GitHubCodeRepository::fromRepository($repository);
         }, $repositories);
     }
 }

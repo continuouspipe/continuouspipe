@@ -161,10 +161,9 @@ class ContextFactory
         }
 
         try {
-            $repository = $codeRepository->getGitHubRepository();
             $labels = $client->issue()->labels()->all(
-                $repository->getOwner()->getLogin(),
-                $repository->getName(),
+                $codeRepository->getOrganisation(),
+                $codeRepository->getName(),
                 $pullRequest->getNumber()
             );
         } catch (\Exception $e) {

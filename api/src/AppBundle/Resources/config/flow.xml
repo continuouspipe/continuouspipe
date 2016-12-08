@@ -19,15 +19,11 @@
         <service id="river.flow.projections.flat_flow_repository" class="ContinuousPipe\River\Flow\Projections\FromFlowAggregateFlatFlowRepository">
             <argument type="service" id="river.repository.flow" />
         </service>
-        <service id="river.code_repository.webhook_manager" class="ContinuousPipe\River\CodeRepository\WebHook\RepositoryWebHookManager">
-            <argument type="service" id="repository_river.github.webhook_manager" />
-            <argument type="service" id="router" />
-            <argument>%github_secret%</argument>
-            <argument>%river_public_url%</argument>
-        </service>
         <service id="river.flow_factory" class="ContinuousPipe\River\FlowFactory">
             <argument type="service" id="security.user_context" />
             <argument type="service" id="repository_river.code_repository_repository" />
+            <argument type="service" id="event_bus"/>
+            <argument type="service" id="river.repository.flow"/>
         </service>
     </services>
 </container>

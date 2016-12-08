@@ -4,7 +4,8 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Repository\FlowRepository;
 use GitHub\WebHook\GitHubRequest;
 use Psr\Log\LoggerInterface;
@@ -26,7 +27,7 @@ class GitHubController
     private $commandBus;
 
     /**
-     * @var FlowRepository
+     * @var FlatFlowRepository
      */
     private $flowRepository;
 
@@ -36,11 +37,11 @@ class GitHubController
     private $logger;
 
     /**
-     * @param MessageBus      $commandBus
-     * @param FlowRepository  $flowRepository
-     * @param LoggerInterface $logger
+     * @param MessageBus         $commandBus
+     * @param FlatFlowRepository $flowRepository
+     * @param LoggerInterface    $logger
      */
-    public function __construct(MessageBus $commandBus, FlowRepository $flowRepository, LoggerInterface $logger)
+    public function __construct(MessageBus $commandBus, FlatFlowRepository $flowRepository, LoggerInterface $logger)
     {
         $this->commandBus = $commandBus;
         $this->flowRepository = $flowRepository;
@@ -53,7 +54,7 @@ class GitHubController
      * @ParamConverter("request", converter="githubRequest")
      * @View
      */
-    public function flowWebHookAction(Flow\Projections\FlatFlow $flow, GitHubRequest $request)
+    public function flowWebHookAction(FlatFlow $flow, GitHubRequest $request)
     {
         $this->commandBus->handle(new HandleGitHubEvent(
             $flow->getUuid(),
@@ -68,7 +69,7 @@ class GitHubController
      */
     public function integrationAction(GitHubRequest $request)
     {
-        $repository = new GitHubCodeRepository($request->getEvent()->getRepository());
+        $repository = GitHubCodeRepository::fromRepository($request->getEvent()->getRepository());
         $flows = $this->flowRepository->findByCodeRepository($repository);
 
         if (empty($flows)) {

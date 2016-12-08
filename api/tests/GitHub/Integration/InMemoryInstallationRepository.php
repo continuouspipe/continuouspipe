@@ -25,7 +25,7 @@ class InMemoryInstallationRepository implements InstallationRepository
     public function findByRepository(GitHubCodeRepository $codeRepository)
     {
         $matchingInstallations = array_filter($this->installations, function(Installation $installation) use ($codeRepository) {
-            return $installation->getAccount()->getLogin() == $codeRepository->getGitHubRepository()->getOwner()->getLogin();
+            return $installation->getAccount()->getLogin() == $codeRepository->getOrganisation();
         });
 
         if (count($matchingInstallations) == 0) {

@@ -2,12 +2,15 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\River\Event\BeforeFlowSave;
 use ContinuousPipe\River\Flow\Request\FlowCreationRequest;
 use ContinuousPipe\River\Flow\Request\FlowUpdateRequest;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
+use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Authenticator\UserContext;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
+use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\Yaml\Yaml;
 
 class FlowFactory
@@ -21,15 +24,27 @@ class FlowFactory
      * @var CodeRepositoryRepository
      */
     private $codeRepositoryRepository;
+    /**
+     * @var MessageBus
+     */
+    private $eventBus;
+    /**
+     * @var FlowRepository
+     */
+    private $flowRepository;
 
     /**
      * @param UserContext              $userContext
      * @param CodeRepositoryRepository $codeRepositoryRepository
+     * @param MessageBus               $eventBus
+     * @param FlowRepository           $flowRepository
      */
-    public function __construct(UserContext $userContext, CodeRepositoryRepository $codeRepositoryRepository)
+    public function __construct(UserContext $userContext, CodeRepositoryRepository $codeRepositoryRepository, MessageBus $eventBus, FlowRepository $flowRepository)
     {
         $this->userContext = $userContext;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
+        $this->eventBus = $eventBus;
+        $this->flowRepository = $flowRepository;
     }
 
     /**
@@ -53,7 +68,11 @@ class FlowFactory
             $this->parseConfiguration($creationRequest)
         );
 
-        return new Flow($flowContext);
+        $flow = Flow::fromContext($flowContext);
+        $this->eventBus->handle(new BeforeFlowSave($flow));
+        $flow = $this->flowRepository->save($flow);
+
+        return $flow;
     }
 
     /**
@@ -62,15 +81,19 @@ class FlowFactory
      *
      * @return Flow
      */
-    public function fromUpdateRequest(Flow $flow, FlowUpdateRequest $updateRequest)
+    public function update(Flow $flow, FlowUpdateRequest $updateRequest)
     {
-        return new Flow(FlowContext::createFlow(
+        $flow = Flow::fromContext(FlowContext::createFlow(
             $flow->getUuid(),
             $flow->getTeam(),
             $flow->getUser(),
             $flow->getCodeRepository(),
             $this->parseConfiguration($updateRequest)
         ));
+
+        $this->flowRepository->save($flow);
+
+        return $flow;
     }
 
     /**

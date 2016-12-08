@@ -2,55 +2,110 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\River\EventBased\ApplyAndRaiseEventCapability;
+use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
+use ContinuousPipe\River\Flow\Event\FlowCreated;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
 
-class Flow
+final class Flow
 {
-    /**
-     * @var FlowContext
-     */
-    private $context;
+    use ApplyAndRaiseEventCapability;
 
     /**
-     * @param FlowContext $context
+     * @var UuidInterface
      */
-    public function __construct(FlowContext $context)
+    private $uuid;
+
+    /**
+     * @var Team
+     */
+    private $team;
+
+    /**
+     * @var User
+     */
+    private $user;
+
+    /**
+     * @var CodeRepository
+     */
+    private $codeRepository;
+
+    /**
+     * @var array
+     */
+    private $configuration = [];
+
+    private function __construct()
     {
-        $this->context = $context;
     }
 
     /**
-     * @return FlowContext
+     * @deprecated Should directly created the aggregate from the events
+     *
+     * @param FlowContext $context
+     *
+     * @return static
      */
-    public function getContext()
+    public static function fromContext(FlowContext $context)
     {
-        return $this->context;
+        return self::fromEvents([
+            new Flow\Event\FlowCreated(
+                $context->getFlowUuid(),
+                $context->getTeam(),
+                $context->getUser(),
+                $context->getCodeRepository()
+            ),
+            new Flow\Event\FlowConfigurationUpdated(
+                $context->getFlowUuid(),
+                $context->getConfiguration()
+            ),
+        ]);
+    }
+
+    /**
+     * @param FlowCreated $event
+     */
+    public function applyFlowCreated(FlowCreated $event)
+    {
+        $this->uuid = $event->getFlowUuid();
+        $this->team = $event->getTeam();
+        $this->user = $event->getUser();
+        $this->codeRepository = $event->getCodeRepository();
+    }
+
+    /**
+     * @param FlowConfigurationUpdated $event
+     */
+    public function applyFlowConfigurationUpdated(FlowConfigurationUpdated $event)
+    {
+        $this->configuration = $event->getConfiguration();
     }
 
     public function getUuid() : UuidInterface
     {
-        return $this->context->getFlowUuid();
+        return $this->uuid;
     }
 
     public function getTeam() : Team
     {
-        return $this->context->getTeam();
+        return $this->team;
     }
 
     public function getConfiguration() : array
     {
-        return $this->context->getConfiguration() ?: [];
+        return $this->configuration;
     }
 
     public function getCodeRepository() : CodeRepository
     {
-        return $this->context->getCodeRepository();
+        return $this->codeRepository;
     }
 
     public function getUser() : User
     {
-        return $this->context->getUser();
+        return $this->user;
     }
 }

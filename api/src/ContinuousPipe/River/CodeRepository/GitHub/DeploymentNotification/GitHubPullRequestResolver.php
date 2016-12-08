@@ -44,11 +44,12 @@ class GitHubPullRequestResolver implements PullRequestResolver
     }
 
     /**
+     * @param Client        $client
      * @param CodeReference $codeReference
      *
-     * @return \GitHub\WebHook\Model\Repository
+     * @return array
      */
-    private function getGitHubRepository(CodeReference $codeReference)
+    private function findPullRequestFromClient(Client $client, CodeReference $codeReference)
     {
         $repository = $codeReference->getRepository();
         if (!$repository instanceof GitHubCodeRepository) {
@@ -58,22 +59,9 @@ class GitHubPullRequestResolver implements PullRequestResolver
             ));
         }
 
-        return $repository->getGitHubRepository();
-    }
-
-    /**
-     * @param Client        $client
-     * @param CodeReference $codeReference
-     *
-     * @return array
-     */
-    private function findPullRequestFromClient(Client $client, CodeReference $codeReference)
-    {
-        $gitHubRepository = $this->getGitHubRepository($codeReference);
-
         $rawPullRequests = $client->pullRequests()->all(
-            $gitHubRepository->getOwner()->getLogin(),
-            $gitHubRepository->getName(),
+            $repository->getOrganisation(),
+            $repository->getName(),
             [
                 'state' => 'open',
             ]

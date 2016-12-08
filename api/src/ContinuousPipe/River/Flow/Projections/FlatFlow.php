@@ -33,11 +33,6 @@ class FlatFlow
     private $user;
 
     /**
-     * @var string
-     */
-    private $ymlConfiguration;
-
-    /**
      * @var array
      */
     private $configuration;
@@ -66,14 +61,14 @@ class FlatFlow
     }
 
     /**
-     * @param \ContinuousPipe\River\Flow $flow
-     * @param Tide[]                     $tides
+     * @param FlatFlow $flow
+     * @param Tide[]   $tides
      *
      * @return FlatFlow
      */
-    public static function fromFlowAndTides(\ContinuousPipe\River\Flow $flow, array $tides)
+    public static function fromFlowAndTides(FlatFlow $flow, array $tides)
     {
-        $view = self::fromFlow($flow);
+        $view = clone $flow;
         $view->tides = $tides;
 
         return $view;

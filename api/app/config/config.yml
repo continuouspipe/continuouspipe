@@ -66,6 +66,7 @@ doctrine:
         types:
             b64Object: ContinuousPipe\River\Infrastructure\Doctrine\Type\Base64Object
             datetime: ContinuousPipe\River\Infrastructure\Doctrine\Type\UTCDateTimeType
+            uuid: Ramsey\Uuid\Doctrine\UuidType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
@@ -81,7 +82,7 @@ doctrine:
                 type: xml
                 is_bundle: false
                 dir: '%kernel.root_dir%/../src/ContinuousPipe/River/Infrastructure/Doctrine/Resources/config'
-                prefix: ContinuousPipe\River
+                prefix: ContinuousPipe
 
 jms_serializer:
     metadata:
@@ -119,10 +120,6 @@ fos_rest:
             - { path: '^/(_profiler|admin)', priorities: ['html'] }
             - { path: '^/$', priorities: ['html'], fallback_format: html, prefer_extension: false }
             - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
-
-    exception:
-        messages:
-            'ContinuousPipe\River\CodeRepository\WebHook\CouldNotCreateWebHookException': true
 
 sensio_framework_extra:
     view:    { annotations: false }

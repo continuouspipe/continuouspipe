@@ -85,7 +85,7 @@ class CodeReferenceResolver
         }
 
         return new CodeReference(
-            new GitHubCodeRepository($repository),
+            GitHubCodeRepository::fromRepository($repository),
             $sha1,
             $branch
         );

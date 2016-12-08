@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository;
 
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\FlowContext;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
@@ -41,7 +42,13 @@ class DoctrineFlowRepository implements FlowRepository
      */
     public function save(Flow $flow)
     {
-        $flowContext = $flow->getContext();
+        $flowContext = FlowContext::createFlow(
+            $flow->getUuid(),
+            $flow->getTeam(),
+            $flow->getUser(),
+            $flow->getCodeRepository(),
+            $flow->getConfiguration()
+        );
 
         try {
             $dto = $this->getDtoByUuid($flowContext->getFlowUuid());
@@ -124,9 +131,7 @@ class DoctrineFlowRepository implements FlowRepository
      */
     public function flowFromDto(FlowDto $dto)
     {
-        $flow = new Flow($dto->context);
-
-        return $flow;
+        return Flow::fromContext($dto->context);
     }
 
     /**

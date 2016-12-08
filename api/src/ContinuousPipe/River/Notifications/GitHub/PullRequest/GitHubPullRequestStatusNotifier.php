@@ -90,18 +90,16 @@ class GitHubPullRequestStatusNotifier implements Notifier
             ));
         }
 
-        $gitHubRepository = $repository->getGitHubRepository();
-
         // Remove previous comments
-        $this->removePreviousComments($client, $gitHubRepository, $tide);
+        $this->removePreviousComments($client, $repository, $tide);
 
         $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($tide->getFlow(), $tide->getCodeReference());
 
         foreach ($pullRequests as $pullRequest) {
             // Create the new comment
             $comment = $client->issues()->comments()->create(
-                $gitHubRepository->getOwner()->getLogin(),
-                $gitHubRepository->getName(),
+                $repository->getOrganisation(),
+                $repository->getName(),
                 $pullRequest->getNumber(),
                 [
                     'body' => $this->getCommentContents($status),
@@ -133,11 +131,11 @@ class GitHubPullRequestStatusNotifier implements Notifier
     }
 
     /**
-     * @param Client     $client
-     * @param Repository $repository
-     * @param Tide       $tide
+     * @param Client               $client
+     * @param GitHubCodeRepository $repository
+     * @param Tide                 $tide
      */
-    private function removePreviousComments(Client $client, Repository $repository, Tide $tide)
+    private function removePreviousComments(Client $client, GitHubCodeRepository $repository, Tide $tide)
     {
         $tides = $this->tideRepository->findByBranch($tide->getFlow()->getUuid(), $tide->getCodeReference());
 
@@ -148,7 +146,7 @@ class GitHubPullRequestStatusNotifier implements Notifier
                 /* @var CommentedTideFeedback $event */
                 try {
                     $client->issues()->comments()->remove(
-                        $repository->getOwner()->getLogin(),
+                        $repository->getOrganisation(),
                         $repository->getName(),
                         $event->getCommentId()
                     );

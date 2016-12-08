@@ -52,7 +52,7 @@ class WizardContext implements Context
     public function iHaveTheFollowingRepositories(TableNode $repositories)
     {
         foreach ($repositories->getHash() as $repository) {
-            $this->codeRepositoryRepository->add(new GitHubCodeRepository(
+            $this->codeRepositoryRepository->add(GitHubCodeRepository::fromRepository(
                 new Repository(new \GitHub\WebHook\Model\User('foo'), $repository['repository'], 'url', false, $repository['repository'])
             ));
         }
@@ -64,7 +64,7 @@ class WizardContext implements Context
     public function theFollowingRepositoriesExistForOrganisations(TableNode $repositories)
     {
         foreach ($repositories->getHash() as $repository) {
-            $this->codeRepositoryRepository->addForOrganisation(new GitHubCodeRepository(
+            $this->codeRepositoryRepository->addForOrganisation(GitHubCodeRepository::fromRepository(
                 new Repository(new \GitHub\WebHook\Model\User('foo'), $repository['repository'], 'bar', false, $repository['repository'])
             ), $repository['organisation']);
         }
@@ -92,7 +92,7 @@ class WizardContext implements Context
     public function iShouldReceiveTheFollowingListOfRepositories(TableNode $expected)
     {
         $received = array_map(function ($repository) {
-            return $repository['repository']['name'];
+            return $repository['name'];
         }, json_decode($this->response->getContent(), true));
 
         foreach ($expected->getHash() as $repository) {

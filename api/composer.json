@@ -41,7 +41,8 @@
         "doctrine/doctrine-cache-bundle": "~1.3.0",
         "rhumsaa/uuid": "^2.8",
         "predis/predis": "^1.1",
-        "malkusch/lock": "^1.0"
+        "malkusch/lock": "^1.0",
+        "ramsey/uuid-doctrine": "^1.2"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
