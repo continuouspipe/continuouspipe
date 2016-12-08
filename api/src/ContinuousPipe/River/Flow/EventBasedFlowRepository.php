@@ -8,6 +8,7 @@ use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Team\Team;
+use EventStore\Exception\StreamNotFoundException;
 use Ramsey\Uuid\Uuid;
 
 class EventBasedFlowRepository implements FlowRepository
@@ -24,7 +25,11 @@ class EventBasedFlowRepository implements FlowRepository
      */
     public function find(Uuid $uuid)
     {
-        $events = $this->eventStore->read(EventStream::fromUuid($uuid));
+        try {
+            $events = $this->eventStore->read(EventStream::fromUuid($uuid));
+        } catch (StreamNotFoundException $e) {
+            $events = [];
+        }
 
         if (0 === count($events)) {
             throw new FlowNotFound(sprintf(

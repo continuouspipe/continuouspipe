@@ -98,6 +98,8 @@ class TideFactory
         $tideUuid = $tideUuid ?: Uuid::uuid1();
         $extraEvents = [];
 
+        var_dump($flow);
+
         try {
             $configuration = $this->configurationFactory->getConfiguration($flow, $codeReference);
 

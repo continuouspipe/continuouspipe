@@ -15,7 +15,8 @@ class FlowConfigurationUpdated implements FlowEvent
     private $flowUuid;
 
     /**
-     * @JMS\Type("array")
+     * @JMS\Type("string")
+     * @JMS\Accessor(getter="serializeConfiguration", setter="deserializeConfiguration")
      *
      * @var array
      */
@@ -39,5 +40,15 @@ class FlowConfigurationUpdated implements FlowEvent
     public function getConfiguration() : array
     {
         return $this->configuration;
+    }
+
+    public function serializeConfiguration() : string
+    {
+        return \GuzzleHttp\json_encode($this->configuration);
+    }
+
+    public function deserializeConfiguration(string $configuration)
+    {
+        $this->configuration = \GuzzleHttp\json_decode($configuration, true);
     }
 }

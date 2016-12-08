@@ -2,9 +2,24 @@
 
 namespace ContinuousPipe\River\EventStore;
 
+use JMS\Serializer\SerializerInterface;
+
 class InMemoryEventStore implements EventStore
 {
     private $streams = [];
+
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
+     * @param SerializerInterface $serializer
+     */
+    public function __construct(SerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+    }
 
     public function store(string $stream, $event)
     {
@@ -12,7 +27,10 @@ class InMemoryEventStore implements EventStore
             $this->streams[$stream] = [];
         }
 
-        $this->streams[$stream][] = $event;
+        $this->streams[$stream][] = [
+            'class' => get_class($event),
+            'data' => $this->serializer->serialize($event, 'json')
+        ];
     }
 
     public function read(string $stream) : array
@@ -21,6 +39,8 @@ class InMemoryEventStore implements EventStore
             return [];
         }
 
-        return $this->streams[$stream];
+        return array_map(function(array $event) {
+            return $this->serializer->deserialize($event['data'], $event['class'], 'json');
+        }, $this->streams[$stream]);
     }
 }
