@@ -123,6 +123,9 @@ smoke:
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
+                - Task\BuildContext:
+                    - @river.tide_event_store
+                    - @event_bus
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
 
