@@ -6,7 +6,46 @@
     </div>
 </md-toolbar>
 <md-content flex id="content" class="configuration-content">
-    <div class="yaml-editor" ui-ace="aceOption" ng-model="flow.yml_configuration"></div>
+    <md-subheader class="md-primary">Variables</md-subheader>
+    <md-content class="form-variable-container" layout-gt-sm="row" layout-padding ng-repeat="(key, variable) in variables">
+        <form name="variableForm" layout-gt-sm="row" flex-gt-sm ng-model-options="{ updateOn: 'blur'}">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Name</label>
+                <input name="name" ng-model="variable.name" required ng-pattern="'([A-Za-z0-9_\.-]+)'">
+                <div ng-messages="variableForm.name.$error">
+                    <div ng-message="required">The name is required.</div>
+                    <div ng-message="pattern">The variable name should match the regex <code>([A-Za-z0-9_\.-]+)</code></div>
+                </div>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Value</label>
+                <input name="value" ng-model="variable.value" required>
+                <div ng-messages="variableForm.value.$error">
+                    <div ng-message="required">The value is required.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Optional condition</label>
+                <input ng-model="variable.condition">
+            </md-input-container>
+
+            <md-input-container>
+                <md-button class="md-fab md-mini md-warn" aria-label="Remove environment variable" ng-click="removeVariableByKey(key)">
+                    <md-icon>delete</md-icon>
+                </md-button>
+            </md-input-container>
+        </form>
+   </md-content>
+   <md-content class="layout-padding">
+        <div>
+            <md-button class="md-raised md-primary" ng-click="addVariable()"><md-icon>add</md-icon> Add a variable</md-button>
+        </div>
+    </md-content>
+
+    <md-subheader class="md-primary">YAML file</md-subheader>
+    <div flex class="yaml-editor" ui-ace="aceOption" ng-model="flow.yml_configuration"></div>
 </md-content>
 <md-toolbar>
     <div class="md-toolbar-tools">
