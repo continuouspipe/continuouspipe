@@ -8,7 +8,6 @@ use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\FlowContext;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\View\TideDto;
-use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
@@ -33,7 +32,7 @@ class DoctrineTideRepository implements TideRepository
     private $flowRepository;
 
     /**
-     * @param EntityManager  $entityManager
+     * @param EntityManager      $entityManager
      * @param FlatFlowRepository $flowRepository
      */
     public function __construct(EntityManager $entityManager, FlatFlowRepository $flowRepository)

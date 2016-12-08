@@ -25,7 +25,7 @@ class FromFlowAggregateFlatFlowRepository implements FlatFlowRepository
 
     /**
      * @param FlatFlowRepository $decoratedRepository
-     * @param FlowRepository $flowRepository
+     * @param FlowRepository     $flowRepository
      */
     public function __construct(FlatFlowRepository $decoratedRepository, FlowRepository $flowRepository)
     {

@@ -1,0 +1,28 @@
+{% extends "@Admin/layout.html.twig" %}
+{% block header_navbar_migrations_class %} class="active"{% endblock %}
+{% block content %}
+<ol class="breadcrumb">
+    <li class="active">Migrations</li>
+</ol>
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <p><strong>To event sourced</strong></p>
+                <p>Migrate the flows from the deprecated read model with `FlowContext`s to an event sourced aggregate.</p>
+            </td>
+            <td>
+                <form action="{{ path('admin_migrate', {'migration': 'to-event-sourced'}) }}" method="POST">
+                    <button class="btn btn-danger">Migrate</button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

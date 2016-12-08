@@ -70,5 +70,12 @@
 
             <tag name="event_bus_middleware" priority="10" />
         </service>
+
+        <service id="river.flow.migrations.to_event_sourced.migrator" class="ContinuousPipe\River\Flow\Migrations\ToEventSourced\Migrator">
+            <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="river.repository.flow.deprecated.doctrine" />
+            <argument type="service" id="river.repository.flow.event_based" />
+            <argument type="service" id="event_bus" />
+        </service>
     </services>
 </container>

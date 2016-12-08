@@ -21,7 +21,7 @@
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "jms/serializer-bundle": "~1.0",
-        "csa/guzzle-bundle": "@stable",
+        "csa/guzzle-bundle": "dev-master",
         "friendsofsymfony/rest-bundle": "~1.7",
         "simple-bus/symfony-bridge": "^4.1",
         "nelmio/cors-bundle": "^1.4",

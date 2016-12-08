@@ -8,7 +8,6 @@ use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\Security\Team\Team;
 use Doctrine\ORM\EntityManager;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
