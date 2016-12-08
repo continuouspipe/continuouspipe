@@ -59,6 +59,8 @@ class Migrator
             try {
                 $this->eventBasedRepository->find($flow->getUuid());
             } catch (FlowNotFound $e) {
+                $flow = $this->hotfixFlow($flow);
+
                 array_map(function ($event) {
                     $this->eventBus->handle($event);
                 }, [
@@ -91,5 +93,14 @@ class Migrator
                 yield $flow;
             }
         }
+    }
+
+    private function hotfixFlow(Flow $flow)
+    {
+        if (empty($flow->getUser()->getRoles())) {
+            $flow->getUser()->setRoles([]);
+        }
+
+        return $flow;
     }
 }

@@ -10,6 +10,7 @@ class GitHubCodeRepository extends AbstractCodeRepository
 {
     /**
      * @JMS\Type("string")
+     * @JMS\Accessor(getter="getAddress")
      *
      * @var string
      */
@@ -17,6 +18,7 @@ class GitHubCodeRepository extends AbstractCodeRepository
 
     /**
      * @JMS\Type("string")
+     * @JMS\Accessor(getter="getOrganisation")
      *
      * @var string
      */
@@ -24,6 +26,7 @@ class GitHubCodeRepository extends AbstractCodeRepository
 
     /**
      * @JMS\Type("string")
+     * @JMS\Accessor(getter="getName")
      *
      * @var string
      */

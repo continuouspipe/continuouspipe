@@ -16,8 +16,17 @@ abstract class AbstractCodeRepository implements CodeRepository
 {
     /**
      * @JMS\Type("string")
+     * @JMS\Accessor(getter="getIdentifier")
      *
      * @var string
      */
     protected $identifier;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
+    }
 }
