@@ -41,9 +41,9 @@
                 <remote-resource resource-name="repositories">
                     <md-list>
                         <md-list-item class="md-1-line" ng-repeat="repository in repositories | filter:wizard.repositoryFilter" ng-click="wizard.repository = repository;" ng-class="{'selected': wizard.repository == repository}">
-                            <md-icon class="md-avatar-icon" ng-if="repository.repository.private">lock</md-icon>
-                            <md-icon class="md-avatar-icon" ng-if="!repository.repository.private">public</md-icon>
-                            <p>{{ repository.repository.name }}</p>
+                            <md-icon class="md-avatar-icon" ng-if="repository.private">lock</md-icon>
+                            <md-icon class="md-avatar-icon" ng-if="!repository.private">public</md-icon>
+                            <p>{{ repository.name }}</p>
                         </md-list-item>
                     </md-list>
                 </remote-resource>

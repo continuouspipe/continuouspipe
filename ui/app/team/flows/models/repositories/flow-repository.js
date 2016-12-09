@@ -27,9 +27,13 @@ angular.module('continuousPipeRiver')
         };
 
         this.createFromRepositoryAndTeam = function(team, repository) {
-            return $resource(RIVER_API_URL+'/flows').save({
-                repository: repository.repository.id,
-                team: team.slug
-            }).$promise;
+            return $resource(RIVER_API_URL+'/teams/:team/flows').save(
+                {
+                    team: team.slug
+                },
+                {
+                    repository: repository.identifier
+                }
+            ).$promise;
         };
     });
