@@ -11,7 +11,7 @@ server {
     }
 
     location @rewriteapp {
-        rewrite ^(.*)$ /index.php/$1 last;
+        rewrite ^(.*)$ /app.php/$1 last;
     }
 
     location ~ \.php(/|$) {
