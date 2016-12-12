@@ -1,6 +1,5 @@
 api:
     build: .
-    command: /app/docker/apache/run.sh
     volumes:
         - .:/app
     links:
@@ -20,12 +19,12 @@ api:
         - LOGSTREAM_FRONTEND_URL=https://logstream-frontend.docker
         - RIVER_URL=river_api.docker/app_dev.php
         - TIDEWAYS_API_KEY=bq8W3cebnQNuKgQA
+        - APP_USER_LOCAL=true
     expose:
         - 80
 
 worker:
     build: .
-    command: /app/docker/worker/run.sh
     volumes:
         - .:/app
     links:
@@ -44,6 +43,9 @@ worker:
         - LOGSTREAM_URL=https://logstream-api.docker
         - LOGSTREAM_FRONTEND_URL=https://logstream-frontend.docker
         - RIVER_URL=river_api.docker/app_dev.php
+        - START_NGINX=false
+        - START_WORKER=true
+        - START_PHP_FPM=false
 
 database:
     image: mariadb

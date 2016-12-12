@@ -1,0 +1,4 @@
+#!/bin/sh
+
+export START_CRON=${START_CRON:-false}
+export START_WORKER=${START_WORKER:-false}

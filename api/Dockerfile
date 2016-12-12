@@ -1,13 +1,7 @@
-FROM docker.io/inviqasession/cp-river-base:v9
+FROM docker.io/inviqasession/cp-river-base:v10
 
-# Apache & PHP configuration
-RUN a2enmod rewrite
-ADD docker/apache/vhost.conf /etc/apache2/sites-enabled/000-default.conf
-ADD docker/php/php.ini /etc/php/7.0/apache2/php.ini
-ADD docker/php/php.ini /etc/php/7.0/cli/php.ini
-
-# Crontab configuration
-COPY docker/cron/crontab /etc/crontab
+COPY ./docker/etc/ /etc/
+COPY ./docker/usr/ /usr/
 
 # Add the application
 ADD . /app

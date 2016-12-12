@@ -12,4 +12,4 @@ if [ -n "$TIDEWAYS_API_KEY" ]; then
 fi
 
 # Run consumer
-rabbitmq-cli-consumer -e "/app/app/console -e=prod --with-headers simple-bus:consume" -i -c /app/docker/worker/configuration.conf
+rabbitmq-cli-consumer -e "/app/app/console -e=prod --with-headers simple-bus:consume" -i -c /usr/local/share/worker/configuration.conf

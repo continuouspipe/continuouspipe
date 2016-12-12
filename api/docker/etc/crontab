@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+* * * * * root /usr/local/share/cron/run-every-x-seconds.sh 5 /usr/local/share/cron/collect.sh
