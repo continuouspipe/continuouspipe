@@ -2,8 +2,6 @@
 
 set -xe
 
-composer run-script update-parameters
-
 chmod 700 /etc/crontab
 
 rsyslogd
