@@ -18,15 +18,15 @@ class DelegateIfNotFoundFlowRepository implements FlowRepository
     private $decorated;
 
     /**
-     * @var DoctrineFlowRepository
+     * @var FlowRepository
      */
     private $delegates;
 
     /**
      * @param Flow\EventBasedFlowRepository $decorated
-     * @param DoctrineFlowRepository $delegates
+     * @param FlowRepository $delegates
      */
-    public function __construct(Flow\EventBasedFlowRepository $decorated, DoctrineFlowRepository $delegates)
+    public function __construct(Flow\EventBasedFlowRepository $decorated, FlowRepository $delegates)
     {
         $this->decorated = $decorated;
         $this->delegates = $delegates;
