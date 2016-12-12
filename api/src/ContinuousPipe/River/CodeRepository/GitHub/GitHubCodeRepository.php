@@ -33,6 +33,14 @@ class GitHubCodeRepository extends AbstractCodeRepository
     private $name;
 
     /**
+     * @JMS\Type("boolean")
+     * @JMS\Accessor(getter="isPrivate")
+     *
+     * @var bool
+     */
+    private $private = false;
+
+    /**
      * @deprecated This method is a BC for the previously stored (serialized) GitHubCodeRepository objects
      *
      * @JMS\Exclude
@@ -41,12 +49,13 @@ class GitHubCodeRepository extends AbstractCodeRepository
      */
     private $repository;
 
-    public function __construct(string $identifier, string $address, string $organisation, string $name)
+    public function __construct(string $identifier, string $address, string $organisation, string $name, bool $private)
     {
         $this->identifier = $identifier;
         $this->address = $address;
         $this->organisation = $organisation;
         $this->name = $name;
+        $this->private = $private;
     }
 
     /**
@@ -60,7 +69,8 @@ class GitHubCodeRepository extends AbstractCodeRepository
             $repository->getId(),
             $repository->getUrl(),
             $repository->getOwner()->getLogin(),
-            $repository->getName()
+            $repository->getName(),
+            $repository->isPrivate()
         );
     }
 
@@ -106,6 +116,15 @@ class GitHubCodeRepository extends AbstractCodeRepository
         return $this->name;
     }
 
+    public function isPrivate() : bool
+    {
+        if ($this->repository) {
+            $this->populateFieldsFromRepository($this->repository);
+        }
+
+        return $this->private;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -120,5 +139,6 @@ class GitHubCodeRepository extends AbstractCodeRepository
         $this->address = $repository->getUrl();
         $this->organisation = $repository->getOwner()->getLogin();
         $this->name = $repository->getName();
+        $this->private = (bool) $repository->isPrivate();
     }
 }
