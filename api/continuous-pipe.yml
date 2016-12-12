@@ -82,6 +82,8 @@ tasks:
                               value: http://app.chc-master.svc.cluster.local
                             - name: ZIPKIN_BASE_URL
                               value: http://zipkin.zipkin-master.svc.cluster.local:9411
+                            - name: APP_USER_LOCAL
+                              value: false
 
                     deployment_strategy:
                         readiness_probe:
