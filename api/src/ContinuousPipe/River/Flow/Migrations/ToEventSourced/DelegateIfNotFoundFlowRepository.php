@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Flow\Migrations\ToEventSourced;
 
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Team\Team;
@@ -12,20 +13,20 @@ use Ramsey\Uuid\Uuid;
 class DelegateIfNotFoundFlowRepository implements FlowRepository
 {
     /**
-     * @var FlowRepository
+     * @var Flow\EventBasedFlowRepository
      */
     private $decorated;
 
     /**
-     * @var FlowRepository
+     * @var DoctrineFlowRepository
      */
     private $delegates;
 
     /**
-     * @param FlowRepository $decorated
-     * @param FlowRepository $delegates
+     * @param Flow\EventBasedFlowRepository $decorated
+     * @param DoctrineFlowRepository $delegates
      */
-    public function __construct(FlowRepository $decorated, FlowRepository $delegates)
+    public function __construct(Flow\EventBasedFlowRepository $decorated, DoctrineFlowRepository $delegates)
     {
         $this->decorated = $decorated;
         $this->delegates = $delegates;
@@ -48,7 +49,7 @@ class DelegateIfNotFoundFlowRepository implements FlowRepository
      */
     public function save(Flow $flow)
     {
-        return $this->decorated->save($flow);
+        return $this->delegates->save($flow);
     }
 
     /**
@@ -56,7 +57,7 @@ class DelegateIfNotFoundFlowRepository implements FlowRepository
      */
     public function findByTeam(Team $team)
     {
-        return $this->decorated->findByTeam($team);
+        return $this->delegates->findByTeam($team);
     }
 
     /**
@@ -64,7 +65,7 @@ class DelegateIfNotFoundFlowRepository implements FlowRepository
      */
     public function remove(Flow $flow)
     {
-        return $this->decorated->remove($flow);
+        return $this->delegates->remove($flow);
     }
 
     /**
@@ -72,6 +73,6 @@ class DelegateIfNotFoundFlowRepository implements FlowRepository
      */
     public function findByCodeRepository(CodeRepository $codeRepository)
     {
-        return $this->decorated->findByCodeRepository($codeRepository);
+        return $this->delegates->findByCodeRepository($codeRepository);
     }
 }
