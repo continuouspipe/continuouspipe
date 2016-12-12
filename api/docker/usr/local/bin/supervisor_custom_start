@@ -11,5 +11,5 @@ if [ -n "$TIDEWAYS_API_KEY" ]; then
     echo "tideways.connection = tcp://tideways:9135" >> /etc/php/7.0/cli/conf.d/40-tideways.ini
 
     echo "tideways.api_key = $TIDEWAYS_API_KEY" >> /etc/php/7.0/fpm/conf.d/40-tideways.ini
-    echo "tideways.connection = tcp://tideways:9135" >> /etc/php/7.0/fom/conf.d/40-tideways.ini
+    echo "tideways.connection = tcp://tideways:9135" >> /etc/php/7.0/fpm/conf.d/40-tideways.ini
 fi
