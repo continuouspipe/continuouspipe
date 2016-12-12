@@ -100,11 +100,14 @@ tasks:
                         environment_variables:
                             <<: *ENV
                             1000:
-                                name: START_NGINX
-                                value: false
+                              name: START_NGINX
+                              value: 'false'
                             1001:
-                                name: START_WORKER
-                                value: true
+                              name: START_PHP_FPM
+                              value: 'false'
+                            1002:
+                              name: START_WORKER
+                              value: 'true'
 
                 tideways:
                     specification:
@@ -134,15 +137,12 @@ tasks:
                             from_service: api
 
                         environment_variables:
-                            -
-                                name: START_NGINX
-                                value: false
-                            -
-                                name: START_PHP_FPM
-                                value: false
-                            -
-                                name: START_CRON
-                                value: true
+                            - name: START_NGINX
+                              value: 'false'
+                            - name: START_PHP_FPM
+                              value: 'false'
+                            - name: START_CRON
+                              value: 'true'
 
                         accessibility:
                             from_cluster: false
