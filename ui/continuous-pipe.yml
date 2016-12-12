@@ -29,4 +29,4 @@ tasks:
                             - name: PIPE_API_URL
                               value: pipe.continuouspipe.io
                             - name: RIVER_API_URL
-                              value: river.continuouspipe.io
+                              value: 35.186.211.139
