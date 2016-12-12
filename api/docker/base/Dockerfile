@@ -9,9 +9,11 @@ RUN apt-get update && \
     cron \
     rsyslog \
     mysql-client \
-    wget \
+    wget && \
+    composer global require hirak/prestissimo \
 
     && \
+
 
 # Install tideways' extension
     echo 'deb http://s3-eu-west-1.amazonaws.com/qafoo-profiler/packages debian main' > /etc/apt/sources.list.d/tideways.list && \
