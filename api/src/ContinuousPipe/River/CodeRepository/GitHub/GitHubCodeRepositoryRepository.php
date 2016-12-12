@@ -15,6 +15,8 @@ use JMS\Serializer\SerializerInterface;
 
 class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
 {
+    const LIMIT = 1000;
+
     /**
      * @var ClientFactory
      */
@@ -41,12 +43,19 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
     public function findByUser(User $user)
     {
         $client = $this->gitHubClientFactory->createClientForUser($user);
-        $currentUserApi = $client->currentUser();
 
         $paginator = new ResultPager($client);
-        $found = $paginator->fetchAll($currentUserApi, 'repositories');
+        $repositories = $paginator->fetch($client->user(), 'repositories', [$user->getUsername()]);
 
-        return $this->parseRepositories($found);
+        while ($paginator->hasNext()) {
+            $repositories = array_merge($repositories, $paginator->fetchNext());
+
+            if (count($repositories) > self::LIMIT) {
+                break;
+            }
+        }
+
+        return $this->parseRepositories($repositories);
     }
 
     /**

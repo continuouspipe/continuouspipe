@@ -5438,12 +5438,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Tolerance/Tolerance.git",
-                "reference": "094c9fa2254cf2dc467fd0656830bf492e49443a"
+                "reference": "569f921cf8990dd90a4394de7ca37be4d65002f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/094c9fa2254cf2dc467fd0656830bf492e49443a",
-                "reference": "094c9fa2254cf2dc467fd0656830bf492e49443a",
+                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/569f921cf8990dd90a4394de7ca37be4d65002f6",
+                "reference": "569f921cf8990dd90a4394de7ca37be4d65002f6",
                 "shasum": ""
             },
             "require": {
@@ -5479,7 +5479,7 @@
                 "MIT"
             ],
             "description": "Fault tolerance library and micro-services helpers",
-            "time": "2016-11-17 18:03:42"
+            "time": "2016-12-12 17:24:05"
         },
         {
             "name": "twig/twig",
