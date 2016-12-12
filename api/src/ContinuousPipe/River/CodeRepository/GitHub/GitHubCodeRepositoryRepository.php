@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryNotFound;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\Repository\CodeRepositoryRepository;
@@ -14,6 +15,8 @@ use JMS\Serializer\SerializerInterface;
 
 class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
 {
+    const LIMIT = 1000;
+
     /**
      * @var ClientFactory
      */
@@ -40,12 +43,19 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
     public function findByUser(User $user)
     {
         $client = $this->gitHubClientFactory->createClientForUser($user);
-        $currentUserApi = $client->currentUser();
 
         $paginator = new ResultPager($client);
-        $found = $paginator->fetchAll($currentUserApi, 'repositories');
+        $repositories = $paginator->fetch($client->user(), 'repositories', [$user->getUsername()]);
 
-        return $this->parseRepositories($found);
+        while ($paginator->hasNext()) {
+            $repositories = array_merge($repositories, $paginator->fetchNext());
+
+            if (count($repositories) > self::LIMIT) {
+                break;
+            }
+        }
+
+        return $this->parseRepositories($repositories);
     }
 
     /**
@@ -86,7 +96,7 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
 
         $repository = $this->serializer->deserialize($rawRepository, Repository::class, 'json');
 
-        return new GitHubCodeRepository($repository);
+        return GitHubCodeRepository::fromRepository($repository);
     }
 
     /**
@@ -109,7 +119,7 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
         );
 
         return array_map(function (Repository $repository) {
-            return new GitHubCodeRepository($repository);
+            return GitHubCodeRepository::fromRepository($repository);
         }, $repositories);
     }
 }

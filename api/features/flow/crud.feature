@@ -27,14 +27,6 @@ Feature:
       | 1234       |
     Then the flow is successfully saved
 
-  Scenario: Uses the deprecated flow creation
-    Given the GitHub repository "1234" exists
-    And the team "foo" exists
-    When I send a deprecated flow creation request with the following parameters:
-      | repository | team |
-      | 1234       | foo  |
-    Then the flow is successfully saved
-
   Scenario: I can force the UUID of a flow
     Given the GitHub repository "1234" exists
     And the team "foo" exists

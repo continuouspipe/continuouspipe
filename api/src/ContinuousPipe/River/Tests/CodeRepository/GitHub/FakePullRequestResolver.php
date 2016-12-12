@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Tests\CodeRepository\GitHub;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 class FakePullRequestResolver implements PullRequestResolver
 {
@@ -13,7 +13,7 @@ class FakePullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(Flow $flow, CodeReference $codeReference)
+    public function findPullRequestWithHeadReference(FlatFlow $flow, CodeReference $codeReference)
     {
         return $this->resolution;
     }

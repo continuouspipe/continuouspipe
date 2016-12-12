@@ -3,16 +3,22 @@
 namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
 use LogStream\Log;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
-class TideContext extends FlowContext
+class TideContext implements Context
 {
     const CODE_REFERENCE_KEY = 'codeReference';
     const TIDE_UUID_KEY = 'tideUuid';
     const TIDE_LOG_KEY = 'tideLog';
     const CONFIGURATION_KEY = 'config';
     const CODE_REPOSITORY_EVENT_KEY = 'codeRepositoryEvent';
+    const FLOW_UUID_KEY = 'flowUuid';
+    const TEAM_KEY = 'team';
+    const USER_KEY = 'user';
 
     /**
      * @var Context
@@ -22,15 +28,12 @@ class TideContext extends FlowContext
     /**
      * @param Context $context
      */
-    public function __construct(Context $context)
+    public function __construct(Context $context = null)
     {
-        parent::__construct($context);
-
-        $this->context = $context;
+        $this->context = $context ?: new ArrayContext();
     }
 
     /**
-     * @param FlowContext         $flowContext
      * @param Uuid                $tideUuid
      * @param CodeReference       $codeReference
      * @param Log                 $log
@@ -39,9 +42,12 @@ class TideContext extends FlowContext
      *
      * @return TideContext
      */
-    public static function createTide(FlowContext $flowContext, Uuid $tideUuid, CodeReference $codeReference, Log $log, array $configuration, CodeRepositoryEvent $codeRepositoryEvent = null)
+    public static function createTide(UuidInterface $flowUuid, Team $team, User $user, Uuid $tideUuid, CodeReference $codeReference, Log $log, array $configuration, CodeRepositoryEvent $codeRepositoryEvent = null)
     {
-        $context = new self($flowContext);
+        $context = new self();
+        $context->set(self::FLOW_UUID_KEY, $flowUuid);
+        $context->set(self::TEAM_KEY, $team);
+        $context->set(self::USER_KEY, $user);
         $context->set(self::TIDE_UUID_KEY, $tideUuid);
         $context->set(self::CODE_REFERENCE_KEY, $codeReference);
         $context->set(self::TIDE_LOG_KEY, $log);
@@ -60,11 +66,43 @@ class TideContext extends FlowContext
     }
 
     /**
+     * @return CodeRepository
+     */
+    public function getCodeRepository()
+    {
+        return $this->getCodeReference()->getRepository();
+    }
+
+    /**
      * @return Uuid
      */
     public function getTideUuid()
     {
         return $this->context->get(self::TIDE_UUID_KEY);
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getFlowUuid()
+    {
+        return $this->context->get(self::FLOW_UUID_KEY);
+    }
+
+    /**
+     * @return Team
+     */
+    public function getTeam()
+    {
+        return $this->context->get(self::TEAM_KEY);
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->context->get(self::USER_KEY);
     }
 
     /**
@@ -93,5 +131,28 @@ class TideContext extends FlowContext
         } catch (ContextKeyNotFound $e) {
             return;
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getBag()
+    {
+        return $this->context->getBag();
+    }
+
+    public function has($key)
+    {
+        return $this->context->has($key);
+    }
+
+    public function get($key)
+    {
+        return $this->context->get($key);
+    }
+
+    public function set($key, $value)
+    {
+        return $this->context->set($key, $value);
     }
 }

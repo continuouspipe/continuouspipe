@@ -6,6 +6,7 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\TideNotFound;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 interface TideRepository
 {
@@ -21,12 +22,12 @@ interface TideRepository
     /**
      * Find last `$limit` tides of this flow.
      *
-     * @param Flow $flow
-     * @param int  $limit
+     * @param UuidInterface $flowUuid
+     * @param int           $limit
      *
      * @return Tide[]
      */
-    public function findLastByFlow(Flow $flow, $limit);
+    public function findLastByFlowUuid(UuidInterface $flowUuid, $limit);
 
     /**
      * @param Uuid          $flowUuid

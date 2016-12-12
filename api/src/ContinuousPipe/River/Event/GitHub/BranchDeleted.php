@@ -4,14 +4,14 @@ namespace ContinuousPipe\River\Event\GitHub;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
-use ContinuousPipe\River\Flow;
+use Ramsey\Uuid\UuidInterface;
 
 class BranchDeleted implements CodeRepositoryEvent
 {
     /**
-     * @var Flow
+     * @var UuidInterface
      */
-    private $flow;
+    private $flowUuid;
 
     /**
      * @var CodeReference
@@ -19,21 +19,21 @@ class BranchDeleted implements CodeRepositoryEvent
     private $codeReference;
 
     /**
-     * @param Flow          $flow
+     * @param UuidInterface $flowUuid
      * @param CodeReference $codeReference
      */
-    public function __construct(Flow $flow, CodeReference $codeReference)
+    public function __construct(UuidInterface $flowUuid, CodeReference $codeReference)
     {
-        $this->flow = $flow;
+        $this->flowUuid = $flowUuid;
         $this->codeReference = $codeReference;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getFlow()
+    public function getFlowUuid()
     {
-        return $this->flow;
+        return $this->flowUuid;
     }
 
     /**

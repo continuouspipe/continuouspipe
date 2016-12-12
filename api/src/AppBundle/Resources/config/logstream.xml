@@ -7,7 +7,7 @@
     <services>
         <service id="river.log_stream.archive_logs.handler.archive_flow_logs_handler" class="ContinuousPipe\River\LogStream\ArchiveLogs\Handler\ArchiveFlowLogsHandler">
             <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="command_bus" />
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\LogStream\ArchiveLogs\Command\ArchiveFlowLogsCommand" />

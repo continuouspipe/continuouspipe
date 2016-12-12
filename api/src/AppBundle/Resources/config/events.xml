@@ -5,14 +5,14 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.event_store.doctrine" class="ContinuousPipe\River\Infrastructure\Doctrine\DoctrineEventStore">
+        <service id="river.tide_event_store.doctrine" class="ContinuousPipe\River\Infrastructure\Doctrine\DoctrineEventStore">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="jms_serializer" />
         </service>
-        <service id="river.event_store" alias="river.event_store.doctrine" />
+        <service id="river.tide_event_store" alias="river.tide_event_store.doctrine" />
 
         <service id="river.event_bus.middleware.tide_event_store" class="ContinuousPipe\River\EventBus\TideEventStoreMiddleware">
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
 
             <tag name="event_bus_middleware" priority="10" />
         </service>

@@ -21,7 +21,7 @@
             <argument type="service" id="river.task.deploy.naming.environment_strategy" />
             <argument type="service" id="river.pipe.cluster_identifier_resolver" />
             <argument type="service" id="logger" />
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="river.queue.delayed_command_bus"/>
             <argument>%retry_interval%</argument>
 

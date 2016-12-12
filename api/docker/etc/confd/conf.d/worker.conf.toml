@@ -1,0 +1,6 @@
+[template]
+src   = "worker.conf.tmpl"
+dest  = "/etc/supervisor/conf.d/worker.conf"
+mode  = "0644"
+keys = [
+]

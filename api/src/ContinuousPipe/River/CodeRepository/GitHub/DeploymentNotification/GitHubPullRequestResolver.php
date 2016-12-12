@@ -6,7 +6,7 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use Github\Client;
 use GitHub\WebHook\Model\PullRequest;
 use JMS\Serializer\Serializer;
@@ -36,29 +36,11 @@ class GitHubPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(Flow $flow, CodeReference $codeReference)
+    public function findPullRequestWithHeadReference(FlatFlow $flow, CodeReference $codeReference)
     {
         $client = $this->gitHubClientFactory->createClientForFlow($flow);
 
         return $this->findPullRequestFromClient($client, $codeReference);
-    }
-
-    /**
-     * @param CodeReference $codeReference
-     *
-     * @return \GitHub\WebHook\Model\Repository
-     */
-    private function getGitHubRepository(CodeReference $codeReference)
-    {
-        $repository = $codeReference->getRepository();
-        if (!$repository instanceof GitHubCodeRepository) {
-            throw new \RuntimeException(sprintf(
-                'Repository of type "%s" not supported',
-                get_class($repository)
-            ));
-        }
-
-        return $repository->getGitHubRepository();
     }
 
     /**
@@ -69,11 +51,17 @@ class GitHubPullRequestResolver implements PullRequestResolver
      */
     private function findPullRequestFromClient(Client $client, CodeReference $codeReference)
     {
-        $gitHubRepository = $this->getGitHubRepository($codeReference);
+        $repository = $codeReference->getRepository();
+        if (!$repository instanceof GitHubCodeRepository) {
+            throw new \RuntimeException(sprintf(
+                'Repository of type "%s" not supported',
+                get_class($repository)
+            ));
+        }
 
         $rawPullRequests = $client->pullRequests()->all(
-            $gitHubRepository->getOwner()->getLogin(),
-            $gitHubRepository->getName(),
+            $repository->getOrganisation(),
+            $repository->getName(),
             [
                 'state' => 'open',
             ]

@@ -25,7 +25,7 @@
         </service>
 
         <service id="app.controller.flow" class="AppBundle\Controller\FlowController">
-            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="river.flow_factory" />
             <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="river.view.tide_repository" />
@@ -34,7 +34,7 @@
         </service>
         <service id="app.controller.github" class="AppBundle\Controller\GitHubController">
             <argument type="service" id="command_bus" />
-            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="logger" />
         </service>
 
@@ -72,6 +72,7 @@
 
         <service id="app.request.param_converter.flow" class="AppBundle\Request\ParamConverter\FlowParamConverter">
             <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
 
             <tag name="request.param_converter" converter="flow" />
         </service>

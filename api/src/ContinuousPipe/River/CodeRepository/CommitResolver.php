@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\River\CodeRepository;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 
 interface CommitResolver
@@ -23,12 +23,12 @@ interface CommitResolver
     public function getLegacyHeadCommitOfBranch(BucketContainer $bucketContainer, CodeRepository $repository, $branch);
 
     /**
-     * @param Flow   $flow
-     * @param string $branch
+     * @param FlatFlow $flow
+     * @param string   $branch
      *
      * @throws CommitResolverException
      *
      * @return string
      */
-    public function getHeadCommitOfBranch(Flow $flow, $branch);
+    public function getHeadCommitOfBranch(FlatFlow $flow, $branch);
 }

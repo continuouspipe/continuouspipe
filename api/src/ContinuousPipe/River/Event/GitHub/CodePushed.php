@@ -4,8 +4,8 @@ namespace ContinuousPipe\River\Event\GitHub;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
-use ContinuousPipe\River\Flow;
 use GitHub\WebHook\Event\PushEvent;
+use Ramsey\Uuid\UuidInterface;
 
 class CodePushed implements CodeRepositoryEvent
 {
@@ -20,20 +20,20 @@ class CodePushed implements CodeRepositoryEvent
     private $codeReference;
 
     /**
-     * @var Flow
+     * @var UuidInterface
      */
-    private $flow;
+    private $flowUuid;
 
     /**
-     * @param Flow          $flow
+     * @param UuidInterface $flowUuid
      * @param PushEvent     $gitHubEvent
      * @param CodeReference $codeReference
      */
-    public function __construct(Flow $flow, PushEvent $gitHubEvent, CodeReference $codeReference)
+    public function __construct(UuidInterface $flowUuid, PushEvent $gitHubEvent, CodeReference $codeReference)
     {
         $this->gitHubEvent = $gitHubEvent;
         $this->codeReference = $codeReference;
-        $this->flow = $flow;
+        $this->flowUuid = $flowUuid;
     }
 
     /**
@@ -45,7 +45,7 @@ class CodePushed implements CodeRepositoryEvent
     }
 
     /**
-     * @return CodeReference
+     * {@inheritdoc}
      */
     public function getCodeReference()
     {
@@ -53,10 +53,10 @@ class CodePushed implements CodeRepositoryEvent
     }
 
     /**
-     * @return Flow
+     * {@inheritdoc}
      */
-    public function getFlow()
+    public function getFlowUuid()
     {
-        return $this->flow;
+        return $this->flowUuid;
     }
 }

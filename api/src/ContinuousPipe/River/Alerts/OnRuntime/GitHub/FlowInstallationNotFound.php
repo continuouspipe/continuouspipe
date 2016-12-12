@@ -6,7 +6,7 @@ use ContinuousPipe\River\Alerts\Alert;
 use ContinuousPipe\River\Alerts\AlertAction;
 use ContinuousPipe\River\Alerts\AlertsRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use GitHub\Integration\InstallationNotFound;
 use GitHub\Integration\InstallationRepository;
 
@@ -28,7 +28,7 @@ class FlowInstallationNotFound implements AlertsRepository
     /**
      * {@inheritdoc}
      */
-    public function findByFlow(Flow $flow)
+    public function findByFlow(FlatFlow $flow)
     {
         $repository = $flow->getRepository();
         if (!$repository instanceof GitHubCodeRepository) {

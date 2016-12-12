@@ -61,7 +61,6 @@ class GitHubCommitStatusNotifier implements Notifier
         }
 
         try {
-            $gitHubRepository = $repository->getGitHubRepository();
             $statusParameters = [
                 'state' => $this->gitHubStateResolver->fromStatus($status),
                 'context' => self::GITHUB_CONTEXT,
@@ -73,8 +72,8 @@ class GitHubCommitStatusNotifier implements Notifier
             }
 
             $client->repository()->statuses()->create(
-                $gitHubRepository->getOwner()->getLogin(),
-                $gitHubRepository->getName(),
+                $repository->getOrganisation(),
+                $repository->getName(),
                 $tide->getCodeReference()->getCommitSha(),
                 $statusParameters
             );

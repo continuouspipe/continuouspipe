@@ -6,6 +6,7 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
+use ContinuousPipe\River\EventStore\EventStore;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use ContinuousPipe\Security\Team\Team;
@@ -18,6 +19,7 @@ use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\FlowContext as RiverFlowContext;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
+use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
@@ -87,6 +89,10 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var TeamRepository
      */
     private $teamRepository;
+    /**
+     * @var MessageBus
+     */
+    private $eventBus;
 
     /**
      * @param Kernel $kernel
@@ -96,8 +102,9 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @param FakeClient $pipeClient
      * @param TraceableClient $traceablePipeClient
      * @param TeamRepository $teamRepository
+     * @param MessageBus $eventBus
      */
-    public function __construct(Kernel $kernel, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient, FakeClient $pipeClient, TraceableClient $traceablePipeClient, TeamRepository $teamRepository)
+    public function __construct(Kernel $kernel, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient, FakeClient $pipeClient, TraceableClient $traceablePipeClient, TeamRepository $teamRepository, MessageBus $eventBus)
     {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
@@ -106,6 +113,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         $this->pipeClient = $pipeClient;
         $this->teamRepository = $teamRepository;
         $this->traceablePipeClient = $traceablePipeClient;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -153,9 +161,37 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      */
     public function theGitHubRepositoryExists($id)
     {
-        $this->codeRepositoryRepository->add(new CodeRepository\GitHub\GitHubCodeRepository(
+        $this->codeRepositoryRepository->add(CodeRepository\GitHub\GitHubCodeRepository::fromRepository(
             new Repository(new \GitHub\WebHook\Model\User('foo'), 'foo', 'bar', false, $id)
         ));
+    }
+
+    /**
+     * @Given the flow configuration version is :arg1
+     */
+    public function theFlowConfigurationVersionIs($arg1)
+    {
+    }
+
+    /**
+     * @When I request the flow configuration
+     */
+    public function iRequestTheFlowConfiguration()
+    {
+        $this->response = $this->kernel->handle(Request::create('/flows/'.$this->flowUuid.'/configuration'));
+    }
+
+    /**
+     * @When I update the flow to the version :version and the following configuration:
+     */
+    public function iUpdateTheFlowToTheVersionAndTheFollowingConfiguration($version, PyStringNode $string)
+    {
+        $this->response = $this->kernel->handle(Request::create('/flows/'.$this->flowUuid.'/configuration', 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], json_encode([
+            'version' => (int) $version,
+            'yaml' => $string->getRaw()
+        ])));
     }
 
     /**
@@ -302,7 +338,7 @@ EOF;
     public function theStoredConfigurationIsNotEmpty()
     {
         $flow = $this->flowRepository->find(Uuid::fromString($this->flowUuid));
-        $configuration = $flow->getContext()->getConfiguration();
+        $configuration = $flow->getConfiguration();
 
         if (empty($configuration)) {
             throw new \RuntimeException('Found empty configuration while expecting it to be saved');
@@ -522,45 +558,79 @@ EOF;
     }
 
     /**
+     * @Then the configuration should be:
+     */
+    public function theConfigurationShouldBe(PyStringNode $string)
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then the flow configuration version should be :arg1
+     */
+    public function theFlowConfigurationVersionShouldBe($arg1)
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then the flow configuration should be saved successfully
+     */
+    public function theFlowConfigurationShouldBeSavedSuccessfully()
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then the flow configuration update should be rejected
+     */
+    public function theFlowConfigurationUpdateShouldBeRejected()
+    {
+        throw new PendingException();
+    }
+
+    /**
      * @param Uuid $uuid
      * @param array $configuration
      * @return Flow
      */
     public function createFlow(Uuid $uuid = null, array $configuration = [], Team $team = null)
     {
-        $context = $this->createFlowContext($uuid, $configuration, $team);
-
-        $flow = new Flow($context);
-        $this->flowRepository->save($flow);
-
-        $this->currentFlow = $flow;
-
-        return $flow;
-    }
-
-    /**
-     * @param CodeRepository $codeRepository
-     *
-     * @param Uuid $uuid
-     * @param array $configuration
-     * @return RiverFlowContext
-     */
-    private function createFlowContextWithCodeRepository(CodeRepository $codeRepository, Uuid $uuid = null, array $configuration = [], Team $team = null)
-    {
-        $this->flowUuid = (string) ($uuid ?: Uuid::uuid1());
-        $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
+        $uuid = $uuid ?: Uuid::uuid1();
         $team = $team ?: $this->securityContext->theTeamExists('samuel');
+        $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
+        $repository = CodeRepository\GitHub\GitHubCodeRepository::fromRepository(
+            new Repository(
+                new \GitHub\WebHook\Model\User('sroze'),
+                'docker-php-example',
+                'https://github.com/sroze/docker-php-example',
+                false,
+                37856553
+            )
+        );
 
-        $this->codeRepositoryRepository->add($codeRepository);
+        array_map(function($event) use ($uuid) {
+            $this->eventBus->handle($event);
+        }, [
+            new Flow\Event\FlowCreated(
+                $uuid,
+                $team,
+                $user,
+                $repository
+            ),
+            new Flow\Event\FlowConfigurationUpdated(
+                $uuid,
+                $configuration
+            )
+        ]);
+
+        $this->codeRepositoryRepository->add($repository);
         $this->authenticatorClient->addUser($user);
 
-        return RiverFlowContext::createFlow(
-            Uuid::fromString($this->flowUuid),
-            $team,
-            $user,
-            $codeRepository,
-            $configuration
-        );
+        $this->flowUuid = (string) $uuid;
+        $this->currentFlow = $flow = $this->flowRepository->find($uuid);
+
+        return $flow;
     }
 
     /**
@@ -569,24 +639,6 @@ EOF;
     public function getCurrentFlow()
     {
         return $this->currentFlow;
-    }
-
-    /**
-     * @param Uuid $uuid
-     * @param array $configuration
-     * @return RiverFlowContext
-     */
-    private function createFlowContext(Uuid $uuid = null, array $configuration = [], Team $team = null)
-    {
-        return $this->createFlowContextWithCodeRepository(new CodeRepository\GitHub\GitHubCodeRepository(
-            new Repository(
-                new \GitHub\WebHook\Model\User('sroze'),
-                'docker-php-example',
-                'https://github.com/sroze/docker-php-example',
-                false,
-                37856553
-            )
-        ), $uuid, $configuration, $team);
     }
 
     /**

@@ -1,0 +1,6 @@
+[template]
+src   = "cron.conf.tmpl"
+dest  = "/etc/supervisor/conf.d/cron.conf"
+mode  = "0644"
+keys = [
+]

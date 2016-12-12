@@ -10,15 +10,21 @@
         </service>
 
         <service id="admin.controller.flow" class="AdminBundle\Controller\FlowController">
-            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="command_bus"/>
             <argument type="service" id="router" />
             <argument type="service" id="session" />
         </service>
 
+        <service id="admin.controller.migrations" class="AdminBundle\Controller\MigrationsController">
+            <argument type="service" id="session" />
+            <argument type="service" id="river.flow.migrations.to_event_sourced.migrator"/>
+            <argument type="service" id="router" />
+        </service>
+
         <service id="admin.controller.tide" class="AdminBundle\Controller\TideController">
             <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="knp_paginator" />
             <argument>%logstream_frontend_url%</argument>
         </service>

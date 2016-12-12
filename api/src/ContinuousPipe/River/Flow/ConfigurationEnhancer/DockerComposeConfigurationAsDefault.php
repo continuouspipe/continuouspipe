@@ -6,13 +6,14 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\DockerCompose\ComponentsResolver;
 use ContinuousPipe\River\CodeRepository\DockerCompose\DockerComposeComponent;
 use ContinuousPipe\River\CodeRepository\DockerCompose\ResolveException;
-use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\View\Flow as FlowView;
+use ContinuousPipe\River\Flow\ConfigurationEnhancer;
+use ContinuousPipe\River\Flow\ConfigurationEnhancer\Helper\TaskLocator;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
+class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
 {
-    use Flow\ConfigurationEnhancer\Helper\TaskLocator;
+    use TaskLocator;
 
     /**
      * @var ComponentsResolver
@@ -30,10 +31,10 @@ class DockerComposeConfigurationAsDefault implements Flow\ConfigurationEnhancer
     /**
      * {@inheritdoc}
      */
-    public function enhance(Flow $flow, CodeReference $codeReference, array $configs)
+    public function enhance(FlatFlow $flow, CodeReference $codeReference, array $configs)
     {
         try {
-            $dockerComposeComponents = $this->componentsResolver->resolve(FlowView::fromFlow($flow), $codeReference);
+            $dockerComposeComponents = $this->componentsResolver->resolve($flow, $codeReference);
         } catch (ResolveException $e) {
             return $configs;
         }

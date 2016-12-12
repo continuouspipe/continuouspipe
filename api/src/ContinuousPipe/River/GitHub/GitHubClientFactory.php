@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\GitHub;
 
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -123,7 +123,7 @@ class GitHubClientFactory implements ClientFactory
     /**
      * {@inheritdoc}
      */
-    public function createClientForFlow(Flow $flow)
+    public function createClientForFlow(FlatFlow $flow)
     {
         $repository = $flow->getRepository();
 

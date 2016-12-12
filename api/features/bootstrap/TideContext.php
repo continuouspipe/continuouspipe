@@ -212,7 +212,7 @@ EOF;
     public function theSecondTideStarts()
     {
         $flow = $this->flowContext->getCurrentFlow();
-        $tides = $this->viewTideRepository->findLastByFlow($flow, 1);
+        $tides = $this->viewTideRepository->findLastByFlowUuid($flow->getUuid(), 1);
         if (count($tides) == 0) {
             throw new \RuntimeException(sprintf(
                 'Found not tide in flow %s',
@@ -1233,7 +1233,7 @@ EOF;
     private function getTideByCodeReference($branch, $sha1)
     {
         $flow = $this->flowContext->getCurrentFlow();
-        $codeRepository = $flow->getContext()->getCodeRepository();
+        $codeRepository = $flow->getCodeRepository();
         $tides = $this->viewTideRepository->findByCodeReference($flow->getUuid(), new CodeReference($codeRepository, $sha1, $branch));
 
         if (count($tides) != 1) {
@@ -1308,9 +1308,9 @@ EOF;
         $sha = $sha ?: sha1($branch);
 
         return $this->tideFactory->createFromCodeReference(
-            $flow,
+            Flow\Projections\FlatFlow::fromFlow($flow),
             new CodeReference(
-                $flow->getContext()->getCodeRepository(),
+                $flow->getCodeRepository(),
                 $sha,
                 $branch
             ),
@@ -1323,7 +1323,7 @@ EOF;
     {
         if (null === $this->tideUuid) {
             $flow = $this->flowContext->getCurrentFlow();
-            $tides = $this->viewTideRepository->findLastByFlow($flow, 1);
+            $tides = $this->viewTideRepository->findLastByFlowUuid($flow->getUuid(), 1);
 
             if (count($tides) == 0) {
                 throw new \RuntimeException(sprintf(

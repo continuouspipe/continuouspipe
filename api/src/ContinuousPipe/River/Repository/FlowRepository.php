@@ -14,12 +14,16 @@ interface FlowRepository
      *
      * @param Flow $flow
      *
+     * @deprecated Should use Events instead
+     *
      * @return Flow
      */
     public function save(Flow $flow);
 
     /**
      * Find flows by team.
+     *
+     * @deprecated Need to use the `FlatFlowRepository` instead
      *
      * @param Team $team
      *
@@ -29,6 +33,8 @@ interface FlowRepository
 
     /**
      * Delete the flow.
+     *
+     * @deprecated Need to use the `FlatFlowRepository` instead
      *
      * @param Flow $flow
      */
@@ -46,6 +52,8 @@ interface FlowRepository
     public function find(Uuid $uuid);
 
     /**
+     * @deprecated Need to use the `FlatFlowRepository` instead
+     *
      * @param CodeRepository $codeRepository
      *
      * @return Flow[]

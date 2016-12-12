@@ -3,20 +3,20 @@
 namespace ContinuousPipe\River\CodeRepository\DockerCompose;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 
 interface ComponentsResolver
 {
     /**
-     * @param Flow          $flow
+     * @param FlatFlow      $flow
      * @param CodeReference $codeReference
      *
      * @throws ResolveException
      *
      * @return DockerComposeComponent[]
      */
-    public function resolve(Flow $flow, CodeReference $codeReference);
+    public function resolve(FlatFlow $flow, CodeReference $codeReference);
 
     /**
      * Get the components of the given code reference.

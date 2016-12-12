@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 interface ConfigurationEnhancer
 {
@@ -12,11 +12,11 @@ interface ConfigurationEnhancer
      *
      * This method should return the `configs` array with new (or not) elements.
      *
-     * @param Flow          $flow
+     * @param FlatFlow      $flow
      * @param CodeReference $codeReference
      * @param array         $configs
      *
      * @return array
      */
-    public function enhance(Flow $flow, CodeReference $codeReference, array $configs);
+    public function enhance(FlatFlow $flow, CodeReference $codeReference, array $configs);
 }

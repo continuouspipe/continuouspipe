@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Flow\ConfigurationFinalizer;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
@@ -28,7 +28,7 @@ class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration(Flow $flow, CodeReference $codeReference)
+    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference)
     {
         $configuration = $this->factory->getConfiguration($flow, $codeReference);
 
@@ -94,12 +94,12 @@ class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
     }
 
     /**
-     * @param Flow          $flow
+     * @param FlatFlow      $flow
      * @param CodeReference $codeReference
      *
      * @return ArrayObject
      */
-    private function createContext(Flow $flow, CodeReference $codeReference)
+    private function createContext(FlatFlow $flow, CodeReference $codeReference)
     {
         return new ArrayObject([
             'code_reference' => new ArrayObject([

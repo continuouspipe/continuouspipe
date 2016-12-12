@@ -17,7 +17,7 @@
 
         <service id="river.analytics.keen.listener.tide_report" class="ContinuousPipe\River\Analytics\Keen\TideReportListener">
             <argument type="service" id="river.keen.client" />
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="logger" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
@@ -27,7 +27,7 @@
         <!-- Tasks listeners -->
         <service id="river.analytics.keen.listener.build_task" class="ContinuousPipe\River\Analytics\Keen\TaskListener\BuildTaskListener">
             <argument type="service" id="river.keen.client" />
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="logger" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\BuildSuccessful"/>
@@ -36,7 +36,7 @@
 
         <service id="river.analytics.keen.listener.deploy_task" class="ContinuousPipe\River\Analytics\Keen\TaskListener\DeployTaskListener">
             <argument type="service" id="river.keen.client" />
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="logger" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed"/>

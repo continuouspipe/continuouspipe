@@ -82,6 +82,8 @@ tasks:
                               value: http://app.chc-master.svc.cluster.local
                             - name: ZIPKIN_BASE_URL
                               value: http://zipkin.zipkin-master.svc.cluster.local:9411
+                            - name: APP_USER_LOCAL
+                              value: false
 
                     deployment_strategy:
                         readiness_probe:
@@ -97,6 +99,15 @@ tasks:
                             from_service: api
                         environment_variables:
                             <<: *ENV
+                            1000:
+                              name: START_NGINX
+                              value: 'false'
+                            1001:
+                              name: START_PHP_FPM
+                              value: 'false'
+                            1002:
+                              name: START_WORKER
+                              value: 'true'
 
                 tideways:
                     specification:
@@ -125,11 +136,38 @@ tasks:
                         source:
                             from_service: api
 
+                        environment_variables:
+                            - name: START_NGINX
+                              value: 'false'
+                            - name: START_PHP_FPM
+                              value: 'false'
+                            - name: START_CRON
+                              value: 'true'
+
                         accessibility:
                             from_cluster: false
 
-                        command:
-                            - /app/docker/cron/run.sh
+                eventstore:
+                    specification:
+                        volumes:
+                            - type: persistent
+                              name: eventstore-volume
+                              capacity: 5Gi
+                              storage_class: default
+
+                        volume_mounts:
+                            - name: eventstore-volume
+                              mount_path: /var/lib/eventstore
+
+                        resources:
+                            requests:
+                                cpu: 50m
+                                memory: 150Mi
+
+                    deployment_strategy:
+                        readiness_probe:
+                            type: tcp
+                            port: 2113
 
         filter:
             expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'

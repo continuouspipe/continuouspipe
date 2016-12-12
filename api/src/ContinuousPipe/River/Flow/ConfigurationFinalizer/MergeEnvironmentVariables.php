@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Flow\ConfigurationFinalizer;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\TideConfigurationFactory;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -32,7 +32,7 @@ class MergeEnvironmentVariables implements TideConfigurationFactory
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration(Flow $flow, CodeReference $codeReference)
+    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference)
     {
         $configuration = $this->factory->getConfiguration($flow, $codeReference);
 

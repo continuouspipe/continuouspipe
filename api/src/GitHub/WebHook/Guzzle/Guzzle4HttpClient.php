@@ -3,10 +3,9 @@
 namespace GitHub\WebHook\Guzzle;
 
 use Github\HttpClient\HttpClientInterface;
-use GitHub\WebHook\Guzzle\Listener\AuthListener;
+use Github\Client as GitHubClient;
 use GuzzleHttp\Client;
-use GuzzleHttp\Event\BeforeEvent;
-use GuzzleHttp\Message\Response;
+use GuzzleHttp\Psr7\Response;
 
 class Guzzle4HttpClient implements HttpClientInterface
 {
@@ -157,11 +156,13 @@ class Guzzle4HttpClient implements HttpClientInterface
      */
     public function authenticate($tokenOrLogin, $password, $authMethod)
     {
-        $authListener = new AuthListener($tokenOrLogin, $password, $authMethod);
-
-        $this->httpClient->getEmitter()->on('before', function (BeforeEvent $beforeEvent) use ($authListener) {
-            $authListener->beforeRequest($beforeEvent);
-        });
+        if ($authMethod === GitHubClient::AUTH_HTTP_TOKEN) {
+            $this->defaultHeaders = [
+                'Authorization' => sprintf('token %s', $tokenOrLogin),
+            ];
+        } else {
+            throw new \RuntimeException('Auth method '.$authMethod.' not supported');
+        }
     }
 
     /**

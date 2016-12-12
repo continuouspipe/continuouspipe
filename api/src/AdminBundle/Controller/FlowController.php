@@ -2,9 +2,10 @@
 
 namespace AdminBundle\Controller;
 
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\LogStream\ArchiveLogs\Command\ArchiveFlowLogsCommand;
 use ContinuousPipe\River\Repository\FlowRepository;
-use ContinuousPipe\River\Flow;
 use ContinuousPipe\Security\Team\Team;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -21,7 +22,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class FlowController
 {
     /**
-     * @var FlowRepository
+     * @var FlatFlowRepository
      */
     private $flowRepository;
 
@@ -41,12 +42,12 @@ class FlowController
     private $session;
 
     /**
-     * @param FlowRepository        $flowRepository
+     * @param FlatFlowRepository    $flowRepository
      * @param MessageBus            $commandBus
      * @param UrlGeneratorInterface $urlGenerator
      * @param Session               $session
      */
-    public function __construct(FlowRepository $flowRepository, MessageBus $commandBus, UrlGeneratorInterface $urlGenerator, Session $session)
+    public function __construct(FlatFlowRepository $flowRepository, MessageBus $commandBus, UrlGeneratorInterface $urlGenerator, Session $session)
     {
         $this->flowRepository = $flowRepository;
         $this->commandBus = $commandBus;
@@ -70,13 +71,13 @@ class FlowController
     /**
      * @Route("/teams/{team}/flows/{flow}/archive-logs", methods={"POST"}, name="admin_tides_archive_logs")
      * @ParamConverter("team", converter="team", options={"slug"="team"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="flow"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="flow", "flat"=true})
      */
-    public function archiveLogsAction(Team $team, Flow $flow)
+    public function archiveLogsAction(Team $team, FlatFlow $flow)
     {
         $this->commandBus->handle(new ArchiveFlowLogsCommand($flow->getUuid()));
 
-        $this->session->getFlashBag()->add('success', 'Flow\'s tides\' logs successfully archived');
+        $this->session->getFlashBag()->add('success', 'FlatFlow\'s tides\' logs successfully archived');
 
         return new RedirectResponse(
             $this->urlGenerator->generate('admin_tides', [

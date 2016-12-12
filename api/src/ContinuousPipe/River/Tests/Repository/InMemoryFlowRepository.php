@@ -21,7 +21,7 @@ class InMemoryFlowRepository implements FlowRepository
     {
         $this->flowsByUuid[(string) $flow->getUuid()] = $flow;
 
-        $teamSlug = $flow->getContext()->getTeam()->getSlug();
+        $teamSlug = $flow->getTeam()->getSlug();
         if (!array_key_exists($teamSlug, $this->flowsByTeam)) {
             $this->flowsByTeam[$teamSlug] = [];
         }
@@ -68,7 +68,7 @@ class InMemoryFlowRepository implements FlowRepository
     public function findByCodeRepository(CodeRepository $codeRepository)
     {
         $matchingFlows = array_filter($this->flowsByUuid, function (Flow $flow) use ($codeRepository) {
-            return $flow->getContext()->getCodeRepository()->getIdentifier() == $codeRepository->getIdentifier();
+            return $flow->getCodeRepository()->getIdentifier() == $codeRepository->getIdentifier();
         });
 
         return array_values($matchingFlows);

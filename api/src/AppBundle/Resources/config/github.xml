@@ -68,7 +68,6 @@
             <argument type="service" id="river.github.code_reference_resolver" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.repository.flow" />
             <argument type="service" id="logger" />
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent" />
@@ -86,7 +85,7 @@
         <service id="river.listener.github.pull_request.comment_deployment_environment_endpoints" class="ContinuousPipe\River\EventListener\GitHub\PullRequestOpened\CommentDeploymentEnvironmentEndpoints">
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.notifications.tide_listener" />
-            <argument type="service" id="river.event_store" />
+            <argument type="service" id="river.tide_event_store" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestOpened"/>
         </service>
@@ -103,7 +102,7 @@
             <argument type="service" id="river.task_filter.context_factory" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.tide.start_voter" />
-
+            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
         </service>
 
         <service id="river.listener.github.locked.eventually_create_and_start_tide"

@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Alerts\TeamConfiguration;
 use ContinuousPipe\River\Alerts\Alert;
 use ContinuousPipe\River\Alerts\AlertAction;
 use ContinuousPipe\River\Alerts\AlertsRepository;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 
 class TeamDoNotHaveAnyClusterOrRegistry implements AlertsRepository
@@ -26,7 +26,7 @@ class TeamDoNotHaveAnyClusterOrRegistry implements AlertsRepository
     /**
      * {@inheritdoc}
      */
-    public function findByFlow(Flow $flow)
+    public function findByFlow(FlatFlow $flow)
     {
         $bucket = $this->bucketRepository->find(
             $flow->getTeam()->getBucketUuid()

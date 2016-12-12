@@ -1,0 +1,10 @@
+[program:cron]
+command = /usr/local/share/cron/run.sh
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+user = root
+autostart = {{ getenv "START_CRON" }}
+autorestart = true
+priority = 10

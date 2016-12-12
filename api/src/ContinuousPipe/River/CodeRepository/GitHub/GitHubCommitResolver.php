@@ -7,7 +7,7 @@ use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 use Github\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -51,7 +51,7 @@ class GitHubCommitResolver implements CommitResolver
     /**
      * {@inheritdoc}
      */
-    public function getHeadCommitOfBranch(Flow $flow, $branch)
+    public function getHeadCommitOfBranch(FlatFlow $flow, $branch)
     {
         $client = $this->clientFactory->createClientForFlow($flow);
 

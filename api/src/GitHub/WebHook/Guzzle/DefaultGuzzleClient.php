@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 class DefaultGuzzleClient extends Client
 {
     protected $options = array(
-        'base_url' => 'https://api.github.com/',
+        'base_uri' => 'https://api.github.com/',
         'timeout' => 10,
         'api_limit' => 5000,
         'cache_dir' => null,

@@ -2,33 +2,76 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
-use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\AbstractCodeRepository;
 use GitHub\WebHook\Model\Repository;
 use JMS\Serializer\Annotation as JMS;
 
-class GitHubCodeRepository implements CodeRepository
+class GitHubCodeRepository extends AbstractCodeRepository
 {
     /**
-     * @JMS\Type("GitHub\WebHook\Model\Repository")
+     * @JMS\Type("string")
+     * @JMS\Accessor(getter="getAddress")
+     *
+     * @var string
+     */
+    private $address;
+
+    /**
+     * @JMS\Type("string")
+     * @JMS\Accessor(getter="getOrganisation")
+     *
+     * @var string
+     */
+    private $organisation;
+
+    /**
+     * @JMS\Type("string")
+     * @JMS\Accessor(getter="getName")
+     *
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @JMS\Type("boolean")
+     * @JMS\Accessor(getter="isPrivate")
+     *
+     * @var bool
+     */
+    private $private = false;
+
+    /**
+     * @deprecated This method is a BC for the previously stored (serialized) GitHubCodeRepository objects
+     *
+     * @JMS\Exclude
      *
      * @var Repository
      */
     private $repository;
 
-    /**
-     * @param Repository $repository
-     */
-    public function __construct(Repository $repository)
+    public function __construct(string $identifier, string $address, string $organisation, string $name, bool $private)
     {
-        $this->repository = $repository;
+        $this->identifier = $identifier;
+        $this->address = $address;
+        $this->organisation = $organisation;
+        $this->name = $name;
+        $this->private = $private;
     }
 
     /**
-     * @return Repository
+     * @param Repository $repository
+     *
+     * @return GitHubCodeRepository
      */
-    public function getGitHubRepository()
+    public static function fromRepository(Repository $repository)
     {
-        return $this->repository;
+        return new self(
+            $repository->getId(),
+            $repository->getUrl(),
+            $repository->getOwner()->getLogin(),
+            $repository->getName(),
+            $repository->isPrivate()
+        );
     }
 
     /**
@@ -36,7 +79,11 @@ class GitHubCodeRepository implements CodeRepository
      */
     public function getIdentifier()
     {
-        return $this->repository->getId();
+        if ($this->repository) {
+            $this->populateFieldsFromRepository($this->repository);
+        }
+
+        return $this->identifier;
     }
 
     /**
@@ -44,7 +91,38 @@ class GitHubCodeRepository implements CodeRepository
      */
     public function getAddress()
     {
-        return $this->repository->getUrl();
+        if ($this->repository) {
+            $this->populateFieldsFromRepository($this->repository);
+        }
+
+        return $this->address;
+    }
+
+    public function getOrganisation() : string
+    {
+        if ($this->repository) {
+            $this->populateFieldsFromRepository($this->repository);
+        }
+
+        return $this->organisation;
+    }
+
+    public function getName() : string
+    {
+        if ($this->repository) {
+            $this->populateFieldsFromRepository($this->repository);
+        }
+
+        return $this->name;
+    }
+
+    public function isPrivate() : bool
+    {
+        if ($this->repository) {
+            $this->populateFieldsFromRepository($this->repository);
+        }
+
+        return $this->private;
     }
 
     /**
@@ -53,5 +131,14 @@ class GitHubCodeRepository implements CodeRepository
     public function getType()
     {
         return 'github';
+    }
+
+    private function populateFieldsFromRepository(Repository $repository)
+    {
+        $this->identifier = $repository->getId();
+        $this->address = $repository->getUrl();
+        $this->organisation = $repository->getOwner()->getLogin();
+        $this->name = $repository->getName();
+        $this->private = (bool) $repository->isPrivate();
     }
 }

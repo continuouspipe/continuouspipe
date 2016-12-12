@@ -3,8 +3,8 @@
 namespace ContinuousPipe\River\Flow\ConfigurationEnhancer;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Flow\ConfigurationEnhancer;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class AddDefaultValues implements ConfigurationEnhancer
@@ -14,7 +14,7 @@ class AddDefaultValues implements ConfigurationEnhancer
     /**
      * {@inheritdoc}
      */
-    public function enhance(Flow $flow, CodeReference $codeReference, array $configs)
+    public function enhance(FlatFlow $flow, CodeReference $codeReference, array $configs)
     {
         $defaults = $this->getDefaultValues($configs);
         $defaultConfiguration = $this->getEmptyConfiguration($configs);

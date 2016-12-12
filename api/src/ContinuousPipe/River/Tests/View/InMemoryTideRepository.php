@@ -6,9 +6,9 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
-use ContinuousPipe\River\View\TideList;
 use ContinuousPipe\River\View\TideRepository;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class InMemoryTideRepository implements TideRepository
 {
@@ -72,9 +72,9 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findLastByFlow(Flow $flow, $limit)
+    public function findLastByFlowUuid(UuidInterface $flowUuid, $limit)
     {
-        $tides = $this->findByFlowUuid($flow->getUuid());
+        $tides = $this->findByFlowUuid($flowUuid);
 
         return array_slice($tides->toArray(), 0, $limit);
     }

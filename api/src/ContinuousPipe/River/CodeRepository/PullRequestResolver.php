@@ -3,17 +3,17 @@
 namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\View\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 interface PullRequestResolver
 {
     /**
      * Get the pull request which have this head commit.
      *
-     * @param Flow          $flow
-     * @param CodeReference $codeReference
+     * @param \ContinuousPipe\River\Flow\Projections\FlatFlow $flow
+     * @param CodeReference                                   $codeReference
      *
      * @return \GitHub\WebHook\Model\PullRequest[]
      */
-    public function findPullRequestWithHeadReference(Flow $flow, CodeReference $codeReference);
+    public function findPullRequestWithHeadReference(FlatFlow $flow, CodeReference $codeReference);
 }
