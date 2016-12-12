@@ -218,6 +218,10 @@ tolerance:
                 value: ~
                 logger: logger
 
+        buffered:
+            buffered:
+                runner: tolerance.operation_runners.null_placeholdered
+
         builder:
             success_failure_metrics:
                 publisher: tolerance.metrics.publisher.statsd
@@ -243,11 +247,6 @@ tolerance:
                 publisher: tolerance.metrics.publisher.statsd
                 namespace: river.outgoing.slack
 
-
-        buffered:
-            buffered:
-                runner: tolerance.operation_runners.null_placeholdered
-
     metrics:
         collectors:
             -
@@ -264,6 +263,7 @@ tolerance:
         publishers:
             hosted_graphite:
                 type: hosted_graphite
+                operation_runner: tolerance.operation_runners.buffered
                 options:
                     server: %hosted_graphite_server%
                     port: %hosted_graphite_port%
@@ -271,6 +271,7 @@ tolerance:
 
             statsd:
                 type: beberlei
+                operation_runner: tolerance.operation_runners.buffered
                 options:
                     service: beberlei_metrics.collector.statsd
                     auto_flush: true
