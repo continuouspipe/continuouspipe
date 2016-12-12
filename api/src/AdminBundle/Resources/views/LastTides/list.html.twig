@@ -27,7 +27,7 @@
         {% endif %}
 
         <tr class="{{ tr_class }}">
-            <td>{{ tide.codeReference.repository.gitHubRepository.owner.login }} / {{ tide.codeReference.repository.gitHubRepository.name }}</td>
+            <td>{{ tide.codeReference.repository.organisation }} / {{ tide.codeReference.repository.name }}</td>
             <td>{{ tide.codeReference.branch }} ({{ tide.codeReference.commitSha }})</td>
             <td>{{ tide.creationDate | date }}</td>
             <td>{{ tide.status }}</td>
