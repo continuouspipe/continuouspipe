@@ -52,4 +52,5 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.flow = flow;
+        $scope.flow.yml_configuration = jsyaml.safeDump(flow.configuration);
     });
