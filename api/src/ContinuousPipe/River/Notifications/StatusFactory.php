@@ -151,7 +151,7 @@ class StatusFactory
             '%s/team/%s/%s/%s/logs',
             $this->getUiBaseUrl(),
             $tide->getTeam()->getSlug(),
-            (string) $tide->getFlow()->getUuid(),
+            (string) $tide->getFlowUuid(),
             (string) $tide->getUuid()
         );
     }

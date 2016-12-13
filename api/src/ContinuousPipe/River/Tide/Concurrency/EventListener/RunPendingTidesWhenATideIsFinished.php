@@ -37,7 +37,7 @@ class RunPendingTidesWhenATideIsFinished
         $tide = $this->tideRepository->find($tideEvent->getTideUuid());
 
         $this->commandBus->handle(new RunPendingTidesCommand(
-            $tide->getFlow()->getUuid(),
+            $tide->getFlowUuid(),
             $tide->getCodeReference()->getBranch()
         ));
     }

@@ -48,7 +48,7 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
     public function getFileSystem(FlatFlow $flow, CodeReference $codeReference)
     {
         return new CodeRepository\GitHubRelativeFileSystem(
-            $this->gitHubClientFactory->createClientForFlow($flow),
+            $this->gitHubClientFactory->createClientForFlow($flow->getUuid()),
             $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
             $codeReference->getCommitSha() ?: $codeReference->getBranch()
         );

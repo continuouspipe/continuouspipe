@@ -38,7 +38,7 @@ class PullRequestResolver implements ExternalRelationResolver
         $tide = $this->tideRepository->find($tideUuid);
         $codeRepository = $tide->getCodeReference()->getRepository();
         $gitHubPullRequests = $this->codeRepositoryPullRequestResolver->findPullRequestWithHeadReference(
-            $tide->getFlow(),
+            $tide->getFlowUuid(),
             $tide->getCodeReference()
         );
 

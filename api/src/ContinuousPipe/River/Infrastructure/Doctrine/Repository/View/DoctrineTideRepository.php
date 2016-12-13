@@ -100,7 +100,7 @@ class DoctrineTideRepository implements TideRepository
             $dto = $this->findDto($tide->getUuid());
             $dto->merge($tide);
         } catch (TideNotFound $e) {
-            $flow = $this->flowRepository->find($tide->getFlow()->getUuid());
+            $flow = $this->flowRepository->find($tide->getFlowUuid());
 
             $flowDto = new FlowDto();
             $flowDto->context = FlowContext::createFlow(
@@ -221,13 +221,10 @@ class DoctrineTideRepository implements TideRepository
     private function dtoToTide(TideDto $tideDto)
     {
         $wrappedTide = $tideDto->getTide();
-        $flow = $this->flowRepository->find(Uuid::fromString(
-            $tideDto->getFlow()->uuid
-        ));
 
         $tide = Tide::create(
             Uuid::fromString($tideDto->getUuid()),
-            $flow,
+            Uuid::fromString($tideDto->getFlow()->uuid),
             $wrappedTide->getCodeReference(),
             TreeLog::fromId($wrappedTide->getLogId()),
             $wrappedTide->getTeam(),

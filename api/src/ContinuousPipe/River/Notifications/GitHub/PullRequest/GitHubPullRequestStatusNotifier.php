@@ -77,7 +77,7 @@ class GitHubPullRequestStatusNotifier implements Notifier
         }
 
         try {
-            $client = $this->gitHubClientFactory->createClientForFlow($tide->getFlow());
+            $client = $this->gitHubClientFactory->createClientForFlow($tide->getFlowUuid());
         } catch (UserCredentialsNotFound $e) {
             throw new NotificationException('No valid GitHub credentials in bucket', $e->getCode(), $e);
         }
@@ -93,7 +93,10 @@ class GitHubPullRequestStatusNotifier implements Notifier
         // Remove previous comments
         $this->removePreviousComments($client, $repository, $tide);
 
-        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($tide->getFlow(), $tide->getCodeReference());
+        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference(
+            $tide->getFlowUuid(),
+            $tide->getCodeReference()
+        );
 
         foreach ($pullRequests as $pullRequest) {
             // Create the new comment
@@ -137,7 +140,7 @@ class GitHubPullRequestStatusNotifier implements Notifier
      */
     private function removePreviousComments(Client $client, GitHubCodeRepository $repository, Tide $tide)
     {
-        $tides = $this->tideRepository->findByBranch($tide->getFlow()->getUuid(), $tide->getCodeReference());
+        $tides = $this->tideRepository->findByBranch($tide->getFlowUuid(), $tide->getCodeReference());
 
         foreach ($tides as $tide) {
             $commentEvents = $this->eventStore->findByTideUuidAndType($tide->getUuid(), CommentedTideFeedback::class);

@@ -42,7 +42,7 @@ class ViewRepositoryBasedConcurrencyManager implements TideConcurrencyManager
     public function shouldTideStart(Tide $tide)
     {
         $runningTides = $this->tideRepository->findRunningByFlowUuidAndBranch(
-            $tide->getFlow()->getUuid(),
+            $tide->getFlowUuid(),
             $tide->getCodeReference()->getBranch()
         );
 
@@ -55,7 +55,7 @@ class ViewRepositoryBasedConcurrencyManager implements TideConcurrencyManager
     public function postPoneTideStart(Tide $tide)
     {
         $this->delayedCommandBus->publish(
-            new RunPendingTidesCommand($tide->getFlow()->getUuid(), $tide->getCodeReference()->getBranch()),
+            new RunPendingTidesCommand($tide->getFlowUuid(), $tide->getCodeReference()->getBranch()),
             $this->retryStartInterval
         );
     }

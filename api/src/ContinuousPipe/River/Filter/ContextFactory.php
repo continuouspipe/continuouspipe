@@ -16,6 +16,7 @@ use ContinuousPipe\River\TideContext;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use GitHub\WebHook\Model\PullRequest;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\UuidInterface;
 
 class ContextFactory
 {
@@ -107,13 +108,12 @@ class ContextFactory
     {
         $context = $tide->getContext();
         $repository = $context->getCodeRepository();
-        $flow = FlatFlow::fromFlow($this->flowRepository->find($context->getFlowUuid()));
 
         if (null !== ($event = $context->getCodeRepositoryEvent()) && $event instanceof PullRequestEvent) {
             $pullRequest = $event->getEvent()->getPullRequest();
         } else {
             $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference(
-                $flow,
+                $context->getFlowUuid(),
                 $context->getCodeReference()
             );
 
@@ -131,26 +131,26 @@ class ContextFactory
         return new ArrayObject([
             'number' => $pullRequest->getNumber(),
             'state' => $pullRequest->getState(),
-            'labels' => $this->getPullRequestLabelNames($flow, $context, $repository, $pullRequest),
+            'labels' => $this->getPullRequestLabelNames($context->getFlowUuid(), $context, $repository, $pullRequest),
         ]);
     }
 
     /**
-     * @param FlatFlow       $flow
+     * @param UuidInterface $flowUuid
      * @param TideContext    $context
      * @param CodeRepository $codeRepository
      * @param PullRequest    $pullRequest
      *
      * @return array
      */
-    private function getPullRequestLabelNames(FlatFlow $flow, TideContext $context, CodeRepository $codeRepository, PullRequest $pullRequest)
+    private function getPullRequestLabelNames(UuidInterface $flowUuid, TideContext $context, CodeRepository $codeRepository, PullRequest $pullRequest)
     {
         if (!$codeRepository instanceof CodeRepository\GitHub\GitHubCodeRepository) {
             return [];
         }
 
         try {
-            $client = $this->gitHubClientFactory->createClientForFlow($flow);
+            $client = $this->gitHubClientFactory->createClientForFlow($flowUuid);
         } catch (UserCredentialsNotFound $e) {
             $this->logger->warning('Unable to get pull-request labels, credentials not found', [
                 'exception' => $e,

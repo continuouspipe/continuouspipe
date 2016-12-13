@@ -10,6 +10,7 @@ use Github\Client;
 use Github\HttpClient\HttpClientInterface;
 use GitHub\Integration\Installation;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class TestClientFactory implements ClientFactory
 {
@@ -69,7 +70,7 @@ class TestClientFactory implements ClientFactory
     /**
      * {@inheritdoc}
      */
-    public function createClientForFlow(FlatFlow $flow)
+    public function createClientForFlow(UuidInterface $flowUuid)
     {
         return new Client($this->httpClient);
     }

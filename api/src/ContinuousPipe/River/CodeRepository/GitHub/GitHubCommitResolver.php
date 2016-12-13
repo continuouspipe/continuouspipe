@@ -53,7 +53,7 @@ class GitHubCommitResolver implements CommitResolver
      */
     public function getHeadCommitOfBranch(FlatFlow $flow, $branch)
     {
-        $client = $this->clientFactory->createClientForFlow($flow);
+        $client = $this->clientFactory->createClientForFlow($flow->getUuid());
 
         return $this->_getHeadCommit($client, $flow->getRepository(), $branch);
     }

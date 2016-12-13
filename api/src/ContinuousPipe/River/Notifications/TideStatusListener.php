@@ -70,7 +70,7 @@ class TideStatusListener
                 $this->logger->warning('Unable to send notification', [
                     'message' => $e->getMessage(),
                     'notification' => $notification,
-                    'flow' => (string) $tide->getFlow()->getUuid(),
+                    'flow' => (string) $tide->getFlowUuid(),
                 ]);
             }
         }

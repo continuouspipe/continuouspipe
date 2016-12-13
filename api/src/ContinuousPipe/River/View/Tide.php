@@ -8,6 +8,7 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use LogStream\Log;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class Tide
 {
@@ -22,9 +23,9 @@ class Tide
     private $uuid;
 
     /**
-     * @var FlatFlow
+     * @var UuidInterface
      */
-    private $flow;
+    private $flowUuid;
 
     /**
      * @var CodeReference
@@ -79,7 +80,7 @@ class Tide
      * Create a new tide representation.
      *
      * @param Uuid          $uuid
-     * @param FlatFlow      $flow
+     * @param UuidInterface $flowUuid
      * @param CodeReference $codeReference
      * @param Log           $log
      * @param Team          $team
@@ -89,11 +90,11 @@ class Tide
      *
      * @return Tide
      */
-    public static function create(Uuid $uuid, FlatFlow $flow, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate)
+    public static function create(Uuid $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate)
     {
         $tide = new self();
         $tide->uuid = $uuid;
-        $tide->flow = $flow;
+        $tide->flowUuid = $flowUuid;
         $tide->codeReference = $codeReference;
         $tide->logId = $log->getId();
         $tide->creationDate = $creationDate;
@@ -113,11 +114,11 @@ class Tide
     }
 
     /**
-     * @return FlatFlow
+     * @return UuidInterface
      */
-    public function getFlow()
+    public function getFlowUuid()
     {
-        return $this->flow;
+        return $this->flowUuid;
     }
 
     /**

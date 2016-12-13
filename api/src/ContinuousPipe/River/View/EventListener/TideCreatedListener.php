@@ -42,11 +42,10 @@ class TideCreatedListener
     public function notify(TideCreated $event)
     {
         $tideContext = $event->getTideContext();
-        $flow = $this->flowRepository->find($tideContext->getFlowUuid());
 
         $view = Tide::create(
             $event->getTideUuid(),
-            FlatFlow::fromFlow($flow),
+            $tideContext->getFlowUuid(),
             $tideContext->getCodeReference(),
             $tideContext->getLog(),
             $tideContext->getTeam(),
