@@ -142,7 +142,7 @@ class FlowController
      */
     public function getConfigurationAction(FlatFlow $flow)
     {
-        $defaultCodeReference = new CodeReference($flow->getRepository(), null, $flow->getRepository()->getDefaultBranch() ?: 'master');
+        $defaultCodeReference = CodeReference::repositoryDefault($flow->getRepository());
 
         return [
             'configuration' => $flow->getConfiguration(),

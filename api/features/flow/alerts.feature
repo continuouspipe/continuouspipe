@@ -30,3 +30,15 @@ Feature:
     Given the team "samuel" have the credentials of a Docker registry "gcr.io"
     When I load the alerts of the flow "00000000-0000-0000-0000-000000000000"
     Then I should not see the "team-missing-docker-registry" alert
+
+  Scenario: A missing variable will produce an alert
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        kubernetes:
+            deploy:
+                cluster: ${CLUSTER}
+                services: []
+    """
+    When I load the alerts of the flow "00000000-0000-0000-0000-000000000000"
+    Then I should see the "missing-variable" alert
