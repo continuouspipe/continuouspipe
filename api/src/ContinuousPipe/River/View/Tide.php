@@ -71,6 +71,11 @@ class Tide
      */
     private $finishDate;
 
+    /**
+     * @var TideTaskView[]
+     */
+    private $tasks = [];
+
     private function __construct()
     {
     }
@@ -190,6 +195,22 @@ class Tide
     public function setFinishDate($finishDate)
     {
         $this->finishDate = $finishDate;
+    }
+
+    /**
+     * @return TideTaskView[]
+     */
+    public function getTasks(): array
+    {
+        return $this->tasks;
+    }
+
+    /**
+     * @param TideTaskView[] $tasks
+     */
+    public function setTasks(array $tasks)
+    {
+        $this->tasks = $tasks;
     }
 
     /**

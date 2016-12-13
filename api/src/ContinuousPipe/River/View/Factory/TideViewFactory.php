@@ -8,7 +8,9 @@ use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\View\TideTaskView;
 use ContinuousPipe\River\View\TimeResolver;
 use Ramsey\Uuid\UuidInterface;
 
@@ -70,6 +72,9 @@ class TideViewFactory
         $view->setStartDate($startedAt);
         $view->setFinishDate($finishedAt);
         $view->setStatus(Tide::STATUS_PENDING);
+        $view->setTasks(array_map(function(Task $task) {
+            return TideTaskView::fromTask($task);
+        }, $tide->getTasks()->getTasks()));
 
         if ($tide->isRunning()) {
             $view->setStatus(Tide::STATUS_RUNNING);

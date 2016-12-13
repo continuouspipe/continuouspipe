@@ -22,6 +22,7 @@ use ContinuousPipe\River\Tests\Queue\TracedDelayedCommandBus;
 use ContinuousPipe\River\Tests\View\PredictableTimeResolver;
 use ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand;
 use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\View\TideTaskView;
 use ContinuousPipe\Security\Team\Team;
 use LogStream\Node\Container;
 use LogStream\Node\Text;
@@ -98,6 +99,11 @@ class TideContext implements Context
      * @var Response|null
      */
     private $response;
+    /**
+     * @var Tide|null
+     */
+    private $view;
+
     /**
      * @var PredictableCommitResolver
      */
@@ -397,6 +403,39 @@ EOF;
                 'page' => $page,
             ]
         ));
+    }
+
+    /**
+     * @When I request the tide view
+     */
+    public function iRequestTheTideView()
+    {
+        $this->view = $this->viewTideRepository->find($this->tideUuid);
+    }
+
+    /**
+     * @Then the task :task should be :status
+     */
+    public function theTaskShouldBe($taskIdentifier, $status)
+    {
+        $matchingTasks = array_filter($this->view->getTasks(), function(TideTaskView $view) use ($taskIdentifier) {
+            return $view->getIdentifier() == $taskIdentifier;
+        });
+
+        if (count($matchingTasks) == 0) {
+            throw new \RuntimeException('No task matching this identifier found');
+        }
+
+        $task = current($matchingTasks);
+        $foundStatus = $task->getStatus();
+
+        if ($status != $foundStatus) {
+            throw new \RuntimeException(sprintf(
+                'Found status "%s" while expecting "%s"',
+                $foundStatus,
+                $status
+            ));
+        }
     }
 
     /**
@@ -734,7 +773,7 @@ EOF;
     public function aTideIsStartedWithABuildTask()
     {
         $this->aTideIsStartedWithTasks([
-            [
+            'build' => [
                 'build' => []
             ]
         ]);
@@ -746,7 +785,7 @@ EOF;
     public function aTideIsStartedWithABuildTaskThatHaveTheFollowingEnvironmentVariables(TableNode $environ)
     {
         $this->aTideIsStartedWithTasks([
-            [
+            'build' => [
                 'build' => [
                     'environment' => $environ->getHash(),
                     'services' => ['image0' => []]
