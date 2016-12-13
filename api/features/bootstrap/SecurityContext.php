@@ -42,7 +42,7 @@ class SecurityContext implements Context
      */
     public function iAmAuthenticated()
     {
-        $this->iAmAuthenticatedAs('samuel');
+        $this->iAmAuthenticatedAs('samuel.roze@gmail.com');
     }
 
     /**
@@ -61,6 +61,7 @@ class SecurityContext implements Context
 
     /**
      * @Given the team :slug exists
+     * @Given there is a team :slug
      */
     public function theTeamExists($slug)
     {

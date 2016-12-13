@@ -31,6 +31,7 @@
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="validator" />
             <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="river.flow.configuration.missing_variables.configuration_resolver" />
         </service>
         <service id="app.controller.github" class="AppBundle\Controller\GitHubController">
             <argument type="service" id="command_bus" />

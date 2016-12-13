@@ -179,6 +179,8 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     public function iRequestTheFlowConfiguration()
     {
         $this->response = $this->kernel->handle(Request::create('/flows/'.$this->flowUuid.'/configuration'));
+
+        $this->assertResponseCode(200);
     }
 
     /**
@@ -263,6 +265,30 @@ EOF;
     public function iRetrieveTheListOfTheFlowsOfTheTeam($teamSlug)
     {
         $this->response = $this->kernel->handle(Request::create(sprintf('/teams/%s/flows', $teamSlug), 'GET'));
+    }
+
+    /**
+     * @Then the variable :variable should be missing
+     */
+    public function theVariableShouldBeMissing($variable)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if (!in_array($variable, $json['missing_variables'])) {
+            throw new \RuntimeException('The variable is not found is the missing variables');
+        }
+    }
+
+    /**
+     * @Then the variable :variable should not be missing
+     */
+    public function theVariableShouldNotBeMissing($variable)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if (in_array($variable, $json['missing_variables'])) {
+            throw new \RuntimeException('The variable is found is the missing variables');
+        }
     }
 
     /**

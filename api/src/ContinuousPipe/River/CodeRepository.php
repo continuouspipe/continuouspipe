@@ -20,4 +20,9 @@ interface CodeRepository
      * @return string
      */
     public function getType();
+
+    /**
+     * @return string
+     */
+    public function getDefaultBranch();
 }
