@@ -16,7 +16,7 @@ angular.module('continuousPipeRiver')
                     'title@layout': {
                         template:
                             '<a ui-sref="flows({team: team.slug})">{{ team.name || team.slug }}</a> / '+
-                            '<a ui-sref="flow.tides({uuid: flow.uuid})">{{ flow.repository.repository.name }}</a> / '+
+                            '<a ui-sref="flow.tides({uuid: flow.uuid})">{{ flow.repository.name }}</a> / '+
                             '{{ tide.uuid }} <span class="branch"><md-icon class="cp-icon-git-branch"></md-icon> {{ tide.code_reference.branch }}</span>'
                         ,
                         controller: function($scope, team, flow, tide) {

@@ -23,7 +23,7 @@ angular.module('continuousPipeRiver')
                         templateUrl: 'flow/views/layout/aside.html'
                     },
                     'title@layout': {
-                        template: '<a ui-sref="flows({team: team.slug})">{{ team.name || team.slug }}</a> / {{ flow.repository.repository.name }}',
+                        template: '<a ui-sref="flows({team: team.slug})">{{ team.name || team.slug }}</a> / {{ flow.repository.name }}',
                         controller: function($scope, team, flow) {
                             $scope.team = team;
                             $scope.flow = flow;

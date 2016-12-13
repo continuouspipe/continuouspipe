@@ -18,7 +18,7 @@ angular.module('continuousPipeRiver')
 
         this.findComponentsByRepositoryAndBranch = function(repository, branch) {
             return $resource(RIVER_API_URL+'/wizard/repositories/:id/components/:branch').query({
-                id: repository.repository.id,
+                id: repository.identifier,
                 branch: branch
             }).$promise;
         };
