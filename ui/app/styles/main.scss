@@ -494,6 +494,26 @@ body {
             margin: 4px;
         }
     }
+
+    .configuration-content {
+        .form-variable-container {
+            padding-top: 0;
+            padding-bottom: 0;
+        
+            form {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+
+                md-input-container {
+                    margin-bottom: 0;
+                }
+
+                .md-button.md-fab {
+                    z-index: 1;
+                }
+            }
+        }
+    }
 }
 
 $loader-color: rgb(66, 133, 244);
@@ -541,6 +561,7 @@ pre.deployment-logs {
 
 .yaml-editor {
     min-height: 400px;
+    z-index: 1;
 }
 .yaml-editor-buttons {
     text-align: center;
