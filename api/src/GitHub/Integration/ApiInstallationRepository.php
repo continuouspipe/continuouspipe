@@ -105,6 +105,6 @@ class ApiInstallationRepository implements InstallationRepository
             }
         }
 
-        throw new InstallationNotFound('The GitHub integration do not have access to this repository');
+        throw new InstallationNotFound('The GitHub integration does not have access to this repository');
     }
 }

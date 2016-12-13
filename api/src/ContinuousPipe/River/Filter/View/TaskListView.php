@@ -35,7 +35,7 @@ class TaskListView
     {
         if (!array_key_exists($key, $this->tasks)) {
             throw new \InvalidArgumentException(sprintf(
-                'Task "%s" do not exists',
+                'Task "%s" does not exist',
                 $key
             ));
         }

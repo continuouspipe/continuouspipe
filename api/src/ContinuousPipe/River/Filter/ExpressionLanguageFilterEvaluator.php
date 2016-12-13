@@ -48,7 +48,7 @@ class ExpressionLanguageFilterEvaluator implements FilterEvaluator
 
         if (!is_bool($evaluated)) {
             throw new TideConfigurationException(sprintf(
-                'Expression "%s" is not valid as it do not return a boolean',
+                'Expression "%s" is not valid as it does not return a boolean',
                 $expression
             ));
         }

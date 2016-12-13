@@ -523,7 +523,7 @@ EOF;
         $environments = json_decode($this->response->getContent(), true);
 
         if (!is_array($environments)) {
-            throw new \RuntimeException('The response do not looks like to be a JSON array');
+            throw new \RuntimeException('The response does not look like it is a JSON array');
         }
 
         if (count($environments) > 0) {

@@ -25,7 +25,7 @@ class ArrayObject implements \ArrayAccess
     public function __get($key)
     {
         if (!$this->offsetExists($key)) {
-            throw new \InvalidArgumentException(sprintf('The key "%s" do not exists', $key));
+            throw new \InvalidArgumentException(sprintf('The key "%s" does not exist', $key));
         }
 
         return $this->offsetGet($key);
