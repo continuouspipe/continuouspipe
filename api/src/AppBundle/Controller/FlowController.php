@@ -151,9 +151,9 @@ class FlowController
     }
 
     /**
-     * Update a flow.
+     * Update the flow configuration.
      *
-     * @Route("/flows/{uuid}", methods={"PUT"})
+     * @Route("/flows/{uuid}/configuration", methods={"POST"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @ParamConverter("updateRequest", converter="fos_rest.request_body")
      * @Security("is_granted('UPDATE', flow)")

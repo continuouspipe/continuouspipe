@@ -242,14 +242,13 @@ tasks:
         cluster: foo
 EOF;
 
-        $url = sprintf('/flows/%s', $this->flowUuid);
-        $this->response = $this->kernel->handle(Request::create($url, 'PUT', [], [], [], [
+        $url = sprintf('/flows/%s/configuration', $this->flowUuid);
+        $this->response = $this->kernel->handle(Request::create($url, 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
         ], json_encode([
             'yml_configuration' => $this->lastConfiguration
         ])));
     }
-
 
     /**
      * @When I retrieve the list of the flows

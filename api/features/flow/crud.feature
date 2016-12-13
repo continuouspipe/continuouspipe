@@ -37,7 +37,7 @@ Feature:
     And the flow UUID should be "00000000-0000-0000-0000-000000000000"
 
   @smoke
-  Scenario: I can update the flow
+  Scenario: I can update the configuration of a flow
     Given the team "samuel" exists
     And the user "samuel" is "ADMIN" of the team "samuel"
     And I have a flow in the team "samuel"
