@@ -65,7 +65,7 @@ class DoctrineTideRepository implements TideRepository
         $queryBuilder = $this
             ->getEntityRepository()
             ->createQueryBuilder('dto')
-            ->where('dto.flow = :flowUuid')
+            ->where('dto.flowUuid = :flowUuid')
             ->setParameter('flowUuid', (string) $uuid)
             ->orderBy('dto.tide.creationDate', 'DESC')
         ;
@@ -81,7 +81,7 @@ class DoctrineTideRepository implements TideRepository
     public function findLastByFlowUuid(UuidInterface $flowUuid, $limit)
     {
         $dtos = $this->getEntityRepository()->findBy([
-            'flow' => (string) $flowUuid,
+            'flowUuid' => (string) $flowUuid,
         ], [
             'tide.creationDate' => 'DESC',
         ], $limit);
@@ -100,25 +100,7 @@ class DoctrineTideRepository implements TideRepository
             $dto = $this->findDto($tide->getUuid());
             $dto->merge($tide);
         } catch (TideNotFound $e) {
-            $flow = $this->flowRepository->find($tide->getFlowUuid());
-
-            $flowDto = new FlowDto();
-            $flowDto->context = FlowContext::createFlow(
-                $flow->getUuid(),
-                $flow->getTeam(),
-                $flow->getUser(),
-                $flow->getRepository(),
-                $flow->getConfiguration()
-            );
-            $flowDto->repositoryIdentifier = $flow->getRepository()->getIdentifier();
-            $flowDto->repositoryType = $flow->getRepository()->getType();
-            $flowDto->teamSlug = $flow->getTeam()->getSlug();
-            $flowDto->userUsername = $flow->getUser()->getUsername();
-            $flowDto->uuid = $flow->getUuid()->toString();
-
-            $flowDto = $this->entityManager->merge($flowDto);
-
-            $dto = TideDto::fromTide($tide, $flowDto);
+            $dto = TideDto::fromTide($tide);
         }
 
         $this->entityManager->persist($dto);
@@ -131,7 +113,7 @@ class DoctrineTideRepository implements TideRepository
     public function findByCodeReference(Uuid $flowUuid, CodeReference $codeReference)
     {
         $dtos = $this->getEntityRepository()->findBy([
-            'flow' => (string) $flowUuid,
+            'flowUuid' => (string) $flowUuid,
             'tide.codeReference.sha1' => $codeReference->getCommitSha(),
             'tide.codeReference.branch' => $codeReference->getBranch(),
         ]);
@@ -147,7 +129,7 @@ class DoctrineTideRepository implements TideRepository
     public function findByBranch(Uuid $flowUuid, CodeReference $codeReference)
     {
         $dtos = $this->getEntityRepository()->findBy([
-            'flow' => (string) $flowUuid,
+            'flowUuid' => (string) $flowUuid,
             'tide.codeReference.branch' => $codeReference->getBranch(),
         ]);
 
@@ -170,7 +152,7 @@ class DoctrineTideRepository implements TideRepository
     public function findRunningByFlowUuidAndBranch(Uuid $flowUuid, $branch)
     {
         $dtos = $this->getEntityRepository()->findBy([
-            'flow' => (string) $flowUuid,
+            'flowUuid' => (string) $flowUuid,
             'tide.codeReference.branch' => $branch,
             'tide.status' => Tide::STATUS_RUNNING,
         ]);
@@ -186,7 +168,7 @@ class DoctrineTideRepository implements TideRepository
     public function findPendingByFlowUuidAndBranch(Uuid $flowUuid, $branch)
     {
         $dtos = $this->getEntityRepository()->findBy([
-            'flow' => (string) $flowUuid,
+            'flowUuid' => (string) $flowUuid,
             'tide.codeReference.branch' => $branch,
             'tide.status' => Tide::STATUS_PENDING,
         ]);
@@ -202,7 +184,7 @@ class DoctrineTideRepository implements TideRepository
     public function findRunningByFlowUuid(Uuid $flowUuid)
     {
         $dtos = $this->getEntityRepository()->findBy([
-            'flow' => (string) $flowUuid,
+            'flowUuid' => (string) $flowUuid,
             'tide.status' => Tide::STATUS_RUNNING,
         ]);
 
@@ -223,8 +205,8 @@ class DoctrineTideRepository implements TideRepository
         $wrappedTide = $tideDto->getTide();
 
         $tide = Tide::create(
-            Uuid::fromString($tideDto->getUuid()),
-            Uuid::fromString($tideDto->getFlow()->uuid),
+            $tideDto->getUuid(),
+            $tideDto->getFlowUuid(),
             $wrappedTide->getCodeReference(),
             TreeLog::fromId($wrappedTide->getLogId()),
             $wrappedTide->getTeam(),

@@ -18,7 +18,7 @@ class Tide
     const STATUS_SUCCESS = 'success';
 
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $uuid;
 
@@ -79,7 +79,7 @@ class Tide
     /**
      * Create a new tide representation.
      *
-     * @param Uuid          $uuid
+     * @param UuidInterface $uuid
      * @param UuidInterface $flowUuid
      * @param CodeReference $codeReference
      * @param Log           $log
@@ -90,7 +90,7 @@ class Tide
      *
      * @return Tide
      */
-    public static function create(Uuid $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate)
+    public static function create(UuidInterface $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate)
     {
         $tide = new self();
         $tide->uuid = $uuid;
@@ -106,7 +106,7 @@ class Tide
     }
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getUuid()
     {

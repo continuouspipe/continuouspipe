@@ -5,18 +5,23 @@ namespace ContinuousPipe\River\Infrastructure\Doctrine\Entity\View;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
 use ContinuousPipe\River\View\Tide;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="idx_tide_dto_by_flow", columns={"flow_uuid"}),
+ *     @ORM\Index(name="idx_tide_dto_by_sha1_and_branch", columns={"code_reference_sha1", "code_reference_branch"}),
+ * })
  */
 class TideDto
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="uuid")
      * @ORM\GeneratedValue(strategy="NONE")
      *
-     * @var string
+     * @var UuidInterface
      */
     private $uuid;
 
@@ -28,26 +33,24 @@ class TideDto
     private $tide;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto")
-     * @ORM\JoinColumn(name="flow_uuid", referencedColumnName="uuid", onDelete="CASCADE")
+     * @ORM\Column(name="flow_uuid", type="uuid", nullable=false)
      *
-     * @var FlowDto
+     * @var UuidInterface
      */
-    private $flow;
+    private $flowUuid;
 
     /**
      * Create a DTO from the tide.
      *
      * @param Tide    $tide
-     * @param FlowDto $flowDto
      *
      * @return TideDto
      */
-    public static function fromTide(Tide $tide, FlowDto $flowDto)
+    public static function fromTide(Tide $tide)
     {
         $dto = new self();
         $dto->uuid = $tide->getUuid();
-        $dto->flow = $flowDto;
+        $dto->flowUuid = $tide->getFlowUuid();
         $dto->merge($tide);
 
         return $dto;
@@ -62,19 +65,11 @@ class TideDto
     }
 
     /**
-     * @return string
+     * @return UuidInterface
      */
     public function getUuid()
     {
         return $this->uuid;
-    }
-
-    /**
-     * @param string $uuid
-     */
-    public function setUuid($uuid)
-    {
-        $this->uuid = $uuid;
     }
 
     /**
@@ -86,26 +81,10 @@ class TideDto
     }
 
     /**
-     * @param Tide $tide
+     * @return UuidInterface
      */
-    public function setTide($tide)
+    public function getFlowUuid(): UuidInterface
     {
-        $this->tide = $tide;
-    }
-
-    /**
-     * @return FlowDto
-     */
-    public function getFlow()
-    {
-        return $this->flow;
-    }
-
-    /**
-     * @param FlowDto $flow
-     */
-    public function setFlow($flow)
-    {
-        $this->flow = $flow;
+        return $this->flowUuid;
     }
 }

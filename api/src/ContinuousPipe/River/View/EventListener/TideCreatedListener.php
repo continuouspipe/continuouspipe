@@ -43,18 +43,7 @@ class TideCreatedListener
     {
         $tideContext = $event->getTideContext();
 
-        $view = Tide::create(
-            $event->getTideUuid(),
-            $tideContext->getFlowUuid(),
-            $tideContext->getCodeReference(),
-            $tideContext->getLog(),
-            $tideContext->getTeam(),
-            $tideContext->getUser(),
-            $tideContext->getConfiguration(),
-            $this->timeResolver->resolve()
-        );
 
-        $view->setStatus(Tide::STATUS_PENDING);
 
         $this->tideRepository->save($view);
     }
