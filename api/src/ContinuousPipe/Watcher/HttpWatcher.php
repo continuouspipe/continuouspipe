@@ -4,9 +4,9 @@ namespace ContinuousPipe\Watcher;
 
 use ContinuousPipe\Security\Credentials\Cluster;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Exception\RequestException;
 use LogStream\Tree\TreeLog;
+use Psr\Http\Message\ResponseInterface;
 
 class HttpWatcher implements Watcher
 {
@@ -36,7 +36,7 @@ class HttpWatcher implements Watcher
     public function logs(Cluster\Kubernetes $kubernetes, string $namespace, string $pod)
     {
         try {
-            $response = $this->httpClient->post($this->baseUrl.'/v1/watch/logs', [
+            $response = $this->httpClient->request('post', $this->baseUrl.'/v1/watch/logs', [
                 'json' => [
                     'cluster' => [
                         'address' => $kubernetes->getAddress(),
@@ -77,8 +77,11 @@ class HttpWatcher implements Watcher
     }
 
     /**
+     * @param ResponseInterface $response
+     *
+     * @throws WatcherException
+     *
      * @return ResponseInterface $response
-     * @return array
      */
     private function getJson(ResponseInterface $response)
     {

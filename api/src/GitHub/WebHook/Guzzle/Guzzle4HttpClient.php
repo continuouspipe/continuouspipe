@@ -51,12 +51,17 @@ class Guzzle4HttpClient implements HttpClientInterface
      */
     public function get($path, array $parameters = array(), array $headers = array())
     {
-        $response = $this->httpClient->get($path, [
-            'query' => $parameters,
+        $options = [
             'headers' => array_merge($this->defaultHeaders, $headers),
-        ]);
+        ];
 
-        return $this->transformResponse($response);
+        if (!empty($parameters)) {
+            $options['query'] = $parameters;
+        }
+
+        return $this->transformResponse(
+            $this->httpClient->request('GET', $path, $options)
+        );
     }
 
     /**
@@ -148,7 +153,7 @@ class Guzzle4HttpClient implements HttpClientInterface
      */
     public function setHeaders(array $headers)
     {
-        $this->defaultHeaders = $headers;
+        $this->defaultHeaders = array_merge($this->defaultHeaders, $headers);
     }
 
     /**
@@ -157,9 +162,9 @@ class Guzzle4HttpClient implements HttpClientInterface
     public function authenticate($tokenOrLogin, $password, $authMethod)
     {
         if ($authMethod === GitHubClient::AUTH_HTTP_TOKEN) {
-            $this->defaultHeaders = [
+            $this->setHeaders([
                 'Authorization' => sprintf('token %s', $tokenOrLogin),
-            ];
+            ]);
         } else {
             throw new \RuntimeException('Auth method '.$authMethod.' not supported');
         }

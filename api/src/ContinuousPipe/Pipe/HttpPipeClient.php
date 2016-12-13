@@ -10,9 +10,9 @@ use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Message\ResponseInterface;
 use JMS\Serializer\Serializer;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class HttpPipeClient implements Client
 {
@@ -55,7 +55,7 @@ class HttpPipeClient implements Client
      */
     public function start(DeploymentRequest $deploymentRequest, User $user)
     {
-        $response = $this->client->post($this->baseUrl.'/deployments', [
+        $response = $this->client->request('post', $this->baseUrl.'/deployments', [
             'body' => $this->serializer->serialize($deploymentRequest, 'json'),
             'headers' => $this->getRequestHeaders($user),
         ]);
@@ -78,7 +78,7 @@ class HttpPipeClient implements Client
             $target->getEnvironmentName()
         );
 
-        $this->client->delete($url, [
+        $this->client->request('delete', $url, [
             'headers' => $this->getRequestHeaders($authenticatedUser),
         ]);
     }
@@ -153,7 +153,7 @@ class HttpPipeClient implements Client
     private function requestEnvironmentList(User $user, $url)
     {
         try {
-            $response = $this->client->get($url, [
+            $response = $this->client->request('get', $url, [
                 'headers' => $this->getRequestHeaders($user),
             ]);
         } catch (ClientException $e) {
