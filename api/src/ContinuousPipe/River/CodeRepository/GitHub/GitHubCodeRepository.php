@@ -41,6 +41,14 @@ class GitHubCodeRepository extends AbstractCodeRepository
     private $private = false;
 
     /**
+     * @JMS\Type("string")
+     * @JMS\Accessor(getter="getDefaultBranch")
+     *
+     * @var string|null
+     */
+    private $defaultBranch;
+
+    /**
      * @deprecated This method is a BC for the previously stored (serialized) GitHubCodeRepository objects
      *
      * @JMS\Exclude
@@ -49,13 +57,14 @@ class GitHubCodeRepository extends AbstractCodeRepository
      */
     private $repository;
 
-    public function __construct(string $identifier, string $address, string $organisation, string $name, bool $private)
+    public function __construct(string $identifier, string $address, string $organisation, string $name, bool $private, string $defaultBranch = null)
     {
         $this->identifier = $identifier;
         $this->address = $address;
         $this->organisation = $organisation;
         $this->name = $name;
         $this->private = $private;
+        $this->defaultBranch = $defaultBranch;
     }
 
     /**
@@ -70,7 +79,8 @@ class GitHubCodeRepository extends AbstractCodeRepository
             $repository->getUrl(),
             $repository->getOwner()->getLogin(),
             $repository->getName(),
-            $repository->isPrivate()
+            $repository->isPrivate(),
+            $repository->getDefaultBranch()
         );
     }
 
@@ -125,6 +135,15 @@ class GitHubCodeRepository extends AbstractCodeRepository
         return $this->private;
     }
 
+    public function getDefaultBranch()
+    {
+        if ($this->repository) {
+            $this->populateFieldsFromRepository($this->repository);
+        }
+
+        return $this->defaultBranch;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -140,5 +159,6 @@ class GitHubCodeRepository extends AbstractCodeRepository
         $this->organisation = $repository->getOwner()->getLogin();
         $this->name = $repository->getName();
         $this->private = (bool) $repository->isPrivate();
+        $this->defaultBranch = $repository->getDefaultBranch();
     }
 }

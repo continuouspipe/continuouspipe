@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River\Alerts\TeamConfiguration;
+namespace ContinuousPipe\River\Alerts\OnRuntime\TeamConfiguration;
 
 use ContinuousPipe\River\Alerts\Alert;
 use ContinuousPipe\River\Alerts\AlertAction;

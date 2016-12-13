@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Flow\Migrations\ToEventSourced;
 
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
-use ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Team\Team;
@@ -24,7 +23,7 @@ class DelegateIfNotFoundFlowRepository implements FlowRepository
 
     /**
      * @param Flow\EventBasedFlowRepository $decorated
-     * @param FlowRepository $delegates
+     * @param FlowRepository                $delegates
      */
     public function __construct(Flow\EventBasedFlowRepository $decorated, FlowRepository $delegates)
     {

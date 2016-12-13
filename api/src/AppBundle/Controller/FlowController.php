@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Flow\Projections\FlatFlow as FlowView;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
@@ -53,21 +54,35 @@ class FlowController
     private $teamRepository;
 
     /**
-     * @param Flow\Projections\FlatFlowRepository $flowRepository
-     * @param FlowFactory                         $flowFactory
-     * @param MessageBus                          $eventBus
-     * @param TideRepository                      $tideRepository
-     * @param ValidatorInterface                  $validator
-     * @param TeamRepository                      $teamRepository
+     * @var Flow\MissingVariables\MissingVariableResolver
      */
-    public function __construct(Flow\Projections\FlatFlowRepository $flowRepository, FlowFactory $flowFactory, MessageBus $eventBus, TideRepository $tideRepository, ValidatorInterface $validator, TeamRepository $teamRepository)
-    {
+    private $missingVariableResolver;
+
+    /**
+     * @param Flow\Projections\FlatFlowRepository           $flowRepository
+     * @param FlowFactory                                   $flowFactory
+     * @param MessageBus                                    $eventBus
+     * @param TideRepository                                $tideRepository
+     * @param ValidatorInterface                            $validator
+     * @param TeamRepository                                $teamRepository
+     * @param Flow\MissingVariables\MissingVariableResolver $missingVariableResolver
+     */
+    public function __construct(
+        Flow\Projections\FlatFlowRepository $flowRepository,
+        FlowFactory $flowFactory,
+        MessageBus $eventBus,
+        TideRepository $tideRepository,
+        ValidatorInterface $validator,
+        TeamRepository $teamRepository,
+        Flow\MissingVariables\MissingVariableResolver $missingVariableResolver
+    ) {
         $this->flowRepository = $flowRepository;
         $this->eventBus = $eventBus;
         $this->flowFactory = $flowFactory;
         $this->tideRepository = $tideRepository;
         $this->validator = $validator;
         $this->teamRepository = $teamRepository;
+        $this->missingVariableResolver = $missingVariableResolver;
     }
 
     /**
@@ -118,9 +133,27 @@ class FlowController
     }
 
     /**
-     * Update a flow.
+     * Get a flow configuration.
      *
-     * @Route("/flows/{uuid}", methods={"PUT"})
+     * @Route("/flows/{uuid}/configuration", methods={"GET"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
+     * @Security("is_granted('READ', flow)")
+     * @View
+     */
+    public function getConfigurationAction(FlatFlow $flow)
+    {
+        $defaultCodeReference = CodeReference::repositoryDefault($flow->getRepository());
+
+        return [
+            'configuration' => $flow->getConfiguration(),
+            'missing_variables' => $this->missingVariableResolver->findMissingVariables($flow, $defaultCodeReference),
+        ];
+    }
+
+    /**
+     * Update the flow configuration.
+     *
+     * @Route("/flows/{uuid}/configuration", methods={"POST"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @ParamConverter("updateRequest", converter="fos_rest.request_body")
      * @Security("is_granted('UPDATE', flow)")

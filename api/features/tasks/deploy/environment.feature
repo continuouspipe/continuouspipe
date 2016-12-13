@@ -337,7 +337,7 @@ Feature:
     Given there is 1 application images in the repository
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
-    environment_variables:
+    variables:
         - name: INITIAL_DELAY
           value: 5
 

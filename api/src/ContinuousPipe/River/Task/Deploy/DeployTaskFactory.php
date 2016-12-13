@@ -174,7 +174,7 @@ class DeployTaskFactory implements TaskFactory
                                         ->performNoDeepMerging()
                                         ->prototype('scalar')->end()
                                     ->end()
-                                    ->append(Configuration::getEnvironmentVariablesNode())
+                                    ->append(Configuration::getVariablesNode('environment_variables'))
                                     ->arrayNode('ports')
                                         ->performNoDeepMerging()
                                         ->prototype('array')

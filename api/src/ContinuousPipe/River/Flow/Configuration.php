@@ -29,8 +29,21 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $root = $treeBuilder->root('flow');
         $root
+            ->beforeNormalization()
+                ->always(function(array $config) {
+                    if (isset($config['environment_variables'])) {
+                        // move existing values to the right key
+                        $config['variables'] = $config['environment_variables'];
+
+                        // remove invalid key
+                        unset($config['environment_variables']);
+                    }
+
+                    return $config;
+                })
+            ->end()
             ->children()
-                ->append(self::getEnvironmentVariablesNode())
+                ->append(self::getVariablesNode('variables'))
                 ->append(self::getDefaultsNode())
                 ->append($this->getTasksNode())
                 ->scalarNode('filter')->end()
@@ -90,10 +103,10 @@ class Configuration implements ConfigurationInterface
         return $node;
     }
 
-    public static function getEnvironmentVariablesNode()
+    public static function getVariablesNode($name)
     {
         $builder = new TreeBuilder();
-        $node = $builder->root('environment_variables');
+        $node = $builder->root($name);
 
         $node
             ->prototype('array')

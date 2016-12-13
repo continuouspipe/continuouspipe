@@ -40,6 +40,22 @@ class CodeReference
     }
 
     /**
+     * Create the default code reference for this given code repository.
+     *
+     * @param CodeRepository $codeRepository
+     *
+     * @return CodeReference
+     */
+    public static function repositoryDefault(CodeRepository $codeRepository)
+    {
+        return new self(
+            $codeRepository,
+            null,
+            $codeRepository->getDefaultBranch() ?: 'master'
+        );
+    }
+
+    /**
      * @return CodeRepository
      */
     public function getRepository()

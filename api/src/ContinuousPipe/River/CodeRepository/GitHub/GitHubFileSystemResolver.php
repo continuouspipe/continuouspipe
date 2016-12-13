@@ -50,7 +50,7 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
         return new CodeRepository\GitHubRelativeFileSystem(
             $this->gitHubClientFactory->createClientForFlow($flow),
             $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
-            $codeReference->getCommitSha()
+            $codeReference->getCommitSha() ?: $codeReference->getBranch()
         );
     }
 }

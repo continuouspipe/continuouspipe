@@ -46,7 +46,7 @@ class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
     private function resolveVariables(array $configuration, ArrayObject $context)
     {
         $variables = [];
-        foreach ($configuration['environment_variables'] as $item) {
+        foreach ($configuration['variables'] as $item) {
             if (array_key_exists('condition', $item) && !$this->isConditionValid($item['condition'], $context)) {
                 continue;
             }
