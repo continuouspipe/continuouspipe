@@ -118,8 +118,26 @@
             <argument type="service" id="river.tide_event_store" />
         </service>
 
+        <service id="river.view.storage.firebase.database_factory" class="ContinuousPipe\River\Infrastructure\Firebase\ServiceAccountedFirebaseDatabaseFactory">
+            <argument>%firebase_service_account_path%</argument>
+        </service>
+
+        <service id="river.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage\FirebaseTideViewStorage">
+            <argument type="service" id="river.view.storage.firebase.database_factory" />
+            <argument type="service" id="jms_serializer" />
+            <argument type="service" id="logger" />
+            <argument>%firebase_database_uri%</argument>
+        </service>
+
+        <service id="river.view.storage" class="ContinuousPipe\River\View\Storage\DuplicateViewToManyStorages">
+            <argument type="collection">
+                <argument type="service" id="river.view.tide_repository" />
+                <argument type="service" id="river.view.storage.firebase" />
+            </argument>
+        </service>
+
         <service id="river.view.message_bus_middleware.update_tide_when_event" class="ContinuousPipe\River\View\EventBusMiddleware\UpdateTideViewWhenTideEventPublished">
-            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.view.storage" />
             <argument type="service" id="river.view.tide_view_factory" />
 
             <tag name="event_bus_middleware" />

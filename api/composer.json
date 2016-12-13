@@ -47,7 +47,8 @@
         "beberlei/metrics": "^2.3",
         "jms/aop-bundle": "^1.2",
         "dbellettini/eventstore-client": "^0.8.0",
-        "mhujer/jms-serializer-uuid-bundle": "^1.0"
+        "mhujer/jms-serializer-uuid-bundle": "^1.0",
+        "kreait/firebase-php": "^2.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

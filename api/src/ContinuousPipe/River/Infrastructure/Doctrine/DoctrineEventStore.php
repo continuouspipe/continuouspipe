@@ -27,7 +27,7 @@ class DoctrineEventStore implements EventStore
 
     /**
      * @param EntityManager $entityManager
-     * @param TimeResolver $timeResolver
+     * @param TimeResolver  $timeResolver
      */
     public function __construct(EntityManager $entityManager, TimeResolver $timeResolver)
     {

@@ -5,10 +5,11 @@ namespace ContinuousPipe\River\View;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\TideNotFound;
+use ContinuousPipe\River\View\Storage\TideViewStorage;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
-interface TideRepository
+interface TideRepository extends TideViewStorage
 {
     /**
      * Find tides related to this flow UUID.
@@ -71,13 +72,6 @@ interface TideRepository
      * @return Tide[]
      */
     public function findRunningByFlowUuid(Uuid $flowUuid);
-
-    /**
-     * Save the tide representation.
-     *
-     * @param Tide $tide
-     */
-    public function save(Tide $tide);
 
     /**
      * Find tide representation by its UUID.

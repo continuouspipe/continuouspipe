@@ -8,6 +8,7 @@ use ContinuousPipe\Security\User\User;
 use LogStream\Log;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class Tide
 {
@@ -17,61 +18,85 @@ class Tide
     const STATUS_SUCCESS = 'success';
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var UuidInterface
      */
     private $uuid;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var UuidInterface
      */
     private $flowUuid;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var CodeReference
      */
     private $codeReference;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var User
      */
     private $user;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var Team
      */
     private $team;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var string
      */
     private $status;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var string
      */
     private $logId;
 
     /**
+     * @JMS\Groups({"Configuration"})
+     *
      * @var array
      */
     private $configuration;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var \DateTime
      */
     private $creationDate;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var \DateTime
      */
     private $startDate;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var \DateTime
      */
     private $finishDate;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var TideTaskView[]
      */
     private $tasks = [];

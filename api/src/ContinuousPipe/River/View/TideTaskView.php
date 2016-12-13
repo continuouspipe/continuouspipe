@@ -5,20 +5,27 @@ namespace ContinuousPipe\River\View;
 use ContinuousPipe\River\Task\Task;
 use LogStream\Log;
 use LogStream\Node\Text;
+use JMS\Serializer\Annotation as JMS;
 
 final class TideTaskView
 {
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var string
      */
     private $identifier;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var string
      */
     private $label;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var string
      */
     private $status;
