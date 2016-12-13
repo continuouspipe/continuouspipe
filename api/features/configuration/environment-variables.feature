@@ -6,7 +6,7 @@ Feature:
   Scenario: The variables are replaced in the configuration
     Given I have a flow with the following configuration:
     """
-    environment_variables:
+    variables:
         - name: FOO
           value: BAR
     """
@@ -31,7 +31,7 @@ Feature:
     Given there is 1 application images in the repository
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
-    environment_variables:
+    variables:
         - name: CLUSTER
           value: bar
           condition: 'code_reference.branch == "production"'
@@ -59,7 +59,7 @@ Feature:
   Scenario: Variable from an expression
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
-    environment_variables:
+    variables:
         - name: BRANCH_NAME
           expression: code_reference.branch
 
@@ -76,4 +76,28 @@ Feature:
         named:
             deploy:
                 cluster: master
+    """
+
+  Scenario: We can define variables with the "deprecated" method
+    Given I have a flow with the following configuration:
+    """
+    environment_variables:
+        - name: FOO
+          value: BAR
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: ${FOO}
+                services: []
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: BAR
     """

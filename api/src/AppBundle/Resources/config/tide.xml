@@ -69,7 +69,7 @@
                  decorates="river.tide_configuration_factory">
             <argument type="service" id="river.tide.configuration_factory.merge_environment_variables.inner" />
             <argument type="collection">
-                <argument>[environment_variables]</argument>
+                <argument>[variables]</argument>
                 <argument>[tasks][*][deploy][services][*][specification][environment_variables]</argument>
             </argument>
         </service>

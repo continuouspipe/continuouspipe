@@ -29,7 +29,7 @@ Feature:
   Scenario: The variables with the deployed component references are replaced before run
     Given I have a flow with the following configuration:
     """
-    environment_variables:
+    variables:
         - { name: FOO, value: BAR }
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:
@@ -64,7 +64,7 @@ Feature:
   Scenario: A zero string variable should be deployed as 0 string environment
     Given I have a flow with the following configuration:
     """
-    environment_variables:
+    variables:
         - { name: MIGRATION_BRANCH, value: 0 }
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:

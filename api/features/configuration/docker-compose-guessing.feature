@@ -118,7 +118,7 @@ Feature:
   Scenario: It loads the environment variables and replaces variable values if some
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
-    environment_variables:
+    variables:
         - name: baz
           value: bar
 
@@ -295,7 +295,7 @@ Feature:
   Scenario: When the image name is missing, then the tide should be failed
     Given I have a flow with the following configuration:
     """
-    environment_variables:
+    variables:
         - { name: FOO, value: BAR }
     """
     And I have a "docker-compose.yml" file in my repository that contains:

@@ -25,7 +25,7 @@ Feature:
     Given I have a flow
     And  I have a "continuous-pipe.yml" file in my repository that contains:
     """
-    environment_variables:
+    variables:
         - name: CLUSTER
           value: FOO
 
@@ -41,7 +41,7 @@ Feature:
   Scenario: An already defined variable in the flow configuration should be not missing
     Given I have a flow with the following configuration:
     """
-    environment_variables:
+    variables:
         - name: CLUSTER
           value: FOO
     """
