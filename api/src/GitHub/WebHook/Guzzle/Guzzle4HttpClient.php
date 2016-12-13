@@ -148,7 +148,7 @@ class Guzzle4HttpClient implements HttpClientInterface
      */
     public function setHeaders(array $headers)
     {
-        $this->defaultHeaders = $headers;
+        $this->defaultHeaders = array_merge($this->defaultHeaders, $headers);
     }
 
     /**
@@ -157,9 +157,9 @@ class Guzzle4HttpClient implements HttpClientInterface
     public function authenticate($tokenOrLogin, $password, $authMethod)
     {
         if ($authMethod === GitHubClient::AUTH_HTTP_TOKEN) {
-            $this->defaultHeaders = [
+            $this->setHeaders([
                 'Authorization' => sprintf('token %s', $tokenOrLogin),
-            ];
+            ]);
         } else {
             throw new \RuntimeException('Auth method '.$authMethod.' not supported');
         }
