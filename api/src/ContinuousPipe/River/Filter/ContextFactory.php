@@ -13,7 +13,6 @@ use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\TideContext;
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use GitHub\WebHook\Model\PullRequest;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
@@ -136,7 +135,7 @@ class ContextFactory
     }
 
     /**
-     * @param UuidInterface $flowUuid
+     * @param UuidInterface  $flowUuid
      * @param TideContext    $context
      * @param CodeRepository $codeRepository
      * @param PullRequest    $pullRequest

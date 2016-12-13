@@ -11,7 +11,11 @@ use ContinuousPipe\River\Task\TaskFailed;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Task\TaskRunnerException;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
+use LogStream\Log;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class Tide
 {
@@ -216,7 +220,7 @@ class Tide
     /**
      * @return bool
      */
-    private function isStarted()
+    public function isStarted()
     {
         return 0 < $this->events->numberOfEventsOfType(TideStarted::class);
     }
@@ -224,7 +228,7 @@ class Tide
     /**
      * @return bool
      */
-    private function isFailed()
+    public function isFailed()
     {
         return 0 < $this->events->numberOfEventsOfType(TideFailed::class);
     }
@@ -232,7 +236,7 @@ class Tide
     /**
      * @return bool
      */
-    private function isSuccessful()
+    public function isSuccessful()
     {
         return 0 < $this->events->numberOfEventsOfType(TideSuccessful::class);
     }
@@ -243,5 +247,35 @@ class Tide
     public function pushNewEvent(TideEvent $event)
     {
         $this->newEvents[] = $event;
+    }
+
+    public function getFlowUuid() : UuidInterface
+    {
+        return $this->context->getFlowUuid();
+    }
+
+    public function getCodeReference() : CodeReference
+    {
+        return $this->context->getCodeReference();
+    }
+
+    public function getLog() : Log
+    {
+        return $this->context->getLog();
+    }
+
+    public function getTeam() : Team
+    {
+        return $this->context->getTeam();
+    }
+
+    public function getUser() : User
+    {
+        return $this->context->getUser();
+    }
+
+    public function getConfiguration() : array
+    {
+        return $this->context->getConfiguration() ?: [];
     }
 }

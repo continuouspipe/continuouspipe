@@ -3,9 +3,7 @@
 namespace ContinuousPipe\River\GitHub;
 
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
-use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -52,12 +50,12 @@ class GitHubClientFactory implements ClientFactory
     private $flatFlowRepository;
 
     /**
-     * @param TokenStorageInterface $tokenStorage
-     * @param HttpClientInterface $githubHttpClient
-     * @param BucketRepository $bucketRepository
-     * @param InstallationRepository $installationRepository
+     * @param TokenStorageInterface     $tokenStorage
+     * @param HttpClientInterface       $githubHttpClient
+     * @param BucketRepository          $bucketRepository
+     * @param InstallationRepository    $installationRepository
      * @param InstallationClientFactory $installationClientFactory
-     * @param FlatFlowRepository $flatFlowRepository
+     * @param FlatFlowRepository        $flatFlowRepository
      */
     public function __construct(
         TokenStorageInterface $tokenStorage,

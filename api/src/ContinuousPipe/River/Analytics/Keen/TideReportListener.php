@@ -3,12 +3,10 @@
 namespace ContinuousPipe\River\Analytics\Keen;
 
 use ContinuousPipe\River\Analytics\Keen\Client\KeenClient;
-use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\Event\TideFailed;
-use ContinuousPipe\River\Event\TideStarted;
-use ContinuousPipe\River\Event\TideSuccessful;
-use ContinuousPipe\River\EventBus\EventStore;
+use ContinuousPipe\River\Repository\TideNotFound;
+use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\View\TideRepository;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -20,25 +18,25 @@ class TideReportListener
     private $keenClient;
 
     /**
-     * @var EventStore
-     */
-    private $eventStore;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
 
     /**
-     * @param KeenClient      $keenClient
-     * @param EventStore      $eventStore
-     * @param LoggerInterface $logger
+     * @var TideRepository
      */
-    public function __construct(KeenClient $keenClient, EventStore $eventStore, LoggerInterface $logger)
+    private $tideRepository;
+
+    /**
+     * @param KeenClient      $keenClient
+     * @param LoggerInterface $logger
+     * @param TideRepository  $tideRepository
+     */
+    public function __construct(KeenClient $keenClient, LoggerInterface $logger, TideRepository $tideRepository)
     {
         $this->keenClient = $keenClient;
-        $this->eventStore = $eventStore;
         $this->logger = $logger;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -46,42 +44,35 @@ class TideReportListener
      */
     public function notify(TideEvent $event)
     {
-        if ($event instanceof TideSuccessful) {
-            $status = 'success';
-        } elseif ($event instanceof TideFailed) {
-            $status = 'failure';
-        } else {
-            $status = 'unknown';
-        }
-
-        $tideCreatedEvents = $this->eventStore->findByTideUuidAndType($event->getTideUuid(), TideCreated::class);
-        if (count($tideCreatedEvents) == 0) {
+        try {
+            $tide = $this->tideRepository->find($event->getTideUuid());
+        } catch (TideNotFound $e) {
             $this->logger->critical('No tide created event found, unable to create keen report', [
                 'tideUuid' => $event->getTideUuid(),
-                'status' => $status,
+                'eventType' => get_class($event),
             ]);
 
             return;
         }
 
-        /** @var TideCreated $tideCreatedEvent */
-        $tideCreatedEvent = $tideCreatedEvents[0];
-        $context = $tideCreatedEvent->getTideContext();
+        if ($tide->getStatus() == Tide::STATUS_SUCCESS) {
+            $status = 'success';
+        } elseif ($tide->getStatus() == Tide::STATUS_FAILURE) {
+            $status = 'failure';
+        } else {
+            $status = 'unknown';
+        }
 
-        $createdAt = $this->getFirstEventDateTime($event->getTideUuid(), TideCreated::class) ?: new \DateTime();
-        $startedAt = $this->getFirstEventDateTime($event->getTideUuid(), TideStarted::class) ?: new \DateTime();
-        $failedAt = $this->getFirstEventDateTime($event->getTideUuid(), TideFailed::class);
-        $succeedAt = $this->getFirstEventDateTime($event->getTideUuid(), TideSuccessful::class);
-        $finishedAt = $succeedAt ?: $failedAt ?: new \DateTime();
+        $createdAt = $tide->getCreationDate();
+        $startedAt = $tide->getStartDate() ?: $createdAt;
+        $finishedAt = $tide->getFinishDate() ?: $startedAt;
 
         $this->keenClient->addEvent('tides', [
-            'uuid' => (string) $context->getTideUuid(),
+            'uuid' => (string) $tide->getUuid(),
             'status' => $status,
             'timing' => [
                 'created_at' => $createdAt->format(\DateTime::ISO8601),
                 'started_at' => $startedAt->format(\DateTime::ISO8601),
-                'failed_at' => $failedAt !== null ? $failedAt->format(\DateTime::ISO8601) : null,
-                'succeed_at' => $succeedAt !== null ? $succeedAt->format(\DateTime::ISO8601) : null,
                 'finished_at' => $finishedAt->format(\DateTime::ISO8601),
             ],
             'duration' => [
@@ -90,40 +81,24 @@ class TideReportListener
                 'execution' => $finishedAt->getTimestamp() - $startedAt->getTimestamp(),
             ],
             'flow' => [
-                'uuid' => (string) $context->getFlowUuid(),
+                'uuid' => (string) $tide->getFlowUuid(),
             ],
             'team' => [
-                'slug' => $context->getTeam()->getSlug(),
+                'slug' => $tide->getTeam()->getSlug(),
             ],
             'user' => [
-                'username' => $context->getUser()->getUsername(),
-                'email' => $context->getUser()->getEmail(),
+                'username' => $tide->getUser()->getUsername(),
+                'email' => $tide->getUser()->getEmail(),
             ],
             'code_reference' => [
-                'sha1' => $context->getCodeReference()->getCommitSha(),
-                'branch' => $context->getCodeReference()->getBranch(),
+                'sha1' => $tide->getCodeReference()->getCommitSha(),
+                'branch' => $tide->getCodeReference()->getBranch(),
             ],
             'repository' => [
-                'identifier' => $context->getCodeRepository()->getIdentifier(),
-                'address' => $context->getCodeRepository()->getAddress(),
+                'identifier' => $tide->getCodeReference()->getRepository()->getIdentifier(),
+                'address' => $tide->getCodeReference()->getRepository()->getAddress(),
             ],
-            'configuration' => $context->getConfiguration(),
+            'configuration' => $tide->getConfiguration(),
         ]);
-    }
-
-    /**
-     * @param Uuid   $tideUuid
-     * @param string $className
-     *
-     * @return \DateTime|null
-     */
-    private function getFirstEventDateTime(Uuid $tideUuid, $className)
-    {
-        $events = $this->eventStore->findByTideUuidAndTypeWithMetadata($tideUuid, $className);
-        if (count($events) == 0) {
-            return;
-        }
-
-        return $events[0]->getDateTime();
     }
 }

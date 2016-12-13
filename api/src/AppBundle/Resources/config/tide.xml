@@ -112,21 +112,17 @@
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
         </service>
 
-        <service id="river.view.listener.tide_created" class="ContinuousPipe\River\View\EventListener\TideCreatedListener">
-            <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.repository.flow" />
+        <service id="river.view.tide_view_factory" class="ContinuousPipe\River\View\Factory\TideViewFactory">
+            <argument type="service" id="river.repository.tide" />
             <argument type="service" id="river.time_resolver" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
+            <argument type="service" id="river.tide_event_store" />
         </service>
 
-        <service id="river.view.listener.tide_status" class="ContinuousPipe\River\View\EventListener\TideStatusListener">
+        <service id="river.view.message_bus_middleware.update_tide_when_event" class="ContinuousPipe\River\View\EventBusMiddleware\UpdateTideViewWhenTideEventPublished">
             <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.time_resolver" />
+            <argument type="service" id="river.view.tide_view_factory" />
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
+            <tag name="event_bus_middleware" />
         </service>
 
         <!-- Concurrency -->

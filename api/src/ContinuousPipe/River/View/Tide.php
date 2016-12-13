@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use LogStream\Log;

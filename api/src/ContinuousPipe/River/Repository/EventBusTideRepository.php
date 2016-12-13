@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Repository;
 
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\TideFactory;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class EventBusTideRepository implements TideRepository
 {
@@ -31,7 +31,7 @@ class EventBusTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function find(Uuid $uuid)
+    public function find(UuidInterface $uuid)
     {
         $events = $this->eventStore->findByTideUuid($uuid);
         $tide = $this->tideFactory->createFromEvents($events);

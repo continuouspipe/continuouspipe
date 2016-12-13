@@ -6,7 +6,6 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use Github\Client;
 use GitHub\WebHook\Model\PullRequest;
 use JMS\Serializer\Serializer;

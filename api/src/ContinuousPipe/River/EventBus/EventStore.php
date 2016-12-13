@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\EventBus;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideEventWithMetadata;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 interface EventStore
 {
@@ -14,18 +15,18 @@ interface EventStore
     public function add(TideEvent $event);
 
     /**
-     * @param Uuid $uuid
+     * @param UuidInterface $uuid
      *
      * @return TideEvent[]
      */
-    public function findByTideUuid(Uuid $uuid);
+    public function findByTideUuid(UuidInterface $uuid);
 
     /**
-     * @param Uuid $uuid
+     * @param UuidInterface $uuid
      *
      * @return TideEventWithMetadata[]
      */
-    public function findByTideUuidWithMetadata(Uuid $uuid);
+    public function findByTideUuidWithMetadata(UuidInterface $uuid);
 
     /**
      * @param Uuid   $uuid
@@ -41,5 +42,5 @@ interface EventStore
      *
      * @return TideEventWithMetadata[]
      */
-    public function findByTideUuidAndTypeWithMetadata(Uuid $uuid, $className);
+    public function findByTideUuidAndTypeWithMetadata(UuidInterface $uuid, $className);
 }

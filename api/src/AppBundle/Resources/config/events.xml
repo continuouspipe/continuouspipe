@@ -7,7 +7,7 @@
     <services>
         <service id="river.tide_event_store.doctrine" class="ContinuousPipe\River\Infrastructure\Doctrine\DoctrineEventStore">
             <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="jms_serializer" />
+            <argument type="service" id="river.time_resolver" />
         </service>
         <service id="river.tide_event_store" alias="river.tide_event_store.doctrine" />
 

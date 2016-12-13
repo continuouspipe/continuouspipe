@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\GitHub;
 
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\Bucket;
 use Github\Client;
 use ContinuousPipe\Security\User\User;

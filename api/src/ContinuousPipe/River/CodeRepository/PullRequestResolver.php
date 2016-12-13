@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use Ramsey\Uuid\UuidInterface;
 
 interface PullRequestResolver

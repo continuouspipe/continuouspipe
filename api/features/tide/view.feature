@@ -16,12 +16,12 @@ Feature:
     Then the tide is represented as running
 
   Scenario: Tide is failed
-    When a tide is started
+    When a tide is started with a build task
     And the tide failed
     Then the tide is represented as failed
 
   Scenario: Tide succeed
-    When a tide is started
+    When a tide is started with a build task
     And the tide is successful
     Then the tide is represented as successful
 

@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Infrastructure\Doctrine\Entity\View;
 
-use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
 use ContinuousPipe\River\View\Tide;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
@@ -42,7 +41,7 @@ class TideDto
     /**
      * Create a DTO from the tide.
      *
-     * @param Tide    $tide
+     * @param Tide $tide
      *
      * @return TideDto
      */

@@ -3,10 +3,7 @@
 namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository\View;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
-use ContinuousPipe\River\FlowContext;
-use ContinuousPipe\River\Infrastructure\Doctrine\Entity\FlowDto;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\View\TideDto;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Repository\TideNotFound;

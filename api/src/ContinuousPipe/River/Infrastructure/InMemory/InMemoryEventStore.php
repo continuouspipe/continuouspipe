@@ -5,14 +5,29 @@ namespace ContinuousPipe\River\Infrastructure\InMemory;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideEventWithMetadata;
 use ContinuousPipe\River\EventBus\EventStore;
+use ContinuousPipe\River\View\TimeResolver;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class InMemoryEventStore implements EventStore
 {
     /**
+     * @var TimeResolver
+     */
+    private $timeResolver;
+
+    /**
      * @var TideEventWithMetadata[][]
      */
     private $eventsByTideUuid = [];
+
+    /**
+     * @param TimeResolver $timeResolver
+     */
+    public function __construct(TimeResolver $timeResolver)
+    {
+        $this->timeResolver = $timeResolver;
+    }
 
     /**
      * {@inheritdoc}
@@ -24,13 +39,13 @@ class InMemoryEventStore implements EventStore
             $this->eventsByTideUuid[$uuid] = [];
         }
 
-        $this->eventsByTideUuid[$uuid][] = new TideEventWithMetadata($event, new \DateTime());
+        $this->eventsByTideUuid[$uuid][] = new TideEventWithMetadata($event, $this->timeResolver->resolve());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findByTideUuid(Uuid $uuid)
+    public function findByTideUuid(UuidInterface $uuid)
     {
         $uuid = (string) $uuid;
         if (!array_key_exists($uuid, $this->eventsByTideUuid)) {
@@ -55,7 +70,7 @@ class InMemoryEventStore implements EventStore
     /**
      * {@inheritdoc}
      */
-    public function findByTideUuidAndTypeWithMetadata(Uuid $uuid, $className)
+    public function findByTideUuidAndTypeWithMetadata(UuidInterface $uuid, $className)
     {
         $uuid = (string) $uuid;
         if (!array_key_exists($uuid, $this->eventsByTideUuid)) {
@@ -72,7 +87,7 @@ class InMemoryEventStore implements EventStore
     /**
      * {@inheritdoc}
      */
-    public function findByTideUuidWithMetadata(Uuid $uuid)
+    public function findByTideUuidWithMetadata(UuidInterface $uuid)
     {
         $uuid = (string) $uuid;
         if (!array_key_exists($uuid, $this->eventsByTideUuid)) {
