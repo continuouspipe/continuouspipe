@@ -51,12 +51,17 @@ class Guzzle4HttpClient implements HttpClientInterface
      */
     public function get($path, array $parameters = array(), array $headers = array())
     {
-        $response = $this->httpClient->get($path, [
-            'query' => $parameters,
+        $options = [
             'headers' => array_merge($this->defaultHeaders, $headers),
-        ]);
+        ];
 
-        return $this->transformResponse($response);
+        if (!empty($parameters)) {
+            $options['query'] = $parameters;
+        }
+
+        return $this->transformResponse(
+            $this->httpClient->request('GET', $path, $options)
+        );
     }
 
     /**
