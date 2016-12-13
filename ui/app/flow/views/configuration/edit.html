@@ -5,7 +5,10 @@
         <md-button class="md-raised" aria-label="Save" ng-click="save()" ng-disabled="isLoading"><md-icon>save</md-icon> Save</md-button>
     </div>
 </md-toolbar>
-<md-content flex id="content" class="configuration-content">
+<md-content flex id="content" class="configuration-content" ng-if="!configuration">
+    <remote-resource resource-name="configuration"></remote-resource>
+</md-content>
+<md-content flex id="content" class="configuration-content" ng-if="configuration">
     <md-subheader class="md-primary">Variables</md-subheader>
     <md-content class="form-variable-container" layout-gt-sm="row" layout-padding ng-repeat="(key, variable) in variables">
         <form name="variableForm" layout-gt-sm="row" flex-gt-sm ng-model-options="{ updateOn: 'blur'}">

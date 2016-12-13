@@ -2,11 +2,13 @@
 
 angular.module('continuousPipeRiver')
     .service('FlowRepository', function($resource, RIVER_API_URL) {
+        this.configurationResource = $resource(RIVER_API_URL+'/flows/:uuid/configuration', {identifier: '@id'}, {});
         this.resource = $resource(RIVER_API_URL+'/flows/:uuid', {identifier: '@id'}, {
             update: {
                 method: 'PUT'
             }
         });
+
 
         this.findByTeam = function(team) {
             return $resource(RIVER_API_URL+'/teams/:team/flows').query({team: team.slug}).$promise;
@@ -35,5 +37,15 @@ angular.module('continuousPipeRiver')
                     repository: repository.identifier
                 }
             ).$promise;
+        };
+
+        this.getConfiguration = function(flow) {
+            return this.configurationResource.get({uuid: flow.uuid}).$promise;
+        };
+
+        this.updateConfiguration = function(flow) {
+            return this.configurationResource.save({uuid: flow.uuid}, {
+                yml_configuration: flow.yml_configuration,
+            }).$promise;
         };
     });
