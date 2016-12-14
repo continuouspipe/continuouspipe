@@ -138,7 +138,7 @@
 
         <service id="river.view.message_bus_middleware.update_tide_when_event" class="ContinuousPipe\River\View\EventBusMiddleware\UpdateTideViewWhenTideEventPublished">
             <argument type="service" id="river.view.storage" />
-            <argument type="service" id="river.view.tide_view_factory" />
+            <argument type="service" id="service_container" />
 
             <tag name="event_bus_middleware" />
         </service>

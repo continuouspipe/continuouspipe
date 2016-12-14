@@ -7,27 +7,28 @@ use ContinuousPipe\River\View\Factory\TideViewFactory;
 use ContinuousPipe\River\View\Storage\TideViewStorage;
 use Ramsey\Uuid\UuidInterface;
 use SimpleBus\Message\Bus\Middleware\MessageBusMiddleware;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class UpdateTideViewWhenTideEventPublished implements MessageBusMiddleware
 {
     /**
-     * @var TideViewFactory
-     */
-    private $tideViewFactory;
-
-    /**
-     * @var \ContinuousPipe\River\View\Storage\TideViewStorage
+     * @var TideViewStorage
      */
     private $tideViewStorage;
 
     /**
-     * @param TideViewStorage $tideViewStorage
-     * @param TideViewFactory $tideViewFactory
+     * @var ContainerInterface
      */
-    public function __construct(TideViewStorage $tideViewStorage, TideViewFactory $tideViewFactory)
+    private $container;
+
+    /**
+     * @param TideViewStorage $tideViewStorage
+     * @param ContainerInterface $container
+     */
+    public function __construct(TideViewStorage $tideViewStorage, ContainerInterface $container)
     {
-        $this->tideViewFactory = $tideViewFactory;
         $this->tideViewStorage = $tideViewStorage;
+        $this->container = $container;
     }
 
     /**
@@ -48,7 +49,19 @@ class UpdateTideViewWhenTideEventPublished implements MessageBusMiddleware
     private function updateTideView(UuidInterface $uuid)
     {
         $this->tideViewStorage->save(
-            $this->tideViewFactory->create($uuid)
+            $this->getTideViewFactory()->create($uuid)
         );
+    }
+
+    /**
+     * This has been added because of a circular dependency with the TideFactory. Once the `Tide`
+     * object will have been refactored to have dependencies coming as method arguments, that should
+     * be a LOT better.
+     *
+     * @return TideViewFactory
+     */
+    private function getTideViewFactory()
+    {
+        return $this->container->get('river.view.tide_view_factory');
     }
 }
