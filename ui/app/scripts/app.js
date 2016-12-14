@@ -42,6 +42,12 @@ angular
         ;
 
         $mdThemingProvider.theme('blue');
+
+        firebase.initializeApp({
+            apiKey: "AIzaSyDIK_08syPHkRxcf2n8zJ48XAVPHWpTsp0",
+            authDomain: "continuous-pipe.firebaseapp.com",
+            databaseURL: "https://continuous-pipe.firebaseio.com",
+        });
     })
     // We need to inject it at least once to have automatic tracking
     .run(function(Analytics, $rootScope, $http) {

@@ -1,0 +1,27 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Pipelines</span>
+        </h2>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <remote-resource resource-name="tides">
+        <table class="table hover actionable" ng-show="tides.length">
+            <tbody>
+            <tr ng-repeat="tide in tides | orderBy: '-creation_date'">
+                <td>
+                    <p><strong>Tide #{{ tide.uuid }}</strong></p>
+                    <p><code>{{ tide.code_reference.branch }}</code> (<code>{{ tide.code_reference.sha1 }}</code>)</p>
+                    <p><em>{{ tide.creation_date | timeAgo }}</em></p>
+                    <p>{{ tide.status }}</p>
+                </td>
+                <td ng-repeat="task in tide.tasks">
+                    <h3>{{ task.label }}</h3>
+                    <p>{{ task.status }}</p>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>

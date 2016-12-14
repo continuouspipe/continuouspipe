@@ -46,6 +46,16 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+            .state('flow.pipelines', {
+                url: '/pipelines',
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/pipelines/list.html',
+                        controller: 'FlowPipelinesController'
+                    }
+                },
+                aside: true
+            })
             .state('flow.create-tide', {
                 url: '/tides/create',
                 views: {
