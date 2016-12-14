@@ -120,6 +120,7 @@
 
         <service id="river.view.storage.firebase.database_factory" class="ContinuousPipe\River\Infrastructure\Firebase\ServiceAccountedFirebaseDatabaseFactory">
             <argument>%firebase_service_account_path%</argument>
+            <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
         </service>
 
         <service id="river.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage\FirebaseTideViewStorage">
