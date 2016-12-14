@@ -247,11 +247,13 @@ tolerance:
             success_failure_metrics:
                 publisher: tolerance.metrics.publisher.statsd
                 namespace: river.outgoing.slack
+                runner: tolerance.operation_runners.null_placeholdered
 
         firebase:
             success_failure_metrics:
                 publisher: tolerance.metrics.publisher.statsd
                 namespace: river.outgoing.firebase
+                runner: tolerance.operation_runners.null_placeholdered
 
     metrics:
         collectors:
