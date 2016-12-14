@@ -7,7 +7,7 @@ imports:
 parameters:
     locale: en
     default_environment_expression: 'flow.uuid ~ "-" ~ code_reference.branch'
-    firebase_service_account_path: '%kernel.root_dir%/var/firebase/continuous-pipe-6e52d1420d38.json'
+    firebase_service_account_path: '%kernel.root_dir%/var/firebase/continuous-pipe-firebase-adminsdk-57uln-abf9ce37fe.json'
 
 framework:
     #esi:             ~
