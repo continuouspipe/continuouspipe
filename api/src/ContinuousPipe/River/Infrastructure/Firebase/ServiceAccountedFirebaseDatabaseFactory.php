@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Infrastructure\Firebase;
 use Firebase\Database;
 use Firebase\Http\Middleware as FirebaseMiddleware;
 use Firebase\ServiceAccount;
+use Firebase\V3\Auth\CustomToken;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 use Google\Auth\Middleware\AuthTokenMiddleware;
 use GuzzleHttp\Client;
@@ -53,7 +54,12 @@ final class ServiceAccountedFirebaseDatabaseFactory implements DatabaseFactory
             'auth' => 'google_auth',
         ]);
 
-        return new Database(\GuzzleHttp\Psr7\uri_for($uri), new Database\ApiClient($http));
+        $database = new Database(\GuzzleHttp\Psr7\uri_for($uri), new Database\ApiClient($http));
+        $database->withCustomAuth(new CustomToken('river', [
+            'system' => true,
+        ]));
+
+        return $database;
     }
 
     /**
