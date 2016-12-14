@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
+use LogStream\Log;
 
 interface Task
 {
@@ -62,10 +63,9 @@ interface Task
      */
     public function popNewEvents();
 
-    /**
-     * @return TaskContext
-     */
-    public function getContext();
+    public function getIdentifier() : string;
+    public function getLogIdentifier() : string;
+    public function getLabel() : string;
 
     /**
      * @return ArrayObject

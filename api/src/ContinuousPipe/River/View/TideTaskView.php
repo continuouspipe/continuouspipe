@@ -37,19 +37,8 @@ final class TideTaskView
     public static function fromTask(Task $task) : TideTaskView
     {
         $view = new self();
-        $view->identifier = $task->getContext()->getTaskId();
-
-        $log = $task->getContext()->getTaskLog();
-        if ($log instanceof Log) {
-            $node = $log->getNode();
-            if ($node instanceof Text) {
-                $view->label = $node->getText();
-            }
-        }
-
-        if (!$view->label) {
-            $view->label = $view->identifier;
-        }
+        $view->identifier = $task->getIdentifier();
+        $view->label = $task->getLabel();
 
         if ($task->isFailed()) {
             $view->status = 'failed';

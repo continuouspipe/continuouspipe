@@ -60,7 +60,7 @@ class WebHookTask extends EventDrivenTask
     public function start()
     {
         $context = $this->getContext();
-        $logger = $this->loggerFactory->from($context->getLog());
+        $logger = $this->loggerFactory->fromId($this->getIdentifier());
         $log = $logger->child(new Text('Sending the web-hook'))->getLog();
 
         $webHook = new WebHook(

@@ -13,18 +13,25 @@ class TaskSkipped implements TideEvent, TaskEvent
     private $tideUuid;
 
     /**
-     * @var TaskContext
+     * @var string
      */
-    private $taskContext;
+    private $taskId;
 
     /**
-     * @param Uuid        $tideUuid
-     * @param TaskContext $taskContext
+     * @var string
      */
-    public function __construct(Uuid $tideUuid, TaskContext $taskContext)
+    private $taskLogId;
+
+    /**
+     * @param Uuid $tideUuid
+     * @param string $taskId
+     * @param string $taskLogId
+     */
+    public function __construct(Uuid $tideUuid, string $taskId, string $taskLogId)
     {
         $this->tideUuid = $tideUuid;
-        $this->taskContext = $taskContext;
+        $this->taskId = $taskId;
+        $this->taskLogId = $taskLogId;
     }
 
     /**
@@ -40,14 +47,14 @@ class TaskSkipped implements TideEvent, TaskEvent
      */
     public function getTaskId()
     {
-        return $this->taskContext->getTaskId();
+        return $this->taskId;
     }
 
     /**
-     * @return TaskContext
+     * @return string
      */
-    public function getTaskContext()
+    public function getTaskLogId()
     {
-        return $this->taskContext;
+        return $this->taskLogId;
     }
 }

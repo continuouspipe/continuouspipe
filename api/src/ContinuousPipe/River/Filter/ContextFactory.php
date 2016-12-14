@@ -90,7 +90,7 @@ class ContextFactory
         $view = new TaskListView();
 
         foreach ($tasks as $task) {
-            $taskId = $task->getContext()->getTaskId();
+            $taskId = $task->getIdentifier();
 
             $view->add($taskId, $task->getExposedContext());
         }

@@ -13,25 +13,32 @@ class TaskFailed implements TideEvent
     private $tideUuid;
 
     /**
-     * @var Task
-     */
-    private $taskContext;
-
-    /**
      * @var string
      */
     private $message;
 
     /**
-     * @param Uuid        $tideUuid
-     * @param TaskContext $taskContext
-     * @param string      $message
+     * @var string
      */
-    public function __construct(Uuid $tideUuid, TaskContext $taskContext, $message)
+    private $taskIdentifier;
+
+    /**
+     * @var string
+     */
+    private $taskLogIdentifier;
+
+    /**
+     * @param Uuid $tideUuid
+     * @param string $taskIdentifier
+     * @param string $taskLogIdentifier
+     * @param string $message
+     */
+    public function __construct(Uuid $tideUuid, string $taskIdentifier, string $taskLogIdentifier, $message)
     {
         $this->tideUuid = $tideUuid;
-        $this->taskContext = $taskContext;
         $this->message = $message;
+        $this->taskIdentifier = $taskIdentifier;
+        $this->taskLogIdentifier = $taskLogIdentifier;
     }
 
     /**
@@ -43,18 +50,26 @@ class TaskFailed implements TideEvent
     }
 
     /**
-     * @return TaskContext
-     */
-    public function getTaskContext()
-    {
-        return $this->taskContext;
-    }
-
-    /**
      * @return string
      */
     public function getMessage()
     {
         return $this->message;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTaskIdentifier(): string
+    {
+        return $this->taskIdentifier;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTaskLogIdentifier(): string
+    {
+        return $this->taskLogIdentifier;
     }
 }

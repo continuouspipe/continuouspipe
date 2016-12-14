@@ -181,7 +181,7 @@ class Tide
         if (null !== ($failedTask = $this->tasks->getFailedTask())) {
             $this->newEvents[] = new TideFailed(
                 $event->getTideUuid(),
-                sprintf('Task "%s" failed', $failedTask->getContext()->getTaskId())
+                sprintf('Task "%s" failed', $failedTask->getIdentifier())
             );
         } elseif ($this->tasks->allSuccessful()) {
             $this->newEvents[] = new TideSuccessful($event->getTideUuid());
@@ -189,7 +189,9 @@ class Tide
             try {
                 $this->nextTask();
             } catch (TaskRunnerException $e) {
-                $this->newEvents[] = new TaskFailed($event->getTideUuid(), $e->getTask()->getContext(), $e->getMessage());
+                $task = $e->getTask();
+
+                $this->newEvents[] = new TaskFailed($event->getTideUuid(), $task->getIdentifier(), $task->getLogIdentifier(), $e->getMessage());
                 $this->newEvents[] = new TideFailed($event->getTideUuid(), $e->getMessage());
             }
         }

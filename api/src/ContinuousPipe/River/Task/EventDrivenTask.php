@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Task;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
+use LogStream\Node\Text;
 
 abstract class EventDrivenTask implements Task
 {
@@ -127,6 +128,36 @@ abstract class EventDrivenTask implements Task
         }
 
         return $this->context;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLabel(): string
+    {
+        if ($taskLog = $this->getContext()->getTaskLog()) {
+            $node = $taskLog->getNode();
+
+            if ($node instanceof Text) {
+                return $node->getText();
+            }
+        }
+
+        return $this->getIdentifier();
+    }
+
+    public function getIdentifier(): string
+    {
+        return $this->context->getTaskId();
+    }
+
+    public function getLogIdentifier(): string
+    {
+        if (null === ($log = $this->context->getTaskLog())) {
+            $log = $this->context->getLog();
+        }
+
+        return $log->getId();
     }
 
     /**
