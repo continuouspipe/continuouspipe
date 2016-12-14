@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
@@ -47,7 +48,11 @@ class ConfigurationFactory implements TideConfigurationFactory
      */
     public function getConfiguration(FlatFlow $flow, CodeReference $codeReference)
     {
-        $fileSystem = $this->fileSystemResolver->getFileSystem($flow, $codeReference);
+        try {
+            $fileSystem = $this->fileSystemResolver->getFileSystem($flow, $codeReference);
+        } catch (CodeRepositoryException $e) {
+            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
+        }
 
         $configs = [
             $flow->getConfiguration(),

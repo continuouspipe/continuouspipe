@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\GitHub;
 
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -14,6 +14,7 @@ use GitHub\Integration\Installation;
 use GitHub\Integration\InstallationNotFound;
 use GitHub\Integration\InstallationRepository;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GitHubClientFactory implements ClientFactory
@@ -44,19 +45,32 @@ class GitHubClientFactory implements ClientFactory
     private $installationClientFactory;
 
     /**
+     * @var FlatFlowRepository
+     */
+    private $flatFlowRepository;
+
+    /**
      * @param TokenStorageInterface     $tokenStorage
      * @param HttpClientInterface       $githubHttpClient
      * @param BucketRepository          $bucketRepository
      * @param InstallationRepository    $installationRepository
      * @param InstallationClientFactory $installationClientFactory
+     * @param FlatFlowRepository        $flatFlowRepository
      */
-    public function __construct(TokenStorageInterface $tokenStorage, HttpClientInterface $githubHttpClient, BucketRepository $bucketRepository, InstallationRepository $installationRepository, InstallationClientFactory $installationClientFactory)
-    {
+    public function __construct(
+        TokenStorageInterface $tokenStorage,
+        HttpClientInterface $githubHttpClient,
+        BucketRepository $bucketRepository,
+        InstallationRepository $installationRepository,
+        InstallationClientFactory $installationClientFactory,
+        FlatFlowRepository $flatFlowRepository
+    ) {
         $this->tokenStorage = $tokenStorage;
         $this->githubHttpClient = $githubHttpClient;
         $this->bucketRepository = $bucketRepository;
         $this->installationRepository = $installationRepository;
         $this->installationClientFactory = $installationClientFactory;
+        $this->flatFlowRepository = $flatFlowRepository;
     }
 
     /**
@@ -123,8 +137,9 @@ class GitHubClientFactory implements ClientFactory
     /**
      * {@inheritdoc}
      */
-    public function createClientForFlow(FlatFlow $flow)
+    public function createClientForFlow(UuidInterface $flowUuid)
     {
+        $flow = $this->flatFlowRepository->find($flowUuid);
         $repository = $flow->getRepository();
 
         // If the repository is not a GitHub code repository, creates the client

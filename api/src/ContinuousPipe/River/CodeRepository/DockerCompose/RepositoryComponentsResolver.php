@@ -6,6 +6,7 @@ use ContinuousPipe\DockerCompose\DockerComposeException;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
@@ -37,10 +38,14 @@ class RepositoryComponentsResolver implements ComponentsResolver
      */
     public function resolve(FlatFlow $flow, CodeReference $codeReference)
     {
-        return $this->resolveWithFilesystem(
-            $this->fileSystemResolver->getFileSystem($flow, $codeReference),
-            $codeReference
-        );
+        try {
+            return $this->resolveWithFilesystem(
+                $this->fileSystemResolver->getFileSystem($flow, $codeReference),
+                $codeReference
+            );
+        } catch (CodeRepositoryException $e) {
+            throw new ResolveException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -48,10 +53,14 @@ class RepositoryComponentsResolver implements ComponentsResolver
      */
     public function resolveByCodeReferenceAndBucket(CodeReference $codeReference, BucketContainer $bucketContainer)
     {
-        return $this->resolveWithFilesystem(
-            $this->fileSystemResolver->getFileSystemWithBucketContainer($codeReference, $bucketContainer),
-            $codeReference
-        );
+        try {
+            return $this->resolveWithFilesystem(
+                $this->fileSystemResolver->getFileSystemWithBucketContainer($codeReference, $bucketContainer),
+                $codeReference
+            );
+        } catch (CodeRepositoryException $e) {
+            throw new ResolveException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**

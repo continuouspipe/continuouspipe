@@ -6,8 +6,10 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideEventWithMetadata;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Infrastructure\Doctrine\Entity\EventDto;
+use ContinuousPipe\River\View\TimeResolver;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class DoctrineEventStore implements EventStore
 {
@@ -19,11 +21,18 @@ class DoctrineEventStore implements EventStore
     private $entityManager;
 
     /**
-     * @param EntityManager $entityManager
+     * @var TimeResolver
      */
-    public function __construct(EntityManager $entityManager)
+    private $timeResolver;
+
+    /**
+     * @param EntityManager $entityManager
+     * @param TimeResolver  $timeResolver
+     */
+    public function __construct(EntityManager $entityManager, TimeResolver $timeResolver)
     {
         $this->entityManager = $entityManager;
+        $this->timeResolver = $timeResolver;
     }
 
     /**
@@ -35,7 +44,7 @@ class DoctrineEventStore implements EventStore
         $dto->tideUuid = $event->getTideUuid();
         $dto->eventClass = get_class($event);
         $dto->serializedEvent = base64_encode(serialize($event));
-        $dto->eventDatetime = $this->getCurrentMicroDateTime();
+        $dto->eventDatetime = $this->timeResolver->resolve();
 
         $this->entityManager->persist($dto);
         $this->entityManager->flush();
@@ -44,7 +53,7 @@ class DoctrineEventStore implements EventStore
     /**
      * {@inheritdoc}
      */
-    public function findByTideUuid(Uuid $uuid)
+    public function findByTideUuid(UuidInterface $uuid)
     {
         $dtoCollection = $this->getEntityRepository()->findBy([
             'tideUuid' => (string) $uuid,
@@ -73,7 +82,7 @@ class DoctrineEventStore implements EventStore
     /**
      * {@inheritdoc}
      */
-    public function findByTideUuidAndTypeWithMetadata(Uuid $uuid, $className)
+    public function findByTideUuidAndTypeWithMetadata(UuidInterface $uuid, $className)
     {
         $dtoCollection = $this->getEntityRepository()->findBy([
             'tideUuid' => (string) $uuid,
@@ -93,7 +102,7 @@ class DoctrineEventStore implements EventStore
     /**
      * {@inheritdoc}
      */
-    public function findByTideUuidWithMetadata(Uuid $uuid)
+    public function findByTideUuidWithMetadata(UuidInterface $uuid)
     {
         $dtoCollection = $this->getEntityRepository()->findBy([
             'tideUuid' => (string) $uuid,
@@ -130,17 +139,6 @@ class DoctrineEventStore implements EventStore
     private function getEntityRepository()
     {
         return $this->entityManager->getRepository(self::DTO_CLASS);
-    }
-
-    /**
-     * @return \DateTime
-     */
-    private function getCurrentMicroDateTime()
-    {
-        $time = microtime(true);
-        $microSeconds = sprintf('%06d', ($time - floor($time)) * 1000000);
-
-        return new \DateTime(date('Y-m-d H:i:s.'.$microSeconds, $time));
     }
 
     /**

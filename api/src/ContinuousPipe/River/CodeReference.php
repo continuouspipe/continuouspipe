@@ -8,6 +8,7 @@ class CodeReference
 {
     /**
      * @JMS\Type("ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository")
+     * @JMS\Groups({"Default"})
      *
      * @var CodeRepository
      */
@@ -15,6 +16,7 @@ class CodeReference
 
     /**
      * @JMS\Type("string")
+     * @JMS\Groups({"Default"})
      *
      * @var string
      */
@@ -22,6 +24,7 @@ class CodeReference
 
     /**
      * @JMS\Type("string")
+     * @JMS\Groups({"Default"})
      *
      * @var null|string
      */

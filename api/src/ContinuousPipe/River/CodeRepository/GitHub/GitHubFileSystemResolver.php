@@ -6,6 +6,7 @@ use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\GitHub\GitHubClientException;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
@@ -35,11 +36,15 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
      */
     public function getFileSystemWithBucketContainer(CodeReference $codeReference, BucketContainer $bucketContainer)
     {
-        return new CodeRepository\GitHubRelativeFileSystem(
-            $this->gitHubClientFactory->createClientFromBucketUuid($bucketContainer->getBucketUuid()),
-            $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
-            $codeReference->getCommitSha()
-        );
+        try {
+            return new CodeRepository\GitHubRelativeFileSystem(
+                $this->gitHubClientFactory->createClientFromBucketUuid($bucketContainer->getBucketUuid()),
+                $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
+                $codeReference->getCommitSha()
+            );
+        } catch (GitHubClientException $e) {
+            throw new CodeRepository\CodeRepositoryException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -47,10 +52,14 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
      */
     public function getFileSystem(FlatFlow $flow, CodeReference $codeReference)
     {
-        return new CodeRepository\GitHubRelativeFileSystem(
-            $this->gitHubClientFactory->createClientForFlow($flow),
-            $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
-            $codeReference->getCommitSha() ?: $codeReference->getBranch()
-        );
+        try {
+            return new CodeRepository\GitHubRelativeFileSystem(
+                $this->gitHubClientFactory->createClientForFlow($flow->getUuid()),
+                $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
+                $codeReference->getCommitSha() ?: $codeReference->getBranch()
+            );
+        } catch (GitHubClientException $e) {
+            throw new CodeRepository\CodeRepositoryException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

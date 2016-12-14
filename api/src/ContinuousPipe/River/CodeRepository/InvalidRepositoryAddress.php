@@ -2,6 +2,6 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
-class InvalidRepositoryAddress extends \Exception
+class InvalidRepositoryAddress extends CodeRepositoryException
 {
 }

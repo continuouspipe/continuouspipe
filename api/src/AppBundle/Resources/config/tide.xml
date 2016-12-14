@@ -112,21 +112,40 @@
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
         </service>
 
-        <service id="river.view.listener.tide_created" class="ContinuousPipe\River\View\EventListener\TideCreatedListener">
-            <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.repository.flow" />
+        <service id="river.view.tide_view_factory" class="ContinuousPipe\River\View\Factory\TideViewFactory">
+            <argument type="service" id="river.repository.tide" />
             <argument type="service" id="river.time_resolver" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
+            <argument type="service" id="river.tide_event_store" />
         </service>
 
-        <service id="river.view.listener.tide_status" class="ContinuousPipe\River\View\EventListener\TideStatusListener">
-            <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.time_resolver" />
+        <service id="river.view.storage.firebase.database_factory" class="ContinuousPipe\River\Infrastructure\Firebase\ServiceAccountedFirebaseDatabaseFactory">
+            <argument>%firebase_service_account_path%</argument>
+            <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
+        </service>
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
+        <service id="river.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage\FirebaseTideViewStorage">
+            <argument type="service" id="river.view.storage.firebase.database_factory" />
+            <argument type="service" id="jms_serializer" />
+            <argument type="service" id="logger" />
+            <argument>%firebase_database_uri%</argument>
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="save"
+                 runner="tolerance.operation_runners.firebase" />
+        </service>
+
+        <service id="river.view.storage" class="ContinuousPipe\River\View\Storage\DuplicateViewToManyStorages">
+            <argument type="collection">
+                <argument type="service" id="river.view.tide_repository" />
+                <argument type="service" id="river.view.storage.firebase" />
+            </argument>
+        </service>
+
+        <service id="river.view.message_bus_middleware.update_tide_when_event" class="ContinuousPipe\River\View\EventBusMiddleware\UpdateTideViewWhenTideEventPublished">
+            <argument type="service" id="river.view.storage" />
+            <argument type="service" id="service_container" />
+
+            <tag name="event_bus_middleware" />
         </service>
 
         <!-- Concurrency -->

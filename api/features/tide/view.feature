@@ -16,12 +16,12 @@ Feature:
     Then the tide is represented as running
 
   Scenario: Tide is failed
-    When a tide is started
+    When a tide is started with a build task
     And the tide failed
     Then the tide is represented as failed
 
   Scenario: Tide succeed
-    When a tide is started
+    When a tide is started with a build task
     And the tide is successful
     Then the tide is represented as successful
 
@@ -36,3 +36,14 @@ Feature:
     Then the tide creation date should be "2016-04-06T15:00:00Z"
     Then the tide start date should be "2016-04-06T16:00:00Z"
     And the tide finish date should be "2016-04-06T17:00:00Z"
+
+  Scenario: The running tasks are described
+    Given a tide is started with a build task
+    When I request the tide view
+    Then the task "build" should be "running"
+
+  Scenario: The pending tasks are described
+    Given a tide is started with a build and deploy task
+    When I request the tide view
+    Then the task "build" should be "running"
+    And the task "deploy" should be "pending"

@@ -39,7 +39,7 @@ class TargetEnvironmentFactory
             ),
             $configuration->getClusterIdentifier(),
             [
-                'flow' => (string) $tide->getFlow()->getUuid(),
+                'flow' => (string) $tide->getFlowUuid(),
             ]
         );
     }

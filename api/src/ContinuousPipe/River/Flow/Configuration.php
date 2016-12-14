@@ -30,7 +30,7 @@ class Configuration implements ConfigurationInterface
         $root = $treeBuilder->root('flow');
         $root
             ->beforeNormalization()
-                ->always(function(array $config) {
+                ->always(function (array $config) {
                     if (isset($config['environment_variables'])) {
                         // move existing values to the right key
                         $config['variables'] = $config['environment_variables'];

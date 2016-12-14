@@ -7,6 +7,7 @@ imports:
 parameters:
     locale: en
     default_environment_expression: 'flow.uuid ~ "-" ~ code_reference.branch'
+    firebase_service_account_path: '%kernel.root_dir%/var/firebase/continuous-pipe-firebase-adminsdk-57uln-abf9ce37fe.json'
 
 framework:
     #esi:             ~
@@ -246,6 +247,11 @@ tolerance:
             success_failure_metrics:
                 publisher: tolerance.metrics.publisher.statsd
                 namespace: river.outgoing.slack
+
+        firebase:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.firebase
 
     metrics:
         collectors:

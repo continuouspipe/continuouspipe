@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\GitHub;
 use GitHub\Integration\Installation;
 use Github\Client;
 use Github\HttpClient\HttpClientInterface;
+use GitHub\Integration\InstallationTokenException;
 use GitHub\Integration\InstallationTokenResolver;
 
 class InstallationClientFactory
@@ -34,11 +35,17 @@ class InstallationClientFactory
      *
      * @param Installation $installation
      *
+     * @throws GitHubClientException
+     *
      * @return Client
      */
     public function createClientFromInstallation(Installation $installation)
     {
-        $token = $this->installationTokenResolver->get($installation);
+        try {
+            $token = $this->installationTokenResolver->get($installation);
+        } catch (InstallationTokenException $e) {
+            throw new GitHubClientException('Unable find the credentials to authenticate on GitHub API', $e->getCode(), $e);
+        }
 
         $client = new Client($this->httpClient);
         $client->authenticate($token->getToken(), null, Client::AUTH_HTTP_TOKEN);

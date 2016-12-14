@@ -44,7 +44,7 @@ class QueueSpotTimedOutWhenTideStartedListener
         $tide = $this->tideRepository->find($event->getTideUuid());
 
         $this->delayedCommandBus->publish(
-            new SpotTimedOutTidesCommand($tide->getFlow()->getUuid()),
+            new SpotTimedOutTidesCommand($tide->getFlowUuid()),
             $this->tideTimeout
         );
     }

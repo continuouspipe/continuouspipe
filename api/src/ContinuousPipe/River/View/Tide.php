@@ -3,11 +3,12 @@
 namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use LogStream\Log;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class Tide
 {
@@ -17,59 +18,88 @@ class Tide
     const STATUS_SUCCESS = 'success';
 
     /**
-     * @var Uuid
+     * @JMS\Groups({"Default"})
+     *
+     * @var UuidInterface
      */
     private $uuid;
 
     /**
-     * @var FlatFlow
+     * @JMS\Groups({"Default"})
+     *
+     * @var UuidInterface
      */
-    private $flow;
+    private $flowUuid;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var CodeReference
      */
     private $codeReference;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var User
      */
     private $user;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var Team
      */
     private $team;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var string
      */
     private $status;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var string
      */
     private $logId;
 
     /**
+     * @JMS\Groups({"Configuration"})
+     *
      * @var array
      */
     private $configuration;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var \DateTime
      */
     private $creationDate;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var \DateTime
      */
     private $startDate;
 
     /**
+     * @JMS\Groups({"Default"})
+     *
      * @var \DateTime
      */
     private $finishDate;
+
+    /**
+     * @JMS\Groups({"Default"})
+     *
+     * @var TideTaskView[]
+     */
+    private $tasks = [];
 
     private function __construct()
     {
@@ -78,8 +108,8 @@ class Tide
     /**
      * Create a new tide representation.
      *
-     * @param Uuid          $uuid
-     * @param FlatFlow      $flow
+     * @param UuidInterface $uuid
+     * @param UuidInterface $flowUuid
      * @param CodeReference $codeReference
      * @param Log           $log
      * @param Team          $team
@@ -89,11 +119,11 @@ class Tide
      *
      * @return Tide
      */
-    public static function create(Uuid $uuid, FlatFlow $flow, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate)
+    public static function create(UuidInterface $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate)
     {
         $tide = new self();
         $tide->uuid = $uuid;
-        $tide->flow = $flow;
+        $tide->flowUuid = $flowUuid;
         $tide->codeReference = $codeReference;
         $tide->logId = $log->getId();
         $tide->creationDate = $creationDate;
@@ -105,7 +135,7 @@ class Tide
     }
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getUuid()
     {
@@ -113,11 +143,11 @@ class Tide
     }
 
     /**
-     * @return FlatFlow
+     * @return UuidInterface
      */
-    public function getFlow()
+    public function getFlowUuid()
     {
-        return $this->flow;
+        return $this->flowUuid;
     }
 
     /**
@@ -190,6 +220,22 @@ class Tide
     public function setFinishDate($finishDate)
     {
         $this->finishDate = $finishDate;
+    }
+
+    /**
+     * @return TideTaskView[]
+     */
+    public function getTasks(): array
+    {
+        return $this->tasks;
+    }
+
+    /**
+     * @param TideTaskView[] $tasks
+     */
+    public function setTasks(array $tasks)
+    {
+        $this->tasks = $tasks;
     }
 
     /**

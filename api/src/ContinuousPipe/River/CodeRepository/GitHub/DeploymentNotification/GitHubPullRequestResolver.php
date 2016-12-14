@@ -6,10 +6,10 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use Github\Client;
 use GitHub\WebHook\Model\PullRequest;
 use JMS\Serializer\Serializer;
+use Ramsey\Uuid\UuidInterface;
 
 class GitHubPullRequestResolver implements PullRequestResolver
 {
@@ -36,9 +36,9 @@ class GitHubPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(FlatFlow $flow, CodeReference $codeReference)
+    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference)
     {
-        $client = $this->gitHubClientFactory->createClientForFlow($flow);
+        $client = $this->gitHubClientFactory->createClientForFlow($flowUuid);
 
         return $this->findPullRequestFromClient($client, $codeReference);
     }

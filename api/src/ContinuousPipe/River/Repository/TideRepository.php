@@ -4,17 +4,18 @@ namespace ContinuousPipe\River\Repository;
 
 use ContinuousPipe\River\Tide;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 interface TideRepository
 {
     /**
      * Get a tide by its UUID.
      *
-     * @param Uuid $uuid
+     * @param UuidInterface $uuid
      *
      * @throws TideNotFound
      *
      * @return Tide
      */
-    public function find(Uuid $uuid);
+    public function find(UuidInterface $uuid);
 }
