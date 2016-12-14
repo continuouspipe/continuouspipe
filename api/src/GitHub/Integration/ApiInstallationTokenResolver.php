@@ -3,6 +3,7 @@
 namespace GitHub\Integration;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\SerializerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 
@@ -55,13 +56,21 @@ class ApiInstallationTokenResolver implements InstallationTokenResolver
             'iss' => $this->integrationId,
         ]);
 
-        $response = $this->httpClient->post('https://api.github.com/installations/'.$installation->getId().'/access_tokens', [
-            'headers' => [
-                'Accept' => 'application/vnd.github.machine-man-preview+json',
-                'Authorization' => 'Bearer '.$jwt,
-            ],
-        ]);
+        try {
+            $response = $this->httpClient->post('https://api.github.com/installations/' . $installation->getId() . '/access_tokens', [
+                'headers' => [
+                    'Accept' => 'application/vnd.github.machine-man-preview+json',
+                    'Authorization' => 'Bearer ' . $jwt,
+                ],
+            ]);
+        } catch (RequestException $e) {
+            throw new InstallationTokenException('Unable to fetch the installation token from the GitHub API', $e->getCode(), $e);
+        }
 
-        return $this->serializer->deserialize($response->getBody()->getContents(), InstallationToken::class, 'json');
+        try {
+            return $this->serializer->deserialize($response->getBody()->getContents(), InstallationToken::class, 'json');
+        } catch (\InvalidArgumentException $e) {
+            throw new InstallationTokenException('Unable to decode the installation token from the GitHub API', $e->getCode(), $e);
+        }
     }
 }

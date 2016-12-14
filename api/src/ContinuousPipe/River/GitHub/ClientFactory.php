@@ -57,6 +57,8 @@ interface ClientFactory
     /**
      * @param Installation $installation
      *
+     * @throws GitHubClientException
+     *
      * @return Client
      */
     public function createClientFromInstallation(Installation $installation);

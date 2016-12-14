@@ -17,7 +17,7 @@ interface FileSystemResolver
      *
      * @return RelativeFileSystem
      *
-     * @throws InvalidRepositoryAddress
+     * @throws CodeRepositoryException
      */
     public function getFileSystem(FlatFlow $flow, CodeReference $codeReference);
 
@@ -32,7 +32,7 @@ interface FileSystemResolver
      *
      * @return RelativeFileSystem
      *
-     * @throws InvalidRepositoryAddress
+     * @throws CodeRepositoryException
      */
     public function getFileSystemWithBucketContainer(CodeReference $codeReference, BucketContainer $bucketContainer);
 }
