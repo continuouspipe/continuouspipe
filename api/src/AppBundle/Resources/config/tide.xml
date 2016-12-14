@@ -128,6 +128,10 @@
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="logger" />
             <argument>%firebase_database_uri%</argument>
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="save"
+                 runner="tolerance.operation_runners.firebase" />
         </service>
 
         <service id="river.view.storage" class="ContinuousPipe\River\View\Storage\DuplicateViewToManyStorages">

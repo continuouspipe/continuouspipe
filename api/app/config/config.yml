@@ -248,6 +248,11 @@ tolerance:
                 publisher: tolerance.metrics.publisher.statsd
                 namespace: river.outgoing.slack
 
+        firebase:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.firebase
+
     metrics:
         collectors:
             -
