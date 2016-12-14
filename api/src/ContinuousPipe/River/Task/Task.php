@@ -8,6 +8,12 @@ use LogStream\Log;
 
 interface Task
 {
+    const STATUS_PENDING = 'pending';
+    const STATUS_SKIPPED = 'skipped';
+    const STATUS_RUNNING = 'running';
+    const STATUS_FAILED = 'failed';
+    const STATUS_SUCCESSFUL = 'successful';
+
     /**
      * Start the task.
      */
@@ -28,35 +34,12 @@ interface Task
     public function accept(TideEvent $event);
 
     /**
-     * Is this task running ?
+     * Get the status of the given task. This can be one of the status
+     * defined as constant of this interface.
      *
-     * @return bool
+     * @return string
      */
-    public function isRunning();
-
-    /**
-     * Is this task successful ?
-     *
-     * @return bool
-     */
-    public function isSuccessful();
-
-    /**
-     * Is this task failed ?
-     *
-     * @return bool
-     */
-    public function isFailed();
-
-    /**
-     * @return bool
-     */
-    public function isPending();
-
-    /**
-     * @return bool
-     */
-    public function isSkipped();
+    public function getStatus() : string;
 
     /**
      * @return TideEvent[]

@@ -80,12 +80,10 @@ class BuildContext implements Context
     public function theBuildTaskShouldBeFailed()
     {
         $buildTask = $this->getBuildTask();
-        if (!$buildTask->isFailed()) {
+        if ($buildTask->getStatus() != Task::STATUS_FAILED) {
             throw new \RuntimeException(sprintf(
-                'Expected the task to be failed (successful=%b failed=%b pending=%b)',
-                $buildTask->isSuccessful(),
-                $buildTask->isFailed(),
-                $buildTask->isPending()
+                'Expected the task to be failed (%s)',
+                $buildTask->getStatus()
             ));
         }
     }
@@ -96,12 +94,10 @@ class BuildContext implements Context
     public function theBuildTaskShouldBeRunning()
     {
         $buildTask = $this->getBuildTask();
-        if (!$buildTask->isRunning()) {
+        if ($buildTask->getStatus() !== Task::STATUS_RUNNING) {
             throw new \RuntimeException(sprintf(
-                'Expected the task to be running (successful=%b failed=%b pending=%b)',
-                $buildTask->isSuccessful(),
-                $buildTask->isFailed(),
-                $buildTask->isPending()
+                'Expected the task to be running (%s)',
+                $buildTask->getStatus()
             ));
         }
     }
@@ -112,12 +108,10 @@ class BuildContext implements Context
     public function theBuildTaskShouldBeSuccessful()
     {
         $buildTask = $this->getBuildTask();
-        if (!$buildTask->isSuccessful()) {
+        if ($buildTask->getStatus() !== Task::STATUS_SUCCESSFUL) {
             throw new \RuntimeException(sprintf(
-                'Expected the task to be successful (successful=%b failed=%b pending=%b)',
-                $buildTask->isSuccessful(),
-                $buildTask->isFailed(),
-                $buildTask->isPending()
+                'Expected the task to be successful (%s)',
+                $buildTask->getStatus()
             ));
         }
     }

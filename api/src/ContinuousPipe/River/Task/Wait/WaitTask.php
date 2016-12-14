@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Task\Wait;
 use ContinuousPipe\River\Event\GitHub\StatusUpdated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\EventDrivenTask;
+use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\Wait\Event\WaitFailed;
 use ContinuousPipe\River\Task\Wait\Event\WaitStarted;
@@ -80,7 +81,7 @@ class WaitTask extends EventDrivenTask
      */
     public function apply(TideEvent $event)
     {
-        if ($event instanceof StatusUpdated && $this->isRunning()) {
+        if ($event instanceof StatusUpdated && $this->getStatus() == Task::STATUS_RUNNING) {
             $this->applyStatusUpdated($event);
         }
 

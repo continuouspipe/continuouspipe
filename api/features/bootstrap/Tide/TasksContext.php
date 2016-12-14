@@ -59,7 +59,7 @@ class TasksContext implements Context
      */
     public function theBuildTaskShouldBeStarted()
     {
-        if (!$this->getTasksOfType(BuildTask::class)[0]->isRunning()) {
+        if ($this->getTasksOfType(BuildTask::class)[0]->getStatus() !== Task::STATUS_RUNNING) {
             throw new \RuntimeException('The build task is not running');
         }
     }
@@ -74,7 +74,7 @@ class TasksContext implements Context
             throw new \RuntimeException('Did not found any deploy task');
         }
 
-        if ($deployTasks[0]->isRunning()) {
+        if ($deployTasks[0]->getStatus() == Task::STATUS_RUNNING) {
             throw new \RuntimeException('The deploy task is running');
         }
     }
@@ -87,7 +87,7 @@ class TasksContext implements Context
         $tide = $this->tideContext->findTideByIndex(0);
         $task = $this->getTasksOfType(BuildTask::class, $tide->getUuid())[0];
 
-        if (!$task->isSkipped()) {
+        if ($task->getStatus() != Task::STATUS_SKIPPED) {
             throw new \RuntimeException('The build task is not skipped');
         }
     }
@@ -100,7 +100,7 @@ class TasksContext implements Context
         $tide = $this->tideContext->findTideByIndex(1);
         $task = $this->getTasksOfType(BuildTask::class, $tide->getUuid())[0];
 
-        if (!$task->isRunning()) {
+        if ($task->getStatus() !== Task::STATUS_RUNNING) {
             throw new \RuntimeException('The build task is not running');
         }
     }
@@ -115,7 +115,7 @@ class TasksContext implements Context
             throw new \RuntimeException('Did not found any deploy task');
         }
 
-        if (!$deployTasks[0]->isRunning()) {
+        if ($deployTasks[0]->getStatus() != Task::STATUS_RUNNING) {
             throw new \RuntimeException('The deploy task is not running');
         }
     }
@@ -124,7 +124,7 @@ class TasksContext implements Context
      */
     public function theBuildTaskShouldNotBeRunning()
     {
-        if ($this->getTasksOfType(BuildTask::class)[0]->isRunning()) {
+        if ($this->getTasksOfType(BuildTask::class)[0]->getStatus() == Task::STATUS_RUNNING) {
             throw new \RuntimeException('The build task is running');
         }
     }
@@ -136,12 +136,10 @@ class TasksContext implements Context
     {
         $task = $this->getTasksOfType(RunTask::class)[1];
 
-        if (!$task->isRunning()) {
+        if ($task->getStatus() != Task::STATUS_RUNNING) {
             throw new \RuntimeException(sprintf(
-                'The second run task is not running (successful=%b failed=%b pending=%b)',
-                $task->isSuccessful(),
-                $task->isFailed(),
-                $task->isPending()
+                'The second run task is not running (%s)',
+                $task->getStatus()
             ));
         }
     }
@@ -152,12 +150,10 @@ class TasksContext implements Context
     public function theSecondDeployTaskShouldBeRunning()
     {
         $task = $this->getTasksOfType(DeployTask::class)[1];
-        if (!$task->isRunning()) {
+        if ($task->getStatus() != Task::STATUS_RUNNING) {
             throw new \RuntimeException(sprintf(
-                'The second deploy task is not running (successful=%b failed=%b pending=%b)',
-                $task->isSuccessful(),
-                $task->isFailed(),
-                $task->isPending()
+                'The second deploy task is not running (%s)',
+                $task->getStatus()
             ));
         }
     }
@@ -169,12 +165,10 @@ class TasksContext implements Context
     {
         $task = $this->getTasksOfType(RunTask::class)[0];
 
-        if (!$task->isRunning()) {
+        if ($task->getStatus() != Task::STATUS_RUNNING)  {
             throw new \RuntimeException(sprintf(
-                'The run task is not running (successful=%b failed=%b pending=%b)',
-                $task->isSuccessful(),
-                $task->isFailed(),
-                $task->isPending()
+                'The run task is not running (%s)',
+                $task->getStatus()
             ));
         }
     }
@@ -186,12 +180,10 @@ class TasksContext implements Context
     {
         $task = $this->getTasksOfType(DeployTask::class)[1];
 
-        if (!$task->isPending()) {
+        if ($task->getStatus() !== Task::STATUS_PENDING) {
             throw new \RuntimeException(sprintf(
-                'The second run task is not running (successful=%b failed=%b pending=%b)',
-                $task->isSuccessful(),
-                $task->isFailed(),
-                $task->isPending()
+                'The second run task is not running (%s)',
+                $task->getStatus()
             ));
         }
     }

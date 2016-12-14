@@ -167,4 +167,38 @@ abstract class EventDrivenTask implements Task
     {
         return new ArrayObject([]);
     }
+
+    /**
+     * Is this task successful ?
+     *
+     * @return bool
+     */
+    public abstract function isSuccessful();
+
+    /**
+     * Is this task failed ?
+     *
+     * @return bool
+     */
+    public abstract function isFailed();
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        if ($this->isSkipped()) {
+            return Task::STATUS_SKIPPED;
+        } elseif ($this->isPending()) {
+            return Task::STATUS_PENDING;
+        } elseif ($this->isSuccessful()) {
+            return Task::STATUS_SUCCESSFUL;
+        } elseif ($this->isFailed()) {
+            return Task::STATUS_FAILED;
+        } elseif ($this->isRunning()) {
+            return Task::STATUS_RUNNING;
+        }
+
+        throw new \RuntimeException('Unable to determinate curent task status');
+    }
 }

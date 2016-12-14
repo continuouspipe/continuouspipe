@@ -11,6 +11,7 @@ use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\RunTask;
+use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
@@ -169,7 +170,7 @@ class RunContext implements Context
      */
     public function theRunTaskShouldBeFailed()
     {
-        if (!$this->getRunTask()->isFailed()) {
+        if ($this->getRunTask()->getStatus() != Task::STATUS_FAILED) {
             throw new \RuntimeException('Expected the task to be failed');
         }
     }
@@ -179,7 +180,7 @@ class RunContext implements Context
      */
     public function theRunTaskShouldBeSuccessful()
     {
-        if (!$this->getRunTask()->isSuccessful()) {
+        if ($this->getRunTask()->getStatus() != Task::STATUS_SUCCESSFUL) {
             throw new \RuntimeException('Expected the task to be successful, be it\'s not');
         }
     }

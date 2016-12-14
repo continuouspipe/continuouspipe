@@ -7,6 +7,7 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Event\TideSuccessful;
+use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskFailed;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
@@ -205,7 +206,7 @@ class Tide
         if (null !== ($nextTask = $this->tasks->next())) {
             $this->taskRunner->run($this, $nextTask);
 
-            if ($nextTask->isSkipped()) {
+            if ($nextTask->getStatus() == Task::STATUS_SKIPPED) {
                 $this->nextTask();
             }
         }

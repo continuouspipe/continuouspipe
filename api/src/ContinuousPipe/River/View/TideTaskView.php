@@ -39,20 +39,7 @@ final class TideTaskView
         $view = new self();
         $view->identifier = $task->getIdentifier();
         $view->label = $task->getLabel();
-
-        if ($task->isFailed()) {
-            $view->status = 'failed';
-        } elseif ($task->isRunning()) {
-            $view->status = 'running';
-        } elseif ($task->isSuccessful()) {
-            $view->status = 'success';
-        } elseif ($task->isPending()) {
-            $view->status = 'pending';
-        } elseif ($task->isSkipped()) {
-            $view->status = 'skipped';
-        } else {
-            $view->status = 'unknown';
-        }
+        $view->status = $task->getStatus();
 
         return $view;
     }
