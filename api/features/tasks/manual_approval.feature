@@ -38,3 +38,30 @@ Feature:
     And I reject the task
     Then the manual approval task should be failed
     And the tide should be failed
+
+  Scenario: It continues to the second task if approved
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        - deploy: { cluster: foo, services: [] }
+        - manual_approval: ~
+        - deploy: { cluster: bar, services: [] }
+    """
+    When a tide is started
+    And the first deploy succeed
+    And I approve the task
+    Then the second deploy task should be running
+
+  Scenario: It cancel everything if rejected
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        - deploy: { cluster: foo, services: [] }
+        - manual_approval: ~
+        - deploy: { cluster: bar, services: [] }
+    """
+    When a tide is started
+    And the first deploy succeed
+    And I reject the task
+    Then the second deploy task should be pending
+    And the tide should be failed
