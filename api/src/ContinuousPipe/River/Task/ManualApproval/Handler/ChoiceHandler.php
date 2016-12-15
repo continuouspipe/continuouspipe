@@ -7,6 +7,7 @@ use ContinuousPipe\River\Task\ManualApproval\Command\Approve;
 use ContinuousPipe\River\Task\ManualApproval\Command\ManualApprovalCommand;
 use ContinuousPipe\River\Task\ManualApproval\Command\Reject;
 use ContinuousPipe\River\Task\ManualApproval\ManualApprovalTask;
+use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
 
 class ChoiceHandler
@@ -20,15 +21,21 @@ class ChoiceHandler
      * @var MessageBus
      */
     private $eventBus;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
 
     /**
      * @param TideRepository $tideRepository
      * @param MessageBus     $eventBus
+     * @param LoggerFactory  $loggerFactory
      */
-    public function __construct(TideRepository $tideRepository, MessageBus $eventBus)
+    public function __construct(TideRepository $tideRepository, MessageBus $eventBus, LoggerFactory $loggerFactory)
     {
         $this->tideRepository = $tideRepository;
         $this->eventBus = $eventBus;
+        $this->loggerFactory = $loggerFactory;
     }
 
     public function handle(ManualApprovalCommand $command)
@@ -41,9 +48,9 @@ class ChoiceHandler
         }
 
         if ($command instanceof Approve) {
-            $task->approve($command->getUser());
+            $task->approve($this->loggerFactory, $command->getUser());
         } elseif ($command instanceof Reject) {
-            $task->reject($command->getUser());
+            $task->reject($this->loggerFactory, $command->getUser());
         }
 
         $events = $tide->popNewEvents();

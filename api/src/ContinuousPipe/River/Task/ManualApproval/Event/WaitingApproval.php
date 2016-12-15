@@ -8,13 +8,15 @@ class WaitingApproval extends ManualApprovalEvent
 {
     private $logIdentifier;
     private $label;
+    private $approvalLogIdentifier;
 
-    public function __construct(UuidInterface $tideUuid, string $taskIdentifier, string $logIdentifier, string $label)
+    public function __construct(UuidInterface $tideUuid, string $taskIdentifier, string $logIdentifier, string $label, string $approvalLogIdentifier)
     {
         parent::__construct($tideUuid, $taskIdentifier);
 
         $this->logIdentifier = $logIdentifier;
         $this->label = $label;
+        $this->approvalLogIdentifier = $approvalLogIdentifier;
     }
 
     public function getLogIdentifier(): string
@@ -25,5 +27,10 @@ class WaitingApproval extends ManualApprovalEvent
     public function getLabel(): string
     {
         return $this->label;
+    }
+
+    public function getApprovalLogIdentifier(): string
+    {
+        return $this->approvalLogIdentifier;
     }
 }

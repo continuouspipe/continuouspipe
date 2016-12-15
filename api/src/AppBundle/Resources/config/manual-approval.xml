@@ -19,6 +19,7 @@
         <service id="river.task.manual_approve.choice_handler" class="ContinuousPipe\River\Task\ManualApproval\Handler\ChoiceHandler">
             <argument type="service" id="river.repository.tide" />
             <argument type="service" id="event_bus" />
+            <argument type="service" id="log_stream.logger_factory" />
 
             <tag name="command_handler" handles="ContinuousPipe\River\Task\ManualApproval\Command\Approve" />
             <tag name="command_handler" handles="ContinuousPipe\River\Task\ManualApproval\Command\Reject" />
