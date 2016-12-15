@@ -1,0 +1,28 @@
+<div class="content">
+    <i ng-if="log.status == 'pending'" class="material-icons expand-icon">keyboard_arrow_down</i>
+    <span ng-if="log.status == 'pending'">Waiting manual approval</span>
+
+    <i ng-if="log.status == 'success'" class="material-icons expand-icon">done</i>
+    <span ng-if="log.status == 'success'">Approved by {{ log.choice_user }} 
+        <span>
+            <md-tooltip md-direction="top">{{ log.choice_datetime | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+            {{ log.choice_datetime | timeAgo }}
+        </span>
+    </span>
+
+    <i ng-if="log.status == 'failure'" class="material-icons expand-icon">block</i>
+    <span ng-if="log.status == 'failure'">Rejected by {{ log.choice_user }} 
+        <span>
+            <md-tooltip md-direction="top">{{ log.choice_datetime | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+            {{ log.choice_datetime | timeAgo }}
+        </span>
+    </span>
+</div>
+<div ng-controller="LogsManualApprovalController" class="children approval-form" ng-if="log.status == 'pending'" layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+    <section flex>
+        <md-button class="md-raised md-success" ng-click="approve(log)" ng-disabled="isLoading"><md-icon>done</md-icon> Approve</md-button>
+    </section>
+    <section flex>
+        <md-button class="md-raised md-warn" ng-click="reject(log)" ng-disabled="isLoading"><md-icon>block</md-icon> Reject</md-button>
+    </section>
+</div>

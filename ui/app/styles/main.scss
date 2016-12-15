@@ -30,6 +30,15 @@ $failure-dark-color: #F28282;
     font-size: 14px;
 }
 
+.md-button.md-success.md-raised {
+    color: rgba(255, 255, 255, 0.87);
+    background-color: rgb(63, 181, 68);
+
+    &:hover {
+        background-color: #248e28;
+    }
+}
+
 table.table {
     border-top: 1px solid #F3F4F8;
     border-collapse: collapse;

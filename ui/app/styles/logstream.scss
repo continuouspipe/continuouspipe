@@ -3,6 +3,7 @@ $success-color: #64ad03;
 $default-color: #999;
 $failure-color: #d61341;
 $running-color: #2979ca;
+$pending-color: #ff9c23;
 
 // Layout
 $text-rounds-radius: 20px;
@@ -75,6 +76,12 @@ $text-rounds-radius: 20px;
                     border-bottom-color: $failure-color;
                 }
             }
+
+            &.status-pending {
+                > div.content {
+                    border-bottom-color: $pending-color;
+                }
+            }
         }
 
         &.level-2 {
@@ -83,7 +90,7 @@ $text-rounds-radius: 20px;
             &.status-success {
                 border-left: 3px solid $success-color;
             }
-            &.status-running {
+            &.status-running, &.status-pending {
                 border-left: 3px solid $running-color;
             }
             &.status-failure {
@@ -327,6 +334,24 @@ $text-rounds-radius: 20px;
                 }
                 .pod-contents, &.legend-container {
                     background: $pod-failed-body;
+                }
+            }
+        }
+
+        &.type-manual_approval {
+            .approval-form {
+                > section {
+                    text-align: center;
+                    padding: 30px;
+
+                    > .md-button {
+                        padding: 5px 20px;
+
+                        md-icon {
+                            margin-right: 10px;
+                            color: #fff;
+                        }
+                    }
                 }
             }
         }
