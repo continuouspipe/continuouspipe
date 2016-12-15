@@ -7,6 +7,7 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Event\TideSuccessful;
+use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskFailed;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
@@ -166,6 +167,24 @@ class Tide
     }
 
     /**
+     * @param string $identifier
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return Task
+     */
+    public function getTask(string $identifier) : Task
+    {
+        foreach ($this->tasks->getTasks() as $task) {
+            if ($task->getIdentifier() == $identifier) {
+                return $task;
+            }
+        }
+
+        throw new \InvalidArgumentException(sprintf('The task identified "%s" is not found', $identifier));
+    }
+
+    /**
      * @param TideCreated $event
      */
     private function applyTideCreated(TideCreated $event)
@@ -181,7 +200,7 @@ class Tide
         if (null !== ($failedTask = $this->tasks->getFailedTask())) {
             $this->newEvents[] = new TideFailed(
                 $event->getTideUuid(),
-                sprintf('Task "%s" failed', $failedTask->getContext()->getTaskId())
+                sprintf('Task "%s" failed', $failedTask->getIdentifier())
             );
         } elseif ($this->tasks->allSuccessful()) {
             $this->newEvents[] = new TideSuccessful($event->getTideUuid());
@@ -189,7 +208,9 @@ class Tide
             try {
                 $this->nextTask();
             } catch (TaskRunnerException $e) {
-                $this->newEvents[] = new TaskFailed($event->getTideUuid(), $e->getTask()->getContext(), $e->getMessage());
+                $task = $e->getTask();
+
+                $this->newEvents[] = new TaskFailed($event->getTideUuid(), $task->getIdentifier(), $task->getLogIdentifier(), $e->getMessage());
                 $this->newEvents[] = new TideFailed($event->getTideUuid(), $e->getMessage());
             }
         }
@@ -203,7 +224,7 @@ class Tide
         if (null !== ($nextTask = $this->tasks->next())) {
             $this->taskRunner->run($this, $nextTask);
 
-            if ($nextTask->isSkipped()) {
+            if ($nextTask->getStatus() == Task::STATUS_SKIPPED) {
                 $this->nextTask();
             }
         }

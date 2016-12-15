@@ -26,12 +26,11 @@ class LoggingListener
      */
     public function notify(TaskFailed $event)
     {
-        $context = $event->getTaskContext();
-        $logger = $this->loggerFactory->from($context->getLog());
+        $logger = $this->loggerFactory->fromId($event->getTaskLogIdentifier());
 
         $logger->child(new Text(sprintf(
             'Unable to start task "%s": %s',
-            $context->getTaskId(),
+            $event->getTaskIdentifier(),
             $event->getMessage()
         )));
     }

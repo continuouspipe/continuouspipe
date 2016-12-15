@@ -49,7 +49,7 @@ class TaskList
     public function hasRunning()
     {
         return 0 < count(array_filter($this->tasks, function (Task $task) {
-            return $task->isRunning();
+            return $task->getStatus() == Task::STATUS_RUNNING;
         }));
     }
 
@@ -63,7 +63,7 @@ class TaskList
     public function getFailedTask()
     {
         $failedTasks = array_filter($this->tasks, function (Task $task) {
-            return $task->isFailed();
+            return $task->getStatus() == Task::STATUS_FAILED;
         });
 
         return count($failedTasks) ? current($failedTasks) : null;
@@ -75,7 +75,7 @@ class TaskList
     public function next()
     {
         foreach ($this->tasks as $task) {
-            if ($task->isPending() && !$task->isSkipped()) {
+            if ($task->getStatus() == Task::STATUS_PENDING && $task->getStatus() != Task::STATUS_SKIPPED) {
                 return $task;
             }
         }
@@ -89,7 +89,7 @@ class TaskList
     public function allSuccessful()
     {
         return array_reduce($this->tasks, function ($successful, Task $task) {
-            return $successful && ($task->isSuccessful() || $task->isSkipped());
+            return $successful && in_array($task->getStatus(), [Task::STATUS_SUCCESSFUL, Task::STATUS_SKIPPED]);
         }, true);
     }
 
@@ -99,7 +99,7 @@ class TaskList
     public function getCurrentTask()
     {
         foreach ($this->tasks as $task) {
-            if ($task->isRunning()) {
+            if ($task->getStatus() == Task::STATUS_RUNNING) {
                 return $task;
             }
         }

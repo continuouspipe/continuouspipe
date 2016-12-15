@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Task;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
+use LogStream\Node\Text;
 
 abstract class EventDrivenTask implements Task
 {
@@ -132,8 +133,72 @@ abstract class EventDrivenTask implements Task
     /**
      * {@inheritdoc}
      */
+    public function getLabel(): string
+    {
+        if ($taskLog = $this->getContext()->getTaskLog()) {
+            $node = $taskLog->getNode();
+
+            if ($node instanceof Text) {
+                return $node->getText();
+            }
+        }
+
+        return $this->getIdentifier();
+    }
+
+    public function getIdentifier(): string
+    {
+        return $this->context->getTaskId();
+    }
+
+    public function getLogIdentifier(): string
+    {
+        if (null === ($log = $this->context->getTaskLog())) {
+            $log = $this->context->getLog();
+        }
+
+        return $log->getId();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getExposedContext()
     {
         return new ArrayObject([]);
+    }
+
+    /**
+     * Is this task successful ?
+     *
+     * @return bool
+     */
+    abstract public function isSuccessful();
+
+    /**
+     * Is this task failed ?
+     *
+     * @return bool
+     */
+    abstract public function isFailed();
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        if ($this->isSkipped()) {
+            return Task::STATUS_SKIPPED;
+        } elseif ($this->isPending()) {
+            return Task::STATUS_PENDING;
+        } elseif ($this->isSuccessful()) {
+            return Task::STATUS_SUCCESSFUL;
+        } elseif ($this->isFailed()) {
+            return Task::STATUS_FAILED;
+        } elseif ($this->isRunning()) {
+            return Task::STATUS_RUNNING;
+        }
+
+        throw new \RuntimeException('Unable to determinate curent task status');
     }
 }

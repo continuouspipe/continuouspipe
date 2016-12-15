@@ -54,6 +54,8 @@ default:
                     - @river.pipe_client
                     - @jms_serializer
                 - Task\WaitContext: ~
+                - Task\ManualApprovalContext:
+                    - @kernel
                 - WizardContext:
                     - @kernel
                     - @repository_river.code_repository_repository

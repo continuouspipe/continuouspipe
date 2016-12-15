@@ -42,6 +42,9 @@
             <argument>%firebase_service_account_path%</argument>
             <argument>%firebase_database_uri%</argument>
         </service>
+        <service id="app.controller.manual_approval" class="AppBundle\Controller\ManualApprovalController">
+            <argument type="service" id="command_bus" />
+        </service>
 
         <service id="app.controller.builder_notification" class="AppBundle\Controller\BuilderNotificationController">
             <argument type="service" id="simple_bus.event_bus" />

@@ -26,12 +26,11 @@ class LoggingListener
      */
     public function notify(TaskSkipped $event)
     {
-        $context = $event->getTaskContext();
-        $logger = $this->loggerFactory->from($context->getLog());
+        $logger = $this->loggerFactory->fromId($event->getTaskLogId());
 
         $logger->child(new Text(sprintf(
             'Skipping task "%s" based on filters',
-            $context->getTaskId()
+            $event->getTaskId()
         )));
     }
 }

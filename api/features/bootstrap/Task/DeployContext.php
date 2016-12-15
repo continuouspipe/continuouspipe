@@ -296,7 +296,7 @@ class DeployContext implements Context
      */
     public function theTaskShouldBeFailed()
     {
-        if (!$this->getDeployTask()->isFailed()) {
+        if ($this->getDeployTask()->getStatus() != Task::STATUS_FAILED) {
             throw new \RuntimeException('Expected the task to be failed');
         }
     }
@@ -306,7 +306,7 @@ class DeployContext implements Context
      */
     public function theTaskShouldBeSuccessful()
     {
-        if (!$this->getDeployTask()->isSuccessful()) {
+        if ($this->getDeployTask()->getStatus() != Task::STATUS_SUCCESSFUL) {
             throw new \RuntimeException('Expected the task to be successful');
         }
     }

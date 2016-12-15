@@ -6,11 +6,9 @@ use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
-use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tide\Summary\CurrentTask;
 use ContinuousPipe\River\Tide\Summary\DeployedService;
 use ContinuousPipe\River\View\Tide;
-use LogStream\Node\Text;
 
 class TideSummaryCreator
 {
@@ -110,27 +108,9 @@ class TideSummaryCreator
         $tide = $this->tideRepository->find($tideView->getUuid());
         if ($task = $tide->getTasks()->getCurrentTask()) {
             return new CurrentTask(
-                $task->getContext()->getTaskId(),
-                $this->getTaskLog($task)
+                $task->getIdentifier(),
+                $task->getLabel()
             );
-        }
-
-        return;
-    }
-
-    /**
-     * @param Task $task
-     *
-     * @return string|null
-     */
-    private function getTaskLog(Task $task)
-    {
-        if ($taskLog = $task->getContext()->getTaskLog()) {
-            $node = $taskLog->getNode();
-
-            if ($node instanceof Text) {
-                return $node->getText();
-            }
         }
 
         return;

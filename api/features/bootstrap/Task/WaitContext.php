@@ -4,6 +4,7 @@ namespace Task;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\Wait\WaitTask;
 
 class WaitContext implements Context
@@ -26,7 +27,7 @@ class WaitContext implements Context
      */
     public function theWaitTaskShouldBeFailed()
     {
-        if (!$this->getWaitTask()->isFailed()) {
+        if ($this->getWaitTask()->isFailed() != Task::STATUS_FAILED) {
             throw new \RuntimeException('Expected the task to be failed, be it\'s not');
         }
     }
@@ -36,7 +37,7 @@ class WaitContext implements Context
      */
     public function theWaitTaskShouldBeSuccessful()
     {
-        if (!$this->getWaitTask()->isSuccessful()) {
+        if ($this->getWaitTask()->getStatus() != Task::STATUS_SUCCESSFUL) {
             throw new \RuntimeException('Expected the task to be successful, be it\'s not');
         }
     }
@@ -46,7 +47,7 @@ class WaitContext implements Context
      */
     public function theWaitTaskShouldBeRunning()
     {
-        if (!$this->getWaitTask()->isRunning()) {
+        if ($this->getWaitTask()->getStatus() !== Task::STATUS_RUNNING) {
             throw new \RuntimeException('Expected the task to be running, be it\'s not');
         }
     }

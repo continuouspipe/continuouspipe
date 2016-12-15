@@ -43,6 +43,7 @@ class AppExtension extends Extension
         $loader->load('run/logging.xml');
         $loader->load('wait/task.xml');
         $loader->load('wait/logging.xml');
+        $loader->load('manual-approval.xml');
         $loader->load('analytics/keen.xml');
         $loader->load('recover/timed-out-tides.xml');
         $loader->load('recover/cancel.xml');

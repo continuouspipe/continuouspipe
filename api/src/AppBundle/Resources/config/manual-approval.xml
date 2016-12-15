@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.task.manual_approval_factory" class="ContinuousPipe\River\Task\ManualApproval\ManualApprovalTaskFactory">
+            <tag name="river.task_factory" task="manual_approval" />
+        </service>
+
+        <service id="river.task.manual_approval.runner"
+                 class="ContinuousPipe\River\Task\ManualApproval\ManualApprovalRunner"
+                 decorates="river.tide.task_runner">
+            <argument type="service" id="river.task.manual_approval.runner.inner" />
+            <argument type="service" id="log_stream.logger_factory" />
+        </service>
+
+        <service id="river.task.manual_approve.choice_handler" class="ContinuousPipe\River\Task\ManualApproval\Handler\ChoiceHandler">
+            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="log_stream.logger_factory" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Task\ManualApproval\Command\Approve" />
+            <tag name="command_handler" handles="ContinuousPipe\River\Task\ManualApproval\Command\Reject" />
+        </service>
+    </services>
+</container>
