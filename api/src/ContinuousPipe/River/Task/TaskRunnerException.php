@@ -15,7 +15,7 @@ class TaskRunnerException extends \Exception
      * @param \Exception $previous
      * @param Task       $task
      */
-    public function __construct($message, $code, \Exception $previous, Task $task)
+    public function __construct($message, $code, \Exception $previous = null, Task $task)
     {
         parent::__construct($message, $code, $previous);
 

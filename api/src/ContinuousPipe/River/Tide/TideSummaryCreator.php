@@ -6,11 +6,9 @@ use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
-use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tide\Summary\CurrentTask;
 use ContinuousPipe\River\Tide\Summary\DeployedService;
 use ContinuousPipe\River\View\Tide;
-use LogStream\Node\Text;
 
 class TideSummaryCreator
 {

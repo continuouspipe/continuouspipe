@@ -24,7 +24,7 @@ final class ServiceAccountedFirebaseDatabaseFactory implements DatabaseFactory
     private $serviceAccountPath;
 
     /**
-     * @param string $serviceAccountPath
+     * @param string   $serviceAccountPath
      * @param callable $historyMiddleware
      */
     public function __construct(string $serviceAccountPath, callable $historyMiddleware = null)

@@ -28,7 +28,7 @@ class TaskFailed implements TideEvent
     private $taskLogIdentifier;
 
     /**
-     * @param Uuid $tideUuid
+     * @param Uuid   $tideUuid
      * @param string $taskIdentifier
      * @param string $taskLogIdentifier
      * @param string $message

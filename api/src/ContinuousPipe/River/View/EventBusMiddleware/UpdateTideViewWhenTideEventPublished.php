@@ -22,7 +22,7 @@ class UpdateTideViewWhenTideEventPublished implements MessageBusMiddleware
     private $container;
 
     /**
-     * @param TideViewStorage $tideViewStorage
+     * @param TideViewStorage    $tideViewStorage
      * @param ContainerInterface $container
      */
     public function __construct(TideViewStorage $tideViewStorage, ContainerInterface $container)

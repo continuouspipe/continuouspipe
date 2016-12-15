@@ -173,14 +173,14 @@ abstract class EventDrivenTask implements Task
      *
      * @return bool
      */
-    public abstract function isSuccessful();
+    abstract public function isSuccessful();
 
     /**
      * Is this task failed ?
      *
      * @return bool
      */
-    public abstract function isFailed();
+    abstract public function isFailed();
 
     /**
      * @return string

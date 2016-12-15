@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
-use LogStream\Log;
 
 interface Task
 {
@@ -13,11 +12,6 @@ interface Task
     const STATUS_RUNNING = 'running';
     const STATUS_FAILED = 'failed';
     const STATUS_SUCCESSFUL = 'successful';
-
-    /**
-     * Start the task.
-     */
-    public function start();
 
     /**
      * @param TideEvent $event

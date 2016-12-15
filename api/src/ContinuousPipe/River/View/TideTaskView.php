@@ -3,8 +3,6 @@
 namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\Task\Task;
-use LogStream\Log;
-use LogStream\Node\Text;
 use JMS\Serializer\Annotation as JMS;
 
 final class TideTaskView

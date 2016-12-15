@@ -23,7 +23,7 @@ class TaskSkipped implements TideEvent, TaskEvent
     private $taskLogId;
 
     /**
-     * @param Uuid $tideUuid
+     * @param Uuid   $tideUuid
      * @param string $taskId
      * @param string $taskLogId
      */

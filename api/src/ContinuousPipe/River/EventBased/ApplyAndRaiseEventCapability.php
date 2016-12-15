@@ -27,6 +27,11 @@ trait ApplyAndRaiseEventCapability
         return $this->raisedEvents;
     }
 
+    public function eraseEvents()
+    {
+        $this->raisedEvents = [];
+    }
+
     public function apply($event)
     {
         $className = get_class($event);

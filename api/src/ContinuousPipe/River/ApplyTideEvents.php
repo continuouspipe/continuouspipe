@@ -9,6 +9,11 @@ use SimpleBus\Message\Bus\MessageBus;
 /**
  * A new tide-related event is received, we'll apply it to the tide and then
  * dispatch newly created events if there's any.
+ *
+ * @deprecated This is not really the way to do... at all. There are 2 (WRONG) reasons
+ * for this class to be something:
+ * - Something else than the aggregate (`Tide`) is creating some events
+ * - Applying an event on the aggregate can generate other events
  */
 class ApplyTideEvents implements TideSaga
 {

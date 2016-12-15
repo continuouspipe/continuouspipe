@@ -2,29 +2,40 @@
 
 namespace ContinuousPipe\River\Task\ManualApproval;
 
-use ContinuousPipe\River\Task\Task;
+use ContinuousPipe\River\Task\ManualApproval\Event\TaskCreated;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
-use Symfony\Component\Config\Definition\Builder\NodeDefinition;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 class ManualApprovalTaskFactory implements TaskFactory
 {
     /**
-     * @param TaskContext $taskContext
-     * @param array $configuration
-     *
-     * @return Task
+     * {@inheritdoc}
      */
     public function create(TaskContext $taskContext, array $configuration)
     {
-        // TODO: Implement create() method.
+        return ManualApprovalTask::fromEvents([
+            new TaskCreated(
+                $taskContext->getTideUuid(),
+                $taskContext->getTaskId()
+            ),
+        ]);
     }
 
     /**
-     * @return NodeDefinition
+     * {@inheritdoc}
      */
     public function getConfigTree()
     {
-        // TODO: Implement getConfigTree() method.
+        $builder = new TreeBuilder();
+        $node = $builder->root('manual_approval');
+
+        $node
+            ->children()
+
+            ->end()
+        ;
+
+        return $node;
     }
 }

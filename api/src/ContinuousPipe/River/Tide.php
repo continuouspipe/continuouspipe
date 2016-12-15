@@ -167,6 +167,24 @@ class Tide
     }
 
     /**
+     * @param string $identifier
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return Task
+     */
+    public function getTask(string $identifier) : Task
+    {
+        foreach ($this->tasks->getTasks() as $task) {
+            if ($task->getIdentifier() == $identifier) {
+                return $task;
+            }
+        }
+
+        throw new \InvalidArgumentException(sprintf('The task identified "%s" is not found', $identifier));
+    }
+
+    /**
      * @param TideCreated $event
      */
     private function applyTideCreated(TideCreated $event)

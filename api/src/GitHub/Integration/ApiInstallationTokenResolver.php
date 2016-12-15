@@ -57,10 +57,10 @@ class ApiInstallationTokenResolver implements InstallationTokenResolver
         ]);
 
         try {
-            $response = $this->httpClient->post('https://api.github.com/installations/' . $installation->getId() . '/access_tokens', [
+            $response = $this->httpClient->post('https://api.github.com/installations/'.$installation->getId().'/access_tokens', [
                 'headers' => [
                     'Accept' => 'application/vnd.github.machine-man-preview+json',
-                    'Authorization' => 'Bearer ' . $jwt,
+                    'Authorization' => 'Bearer '.$jwt,
                 ],
             ]);
         } catch (RequestException $e) {
