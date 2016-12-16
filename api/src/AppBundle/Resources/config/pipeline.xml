@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.pipeline.tide_configuration_factory.create_default_pipeline"
+                 class="ContinuousPipe\River\Pipeline\FlowConfiguration\CreateDefaultPipeline"
+                 decorates="river.tide_configuration_factory">
+            <argument type="service" id="river.pipeline.tide_configuration_factory.create_default_pipeline.inner" />
+        </service>
+
+        <service id="river.pipeline.tide_configuration_factory.import_pipeline_tasks"
+                 class="ContinuousPipe\River\Pipeline\FlowConfiguration\ImportPipelineTasks"
+                 decorates="river.tide_configuration_factory"
+                 decoration-priority="-5">
+            <argument type="service" id="river.pipeline.tide_configuration_factory.import_pipeline_tasks.inner" />
+        </service>
+
+        <service id="river.pipeline.tide_generator" class="ContinuousPipe\River\Pipeline\Generation\TideForEachPipelineGenerator">
+            <argument type="service" id="river.tide_configuration_factory" />
+            <argument type="service" id="river.tide_factory" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.pipeline.handler.generate_tides_handler" class="ContinuousPipe\River\Pipeline\Handler\GenerateTidesHandler">
+            <argument type="service" id="river.pipeline.tide_generator" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Pipeline\Command\GenerateTides" />
+        </service>
+    </services>
+</container>

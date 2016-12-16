@@ -191,6 +191,21 @@ class DoctrineTideRepository implements TideRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function findByGenerationUuid(UuidInterface $flowUuid, UuidInterface $generationUuid)
+    {
+        $dtos = $this->getEntityRepository()->findBy([
+            'flowUuid' => (string) $flowUuid,
+            'tide.generationUuid' => $generationUuid,
+        ]);
+
+        return array_map(function (TideDto $dto) {
+            return $this->dtoToTide($dto);
+        }, $dtos);
+    }
+
+    /**
      * Get a tide object from its dto.
      *
      * @param TideDto $tideDto
@@ -209,7 +224,8 @@ class DoctrineTideRepository implements TideRepository
             $wrappedTide->getTeam(),
             $wrappedTide->getUser(),
             $wrappedTide->getConfiguration() ?: [],
-            $wrappedTide->getCreationDate()
+            $wrappedTide->getCreationDate(),
+            $wrappedTide->getGenerationUuid()
         );
 
         $tide->setStatus($wrappedTide->getStatus());

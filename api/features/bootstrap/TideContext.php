@@ -1014,10 +1014,29 @@ EOF;
      */
     public function aTideShouldBeCreated()
     {
-        if ($this->response->getStatusCode() != 201) {
+        $this->assertResponseStatus(201);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        if (empty($json)) {
+            throw new \RuntimeException('No tide was created');
+        }
+
+        $this->tideUuid = Uuid::fromString($json[0]['uuid']);
+    }
+
+    /**
+     * @Then :count tides should have been created
+     */
+    public function tidesShouldHaveBeenCreated($count)
+    {
+        $this->assertResponseStatus(201);
+
+        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        if (count($tides) != $count) {
             throw new \RuntimeException(sprintf(
-                'Expected status code 201, but got %d',
-                $this->response->getStatusCode()
+                'Expected %d tides, but found %d',
+                $count,
+                count($tides)
             ));
         }
     }
@@ -1051,7 +1070,7 @@ EOF;
     {
         if ($this->response->getStatusCode() != 400) {
             throw new \RuntimeException(sprintf(
-                'Expected status code 201, but got %d',
+                'Expected status code 400, but got %d',
                 $this->response->getStatusCode()
             ));
         }
@@ -1432,6 +1451,8 @@ EOF;
     private function assertResponseStatus($status)
     {
         if ($this->response->getStatusCode() != $status) {
+            echo $this->response->getContent();
+
             throw new \RuntimeException(sprintf(
                 'Expected status %d but got %d',
                 $status,

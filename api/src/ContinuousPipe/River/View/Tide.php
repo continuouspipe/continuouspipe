@@ -101,6 +101,13 @@ class Tide
      */
     private $tasks = [];
 
+    /**
+     * @JMS\Groups({"Default"})
+     *
+     * @var UuidInterface|null
+     */
+    private $generationUuid;
+
     private function __construct()
     {
     }
@@ -116,10 +123,11 @@ class Tide
      * @param User          $user
      * @param array         $configuration
      * @param \DateTime     $creationDate
+     * @param UuidInterface $generationUuid
      *
      * @return Tide
      */
-    public static function create(UuidInterface $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate)
+    public static function create(UuidInterface $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate, UuidInterface $generationUuid = null)
     {
         $tide = new self();
         $tide->uuid = $uuid;
@@ -130,6 +138,7 @@ class Tide
         $tide->team = $team;
         $tide->user = $user;
         $tide->configuration = $configuration;
+        $tide->generationUuid = $generationUuid;
 
         return $tide;
     }
@@ -260,5 +269,13 @@ class Tide
     public function getConfiguration()
     {
         return $this->configuration;
+    }
+
+    /**
+     * @return null|UuidInterface
+     */
+    public function getGenerationUuid()
+    {
+        return $this->generationUuid;
     }
 }

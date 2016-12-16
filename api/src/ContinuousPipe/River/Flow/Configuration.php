@@ -49,6 +49,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('filter')->end()
                 ->booleanNode('silent')->defaultFalse()->end()
                 ->append($this->getNotificationsNode())
+                ->append($this->getPipelinesNode())
             ->end()
         ;
 
@@ -60,7 +61,7 @@ class Configuration implements ConfigurationInterface
         $builder = new TreeBuilder();
         $node = $builder->root('tasks');
 
-        $nodeChildren = $node
+        $tasksPrototype = $node
             ->isRequired()
             ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
@@ -84,19 +85,11 @@ class Configuration implements ConfigurationInterface
                         return $value;
                     })
                 ->end()
-                ->children();
+        ;
 
-        foreach ($this->taskFactoryRegistry->findAll() as $factory) {
-            $nodeChildren->append($factory->getConfigTree());
-        }
+        $this->setupTasksPrototype($tasksPrototype);
 
-        $nodeChildren
-                    ->arrayNode('filter')
-                        ->children()
-                            ->scalarNode('expression')->isRequired()->end()
-                        ->end()
-                    ->end()
-                ->end()
+        $tasksPrototype
             ->end()
         ;
 
@@ -166,5 +159,83 @@ class Configuration implements ConfigurationInterface
         ;
 
         return $node;
+    }
+
+    private function getPipelinesNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('pipelines');
+
+        $tasksPrototype = $node
+            ->prototype('array')
+                ->children()
+                    ->scalarNode('name')->isRequired()->end()
+                    ->scalarNode('condition')->end()
+                    ->arrayNode('tasks')
+                        ->isRequired()
+                        ->prototype('array')
+                            ->beforeNormalization()
+                                ->ifString()
+                                ->then(function ($v) {
+                                    return array('imports' => $v);
+                                })
+                            ->end()
+                            ->validate()
+                                ->always()
+                                ->then(function ($value) {
+                                    $keys = array_filter(array_keys($value), function ($key) {
+                                        return $key != 'filter' && $key != 'imports';
+                                    });
+
+                                    if (count($keys) > 1) {
+                                        throw new \InvalidArgumentException(sprintf(
+                                            'Only one task type should be configured here but found "%s"',
+                                            implode('" & "', $keys)
+                                        ));
+                                    }
+
+                                    return $value;
+                                })
+                            ->end()
+        ;
+
+        $tasksPrototype
+            ->children()
+                ->scalarNode('imports')->end()
+            ->end()
+        ;
+
+        $this->setupTasksPrototype($tasksPrototype);
+
+        $tasksPrototype
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    /**
+     * @param $tasksPrototype
+     */
+    private function setupTasksPrototype($tasksPrototype)
+    {
+        $nodeChildren = $tasksPrototype
+
+            ->children();
+
+        foreach ($this->taskFactoryRegistry->findAll() as $factory) {
+            $nodeChildren->append($factory->getConfigTree());
+        }
+
+        $nodeChildren
+            ->arrayNode('filter')
+            ->children()
+            ->scalarNode('expression')->isRequired()->end()
+            ->end()
+            ->end()
+            ->end();
     }
 }

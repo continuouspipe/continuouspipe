@@ -23,6 +23,16 @@ class TideCreationRequest
     private $sha1;
 
     /**
+     * @param string $branch
+     * @param string $sha1
+     */
+    public function __construct(string $branch, string $sha1 = null)
+    {
+        $this->branch = $branch;
+        $this->sha1 = $sha1;
+    }
+
+    /**
      * @return string
      */
     public function getBranch()
