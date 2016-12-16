@@ -9,6 +9,10 @@ $inner-toolbar-background: white;
 $inner-toolbar-color: #6D6D6D;
 $inner-toolbar-button-background: #52A6FF;
 $inner-toolbar-button-color: #fff;
+$inner-background-color-grey: #f2f4f6;
+$border-grey: #a1a1a1;
+$inactive-grey: #e7e7e7;
+$active-grey: #9f9f9f;
 
 $logo-size: 40px;
 $header-height: 64px;
@@ -22,6 +26,8 @@ $running-color: #E6F2FB;
 $running-dark-color: #1D8CD9;
 $failure-color: #FDE3E3;
 $failure-dark-color: #F28282;
+$pipeline-success-color: #3d9e47;
+$pipeline-failure-color: #222732;
 
 .title-text {
     text-transform: uppercase;
@@ -86,7 +92,7 @@ body {
     .md-open-menu-container {
         z-index: 500;
     }
-    
+
     > md-toolbar {
         background: $header-background !important;
         height: 40px;
@@ -121,13 +127,13 @@ body {
                     color: #fff;
                     text-decoration: none;
                 }
-                
+
                 span.branch {
                     background: rgba(255, 255, 255, 0.4);
                     padding: 4px 10px 6px 5px;
                     margin-left: 10px;
                     color: #fff;
-                    
+
                     > md-icon {
                         text-align: center;
                     }
@@ -266,7 +272,7 @@ body {
             box-shadow: none;
             border: 1px solid #efefef;
             float: left;
-            
+
             md-card-header {
                 cursor: pointer;
             }
@@ -499,7 +505,7 @@ body {
         .form-variable-container {
             padding-top: 0;
             padding-bottom: 0;
-        
+
             form {
                 padding-top: 0 !important;
                 padding-bottom: 0 !important;
@@ -566,4 +572,84 @@ pre.deployment-logs {
 .yaml-editor-buttons {
     text-align: center;
     padding: 10px;
+}
+
+.cp-pipeline-content {
+    margin-top: 20px;
+    width: 100%;
+}
+.cp-pipeline_flex {
+    display: flex;
+    flex-direction: row;
+    background-color: $inner-toolbar-background;
+    border: 1px solid $border-grey;
+    margin-bottom: 20px;
+    text-align: center;
+    overflow: scroll;
+}
+
+.cp-pipeline_flex-item {
+    padding: 0 10px;
+
+    &.--tide {
+      border-right: 1px solid $border-grey;
+    }
+
+    &.--task {
+      min-width: 250px;
+      position: relative;
+
+      &::after {
+        content: 'keyboard_arrow_right';
+        font-family: "Material Icons";
+        font-size: 50px;
+        color: $active-grey;
+        position: absolute;
+        top: 50%;
+        margin-top: -25px;
+        right: 5px;
+      }
+
+      &:last-child::after{
+        content: "";
+      }
+    }
+}
+
+.cp-pipeline-item_content {
+  padding: 0 50px 35px 0;
+  position:relative;
+
+  & md-icon {
+    position:absolute;
+    bottom:0;
+    right:70px;
+    font-size: 40px;
+  }
+}
+
+.status-success {
+  color: $pipeline-success-color;
+
+  &::after {
+    content: 'check_box';
+    color: $pipeline-success-color;
+  }
+}
+
+.status-failure {
+  color: $pipeline-failure-color;
+
+  &::after {
+    content: 'error';
+    color: $pipeline-failure-color;
+  }
+}
+
+.cp-pipeline-title {
+  &::after {
+    font-family: "Material Icons";
+    font-size: 25px;
+    padding: 5px 0 0 5px;
+  }
 }

@@ -7,21 +7,22 @@
 </md-toolbar>
 <md-content flex id="content">
     <remote-resource resource-name="tides">
-        <table class="table hover actionable" ng-show="tides.length">
-            <tbody>
-            <tr ng-repeat="tide in tides | orderBy: '-creation_date'">
-                <td>
-                    <p><strong>Tide #{{ tide.uuid }}</strong></p>
+        <div class="cp-pipeline-content" ng-show="tides.length">
+            <div  class= "cp-pipeline_flex" ng-repeat="tide in tides | orderBy: '-creation_date'">
+                <div class="cp-pipeline_flex-item --tide">
+                    <p ng-class="'status-'+task.status" class="cp-pipeline-title --tide"><strong>Tide #{{ tide.uuid }}</strong></p>
                     <p><code>{{ tide.code_reference.branch }}</code> (<code>{{ tide.code_reference.sha1 }}</code>)</p>
                     <p><em>{{ tide.creation_date | timeAgo }}</em></p>
                     <p>{{ tide.status }}</p>
-                </td>
-                <td ng-repeat="task in tide.tasks">
-                    <h3>{{ task.label }}</h3>
+                </div>
+                <div ng-repeat="task in tide.tasks"  class="cp-pipeline_flex-item --task">
+                  <div class="cp-pipeline-item_content">
+                    <h3 ng-class="'status-'+task.status" class="cp-pipeline-title --task">{{ task.label }}</h3>
                     <p>{{ task.status }}</p>
-                </td>
-            </tr>
-            </tbody>
+                    <md-icon>playlist_play</md-icon>
+                  </div>
+                </div>
+            </div>
         </table>
     </remote-resource>
 </md-content>
