@@ -596,60 +596,60 @@ pre.deployment-logs {
     }
 
     &.--task {
-      min-width: 250px;
-      position: relative;
+        min-width: 250px;
+        position: relative;
 
       &::after {
-        content: 'keyboard_arrow_right';
-        font-family: "Material Icons";
-        font-size: 50px;
-        color: $active-grey;
-        position: absolute;
-        top: 50%;
-        margin-top: -25px;
-        right: 5px;
+          content: 'keyboard_arrow_right';
+          font-family: "Material Icons";
+          font-size: 50px;
+          color: $active-grey;
+          position: absolute;
+          top: 50%;
+          margin-top: -25px;
+          right: 5px;
       }
 
       &:last-child::after{
-        content: "";
+         content: "";
       }
     }
 }
 
 .cp-pipeline-item_content {
-  padding: 0 50px 35px 0;
-  position:relative;
+   padding: 0 50px 35px 0;
+   position:relative;
 
   & md-icon {
-    position:absolute;
-    bottom:0;
-    right:70px;
-    font-size: 40px;
+      position:absolute;
+      bottom:0;
+      right:70px;
+      font-size: 40px;
   }
 }
 
 .status-success {
-  color: $pipeline-success-color;
+    color: $pipeline-success-color;
 
   &::after {
-    content: 'check_box';
-    color: $pipeline-success-color;
+      content: 'check_box';
+      color: $pipeline-success-color;
   }
 }
 
 .status-failure {
-  color: $pipeline-failure-color;
+    color: $pipeline-failure-color;
 
   &::after {
-    content: 'error';
-    color: $pipeline-failure-color;
+      content: 'error';
+      color: $pipeline-failure-color;
   }
 }
 
 .cp-pipeline-title {
   &::after {
-    font-family: "Material Icons";
-    font-size: 25px;
-    padding: 5px 0 0 5px;
+      font-family: "Material Icons";
+      font-size: 25px;
+      padding: 5px 0 0 5px;
   }
 }
