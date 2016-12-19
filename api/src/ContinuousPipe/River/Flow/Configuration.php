@@ -2,7 +2,10 @@
 
 namespace ContinuousPipe\River\Flow;
 
+use ContinuousPipe\River\Flow\Configuration\KeyIndexedArrayNodeDefinition;
+use ContinuousPipe\River\Flow\Configuration\VariablesArrayNodeDefinition;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
+use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -62,7 +65,6 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('tasks');
 
         $tasksPrototype = $node
-            ->isRequired()
             ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
             ->prototype('array')
@@ -98,8 +100,11 @@ class Configuration implements ConfigurationInterface
 
     public static function getVariablesNode($name)
     {
+        $nodeBuilder = new NodeBuilder();
+        $nodeBuilder->setNodeClass('variables', VariablesArrayNodeDefinition::class);
+
         $builder = new TreeBuilder();
-        $node = $builder->root($name);
+        $node = $builder->root($name, 'variables', $nodeBuilder);
 
         $node
             ->prototype('array')
@@ -163,15 +168,18 @@ class Configuration implements ConfigurationInterface
 
     private function getPipelinesNode()
     {
+        $nodeBuilder = new NodeBuilder();
+        $nodeBuilder->setNodeClass('key-indexed-array', KeyIndexedArrayNodeDefinition::class);
+
         $builder = new TreeBuilder();
-        $node = $builder->root('pipelines');
+        $node = $builder->root('pipelines', 'key-indexed-array', $nodeBuilder);
 
         $tasksPrototype = $node
             ->prototype('array')
                 ->children()
                     ->scalarNode('name')->isRequired()->end()
                     ->scalarNode('condition')->end()
-                    ->arrayNode('tasks')
+                    ->node('tasks', 'key-indexed-array')
                         ->isRequired()
                         ->prototype('array')
                             ->beforeNormalization()
@@ -184,7 +192,7 @@ class Configuration implements ConfigurationInterface
                                 ->always()
                                 ->then(function ($value) {
                                     $keys = array_filter(array_keys($value), function ($key) {
-                                        return $key != 'filter' && $key != 'imports';
+                                        return $key != 'filter' && $key != 'imports' && $key != 'identifier';
                                     });
 
                                     if (count($keys) > 1) {
@@ -220,7 +228,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @param $tasksPrototype
      */
-    private function setupTasksPrototype($tasksPrototype)
+    public function setupTasksPrototype($tasksPrototype)
     {
         $nodeChildren = $tasksPrototype
 

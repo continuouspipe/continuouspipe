@@ -5,17 +5,12 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.pipeline.tide_configuration_factory.create_default_pipeline"
-                 class="ContinuousPipe\River\Pipeline\FlowConfiguration\CreateDefaultPipeline"
-                 decorates="river.tide_configuration_factory">
-            <argument type="service" id="river.pipeline.tide_configuration_factory.create_default_pipeline.inner" />
-        </service>
+        <service id="river.pipeline.tide_configuration_finalizer.create_default_pipeline"
+                 class="ContinuousPipe\River\Pipeline\FlowConfiguration\CreateDefaultPipeline" />
 
-        <service id="river.pipeline.tide_configuration_factory.import_pipeline_configuration"
-                 class="ContinuousPipe\River\Pipeline\FlowConfiguration\ImportPipelineConfiguration"
-                 decorates="river.tide_configuration_factory"
-                 decoration-priority="-5">
-            <argument type="service" id="river.pipeline.tide_configuration_factory.import_pipeline_configuration.inner" />
+        <service id="river.pipeline.tide_configuration_finalizer.import_pipeline_configuration"
+                 class="ContinuousPipe\River\Pipeline\FlowConfiguration\ImportPipelineConfiguration">
+            <argument type="service" id="river.task_factory_registry" />
         </service>
 
         <service id="river.pipeline.tide_generator" class="ContinuousPipe\River\Pipeline\Generation\TideForEachPipelineGenerator">

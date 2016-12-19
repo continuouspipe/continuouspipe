@@ -3,35 +3,20 @@
 namespace ContinuousPipe\River\Flow\ConfigurationFinalizer;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Flow\ConfigurationFinalizer;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\TideConfigurationException;
-use ContinuousPipe\River\TideConfigurationFactory;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
-class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
+class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
 {
-    /**
-     * @var TideConfigurationFactory
-     */
-    private $factory;
-
-    /**
-     * @param TideConfigurationFactory $factory
-     */
-    public function __construct(TideConfigurationFactory $factory)
-    {
-        $this->factory = $factory;
-    }
-
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference)
+    public function finalize(FlatFlow $flow, CodeReference $codeReference, array $configuration)
     {
-        $configuration = $this->factory->getConfiguration($flow, $codeReference);
-
         $variables = $this->resolveVariables($configuration, $this->createContext($flow, $codeReference));
 
         return self::replaceValues($configuration, $variables);
@@ -45,6 +30,10 @@ class ReplaceEnvironmentVariableValues implements TideConfigurationFactory
      */
     private function resolveVariables(array $configuration, ArrayObject $context)
     {
+        if (!isset($configuration['variables'])) {
+            return [];
+        }
+
         $variables = [];
         foreach ($configuration['variables'] as $item) {
             if (array_key_exists('condition', $item) && !$this->isConditionValid($item['condition'], $context)) {

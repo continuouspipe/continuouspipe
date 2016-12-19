@@ -3,25 +3,36 @@
 namespace ContinuousPipe\River\Pipeline\FlowConfiguration;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Flow\Configuration;
+use ContinuousPipe\River\Flow\ConfigurationFinalizer;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\TideConfigurationException;
-use ContinuousPipe\River\TideConfigurationFactory;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
-class ImportPipelineConfiguration implements TideConfigurationFactory
+class ImportPipelineConfiguration implements ConfigurationFinalizer
 {
-    private $decoratedFactory;
+    private $taskFactoryRegistry;
 
-    public function __construct(TideConfigurationFactory $decoratedFactory)
+    public function __construct(TaskFactoryRegistry $taskFactoryRegistry)
     {
-        $this->decoratedFactory = $decoratedFactory;
+        $this->taskFactoryRegistry = $taskFactoryRegistry;
     }
 
     /**
-     * {@inheritdoc.
+     * {@inheritdoc}
      */
-    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference)
+    public function finalize(FlatFlow $flow, CodeReference $codeReference, array $configuration)
     {
-        $configuration = $this->decoratedFactory->getConfiguration($flow, $codeReference);
+        if (!isset($configuration['tasks'])) {
+            return $configuration;
+        }
+
+        $tasksConfigurationDefinition = new Configuration($this->taskFactoryRegistry);
+
+        $builder = new TreeBuilder();
+        $node = $builder->root('task');
+        $tasksConfigurationDefinition->setupTasksPrototype($node);
 
         foreach ($configuration['pipelines'] as &$pipeline) {
             foreach ($pipeline['tasks'] as &$task) {
@@ -29,14 +40,16 @@ class ImportPipelineConfiguration implements TideConfigurationFactory
                     continue;
                 }
 
-                if (!array_key_exists($task['imports'], $configuration['tasks'])) {
+                $taskName = $task['imports'];
+                if (!array_key_exists($taskName, $configuration['tasks'])) {
                     throw new TideConfigurationException(sprintf(
                         'Unable to import task "%s": The task do not exists',
                         $task['imports']
                     ));
                 }
 
-                $task = array_merge($configuration['tasks'][$task['imports']], $task);
+                $tree = $builder->buildTree();
+                $task = $tree->merge($configuration['tasks'][$taskName], $task);
 
                 if (!array_key_exists('name', $task)) {
                     $task['identifier'] = $task['imports'];

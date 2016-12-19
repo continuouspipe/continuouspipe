@@ -16,16 +16,14 @@ trait TaskLocator
         $paths = [];
 
         foreach ($configs as $config) {
-            if (!array_key_exists('tasks', $config)) {
-                continue;
+            foreach ($this->findPathsInConfig($config) as $path => $taskName) {
+                $paths[$path] = $taskName;
             }
 
-            foreach ($config['tasks'] as $key => $task) {
-                foreach ($task as $taskName => $taskConfiguration) {
-                    $path = '[tasks]['.$key.']['.$taskName.']';
-
-                    if (!array_key_exists($path, $paths)) {
-                        $paths[$path] = $taskName;
+            if (array_key_exists('pipelines', $config)) {
+                foreach ($config['pipelines'] as $key => $pipeline) {
+                    foreach ($this->findPathsInConfig($pipeline) as $path => $taskName) {
+                        $paths['[pipelines]['.$key.']'.$path] = $taskName;
                     }
                 }
             }
@@ -138,5 +136,47 @@ trait TaskLocator
         }
 
         return $values[count($values) - 1];
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return string[]
+     */
+    private function findPathsInConfig(array $config)
+    {
+        if (!array_key_exists('tasks', $config)) {
+            return [];
+        }
+
+        $paths = [];
+        foreach ($config['tasks'] as $key => $task) {
+            if (!is_array($task)) {
+                continue;
+            }
+
+            foreach ($task as $taskName => $taskConfiguration) {
+                if ($this->ignoreTaskKey($taskName)) {
+                    continue;
+                }
+
+                $path = '[tasks]['.$key.']['.$taskName.']';
+                if (!array_key_exists($path, $paths)) {
+                    $paths[$path] = $taskName;
+                }
+            }
+        }
+
+        return $paths;
+    }
+
+    /**
+     * @param string $taskName
+     *
+     * @return bool
+     */
+    private function ignoreTaskKey(string $taskName): bool
+    {
+        return $taskName == 'imports';
     }
 }

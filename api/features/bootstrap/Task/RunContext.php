@@ -297,6 +297,10 @@ class RunContext implements Context
         $component = $this->getDeployedComponentNamed($name);
         $foundEnvironmentVariablesAsHash = [];
         foreach ($component->getSpecification()->getEnvironmentVariables() as $environmentVariable) {
+            if (array_key_exists($environmentVariable->getName(), $foundEnvironmentVariablesAsHash)) {
+                throw new \RuntimeException(sprintf('Variable "%s" defined at least 2 times', $environmentVariable->getName()));
+            }
+
             $foundEnvironmentVariablesAsHash[$environmentVariable->getName()] = $environmentVariable->getValue();
         }
 

@@ -3,25 +3,16 @@
 namespace ContinuousPipe\River\Pipeline\FlowConfiguration;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Flow\ConfigurationFinalizer;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use ContinuousPipe\River\TideConfigurationFactory;
 
-final class CreateDefaultPipeline implements TideConfigurationFactory
+final class CreateDefaultPipeline implements ConfigurationFinalizer
 {
-    private $decoratedFactory;
-
-    public function __construct(TideConfigurationFactory $decoratedFactory)
-    {
-        $this->decoratedFactory = $decoratedFactory;
-    }
-
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference)
+    public function finalize(FlatFlow $flow, CodeReference $codeReference, array $configuration)
     {
-        $configuration = $this->decoratedFactory->getConfiguration($flow, $codeReference);
-
         if (empty($configuration['pipelines'])) {
             $tasks = [];
             $hasUniqueNames = !has_dupes(array_keys($configuration['tasks']));

@@ -62,12 +62,16 @@
                 <argument type="service" id="river.tide.configuration_enhancer.run.get_images_name_from_built_services" />
                 <argument type="service" id="river.tide.configuration_enhancer.deploy.get_images_name_from_built_services" />
             </argument>
+            <argument type="collection">
+                <argument type="service" id="river.tide.configuration_finalizer.merge_environment_variables" />
+                <argument type="service" id="river.tide.configuration_finalizer.replace_environ_values" />
+                <argument type="service" id="river.pipeline.tide_configuration_finalizer.create_default_pipeline" />
+                <argument type="service" id="river.pipeline.tide_configuration_finalizer.import_pipeline_configuration" />
+            </argument>
         </service>
 
-        <service id="river.tide.configuration_factory.merge_environment_variables"
-                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\MergeEnvironmentVariables"
-                 decorates="river.tide_configuration_factory">
-            <argument type="service" id="river.tide.configuration_factory.merge_environment_variables.inner" />
+        <service id="river.tide.configuration_finalizer.merge_environment_variables"
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\MergeEnvironmentVariables">
             <argument type="collection">
                 <argument>[variables]</argument>
                 <argument>[tasks][*][deploy][services][*][specification][environment_variables]</argument>
@@ -75,10 +79,7 @@
         </service>
 
         <service id="river.tide.configuration_finalizer.replace_environ_values"
-                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues"
-                 decorates="river.tide_configuration_factory">
-            <argument type="service" id="river.tide.configuration_finalizer.replace_environ_values.inner" />
-        </service>
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues" />
 
         <service id="river.task_filter.context_factory" class="ContinuousPipe\River\Filter\ContextFactory">
             <argument type="service" id="river.github.client_factory" />
