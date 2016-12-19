@@ -122,14 +122,14 @@ class Tide
     /**
      * Create a new tide representation.
      *
-     * @param UuidInterface $uuid
-     * @param UuidInterface $flowUuid
-     * @param CodeReference $codeReference
-     * @param Log $log
-     * @param Team $team
-     * @param User $user
-     * @param array $configuration
-     * @param \DateTime $creationDate
+     * @param UuidInterface      $uuid
+     * @param UuidInterface      $flowUuid
+     * @param CodeReference      $codeReference
+     * @param Log                $log
+     * @param Team               $team
+     * @param User               $user
+     * @param array              $configuration
+     * @param \DateTime          $creationDate
      * @param UuidInterface|null $generationUuid
      * @param UuidInterface|null $pipelineUuid
      *
