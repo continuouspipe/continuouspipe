@@ -8,6 +8,7 @@ use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -42,12 +43,17 @@ class FlatFlow
     /**
      * @var ArrayCollection|FlatPipeline[]
      */
-    private $pipelines = [];
+    private $pipelines;
 
     /**
      * @var Tide[]
      */
     private $tides;
+
+    public function __construct()
+    {
+        $this->pipelines = new ArrayCollection();
+    }
 
     /**
      * @param Flow $flow
@@ -108,14 +114,9 @@ class FlatFlow
     }
 
     /**
-     * @return FlatPipeline[]
+     * @return FlatPipeline[]|Collection
      */
-    public function getPipelines(): array
-    {
-        return $this->pipelines->toArray();
-    }
-
-    public function getPipelinesCollection() : ArrayCollection
+    public function getPipelines()
     {
         return $this->pipelines;
     }

@@ -43,12 +43,12 @@ Feature:
 
   @smoke
   Scenario: It creates the pipeline object
-    When I send a tide creation request for branch "master" and commit "1234"
-    And I request the flow with UUID "00000000-0000-0000-0000-000000000000"
-    Then I should see the pipeline "To master" in the flow
-
-  @smoke
-  Scenario: It creates the pipeline object
     When I send a tide creation request for branch "foo/bar" and commit "098789"
     And I request the flow with UUID "00000000-0000-0000-0000-000000000000"
     Then I should see the pipeline "Only the branches" in the flow
+
+  @smoke
+  Scenario: It creates the pipeline object
+    When I send a tide creation request for branch "master" and commit "1234"
+    And I request the flow with UUID "00000000-0000-0000-0000-000000000000"
+    Then I should see the pipeline "To master" in the flow
