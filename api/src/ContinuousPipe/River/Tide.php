@@ -63,6 +63,11 @@ class Tide
     private $generationUuid;
 
     /**
+     * @var FlatPipeline
+     */
+    private $pipeline;
+
+    /**
      * @param TaskRunner $taskRunner
      * @param TaskList   $taskList
      */
@@ -147,6 +152,7 @@ class Tide
             $this->applyTideCreated($event);
         } elseif ($event instanceof TideGenerated) {
             $this->generationUuid = $event->getGenerationUuid();
+            $this->pipeline = $event->getFlatPipeline();
         } elseif (!$event instanceof TideFailed) {
             $this->tasks->apply($event);
 
@@ -332,5 +338,17 @@ class Tide
     public function getGenerationUuid()
     {
         return $this->generationUuid;
+    }
+
+    /**
+     * @return UuidInterface|null
+     */
+    public function getPipelineUuid()
+    {
+        if (null === $this->pipeline) {
+            return null;
+        }
+
+        return $this->pipeline->getUuid();
     }
 }

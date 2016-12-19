@@ -225,7 +225,8 @@ class DoctrineTideRepository implements TideRepository
             $wrappedTide->getUser(),
             $wrappedTide->getConfiguration() ?: [],
             $wrappedTide->getCreationDate(),
-            $wrappedTide->getGenerationUuid()
+            $wrappedTide->getGenerationUuid(),
+            $wrappedTide->getPipelineUuid()
         );
 
         $tide->setStatus($wrappedTide->getStatus());

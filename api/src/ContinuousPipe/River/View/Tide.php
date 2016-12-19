@@ -108,6 +108,13 @@ class Tide
      */
     private $generationUuid;
 
+    /**
+     * @JMS\Groups({"Default"})
+     *
+     * @var UuidInterface|null
+     */
+    private $pipelineUuid;
+
     private function __construct()
     {
     }
@@ -118,16 +125,17 @@ class Tide
      * @param UuidInterface $uuid
      * @param UuidInterface $flowUuid
      * @param CodeReference $codeReference
-     * @param Log           $log
-     * @param Team          $team
-     * @param User          $user
-     * @param array         $configuration
-     * @param \DateTime     $creationDate
-     * @param UuidInterface $generationUuid
+     * @param Log $log
+     * @param Team $team
+     * @param User $user
+     * @param array $configuration
+     * @param \DateTime $creationDate
+     * @param UuidInterface|null $generationUuid
+     * @param UuidInterface|null $pipelineUuid
      *
      * @return Tide
      */
-    public static function create(UuidInterface $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate, UuidInterface $generationUuid = null)
+    public static function create(UuidInterface $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate, UuidInterface $generationUuid = null, UuidInterface $pipelineUuid = null)
     {
         $tide = new self();
         $tide->uuid = $uuid;
@@ -139,6 +147,7 @@ class Tide
         $tide->user = $user;
         $tide->configuration = $configuration;
         $tide->generationUuid = $generationUuid;
+        $tide->pipelineUuid = $pipelineUuid;
 
         return $tide;
     }
@@ -277,5 +286,13 @@ class Tide
     public function getGenerationUuid()
     {
         return $this->generationUuid;
+    }
+
+    /**
+     * @return null|UuidInterface
+     */
+    public function getPipelineUuid()
+    {
+        return $this->pipelineUuid;
     }
 }
