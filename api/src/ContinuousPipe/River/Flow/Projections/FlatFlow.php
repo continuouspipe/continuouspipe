@@ -3,9 +3,11 @@
 namespace ContinuousPipe\River\Flow\Projections;
 
 use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
+use Doctrine\Common\Collections\ArrayCollection;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -38,16 +40,21 @@ class FlatFlow
     private $configuration;
 
     /**
+     * @var ArrayCollection|FlatPipeline[]
+     */
+    private $pipelines = [];
+
+    /**
      * @var Tide[]
      */
     private $tides;
 
     /**
-     * @param \ContinuousPipe\River\Flow $flow
+     * @param Flow $flow
      *
      * @return FlatFlow
      */
-    public static function fromFlow(\ContinuousPipe\River\Flow $flow)
+    public static function fromFlow(Flow $flow)
     {
         $view = new self();
         $view->uuid = $flow->getUuid();
@@ -56,6 +63,7 @@ class FlatFlow
         $view->configuration = $flow->getConfiguration() ?: [];
         $view->ymlConfiguration = Yaml::dump($view->configuration);
         $view->user = $flow->getUser();
+        $view->pipelines = new ArrayCollection($flow->getPipelines());
 
         return $view;
     }
@@ -97,5 +105,18 @@ class FlatFlow
     public function getUser() : User
     {
         return $this->user;
+    }
+
+    /**
+     * @return FlatPipeline[]
+     */
+    public function getPipelines(): array
+    {
+        return $this->pipelines->toArray();
+    }
+
+    public function getPipelinesCollection() : ArrayCollection
+    {
+        return $this->pipelines;
     }
 }

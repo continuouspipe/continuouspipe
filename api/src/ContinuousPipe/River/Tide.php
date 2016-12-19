@@ -9,6 +9,7 @@ use ContinuousPipe\River\Event\TideGenerated;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideValidated;
+use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskFailed;
@@ -87,15 +88,21 @@ class Tide
      * @param TaskList              $tasks
      * @param TideContext           $context
      * @param TideGenerationRequest $generationRequest
+     * @param FlatPipeline          $pipeline
      *
      * @return Tide
      */
-    public static function create(TaskRunner $taskRunner, TaskList $tasks, TideContext $context, TideGenerationRequest $generationRequest)
-    {
+    public static function create(
+        TaskRunner $taskRunner,
+        TaskList $tasks,
+        TideContext $context,
+        TideGenerationRequest $generationRequest,
+        FlatPipeline $pipeline
+    ) {
         $tide = new self($taskRunner, $tasks);
         $events = [
             new TideCreated($context),
-            new TideGenerated($context->getTideUuid(), $generationRequest->getGenerationUuid()),
+            new TideGenerated($context->getTideUuid(), $context->getFlowUuid(), $generationRequest->getGenerationUuid(), $pipeline),
             new TideValidated($context->getTideUuid()),
         ];
 

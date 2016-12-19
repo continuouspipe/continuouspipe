@@ -184,6 +184,16 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
+     * @When I request the flow with UUID :uuid
+     */
+    public function iRequestTheFlowWithUuid($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create('/flows/'.$uuid));
+
+        $this->assertResponseCode(200);
+    }
+
+    /**
      * @When I update the flow to the version :version and the following configuration:
      */
     public function iUpdateTheFlowToTheVersionAndTheFollowingConfiguration($version, PyStringNode $string)
@@ -308,6 +318,25 @@ EOF;
 
         if (0 == count($matchingFlows)) {
             throw new \RuntimeException('No matching flow found');
+        }
+    }
+
+    /**
+     * @Then I should see the pipeline :name in the flow
+     */
+    public function iShouldSeeThePipelineInTheFlow($name)
+    {
+        $flow = json_decode($this->response->getContent(), true);
+        if (!is_array($flow)) {
+            throw new \RuntimeException('Expected to receive an array');
+        }
+
+        $matchingPipelines = array_filter($flow['pipelines'], function(array $pipeline) use ($name) {
+            return $pipeline['name'] == $name;
+        });
+
+        if (count($matchingPipelines) == 0) {
+            throw new \RuntimeException('No matching pipeline found');
         }
     }
 

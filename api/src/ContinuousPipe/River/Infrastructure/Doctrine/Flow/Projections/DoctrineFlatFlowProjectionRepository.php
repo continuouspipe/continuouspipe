@@ -73,10 +73,20 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
      */
     public function save(FlatFlow $flow)
     {
-        $flow = $this->entityManager->merge($flow);
+        $collection = $flow->getPipelinesCollection();
+        foreach ($collection->getIterator() as $key => $value) {
+            $value->setFlow($flow);
 
-        $this->entityManager->persist($flow);
-        $this->entityManager->flush($flow);
+            $merged = $this->entityManager->merge($value);
+            $this->entityManager->persist($merged);
+
+            $collection->set($key, $merged);
+        }
+
+        $merged = $this->entityManager->merge($flow);
+
+        $this->entityManager->persist($merged);
+        $this->entityManager->flush();
     }
 
     private function getRepository()

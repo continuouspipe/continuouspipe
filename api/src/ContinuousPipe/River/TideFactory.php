@@ -5,6 +5,7 @@ namespace ContinuousPipe\River;
 use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Task\TaskContext;
@@ -87,7 +88,7 @@ class TideFactory
 
         $taskList = $this->createTideTaskList($tideContext);
 
-        $tide = Tide::create($this->taskRunner, $taskList, $tideContext, $request);
+        $tide = Tide::create($this->taskRunner, $taskList, $tideContext, $request, FlatPipeline::fromPipeline($pipeline));
 
         return $tide;
     }

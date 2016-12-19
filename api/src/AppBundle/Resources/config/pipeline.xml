@@ -38,8 +38,16 @@
         <service id="river.pipeline.handler.generate_tides_handler" class="ContinuousPipe\River\Pipeline\Handler\GenerateTidesHandler">
             <argument type="service" id="river.pipeline.tide_generator" />
             <argument type="service" id="event_bus" />
+            <argument type="service" id="logger" />
 
             <tag name="command_handler" handles="ContinuousPipe\River\Pipeline\Command\GenerateTides" />
+        </service>
+
+        <service id="river.pipeline.listener.tide_generated.create_pipeline_if_not_exits" class="ContinuousPipe\River\Flow\EventListener\TideGenerated\CreatePipelineIfNotExists">
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideGenerated"/>
         </service>
     </services>
 </container>

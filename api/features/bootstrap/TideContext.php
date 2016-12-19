@@ -1215,8 +1215,13 @@ EOF;
      */
     public function iHaveATide($uuid)
     {
+        $generationRequest = $this->createGenerationRequest('master', sha1('master'));
+
         $tide = $this->tideFactory->create(
-            new Pipeline(['tasks' => []]),
+            Pipeline::withConfiguration($generationRequest->getFlow(), [
+                'tasks' => [],
+                'name' => 'Default pipeline',
+            ]),
             $this->createGenerationRequest('master', sha1('master')),
             Uuid::fromString($uuid)
         );

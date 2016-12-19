@@ -27,6 +27,10 @@ class PreventDuplicatedTideGeneration implements PipelineTideGenerator
     {
         $tides = $this->decoratedGenerator->generate($request);
 
+        if ($request->getGenerationTrigger()->getUser()) {
+            return $tides;
+        }
+
         return array_values(array_filter($tides, function (Tide $tide) {
             return $this->tideShouldBeGenerated($tide);
         }));
