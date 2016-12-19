@@ -20,17 +20,23 @@ final class TideGenerationRequest
      * @var UuidInterface
      */
     private $generationUuid;
+    /**
+     * @var TideGenerationTrigger
+     */
+    private $generationTrigger;
 
     /**
-     * @param UuidInterface $generationUuid
-     * @param FlatFlow      $flow
-     * @param CodeReference $codeReference
+     * @param UuidInterface         $generationUuid
+     * @param FlatFlow              $flow
+     * @param CodeReference         $codeReference
+     * @param TideGenerationTrigger $generationTrigger
      */
-    public function __construct(UuidInterface $generationUuid, FlatFlow $flow, CodeReference $codeReference)
+    public function __construct(UuidInterface $generationUuid, FlatFlow $flow, CodeReference $codeReference, TideGenerationTrigger $generationTrigger)
     {
         $this->flow = $flow;
         $this->codeReference = $codeReference;
         $this->generationUuid = $generationUuid;
+        $this->generationTrigger = $generationTrigger;
     }
 
     /**
@@ -55,5 +61,13 @@ final class TideGenerationRequest
     public function getGenerationUuid(): UuidInterface
     {
         return $this->generationUuid;
+    }
+
+    /**
+     * @return TideGenerationTrigger
+     */
+    public function getGenerationTrigger(): TideGenerationTrigger
+    {
+        return $this->generationTrigger;
     }
 }

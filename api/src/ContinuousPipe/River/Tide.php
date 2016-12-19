@@ -8,6 +8,7 @@ use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\TideGenerated;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Event\TideSuccessful;
+use ContinuousPipe\River\Event\TideValidated;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskFailed;
@@ -95,6 +96,7 @@ class Tide
         $events = [
             new TideCreated($context),
             new TideGenerated($context->getTideUuid(), $generationRequest->getGenerationUuid()),
+            new TideValidated($context->getTideUuid()),
         ];
 
         foreach ($events as $event) {

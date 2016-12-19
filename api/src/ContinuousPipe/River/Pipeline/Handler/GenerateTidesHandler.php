@@ -30,6 +30,10 @@ class GenerateTidesHandler
     {
         $tides = $this->tideGenerator->generate($command->getRequest());
 
+        if (empty($tides)) {
+            var_dump('WTF?');
+        }
+
         foreach ($tides as $tide) {
             foreach ($tide->popNewEvents() as $event) {
                 $this->eventBus->handle($event);

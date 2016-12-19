@@ -53,11 +53,8 @@ class FilterDecorator implements TaskRunner
      */
     public function run(Tide $tide, Task $task)
     {
-        $configuration = $tide->getContext()->getConfiguration();
-        $taskId = $task->getIdentifier();
-        $taskConfiguration = $configuration['tasks'][$taskId];
-
         try {
+            $taskConfiguration = $this->getTaskConfiguration($tide, $task->getIdentifier());
             $shouldBeSkipped = $this->shouldSkipTask($taskConfiguration, $tide);
         } catch (TideConfigurationException $e) {
             $this->logger->error('Task configuration exception', [
@@ -89,5 +86,26 @@ class FilterDecorator implements TaskRunner
         }
 
         return !$this->filterEvaluator->evaluates($tide, $configuration['filter']);
+    }
+
+    /**
+     * @param Tide   $tide
+     * @param string $identifier
+     *
+     * @throws TideConfigurationException
+     *
+     * @return array
+     */
+    private function getTaskConfiguration(Tide $tide, string $identifier)
+    {
+        $configuration = $tide->getContext()->getConfiguration();
+
+        foreach ($configuration['tasks'] as $key => $task) {
+            if (isset($task['identifier']) && $task['identifier'] == $identifier || $key == $identifier) {
+                return $task;
+            }
+        }
+
+        throw new TideConfigurationException(sprintf('Configuration of task "%s" cannot be found', $identifier));
     }
 }

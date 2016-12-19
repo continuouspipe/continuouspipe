@@ -58,9 +58,11 @@ class FilterHashEvaluator
             return $filters;
         }
 
-        foreach ($configuration['tasks'] as $taskName => $task) {
+        foreach ($configuration['tasks'] as $key => $task) {
+            $taskIdentifier = isset($task['identifier']) ? $task['identifier'] : $key;
+
             if (array_key_exists('filter', $task)) {
-                $filters[$taskName] = $task['filter'];
+                $filters[$taskIdentifier] = $task['filter'];
             }
         }
 

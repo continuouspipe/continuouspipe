@@ -23,18 +23,40 @@ final class CreateDefaultPipeline implements TideConfigurationFactory
         $configuration = $this->decoratedFactory->getConfiguration($flow, $codeReference);
 
         if (empty($configuration['pipelines'])) {
+            $tasks = [];
+            $hasUniqueNames = !has_dupes(array_keys($configuration['tasks']));
+
+            foreach ($configuration['tasks'] as $name => $taskConfiguration) {
+                $tasks[$hasUniqueNames ? $name : count($tasks)] = [
+                    'imports' => $name,
+                ];
+            }
+
             $configuration['pipelines'] = [
                 [
                     'name' => 'Default pipeline',
-                    'tasks' => array_map(function ($name) {
-                        return [
-                            'imports' => $name,
-                        ];
-                    }, array_keys($configuration['tasks'])),
+                    'tasks' => $tasks,
                 ],
             ];
         }
 
         return $configuration;
     }
+}
+
+function has_dupes($array)
+{
+    $foundValues = [];
+
+    foreach ($array as $val) {
+        if (!isset($foundValues[$val])) {
+            $foundValues[$val] = 0;
+        }
+
+        if (++$foundValues[$val] > 1) {
+            return true;
+        }
+    }
+
+    return false;
 }

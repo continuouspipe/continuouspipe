@@ -8,6 +8,7 @@ use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Pipeline\Command\GenerateTides;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
+use ContinuousPipe\River\Pipeline\TideGenerationTrigger;
 use ContinuousPipe\River\Recover\CancelTides\Command\CancelTideCommand;
 use ContinuousPipe\River\Tide\ExternalRelation\ExternalRelationResolver;
 use ContinuousPipe\River\Tide\Request\TideCreationRequest;
@@ -15,6 +16,7 @@ use ContinuousPipe\River\Tide\TideSummaryCreator;
 use ContinuousPipe\River\TideFactory;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\Security\User\User;
 use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Knp\Component\Pager\PaginatorInterface;
 use Ramsey\Uuid\Uuid;
@@ -127,10 +129,11 @@ class TideController
      * @Route("/flows/{uuid}/tides", methods={"POST"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
      * @ParamConverter("creationRequest", converter="fos_rest.request_body")
+     * @ParamConverter("user", converter="user")
      * @Security("is_granted('CREATE_TIDE', flow)")
      * @View(statusCode=201)
      */
-    public function createAction(Flow\Projections\FlatFlow $flow, TideCreationRequest $creationRequest)
+    public function createAction(Flow\Projections\FlatFlow $flow, TideCreationRequest $creationRequest, User $user)
     {
         $errors = $this->validator->validate($creationRequest);
         if ($errors->count() > 0) {
@@ -164,7 +167,8 @@ class TideController
                     $flow->getRepository(),
                     $creationRequest->getSha1(),
                     $creationRequest->getBranch()
-                )
+                ),
+                TideGenerationTrigger::user($user)
             )
         ));
 

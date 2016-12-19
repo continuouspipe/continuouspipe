@@ -11,17 +11,33 @@
             <argument type="service" id="river.pipeline.tide_configuration_factory.create_default_pipeline.inner" />
         </service>
 
-        <service id="river.pipeline.tide_configuration_factory.import_pipeline_tasks"
-                 class="ContinuousPipe\River\Pipeline\FlowConfiguration\ImportPipelineTasks"
+        <service id="river.pipeline.tide_configuration_factory.import_pipeline_configuration"
+                 class="ContinuousPipe\River\Pipeline\FlowConfiguration\ImportPipelineConfiguration"
                  decorates="river.tide_configuration_factory"
                  decoration-priority="-5">
-            <argument type="service" id="river.pipeline.tide_configuration_factory.import_pipeline_tasks.inner" />
+            <argument type="service" id="river.pipeline.tide_configuration_factory.import_pipeline_configuration.inner" />
         </service>
 
         <service id="river.pipeline.tide_generator" class="ContinuousPipe\River\Pipeline\Generation\TideForEachPipelineGenerator">
             <argument type="service" id="river.tide_configuration_factory" />
             <argument type="service" id="river.tide_factory" />
             <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.pipeline.tide_generator.prevent_duplicated_tide_generation"
+                 class="ContinuousPipe\River\Pipeline\Generation\PreventDuplicatedTideGeneration"
+                 decorates="river.pipeline.tide_generator">
+            <argument type="service" id="river.pipeline.tide_generator.prevent_duplicated_tide_generation.inner" />
+            <argument type="service" id="river.task_filter.context_factory" />
+            <argument type="service" id="river.tide.start_voter" />
+        </service>
+
+        <service id="river.pipeline.tide_generator.creates_failing_tide_for_configuration_issues"
+                 class="ContinuousPipe\River\Pipeline\Generation\CreateFailingTideWhenConfigurationIsWrong"
+                 decorates="river.pipeline.tide_generator"
+                 decoration-priority="-10">
+            <argument type="service" id="river.pipeline.tide_generator.creates_failing_tide_for_configuration_issues.inner" />
+            <argument type="service" id="log_stream.logger_factory"/>
         </service>
 
         <service id="river.pipeline.handler.generate_tides_handler" class="ContinuousPipe\River\Pipeline\Handler\GenerateTidesHandler">

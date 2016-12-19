@@ -119,3 +119,58 @@ Feature:
     """
     When I send a tide creation request for branch "foo/bar" and commit "1234"
     Then 2 tides should have been created
+
+  Scenario: It allows nothing to be run
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services: []
+
+    pipelines:
+        - name: To master
+          condition: code_reference.branch == 'production'
+          tasks:
+              - images
+              - deployment
+    """
+    When I send a tide creation request for branch "foo/bar" and commit "1234"
+    Then 0 tides should have been created
+
+
+  Scenario: It uses the pipeline from events coming from GitHub too
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services: []
+
+        tests:
+            run:
+                cluster: foo
+                image: busybox
+                commands:
+                    - echo hello
+
+    pipelines:
+        - name: To master
+          condition: code_reference.branch == 'master'
+          tasks:
+              - images
+              - deployment
+    """
+    When the commit "12345" is pushed to the branch "master"
+    Then the tide should be created
+    And the tide should have the task "images"
+    And the tide should have the task "deployment"
+    And the tide should not have the task "tests"

@@ -203,20 +203,43 @@
 
         <!-- Tide start voters -->
         <service id="river.tide.start_voter.filter_configuration" class="ContinuousPipe\River\Tide\StartVoter\FilterConfigurationVoter" />
+        <service id="river.tide.start_voter.filter_configuration.logger"
+                 class="ContinuousPipe\River\Tide\StartVoter\DebugLoggingWhenVoterVotesNo"
+                 decorates="river.tide.start_voter.filter_configuration">
+            <argument type="service" id="river.tide.start_voter.filter_configuration.logger.inner" />
+            <argument type="service" id="logger" />
+        </service>
         <service id="river.tide.start_voter.filter_hash_changed" class="ContinuousPipe\River\Tide\StartVoter\FilterHashChangedVoter">
             <argument type="service" id="river.tide.filter.filter_hash_evaluator"/>
             <argument type="service" id="river.view.tide_repository"/>
             <argument type="service" id="river.tide.filter.filter_hash_repository"/>
         </service>
+        <service id="river.tide.start_voter.filter_hash_changed.logger"
+                 class="ContinuousPipe\River\Tide\StartVoter\DebugLoggingWhenVoterVotesNo"
+                 decorates="river.tide.start_voter.filter_hash_changed">
+            <argument type="service" id="river.tide.start_voter.filter_hash_changed.logger.inner" />
+            <argument type="service" id="logger" />
+        </service>
         <service id="river.tide.start_voter.tide_already_created" class="ContinuousPipe\River\Tide\StartVoter\TideAlreadyCreatedVoter">
             <argument type="service" id="river.view.tide_repository" />
         </service>
-
+        <service id="river.tide.start_voter.tide_already_created.logger"
+                 class="ContinuousPipe\River\Tide\StartVoter\DebugLoggingWhenVoterVotesNo"
+                 decorates="river.tide.start_voter.tide_already_created">
+            <argument type="service" id="river.tide.start_voter.tide_already_created.logger.inner" />
+            <argument type="service" id="logger" />
+        </service>
         <service id="river.tide.start_voter.context" class="ContinuousPipe\River\Tide\StartVoter\AffirmativeVoter">
             <argument type="collection">
                 <argument type="service" id="river.tide.start_voter.tide_already_created" />
                 <argument type="service" id="river.tide.start_voter.filter_hash_changed" />
             </argument>
+        </service>
+        <service id="river.tide.start_voter.context.logger"
+                 class="ContinuousPipe\River\Tide\StartVoter\DebugLoggingWhenVoterVotesNo"
+                 decorates="river.tide.start_voter.context">
+            <argument type="service" id="river.tide.start_voter.context.logger.inner" />
+            <argument type="service" id="logger" />
         </service>
         <service id="river.tide.start_voter" class="ContinuousPipe\River\Tide\StartVoter\UnanimousVoter">
             <argument type="collection">

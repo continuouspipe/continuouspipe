@@ -7,7 +7,7 @@ use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
 
-class ImportPipelineTasks implements TideConfigurationFactory
+class ImportPipelineConfiguration implements TideConfigurationFactory
 {
     private $decoratedFactory;
 
@@ -43,6 +43,14 @@ class ImportPipelineTasks implements TideConfigurationFactory
                 }
 
                 unset($task['imports']);
+            }
+
+            if (!isset($pipeline['notifications']) && isset($configuration['notifications'])) {
+                $pipeline['notifications'] = $configuration['notifications'];
+            }
+
+            if (!isset($pipeline['filter']) && isset($configuration['filter'])) {
+                $pipeline['filter'] = $configuration['filter'];
             }
         }
 

@@ -50,8 +50,6 @@ class TideForEachPipelineGenerator implements PipelineTideGenerator
 
         $pipelines = $this->getPipelines($configuration);
         if (empty($pipelines)) {
-            var_dump($configuration);
-
             $this->logger->warning('No pipeline found in configuration', [
                 'flow_uuid' => $request->getFlow()->getUuid(),
             ]);
