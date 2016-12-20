@@ -44,7 +44,12 @@ angular.module('continuousPipeRiver')
         };
 
         this.create = function(flow, tide) {
-            return $resource(RIVER_API_URL+'/flows/:uuid/tides').save({
+            return $resource(RIVER_API_URL+'/flows/:uuid/tides', {}, {
+                create: {
+                    method: 'POST',
+                    isArray: true
+                }
+            }).create({
                 uuid: flow.uuid
             }, tide).$promise;
         };

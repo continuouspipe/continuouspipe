@@ -39,10 +39,18 @@ angular.module('continuousPipeRiver')
                 branch: tide.code_reference.branch,
                 sha1: tide.code_reference.sha1
             }).then(function(created) {
-                $state.go('tide.logs', {
-                    uuid: flow.uuid,
-                    tideUuid: created.uuid
-                });
+                if (created.length > 1) {
+                    $state.go('flow.tides', {
+                        uuid: flow.uuid
+                    });
+                } else if (created.length == 1) {
+                    $state.go('tide.logs', {
+                        uuid: flow.uuid,
+                        tideUuid: created[0].uuid
+                    });
+                } else {
+                    swal("No tide created", "No tide was created as the result of your request. Maybe no pipeline is matching?", "error");
+                }
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occured while creating the tide", "error");
             })['finally'](function() {
