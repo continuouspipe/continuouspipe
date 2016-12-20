@@ -26,7 +26,7 @@
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="knp_paginator" />
-            <argument>%logstream_frontend_url%</argument>
+            <argument>%river_ui_url%</argument>
         </service>
 
         <service id="admin.controller.last_tides" class="AdminBundle\Controller\LastTidesController">
