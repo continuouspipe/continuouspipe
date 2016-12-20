@@ -81,7 +81,7 @@ class FirebaseTideViewStorage implements TideViewStorage
                 'name' => $pipeline->getName(),
             ]);
         } catch (ApiException $e) {
-            $this->logger->error('Unable to save the tide view into Firebase', [
+            $this->logger->warning('Unable to save the tide view into Firebase', [
                 'exception' => $e,
                 'message' => $e->getMessage(),
                 'tideUuid' => (string) $tide->getUuid(),
