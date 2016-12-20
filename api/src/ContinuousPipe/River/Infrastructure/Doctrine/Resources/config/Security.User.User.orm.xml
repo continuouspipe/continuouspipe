@@ -8,6 +8,6 @@
         <field name="username" type="string" />
         <field name="email" type="string" nullable="true" />
         <field name="bucketUuid" type="uuid" />
-        <field name="roles" type="json_array" />
+        <field name="roles" type="json_array" nullable="true" />
     </embeddable>
 </doctrine-mapping>
