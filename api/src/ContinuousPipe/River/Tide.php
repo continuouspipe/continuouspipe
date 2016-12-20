@@ -5,8 +5,12 @@ namespace ContinuousPipe\River;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
+use ContinuousPipe\River\Event\TideGenerated;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Event\TideSuccessful;
+use ContinuousPipe\River\Event\TideValidated;
+use ContinuousPipe\River\Flow\Projections\FlatPipeline;
+use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskFailed;
 use ContinuousPipe\River\Task\TaskList;
@@ -54,6 +58,16 @@ class Tide
     private $newEvents = [];
 
     /**
+     * @var UuidInterface|null
+     */
+    private $generationUuid;
+
+    /**
+     * @var FlatPipeline
+     */
+    private $pipeline;
+
+    /**
      * @param TaskRunner $taskRunner
      * @param TaskList   $taskList
      */
@@ -75,18 +89,33 @@ class Tide
     /**
      * Create a new tide.
      *
-     * @param TaskRunner  $taskRunner
-     * @param TaskList    $tasks
-     * @param TideContext $context
+     * @param TaskRunner            $taskRunner
+     * @param TaskList              $tasks
+     * @param TideContext           $context
+     * @param TideGenerationRequest $generationRequest
+     * @param FlatPipeline          $pipeline
      *
      * @return Tide
      */
-    public static function create(TaskRunner $taskRunner, TaskList $tasks, TideContext $context)
-    {
+    public static function create(
+        TaskRunner $taskRunner,
+        TaskList $tasks,
+        TideContext $context,
+        TideGenerationRequest $generationRequest,
+        FlatPipeline $pipeline
+    ) {
         $tide = new self($taskRunner, $tasks);
-        $event = new TideCreated($context);
-        $tide->apply($event);
-        $tide->newEvents = [$event];
+        $events = [
+            new TideCreated($context),
+            new TideGenerated($context->getTideUuid(), $context->getFlowUuid(), $generationRequest->getGenerationUuid(), $pipeline),
+            new TideValidated($context->getTideUuid()),
+        ];
+
+        foreach ($events as $event) {
+            $tide->apply($event);
+        }
+
+        $tide->newEvents = $events;
 
         return $tide;
     }
@@ -121,6 +150,9 @@ class Tide
     {
         if ($event instanceof TideCreated) {
             $this->applyTideCreated($event);
+        } elseif ($event instanceof TideGenerated) {
+            $this->generationUuid = $event->getGenerationUuid();
+            $this->pipeline = $event->getFlatPipeline();
         } elseif (!$event instanceof TideFailed) {
             $this->tasks->apply($event);
 
@@ -298,5 +330,25 @@ class Tide
     public function getConfiguration() : array
     {
         return $this->context->getConfiguration() ?: [];
+    }
+
+    /**
+     * @return null|UuidInterface
+     */
+    public function getGenerationUuid()
+    {
+        return $this->generationUuid;
+    }
+
+    /**
+     * @return FlatPipeline|null
+     */
+    public function getPipeline()
+    {
+        if (null === $this->pipeline) {
+            return null;
+        }
+
+        return $this->pipeline;
     }
 }

@@ -31,7 +31,7 @@
             <td>{{ tide.codeReference.branch }} ({{ tide.codeReference.commitSha }})</td>
             <td>{{ tide.creationDate | date }}</td>
             <td>{{ tide.status }}</td>
-            <td><a href="{{ path('admin_tide', {'team': tide.flow.team.slug, 'flow': tide.flow.uuid, 'uuid': tide.uuid}) }}" class="btn btn-default">View</a></td>
+            <td><a href="{{ path('admin_tide', {'team': tide.team.slug, 'flow': tide.flowUuid, 'uuid': tide.uuid}) }}" class="btn btn-default">View</a></td>
         </tr>
     {% endfor %}
     </tbody>

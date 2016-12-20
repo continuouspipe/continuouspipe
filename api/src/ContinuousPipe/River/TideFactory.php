@@ -3,21 +3,18 @@
 namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\CodeRepository\CommitResolver;
-use ContinuousPipe\River\CodeRepository\CommitResolverException;
-use ContinuousPipe\River\Event\CodeRepositoryEvent;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\Event\TideFailed;
-use ContinuousPipe\River\Event\TideValidated;
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Flow\Projections\FlatPipeline;
+use ContinuousPipe\River\Pipeline\Pipeline;
+use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
-use ContinuousPipe\River\Tide\Request\TideCreationRequest;
 use LogStream\LoggerFactory;
-use LogStream\Node\Text;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class TideFactory
 {
@@ -63,74 +60,35 @@ class TideFactory
     }
 
     /**
-     * @param FlatFlow            $flow
-     * @param TideCreationRequest $creationRequest
+     * Create the pipeline from a generation request.
      *
-     * @throws CommitResolverException
-     *
-     * @return Tide
-     */
-    public function createFromCreationRequest(FlatFlow $flow, TideCreationRequest $creationRequest)
-    {
-        $repository = $flow->getRepository();
-        if (null == ($sha1 = $creationRequest->getSha1())) {
-            $sha1 = $this->commitResolver->getHeadCommitOfBranch($flow, $creationRequest->getBranch());
-        }
-
-        return $this->createFromCodeReference($flow, new CodeReference(
-            $repository,
-            $sha1,
-            $creationRequest->getBranch()
-        ));
-    }
-
-    /**
-     * @param FlatFlow            $flow
-     * @param CodeReference       $codeReference
-     * @param CodeRepositoryEvent $codeRepositoryEvent
-     * @param Uuid                $tideUuid
+     * @param Pipeline              $pipeline
+     * @param TideGenerationRequest $request
+     * @param UuidInterface         $tideUuid
      *
      * @return Tide
      */
-    public function createFromCodeReference(FlatFlow $flow, CodeReference $codeReference, CodeRepositoryEvent $codeRepositoryEvent = null, Uuid $tideUuid = null)
+    public function create(Pipeline $pipeline, TideGenerationRequest $request, UuidInterface $tideUuid = null) : Tide
     {
+        $flow = $request->getFlow();
         $log = $this->loggerFactory->create()->getLog();
-        $tideUuid = $tideUuid ?: Uuid::uuid1();
-        $extraEvents = [];
+        $trigger = $request->getGenerationTrigger();
 
-        try {
-            $configuration = $this->configurationFactory->getConfiguration($flow, $codeReference);
-
-            $extraEvents[] = new TideValidated($tideUuid);
-        } catch (TideConfigurationException $e) {
-            $configuration = [];
-
-            $logger = $this->loggerFactory->from($log);
-            $logger->child(new Text(sprintf(
-                'Unable to create tide task list: %s',
-                $e->getMessage()
-            )));
-
-            $extraEvents[] = new TideFailed($tideUuid, $e->getMessage());
-        }
-
+        $tideUuid = $tideUuid ?: Uuid::uuid4();
         $tideContext = TideContext::createTide(
             $flow->getUuid(),
             $flow->getTeam(),
             $flow->getUser(),
             $tideUuid,
-            $codeReference,
+            $request->getCodeReference(),
             $log,
-            $configuration,
-            $codeRepositoryEvent
+            $pipeline->getConfiguration(),
+            $trigger->getCodeRepositoryEvent()
         );
 
         $taskList = $this->createTideTaskList($tideContext);
 
-        $tide = Tide::create($this->taskRunner, $taskList, $tideContext);
-        foreach ($extraEvents as $event) {
-            $tide->pushNewEvent($event);
-        }
+        $tide = Tide::create($this->taskRunner, $taskList, $tideContext, $request, FlatPipeline::fromPipeline($pipeline));
 
         return $tide;
     }
@@ -174,6 +132,10 @@ class TideFactory
         foreach ($tasksConfiguration as $taskId => $taskConfig) {
             $taskName = array_keys($taskConfig)[0];
             $taskConfiguration = $taskConfig[$taskName];
+
+            if (is_int($taskId) && isset($taskConfig['identifier'])) {
+                $taskId = $taskConfig['identifier'];
+            }
 
             $taskFactory = $this->taskFactoryRegistry->find($taskName);
             $taskContext = TaskContext::createTaskContext(

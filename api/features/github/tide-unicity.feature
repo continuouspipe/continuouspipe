@@ -38,7 +38,7 @@ Feature:
     tasks:
         images:
             build:
-                services: []
+                 services: []
 
             filter:
                 expression: '"Ready for QA" in pull_request.labels'
@@ -73,4 +73,16 @@ Feature:
     And the pull request #1 is labeled with head "feature/super-labels" and the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9"
     And the pull request #1 have the labels "Ready for QA,Dev approved"
     When the pull request #1 is labeled with head "feature/super-labels" and the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9"
+    Then only 2 tide should be created
+
+  Scenario: The user can force-created a tide
+    Given I am authenticated as "samuel"
+    And the team "samuel" exists
+    And the user "samuel" is "USER" of the team "samuel"
+    And I have a flow with the following configuration:
+    """
+    tasks: [{build: {services: []}}]
+    """
+    When the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9" is pushed to the branch "feature/dc-labels"
+    And I send a tide creation request for branch "feature/dc-labels" and commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9"
     Then only 2 tide should be created

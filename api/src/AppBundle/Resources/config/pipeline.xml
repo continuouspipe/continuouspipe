@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.pipeline.tide_configuration_finalizer.create_default_pipeline"
+                 class="ContinuousPipe\River\Pipeline\FlowConfiguration\CreateDefaultPipeline" />
+
+        <service id="river.pipeline.tide_configuration_finalizer.import_pipeline_configuration"
+                 class="ContinuousPipe\River\Pipeline\FlowConfiguration\ImportPipelineConfiguration">
+            <argument type="service" id="river.task_factory_registry" />
+        </service>
+
+        <service id="river.pipeline.tide_generator" class="ContinuousPipe\River\Pipeline\Generation\TideForEachPipelineGenerator">
+            <argument type="service" id="river.tide_configuration_factory" />
+            <argument type="service" id="river.tide_factory" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.pipeline.tide_generator.prevent_duplicated_tide_generation"
+                 class="ContinuousPipe\River\Pipeline\Generation\PreventDuplicatedTideGeneration"
+                 decorates="river.pipeline.tide_generator">
+            <argument type="service" id="river.pipeline.tide_generator.prevent_duplicated_tide_generation.inner" />
+            <argument type="service" id="river.task_filter.context_factory" />
+            <argument type="service" id="river.tide.start_voter" />
+        </service>
+
+        <service id="river.pipeline.tide_generator.creates_failing_tide_for_configuration_issues"
+                 class="ContinuousPipe\River\Pipeline\Generation\CreateFailingTideWhenConfigurationIsWrong"
+                 decorates="river.pipeline.tide_generator"
+                 decoration-priority="-10">
+            <argument type="service" id="river.pipeline.tide_generator.creates_failing_tide_for_configuration_issues.inner" />
+            <argument type="service" id="log_stream.logger_factory"/>
+        </service>
+
+        <service id="river.pipeline.handler.generate_tides_handler" class="ContinuousPipe\River\Pipeline\Handler\GenerateTidesHandler">
+            <argument type="service" id="river.pipeline.tide_generator" />
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="logger" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Pipeline\Command\GenerateTides" />
+        </service>
+
+        <service id="river.pipeline.listener.tide_generated.create_pipeline_if_not_exits" class="ContinuousPipe\River\Flow\EventListener\TideGenerated\CreatePipelineIfNotExists">
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideGenerated"/>
+        </service>
+    </services>
+</container>

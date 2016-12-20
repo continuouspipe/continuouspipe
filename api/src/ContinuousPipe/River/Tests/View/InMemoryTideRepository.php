@@ -141,6 +141,16 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
+    public function findByGenerationUuid(UuidInterface $flowUuid, UuidInterface $generationUuid)
+    {
+        return array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) use ($generationUuid) {
+            return $tide->getGenerationUuid() == $generationUuid;
+        }));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findAll()
     {
         return new InMemoryTideList($this->tides);

@@ -3,11 +3,11 @@
 namespace ContinuousPipe\River\Flow\ConfigurationFinalizer;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Flow\ConfigurationFinalizer;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use ContinuousPipe\River\TideConfigurationFactory;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-class MergeEnvironmentVariables implements TideConfigurationFactory
+class MergeEnvironmentVariables implements ConfigurationFinalizer
 {
     /**
      * @var array
@@ -15,27 +15,18 @@ class MergeEnvironmentVariables implements TideConfigurationFactory
     private $paths;
 
     /**
-     * @var TideConfigurationFactory
+     * @param array $paths
      */
-    private $factory;
-
-    /**
-     * @param TideConfigurationFactory $factory
-     * @param array                    $paths
-     */
-    public function __construct(TideConfigurationFactory $factory, array $paths)
+    public function __construct(array $paths)
     {
         $this->paths = $paths;
-        $this->factory = $factory;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference)
+    public function finalize(FlatFlow $flow, CodeReference $codeReference, array $configuration)
     {
-        $configuration = $this->factory->getConfiguration($flow, $codeReference);
-
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $paths = $this->resolvePaths($configuration, $this->paths);
 

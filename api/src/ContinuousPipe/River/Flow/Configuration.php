@@ -2,7 +2,10 @@
 
 namespace ContinuousPipe\River\Flow;
 
+use ContinuousPipe\River\Flow\Configuration\KeyIndexedArrayNodeDefinition;
+use ContinuousPipe\River\Flow\Configuration\VariablesArrayNodeDefinition;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
+use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -49,6 +52,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('filter')->end()
                 ->booleanNode('silent')->defaultFalse()->end()
                 ->append($this->getNotificationsNode())
+                ->append($this->getPipelinesNode())
             ->end()
         ;
 
@@ -60,8 +64,7 @@ class Configuration implements ConfigurationInterface
         $builder = new TreeBuilder();
         $node = $builder->root('tasks');
 
-        $nodeChildren = $node
-            ->isRequired()
+        $tasksPrototype = $node
             ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
             ->prototype('array')
@@ -84,19 +87,11 @@ class Configuration implements ConfigurationInterface
                         return $value;
                     })
                 ->end()
-                ->children();
+        ;
 
-        foreach ($this->taskFactoryRegistry->findAll() as $factory) {
-            $nodeChildren->append($factory->getConfigTree());
-        }
+        $this->setupTasksPrototype($tasksPrototype);
 
-        $nodeChildren
-                    ->arrayNode('filter')
-                        ->children()
-                            ->scalarNode('expression')->isRequired()->end()
-                        ->end()
-                    ->end()
-                ->end()
+        $tasksPrototype
             ->end()
         ;
 
@@ -105,8 +100,11 @@ class Configuration implements ConfigurationInterface
 
     public static function getVariablesNode($name)
     {
+        $nodeBuilder = new NodeBuilder();
+        $nodeBuilder->setNodeClass('variables', VariablesArrayNodeDefinition::class);
+
         $builder = new TreeBuilder();
-        $node = $builder->root($name);
+        $node = $builder->root($name, 'variables', $nodeBuilder);
 
         $node
             ->prototype('array')
@@ -166,5 +164,86 @@ class Configuration implements ConfigurationInterface
         ;
 
         return $node;
+    }
+
+    private function getPipelinesNode()
+    {
+        $nodeBuilder = new NodeBuilder();
+        $nodeBuilder->setNodeClass('key-indexed-array', KeyIndexedArrayNodeDefinition::class);
+
+        $builder = new TreeBuilder();
+        $node = $builder->root('pipelines', 'key-indexed-array', $nodeBuilder);
+
+        $tasksPrototype = $node
+            ->prototype('array')
+                ->children()
+                    ->scalarNode('name')->isRequired()->end()
+                    ->scalarNode('condition')->end()
+                    ->node('tasks', 'key-indexed-array')
+                        ->isRequired()
+                        ->prototype('array')
+                            ->beforeNormalization()
+                                ->ifString()
+                                ->then(function ($v) {
+                                    return array('imports' => $v);
+                                })
+                            ->end()
+                            ->validate()
+                                ->always()
+                                ->then(function ($value) {
+                                    $keys = array_filter(array_keys($value), function ($key) {
+                                        return $key != 'filter' && $key != 'imports' && $key != 'identifier';
+                                    });
+
+                                    if (count($keys) > 1) {
+                                        throw new \InvalidArgumentException(sprintf(
+                                            'Only one task type should be configured here but found "%s"',
+                                            implode('" & "', $keys)
+                                        ));
+                                    }
+
+                                    return $value;
+                                })
+                            ->end()
+        ;
+
+        $tasksPrototype
+            ->children()
+                ->scalarNode('imports')->end()
+            ->end()
+        ;
+
+        $this->setupTasksPrototype($tasksPrototype);
+
+        $tasksPrototype
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    /**
+     * @param $tasksPrototype
+     */
+    public function setupTasksPrototype($tasksPrototype)
+    {
+        $nodeChildren = $tasksPrototype
+
+            ->children();
+
+        foreach ($this->taskFactoryRegistry->findAll() as $factory) {
+            $nodeChildren->append($factory->getConfigTree());
+        }
+
+        $nodeChildren
+            ->arrayNode('filter')
+            ->children()
+            ->scalarNode('expression')->isRequired()->end()
+            ->end()
+            ->end()
+            ->end();
     }
 }

@@ -2,9 +2,12 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\River\Event\TideGenerated;
 use ContinuousPipe\River\EventBased\ApplyAndRaiseEventCapability;
 use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
 use ContinuousPipe\River\Flow\Event\FlowCreated;
+use ContinuousPipe\River\Flow\Event\PipelineCreated;
+use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
@@ -37,6 +40,11 @@ final class Flow
      * @var array
      */
     private $configuration = [];
+
+    /**
+     * @var FlatPipeline[]
+     */
+    private $pipelines = [];
 
     private function __construct()
     {
@@ -97,6 +105,37 @@ final class Flow
     }
 
     /**
+     * @param TideGenerated $event
+     */
+    public function tideWasGenerated(TideGenerated $event)
+    {
+        if ($event->getFlatPipeline() === null) {
+            return;
+        }
+
+        foreach ($this->pipelines as $pipeline) {
+            if ($event->getFlatPipeline()->getUuid()->equals($pipeline->getUuid())) {
+                return;
+            }
+        }
+
+        $this->raise(
+            new PipelineCreated(
+                $this->uuid,
+                $event->getFlatPipeline()
+            )
+        );
+    }
+
+    /**
+     * @param PipelineCreated $event
+     */
+    public function applyPipelineCreated(PipelineCreated $event)
+    {
+        $this->pipelines[] = $event->getFlatPipeline();
+    }
+
+    /**
      * @param FlowCreated $event
      */
     public function applyFlowCreated(FlowCreated $event)
@@ -138,5 +177,13 @@ final class Flow
     public function getUser() : User
     {
         return $this->user;
+    }
+
+    /**
+     * @return FlatPipeline[]
+     */
+    public function getPipelines(): array
+    {
+        return $this->pipelines;
     }
 }

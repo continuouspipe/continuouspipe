@@ -15,6 +15,10 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\LogStream\ArchiveLogs\Command\ArchiveTideCommand;
+use ContinuousPipe\River\Pipeline\Command\GenerateTides;
+use ContinuousPipe\River\Pipeline\Pipeline;
+use ContinuousPipe\River\Pipeline\TideGenerationRequest;
+use ContinuousPipe\River\Pipeline\TideGenerationTrigger;
 use ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\TimedOutTideRepository;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
@@ -27,6 +31,7 @@ use ContinuousPipe\Security\Team\Team;
 use LogStream\Node\Container;
 use LogStream\Node\Text;
 use LogStream\Tree\TreeLog;
+use phpseclib\Crypt\Random;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
@@ -1014,10 +1019,29 @@ EOF;
      */
     public function aTideShouldBeCreated()
     {
-        if ($this->response->getStatusCode() != 201) {
+        $this->assertResponseStatus(201);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        if (empty($json)) {
+            throw new \RuntimeException('No tide was created');
+        }
+
+        $this->tideUuid = Uuid::fromString($json[0]['uuid']);
+    }
+
+    /**
+     * @Then :count tides should have been created
+     */
+    public function tidesShouldHaveBeenCreated($count)
+    {
+        $this->assertResponseStatus(201);
+
+        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        if (count($tides) != $count) {
             throw new \RuntimeException(sprintf(
-                'Expected status code 201, but got %d',
-                $this->response->getStatusCode()
+                'Expected %d tides, but found %d',
+                $count,
+                count($tides)
             ));
         }
     }
@@ -1051,7 +1075,7 @@ EOF;
     {
         if ($this->response->getStatusCode() != 400) {
             throw new \RuntimeException(sprintf(
-                'Expected status code 201, but got %d',
+                'Expected status code 400, but got %d',
                 $this->response->getStatusCode()
             ));
         }
@@ -1176,9 +1200,9 @@ EOF;
      */
     public function theTideIsRunningAndTimedOut($uuid)
     {
-        $tideUuid = Uuid::fromString($uuid);
-        $this->createTide('master', null, $tideUuid);
+        $this->iHaveATide($uuid);
 
+        $tideUuid = Uuid::fromString($uuid);
         $tide = $this->viewTideRepository->find($tideUuid);
         $tide->setStartDate((new \DateTime())->sub(new \DateInterval('P1D')));
         $tide->setStatus(Tide::STATUS_RUNNING);
@@ -1191,7 +1215,20 @@ EOF;
      */
     public function iHaveATide($uuid)
     {
-        $this->createTide('master', null, Uuid::fromString($uuid));
+        $generationRequest = $this->createGenerationRequest('master', sha1('master'));
+
+        $tide = $this->tideFactory->create(
+            Pipeline::withConfiguration($generationRequest->getFlow(), [
+                'tasks' => [],
+                'name' => 'Default pipeline',
+            ]),
+            $this->createGenerationRequest('master', sha1('master')),
+            Uuid::fromString($uuid)
+        );
+
+        foreach ($tide->popNewEvents() as $event) {
+            $this->eventBus->handle($event);
+        }
     }
 
     /**
@@ -1323,12 +1360,7 @@ EOF;
     private function createTide($branch = 'master', $sha = null, Uuid $uuid = null)
     {
         $tide = $this->factoryTide($branch, $sha, $uuid);
-
-        foreach ($tide->popNewEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
-
-        $this->tideUuid = $tide->getContext()->getTideUuid();
+        $this->tideUuid = $tide->getUuid();
     }
 
     /**
@@ -1340,22 +1372,22 @@ EOF;
      */
     private function factoryTide($branch = 'master', $sha = null, Uuid $uuid = null)
     {
-        if (null === ($flow = $this->flowContext->getCurrentFlow())) {
-            $flow = $this->flowContext->iHaveAFlow();
+        $generationRequest = $this->createGenerationRequest($branch, $sha);
+
+        $this->commandBus->handle(new GenerateTides($generationRequest));
+        $tides = $this->viewTideRepository->findByGenerationUuid(
+            $generationRequest->getFlow()->getUuid(),
+            $generationRequest->getGenerationUuid()
+        );
+
+        if (count($tides) != 1) {
+            throw new \RuntimeException(sprintf(
+                'Expected 1 tide, found %d',
+                count($tides)
+            ));
         }
 
-        $sha = $sha ?: sha1($branch);
-
-        return $this->tideFactory->createFromCodeReference(
-            Flow\Projections\FlatFlow::fromFlow($flow),
-            new CodeReference(
-                $flow->getCodeRepository(),
-                $sha,
-                $branch
-            ),
-            null,
-            $uuid
-        );
+        return $tides[0];
     }
 
     private function getTideUuid()
@@ -1432,11 +1464,40 @@ EOF;
     private function assertResponseStatus($status)
     {
         if ($this->response->getStatusCode() != $status) {
+            echo $this->response->getContent();
+
             throw new \RuntimeException(sprintf(
                 'Expected status %d but got %d',
                 $status,
                 $this->response->getStatusCode()
             ));
         }
+    }
+
+    /**
+     * @param string $branch
+     * @param string $sha
+     *
+     * @return TideGenerationRequest
+     */
+    private function createGenerationRequest($branch, $sha): TideGenerationRequest
+    {
+        if (null === ($flow = $this->flowContext->getCurrentFlow())) {
+            $flow = $this->flowContext->iHaveAFlow();
+        }
+
+        $sha = $sha ?: sha1(Random::string(8));
+        $generation = Uuid::uuid4();
+        $generationRequest = new TideGenerationRequest(
+            $generation,
+            Flow\Projections\FlatFlow::fromFlow($flow),
+            new CodeReference(
+                $flow->getCodeRepository(),
+                $sha,
+                $branch
+            ),
+            TideGenerationTrigger::user($flow->getUser())
+        );
+        return $generationRequest;
     }
 }

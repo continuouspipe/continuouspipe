@@ -2,8 +2,13 @@
 
 namespace AppBundle\Controller;
 
+use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Pipeline\Command\GenerateTides;
+use ContinuousPipe\River\Pipeline\TideGenerationRequest;
+use ContinuousPipe\River\Pipeline\TideGenerationTrigger;
 use ContinuousPipe\River\Recover\CancelTides\Command\CancelTideCommand;
 use ContinuousPipe\River\Tide\ExternalRelation\ExternalRelationResolver;
 use ContinuousPipe\River\Tide\Request\TideCreationRequest;
@@ -11,6 +16,7 @@ use ContinuousPipe\River\Tide\TideSummaryCreator;
 use ContinuousPipe\River\TideFactory;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\Security\User\User;
 use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Knp\Component\Pager\PaginatorInterface;
 use Ramsey\Uuid\Uuid;
@@ -69,6 +75,11 @@ class TideController
     private $externalRelationResolver;
 
     /**
+     * @var CommitResolver
+     */
+    private $commitResolver;
+
+    /**
      * @param TideRepository           $tideRepository
      * @param ValidatorInterface       $validator
      * @param TideFactory              $tideFactory
@@ -77,8 +88,9 @@ class TideController
      * @param PaginatorInterface       $paginator
      * @param MessageBus               $commandBus
      * @param ExternalRelationResolver $externalRelationResolver
+     * @param CommitResolver           $commitResolver
      */
-    public function __construct(TideRepository $tideRepository, ValidatorInterface $validator, TideFactory $tideFactory, MessageBus $eventBus, TideSummaryCreator $tideSummaryCreator, PaginatorInterface $paginator, MessageBus $commandBus, ExternalRelationResolver $externalRelationResolver)
+    public function __construct(TideRepository $tideRepository, ValidatorInterface $validator, TideFactory $tideFactory, MessageBus $eventBus, TideSummaryCreator $tideSummaryCreator, PaginatorInterface $paginator, MessageBus $commandBus, ExternalRelationResolver $externalRelationResolver, CommitResolver $commitResolver)
     {
         $this->tideRepository = $tideRepository;
         $this->validator = $validator;
@@ -88,6 +100,7 @@ class TideController
         $this->paginator = $paginator;
         $this->commandBus = $commandBus;
         $this->externalRelationResolver = $externalRelationResolver;
+        $this->commitResolver = $commitResolver;
     }
 
     /**
@@ -116,10 +129,11 @@ class TideController
      * @Route("/flows/{uuid}/tides", methods={"POST"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
      * @ParamConverter("creationRequest", converter="fos_rest.request_body")
+     * @ParamConverter("user", converter="user")
      * @Security("is_granted('CREATE_TIDE', flow)")
      * @View(statusCode=201)
      */
-    public function createAction(Flow\Projections\FlatFlow $flow, TideCreationRequest $creationRequest)
+    public function createAction(Flow\Projections\FlatFlow $flow, TideCreationRequest $creationRequest, User $user)
     {
         $errors = $this->validator->validate($creationRequest);
         if ($errors->count() > 0) {
@@ -128,19 +142,37 @@ class TideController
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        try {
-            $tide = $this->tideFactory->createFromCreationRequest($flow, $creationRequest);
-        } catch (CommitResolverException $e) {
-            return new JsonResponse([
-                'error' => $e->getMessage(),
-            ], JsonResponse::HTTP_BAD_REQUEST);
+        if (empty($creationRequest->getSha1())) {
+            try {
+                $headCommit = $this->commitResolver->getHeadCommitOfBranch($flow, $creationRequest->getBranch());
+            } catch (CommitResolverException $e) {
+                return new JsonResponse([
+                    'error' => $e->getMessage(),
+                ], JsonResponse::HTTP_BAD_REQUEST);
+            }
+
+            $creationRequest = new TideCreationRequest(
+                $creationRequest->getBranch(),
+                $headCommit
+            );
         }
 
-        foreach ($tide->popNewEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
+        $generationUuid = Uuid::uuid4();
 
-        return $this->tideRepository->find($tide->getUuid());
+        $this->commandBus->handle(new GenerateTides(
+            new TideGenerationRequest(
+                $generationUuid,
+                $flow,
+                new CodeReference(
+                    $flow->getRepository(),
+                    $creationRequest->getSha1(),
+                    $creationRequest->getBranch()
+                ),
+                TideGenerationTrigger::user($user)
+            )
+        ));
+
+        return $this->tideRepository->findByGenerationUuid($flow->getUuid(), $generationUuid);
     }
 
     /**

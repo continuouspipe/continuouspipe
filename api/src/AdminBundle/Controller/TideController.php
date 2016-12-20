@@ -37,19 +37,19 @@ class TideController
     /**
      * @var string
      */
-    private $logStreamUrl;
+    private $uiUrl;
 
     /**
      * @param TideRepository     $tideRepository
      * @param EventStore         $eventStore
      * @param PaginatorInterface $paginator
-     * @param string             $logStreamUrl
+     * @param string             $uiUrl
      */
-    public function __construct(TideRepository $tideRepository, EventStore $eventStore, PaginatorInterface $paginator, $logStreamUrl)
+    public function __construct(TideRepository $tideRepository, EventStore $eventStore, PaginatorInterface $paginator, string $uiUrl)
     {
         $this->tideRepository = $tideRepository;
         $this->eventStore = $eventStore;
-        $this->logStreamUrl = $logStreamUrl;
+        $this->uiUrl = $uiUrl;
         $this->paginator = $paginator;
     }
 
@@ -82,12 +82,19 @@ class TideController
     {
         $tideUuid = Uuid::fromString($uuid);
         $tide = $this->tideRepository->find($tideUuid);
+        $logsUrl = sprintf(
+            '%s/team/%s/%s/%s/logs',
+            $this->uiUrl,
+            $tide->getTeam()->getSlug(),
+            (string) $tide->getFlowUuid(),
+            (string) $tide->getUuid()
+        );
 
         return [
             'team' => $team,
             'flow' => $flow,
             'tide' => $tide,
-            'tideLogsUrl' => sprintf('%s/#log/%s', $this->logStreamUrl, $tide->getLogId()),
+            'tideLogsUrl' => $logsUrl,
             'events' => $this->eventStore->findByTideUuidWithMetadata($tideUuid),
         ];
     }

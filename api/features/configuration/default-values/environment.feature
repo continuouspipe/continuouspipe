@@ -1,7 +1,7 @@
 Feature:
   In order to simplify the configuration file
   As a user
-  I want to be able to set default values for tasks
+  I want to be able to set default values for the environments
 
   Background:
     Given I have a flow

@@ -8,6 +8,7 @@ use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\Security\Team\Team;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 use Ramsey\Uuid\UuidInterface;
 
 class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
@@ -30,7 +31,17 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
      */
     public function find(UuidInterface $uuid)
     {
-        if (null === ($flow = $this->getRepository()->find((string) $uuid))) {
+        $query = $this->getRepository()->createQueryBuilder('f')
+            ->select('f, p')
+            ->leftJoin('f.pipelines', 'p')
+            ->where('f.uuid = :uuid')
+            ->setParameter('uuid', $uuid)
+            ->getQuery()
+            // For whatever reason, this is required
+            ->setHint(Query::HINT_REFRESH, true)
+        ;
+
+        if (null === ($flow = $query->getOneOrNullResult())) {
             throw new FlowNotFound(sprintf('Flow "%s" not found', (string) $uuid));
         }
 
@@ -73,10 +84,20 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
      */
     public function save(FlatFlow $flow)
     {
-        $flow = $this->entityManager->merge($flow);
+        $merged = $this->entityManager->merge($flow);
+        $this->entityManager->persist($merged);
 
-        $this->entityManager->persist($flow);
-        $this->entityManager->flush($flow);
+        $collection = $flow->getPipelines();
+        foreach ($collection->getIterator() as $key => $value) {
+            $value->setFlow($flow);
+
+            $merged = $this->entityManager->merge($value);
+            $this->entityManager->persist($merged);
+
+            $collection->set($key, $merged);
+        }
+
+        $this->entityManager->flush();
     }
 
     private function getRepository()

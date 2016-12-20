@@ -13,6 +13,7 @@
         <field name="configuration" type="b64Object" nullable="true" />
         <field name="user" column="serialized_user" type="b64Object" nullable="true" />
         <field name="team" column="serialized_team" type="b64Object" nullable="true" />
+        <field name="generationUuid" type="uuid" nullable="true" />
 
         <embedded name="codeReference" class="ContinuousPipe\River\CodeReference" />
     </embeddable>

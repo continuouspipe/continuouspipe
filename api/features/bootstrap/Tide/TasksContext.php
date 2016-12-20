@@ -215,6 +215,31 @@ class TasksContext implements Context
     }
 
     /**
+     * @Then the tide should have the task :identifier
+     */
+    public function theTideShouldHaveTheTask($identifier)
+    {
+        $this->getCurrentTide()->getTask($identifier);
+    }
+
+    /**
+     * @Then the tide should not have the task :arg1
+     */
+    public function theTideShouldNotHaveTheTask($identifier)
+    {
+        try {
+            $this->getCurrentTide()->getTask($identifier);
+            $found = true;
+        } catch (\InvalidArgumentException $e) {
+            $found = false;
+        }
+
+        if ($found) {
+            throw new \RuntimeException('Task was found');
+        }
+    }
+
+    /**
      * @param string $taskType
      * @param Uuid $tideUuid
      *

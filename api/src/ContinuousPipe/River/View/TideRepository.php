@@ -90,4 +90,14 @@ interface TideRepository extends TideViewStorage
      * @return TideList
      */
     public function findAll();
+
+    /**
+     * Find tides by their generation UUID.
+     *
+     * @param UuidInterface $generationUuid
+     * @param UuidInterface $flowUuid
+     *
+     * @return Tide[]
+     */
+    public function findByGenerationUuid(UuidInterface $flowUuid, UuidInterface $generationUuid);
 }
