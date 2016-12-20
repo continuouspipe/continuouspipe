@@ -20,7 +20,10 @@ angular.module('continuousPipeRiver')
                 },
                 views: {
                     'aside@': {
-                        templateUrl: 'flow/views/layout/aside.html'
+                        templateUrl: 'flow/views/layout/aside.html',
+                        controller: function($scope, flow) {
+                            $scope.flow = flow;
+                        }
                     },
                     'title@layout': {
                         template: '<a ui-sref="flows({team: team.slug})">{{ team.name || team.slug }}</a> / {{ flow.repository.name }}',
@@ -46,12 +49,25 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
-            .state('flow.pipelines', {
-                url: '/pipelines',
+            .state('flow.pipeline', {
+                url: '/pipeline/:pipeline',
                 views: {
                     'content@': {
-                        templateUrl: 'flow/views/pipelines/list.html',
-                        controller: 'FlowPipelinesController'
+                        templateUrl: 'flow/views/pipeline/tides.html',
+                        controller: 'FlowPipelineController'
+                    }
+                },
+                resolve: {
+                    pipeline: function($stateParams, flow) {
+                        var matchingPipelines = flow.pipelines.filter(function(pipeline) {
+                            return pipeline.uuid == $stateParams.pipeline;
+                        });
+
+                        if (matchingPipelines.length == 1) {
+                            return matchingPipelines[0];
+                        }
+
+                        return $q.reject(new Error('Pipeline not found'));
                     }
                 },
                 aside: true
