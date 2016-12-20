@@ -20,7 +20,7 @@ class FlatPipeline
     private $name;
 
     /**
-     * @JMS\Type("FlatFlow")
+     * @JMS\Type("ContinuousPipe\River\Flow\Projections\FlatFlow")
      */
     private $flow;
 
