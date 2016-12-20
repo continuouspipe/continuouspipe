@@ -43,6 +43,7 @@
 
         <service id="river.docker_compose.configuration_enhancer" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\DockerComposeConfigurationAsDefault">
             <argument type="service" id="river.docker_compose.repository_components_resolver" />
+            <argument type="service" id="logger" />
         </service>
     </services>
 </container>

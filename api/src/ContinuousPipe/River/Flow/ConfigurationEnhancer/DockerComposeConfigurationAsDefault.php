@@ -9,6 +9,7 @@ use ContinuousPipe\River\CodeRepository\DockerCompose\ResolveException;
 use ContinuousPipe\River\Flow\ConfigurationEnhancer;
 use ContinuousPipe\River\Flow\ConfigurationEnhancer\Helper\TaskLocator;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
@@ -21,11 +22,18 @@ class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
     private $componentsResolver;
 
     /**
-     * @param ComponentsResolver $componentsResolver
+     * @var LoggerInterface
      */
-    public function __construct(ComponentsResolver $componentsResolver)
+    private $logger;
+
+    /**
+     * @param ComponentsResolver $componentsResolver
+     * @param LoggerInterface    $logger
+     */
+    public function __construct(ComponentsResolver $componentsResolver, LoggerInterface $logger)
     {
         $this->componentsResolver = $componentsResolver;
+        $this->logger = $logger;
     }
 
     /**
@@ -36,6 +44,13 @@ class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
         try {
             $dockerComposeComponents = $this->componentsResolver->resolve($flow, $codeReference);
         } catch (ResolveException $e) {
+            $this->logger->info('Unable to resolve the DockerCompose components', [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'flow_uuid' => (string) $flow->getUuid(),
+                'code_reference' => $codeReference,
+            ]);
+
             return $configs;
         }
 
@@ -49,11 +64,24 @@ class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
                 continue;
             }
 
-            $servicesConfiguration = $this->getServicesConfigurationForTask($taskType, $dockerComposeComponents);
+            try {
+                $servicesConfiguration = $this->getServicesConfigurationForTask($taskType, $dockerComposeComponents);
+            } catch (ResolveException $e) {
+                $this->logger->info('Unable to resolve the service configuration for tasks', [
+                    'exception' => $e,
+                    'message' => $e->getMessage(),
+                    'flow_uuid' => (string) $flow->getUuid(),
+                    'code_reference' => $codeReference,
+                    'task_path' => $path,
+                ]);
+
+                continue;
+            }
+
             $servicesPath = $path.'[services]';
+            $existingConfigurations = $this->getValuesAtPath($configs, $servicesPath);
 
             // If a configuration already exists, then only enhance the defined services
-            $existingConfigurations = $this->getValuesAtPath($configs, $servicesPath);
             if (!empty($existingConfigurations)) {
                 $existingServices = array_reduce($existingConfigurations, function (array $services, array $config) {
                     return array_merge($services, array_keys($config));
@@ -160,21 +188,34 @@ class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
                     ];
                 }
 
-                foreach ($component->getVolumes() as $index => $volume) {
+                try {
+                    $volumes = $component->getVolumes();
+                } catch (ResolveException $e) {
+                    $volumes = [];
+                }
+
+                foreach ($volumes as $index => $volume) {
                     if (!$volume->isHostMount()) {
+                        continue;
+                    }
+
+                    try {
+                        $mountPath = $volume->getMountPath();
+                        $hostPath = $volume->getHostPath();
+                    } catch (ResolveException $e) {
                         continue;
                     }
 
                     $volumeName = $component->getName().'-volume-'.$index;
                     $configuration['specification']['volumes'][] = [
                         'type' => 'hostPath',
-                        'path' => $volume->getHostPath(),
+                        'path' => $hostPath,
                         'name' => $volumeName,
                     ];
 
                     $configuration['specification']['volume_mounts'][] = [
                         'name' => $volumeName,
-                        'mount_path' => $volume->getMountPath(),
+                        'mount_path' => $mountPath,
                     ];
                 }
             }
