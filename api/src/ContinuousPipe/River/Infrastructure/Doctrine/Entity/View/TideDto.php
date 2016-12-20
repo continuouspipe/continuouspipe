@@ -11,6 +11,10 @@ use Ramsey\Uuid\UuidInterface;
  * @ORM\Table(indexes={
  *     @ORM\Index(name="idx_tide_dto_by_flow", columns={"flow_uuid"}),
  *     @ORM\Index(name="idx_tide_dto_by_sha1_and_branch", columns={"code_reference_sha1", "code_reference_branch"}),
+ *     @ORM\Index(name="idx_tide_dto_by_flow_sha1_and_branch", columns={"flow_uuid", "code_reference_sha1", "code_reference_branch"}),
+ *     @ORM\Index(name="idx_tide_dto_by_flow_and_branch", columns={"flow_uuid", "code_reference_branch"}),
+ *     @ORM\Index(name="idx_tide_dto_by_flow_branch_and_status", columns={"flow_uuid", "code_reference_branch", "status"}),
+ *     @ORM\Index(name="idx_tide_dto_by_flow_and_status", columns={"flow_uuid", "status"}),
  * })
  */
 class TideDto

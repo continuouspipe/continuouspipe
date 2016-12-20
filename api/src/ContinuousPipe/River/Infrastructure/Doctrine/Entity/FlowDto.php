@@ -7,6 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="idx_flow_dto_by_team", columns={"team_slug"}),
+ *     @ORM\Index(name="idx_flow_dto_repository_type_and_identifier", columns={"repository_type", "repository_identifier"})
+ * })
  */
 class FlowDto
 {
