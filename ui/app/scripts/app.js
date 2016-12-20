@@ -11,7 +11,6 @@
 angular
     .module('continuousPipeRiver', [
         'config',
-        'ngRaven',
         'ngAnimate',
         'ngMessages',
         'ngSanitize',
@@ -40,8 +39,21 @@ angular
             .setAccount('UA-71216332-2')
             .setPageEvent('$stateChangeSuccess')
         ;
-
+        
         $mdThemingProvider.theme('blue');
+    })
+    .factory('$exceptionHandler', function ($window, $log, SENTRY_DSN) {
+        if (SENTRY_DSN) {
+            Raven.config(SENTRY_DSN).install();
+        }
+
+        return function (exception, cause) {
+            $log.error.apply($log, arguments);
+
+            if (SENTRY_DSN) {
+                Raven.captureException(exception);
+            }
+        };
     })
     // We need to inject it at least once to have automatic tracking
     .run(function(Analytics, $rootScope, $http) {
