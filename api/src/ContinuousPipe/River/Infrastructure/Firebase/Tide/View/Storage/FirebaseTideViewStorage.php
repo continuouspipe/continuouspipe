@@ -51,17 +51,35 @@ class FirebaseTideViewStorage implements TideViewStorage
      */
     public function save(Tide $tide)
     {
-        $referencePath = sprintf('flows/%s/tides/%s', (string) $tide->getFlowUuid(), (string) $tide->getUuid());
+        if (null === ($pipeline = $tide->getPipeline())) {
+            $this->logger->error('Attempted to save a tide view without any pipeline', [
+                'tide_uuid' => (string) $tide->getUuid(),
+                'flow_uuid' => (string) $tide->getFlowUuid(),
+            ]);
+
+            return;
+        }
 
         $database = $this->databaseFactory->create($this->databaseUri);
 
         try {
-            $context = SerializationContext::create();
-            $context->setGroups(['Default']);
+            // Update the tides by pipelines view
+            $database->getReference(sprintf(
+                'flows/%s/tides/by-pipelines/%s/%s',
+                (string) $tide->getFlowUuid(),
+                (string) $pipeline->getUuid(),
+                (string) $tide->getUuid()
+            ))->set($this->normalizeTide($tide));
 
-            $database->getReference($referencePath)->set(
-                \GuzzleHttp\json_decode($this->serializer->serialize($tide, 'json', $context))
-            );
+            // Updates the pipelines' view
+            $database->getReference(sprintf(
+                'flows/%s/pipelines/%s',
+                (string) $tide->getFlowUuid(),
+                (string) $pipeline->getUuid()
+            ))->update([
+                'uuid' => (string) $pipeline->getUuid(),
+                'name' => $pipeline->getName(),
+            ]);
         } catch (ApiException $e) {
             $this->logger->error('Unable to save the tide view into Firebase', [
                 'exception' => $e,
@@ -69,5 +87,18 @@ class FirebaseTideViewStorage implements TideViewStorage
                 'tideUuid' => (string) $tide->getUuid(),
             ]);
         }
+    }
+
+    /**
+     * @param Tide $tide
+     *
+     * @return array
+     */
+    private function normalizeTide(Tide $tide): array
+    {
+        $context = SerializationContext::create();
+        $context->setGroups(['Default']);
+
+        return \GuzzleHttp\json_decode($this->serializer->serialize($tide, 'json', $context), true);
     }
 }

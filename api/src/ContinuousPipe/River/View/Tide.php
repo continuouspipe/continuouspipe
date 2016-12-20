@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\View;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use LogStream\Log;
@@ -111,9 +112,9 @@ class Tide
     /**
      * @JMS\Groups({"Default"})
      *
-     * @var UuidInterface|null
+     * @var FlatPipeline|null
      */
-    private $pipelineUuid;
+    private $pipeline;
 
     private function __construct()
     {
@@ -131,11 +132,11 @@ class Tide
      * @param array              $configuration
      * @param \DateTime          $creationDate
      * @param UuidInterface|null $generationUuid
-     * @param UuidInterface|null $pipelineUuid
+     * @param FlatPipeline|null  $pipeline
      *
      * @return Tide
      */
-    public static function create(UuidInterface $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate, UuidInterface $generationUuid = null, UuidInterface $pipelineUuid = null)
+    public static function create(UuidInterface $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate, UuidInterface $generationUuid = null, FlatPipeline $pipeline = null)
     {
         $tide = new self();
         $tide->uuid = $uuid;
@@ -147,7 +148,7 @@ class Tide
         $tide->user = $user;
         $tide->configuration = $configuration;
         $tide->generationUuid = $generationUuid;
-        $tide->pipelineUuid = $pipelineUuid;
+        $tide->pipeline = $pipeline;
 
         return $tide;
     }
@@ -289,10 +290,10 @@ class Tide
     }
 
     /**
-     * @return null|UuidInterface
+     * @return null|FlatPipeline
      */
-    public function getPipelineUuid()
+    public function getPipeline()
     {
-        return $this->pipelineUuid;
+        return $this->pipeline;
     }
 }

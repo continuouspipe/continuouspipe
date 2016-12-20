@@ -341,14 +341,14 @@ class Tide
     }
 
     /**
-     * @return UuidInterface|null
+     * @return FlatPipeline|null
      */
-    public function getPipelineUuid()
+    public function getPipeline()
     {
         if (null === $this->pipeline) {
             return null;
         }
 
-        return $this->pipeline->getUuid();
+        return $this->pipeline;
     }
 }
