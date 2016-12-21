@@ -48,7 +48,7 @@ class MissingVariablesOnDefaultBranch implements AlertsRepository
                 new AlertAction(
                     'state',
                     'Configure',
-                    'configuration'
+                    'flow.configuration'
                 )
             ),
         ];
