@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b887b2b97cc268b4f304a0a114fa440e",
-    "content-hash": "49c590d3a31b91746a1d0d1e1fa9ba1d",
+    "hash": "3fe28accfecab65077bc7f0d9e0ff00d",
+    "content-hash": "8881830a081f61a3131898a8d4b0781c",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -225,16 +225,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.2.1",
+            "version": "dev-add-bitbucket-account",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "93f025a3a558cacf449491516b85a1a3f7e85935"
+                "reference": "3281f30a1d26b17b2a21091f218663ebf8296e98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/93f025a3a558cacf449491516b85a1a3f7e85935",
-                "reference": "93f025a3a558cacf449491516b85a1a3f7e85935",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/3281f30a1d26b17b2a21091f218663ebf8296e98",
+                "reference": "3281f30a1d26b17b2a21091f218663ebf8296e98",
                 "shasum": ""
             },
             "require": {
@@ -254,10 +254,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.2.1",
+                "source": "https://github.com/continuouspipe/security/tree/add-bitbucket-account",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2016-11-07 22:36:22"
+            "time": "2016-12-21 19:00:48"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -7709,6 +7709,7 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
+        "continuous-pipe/security": 20,
         "simple-bus/rabbitmq-bundle-bridge": 20
     },
     "prefer-stable": false,

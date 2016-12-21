@@ -30,7 +30,7 @@
         "sroze/log-stream": "~0.4.1",
         "tolerance/tolerance": "dev-master",
         "continuous-pipe/model": "~2.2.8",
-        "continuous-pipe/security": "~2.2.1",
+        "continuous-pipe/security": "dev-add-bitbucket-account",
         "simple-bus/rabbitmq-bundle-bridge": "dev-allow-the-producer-interface",
         "simple-bus/jms-serializer-bundle-bridge": "^2.0",
         "knplabs/github-api": "^1.5",

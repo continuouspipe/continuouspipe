@@ -4,6 +4,8 @@ namespace ContinuousPipe\River\GitHub;
 
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
+use ContinuousPipe\Security\Account\Account;
+use ContinuousPipe\Security\Account\GitHubAccount;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -108,7 +110,6 @@ class GitHubClientFactory implements ClientFactory
      */
     public function createClientFromBucket(Bucket $credentialsBucket)
     {
-        $client = new Client($this->githubHttpClient);
         $gitHubTokens = $credentialsBucket->getGitHubTokens();
 
         if (0 === $gitHubTokens->count()) {
@@ -118,10 +119,19 @@ class GitHubClientFactory implements ClientFactory
             ));
         }
 
-        $token = $gitHubTokens->first()->getAccessToken();
-        $client->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
+        return $this->createClientFromToken(
+            $gitHubTokens->first()->getAccessToken()
+        );
+    }
 
-        return $client;
+    /**
+     * {@inheritdoc}
+     */
+    public function createClientFromAccount(GitHubAccount $account)
+    {
+        return $this->createClientFromToken(
+            $account->getToken()
+        );
     }
 
     /**
@@ -159,5 +169,18 @@ class GitHubClientFactory implements ClientFactory
         }
 
         return $this->createClientFromInstallation($installation);
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return Client
+     */
+    private function createClientFromToken(string $token): Client
+    {
+        $client = new Client($this->githubHttpClient);
+        $client->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
+
+        return $client;
     }
 }

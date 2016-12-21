@@ -49,7 +49,7 @@ class GitHubOrganisationRepository implements OrganisationRepository
         );
 
         return array_map(function (Organisation $organisation) {
-            return new GitHubOrganisation($organisation);
+            return GitHubOrganisation::fromGitHubOrganisation($organisation);
         }, $organisations);
     }
 }

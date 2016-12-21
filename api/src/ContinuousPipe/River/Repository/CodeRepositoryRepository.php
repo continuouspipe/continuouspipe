@@ -10,6 +10,8 @@ interface CodeRepositoryRepository
     /**
      * @param string $organisation
      *
+     * @deprecated Use the code repository explorer instead
+     *
      * @return CodeRepository[]
      */
     public function findByOrganisation($organisation);
@@ -25,6 +27,8 @@ interface CodeRepositoryRepository
 
     /**
      * @param User $user
+     *
+     * @deprecated Use the code repository explorer instead
      *
      * @return CodeRepository[]
      */
