@@ -120,6 +120,7 @@
         <service id="river.code_repository.explorer" class="ContinuousPipe\River\CodeRepository\DelegatesToTheExplorerThatSupportsTheAccountExplorer">
             <argument type="collection">
                 <argument type="service" id="river.code_repository.github.explorer" />
+                <argument type="service" id="river.code_repository.bitbucket.explorer" />
             </argument>
         </service>
     </services>

@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.code_repository.bitbucket.explorer.http_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="river.code_repository.bitbucket.explorer" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketRepositoryExplorer">
+            <argument type="service" id="river.code_repository.bitbucket.explorer.http_client" />
+            <argument>%bitbucket_oauth_key%</argument>
+            <argument>%bitbucket_oauth_secret%</argument>
+        </service>
+    </services>
+</container>

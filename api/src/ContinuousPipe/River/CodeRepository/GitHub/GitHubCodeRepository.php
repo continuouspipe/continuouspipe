@@ -59,7 +59,8 @@ class GitHubCodeRepository extends AbstractCodeRepository
 
     public function __construct(string $identifier, string $address, string $organisation, string $name, bool $private, string $defaultBranch = null)
     {
-        $this->identifier = $identifier;
+        parent::__construct($identifier);
+
         $this->address = $address;
         $this->organisation = $organisation;
         $this->name = $name;
