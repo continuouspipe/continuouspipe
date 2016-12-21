@@ -167,14 +167,15 @@ class TideContext implements Context
 
     /**
      * @When a tide is created
+     * @When a tide is created for the branch :branch
      */
-    public function aTideIsCreated()
+    public function aTideIsCreated($branch = null)
     {
         if (null === $this->flowContext->getCurrentFlow()) {
             $this->flowContext->iHaveAFlow();
         }
 
-        $this->createTide();
+        $this->createTide($branch ?: 'master');
     }
 
     /**

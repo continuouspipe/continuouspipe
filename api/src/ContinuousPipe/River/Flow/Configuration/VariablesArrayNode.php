@@ -42,11 +42,27 @@ class VariablesArrayNode extends PrototypedArrayNode
     private function findVariable(array $leftSide, array $variable)
     {
         foreach ($leftSide as $index => $foundVariable) {
-            if ($foundVariable['name'] == $variable['name']) {
+            if ($this->isSameVariable($foundVariable, $variable)) {
                 return $index;
             }
         }
 
         return false;
+    }
+
+    private function isSameVariable(array $foundVariable, array $variable) : bool
+    {
+        if ($foundVariable['name'] != $variable['name']) {
+            return false;
+        }
+
+        if (!isset($variable['condition'])) {
+            $variable['condition'] = true;
+        }
+        if (!isset($foundVariable['condition'])) {
+            $foundVariable['condition'] = true;
+        }
+
+        return $variable['condition'] == $foundVariable['condition'];
     }
 }

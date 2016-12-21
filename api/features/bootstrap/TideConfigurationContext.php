@@ -67,7 +67,10 @@ class TideConfigurationContext implements Context
      */
     public function theConfigurationOfTheTideIsGeneratedForTheBranchAndTheCommit($branch, $sha1)
     {
-        $flow = $this->flowContext->createFlow();
+        if (null === ($flow = $this->flowContext->getCurrentFlow())) {
+            $flow = $this->flowContext->createFlow();
+        }
+
         $this->configuration = $this->tideConfigurationFactory->getConfiguration(Flow\Projections\FlatFlow::fromFlow($flow), new CodeReference(
             $flow->getCodeRepository(),
             $sha1,
