@@ -101,3 +101,35 @@ Feature:
             deploy:
                 cluster: BAR
     """
+
+  Scenario: It overrides the variables only with the same conditions
+    Given I have a flow with the following configuration:
+    """
+    environment_variables:
+        - name: CLUSTER
+          value: foo
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    environment_variables:
+        - name: CLUSTER
+          condition: code_reference.branch == 'master'
+          value: bar
+        - name: CLUSTER
+          condition: code_reference.branch != 'master'
+          value: baz
+
+    tasks:
+        named:
+            deploy:
+                cluster: ${CLUSTER}
+                services: []
+    """
+    When a tide is created for the branch "master"
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: bar
+    """
