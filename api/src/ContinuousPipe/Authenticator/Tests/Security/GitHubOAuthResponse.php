@@ -76,4 +76,20 @@ class GitHubOAuthResponse extends AbstractUserResponse
     {
         return $this->email ?: $this->username;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFirstName()
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLastName()
+    {
+        return null;
+    }
 }

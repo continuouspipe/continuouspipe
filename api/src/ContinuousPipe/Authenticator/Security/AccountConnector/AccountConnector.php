@@ -3,9 +3,11 @@
 namespace ContinuousPipe\Authenticator\Security\AccountConnector;
 
 use ContinuousPipe\Security\Account\AccountRepository;
+use ContinuousPipe\Security\Account\BitBucketAccount;
 use ContinuousPipe\Security\Account\GitHubAccount;
 use ContinuousPipe\Security\Account\GoogleAccount;
 use HWI\Bundle\OAuthBundle\Connect\AccountConnectorInterface;
+use HWI\Bundle\OAuthBundle\OAuth\ResourceOwner\Bitbucket2ResourceOwner;
 use HWI\Bundle\OAuthBundle\OAuth\ResourceOwner\GitHubResourceOwner;
 use HWI\Bundle\OAuthBundle\OAuth\ResourceOwner\GoogleResourceOwner;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
@@ -46,6 +48,8 @@ class AccountConnector implements AccountConnectorInterface
             $account = $this->getAccountFromGoogleResponse($response);
         } elseif ($resourceOwner instanceof GitHubResourceOwner) {
             $account = $this->getAccountFromGitHubResponse($response);
+        } elseif ($resourceOwner instanceof Bitbucket2ResourceOwner) {
+            $account = $this->getAccountFromBitBucket($response);
         } else {
             return $this->logger->error('Connecting accounts from resource owner of type {type} is not supported', [
                 'type' => get_class($resourceOwner),
@@ -93,6 +97,26 @@ class AccountConnector implements AccountConnectorInterface
             array_key_exists('email', $rawResponse) ? $rawResponse['email'] : null,
             array_key_exists('name', $rawResponse) ? $rawResponse['name'] : null,
             array_key_exists('avatar_url', $rawResponse) ? $rawResponse['avatar_url'] : null
+        );
+    }
+
+    /**
+     * @param UserResponseInterface $response
+     *
+     * @return BitBucketAccount
+     */
+    private function getAccountFromBitBucket(UserResponseInterface $response)
+    {
+        $rawResponse = $response->getResponse();
+
+        return new BitBucketAccount(
+            (string) Uuid::uuid4(),
+            $rawResponse['username'],
+            $rawResponse['uuid'],
+            $response->getEmail(),
+            $response->getRefreshToken(),
+            $rawResponse['display_name'],
+            $response->getProfilePicture()
         );
     }
 }

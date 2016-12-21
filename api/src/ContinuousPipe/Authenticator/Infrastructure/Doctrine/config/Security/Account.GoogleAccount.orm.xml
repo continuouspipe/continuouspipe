@@ -5,10 +5,6 @@
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="ContinuousPipe\Security\Account\GoogleAccount">
-        <field name="identifier" type="string" nullable="false" />
-        <field name="email" type="string" nullable="false" />
         <field name="refreshToken" type="string" nullable="false" />
-        <field name="name" type="string" nullable="true" />
-        <field name="pictureUrl" type="string" nullable="true" />
     </entity>
 </doctrine-mapping>
