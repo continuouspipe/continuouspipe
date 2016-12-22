@@ -2,14 +2,20 @@
 
 namespace ContinuousPipe\River\Flow\Request;
 
+use ContinuousPipe\River\AbstractCodeRepository;
+use ContinuousPipe\River\CodeRepository;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class FlowCreationRequest
 {
     /**
-     * @JMS\Type("string")
+     * @JMS\Type("ContinuousPipe\River\AbstractCodeRepository")
      *
-     * @var string
+     * @Assert\Type("ContinuousPipe\River\AbstractCodeRepository")
+     * @Assert\NotNull
+     *
+     * @var AbstractCodeRepository
      */
     private $repository;
 
@@ -30,9 +36,9 @@ class FlowCreationRequest
     private $team;
 
     /**
-     * @return string
+     * @return CodeRepository
      */
-    public function getRepository()
+    public function getRepository() : CodeRepository
     {
         return $this->repository;
     }

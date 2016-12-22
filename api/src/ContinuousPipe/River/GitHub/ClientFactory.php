@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\GitHub;
 
-use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\GitHubAccount;
 use ContinuousPipe\Security\Credentials\Bucket;
 use Github\Client;
@@ -53,7 +52,7 @@ interface ClientFactory
 
     /**
      * @deprecated This is a bad practice to rely on the current state. Please use the
-     *             `createClientForUser` method.
+     *             `createClientForUser` method
      *
      * @return Client
      */

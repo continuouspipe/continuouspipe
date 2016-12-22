@@ -2,10 +2,8 @@
 
 namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
-use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryExplorer;
-use ContinuousPipe\River\CodeRepository\Organisation;
 use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\BitBucketAccount;
 use GuzzleHttp\ClientInterface;
@@ -43,7 +41,7 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
         $response = $this->client->request('GET', 'https://api.bitbucket.org/2.0/repositories/'.$account->getUsername(), [
             'headers' => [
                 'Authorization' => 'Bearer '.$this->getAuthenticationToken($account),
-            ]
+            ],
         ]);
 
         $json = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
@@ -63,12 +61,12 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
             ],
             'headers' => [
                 'Authorization' => 'Bearer '.$this->getAuthenticationToken($account),
-            ]
+            ],
         ]);
 
         $json = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 
-        return array_map(function(array $organisation) {
+        return array_map(function (array $organisation) {
             return new BitBucketOrganisation(
                 $organisation['username'],
                 $organisation['links']['avatar']['href']
@@ -84,7 +82,7 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
         $response = $this->client->request('GET', 'https://api.bitbucket.org/2.0/teams/'.$organisationIdentifier.'/repositories', [
             'headers' => [
                 'Authorization' => 'Bearer '.$this->getAuthenticationToken($account),
-            ]
+            ],
         ]);
 
         $json = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
@@ -116,7 +114,7 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
                 'form_params' => [
                     'grant_type' => 'refresh_token',
                     'refresh_token' => $account->getRefreshToken(),
-                ]
+                ],
             ]);
         } catch (RequestException $e) {
             throw new CodeRepositoryException('Unable to get the BitBucket token', $e->getCode(), $e);
@@ -128,11 +126,7 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
             throw new CodeRepositoryException('Invalid JSON response from BitBucket', $e->getCode(), $e);
         }
 
-        $token = $json['access_token'];
-        $expiresIn = $json['expires_in'];
-        $scopes = $json['scopes'];
-
-        return $token;
+        return $json['access_token'];
     }
 
     /**
@@ -145,6 +139,7 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
         return array_map(function (array $repository) {
             return new BitBucketCodeRepository(
                 $repository['uuid'],
+                $repository['owner']['username'],
                 $repository['name'],
                 $repository['links']['self']['href'],
                 'master',

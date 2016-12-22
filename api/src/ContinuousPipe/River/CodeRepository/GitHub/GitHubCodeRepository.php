@@ -127,7 +127,10 @@ class GitHubCodeRepository extends AbstractCodeRepository
         return $this->name;
     }
 
-    public function isPrivate() : bool
+    /**
+     * @return bool|null
+     */
+    public function isPrivate()
     {
         if ($this->repository) {
             $this->populateFieldsFromRepository($this->repository);
@@ -136,6 +139,9 @@ class GitHubCodeRepository extends AbstractCodeRepository
         return $this->private;
     }
 
+    /**
+     * @return null|string
+     */
     public function getDefaultBranch()
     {
         if ($this->repository) {

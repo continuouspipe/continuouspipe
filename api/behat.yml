@@ -56,10 +56,6 @@ default:
                 - Task\WaitContext: ~
                 - Task\ManualApprovalContext:
                     - @kernel
-                - WizardContext:
-                    - @kernel
-                    - @repository_river.code_repository_repository
-                    - @repository_river.organisation_repository
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideSummaryContext:
@@ -74,6 +70,8 @@ default:
                 - ClusterHealthContext:
                     - @river.k8s_health_checker.http.guzzle_client.stack
                     - @kernel
+                - BitBucketContext:
+                    - @river.code_repository.bitbucket.explorer.http_client.handler.matching
 
     extensions:
         Behat\Symfony2Extension:

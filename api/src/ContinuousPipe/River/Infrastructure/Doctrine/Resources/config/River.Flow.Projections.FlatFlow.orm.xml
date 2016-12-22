@@ -8,8 +8,13 @@
         <id name="uuid" type="uuid" />
         <field name="configuration" type="json_array" />
         <one-to-many field="pipelines" target-entity="ContinuousPipe\River\Flow\Projections\FlatPipeline" mapped-by="flow" />
+        <many-to-one field="repository" target-entity="ContinuousPipe\River\AbstractCodeRepository">
+            <cascade>
+                <cascade-persist/>
+            </cascade>
+            <join-column name="repository_identifier" referenced-column-name="identifier" />
+        </many-to-one>
 
-        <embedded name="repository" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository" />
         <embedded name="team" class="ContinuousPipe\Security\Team\Team" />
         <embedded name="user" class="ContinuousPipe\Security\User\User" />
     </entity>

@@ -19,23 +19,6 @@ Feature:
     When I retrieve the list of the flows of the team "samuel"
     Then I should see the flow's last tide
 
-  Scenario: If the creation request is valid, the flow should be created
-    Given the GitHub repository "1234" exists
-    And the team "foo" exists
-    When I send a flow creation request for the team "foo" with the following parameters:
-      | repository |
-      | 1234       |
-    Then the flow is successfully saved
-
-  Scenario: I can force the UUID of a flow
-    Given the GitHub repository "1234" exists
-    And the team "foo" exists
-    When I send a flow creation request for the team "foo" with the following parameters:
-      | repository | uuid                                 |
-      | 1234       | 00000000-0000-0000-0000-000000000000 |
-    Then the flow is successfully saved
-    And the flow UUID should be "00000000-0000-0000-0000-000000000000"
-
   @smoke
   Scenario: I can update the configuration of a flow
     Given the team "samuel" exists

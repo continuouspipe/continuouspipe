@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\GitHub;
 
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
-use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\GitHubAccount;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketNotFound;

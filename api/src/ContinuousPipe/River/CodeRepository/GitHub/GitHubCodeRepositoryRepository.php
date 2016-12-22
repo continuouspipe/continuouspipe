@@ -126,6 +126,7 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
      * @param $api
      * @param $method
      * @param $parameters
+     *
      * @return array|mixed
      */
     private function fetchAll($client, $api, $method, $parameters)
@@ -140,6 +141,7 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
                 break;
             }
         }
+
         return $repositories;
     }
 }

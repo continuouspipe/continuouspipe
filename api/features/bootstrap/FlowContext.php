@@ -207,15 +207,22 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
-     * @When I send a flow creation request for the team :team with the following parameters:
+     * @When I send a flow creation request for the team :teamUuid with the :repositoryType repository :repositoryIdentifier
+     * @When I send a flow creation request for the team :teamUuid with the :repositoryType repository :repositoryIdentifier and the UUID :uuid
      */
-    public function iSendAFlowCreationRequestForTheTeamWithTheFollowingParameters($team, TableNode $parameters)
+    public function iSendAFlowCreationRequestForTheTeamWithTheGithubRepositoryAndTheUuid($teamUuid, $repositoryType, $repositoryIdentifier, $uuid = null)
     {
-        $creationRequest = json_encode($parameters->getHash()[0]);
-
-        $this->response = $this->kernel->handle(Request::create('/teams/'.$team.'/flows', 'POST', [], [], [], [
+        $this->response = $this->kernel->handle(Request::create('/teams/'.$teamUuid.'/flows', 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
-        ], $creationRequest));
+        ], json_encode([
+            'repository' => [
+                'type' => strtolower($repositoryType),
+                'identifier' => $repositoryIdentifier,
+                'organisation' => 'sroze',
+                'name' => 'php-example',
+            ],
+            'uuid' => $uuid,
+        ])));
 
         $flowView = json_decode($this->response->getContent(), true);
         if (array_key_exists('uuid', $flowView)) {
@@ -612,35 +619,67 @@ EOF;
     }
 
     /**
-     * @Then the configuration should be:
+     * @When I request the :uuid account's personal repositories
      */
-    public function theConfigurationShouldBe(PyStringNode $string)
+    public function iRequestTheAccountSPersonalRepositories($uuid)
     {
-        throw new PendingException();
+        $this->response = $this->kernel->handle(Request::create(
+            '/account/'.$uuid.'/repositories'
+        ));
+
+        $this->assertResponseCode(200);
     }
 
     /**
-     * @Then the flow configuration version should be :arg1
+     * @When I request the :uuid account's organisations
      */
-    public function theFlowConfigurationVersionShouldBe($arg1)
+    public function iRequestTheAccountSOrganisations($uuid)
     {
-        throw new PendingException();
+        $this->response = $this->kernel->handle(Request::create(
+            '/account/'.$uuid.'/organisations'
+        ));
+
+        $this->assertResponseCode(200);
     }
 
     /**
-     * @Then the flow configuration should be saved successfully
+     * @Then I should see the following organisations:
      */
-    public function theFlowConfigurationShouldBeSavedSuccessfully()
+    public function iShouldSeeTheFollowingOrganisations(TableNode $table)
     {
-        throw new PendingException();
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        foreach ($table->getHash() as $row) {
+            if (!$this->responseHasRow($json, $row)) {
+                throw new \RuntimeException('The response do not contain the organisation');
+            }
+        }
     }
 
     /**
-     * @Then the flow configuration update should be rejected
+     * @When I request the :uuid account's repositories of the organisation :organisation
      */
-    public function theFlowConfigurationUpdateShouldBeRejected()
+    public function iRequestTheAccountSRepositoriesOfTheOrganisation($uuid, $organisation)
     {
-        throw new PendingException();
+        $this->response = $this->kernel->handle(Request::create(
+            '/account/'.$uuid.'/organisations/'.$organisation.'/repositories'
+        ));
+
+        $this->assertResponseCode(200);
+    }
+
+    /**
+     * @Then I should see the following repositories:
+     */
+    public function iShouldSeeTheFollowingRepositories(TableNode $table)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        foreach ($table->getHash() as $row) {
+            if (!$this->responseHasRow($json, $row)) {
+                throw new \RuntimeException('The response do not contain the repository');
+            }
+        }
     }
 
     /**
@@ -708,5 +747,23 @@ EOF;
                 $this->response->getStatusCode()
             ));
         }
+    }
+
+    private function responseHasRow(array $json, array $row): bool
+    {
+        foreach ($json as $repository) {
+            $matching = true;
+            foreach ($row as $key => $value) {
+                if ($repository[$key] !== $value) {
+                    $matching = false;
+                }
+            }
+
+            if ($matching) {
+                return $matching;
+            }
+        }
+
+        return false;
     }
 }

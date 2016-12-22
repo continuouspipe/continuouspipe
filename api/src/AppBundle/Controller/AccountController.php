@@ -4,12 +4,10 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\CodeRepository\CodeRepositoryExplorer;
 use ContinuousPipe\Security\Account\Account;
-
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use FOS\RestBundle\Controller\Annotations\View;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @Route("/account/{accountUuid}", service="app.controller.account")

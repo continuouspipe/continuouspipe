@@ -83,7 +83,6 @@ class GitHubRepositoryExplorer implements CodeRepositoryExplorer
         return array_map(function (GitHubModelOrganisation $organisation) {
             return GitHubOrganisation::fromGitHubOrganisation($organisation);
         }, $organisations);
-
     }
 
     /**

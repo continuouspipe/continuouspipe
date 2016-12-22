@@ -33,7 +33,7 @@ interface CodeRepositoryExplorer
      * Find the repositories of the given organisation with the given account.
      *
      * @param Account $account
-     * @param string $organisationIdentifier
+     * @param string  $organisationIdentifier
      *
      * @throws CodeRepositoryException
      *
@@ -48,5 +48,5 @@ interface CodeRepositoryExplorer
      *
      * @return bool
      */
-    public function supports(Account $account) : bool ;
+    public function supports(Account $account) : bool;
 }
