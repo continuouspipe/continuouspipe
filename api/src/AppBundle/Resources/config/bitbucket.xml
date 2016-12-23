@@ -13,5 +13,6 @@
             <argument>%bitbucket_oauth_key%</argument>
             <argument>%bitbucket_oauth_secret%</argument>
         </service>
+        <service id="river.bitbucket.commit_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCommitResolver" />
     </services>
 </container>

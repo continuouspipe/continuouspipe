@@ -10,6 +10,7 @@ use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Notifications\GitHub\CommitStatus\GitHubStateResolver;
 use ContinuousPipe\River\Notifications\TraceableNotifier;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\TestHttpClient;
+use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
 use ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestDeploymentNotifier;
@@ -74,6 +75,10 @@ class GitHubContext implements Context
      * @var InMemoryInstallationTokenResolver
      */
     private $inMemoryInstallationTokenResolver;
+    /**
+     * @var PredictableCommitResolver
+     */
+    private $commitResolver;
 
     /**
      * @param Kernel $kernel
@@ -84,8 +89,9 @@ class GitHubContext implements Context
      * @param TestHttpClient $gitHubHttpClient
      * @param InMemoryInstallationRepository $inMemoryInstallationRepository
      * @param InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver
+     * @param PredictableCommitResolver $commitResolver
      */
-    public function __construct(Kernel $kernel, TraceableNotifier $gitHubTraceableNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore, TestHttpClient $gitHubHttpClient, InMemoryInstallationRepository $inMemoryInstallationRepository, InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver)
+    public function __construct(Kernel $kernel, TraceableNotifier $gitHubTraceableNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore, TestHttpClient $gitHubHttpClient, InMemoryInstallationRepository $inMemoryInstallationRepository, InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver, PredictableCommitResolver $commitResolver)
     {
         $this->kernel = $kernel;
         $this->fakePullRequestResolver = $fakePullRequestResolver;
@@ -95,6 +101,15 @@ class GitHubContext implements Context
         $this->gitHubTraceableNotifier = $gitHubTraceableNotifier;
         $this->inMemoryInstallationRepository = $inMemoryInstallationRepository;
         $this->inMemoryInstallationTokenResolver = $inMemoryInstallationTokenResolver;
+        $this->commitResolver = $commitResolver;
+    }
+
+    /**
+     * @Given the head commit of branch :branch is :sha1
+     */
+    public function theHeadCommitOfBranchIs($branch, $sha1)
+    {
+        $this->commitResolver->headOfBranchIs($branch, $sha1);
     }
 
     /**

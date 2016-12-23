@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.code_repository.explorer" class="ContinuousPipe\River\CodeRepository\DelegatesToTheExplorerThatSupportsTheAccountExplorer">
+            <argument type="collection">
+                <argument type="service" id="river.code_repository.github.explorer" />
+                <argument type="service" id="river.code_repository.bitbucket.explorer" />
+            </argument>
+        </service>
+
+        <service id="river.commit_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\CommitResolverDelegator">
+            <argument type="collection">
+                <argument type="service" id="river.github.commit_resolver" />
+                <argument type="service" id="river.bitbucket.commit_resolver" />
+            </argument>
+        </service>
+    </services>
+</container>

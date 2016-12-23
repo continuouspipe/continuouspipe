@@ -18,14 +18,6 @@ class PredictableCommitResolver implements CommitResolver
     /**
      * {@inheritdoc}
      */
-    public function getLegacyHeadCommitOfBranch(BucketContainer $bucketContainer, CodeRepository $repository, $branch)
-    {
-        return $this->getCommitByBranch($branch);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getHeadCommitOfBranch(FlatFlow $flow, $branch)
     {
         return $this->getCommitByBranch($branch);
@@ -57,5 +49,13 @@ class PredictableCommitResolver implements CommitResolver
         }
 
         return $this->resolutions[$branch];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(FlatFlow $flow): bool
+    {
+        return $flow->getRepository() instanceof CodeRepository\GitHub\GitHubCodeRepository;
     }
 }

@@ -110,10 +110,6 @@ class TideContext implements Context
     private $view;
 
     /**
-     * @var PredictableCommitResolver
-     */
-    private $commitResolver;
-    /**
      * @var TracedDelayedCommandBus
      */
     private $tracedDelayedMessageProducer;
@@ -130,11 +126,10 @@ class TideContext implements Context
      * @param TideFactory $tideFactory
      * @param TideRepository $viewTideRepository
      * @param Kernel $kernel
-     * @param PredictableCommitResolver $commitResolver
      * @param TracedDelayedCommandBus $tracedDelayedMessageProducer
      * @param PredictableTimeResolver $predictableTimeResolver
      */
-    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository, Kernel $kernel, PredictableCommitResolver $commitResolver, TracedDelayedCommandBus $tracedDelayedMessageProducer, PredictableTimeResolver $predictableTimeResolver)
+    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository, Kernel $kernel, TracedDelayedCommandBus $tracedDelayedMessageProducer, PredictableTimeResolver $predictableTimeResolver)
     {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
@@ -143,7 +138,6 @@ class TideContext implements Context
         $this->tideFactory = $tideFactory;
         $this->viewTideRepository = $viewTideRepository;
         $this->kernel = $kernel;
-        $this->commitResolver = $commitResolver;
         $this->tracedDelayedMessageProducer = $tracedDelayedMessageProducer;
         $this->predictableTimeResolver = $predictableTimeResolver;
     }
@@ -1047,14 +1041,6 @@ EOF;
     }
 
     /**
-     * @Given the head commit of branch :branch is :sha1
-     */
-    public function theHeadCommitOfBranchIs($branch, $sha1)
-    {
-        $this->commitResolver->headOfBranchIs($branch, $sha1);
-    }
-
-    /**
      * @When I send a tide creation request for branch :branch
      */
     public function iSendATideCreationRequestForBranch($branch)
@@ -1066,6 +1052,8 @@ EOF;
         ], json_encode([
             'branch' => $branch,
         ])));
+
+        $this->assertResponseStatus(200);
     }
 
     /**

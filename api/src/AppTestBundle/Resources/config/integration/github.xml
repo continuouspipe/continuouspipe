@@ -10,7 +10,7 @@
         <service id="repository_river.github.webhook_manager" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakeWebHookManager" />
         <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver" />
 
-        <service id="river.commit_resolver" class="ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver" />
+        <service id="river.github.commit_resolver" class="ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver" />
 
         <service id="river.github.http_client" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\TestHttpClient" />
         <service id="river.github.client_factory" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\TestClientFactory">

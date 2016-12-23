@@ -419,6 +419,21 @@ EOF;
     }
 
     /**
+     * @Given I have a flow with a BitBucket repository
+     */
+    public function iHaveAFlowWithABitBucketRepository()
+    {
+        $this->createFlow(null, [], null, new CodeRepository\BitBucket\BitBucketCodeRepository(
+            '{00000000-0000-0000-0000-000000000000}',
+            'sroze',
+            'php-example',
+            'https://api.bitbucket.org/2.0/repositories/sroze/php-example',
+            'master',
+            true
+        ));
+    }
+
+    /**
      * @Given I have a flow with UUID :uuid
      * @Given there is a flow with UUID :uuid
      */
@@ -685,14 +700,17 @@ EOF;
     /**
      * @param Uuid $uuid
      * @param array $configuration
+     * @param Team $team
+     * @param CodeRepository $codeRepository
+     *
      * @return Flow
      */
-    public function createFlow(Uuid $uuid = null, array $configuration = [], Team $team = null)
+    public function createFlow(Uuid $uuid = null, array $configuration = [], Team $team = null, CodeRepository $codeRepository = null)
     {
         $uuid = $uuid ?: Uuid::uuid1();
         $team = $team ?: $this->securityContext->theTeamExists('samuel');
         $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
-        $repository = CodeRepository\GitHub\GitHubCodeRepository::fromRepository(
+        $repository = $codeRepository ?: CodeRepository\GitHub\GitHubCodeRepository::fromRepository(
             new Repository(
                 new \GitHub\WebHook\Model\User('sroze'),
                 'docker-php-example',

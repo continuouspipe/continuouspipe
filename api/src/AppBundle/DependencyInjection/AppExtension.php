@@ -18,6 +18,7 @@ class AppExtension extends Extension
         $loader->load('controllers.xml');
         $loader->load('github.xml');
         $loader->load('bitbucket.xml');
+        $loader->load('code-repositories.xml');
         $loader->load('docker-compose.xml');
         $loader->load('builder.xml');
         $loader->load('pipe.xml');

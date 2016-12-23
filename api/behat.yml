@@ -13,7 +13,6 @@ default:
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
-                    - @river.commit_resolver
                     - @river.queue.delayed_command_bus.traced
                     - @river.time_resolver.predictable
                 - Tide\TasksContext:
@@ -30,6 +29,7 @@ default:
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory
+                    - @river.github.commit_resolver
                 - FlowContext:
                     - @kernel
                     - @river.repository.flow
@@ -106,7 +106,6 @@ smoke:
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
-                    - @river.commit_resolver
                     - @river.queue.delayed_command_bus.traced
                     - @river.time_resolver.predictable
                 - GitHubContext:
@@ -118,6 +117,7 @@ smoke:
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory
+                    - @river.github.commit_resolver
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - Tide\TasksContext:
