@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="atlassian_addon.installation_repository.doctrine" class="ContinuousPipe\AtlassianAddon\Infrastructure\Doctrine\DoctrineInstallationRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="atlassian_addon.installation_repository" alias="atlassian_addon.installation_repository.doctrine" />
+
+        <service id="atlassian_addon.controllers.installation" class="ContinuousPipe\AtlassianAddonBundle\Controller\InstallationController">
+            <argument type="service" id="atlassian_addon.installation_repository" />
+        </service>
+    </services>
+</container>

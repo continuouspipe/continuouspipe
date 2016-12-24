@@ -419,15 +419,19 @@ EOF;
     }
 
     /**
-     * @Given I have a flow with a BitBucket repository
+     * @Given I have a flow with a BitBucket repository :name owned by user :username
      */
-    public function iHaveAFlowWithABitBucketRepository()
+    public function iHaveAFlowWithABitBucketRepositoryOwnerByUser($name, $username)
     {
         $this->createFlow(null, [], null, new CodeRepository\BitBucket\BitBucketCodeRepository(
             '{00000000-0000-0000-0000-000000000000}',
-            'sroze',
-            'php-example',
-            'https://api.bitbucket.org/2.0/repositories/sroze/php-example',
+            new CodeRepository\BitBucket\BitBucketAccount(
+                '{UUID}',
+                $username,
+                'user'
+            ),
+            $name,
+            'https://api.bitbucket.org/2.0/repositories/'.$username.'/'.$name,
             'master',
             true
         ));

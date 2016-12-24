@@ -2,9 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
-use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use ContinuousPipe\Security\Credentials\BucketContainer;
 
 interface CommitResolver
 {

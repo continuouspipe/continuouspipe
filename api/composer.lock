@@ -4,9 +4,72 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3fe28accfecab65077bc7f0d9e0ff00d",
-    "content-hash": "8881830a081f61a3131898a8d4b0781c",
+    "hash": "39e175d171e392fd1d5ce1357c55f481",
+    "content-hash": "1e4d09b2c63081c26fa666e29e1b15cd",
     "packages": [
+        {
+            "name": "adlogix/guzzle-atlassian-connect-middleware",
+            "version": "dev-allow-firebase-jwt-3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sroze/guzzle-atlassian-connect-middleware.git",
+                "reference": "aa7f2432a6c19f1734764819f2569f83eacd59c3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sroze/guzzle-atlassian-connect-middleware/zipball/aa7f2432a6c19f1734764819f2569f83eacd59c3",
+                "reference": "aa7f2432a6c19f1734764819f2569f83eacd59c3",
+                "shasum": ""
+            },
+            "require": {
+                "firebase/php-jwt": "^3.0 || ^4.0",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^6.2",
+                "phpunit/phpunit": "^5.6",
+                "silex/silex": "^2.0",
+                "twig/twig": "^1.26"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "For using this library as it was created for Guzzle6. But you should be able to use it with any PSR-7 HTTP Client"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Adlogix\\GuzzleAtlassianConnect\\": [
+                        "src/",
+                        "tests/"
+                    ]
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cedric Michaux",
+                    "email": "cedric@adlogix.eu",
+                    "homepage": "http://www.adlogix.eu"
+                }
+            ],
+            "description": "An Atlassian Connect authentication middleware for Guzzle",
+            "keywords": [
+                "Atlassian",
+                "Authentication",
+                "Confluence",
+                "Connect",
+                "Guzzle",
+                "JIRA",
+                "JWT",
+                "Middleware",
+                "QSH"
+            ],
+            "support": {
+                "source": "https://github.com/sroze/guzzle-atlassian-connect-middleware/tree/allow-firebase-jwt-3.0"
+            },
+            "time": "2016-12-23 23:56:52"
+        },
         {
             "name": "beberlei/assert",
             "version": "v2.6.8",
@@ -7710,7 +7773,8 @@
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
         "continuous-pipe/security": 20,
-        "simple-bus/rabbitmq-bundle-bridge": 20
+        "simple-bus/rabbitmq-bundle-bridge": 20,
+        "adlogix/guzzle-atlassian-connect-middleware": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

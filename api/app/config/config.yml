@@ -79,6 +79,11 @@ doctrine:
                 is_bundle: false
                 dir: '%kernel.root_dir%/../src/ContinuousPipe/River/Infrastructure/Doctrine/Entity'
                 prefix: ContinuousPipe\River\Infrastructure\Doctrine\Entity
+            ContinuousPipeAtlassianAddon:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/AtlassianAddon/Infrastructure/Doctrine/Resources/config'
+                prefix: ContinuousPipe\AtlassianAddon
             ContinuousPipeRiver:
                 type: xml
                 is_bundle: false

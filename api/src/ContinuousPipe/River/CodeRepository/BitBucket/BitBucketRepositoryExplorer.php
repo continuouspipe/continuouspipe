@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\CodeRepository\BitBucket;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryExplorer;
 use ContinuousPipe\Security\Account\Account;
-use ContinuousPipe\Security\Account\BitBucketAccount;
+use ContinuousPipe\Security\Account\BitBucketAccount as SecurityBitBucketAccount;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 
@@ -96,17 +96,17 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
      */
     public function supports(Account $account): bool
     {
-        return $account instanceof BitBucketAccount;
+        return $account instanceof SecurityBitBucketAccount;
     }
 
     /**
-     * @param BitBucketAccount $account
+     * @param SecurityBitBucketAccount $account
      *
      * @throws CodeRepositoryException
      *
      * @return string
      */
-    private function getAuthenticationToken(BitBucketAccount $account) : string
+    private function getAuthenticationToken(SecurityBitBucketAccount $account) : string
     {
         try {
             $response = $this->client->request('POST', 'https://bitbucket.org/site/oauth2/access_token', [
@@ -139,7 +139,12 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
         return array_map(function (array $repository) {
             return new BitBucketCodeRepository(
                 $repository['uuid'],
-                $repository['owner']['username'],
+                new BitBucketAccount(
+                    $repository['owner']['uuid'],
+                    $repository['owner']['username'],
+                    $repository['owner']['type'],
+                    $repository['owner']['display_name']
+                ),
                 $repository['name'],
                 $repository['links']['self']['href'],
                 'master',

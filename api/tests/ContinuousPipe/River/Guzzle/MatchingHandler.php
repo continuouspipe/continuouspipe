@@ -111,8 +111,10 @@ class MatchingHandler
             }
         }
 
-        var_dump($request->getMethod(), (string) $request->getUri());
-
-        throw new \OutOfBoundsException('No matcher found');
+        throw new \OutOfBoundsException(sprintf(
+            'No matcher found for request %s %s',
+            strtoupper($request->getMethod()),
+            (string) $request->getUri()
+        ));
     }
 }

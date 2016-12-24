@@ -72,7 +72,10 @@ default:
                     - @kernel
                 - BitBucketContext:
                     - @river.code_repository.bitbucket.explorer.http_client.handler.matching
-
+                    - @kernel
+                    - @atlassian_addon.installation_repository.traceable
+                    - @jms_serializer
+                    - @river.bitbucket.client_factory
     extensions:
         Behat\Symfony2Extension:
             kernel:
@@ -128,6 +131,12 @@ smoke:
                     - @event_bus
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
+                - BitBucketContext:
+                    - @river.code_repository.bitbucket.explorer.http_client.handler.matching
+                    - @kernel
+                    - @atlassian_addon.installation_repository.traceable
+                    - @jms_serializer
+                    - @river.bitbucket.client_factory
 
     extensions:
         Behat\Symfony2Extension:

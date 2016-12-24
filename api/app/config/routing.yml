@@ -7,3 +7,7 @@ admin:
     type: annotation
     prefix: /admin
 
+atlassian:
+    resource: "@AtlassianAddonBundle/Controller/"
+    type: annotation
+    prefix: /connect/service/bitbucket/addon

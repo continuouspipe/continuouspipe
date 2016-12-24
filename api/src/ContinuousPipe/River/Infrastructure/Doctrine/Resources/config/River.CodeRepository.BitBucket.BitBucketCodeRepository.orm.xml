@@ -5,10 +5,11 @@
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository">
-        <field name="owner" type="string" />
-        <field name="name" type="string" />
         <field name="address" type="string" />
         <field name="defaultBranch" type="string" nullable="true" />
         <field name="private" type="boolean" nullable="true" />
+        <field name="name" type="string" />
+
+        <embedded name="owner" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketAccount" />
     </entity>
 </doctrine-mapping>

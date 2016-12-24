@@ -26,6 +26,7 @@ class AppKernel extends Kernel
             new Mhujer\JmsSerializer\Uuid\SymfonyBundle\MhujerJmsSerializerUuidBundle(),
             new Beberlei\Bundle\MetricsBundle\BeberleiMetricsBundle(),
             new Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\ToleranceBundle(),
+            new ContinuousPipe\AtlassianAddonBundle\AtlassianAddonBundle(),
             new LogStream\LogStreamBundle(),
             new WorkerBundle\WorkerBundle(),
             new AdminBundle\AdminBundle(),

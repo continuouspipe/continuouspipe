@@ -1052,8 +1052,6 @@ EOF;
         ], json_encode([
             'branch' => $branch,
         ])));
-
-        $this->assertResponseStatus(200);
     }
 
     /**

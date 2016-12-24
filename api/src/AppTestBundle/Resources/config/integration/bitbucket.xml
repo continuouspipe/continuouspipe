@@ -13,12 +13,11 @@
             <argument type="service" id="river.code_repository.bitbucket.explorer.http_client.handler.matching" />
         </service>
 
-        <service id="river.code_repository.bitbucket.explorer.http_client" class="GuzzleHttp\Client">
-            <argument type="collection">
-                <argument key="handler" type="service" id="river.code_repository.bitbucket.explorer.http_client.handler" />
-            </argument>
-
-            <tag name="csa_guzzle.client" />
+        <service id="atlassian_addon.installation_repository" class="ContinuousPipe\AtlassianAddon\InMemoryInstallationRepository" />
+        <service id="atlassian_addon.installation_repository.traceable"
+                 class="ContinuousPipe\AtlassianAddon\TraceableInstallationRepository"
+                 decorates="atlassian_addon.installation_repository">
+            <argument type="service" id="atlassian_addon.installation_repository.traceable.inner" />
         </service>
     </services>
 </container>

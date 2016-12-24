@@ -8,9 +8,9 @@ use JMS\Serializer\Annotation as JMS;
 class BitBucketCodeRepository extends AbstractCodeRepository
 {
     /**
-     * @JMS\Type("string")
+     * @JMS\Type("ContinuousPipe\River\CodeRepository\BitBucket\BitBucketAccount")
      *
-     * @var string
+     * @var BitBucketAccount
      */
     private $owner;
 
@@ -42,7 +42,7 @@ class BitBucketCodeRepository extends AbstractCodeRepository
      */
     private $private;
 
-    public function __construct(string $identifier, string $owner, string $name, string $address, string $defaultBranch, bool $private)
+    public function __construct(string $identifier, BitBucketAccount $owner, string $name, string $address, string $defaultBranch, bool $private)
     {
         parent::__construct($identifier);
 
@@ -78,9 +78,9 @@ class BitBucketCodeRepository extends AbstractCodeRepository
     }
 
     /**
-     * @return string
+     * @return BitBucketAccount
      */
-    public function getOwner(): string
+    public function getOwner(): BitBucketAccount
     {
         return $this->owner;
     }

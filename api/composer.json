@@ -48,7 +48,8 @@
         "jms/aop-bundle": "^1.2",
         "dbellettini/eventstore-client": "^0.8.0",
         "mhujer/jms-serializer-uuid-bundle": "^1.0",
-        "kreait/firebase-php": "^2.0"
+        "kreait/firebase-php": "^2.0",
+        "adlogix/guzzle-atlassian-connect-middleware": "dev-allow-firebase-jwt-3.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -120,6 +121,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/sroze/RabbitMQBundleBridge"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/sroze/guzzle-atlassian-connect-middleware"
         }
     ]
 }

@@ -6,7 +6,6 @@ use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class PredictableCommitResolver implements CommitResolver
 {
