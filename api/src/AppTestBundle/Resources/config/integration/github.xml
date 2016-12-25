@@ -21,5 +21,7 @@
         <service id="github.integration.in_memory_installation_repository" class="GitHub\Integration\InMemoryInstallationRepository" />
         <service id="github.integration.installation_repository" alias="github.integration.in_memory_installation_repository" />
         <service id="github.integration.installation_token_resolver" alias="github.integration.installation_token_resolver.in_memory" />
+        <service id="river.github.file_system_resolver.fake" class="ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver" />
+        <service id="river.github.file_system_resolver" alias="river.github.file_system_resolver.fake" />
     </services>
 </container>

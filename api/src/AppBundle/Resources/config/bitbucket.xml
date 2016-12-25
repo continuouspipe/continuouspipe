@@ -32,5 +32,9 @@
         <service id="river.bitbucket.commit_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCommitResolver">
             <argument type="service" id="river.bitbucket.client_factory" />
         </service>
+
+        <service id="river.bitbucket.file_system_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\Filesystem\BitBucketFileSystemResolver">
+            <argument type="service" id="river.bitbucket.client_factory" />
+        </service>
     </services>
 </container>

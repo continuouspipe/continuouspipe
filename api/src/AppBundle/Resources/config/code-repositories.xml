@@ -18,5 +18,12 @@
                 <argument type="service" id="river.bitbucket.commit_resolver" />
             </argument>
         </service>
+
+        <service id="river.file_system_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\FileSystemResolverDelegator">
+            <argument type="collection">
+                <argument type="service" id="river.github.file_system_resolver" />
+                <argument type="service" id="river.bitbucket.file_system_resolver" />
+            </argument>
+        </service>
     </services>
 </container>

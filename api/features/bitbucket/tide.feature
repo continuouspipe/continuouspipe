@@ -11,7 +11,7 @@ Feature:
   Scenario: Create a tide from the code repository's configuration
     Given I have a flow with a BitBucket repository "example" owned by user "foo"
     And there is the add-on installed for the BitBucket repository "example" owned by user "foo"
-    And I have a "continuous-pipe.yml" file in my repository that contains:
+    And there is a "continuous-pipe.yml" file in my BitBucket repository that contains:
     """
     tasks:
         images:

@@ -7,6 +7,7 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\TransferStats;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 class MatchingHandler
 {
@@ -22,7 +23,12 @@ class MatchingHandler
      */
     private $matchers = [];
 
-    public function __construct(array $matchers = null)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger, array $matchers = null)
     {
         if (null === $matchers) {
             $matchers = [
@@ -40,6 +46,7 @@ class MatchingHandler
         }
 
         $this->matchers = $matchers;
+        $this->logger = $logger;
     }
 
     public function __invoke(RequestInterface $request, array $options)
@@ -111,10 +118,6 @@ class MatchingHandler
             }
         }
 
-        throw new \OutOfBoundsException(sprintf(
-            'No matcher found for request %s %s',
-            strtoupper($request->getMethod()),
-            (string) $request->getUri()
-        ));
+        return new Response(404);
     }
 }

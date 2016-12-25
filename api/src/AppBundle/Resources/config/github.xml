@@ -5,6 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="river.github.file_system_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubFileSystemResolver">
+            <argument type="service" id="river.github.client_factory" />
+            <argument type="service" id="river.github.repository_address_descriptor" />
+        </service>
+
         <service id="repository_river.github.request.github_request_param_converter" class="GitHub\WebHook\Request\ParamConverter\GitHubRequestConverter">
             <argument type="service" id="repository_river.github.request_validator" />
             <argument type="service" id="repository_river.github.request_deserializer" />

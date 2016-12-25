@@ -2,8 +2,10 @@
 
 namespace ContinuousPipe\River\Tests\CodeRepository;
 
+use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketContainer;
 
@@ -25,7 +27,7 @@ class FakeFileSystemResolver implements FileSystemResolver
     /**
      * {@inheritdoc}
      */
-    public function getFileSystem(FlatFlow $flow, CodeReference $codeReference)
+    public function getFileSystem(FlatFlow $flow, CodeReference $codeReference) : RelativeFileSystem
     {
         return new PredictiveFileSystem($this->files);
     }
@@ -33,8 +35,8 @@ class FakeFileSystemResolver implements FileSystemResolver
     /**
      * {@inheritdoc}
      */
-    public function getFileSystemWithBucketContainer(CodeReference $codeReference, BucketContainer $bucketContainer)
+    public function supports(FlatFlow $flow): bool
     {
-        return new PredictiveFileSystem($this->files);
+        return $flow->getRepository() instanceof GitHubCodeRepository;
     }
 }

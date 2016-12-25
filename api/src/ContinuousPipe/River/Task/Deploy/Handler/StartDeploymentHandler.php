@@ -88,6 +88,11 @@ class StartDeploymentHandler
         } catch (UnresolvedEnvironmentNameException $e) {
             $this->eventBus->handle(new TideFailed($command->getTideUuid(), $e->getMessage()));
 
+            $this->logger->debug('Unable to create the deployment request', [
+                'exception' => $e,
+                'tide_uuid' => (string) $tide->getUuid(),
+            ]);
+
             $logger = $this->loggerFactory->fromId($taskDetails->getLogId());
             $logger->child(new Text($e->getMessage()));
 
@@ -101,10 +106,14 @@ class StartDeploymentHandler
             $failedDeployment = new Client\Deployment(Uuid::fromString(Uuid::NIL), $deploymentRequest, Client\Deployment::STATUS_FAILURE);
             $this->eventBus->handle(new DeploymentFailed($command->getTideUuid(), $failedDeployment, $taskDetails->getIdentifier()));
 
+            $this->logger->error('Something went wrong while starting the deployment', [
+                'exceptiom' => $e,
+                'tide_uuid' => (string) $tide->getUuid(),
+            ]);
+
             $logger = $this->loggerFactory->fromId($taskDetails->getLogId());
             $logger->child(new Text(sprintf(
-                'PANIC (%s): %s',
-                get_class($e),
+                'Something went wrong when starting the deployment: %s',
                 $e->getMessage()
             )));
         }

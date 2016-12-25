@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\AtlassianAddon\Installation;
 use ContinuousPipe\AtlassianAddon\TraceableInstallationRepository;
@@ -190,6 +191,32 @@ class BitBucketContext implements Context
         );
 
         $this->traceableInstallationRepository->save($installation);
+    }
+
+    /**
+     * @Given there is a :path file in my BitBucket repository that contains:
+     */
+    public function thereIsAFileInMyBitbucketRepositoryThatContains($path, PyStringNode $string)
+    {
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($path) {
+                if ($request->getMethod() != 'GET') {
+                    return false;
+                }
+
+                if (!preg_match('#^https\:\/\/api\.bitbucket\.org\/1\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/src\/([a-z0-9_-]+)\/(?<path>.+)$#i', (string) $request->getUri(), $matches)) {
+                    return false;
+                }
+
+                return $matches['path'] == $path;
+            },
+            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
+                'node' => '001823eef762',
+                'path' => $path,
+                'data' => $string->getRaw(),
+                'size' => strlen($string->getRaw()),
+            ])),
+        ]);
     }
 
     /**

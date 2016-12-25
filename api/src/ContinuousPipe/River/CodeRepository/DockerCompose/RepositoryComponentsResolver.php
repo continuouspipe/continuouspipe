@@ -49,21 +49,6 @@ class RepositoryComponentsResolver implements ComponentsResolver
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function resolveByCodeReferenceAndBucket(CodeReference $codeReference, BucketContainer $bucketContainer)
-    {
-        try {
-            return $this->resolveWithFilesystem(
-                $this->fileSystemResolver->getFileSystemWithBucketContainer($codeReference, $bucketContainer),
-                $codeReference
-            );
-        } catch (CodeRepositoryException $e) {
-            throw new ResolveException($e->getMessage(), $e->getCode(), $e);
-        }
-    }
-
-    /**
      * @param RelativeFileSystem $fileSystem
      * @param CodeReference      $codeReference
      *

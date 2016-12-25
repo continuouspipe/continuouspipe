@@ -19,20 +19,14 @@ interface FileSystemResolver
      *
      * @throws CodeRepositoryException
      */
-    public function getFileSystem(FlatFlow $flow, CodeReference $codeReference);
+    public function getFileSystem(FlatFlow $flow, CodeReference $codeReference) : RelativeFileSystem;
 
     /**
-     * Get file system for the given code repository and reference.
+     * Returns true if supports the following flow.
      *
-     * @param CodeReference   $codeReference
-     * @param BucketContainer $bucketContainer
+     * @param FlatFlow $flow
      *
-     * @deprecated Being dependent on a Bucket container, this method is deprecated. Please
-     *             use the `getFileSystem` method
-     *
-     * @return RelativeFileSystem
-     *
-     * @throws CodeRepositoryException
+     * @return bool
      */
-    public function getFileSystemWithBucketContainer(CodeReference $codeReference, BucketContainer $bucketContainer);
+    public function supports(FlatFlow $flow) : bool;
 }

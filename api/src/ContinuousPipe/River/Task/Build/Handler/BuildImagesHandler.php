@@ -88,6 +88,11 @@ class BuildImagesHandler
                 $tide->getTeam()->getBucketUuid()
             );
         } catch (BuilderException $e) {
+            $this->logger->warning('Unable to create build requests', [
+                'exception' => $e,
+                'tide_uuid' => (string) $tide->getUuid(),
+            ]);
+
             $logger->child(new Text($e->getMessage()));
             $this->eventBus->handle(new ImageBuildsFailed($tideUuid, $logger->getLog()));
 

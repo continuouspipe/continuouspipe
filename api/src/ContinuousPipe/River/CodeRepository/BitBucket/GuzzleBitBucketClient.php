@@ -17,7 +17,7 @@ class GuzzleBitBucketClient implements BitBucketClient
         $this->client = $client;
     }
 
-    public function getReference(string $owner, string $repository, string $branch)
+    public function getReference(string $owner, string $repository, string $branch) : string
     {
         try {
             $response = $this->client->request('GET', '/2.0/repositories/'.$owner.'/'.$repository.'/refs/branches/'.$branch);
@@ -33,5 +33,30 @@ class GuzzleBitBucketClient implements BitBucketClient
         $json = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 
         return $json['target']['hash'];
+    }
+
+    public function getContents(string $owner, string $repository, string $reference, string $filePath): string
+    {
+        try {
+            $response = $this->client->request('GET', '/1.0/repositories/'.$owner.'/'.$repository.'/src/'.$reference.'/'.$filePath);
+        } catch (RequestException $e) {
+            $message = $e->getMessage();
+            if ($e->getResponse() && $e->getResponse()->getStatusCode() == 404) {
+                $message = 'The file "'.$filePath.'" is not found in "'.$reference.'" of the repository';
+            }
+
+            throw new BitBucketClientException($message, $e->getCode(), $e);
+        }
+
+        $body = $response->getBody();
+        $body->rewind();
+
+        try {
+            $json = \GuzzleHttp\json_decode($body->getContents(), true);
+        } catch (\InvalidArgumentException $e) {
+            throw new BitBucketClientException('Response from BitBucket is not a valid JSON document', $e->getCode(), $e);
+        }
+
+        return $json['data'];
     }
 }
