@@ -26,8 +26,8 @@
         <service id="river.bitbucket.client_factory" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientFactory">
             <argument type="service" id="atlassian_addon.installation_repository" />
             <argument type="service" id="logger" />
-            <argument type="service" id="csa_guzzle.middleware.history" />
             <argument type="service" id="river.code_repository.bitbucket.explorer.http_client.handler" />
+            <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
         </service>
         <service id="river.bitbucket.commit_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCommitResolver">
             <argument type="service" id="river.bitbucket.client_factory" />

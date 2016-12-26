@@ -21,22 +21,24 @@ class BitBucketClientFactory
      * @var LoggerInterface
      */
     private $logger;
-    /**
-     * @var callable
-     */
-    private $csaHistoryMiddleware;
+
     /**
      * @var HandlerStack
      */
     private $handlerStack;
 
     /**
+     * @var callable|null
+     */
+    private $csaHistoryMiddleware;
+
+    /**
      * @param InstallationRepository $installationRepository
      * @param LoggerInterface        $logger
-     * @param callable               $csaHistoryMiddleware
      * @param HandlerStack           $handlerStack
+     * @param callable|null          $csaHistoryMiddleware
      */
-    public function __construct(InstallationRepository $installationRepository, LoggerInterface $logger, callable $csaHistoryMiddleware, HandlerStack $handlerStack)
+    public function __construct(InstallationRepository $installationRepository, LoggerInterface $logger, HandlerStack $handlerStack, callable $csaHistoryMiddleware = null)
     {
         $this->installationRepository = $installationRepository;
         $this->logger = $logger;
@@ -74,7 +76,10 @@ class BitBucketClientFactory
 
         $stack = $this->handlerStack;
         $stack->push($middleware);
-        $stack->push($this->csaHistoryMiddleware);
+
+        if (null !== $this->csaHistoryMiddleware) {
+            $stack->push($this->csaHistoryMiddleware);
+        }
 
         return new GuzzleBitBucketClient(
             new Client([
