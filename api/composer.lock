@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "24cc98bc3841e4a8488d9f90fec1c688",
-    "content-hash": "e9b248350d99c6f88e5de0f4c149aa57",
+    "hash": "57de40d6ee3733950be960c0e42e39a1",
+    "content-hash": "f9b3c15dcec77be539349d7a3656106a",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
-            "version": "dev-allow-firebase-jwt-3.0",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/sroze/guzzle-atlassian-connect-middleware.git",
-                "reference": "aa7f2432a6c19f1734764819f2569f83eacd59c3"
+                "url": "https://github.com/adlogix/guzzle-atlassian-connect-middleware.git",
+                "reference": "d3380c04c87fab6314bf753d4591eeb66527ae69"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/guzzle-atlassian-connect-middleware/zipball/aa7f2432a6c19f1734764819f2569f83eacd59c3",
-                "reference": "aa7f2432a6c19f1734764819f2569f83eacd59c3",
+                "url": "https://api.github.com/repos/adlogix/guzzle-atlassian-connect-middleware/zipball/d3380c04c87fab6314bf753d4591eeb66527ae69",
+                "reference": "d3380c04c87fab6314bf753d4591eeb66527ae69",
                 "shasum": ""
             },
             "require": {
@@ -43,6 +43,7 @@
                     ]
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -55,20 +56,17 @@
             ],
             "description": "An Atlassian Connect authentication middleware for Guzzle",
             "keywords": [
-                "Atlassian",
                 "Authentication",
                 "Confluence",
-                "Connect",
                 "Guzzle",
-                "JIRA",
-                "JWT",
-                "Middleware",
-                "QSH"
+                "QSH",
+                "atlassian",
+                "connect",
+                "jira",
+                "jwt",
+                "middleware"
             ],
-            "support": {
-                "source": "https://github.com/sroze/guzzle-atlassian-connect-middleware/tree/allow-firebase-jwt-3.0"
-            },
-            "time": "2016-12-23 23:56:52"
+            "time": "2016-12-26 11:03:41"
         },
         {
             "name": "beberlei/assert",
@@ -4645,16 +4643,16 @@
         },
         {
             "name": "simple-bus/rabbitmq-bundle-bridge",
-            "version": "dev-allow-the-producer-interface",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/sroze/RabbitMQBundleBridge.git",
-                "reference": "fd5a6fe5fd8aa8e45da96c523591c552442518b5"
+                "url": "https://github.com/SimpleBus/RabbitMQBundleBridge.git",
+                "reference": "4ef340c1e96343cbbe2ce26d1a3dcb2c243fa712"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/RabbitMQBundleBridge/zipball/fd5a6fe5fd8aa8e45da96c523591c552442518b5",
-                "reference": "fd5a6fe5fd8aa8e45da96c523591c552442518b5",
+                "url": "https://api.github.com/repos/SimpleBus/RabbitMQBundleBridge/zipball/4ef340c1e96343cbbe2ce26d1a3dcb2c243fa712",
+                "reference": "4ef340c1e96343cbbe2ce26d1a3dcb2c243fa712",
                 "shasum": ""
             },
             "require": {
@@ -4681,38 +4679,31 @@
                     "SimpleBus\\RabbitMQBundleBridge\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "SimpleBus\\RabbitMQBundleBridge\\Tests\\": "tests"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "Cliff Odijk",
-                    "email": "cliff@jcid.nl"
-                },
-                {
                     "name": "Matthias Noback",
                     "email": "matthiasnoback@gmail.com",
                     "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                },
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
                 }
             ],
             "description": "Use OldSoundRabbitMQBundle with SimpleBus/AsynchronousBundle",
             "homepage": "http://github.com/SimpleBus/RabbitMQBundleBridge",
             "keywords": [
-                "RabbitMQ",
                 "command bus",
                 "event bus",
                 "message bus",
-                "messages"
+                "messages",
+                "rabbitmq"
             ],
-            "support": {
-                "source": "https://github.com/sroze/RabbitMQBundleBridge/tree/allow-the-producer-interface"
-            },
-            "time": "2016-11-16 20:40:22"
+            "time": "2016-12-17 12:51:17"
         },
         {
             "name": "simple-bus/serialization",
@@ -7771,9 +7762,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 20,
-        "tolerance/tolerance": 20,
-        "simple-bus/rabbitmq-bundle-bridge": 20,
-        "adlogix/guzzle-atlassian-connect-middleware": 20
+        "tolerance/tolerance": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
