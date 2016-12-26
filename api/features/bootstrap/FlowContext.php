@@ -184,10 +184,15 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
+     * @When I request the flow
      * @When I request the flow with UUID :uuid
      */
-    public function iRequestTheFlowWithUuid($uuid)
+    public function iRequestTheFlowWithUuid($uuid = null)
     {
+        if (null === $uuid) {
+            $uuid = (string) $this->getCurrentUuid();
+        }
+        
         $this->response = $this->kernel->handle(Request::create('/flows/'.$uuid));
 
         $this->assertResponseCode(200);

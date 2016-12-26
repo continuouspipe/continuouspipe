@@ -7,7 +7,7 @@ Feature:
     Given I am authenticated as "samuel"
     And the team "samuel" exists
     And the user "samuel" is "USER" of the team "samuel"
-    And I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And I have a flow
     And there is 1 application images in the repository
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
@@ -44,11 +44,11 @@ Feature:
   @smoke
   Scenario: It creates the pipeline object
     When I send a tide creation request for branch "foo/bar" and commit "098789"
-    And I request the flow with UUID "00000000-0000-0000-0000-000000000000"
+    And I request the flow
     Then I should see the pipeline "Only the branches" in the flow
 
   @smoke
   Scenario: It creates the pipeline object
     When I send a tide creation request for branch "master" and commit "1234"
-    And I request the flow with UUID "00000000-0000-0000-0000-000000000000"
+    And I request the flow
     Then I should see the pipeline "To master" in the flow

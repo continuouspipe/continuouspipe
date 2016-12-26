@@ -17,8 +17,7 @@ build:
 
         # Smoke tests
         - app/console doctrine:migrations:migrate --no-interaction
-        - bin/behat -f progress --profile=smoke features/pipelines/list.feature:45
-        - cat app/logs/smoke_test.log
+        - bin/behat --profile=smoke
 
 cache:
     mount:

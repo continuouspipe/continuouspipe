@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Flow\Projections;
 
-use ContinuousPipe\Builder\Repository;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\Tide;
@@ -22,11 +21,6 @@ class FlatFlow
     private $uuid;
 
     /**
-     * @var CodeRepository\RepositoryIdentifier
-     */
-    private $repositoryIdentifier;
-
-    /**
      * @var Team
      */
     private $team;
@@ -42,7 +36,7 @@ class FlatFlow
     private $configuration;
 
     /**
-     * @var ArrayCollection|FlatPipeline[]
+     * @var Collection|FlatPipeline[]
      */
     private $pipelines;
 
