@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "39e175d171e392fd1d5ce1357c55f481",
-    "content-hash": "1e4d09b2c63081c26fa666e29e1b15cd",
+    "hash": "24cc98bc3841e4a8488d9f90fec1c688",
+    "content-hash": "e9b248350d99c6f88e5de0f4c149aa57",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -288,16 +288,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "dev-add-bitbucket-account",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "3281f30a1d26b17b2a21091f218663ebf8296e98"
+                "reference": "7436749f68fc8ccea01a47f90ea12e8d7ce83ec6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/3281f30a1d26b17b2a21091f218663ebf8296e98",
-                "reference": "3281f30a1d26b17b2a21091f218663ebf8296e98",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/7436749f68fc8ccea01a47f90ea12e8d7ce83ec6",
+                "reference": "7436749f68fc8ccea01a47f90ea12e8d7ce83ec6",
                 "shasum": ""
             },
             "require": {
@@ -317,10 +317,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/add-bitbucket-account",
+                "source": "https://github.com/continuouspipe/security/tree/2.3.0",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2016-12-21 19:00:48"
+            "time": "2016-12-26 21:10:53"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -7772,7 +7772,6 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
-        "continuous-pipe/security": 20,
         "simple-bus/rabbitmq-bundle-bridge": 20,
         "adlogix/guzzle-atlassian-connect-middleware": 20
     },
