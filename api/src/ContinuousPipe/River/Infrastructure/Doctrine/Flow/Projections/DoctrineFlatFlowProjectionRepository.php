@@ -64,7 +64,7 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
     public function findByCodeRepository(CodeRepository $repository) : array
     {
         return $this->getRepository()->findBy([
-            'repository.identifier' => $repository->getIdentifier(),
+            'repository' => $repository->getIdentifier(),
         ]);
     }
 
