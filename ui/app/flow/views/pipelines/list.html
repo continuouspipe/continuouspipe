@@ -15,7 +15,7 @@
                     <p><em>{{ tide.creation_date | timeAgo }}</em></p>
                     <p>{{ tide.status }}</p>
                 </div>
-                <div ng-repeat="task in tide.tasks"  class="cp-pipeline_flex-item --task">
+                <div ng-repeat="task in tide.tasks" ng-class="'tasks--status-'+task.status" class="cp-pipeline_flex-item --task">
                   <div class="cp-pipeline-item_content">
                     <h3 ng-class="'status-'+task.status" class="cp-pipeline-title --task">{{ task.label }}</h3>
                     <p>{{ task.status }}</p>

@@ -28,6 +28,7 @@ $failure-color: #FDE3E3;
 $failure-dark-color: #F28282;
 $pipeline-success-color: #3d9e47;
 $pipeline-failure-color: #222732;
+$pending-color: #1075AD;
 
 .title-text {
     text-transform: uppercase;
@@ -618,22 +619,34 @@ pre.deployment-logs {
 
 .cp-pipeline-item_content {
    padding: 0 50px 35px 0;
-   position:relative;
+   position: relative;
 
   & md-icon {
-      position:absolute;
-      bottom:0;
-      right:70px;
+      right: 70px;
       font-size: 40px;
   }
 }
 
+.status-successful,
 .status-success {
     color: $pipeline-success-color;
 
   &::after {
+      position: relative;
+      top: 5px;
       content: 'check_box';
       color: $pipeline-success-color;
+  }
+}
+
+.status-pending {
+    color: $pending-color;
+
+  &::after {
+      position: relative;
+      top: 5px;
+      content: 'autorenew';
+      color: $pending-color;
   }
 }
 
@@ -641,15 +654,24 @@ pre.deployment-logs {
     color: $pipeline-failure-color;
 
   &::after {
+      position: relative;
+      top: 5px;
       content: 'error';
       color: $pipeline-failure-color;
   }
 }
 
+.tasks--status-skipped {
+    color: $inactive-grey;
+    md-icon {
+      color: $inactive-grey;
+    }
+}
+
 .cp-pipeline-title {
-  &::after {
-      font-family: "Material Icons";
-      font-size: 25px;
-      padding: 5px 0 0 5px;
-  }
+    &::after {
+       font-family: "Material Icons";
+       font-size: 25px;
+       padding: 5px 0 0 5px;
+    }
 }
