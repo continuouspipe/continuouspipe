@@ -28,7 +28,7 @@
             <argument type="service" id="app.repository.user_invitation" />
             <argument type="service" id="app.repository.team_membership" />
         </service>
-        <service id="api.controller.me" class="ApiBundle\Controller\MeController">
+        <service id="api.controller.account" class="ApiBundle\Controller\AccountController">
             <argument type="service" id="app.repository.account" />
         </service>
         <service id="api.controller.google" class="ApiBundle\Controller\GoogleController">

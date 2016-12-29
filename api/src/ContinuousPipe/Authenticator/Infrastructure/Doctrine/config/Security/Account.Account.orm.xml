@@ -9,9 +9,14 @@
         <discriminator-map>
             <discriminator-mapping value="google" class="ContinuousPipe\Security\Account\GoogleAccount" />
             <discriminator-mapping value="github" class="ContinuousPipe\Security\Account\GitHubAccount" />
+            <discriminator-mapping value="bitbucket" class="ContinuousPipe\Security\Account\BitBucketAccount" />
         </discriminator-map>
 
         <id name="uuid" type="string" />
         <field name="username" type="string" nullable="false" />
+        <field name="identifier" type="string" nullable="false" />
+        <field name="email" type="string" nullable="true" />
+        <field name="name" type="string" nullable="true" />
+        <field name="pictureUrl" type="string" nullable="true" />
     </entity>
 </doctrine-mapping>
