@@ -2,6 +2,18 @@
 
 namespace ContinuousPipe\AtlassianAddonBundle\Request\ParamConverter;
 
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\BuildStatusCreated;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\BuildStatusUpdated;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\CommentEvent;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestApproved;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestCommentCreated;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestCommentDeleted;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestCommentUpdated;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestCreated;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestDeclined;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestMerged;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestUnapproved;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestUpdated;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\Push;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -29,6 +41,18 @@ class WebHookParamConverter implements ParamConverterInterface
         $this->serializer = $serializer;
         $this->eventMapping = [
             'repo:push' => Push::class,
+            'repo:commit_comment_created' => CommentEvent::class,
+            'repo:commit_status_updated' => BuildStatusUpdated::class,
+            'repo:commit_status_created' => BuildStatusCreated::class,
+            'pullrequest:created' => PullRequestCreated::class,
+            'pullrequest:updated' => PullRequestUpdated::class,
+            'pullrequest:approved' => PullRequestApproved::class,
+            'pullrequest:unapproved' => PullRequestUnapproved::class,
+            'pullrequest:fulfilled' => PullRequestMerged::class,
+            'pullrequest:rejected' => PullRequestDeclined::class,
+            'pullrequest:comment_created' => PullRequestCommentCreated::class,
+            'pullrequest:comment_updated' => PullRequestCommentUpdated::class,
+            'pullrequest:comment_deleted' => PullRequestCommentDeleted::class,
         ];
     }
 
