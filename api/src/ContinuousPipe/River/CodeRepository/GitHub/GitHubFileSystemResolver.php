@@ -8,7 +8,6 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\GitHub\GitHubClientException;
-use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
 {

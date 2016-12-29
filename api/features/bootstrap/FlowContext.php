@@ -429,7 +429,7 @@ EOF;
     public function iHaveAFlowWithABitBucketRepositoryOwnerByUser($name, $username)
     {
         $this->createFlow(null, [], null, new CodeRepository\BitBucket\BitBucketCodeRepository(
-            '{00000000-0000-0000-0000-000000000000}',
+            Uuid::uuid5(Uuid::NIL, $name)->toString(),
             new CodeRepository\BitBucket\BitBucketAccount(
                 '{UUID}',
                 $username,

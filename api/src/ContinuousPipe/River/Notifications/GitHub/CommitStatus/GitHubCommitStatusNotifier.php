@@ -40,9 +40,7 @@ class GitHubCommitStatusNotifier implements Notifier
      */
     public function notify(Tide $tide, Status $status, array $configuration)
     {
-        if (!array_key_exists('github_commit_status', $configuration)) {
-            throw new NotificationNotSupported('The notifier only supports the "github_commit_status" notification');
-        } elseif (false === $configuration['github_commit_status']) {
+        if (array_key_exists('github_commit_status', $configuration) && false === $configuration['github_commit_status']) {
             return;
         }
 
@@ -87,6 +85,6 @@ class GitHubCommitStatusNotifier implements Notifier
      */
     public function supports(Tide $tide, Status $status, array $configuration)
     {
-        return array_key_exists('github_commit_status', $configuration) && $configuration['github_commit_status'];
+        return $tide->getCodeReference()->getRepository() instanceof GitHubCodeRepository;
     }
 }

@@ -8,6 +8,7 @@ use ContinuousPipe\AtlassianAddon\Installation;
 use ContinuousPipe\AtlassianAddon\InstallationRepository;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
+use JMS\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
 
 class BitBucketClientFactory
@@ -28,6 +29,11 @@ class BitBucketClientFactory
     private $handlerStack;
 
     /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * @var callable|null
      */
     private $csaHistoryMiddleware;
@@ -36,14 +42,16 @@ class BitBucketClientFactory
      * @param InstallationRepository $installationRepository
      * @param LoggerInterface        $logger
      * @param HandlerStack           $handlerStack
+     * @param SerializerInterface    $serializer
      * @param callable|null          $csaHistoryMiddleware
      */
-    public function __construct(InstallationRepository $installationRepository, LoggerInterface $logger, HandlerStack $handlerStack, callable $csaHistoryMiddleware = null)
+    public function __construct(InstallationRepository $installationRepository, LoggerInterface $logger, HandlerStack $handlerStack, SerializerInterface $serializer, callable $csaHistoryMiddleware = null)
     {
         $this->installationRepository = $installationRepository;
         $this->logger = $logger;
-        $this->csaHistoryMiddleware = $csaHistoryMiddleware;
+        $this->serializer = $serializer;
         $this->handlerStack = $handlerStack;
+        $this->csaHistoryMiddleware = $csaHistoryMiddleware;
     }
 
     public function createForCodeRepository(BitBucketCodeRepository $repository) : BitBucketClient
@@ -85,7 +93,8 @@ class BitBucketClientFactory
             new Client([
                 'base_uri' => $installation->getBaseApiUrl(),
                 'handler' => $stack,
-            ])
+            ]),
+            $this->serializer
         );
     }
 }

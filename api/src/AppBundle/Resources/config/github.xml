@@ -102,22 +102,6 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\BranchDeleted" />
         </service>
 
-        <service id="river.listener.github.eventually_create_and_start_tide" class="ContinuousPipe\River\EventListener\GitHub\EventuallyCreateAndStartTide">
-            <argument type="service" id="command_bus" />
-            <argument type="service" id="river.flow.projections.flat_flow_repository" />
-        </service>
-
-        <service id="river.listener.github.locked.eventually_create_and_start_tide"
-                 class="ContinuousPipe\River\Tide\Concurrency\EventListener\GitHub\LockTheStartDecisionOfATide">
-            <argument type="service" id="river.listener.github.eventually_create_and_start_tide" />
-            <argument type="service" id="river.tide.concurrency.locker" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\CodePushed"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestOpened"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestSynchronized"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestLabeled"/>
-        </service>
-
         <service id="river.code_repository.github.explorer" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubRepositoryExplorer">
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="jms_serializer" />

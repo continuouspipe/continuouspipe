@@ -1,0 +1,202 @@
+{
+  "event": "pullrequest:created",
+  "data": {
+    "pullrequest": {
+      "destination": {
+        "repository": {
+          "full_name": "continouspipe/php-example",
+          "links": {
+            "avatar": {
+              "href": "https://bitbucket.org/continouspipe/php-example/avatar/32/"
+            },
+            "html": {
+              "href": "https://bitbucket.org/continouspipe/php-example"
+            },
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example"
+            }
+          },
+          "name": "php-example",
+          "type": "repository",
+          "uuid": "{e009218b-2e4a-4253-a38b-1fd93323de76}"
+        },
+        "commit": {
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/commit/f04b33ce1d08"
+            }
+          },
+          "hash": "f04b33ce1d08"
+        },
+        "branch": {
+          "name": "master"
+        }
+      },
+      "merge_commit": null,
+      "participants": [],
+      "comment_count": 0,
+      "close_source_branch": true,
+      "title": "README.md edited online with Bitbucket",
+      "closed_by": null,
+      "task_count": 0,
+      "reviewers": [],
+      "created_on": "2016-12-27T13:04:08.405247+00:00",
+      "updated_on": "2016-12-27T13:04:08.431106+00:00",
+      "links": {
+        "comments": {
+          "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/pullrequests/1/comments"
+        },
+        "decline": {
+          "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/pullrequests/1/decline"
+        },
+        "html": {
+          "href": "https://bitbucket.org/continouspipe/php-example/pull-requests/1"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/pullrequests/1"
+        },
+        "approve": {
+          "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/pullrequests/1/approve"
+        },
+        "statuses": {
+          "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/pullrequests/1/statuses"
+        },
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/pullrequests/1/commits"
+        },
+        "activity": {
+          "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/pullrequests/1/activity"
+        },
+        "diff": {
+          "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/pullrequests/1/diff"
+        },
+        "merge": {
+          "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/pullrequests/1/merge"
+        }
+      },
+      "reason": "",
+      "id": 1,
+      "source": {
+        "repository": {
+          "full_name": "continouspipe/php-example",
+          "links": {
+            "avatar": {
+              "href": "https://bitbucket.org/continouspipe/php-example/avatar/32/"
+            },
+            "html": {
+              "href": "https://bitbucket.org/continouspipe/php-example"
+            },
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example"
+            }
+          },
+          "name": "php-example",
+          "type": "repository",
+          "uuid": "{e009218b-2e4a-4253-a38b-1fd93323de76}"
+        },
+        "commit": {
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example/commit/ff5a3ad4d29b"
+            }
+          },
+          "hash": "ff5a3ad4d29b"
+        },
+        "branch": {
+          "name": "sroze/readmemd-edited-online-with-bitbucket-1482843840818"
+        }
+      },
+      "state": "OPEN",
+      "description": "README.md edited online with Bitbucket",
+      "author": {
+        "display_name": "Samuel ROZE",
+        "links": {
+          "avatar": {
+            "href": "https://bitbucket.org/account/sroze/avatar/32/"
+          },
+          "html": {
+            "href": "https://bitbucket.org/sroze/"
+          },
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/users/sroze"
+          }
+        },
+        "username": "sroze",
+        "type": "user",
+        "uuid": "{555f5ea4-c626-40eb-bdb3-bad6b42fe8a8}"
+      },
+      "type": "pullrequest"
+    },
+    "actor": {
+      "display_name": "Samuel ROZE",
+      "links": {
+        "avatar": {
+          "href": "https://bitbucket.org/account/sroze/avatar/32/"
+        },
+        "html": {
+          "href": "https://bitbucket.org/sroze/"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/sroze"
+        }
+      },
+      "username": "sroze",
+      "type": "user",
+      "uuid": "{555f5ea4-c626-40eb-bdb3-bad6b42fe8a8}"
+    },
+    "repository": {
+      "is_private": true,
+      "scm": "git",
+      "website": "",
+      "type": "repository",
+      "links": {
+        "avatar": {
+          "href": "https://bitbucket.org/continouspipe/php-example/avatar/32/"
+        },
+        "html": {
+          "href": "https://bitbucket.org/continouspipe/php-example"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/continouspipe/php-example"
+        }
+      },
+      "full_name": "continouspipe/php-example",
+      "name": "php-example",
+      "project": {
+        "key": "DEMO",
+        "links": {
+          "avatar": {
+            "href": "https://bitbucket.org/account/user/continouspipe/projects/DEMO/avatar/32"
+          },
+          "html": {
+            "href": "https://bitbucket.org/account/user/continouspipe/projects/DEMO"
+          },
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/teams/continouspipe/projects/DEMO"
+          }
+        },
+        "name": "Demo",
+        "type": "project",
+        "uuid": "{d1a01eaa-691d-4630-bcc3-8ac6182e7b27}"
+      },
+      "owner": {
+        "display_name": "ContinousPipe",
+        "links": {
+          "avatar": {
+            "href": "https://bitbucket.org/account/continouspipe/avatar/32/"
+          },
+          "html": {
+            "href": "https://bitbucket.org/continouspipe/"
+          },
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/teams/continouspipe"
+          }
+        },
+        "username": "continouspipe",
+        "type": "team",
+        "uuid": "{009de8ef-1f2c-4d35-86df-47a39003af4e}"
+      },
+      "uuid": "{e009218b-2e4a-4253-a38b-1fd93323de76}"
+    }
+  }
+}

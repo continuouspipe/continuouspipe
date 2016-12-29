@@ -24,7 +24,7 @@ class DoctrineInstallationRepository implements InstallationRepository
     public function save(Installation $installation)
     {
         $installation = $this->entityManager->merge($installation);
-        
+
         $this->entityManager->persist($installation);
         $this->entityManager->flush();
     }

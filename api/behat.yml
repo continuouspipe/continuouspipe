@@ -76,6 +76,7 @@ default:
                     - @atlassian_addon.installation_repository.traceable
                     - @jms_serializer
                     - @river.bitbucket.client_factory
+                    - @csa_guzzle.data_collector.history_bag
     extensions:
         Behat\Symfony2Extension:
             kernel:
@@ -137,6 +138,7 @@ smoke:
                     - @atlassian_addon.installation_repository.traceable
                     - @jms_serializer
                     - @river.bitbucket.client_factory
+                    - @csa_guzzle.data_collector.history_bag
 
     extensions:
         Behat\Symfony2Extension:

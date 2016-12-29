@@ -17,6 +17,7 @@
                 <argument type="service" id="river.notifications.notifier.slack" />
                 <argument type="service" id="river.notifications.notifier.github.commit_status" />
                 <argument type="service" id="river.notifications.notifier.github.pull_request" />
+                <argument type="service" id="river.notifications.notifier.bitbucket.build_status" />
             </argument>
         </service>
 

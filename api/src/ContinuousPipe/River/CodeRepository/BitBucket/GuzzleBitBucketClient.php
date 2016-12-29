@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use JMS\Serializer\SerializerInterface;
 
 class GuzzleBitBucketClient implements BitBucketClient
 {
@@ -11,10 +12,15 @@ class GuzzleBitBucketClient implements BitBucketClient
      * @var ClientInterface
      */
     private $client;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
-    public function __construct(ClientInterface $client)
+    public function __construct(ClientInterface $client, SerializerInterface $serializer)
     {
         $this->client = $client;
+        $this->serializer = $serializer;
     }
 
     public function getReference(string $owner, string $repository, string $branch) : string
@@ -58,5 +64,22 @@ class GuzzleBitBucketClient implements BitBucketClient
         }
 
         return $json['data'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildStatus(string $owner, string $repository, string $reference, BuildStatus $status)
+    {
+        try {
+            $this->client->request('POST', '/2.0/repositories/'.$owner.'/'.$repository.'/commit/'.$reference.'/statuses/build', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => $this->serializer->serialize($status, 'json'),
+            ]);
+        } catch (RequestException $e) {
+            throw new BitBucketClientException('Unable to update the build status', $e->getCode(), $e);
+        }
     }
 }

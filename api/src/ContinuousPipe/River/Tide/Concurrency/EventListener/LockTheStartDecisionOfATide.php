@@ -1,9 +1,9 @@
 <?php
 
-namespace ContinuousPipe\River\Tide\Concurrency\EventListener\GitHub;
+namespace ContinuousPipe\River\Tide\Concurrency\EventListener;
 
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
-use ContinuousPipe\River\EventListener\GitHub\EventuallyCreateAndStartTide;
+use ContinuousPipe\River\EventListener\EventuallyCreateAndStartTide;
 use ContinuousPipe\River\Tide\Concurrency\Lock\Locker;
 
 class LockTheStartDecisionOfATide

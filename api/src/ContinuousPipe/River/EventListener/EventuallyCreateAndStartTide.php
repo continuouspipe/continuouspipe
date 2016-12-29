@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River\EventListener\GitHub;
+namespace ContinuousPipe\River\EventListener;
 
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;

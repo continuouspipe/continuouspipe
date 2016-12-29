@@ -72,8 +72,8 @@ class GitHubPullRequestStatusNotifier implements Notifier
             return;
         }
 
-        if (!array_key_exists('github_pull_request', $configuration)) {
-            throw new NotificationNotSupported('The notifier only supports the "github_pull_request" notification');
+        if (array_key_exists('github_pull_request', $configuration) && !$configuration['github_pull_request']) {
+            return;
         }
 
         try {
@@ -165,6 +165,6 @@ class GitHubPullRequestStatusNotifier implements Notifier
      */
     public function supports(Tide $tide, Status $status, array $configuration)
     {
-        return array_key_exists('github_pull_request', $configuration) && $configuration['github_pull_request'];
+        return $tide->getCodeReference()->getRepository() instanceof GitHubCodeRepository;
     }
 }

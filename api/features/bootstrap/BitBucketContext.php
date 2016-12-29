@@ -11,6 +11,7 @@ use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientException;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientFactory;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
 use ContinuousPipe\River\Guzzle\MatchingHandler;
+use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Psr7\Response;
 use JMS\Serializer\SerializerInterface;
@@ -53,19 +54,25 @@ class BitBucketContext implements Context
      * @var \Exception|null
      */
     private $exception;
+    /**
+     * @var History
+     */
+    private $guzzleHistory;
 
     public function __construct(
         MatchingHandler $bitBucketMatchingClientHandler,
         KernelInterface $kernel,
         TraceableInstallationRepository $traceableInstallationRepository,
         SerializerInterface $serializer,
-        BitBucketClientFactory $clientFactory
+        BitBucketClientFactory $clientFactory,
+        History $guzzleHistory
     ) {
         $this->bitBucketMatchingClientHandler = $bitBucketMatchingClientHandler;
         $this->kernel = $kernel;
         $this->traceableInstallationRepository = $traceableInstallationRepository;
         $this->serializer = $serializer;
         $this->clientFactory = $clientFactory;
+        $this->guzzleHistory = $guzzleHistory;
     }
 
     /**
@@ -78,6 +85,20 @@ class BitBucketContext implements Context
                 return $request->getMethod() == 'GET' && $request->getUri() == 'https://api.bitbucket.org/2.0/repositories/'.$username;
             },
             'response' => $this->createRepositoriesResponse($username, $table),
+        ]);
+    }
+
+    /**
+     * @Given the BitBucket build status request will succeed
+     */
+    public function theBitbucketBuildStatusRequestWillSucceed()
+    {
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) {
+                return $request->getMethod() == 'POST' &&
+                       preg_match('#^https\:\/\/api\.bitbucket\.org\/2\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/commit\/(?<sha1>[a-z0-9_-]+)\/statuses\/build$#i', (string) $request->getUri());
+            },
+            'response' => new Response(),
         ]);
     }
 
@@ -125,6 +146,35 @@ class BitBucketContext implements Context
     }
 
     /**
+     * @When I push the commit :sha1 to the branch :branch of the BitBucket repository :repositoryName owned by :ownerType :ownerUsername
+     */
+    public function iPushTheCommitToTheBranchOfTheBitbucketRepositoryOwnedByUser($sha1, $branch, $repositoryName, $ownerType, $ownerUsername)
+    {
+        $body = \GuzzleHttp\json_decode(file_get_contents(__DIR__ . '/../bitbucket/fixtures/webhook/pushed-in-branch.json'), true);
+        $body['data']['repository']['uuid'] = Uuid::uuid5(Uuid::NIL, $repositoryName)->toString();
+        $body['data']['repository']['name'] = $repositoryName;
+        $body['data']['repository']['owner']['type'] = strtolower($ownerType);
+        $body['data']['repository']['owner']['username'] = $ownerUsername;
+        $body['data']['push']['changes'][0]['new']['type'] = 'branch';
+        $body['data']['push']['changes'][0]['new']['name'] = $branch;
+        $body['data']['push']['changes'][0]['new']['target']['hash'] = $sha1;
+
+        $this->response = $this->kernel->handle(Request::create(
+            '/connect/service/bitbucket/addon/webhook',
+            'POST',
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            json_encode($body)
+        ));
+
+        $this->assertResponseStatus(202);
+    }
+
+    /**
      * @When the add-on :clientKey is installed for the user account :principalUsername
      */
     public function theAddOnIsInstalledForTheUserAccount($clientKey, $principalUsername)
@@ -141,14 +191,7 @@ class BitBucketContext implements Context
             json_encode($addon)
         ));
 
-        if ($this->response->getStatusCode() != 204) {
-            echo $this->response->getContent();
-
-            throw new \RuntimeException(sprintf(
-                'Expected status code 204, found %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseStatus(204);
     }
 
     /**
@@ -179,11 +222,11 @@ class BitBucketContext implements Context
     }
 
     /**
-     * @Given there is the add-on installed for the BitBucket repository :name owned by user :username
+     * @Given there is the add-on installed for the BitBucket repository :repositoryName owned by user :ownerUsername
      */
-    public function thereIsTheAddOnInstalledForTheBitbucketRepositoryOwnedByUser($name, $username)
+    public function thereIsTheAddOnInstalledForTheBitbucketRepositoryOwnedByUser($repositoryName, $ownerUsername)
     {
-        $addon = $this->createAddonArray('test-client-key', $username);
+        $addon = $this->createAddonArray('test-client-key', $ownerUsername);
         $installation = $this->serializer->deserialize(
             json_encode($addon),
             Installation::class,
@@ -296,6 +339,43 @@ class BitBucketContext implements Context
         }
     }
 
+    /**
+     * @Then the BitBucket build status of the commit :sha1 should be :state
+     */
+    public function theBitbucketBuildStatusOfTheCommitShouldBeInProgress($sha1, $state)
+    {
+        $foundStatuses = [];
+
+        foreach ($this->guzzleHistory as $request) {
+            /** @var \GuzzleHttp\Psr7\Request $request */
+            if ($request->getMethod() != 'POST') {
+                continue;
+            } elseif (!preg_match('#^https\:\/\/api\.bitbucket\.org\/2\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/commit\/(?<sha1>[a-z0-9_-]+)\/statuses\/build$#i', (string) $request->getUri(), $matches)) {
+                continue;
+            } elseif ($matches['sha1'] != $sha1) {
+                continue;
+            }
+
+            $body = $request->getBody();
+            $body->rewind();
+
+            $json = \GuzzleHttp\json_decode($body->getContents(), true);
+            $found = strtoupper($json['state']);
+            $expected = strtoupper($state);
+
+            if ($found == $expected) {
+                return true;
+            }
+
+            $foundStatuses[] = $found;
+        }
+
+        throw new \RuntimeException(sprintf(
+            'Notification not found (found %s)',
+            implode(', ', $foundStatuses)
+        ));
+    }
+
     private function createRepositoriesResponse(string $username, TableNode $table): Response
     {
         return new Response(200, ['Content-Type' => 'application/json'], json_encode([
@@ -332,5 +412,21 @@ class BitBucketContext implements Context
         $addon['principal']['username'] = $principalUsername;
 
         return $addon;
+    }
+
+    /**
+     * @param int $expectedStatus
+     */
+    private function assertResponseStatus(int $expectedStatus)
+    {
+        if ($this->response->getStatusCode() != $expectedStatus) {
+            echo $this->response->getContent();
+
+            throw new \RuntimeException(sprintf(
+                'Expected status code %d, found %d',
+                $expectedStatus,
+                $this->response->getStatusCode()
+            ));
+        }
     }
 }

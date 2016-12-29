@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
+use ContinuousPipe\AtlassianAddon\BitBucket\Repository;
 use ContinuousPipe\River\AbstractCodeRepository;
 use JMS\Serializer\Annotation as JMS;
 
@@ -51,6 +52,18 @@ class BitBucketCodeRepository extends AbstractCodeRepository
         $this->address = $address;
         $this->defaultBranch = $defaultBranch;
         $this->private = $private;
+    }
+
+    public static function fromBitBucketRepository(Repository $repository) : BitBucketCodeRepository
+    {
+        return new self(
+            $repository->getUuid(),
+            BitBucketAccount::fromActor($repository->getOwner()),
+            $repository->getName(),
+            $repository->getLinks()->getSelf()->getHref(),
+            'master',
+            $repository->isPrivate()
+        );
     }
 
     /**

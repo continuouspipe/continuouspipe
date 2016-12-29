@@ -27,6 +27,7 @@
             <argument type="service" id="atlassian_addon.installation_repository" />
             <argument type="service" id="logger" />
             <argument type="service" id="river.code_repository.bitbucket.explorer.http_client.handler" />
+            <argument type="service" id="jms_serializer" />
             <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
         </service>
         <service id="river.bitbucket.commit_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCommitResolver">
@@ -34,6 +35,18 @@
         </service>
 
         <service id="river.bitbucket.file_system_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\Filesystem\BitBucketFileSystemResolver">
+            <argument type="service" id="river.bitbucket.client_factory" />
+        </service>
+
+        <service id="river.bitbucket.handler.handle_event" class="ContinuousPipe\River\CodeRepository\BitBucket\Handler\BitBucketEventHandler">
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="logger" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\CodeRepository\BitBucket\Command\HandleBitBucketEvent" />
+        </service>
+
+        <!-- Notifications -->
+        <service id="river.notifications.notifier.bitbucket.build_status" class="ContinuousPipe\River\CodeRepository\BitBucket\Notifications\BitBucketBuildStatusNotifier">
             <argument type="service" id="river.bitbucket.client_factory" />
         </service>
     </services>

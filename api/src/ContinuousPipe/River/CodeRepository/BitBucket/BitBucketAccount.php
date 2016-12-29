@@ -2,6 +2,9 @@
 
 namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
+use ContinuousPipe\AtlassianAddon\BitBucket\Actor;
+use ContinuousPipe\AtlassianAddon\BitBucket\Team;
+
 class BitBucketAccount
 {
     /**
@@ -30,6 +33,16 @@ class BitBucketAccount
         $this->username = $username;
         $this->type = $type;
         $this->displayName = $displayName;
+    }
+
+    public static function fromActor(Actor $actor) : BitBucketAccount
+    {
+        return new self(
+            $actor->getUuid(),
+            $actor->getUsername(),
+            $actor instanceof Team ? 'team' : 'user',
+            $actor->getDisplayName()
+        );
     }
 
     /**

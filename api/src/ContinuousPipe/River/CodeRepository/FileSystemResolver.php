@@ -5,7 +5,6 @@ namespace ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use ContinuousPipe\Security\Credentials\BucketContainer;
 
 interface FileSystemResolver
 {
