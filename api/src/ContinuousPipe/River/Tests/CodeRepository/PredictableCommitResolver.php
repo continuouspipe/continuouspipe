@@ -15,11 +15,25 @@ class PredictableCommitResolver implements CommitResolver
     private $resolutions = [];
 
     /**
+     * @var CommitResolver
+     */
+    private $decoratedResolver;
+
+    public function __construct(CommitResolver $decoratedResolver)
+    {
+        $this->decoratedResolver = $decoratedResolver;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getHeadCommitOfBranch(FlatFlow $flow, $branch)
     {
-        return $this->getCommitByBranch($branch);
+        if (!array_key_exists($branch, $this->resolutions)) {
+            return $this->decoratedResolver->getHeadCommitOfBranch($flow, $branch);
+        }
+
+        return $this->resolutions[$branch];
     }
 
     /**
@@ -32,29 +46,10 @@ class PredictableCommitResolver implements CommitResolver
     }
 
     /**
-     * @param $branch
-     *
-     * @return mixed
-     *
-     * @throws CommitResolverException
-     */
-    private function getCommitByBranch($branch)
-    {
-        if (!array_key_exists($branch, $this->resolutions)) {
-            throw new CommitResolverException(sprintf(
-                'Unable to find predictable resolution of branch "%s"',
-                $branch
-            ));
-        }
-
-        return $this->resolutions[$branch];
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function supports(FlatFlow $flow): bool
     {
-        return $flow->getRepository() instanceof CodeRepository\GitHub\GitHubCodeRepository;
+        return true;
     }
 }

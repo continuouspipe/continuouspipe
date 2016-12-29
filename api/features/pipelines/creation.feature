@@ -142,8 +142,7 @@ Feature:
     When I send a tide creation request for branch "foo/bar" and commit "1234"
     Then 0 tides should have been created
 
-
-  Scenario: It uses the pipeline from events coming from GitHub too
+  Scenario: It uses the pipeline from events coming from the code repository too
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:

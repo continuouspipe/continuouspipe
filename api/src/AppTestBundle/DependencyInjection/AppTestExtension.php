@@ -26,6 +26,7 @@ class AppTestExtension extends Extension
         $loader->load('integration/builder.xml');
         $loader->load('integration/github.xml');
         $loader->load('integration/bitbucket.xml');
+        $loader->load('integration/code-repositories.xml');
         $loader->load('integration/logstream.xml');
         $loader->load('integration/pipe.xml');
         $loader->load('integration/runner.xml');

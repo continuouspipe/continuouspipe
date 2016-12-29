@@ -8,7 +8,7 @@ use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\WebHookEvent;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
 use ContinuousPipe\River\CodeRepository\BitBucket\Command\HandleBitBucketEvent;
-use ContinuousPipe\River\CodeRepository\BitBucket\Event\CodePushed;
+use ContinuousPipe\River\CodeRepository\Event\CodePushed;
 use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 

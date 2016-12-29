@@ -41,3 +41,21 @@ Feature:
     """
     When a tide is started
     Then the GitHub commit status should not be updated
+
+  Scenario: The default GitHub commit status should still be configured if another notification is configured
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        - {build: {services: []}}
+
+    notifications:
+        my_notification:
+            slack:
+                webhook_url: https://hooks.slack.com/services/1/2/3
+            when:
+                - success
+    """
+    When a tide is started for the branch "my/branch"
+    And the tide is successful
+    Then a Slack success notification should have been sent
+    And the GitHub commit status should be "success"

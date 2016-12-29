@@ -29,7 +29,9 @@ default:
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory
-                    - @river.github.commit_resolver
+                - CodeRepositoriesContext:
+                    - @river.commit_resolver.predictable
+                    - @event_bus
                 - FlowContext:
                     - @kernel
                     - @river.repository.flow
@@ -121,7 +123,9 @@ smoke:
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory
-                    - @river.github.commit_resolver
+                - CodeRepositoriesContext:
+                    - @river.commit_resolver.predictable
+                    - @event_bus
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - Tide\TasksContext:

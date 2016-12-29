@@ -10,7 +10,7 @@ Feature:
     tasks: [{build: {services: []}}]
     """
     When the pull request #1 is opened with head "feature/dc-labels" and the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9"
-    And the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9" is pushed to the branch "feature/dc-labels"
+    And the GitHub commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9" is pushed to the branch "feature/dc-labels"
     Then only 1 tide should be created
 
   Scenario: 2 tides should be created if the commit is different
@@ -19,7 +19,7 @@ Feature:
     tasks: [{build: {services: []}}]
     """
     When the pull request #1 is opened with head "feature/dc-labels" and the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9"
-    And the commit "6bc5922dd0f5150173302b88ef6838b0c8fe6a11" is pushed to the branch "feature/dc-labels"
+    And the GitHub commit "6bc5922dd0f5150173302b88ef6838b0c8fe6a11" is pushed to the branch "feature/dc-labels"
     Then only 2 tide should be created
 
   Scenario: A push and a synchronize event
@@ -28,7 +28,7 @@ Feature:
     tasks: [{build: {services: []}}]
     """
     When the pull request #1 is synchronized with head "feature/dc-labels" and the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9"
-    And the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9" is pushed to the branch "feature/dc-labels"
+    And the GitHub commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9" is pushed to the branch "feature/dc-labels"
     Then only 1 tide should be created
 
   Scenario: Rerun tide if filters changed on the same commit
@@ -46,7 +46,7 @@ Feature:
     When the pull request #1 is synchronized with head "feature/dc-labels" and the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9"
     And the tide starts
     And the tide is successful
-    And the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9" is pushed to the branch "feature/dc-labels"
+    And the GitHub commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9" is pushed to the branch "feature/dc-labels"
     And the pull request #1 have the label "Ready for QA"
     And the pull request #1 is labeled
     And the second tide starts
@@ -68,7 +68,7 @@ Feature:
                 expression: '"Ready for QA" in pull_request.labels'
     """
     When the pull request #1 is opened with head "feature/super-labels" and the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9"
-    And the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9" is pushed to the branch "feature/super-labels"
+    And the GitHub commit "a0bf16349981a95b7b3954e3994c9695c1f346e9" is pushed to the branch "feature/super-labels"
     And the pull request #1 have the label "Ready for QA"
     And the pull request #1 is labeled with head "feature/super-labels" and the commit "a0bf16349981a95b7b3954e3994c9695c1f346e9"
     And the pull request #1 have the labels "Ready for QA,Dev approved"
@@ -83,6 +83,6 @@ Feature:
     """
     tasks: [{build: {services: []}}]
     """
-    When the commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9" is pushed to the branch "feature/dc-labels"
+    When the GitHub commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9" is pushed to the branch "feature/dc-labels"
     And I send a tide creation request for branch "feature/dc-labels" and commit "7852e7ddae799f381ee9ddb73d6d2ce8acc2f7f9"
     Then only 2 tide should be created
