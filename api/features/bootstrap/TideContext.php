@@ -161,6 +161,7 @@ class TideContext implements Context
 
     /**
      * @When a tide is created
+     * @When a tide is created for the branch :branch
      * @Given a tide is created for branch :branch and commit :sha
      */
     public function aTideIsCreatedForBranchAndCommit($branch = null, $sha = null)
@@ -169,7 +170,7 @@ class TideContext implements Context
             $this->flowContext->iHaveAFlow();
         }
 
-        $this->createTide($branch, $sha);
+        $this->createTide($branch ?: 'master', $sha);
     }
 
     /**
