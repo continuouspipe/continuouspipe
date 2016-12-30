@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\AtlassianAddonBundle\Request\ParamConverter;
 
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\BranchCreated;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\BranchDeleted;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\BuildStatusCreated;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\BuildStatusUpdated;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\CommentEvent;
@@ -15,6 +17,7 @@ use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestMerged;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestUnapproved;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestUpdated;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\Push;
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\RepositoryUpdated;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
@@ -53,6 +56,9 @@ class WebHookParamConverter implements ParamConverterInterface
             'pullrequest:comment_created' => PullRequestCommentCreated::class,
             'pullrequest:comment_updated' => PullRequestCommentUpdated::class,
             'pullrequest:comment_deleted' => PullRequestCommentDeleted::class,
+            'repo:branch_created' => BranchCreated::class,
+            'repo:branch_deleted' => BranchDeleted::class,
+            'repo:updated' => RepositoryUpdated::class,
         ];
     }
 
