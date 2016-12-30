@@ -11,9 +11,22 @@ use ContinuousPipe\River\Flow\Projections\FlatFlow;
 class FakeFileSystemResolver implements FileSystemResolver
 {
     /**
+     * @var FileSystemResolver
+     */
+    private $decoratedFilesystemResolver;
+
+    /**
      * @var array
      */
     private $files = [];
+
+    /**
+     * @param FileSystemResolver|null $decoratedFilesystemResolver
+     */
+    public function __construct(FileSystemResolver $decoratedFilesystemResolver = null)
+    {
+        $this->decoratedFilesystemResolver = $decoratedFilesystemResolver;
+    }
 
     /**
      * @param array $files
@@ -28,7 +41,10 @@ class FakeFileSystemResolver implements FileSystemResolver
      */
     public function getFileSystem(FlatFlow $flow, CodeReference $codeReference) : RelativeFileSystem
     {
-        return new PredictiveFileSystem($this->files);
+        return new PredictiveFileSystem(
+            $this->files,
+            null !== $this->decoratedFilesystemResolver ? $this->decoratedFilesystemResolver->getFileSystem($flow, $codeReference) : null
+        );
     }
 
     /**
@@ -36,6 +52,6 @@ class FakeFileSystemResolver implements FileSystemResolver
      */
     public function supports(FlatFlow $flow): bool
     {
-        return $flow->getRepository() instanceof GitHubCodeRepository;
+        return true;
     }
 }

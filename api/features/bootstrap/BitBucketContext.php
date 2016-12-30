@@ -5,12 +5,14 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\AtlassianAddon\Installation;
 use ContinuousPipe\AtlassianAddon\TraceableInstallationRepository;
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketAccount;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClient;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientException;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientFactory;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
 use ContinuousPipe\River\Guzzle\MatchingHandler;
+use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Psr7\Response;
@@ -20,7 +22,7 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class BitBucketContext implements Context
+class BitBucketContext implements CodeRepositoryContext
 {
     /**
      * @var MatchingHandler
@@ -58,6 +60,10 @@ class BitBucketContext implements Context
      * @var History
      */
     private $guzzleHistory;
+    /**
+     * @var InMemoryCodeRepositoryRepository
+     */
+    private $inMemoryCodeRepositoryRepository;
 
     public function __construct(
         MatchingHandler $bitBucketMatchingClientHandler,
@@ -65,7 +71,8 @@ class BitBucketContext implements Context
         TraceableInstallationRepository $traceableInstallationRepository,
         SerializerInterface $serializer,
         BitBucketClientFactory $clientFactory,
-        History $guzzleHistory
+        History $guzzleHistory,
+        InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository
     ) {
         $this->bitBucketMatchingClientHandler = $bitBucketMatchingClientHandler;
         $this->kernel = $kernel;
@@ -73,6 +80,35 @@ class BitBucketContext implements Context
         $this->serializer = $serializer;
         $this->clientFactory = $clientFactory;
         $this->guzzleHistory = $guzzleHistory;
+        $this->inMemoryCodeRepositoryRepository = $inMemoryCodeRepositoryRepository;
+    }
+
+    /**
+     * @Given there is a repository identifier :identifier
+     */
+    public function thereIsARepositoryIdentified($identifier = null): CodeRepository
+    {
+        $username = 'sroze';
+        $name = 'php-example';
+
+        $repository = new CodeRepository\BitBucket\BitBucketCodeRepository(
+            Uuid::uuid5(Uuid::NIL, $identifier)->toString(),
+            new CodeRepository\BitBucket\BitBucketAccount(
+                '{UUID}',
+                $username,
+                'user'
+            ),
+            $name,
+            'https://api.bitbucket.org/2.0/repositories/'.$username.'/'.$name,
+            'master',
+            true
+        );
+
+        $this->inMemoryCodeRepositoryRepository->add($repository);
+
+        $this->thereIsTheAddOnInstalledForTheBitbucketRepositoryOwnedByUser($name, $username);
+
+        return $repository;
     }
 
     /**
@@ -150,7 +186,7 @@ class BitBucketContext implements Context
      */
     public function iPushTheCommitToTheBranchOfTheBitbucketRepositoryOwnedByUser($sha1, $branch, $repositoryName, $ownerType, $ownerUsername)
     {
-        $body = \GuzzleHttp\json_decode(file_get_contents(__DIR__ . '/../bitbucket/fixtures/webhook/pushed-in-branch.json'), true);
+        $body = \GuzzleHttp\json_decode($this->readFixture('webhook/pushed-in-branch.json'), true);
         $body['data']['repository']['uuid'] = Uuid::uuid5(Uuid::NIL, $repositoryName)->toString();
         $body['data']['repository']['name'] = $repositoryName;
         $body['data']['repository']['owner']['type'] = strtolower($ownerType);
@@ -172,6 +208,14 @@ class BitBucketContext implements Context
         ));
 
         $this->assertResponseStatus(202);
+    }
+
+    /**
+     * @When the branch :branch with head :sha1 is deleted
+     */
+    public function theBranchWithHeadIsDeleted($branch, $deleted)
+    {
+        throw new PendingException();
     }
 
     /**
@@ -406,7 +450,7 @@ class BitBucketContext implements Context
 
     private function createAddonArray(string $clientKey, string $principalUsername): array
     {
-        $addon = \GuzzleHttp\json_decode(file_get_contents(__DIR__ . '/../bitbucket/fixtures/addon-installed.json'), true);
+        $addon = \GuzzleHttp\json_decode($this->readFixture('addon-installed.json'), true);
         $addon['clientKey'] = $clientKey;
         $addon['principal']['type'] = 'user';
         $addon['principal']['username'] = $principalUsername;
@@ -428,5 +472,15 @@ class BitBucketContext implements Context
                 $this->response->getStatusCode()
             ));
         }
+    }
+
+    /**
+     * @param string $fixture
+     *
+     * @return string
+     */
+    private function readFixture(string $fixture): string
+    {
+        return file_get_contents(__DIR__ . '/../integrations/code-repositories/bitbucket/fixtures/' . $fixture);
     }
 }

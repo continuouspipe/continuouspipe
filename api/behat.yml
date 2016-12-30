@@ -1,15 +1,20 @@
 default:
     suites:
-        application:
+        domain:
+            paths:
+                - %paths.base%/features/domain/
+
             contexts:
                 - SecurityContext:
                     - @security.token_storage
                     - @security.authenticator.client
+                - TideConfigurationContext:
+                    - @river.tide_configuration_factory
                 - TideContext:
                     - @command_bus
                     - @event_bus
                     - @river.tide_event_store
-                    - @river.github.file_system_resolver.fake
+                    - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
@@ -20,15 +25,6 @@ default:
                     - @river.repository.tide
                 - LoggingContext:
                     - @log_stream.client
-                - GitHubContext:
-                    - @kernel
-                    - @river.notifications.notifier.github.commit_status.traceable
-                    - @river.github.pull_request_resolver
-                    - @river.pipe_client
-                    - @river.tide_event_store
-                    - @river.github.http_client
-                    - @github.integration.in_memory_installation_repository
-                    - @github.integration.installation_token_resolver.in_memory
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus
@@ -58,8 +54,6 @@ default:
                 - Task\WaitContext: ~
                 - Task\ManualApprovalContext:
                     - @kernel
-                - TideConfigurationContext:
-                    - @river.tide_configuration_factory
                 - TideSummaryContext:
                     - @kernel
                 - AnalyticsContext:
@@ -72,6 +66,107 @@ default:
                 - ClusterHealthContext:
                     - @river.k8s_health_checker.http.guzzle_client.stack
                     - @kernel
+
+                # TBR:
+                - GitHubContext:
+                    - @kernel
+                    - @river.notifications.notifier.github.commit_status.traceable
+                    - @river.github.pull_request_resolver
+                    - @river.pipe_client
+                    - @river.tide_event_store
+                    - @river.github.http_client
+                    - @github.integration.in_memory_installation_repository
+                    - @github.integration.installation_token_resolver.in_memory
+                    - @repository_river.code_repository_repository
+
+        github:
+            paths:
+                - %paths.base%/features/integrations/code-repositories/common/
+                - %paths.base%/features/integrations/code-repositories/github/
+
+            contexts:
+                # GitHub-specific contexts
+                - GitHubContext:
+                    - @kernel
+                    - @river.notifications.notifier.github.commit_status.traceable
+                    - @river.github.pull_request_resolver
+                    - @river.pipe_client
+                    - @river.tide_event_store
+                    - @river.github.http_client
+                    - @github.integration.in_memory_installation_repository
+                    - @github.integration.installation_token_resolver.in_memory
+                    - @repository_river.code_repository_repository
+
+                # Common contexts
+                - SecurityContext:
+                    - @security.token_storage
+                    - @security.authenticator.client
+                - TideConfigurationContext:
+                    - @river.tide_configuration_factory
+                - TideContext:
+                    - @command_bus
+                    - @event_bus
+                    - @river.tide_event_store
+                    - @river.file_system_resolver.fake
+                    - @river.tide_factory
+                    - @river.view.tide_repository
+                    - @kernel
+                    - @river.queue.delayed_command_bus.traced
+                    - @river.time_resolver.predictable
+                - Tide\TasksContext:
+                    - @event_bus
+                    - @river.repository.tide
+                - LoggingContext:
+                    - @log_stream.client
+                - CodeRepositoriesContext:
+                    - @river.commit_resolver.predictable
+                    - @event_bus
+                - FlowContext:
+                    - @kernel
+                    - @river.repository.flow
+                    - @repository_river.code_repository_repository
+                    - @security.authenticator.client
+                    - @river.pipe_client.fake
+                    - @river.pipe_client
+                    - @authenticator.team_repository
+                    - @event_bus
+                - Task\BuildContext:
+                    - @river.tide_event_store
+                    - @event_bus
+                - Task\DeployContext:
+                    - @river.tide_event_store
+                    - @event_bus
+                    - @river.pipe_client
+                    - @river.task.deploy.naming.environment_strategy
+                    - @kernel
+                    - @jms_serializer
+                - Task\RunContext:
+                    - @kernel
+                    - @river.pipe_client
+                    - @jms_serializer
+                - Task\WaitContext: ~
+                - Task\ManualApprovalContext:
+                    - @kernel
+                - TideSummaryContext:
+                    - @kernel
+                - AnalyticsContext:
+                    - @river.keen.client.traceable
+                - NotificationsContext:
+                    - @river.notifications.notifier.slack.traceable
+                - Task\WebHookContext:
+                    - @river.web_hooks.client.traceable
+                    - @river.web_hooks.client.hookable
+                - ClusterHealthContext:
+                    - @river.k8s_health_checker.http.guzzle_client.stack
+                    - @kernel
+
+        bitbucket:
+            paths:
+                - %paths.base%/features/integrations/code-repositories/common/
+                - %paths.base%/features/integrations/code-repositories/bitbucket/
+
+            contexts:
+                # BitBucket-specific contexts
                 - BitBucketContext:
                     - @river.code_repository.bitbucket.explorer.http_client.handler.matching
                     - @kernel
@@ -79,6 +174,71 @@ default:
                     - @jms_serializer
                     - @river.bitbucket.client_factory
                     - @csa_guzzle.data_collector.history_bag
+                    - @repository_river.code_repository_repository
+
+                # Common contexts
+                - SecurityContext:
+                    - @security.token_storage
+                    - @security.authenticator.client
+                - TideConfigurationContext:
+                    - @river.tide_configuration_factory
+                - TideContext:
+                    - @command_bus
+                    - @event_bus
+                    - @river.tide_event_store
+                    - @river.file_system_resolver.fake
+                    - @river.tide_factory
+                    - @river.view.tide_repository
+                    - @kernel
+                    - @river.queue.delayed_command_bus.traced
+                    - @river.time_resolver.predictable
+                - Tide\TasksContext:
+                    - @event_bus
+                    - @river.repository.tide
+                - LoggingContext:
+                    - @log_stream.client
+                - CodeRepositoriesContext:
+                    - @river.commit_resolver.predictable
+                    - @event_bus
+                - FlowContext:
+                    - @kernel
+                    - @river.repository.flow
+                    - @repository_river.code_repository_repository
+                    - @security.authenticator.client
+                    - @river.pipe_client.fake
+                    - @river.pipe_client
+                    - @authenticator.team_repository
+                    - @event_bus
+                - Task\BuildContext:
+                    - @river.tide_event_store
+                    - @event_bus
+                - Task\DeployContext:
+                    - @river.tide_event_store
+                    - @event_bus
+                    - @river.pipe_client
+                    - @river.task.deploy.naming.environment_strategy
+                    - @kernel
+                    - @jms_serializer
+                - Task\RunContext:
+                    - @kernel
+                    - @river.pipe_client
+                    - @jms_serializer
+                - Task\WaitContext: ~
+                - Task\ManualApprovalContext:
+                    - @kernel
+                - TideSummaryContext:
+                    - @kernel
+                - AnalyticsContext:
+                    - @river.keen.client.traceable
+                - NotificationsContext:
+                    - @river.notifications.notifier.slack.traceable
+                - Task\WebHookContext:
+                    - @river.web_hooks.client.traceable
+                    - @river.web_hooks.client.hookable
+                - ClusterHealthContext:
+                    - @river.k8s_health_checker.http.guzzle_client.stack
+                    - @kernel
+
     extensions:
         Behat\Symfony2Extension:
             kernel:
@@ -108,7 +268,7 @@ smoke:
                     - @command_bus
                     - @event_bus
                     - @river.tide_event_store
-                    - @river.github.file_system_resolver.fake
+                    - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
@@ -136,13 +296,6 @@ smoke:
                     - @event_bus
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
-                - BitBucketContext:
-                    - @river.code_repository.bitbucket.explorer.http_client.handler.matching
-                    - @kernel
-                    - @atlassian_addon.installation_repository.traceable
-                    - @jms_serializer
-                    - @river.bitbucket.client_factory
-                    - @csa_guzzle.data_collector.history_bag
 
     extensions:
         Behat\Symfony2Extension:

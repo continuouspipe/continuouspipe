@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Context\Environment\InitializedContextEnvironment;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
@@ -35,6 +36,11 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var \SecurityContext
      */
     private $securityContext;
+
+    /**
+     * @var InitializedContextEnvironment
+     */
+    private $environment;
 
     /**
      * @var string
@@ -121,7 +127,8 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      */
     public function gatherContexts(BeforeScenarioScope $scope)
     {
-        $this->securityContext = $scope->getEnvironment()->getContext('SecurityContext');
+        $this->environment = $scope->getEnvironment();
+        $this->securityContext = $this->environment->getContext('SecurityContext');
     }
 
     /**
@@ -154,16 +161,6 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
                 $uuid
             ));
         }
-    }
-
-    /**
-     * @Given the GitHub repository :id exists
-     */
-    public function theGitHubRepositoryExists($id)
-    {
-        $this->codeRepositoryRepository->add(CodeRepository\GitHub\GitHubCodeRepository::fromRepository(
-            new Repository(new \GitHub\WebHook\Model\User('foo'), 'foo', 'bar', false, $id)
-        ));
     }
 
     /**
@@ -719,15 +716,7 @@ EOF;
         $uuid = $uuid ?: Uuid::uuid1();
         $team = $team ?: $this->securityContext->theTeamExists('samuel');
         $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
-        $repository = $codeRepository ?: CodeRepository\GitHub\GitHubCodeRepository::fromRepository(
-            new Repository(
-                new \GitHub\WebHook\Model\User('sroze'),
-                'docker-php-example',
-                'https://github.com/sroze/docker-php-example',
-                false,
-                37856553
-            )
-        );
+        $repository = $codeRepository ?: $this->generateRepository();
 
         array_map(function($event) use ($uuid) {
             $this->eventBus->handle($event);
@@ -751,6 +740,30 @@ EOF;
         $this->currentFlow = $flow = $this->flowRepository->find($uuid);
 
         return $flow;
+    }
+
+    /**
+     * @Then the environment should be deleted
+     */
+    public function theEnvironmentShouldBeDeleted()
+    {
+        $deletions = $this->traceablePipeClient->getDeletions();
+
+        if (0 == count($deletions)) {
+            throw new \RuntimeException('No deleted environment found');
+        }
+    }
+
+    /**
+     * @Then the environment should not be deleted
+     */
+    public function theEnvironmentShouldNotBeDeleted()
+    {
+        $deletions = $this->traceablePipeClient->getDeletions();
+
+        if (0 != count($deletions)) {
+            throw new \RuntimeException('Deleted environment(s) found');
+        }
     }
 
     /**
@@ -792,5 +805,22 @@ EOF;
         }
 
         return false;
+    }
+
+    private function generateRepository()
+    {
+        if ($this->environment->hasContextClass(GitHubContext::class)) {
+            $context = $this->environment->getContext(GitHubContext::class);
+        } elseif ($this->environment->hasContextClass(BitBucketContext::class)) {
+            $context = $this->environment->getContext(BitBucketContext::class);
+        } else {
+            throw new \RuntimeException('Unable to find the code repository context');
+        }
+
+        if (!$context instanceof CodeRepositoryContext) {
+            throw new \RuntimeException('The code repository context must implement the '.CodeRepositoryContext::class.' interface');
+        }
+
+        return $context->thereIsARepositoryIdentified();
     }
 }
