@@ -283,6 +283,7 @@ smoke:
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory
+                    - @repository_river.code_repository_repository
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus
