@@ -28,6 +28,7 @@ default:
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus
+                    - @river.tide_event_store
                 - FlowContext:
                     - @kernel
                     - @river.repository.flow
@@ -121,6 +122,7 @@ default:
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus
+                    - @river.tide_event_store
                 - FlowContext:
                     - @kernel
                     - @river.repository.flow
@@ -200,6 +202,7 @@ default:
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus
+                    - @river.tide_event_store
                 - FlowContext:
                     - @kernel
                     - @river.repository.flow
@@ -287,6 +290,7 @@ smoke:
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus
+                    - @river.tide_event_store
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - Tide\TasksContext:

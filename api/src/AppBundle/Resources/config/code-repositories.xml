@@ -5,7 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="river.code_repository.explorer" class="ContinuousPipe\River\CodeRepository\DelegatesToTheExplorerThatSupportsTheAccountExplorer">
+        <service id="river.code_repository.explorer" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToTheExplorerThatSupportsTheAccountExplorer">
             <argument type="collection">
                 <argument type="service" id="river.code_repository.github.explorer" />
                 <argument type="service" id="river.code_repository.bitbucket.explorer" />
@@ -23,6 +23,12 @@
             <argument type="collection">
                 <argument type="service" id="river.bitbucket.file_system_resolver" />
                 <argument type="service" id="river.github.file_system_resolver" />
+            </argument>
+        </service>
+
+        <service id="river.pull_request_comment_manipulator" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToPullRequestCommentManipulatorThatSupports">
+            <argument type="collection">
+                <argument type="service" id="river.code_repository.github.pull_request_comment_manipulator" />
             </argument>
         </service>
 

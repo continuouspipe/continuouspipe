@@ -125,6 +125,101 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
+     * @Given the created comment will have the ID :identifier
+     */
+    public function theCreatedCommentWillHaveTheId($identifier)
+    {
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) {
+                return $request->getMethod() == 'POST' &&
+                    preg_match('#^https\:\/\/api\.bitbucket\.org\/1\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/pullrequests\/([a-z0-9_-]+)\/comments$#i', (string) $request->getUri());
+            },
+            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
+                'comment_id' => $identifier,
+            ])),
+        ]);
+    }
+
+    /**
+     * @Given the pull-request #:identifier contains the tide-related commit
+     */
+    public function thePullRequestContainsTheTideRelatedCommit($identifier)
+    {
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) {
+                return $request->getMethod() == 'GET' &&
+                    preg_match('#^https\:\/\/api\.bitbucket\.org\/2\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/pullrequests\/([a-z0-9_-]+)\/comments\?state\=OPEN$#i', (string) $request->getUri());
+            },
+            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
+                'values' => [], // FIXME
+            ])),
+        ]);
+    }
+
+    /**
+     * @Then the addresses of the environment should be commented on the pull-request
+     */
+    public function theAddressesOfTheEnvironmentShouldBeCommentedOnThePullRequest()
+    {
+        foreach ($this->guzzleHistory as $request) {
+            /** @var \GuzzleHttp\Psr7\Request $request */
+            if ($request->getMethod() != 'POST' ||
+                !preg_match('#^https\:\/\/api\.bitbucket\.org\/1\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/pullrequests\/([a-z0-9_-]+)\/comments$#i', (string) $request->getUri())) {
+                continue;
+            }
+
+            return $request;
+        }
+
+        throw new \RuntimeException('No matching request found');
+    }
+
+    /**
+     * @When a pull-request is created from branch :branch with head commit :sha1
+     */
+    public function aPullRequestIsCreatedFromBranchWithHeadCommit($branch, $sha1)
+    {
+        $body = $this->webhookBoilerplate('webhook/push-branch-deleted.json');
+        $body['data']['pullrequest']['source']['repository'] = $body['data']['repository'];
+        $body['data']['pullrequest']['source']['commit']['hash'] = $sha1;
+        $body['data']['pullrequest']['source']['branch']['name'] = $branch;
+
+        $this->sendWebhook($body);
+    }
+
+    /**
+     * @Then the comment :identifier should have been deleted
+     */
+    public function theCommentShouldHaveBeenDeleted($identifier)
+    {
+        foreach ($this->guzzleHistory as $request) {
+            /** @var \GuzzleHttp\Psr7\Request $request */
+            if ($request->getMethod() != 'DELETE' ||
+                !preg_match('#^https\:\/\/api\.bitbucket\.org\/1\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/pullrequests\/([a-z0-9_-]+)\/comments/'.$identifier.'#i', (string) $request->getUri())) {
+                continue;
+            }
+
+            return true;
+        }
+
+        throw new \RuntimeException('No matching request found');
+    }
+
+    /**
+     * @Then the address :address should be commented on the pull-request
+     */
+    public function theAddressShouldBeCommentedOnThePullRequest($address)
+    {
+        /** @var \GuzzleHttp\Psr7\Request $request */
+        $request = $this->theAddressesOfTheEnvironmentShouldBeCommentedOnThePullRequest();
+        $comment = \GuzzleHttp\json_decode($request->getBody()->getContents(), true)['content'];
+
+        if (strpos($comment, $address) === false) {
+            throw new \RuntimeException('Address is not found in comment');
+        }
+    }
+
+    /**
      * @Given the BitBucket user :username have the following repositories:
      */
     public function theBitbucketUserHaveTheFollowingRepositories($username, TableNode $table)
@@ -208,19 +303,7 @@ class BitBucketContext implements CodeRepositoryContext
         $body['data']['push']['changes'][0]['new']['name'] = $branch;
         $body['data']['push']['changes'][0]['new']['target']['hash'] = $sha1;
 
-        $this->response = $this->kernel->handle(Request::create(
-            '/connect/service/bitbucket/addon/webhook',
-            'POST',
-            [],
-            [],
-            [],
-            [
-                'CONTENT_TYPE' => 'application/json',
-            ],
-            json_encode($body)
-        ));
-
-        $this->assertResponseStatus(202);
+        $this->sendWebhook($body);
     }
 
     /**
@@ -228,35 +311,12 @@ class BitBucketContext implements CodeRepositoryContext
      */
     public function theBranchWithHeadIsDeleted($branch, $sha1)
     {
-        $flow = $this->flowContext->getCurrentFlow();
-        $repository = $flow->getCodeRepository();
-
-        if (!$repository instanceof BitBucketCodeRepository) {
-            throw new \RuntimeException('The code repository of the current flow should be a BitBucket repository');
-        }
-
-        $body = \GuzzleHttp\json_decode($this->readFixture('webhook/push-branch-deleted.json'), true);
-        $body['data']['repository']['uuid'] = $repository->getIdentifier();
-        $body['data']['repository']['name'] = $repository->getName();
-        $body['data']['repository']['owner']['type'] = $repository->getOwner()->getType();
-        $body['data']['repository']['owner']['username'] = $repository->getOwner()->getUsername();
+        $body = $this->webhookBoilerplate('webhook/push-branch-deleted.json');
         $body['data']['push']['changes'][0]['old']['type'] = 'branch';
         $body['data']['push']['changes'][0]['old']['name'] = $branch;
         $body['data']['push']['changes'][0]['old']['target']['hash'] = $sha1;
 
-        $this->response = $this->kernel->handle(Request::create(
-            '/connect/service/bitbucket/addon/webhook',
-            'POST',
-            [],
-            [],
-            [],
-            [
-                'CONTENT_TYPE' => 'application/json',
-            ],
-            json_encode($body)
-        ));
-
-        $this->assertResponseStatus(202);
+        $this->sendWebhook($body);
     }
 
     /**
@@ -523,5 +583,47 @@ class BitBucketContext implements CodeRepositoryContext
     private function readFixture(string $fixture): string
     {
         return file_get_contents(__DIR__ . '/../integrations/code-repositories/bitbucket/fixtures/' . $fixture);
+    }
+
+    /**
+     * @param $body
+     */
+    private function sendWebhook($body)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/connect/service/bitbucket/addon/webhook',
+            'POST',
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            json_encode($body)
+        ));
+
+        $this->assertResponseStatus(202);
+    }
+
+    /**
+     * @param string $fixture
+     *
+     * @return array
+     */
+    private function webhookBoilerplate($fixture): array
+    {
+        $flow = $this->flowContext->getCurrentFlow();
+        $repository = $flow->getCodeRepository();
+
+        if (!$repository instanceof BitBucketCodeRepository) {
+            throw new \RuntimeException('The code repository of the current flow should be a BitBucket repository');
+        }
+
+        $body = \GuzzleHttp\json_decode($this->readFixture($fixture), true);
+        $body['data']['repository']['uuid'] = $repository->getIdentifier();
+        $body['data']['repository']['name'] = $repository->getName();
+        $body['data']['repository']['owner']['type'] = $repository->getOwner()->getType();
+        $body['data']['repository']['owner']['username'] = $repository->getOwner()->getUsername();
+        return $body;
     }
 }

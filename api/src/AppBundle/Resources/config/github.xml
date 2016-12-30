@@ -106,5 +106,9 @@
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="jms_serializer" />
         </service>
+
+        <service id="river.code_repository.github.pull_request_comment_manipulator" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubPullRequestCommentManipulator">
+            <argument type="service" id="river.github.client_factory" />
+        </service>
     </services>
 </container>

@@ -13,7 +13,7 @@ class FakePullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference)
+    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference) : array
     {
         return $this->resolution;
     }

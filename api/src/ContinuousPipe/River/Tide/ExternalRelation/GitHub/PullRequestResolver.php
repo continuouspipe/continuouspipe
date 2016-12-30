@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Tide\ExternalRelation\GitHub;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver as CodeRepositoryPullRequestResolver;
 use ContinuousPipe\River\Tide\ExternalRelation\ExternalRelationResolver;
 use ContinuousPipe\River\View\TideRepository;
-use GitHub\WebHook\Model\PullRequest as GitHubPullRequest;
+use ContinuousPipe\River\CodeRepository\PullRequest as CodeRepositoryPullRequest;
 use Ramsey\Uuid\Uuid;
 
 class PullRequestResolver implements ExternalRelationResolver
@@ -37,13 +37,13 @@ class PullRequestResolver implements ExternalRelationResolver
     {
         $tide = $this->tideRepository->find($tideUuid);
         $codeRepository = $tide->getCodeReference()->getRepository();
-        $gitHubPullRequests = $this->codeRepositoryPullRequestResolver->findPullRequestWithHeadReference(
+        $pullRequests = $this->codeRepositoryPullRequestResolver->findPullRequestWithHeadReference(
             $tide->getFlowUuid(),
             $tide->getCodeReference()
         );
 
-        return array_map(function (GitHubPullRequest $pullRequest) use ($codeRepository) {
-            return PullRequest::fromGitHub($codeRepository, $pullRequest);
-        }, $gitHubPullRequests);
+        return array_map(function (CodeRepositoryPullRequest $pullRequest) use ($codeRepository) {
+            return PullRequest::fromCodeRepository($codeRepository, $pullRequest);
+        }, $pullRequests);
     }
 }

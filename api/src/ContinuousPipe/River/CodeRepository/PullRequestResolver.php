@@ -13,7 +13,7 @@ interface PullRequestResolver
      * @param UuidInterface $flowUuid
      * @param CodeReference $codeReference
      *
-     * @return \GitHub\WebHook\Model\PullRequest[]
+     * @return PullRequest[]
      */
-    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference);
+    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference) : array;
 }

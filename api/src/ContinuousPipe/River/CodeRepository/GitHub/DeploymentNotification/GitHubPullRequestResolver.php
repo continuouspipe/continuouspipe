@@ -36,7 +36,7 @@ class GitHubPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference)
+    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference) : array
     {
         $client = $this->gitHubClientFactory->createClientForFlow($flowUuid);
 
@@ -70,8 +70,14 @@ class GitHubPullRequestResolver implements PullRequestResolver
         $jsonEncoded = json_encode($rawPullRequests);
         $pullRequests = $this->serializer->deserialize($jsonEncoded, 'array<'.PullRequest::class.'>', 'json');
 
-        return array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
+        $matchingPullRequests = array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
             return $codeReference->getCommitSha() == $pullRequest->getHead()->getSha1();
         }));
+
+        return array_map(function(PullRequest $pullRequest) {
+            return new \ContinuousPipe\River\CodeRepository\PullRequest(
+                $pullRequest->getNumber()
+            );
+        }, $matchingPullRequests);
     }
 }

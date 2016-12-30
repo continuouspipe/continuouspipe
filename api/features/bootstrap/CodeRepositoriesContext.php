@@ -4,20 +4,15 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\Event\CodePushed;
+use ContinuousPipe\River\CodeRepository\PullRequest;
+use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
+use ContinuousPipe\River\EventBus\EventStore;
+use ContinuousPipe\River\Notifications\Events\CommentedPullRequest;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
 use SimpleBus\Message\Bus\MessageBus;
 
 class CodeRepositoriesContext implements Context
 {
-    /**
-     * @var PredictableCommitResolver
-     */
-    private $predictableCommitResolver;
-    /**
-     * @var MessageBus
-     */
-    private $eventBus;
-
     /**
      * @var \TideContext
      */
@@ -29,12 +24,30 @@ class CodeRepositoriesContext implements Context
     private $flowContext;
 
     /**
-     * @param PredictableCommitResolver $predictableCommitResolver
+     * @var PredictableCommitResolver
      */
-    public function __construct(PredictableCommitResolver $predictableCommitResolver, MessageBus $eventBus)
+    private $predictableCommitResolver;
+
+    /**
+     * @var MessageBus
+     */
+    private $eventBus;
+
+    /**
+     * @var EventStore
+     */
+    private $eventStore;
+
+    /**
+     * @param PredictableCommitResolver $predictableCommitResolver
+     * @param MessageBus $eventBus
+     * @param EventStore $eventStore
+     */
+    public function __construct(PredictableCommitResolver $predictableCommitResolver, MessageBus $eventBus, EventStore $eventStore)
     {
         $this->predictableCommitResolver = $predictableCommitResolver;
         $this->eventBus = $eventBus;
+        $this->eventStore = $eventStore;
     }
 
     /**
@@ -71,5 +84,17 @@ class CodeRepositoriesContext implements Context
                 )
             )
         );
+    }
+
+    /**
+     * @Given a comment identified :commentId was already added
+     */
+    public function aCommentIdentifiedWasAlreadyAdded($commentId)
+    {
+        $this->eventStore->add(new CommentedPullRequest(
+            $this->tideContext->getCurrentTideUuid(),
+            new PullRequest(1234),
+            $commentId
+        ));
     }
 }

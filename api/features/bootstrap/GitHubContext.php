@@ -162,6 +162,7 @@ class GitHubContext implements CodeRepositoryContext
 
     /**
      * @Given the created GitHub comment will have the ID :id
+     * @Given the created comment will have the ID :id
      */
     public function theCreatedGithubCommentWillHaveTheId($id)
     {
@@ -446,12 +447,13 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @Given the pull-request #:number contains the tide-related commit
      * @Given the GitHub pull-request #:number contains the tide-related commit
      */
     public function aPullRequestContainsTheTideRelatedCommit($number)
     {
         $this->fakePullRequestResolver->willResolve([
-            new \GitHub\WebHook\Model\PullRequest($number, $number),
+            new CodeRepository\PullRequest($number),
         ]);
     }
 
@@ -510,14 +512,6 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
-     * @Given a comment identified :commentId was already added
-     */
-    public function aCommentIdentifiedWasAlreadyAdded($commentId)
-    {
-        $this->eventStore->add(new CommentedTideFeedback($this->tideContext->getCurrentTideUuid(), $commentId));
-    }
-
-    /**
      * @Then the comment :commentId should have been deleted
      */
     public function theCommentShouldHaveBeenDeleted($commentId)
@@ -538,7 +532,7 @@ class GitHubContext implements CodeRepositoryContext
     public function aPullRequestIsCreatedWithHeadCommit($branch, $sha)
     {
         $this->fakePullRequestResolver->willResolve([
-            new \GitHub\WebHook\Model\PullRequest(1, 1),
+            new CodeRepository\PullRequest(1),
         ]);
 
         $contents = $this->readFixture('pull_request-created.json');

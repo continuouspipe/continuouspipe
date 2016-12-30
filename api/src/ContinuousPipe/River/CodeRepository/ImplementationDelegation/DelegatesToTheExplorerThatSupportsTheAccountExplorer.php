@@ -1,7 +1,9 @@
 <?php
 
-namespace ContinuousPipe\River\CodeRepository;
+namespace ContinuousPipe\River\CodeRepository\ImplementationDelegation;
 
+use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
+use ContinuousPipe\River\CodeRepository\CodeRepositoryExplorer;
 use ContinuousPipe\Security\Account\Account;
 
 class DelegatesToTheExplorerThatSupportsTheAccountExplorer implements CodeRepositoryExplorer
