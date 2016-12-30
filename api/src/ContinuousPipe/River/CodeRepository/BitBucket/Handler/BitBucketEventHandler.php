@@ -2,12 +2,14 @@
 
 namespace ContinuousPipe\River\CodeRepository\BitBucket\Handler;
 
+use ContinuousPipe\AtlassianAddon\BitBucket\Reference;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\Change;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\Push;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\WebHookEvent;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
 use ContinuousPipe\River\CodeRepository\BitBucket\Command\HandleBitBucketEvent;
+use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use ContinuousPipe\River\CodeRepository\Event\CodePushed;
 use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
@@ -48,12 +50,28 @@ class BitBucketEventHandler
         if (null !== ($reference = $change->getNew())) {
             $this->eventBus->handle(new CodePushed(
                 $command->getFlowUuid(),
-                new CodeReference(
-                    BitBucketCodeRepository::fromBitBucketRepository($event->getRepository()),
-                    $reference->getTarget()->getHash(),
-                    $reference->getName()
-                )
+                $this->createCodeReference($event, $reference)
+            ));
+        } elseif (null !== ($reference = $change->getOld())) {
+            $this->eventBus->handle(new BranchDeleted(
+                $command->getFlowUuid(),
+                $this->createCodeReference($event, $reference)
             ));
         }
+    }
+
+    /**
+     * @param WebHookEvent $event
+     * @param Reference $reference
+     *
+     * @return CodeReference
+     */
+    private function createCodeReference(WebHookEvent $event, Reference $reference): CodeReference
+    {
+        return new CodeReference(
+            BitBucketCodeRepository::fromBitBucketRepository($event->getRepository()),
+            $reference->getTarget()->getHash(),
+            $reference->getName()
+        );
     }
 }

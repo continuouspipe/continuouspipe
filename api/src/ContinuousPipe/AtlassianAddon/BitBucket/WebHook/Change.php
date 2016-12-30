@@ -50,17 +50,17 @@ class Change
     private $forced;
 
     /**
-     * @return Reference
+     * @return Reference|null
      */
-    public function getNew(): Reference
+    public function getNew()
     {
         return $this->new;
     }
 
     /**
-     * @return Reference
+     * @return Reference|null
      */
-    public function getOld(): Reference
+    public function getOld()
     {
         return $this->old;
     }

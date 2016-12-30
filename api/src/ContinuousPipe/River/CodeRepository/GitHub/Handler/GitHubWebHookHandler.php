@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\CodeRepository\GitHub\Handler;
 
 use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
 use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
-use ContinuousPipe\River\Event\GitHub\BranchDeleted;
+use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use ContinuousPipe\River\Event\GitHub\CodePushed;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
 use ContinuousPipe\River\Event\GitHub\PullRequestOpened;

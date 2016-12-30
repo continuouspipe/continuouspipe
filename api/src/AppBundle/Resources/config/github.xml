@@ -99,7 +99,7 @@
         <service id="river.listener.github.pull_request.delete_related_environment" class="ContinuousPipe\River\EventListener\GitHub\BranchDeleted\DeleteRelatedEnvironment">
             <argument type="service" id="command_bus" />
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\BranchDeleted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\BranchDeleted" />
         </service>
 
         <service id="river.code_repository.github.explorer" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubRepositoryExplorer">

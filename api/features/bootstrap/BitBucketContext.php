@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\AtlassianAddon\Installation;
@@ -24,6 +25,10 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class BitBucketContext implements CodeRepositoryContext
 {
+    /**
+     * @var \FlowContext
+     */
+    private $flowContext;
     /**
      * @var MatchingHandler
      */
@@ -81,6 +86,14 @@ class BitBucketContext implements CodeRepositoryContext
         $this->clientFactory = $clientFactory;
         $this->guzzleHistory = $guzzleHistory;
         $this->inMemoryCodeRepositoryRepository = $inMemoryCodeRepositoryRepository;
+    }
+
+    /**
+     * @BeforeScenario
+     */
+    public function gatherContexts(BeforeScenarioScope $scope)
+    {
+        $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
     }
 
     /**
@@ -213,9 +226,37 @@ class BitBucketContext implements CodeRepositoryContext
     /**
      * @When the branch :branch with head :sha1 is deleted
      */
-    public function theBranchWithHeadIsDeleted($branch, $deleted)
+    public function theBranchWithHeadIsDeleted($branch, $sha1)
     {
-        throw new PendingException();
+        $flow = $this->flowContext->getCurrentFlow();
+        $repository = $flow->getCodeRepository();
+
+        if (!$repository instanceof BitBucketCodeRepository) {
+            throw new \RuntimeException('The code repository of the current flow should be a BitBucket repository');
+        }
+
+        $body = \GuzzleHttp\json_decode($this->readFixture('webhook/push-branch-deleted.json'), true);
+        $body['data']['repository']['uuid'] = $repository->getIdentifier();
+        $body['data']['repository']['name'] = $repository->getName();
+        $body['data']['repository']['owner']['type'] = $repository->getOwner()->getType();
+        $body['data']['repository']['owner']['username'] = $repository->getOwner()->getUsername();
+        $body['data']['push']['changes'][0]['old']['type'] = 'branch';
+        $body['data']['push']['changes'][0]['old']['name'] = $branch;
+        $body['data']['push']['changes'][0]['old']['target']['hash'] = $sha1;
+
+        $this->response = $this->kernel->handle(Request::create(
+            '/connect/service/bitbucket/addon/webhook',
+            'POST',
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            json_encode($body)
+        ));
+
+        $this->assertResponseStatus(202);
     }
 
     /**

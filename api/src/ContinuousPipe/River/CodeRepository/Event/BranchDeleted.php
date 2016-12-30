@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River\Event\GitHub;
+namespace ContinuousPipe\River\CodeRepository\Event;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
