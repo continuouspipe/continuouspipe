@@ -6,7 +6,6 @@ use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\River\Notifications\NotificationException;
-use ContinuousPipe\River\Notifications\NotificationNotSupported;
 use ContinuousPipe\River\Notifications\Notifier;
 use ContinuousPipe\River\Tide\Status\Status;
 use ContinuousPipe\River\View\Tide;

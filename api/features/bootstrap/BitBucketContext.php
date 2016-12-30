@@ -30,6 +30,10 @@ class BitBucketContext implements CodeRepositoryContext
      */
     private $flowContext;
     /**
+     * @var \TideContext
+     */
+    private $tideContext;
+    /**
      * @var MatchingHandler
      */
     private $bitBucketMatchingClientHandler;
@@ -94,6 +98,7 @@ class BitBucketContext implements CodeRepositoryContext
     public function gatherContexts(BeforeScenarioScope $scope)
     {
         $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
+        $this->tideContext = $scope->getEnvironment()->getContext('TideContext');
     }
 
     /**
@@ -145,14 +150,19 @@ class BitBucketContext implements CodeRepositoryContext
      */
     public function thePullRequestContainsTheTideRelatedCommit($identifier)
     {
+        $tide = $this->tideContext->getCurrentTide();
+
+        $pullRequests = \GuzzleHttp\json_decode($this->readFixture('list-of-opened-pull-requests.json'), true);
+        $pullRequests['values'][0]['id'] = (int) $identifier;
+        $pullRequests['values'][0]['source']['commit']['hash'] = $tide->getCodeReference()->getCommitSha();
+        $pullRequests['values'][0]['source']['branch']['name'] = $tide->getCodeReference()->getBranch();
+
         $this->bitBucketMatchingClientHandler->pushMatcher([
             'match' => function(RequestInterface $request) {
                 return $request->getMethod() == 'GET' &&
-                    preg_match('#^https\:\/\/api\.bitbucket\.org\/2\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/pullrequests\/([a-z0-9_-]+)\/comments\?state\=OPEN$#i', (string) $request->getUri());
+                    preg_match('#^https\:\/\/api\.bitbucket\.org\/2\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/pullrequests\?state\=OPEN$#i', (string) $request->getUri());
             },
-            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
-                'values' => [], // FIXME
-            ])),
+            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode($pullRequests)),
         ]);
     }
 
@@ -179,7 +189,9 @@ class BitBucketContext implements CodeRepositoryContext
      */
     public function aPullRequestIsCreatedFromBranchWithHeadCommit($branch, $sha1)
     {
-        $body = $this->webhookBoilerplate('webhook/push-branch-deleted.json');
+        $this->thePullRequestContainsTheTideRelatedCommit(1234);
+
+        $body = $this->webhookBoilerplate('webhook/pull-request-created.json');
         $body['data']['pullrequest']['source']['repository'] = $body['data']['repository'];
         $body['data']['pullrequest']['source']['commit']['hash'] = $sha1;
         $body['data']['pullrequest']['source']['branch']['name'] = $branch;
@@ -192,6 +204,8 @@ class BitBucketContext implements CodeRepositoryContext
      */
     public function theCommentShouldHaveBeenDeleted($identifier)
     {
+        $uris = [];
+
         foreach ($this->guzzleHistory as $request) {
             /** @var \GuzzleHttp\Psr7\Request $request */
             if ($request->getMethod() != 'DELETE' ||
@@ -199,10 +213,15 @@ class BitBucketContext implements CodeRepositoryContext
                 continue;
             }
 
+            $uris[] = (string) $request->getUri();
+
             return true;
         }
 
-        throw new \RuntimeException('No matching request found');
+        throw new \RuntimeException(sprintf(
+            'No matching request found in: %s',
+            implode(', ', $uris)
+        ));
     }
 
     /**
@@ -212,9 +231,13 @@ class BitBucketContext implements CodeRepositoryContext
     {
         /** @var \GuzzleHttp\Psr7\Request $request */
         $request = $this->theAddressesOfTheEnvironmentShouldBeCommentedOnThePullRequest();
-        $comment = \GuzzleHttp\json_decode($request->getBody()->getContents(), true)['content'];
+        $body = $request->getBody();
+        $body->rewind();
 
-        if (strpos($comment, $address) === false) {
+        parse_str($body->getContents(), $comment);
+        $content = $comment['content'];
+
+        if (strpos($content, $address) === false) {
             throw new \RuntimeException('Address is not found in comment');
         }
     }

@@ -14,4 +14,12 @@ abstract class PullRequestEvent extends WebHookEvent
      * @var PullRequest
      */
     private $pullRequest;
+
+    /**
+     * @return PullRequest
+     */
+    public function getPullRequest(): PullRequest
+    {
+        return $this->pullRequest;
+    }
 }

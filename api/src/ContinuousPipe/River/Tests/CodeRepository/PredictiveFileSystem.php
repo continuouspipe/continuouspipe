@@ -18,7 +18,7 @@ class PredictiveFileSystem implements RelativeFileSystem
     private $decoratedFileSystem;
 
     /**
-     * @param array $files
+     * @param array              $files
      * @param RelativeFileSystem $decoratedFileSystem
      */
     public function __construct(array $files, RelativeFileSystem $decoratedFileSystem = null)

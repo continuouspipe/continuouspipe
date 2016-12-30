@@ -1488,4 +1488,11 @@ EOF;
         );
         return $generationRequest;
     }
+
+    public function getCurrentTide()
+    {
+        return $this->viewTideRepository->find(
+            $this->tideUuid
+        );
+    }
 }

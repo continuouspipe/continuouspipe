@@ -45,6 +45,14 @@
             <tag name="command_handler" handles="ContinuousPipe\River\CodeRepository\BitBucket\Command\HandleBitBucketEvent" />
         </service>
 
+        <service id="river.bitbucket.pull_request_comment_manipulator" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketPullRequestCommentManipulator">
+            <argument type="service" id="river.bitbucket.client_factory" />
+        </service>
+
+        <service id="river.bitbucket.pull_request_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketPullRequestResolver">
+            <argument type="service" id="river.bitbucket.client_factory" />
+        </service>
+
         <!-- Notifications -->
         <service id="river.notifications.notifier.bitbucket.build_status" class="ContinuousPipe\River\CodeRepository\BitBucket\Notifications\BitBucketBuildStatusNotifier">
             <argument type="service" id="river.bitbucket.client_factory" />

@@ -224,6 +224,11 @@ tolerance:
                 value: ~
                 logger: logger
 
+        array_placeholdered:
+            placeholder:
+                value: []
+                logger: logger
+
         buffered:
             buffered:
                 runner: tolerance.operation_runners.null_placeholdered

@@ -9,7 +9,7 @@ class Comment
     /**
      * @JMS\Type("integer")
      *
-     * @var integer
+     * @var int
      */
     private $id;
 

@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\EventListener\GitHub\PullRequestOpened;
 
-use ContinuousPipe\River\Event\GitHub\PullRequestOpened;
+use ContinuousPipe\River\CodeRepository\Event\PullRequestOpened;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Notifications\TideStatusListener;
 use ContinuousPipe\River\View\TideRepository;

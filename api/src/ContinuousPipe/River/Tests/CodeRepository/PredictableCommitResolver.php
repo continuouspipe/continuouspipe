@@ -2,9 +2,7 @@
 
 namespace ContinuousPipe\River\Tests\CodeRepository;
 
-use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CommitResolver;
-use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 class PredictableCommitResolver implements CommitResolver

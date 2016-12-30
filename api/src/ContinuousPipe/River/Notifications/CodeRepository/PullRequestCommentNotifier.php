@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Notifications\CodeRepository;
 
-use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\PullRequestCommentManipulator;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\EventBus\EventStore;
@@ -47,12 +46,12 @@ class PullRequestCommentNotifier implements Notifier
     private $logger;
 
     /**
-     * @param PullRequestResolver $pullRequestResolver
+     * @param PullRequestResolver           $pullRequestResolver
      * @param PullRequestCommentManipulator $pullRequestCommentManipulator
-     * @param EventStore $eventStore
-     * @param TideRepository $tideRepository
-     * @param PublicEndpointWriter $publicEndpointWriter
-     * @param LoggerInterface $logger
+     * @param EventStore                    $eventStore
+     * @param TideRepository                $tideRepository
+     * @param PublicEndpointWriter          $publicEndpointWriter
+     * @param LoggerInterface               $logger
      */
     public function __construct(PullRequestResolver $pullRequestResolver, PullRequestCommentManipulator $pullRequestCommentManipulator, EventStore $eventStore, TideRepository $tideRepository, PublicEndpointWriter $publicEndpointWriter, LoggerInterface $logger)
     {
@@ -79,15 +78,10 @@ class PullRequestCommentNotifier implements Notifier
             return;
         }
 
-        $repository = $tide->getCodeReference()->getRepository();
-
         // Remove previous comments
         $this->removePreviousComments($tide);
 
-        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference(
-            $tide->getFlowUuid(),
-            $tide->getCodeReference()
-        );
+        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($tide);
 
         foreach ($pullRequests as $pullRequest) {
             // Create the new comment
@@ -126,7 +120,7 @@ class PullRequestCommentNotifier implements Notifier
     }
 
     /**
-     * @param Tide                 $tide
+     * @param Tide $tide
      */
     private function removePreviousComments(Tide $tide)
     {

@@ -5,7 +5,6 @@ namespace ContinuousPipe\River\Tide\ExternalRelation\GitHub;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Tide\ExternalRelation\ExternalRelation;
-use JMS\Serializer\Annotation as JMS;
 
 class PullRequest implements ExternalRelation
 {

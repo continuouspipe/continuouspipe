@@ -2,9 +2,11 @@
 
 namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
+use ContinuousPipe\AtlassianAddon\BitBucket\PullRequest;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\SerializerInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class GuzzleBitBucketClient implements BitBucketClient
 {
@@ -54,14 +56,7 @@ class GuzzleBitBucketClient implements BitBucketClient
             throw new BitBucketClientException($message, $e->getCode(), $e);
         }
 
-        $body = $response->getBody();
-        $body->rewind();
-
-        try {
-            $json = \GuzzleHttp\json_decode($body->getContents(), true);
-        } catch (\InvalidArgumentException $e) {
-            throw new BitBucketClientException('Response from BitBucket is not a valid JSON document', $e->getCode(), $e);
-        }
+        $json = $this->readJson($response);
 
         return $json['data'];
     }
@@ -81,5 +76,88 @@ class GuzzleBitBucketClient implements BitBucketClient
         } catch (RequestException $e) {
             throw new BitBucketClientException('Unable to update the build status', $e->getCode(), $e);
         }
+    }
+
+    public function getOpenedPullRequests(string $owner, string $repository): array
+    {
+        return $this->readPullRequests(
+            '/2.0/repositories/'.$owner.'/'.$repository.'/pullrequests?state=OPEN'
+        );
+    }
+
+    public function writePullRequestComment(string $owner, string $repository, string $pullRequestIdentifier, string $contents): string
+    {
+        try {
+            $response = $this->client->request('POST', '/1.0/repositories/'.$owner.'/'.$repository.'/pullrequests/'.$pullRequestIdentifier.'/comments', [
+                'form_params' => [
+                    'content' => $contents,
+                ],
+            ]);
+        } catch (RequestException $e) {
+            throw new BitBucketClientException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        $json = $this->readJson($response);
+
+        return $json['comment_id'];
+    }
+
+    public function deletePullRequestComment(string $owner, string $repository, string $pullRequestIdentifier, string $commentIdentifier)
+    {
+        try {
+            $this->client->request('DELETE', '/1.0/repositories/'.$owner.'/'.$repository.'/pullrequests/'.$pullRequestIdentifier.'/comments/'.$commentIdentifier);
+        } catch (RequestException $e) {
+            throw new BitBucketClientException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
+     * @throws BitBucketClientException
+     *
+     * @return array
+     */
+    private function readJson($response): array
+    {
+        $body = $response->getBody();
+        $body->rewind();
+
+        try {
+            return \GuzzleHttp\json_decode($body->getContents(), true);
+        } catch (\InvalidArgumentException $e) {
+            throw new BitBucketClientException('Response from BitBucket is not a valid JSON document', $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @param string $link
+     *
+     * @return PullRequest[]
+     *
+     * @throws BitBucketClientException
+     */
+    private function readPullRequests(string $link)
+    {
+        try {
+            $response = $this->client->request('GET', $link);
+        } catch (RequestException $e) {
+            throw new BitBucketClientException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        $json = $this->readJson($response);
+        $pullRequests = $this->serializer->deserialize(
+            \GuzzleHttp\json_encode($json['values']),
+            'array<'.PullRequest::class.'>',
+            'json'
+        );
+
+        if (isset($json['next'])) {
+            foreach ($this->readPullRequests($json['next']) as $pullRequest) {
+                $pullRequests[] = $pullRequest;
+            }
+        }
+
+        return $pullRequests;
     }
 }

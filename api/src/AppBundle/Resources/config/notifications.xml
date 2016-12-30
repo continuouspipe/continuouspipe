@@ -60,7 +60,7 @@
 
         <!-- Pull Requests -->
         <service id="river.notifications.notifier.pull_request" class="ContinuousPipe\River\Notifications\CodeRepository\PullRequestCommentNotifier">
-            <argument type="service" id="river.github.pull_request_resolver" />
+            <argument type="service" id="river.pull_request_resolver" />
             <argument type="service" id="river.pull_request_comment_manipulator" />
             <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="river.view.tide_repository" />

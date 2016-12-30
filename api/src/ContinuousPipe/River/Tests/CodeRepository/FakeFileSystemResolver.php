@@ -5,7 +5,6 @@ namespace ContinuousPipe\River\Tests\CodeRepository;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
-use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 class FakeFileSystemResolver implements FileSystemResolver

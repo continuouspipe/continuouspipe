@@ -2,12 +2,11 @@
 
 namespace ContinuousPipe\River\Tide\StartVoter;
 
-use ContinuousPipe\River\Event\GitHub\PullRequestSynchronized;
+use ContinuousPipe\River\Event\GitHub\PullRequestEvent;
 use ContinuousPipe\River\Filter\FilterHash\FilterHashEvaluator;
 use ContinuousPipe\River\Filter\FilterHash\FilterHashRepository;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\View\TideRepository;
-use GitHub\WebHook\Event\PullRequestEvent;
 
 class FilterHashChangedVoter implements TideStartVoter
 {
@@ -43,7 +42,7 @@ class FilterHashChangedVoter implements TideStartVoter
      */
     public function vote(Tide $tide, Tide\Configuration\ArrayObject $context)
     {
-        return $this->tideStartedBecauseOfALabel($tide) && $this->hasChangedOfHash($tide);
+        return $this->tideStartedBecauseOfAPullRequest($tide) && $this->hasChangedOfHash($tide);
     }
 
     /**
@@ -51,14 +50,11 @@ class FilterHashChangedVoter implements TideStartVoter
      *
      * @return bool
      */
-    private function tideStartedBecauseOfALabel(Tide $tide)
+    private function tideStartedBecauseOfAPullRequest(Tide $tide)
     {
         $event = $tide->getContext()->getCodeRepositoryEvent();
-        if (!$event instanceof PullRequestSynchronized) {
-            return false;
-        }
 
-        return $event->getEvent()->getAction() == PullRequestEvent::ACTION_LABELED;
+        return $event instanceof PullRequestEvent;
     }
 
     /**

@@ -108,13 +108,21 @@ class ContextFactory
         $repository = $context->getCodeRepository();
 
         if (null !== ($event = $context->getCodeRepositoryEvent()) && $event instanceof PullRequestEvent) {
-            $pullRequest = new CodeRepository\PullRequest(
-                $event->getEvent()->getPullRequest()->getNumber()
-            );
+            $pullRequest = $event->getPullRequest();
         } else {
             $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference(
-                $context->getFlowUuid(),
-                $context->getCodeReference()
+                \ContinuousPipe\River\View\Tide::create(
+                    $tide->getUuid(),
+                    $tide->getFlowUuid(),
+                    $tide->getCodeReference(),
+                    $tide->getLog(),
+                    $tide->getTeam(),
+                    $tide->getUser(),
+                    $tide->getConfiguration(),
+                    new \DateTime(),
+                    $tide->getGenerationUuid(),
+                    $tide->getPipeline()
+                )
             );
 
             $pullRequest = count($matchingPullRequests) > 0 ? current($matchingPullRequests) : null;
@@ -135,10 +143,10 @@ class ContextFactory
     }
 
     /**
-     * @param UuidInterface  $flowUuid
-     * @param TideContext    $context
-     * @param CodeRepository $codeRepository
-     * @param CodeRepository\PullRequest    $pullRequest
+     * @param UuidInterface              $flowUuid
+     * @param TideContext                $context
+     * @param CodeRepository             $codeRepository
+     * @param CodeRepository\PullRequest $pullRequest
      *
      * @return array
      */
