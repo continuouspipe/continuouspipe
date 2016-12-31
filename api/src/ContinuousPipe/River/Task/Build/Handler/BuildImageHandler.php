@@ -98,7 +98,7 @@ class BuildImageHandler
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $buildRequest = new BuildRequest(
-            $buildRequest->getRepository(),
+            $buildRequest->getRepository() ?: $buildRequest->getArchive(),
             $buildRequest->getImage(),
             $buildRequest->getContext(),
             Notification::withHttp(HttpNotification::fromAddress($address)),

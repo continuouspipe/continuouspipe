@@ -102,5 +102,11 @@
         <service id="river.code_repository.github.pull_request_comment_manipulator" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubPullRequestCommentManipulator">
             <argument type="service" id="river.github.client_factory" />
         </service>
+
+        <service id="river.code_repository.github.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\Builder\GitHubBuildRequestSourceResolver">
+            <argument type="service" id="logger" />
+            <argument type="service" id="github.integration.installation_repository" />
+            <argument type="service" id="github.integration.installation_token_resolver" />
+        </service>
     </services>
 </container>

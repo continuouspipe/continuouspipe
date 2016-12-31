@@ -17,6 +17,11 @@ class BuildRequest
     private $repository;
 
     /**
+     * @var Archive
+     */
+    private $archive;
+
+    /**
      * @var Image
      */
     private $image;
@@ -47,7 +52,7 @@ class BuildRequest
     private $credentialsBucket;
 
     /**
-     * @param Repository   $repository
+     * @param Repository|Archive $repositoryOrArchive
      * @param Image        $image
      * @param Context      $context
      * @param Notification $notification
@@ -55,9 +60,16 @@ class BuildRequest
      * @param array        $environment
      * @param Uuid         $credentialsBucket
      */
-    public function __construct(Repository $repository, Image $image, Context $context = null, Notification $notification = null, Logging $logging = null, array $environment = [], Uuid $credentialsBucket = null)
+    public function __construct($repositoryOrArchive, Image $image, Context $context = null, Notification $notification = null, Logging $logging = null, array $environment = [], Uuid $credentialsBucket = null)
     {
-        $this->repository = $repository;
+        if ($repositoryOrArchive instanceof Repository) {
+            $this->repository = $repositoryOrArchive;
+        } elseif ($repositoryOrArchive instanceof Archive) {
+            $this->archive = $repositoryOrArchive;
+        } else {
+            throw new \InvalidArgumentException('The first argument needs to be a repository or an archive');
+        }
+
         $this->image = $image;
         $this->notification = $notification;
         $this->logging = $logging;
@@ -67,11 +79,19 @@ class BuildRequest
     }
 
     /**
-     * @return Repository
+     * @return Repository|null
      */
     public function getRepository()
     {
         return $this->repository;
+    }
+
+    /**
+     * @return Archive|null
+     */
+    public function getArchive()
+    {
+        return $this->archive;
     }
 
     /**
