@@ -15,3 +15,16 @@ Feature:
     """
     And a tide is started
     Then the build should be started with a BitBucket archive URL
+
+  Scenario: It will send the Authorization header
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    first:
+                        image: foo/bar
+    """
+    And a tide is started
+    Then the build should be started with an archive containing the "Authorization" header

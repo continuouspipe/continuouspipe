@@ -54,7 +54,8 @@
         </service>
 
         <service id="river.code_repository.bitbucket.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\Builder\BitBucketBuildRequestSourceResolver">
-
+            <argument type="service" id="atlassian_addon.installation_repository" />
+            <argument type="service" id="logger" />
         </service>
 
         <!-- Notifications -->

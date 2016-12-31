@@ -10,11 +10,18 @@ class Archive
     private $url;
 
     /**
-     * @param string $url
+     * @var array
      */
-    public function __construct(string $url)
+    private $headers;
+
+    /**
+     * @param string $url
+     * @param array $headers
+     */
+    public function __construct(string $url, array $headers = [])
     {
         $this->url = $url;
+        $this->headers = $headers;
     }
 
     /**
@@ -23,5 +30,13 @@ class Archive
     public function getUrl(): string
     {
         return $this->url;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers ?: [];
     }
 }

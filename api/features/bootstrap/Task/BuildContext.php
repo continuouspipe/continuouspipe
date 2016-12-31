@@ -406,6 +406,23 @@ class BuildContext implements Context
     }
 
     /**
+     * @Then the build should be started with an archive containing the :header header
+     */
+    public function theBuildShouldBeStartedWithAnArchiveContainingTheHeader($header)
+    {
+        $buildStartedEvent = $this->getBuildStartedEvents()[0];
+        $archive = $buildStartedEvent->getBuild()->getRequest()->getArchive();
+
+        if (null === $archive) {
+            throw new \RuntimeException('The archive is not found in the build request');
+        }
+
+        if (!array_key_exists($header, $archive->getHeaders())) {
+            throw new \RuntimeException('Header not found');
+        }
+    }
+
+    /**
      * @Then the build should be started with the following environment variables:
      * @Then the first build should be started with the following environment variables:
      */

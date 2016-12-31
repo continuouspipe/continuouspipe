@@ -2,3 +2,5 @@ ContinuousPipe\Builder\Request\Archive:
     properties:
         url:
             type: string
+        headers:
+            type: array<string,string>
