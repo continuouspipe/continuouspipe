@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Guzzle\MatchingHandler;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\Middleware\HistoryMiddleware;
@@ -49,10 +50,34 @@ class HttpContext implements Context
         foreach ($this->builderArchiveFactoryHttpHistory as $request) {
             /** @var Request $request */
             if ($request->getUri() == $url) {
-                return;
+                return $request;
             }
         }
 
         throw new \RuntimeException('This url was not downloaded apparently');
+    }
+
+    /**
+     * @Then the archive should have been downloaded from the URL :url with the following headers:
+     */
+    public function theArchiveShouldHaveBeenDownloadedFromTheUrlWithTheFollowingHeaders($url, TableNode $headers)
+    {
+        $request = $this->theArchiveShouldHaveBeenDownloadedFromTheUrl($url);
+
+        foreach ($headers->getHash() as $row) {
+            if (!$request->hasHeader($row['name'])) {
+                throw new \RuntimeException(sprintf('Request do not have the header "%s"', $row['name']));
+            }
+
+            $foundValue = $request->getHeader($row['name'])[0];
+            if ($foundValue != $row['value']) {
+                throw new \RuntimeException(sprintf(
+                    'Expected "%s" for the header "%s" but found "%s"',
+                    $row['value'],
+                    $row['name'],
+                    $foundValue
+                ));
+            }
+        }
     }
 }

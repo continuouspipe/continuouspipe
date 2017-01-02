@@ -28,3 +28,28 @@ Feature:
     Then the build should be successful
     And the archive should have been downloaded from the URL "https://bitbucket.org/sroze/testing-stuff/get/001823eef762ac0325b79293f8530feafec3fdcc.tar.gz"
     And the archive should contain the file "README.md"
+
+  Scenario: It uses custom HTTP headers
+    Given the URL "https://bitbucket.org/sroze/testing-stuff/get/001823eef762ac0325b79293f8530feafec3fdcc.tar.gz" will return the archive "001823eef762ac0325b79293f8530feafec3fdcc.tar.gz"
+    When I send the following build request:
+    """
+    {
+      "image": {
+        "name": "sroze/php-example",
+        "tag": "master"
+      },
+      "archive": {
+        "url": "https://bitbucket.org/sroze/testing-stuff/get/001823eef762ac0325b79293f8530feafec3fdcc.tar.gz",
+        "headers": {
+          "Authorization": "token FOO-BAR",
+          "X-SpanId": "1234"
+        }
+      },
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+    }
+    """
+    Then the build should be successful
+    And the archive should have been downloaded from the URL "https://bitbucket.org/sroze/testing-stuff/get/001823eef762ac0325b79293f8530feafec3fdcc.tar.gz" with the following headers:
+      | name          | value         |
+      | Authorization | token FOO-BAR |
+      | X-SpanId      | 1234          |
