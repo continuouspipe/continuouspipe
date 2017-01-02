@@ -3,12 +3,12 @@
 namespace ContinuousPipe\Builder\Tests;
 
 use ContinuousPipe\Builder\Archive\ArchiveCreationException;
-use ContinuousPipe\Builder\Archive\Builder\ConditionalArchiveBuilder;
+use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Tests\Archive\FileSystemArchive;
 use LogStream\Logger;
 
-class FixturesArchiveBuilder implements ConditionalArchiveBuilder
+class FixturesArchiveBuilder implements ArchiveBuilder
 {
     const ADDRESS_PREFIX = 'fixtures://';
 

@@ -17,4 +17,13 @@ interface ArchiveBuilder
      * @return Archive
      */
     public function getArchive(BuildRequest $buildRequest, Logger $logger);
+
+    /**
+     * Returns true if the builder supports the build request.
+     *
+     * @param BuildRequest $request
+     *
+     * @return bool
+     */
+    public function supports(BuildRequest $request);
 }

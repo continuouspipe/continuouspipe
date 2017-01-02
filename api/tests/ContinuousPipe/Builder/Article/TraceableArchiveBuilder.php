@@ -39,6 +39,14 @@ class TraceableArchiveBuilder implements ArchiveBuilder
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function supports(BuildRequest $request)
+    {
+        return $this->decoratedBuilder->supports($request);
+    }
+
+    /**
      * @return BuildRequest[]
      */
     public function getRequests()

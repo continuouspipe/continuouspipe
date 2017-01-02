@@ -69,4 +69,13 @@ class GitHubArchiveBuilder implements ArchiveBuilder
 
         return $archive;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(BuildRequest $request)
+    {
+        return $request->getRepository() !== null
+            && strpos($request->getRepository()->getAddress(), 'github') !== false;
+    }
 }

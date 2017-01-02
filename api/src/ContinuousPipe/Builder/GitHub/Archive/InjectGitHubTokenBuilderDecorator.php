@@ -84,4 +84,12 @@ class InjectGitHubTokenBuilderDecorator implements ArchiveBuilder
 
         return $tokens->first()->getAccessToken();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(BuildRequest $request)
+    {
+        return $this->decoratedBuilder->supports($request);
+    }
 }
