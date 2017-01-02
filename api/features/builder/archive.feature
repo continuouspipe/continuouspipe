@@ -10,6 +10,7 @@ Feature:
       | username | password | serverAddress | email                 |
       | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
 
+  @smoke
   Scenario: It downloads the archive from an URL
     Given the URL "https://bitbucket.org/sroze/testing-stuff/get/001823eef762ac0325b79293f8530feafec3fdcc.tar.gz" will return the archive "001823eef762ac0325b79293f8530feafec3fdcc.tar.gz"
     When I send the following build request:
