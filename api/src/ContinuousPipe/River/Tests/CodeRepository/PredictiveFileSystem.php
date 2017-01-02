@@ -13,11 +13,18 @@ class PredictiveFileSystem implements RelativeFileSystem
     private $files;
 
     /**
-     * @param array $files
+     * @var RelativeFileSystem
      */
-    public function __construct(array $files)
+    private $decoratedFileSystem;
+
+    /**
+     * @param array              $files
+     * @param RelativeFileSystem $decoratedFileSystem
+     */
+    public function __construct(array $files, RelativeFileSystem $decoratedFileSystem = null)
     {
         $this->files = $files;
+        $this->decoratedFileSystem = $decoratedFileSystem;
     }
 
     /**
@@ -25,7 +32,9 @@ class PredictiveFileSystem implements RelativeFileSystem
      */
     public function exists($filePath)
     {
-        return array_key_exists($filePath, $this->files);
+        return array_key_exists($filePath, $this->files) || (
+            null !== $this->decoratedFileSystem && $this->decoratedFileSystem->exists($filePath)
+        );
     }
 
     /**
@@ -33,8 +42,12 @@ class PredictiveFileSystem implements RelativeFileSystem
      */
     public function getContents($filePath)
     {
-        if (!$this->exists($filePath)) {
-            throw new FileNotFound();
+        if (!array_key_exists($filePath, $this->files)) {
+            if (null !== $this->decoratedFileSystem) {
+                return $this->decoratedFileSystem->getContents($filePath);
+            }
+
+            throw new FileNotFound(sprintf('File %s not found in predictive file system', $filePath));
         }
 
         return $this->files[$filePath];

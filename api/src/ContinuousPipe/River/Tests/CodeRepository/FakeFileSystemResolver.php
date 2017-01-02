@@ -2,17 +2,30 @@
 
 namespace ContinuousPipe\River\Tests\CodeRepository;
 
+use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class FakeFileSystemResolver implements FileSystemResolver
 {
     /**
+     * @var FileSystemResolver
+     */
+    private $decoratedFilesystemResolver;
+
+    /**
      * @var array
      */
     private $files = [];
+
+    /**
+     * @param FileSystemResolver|null $decoratedFilesystemResolver
+     */
+    public function __construct(FileSystemResolver $decoratedFilesystemResolver = null)
+    {
+        $this->decoratedFilesystemResolver = $decoratedFilesystemResolver;
+    }
 
     /**
      * @param array $files
@@ -25,16 +38,19 @@ class FakeFileSystemResolver implements FileSystemResolver
     /**
      * {@inheritdoc}
      */
-    public function getFileSystem(FlatFlow $flow, CodeReference $codeReference)
+    public function getFileSystem(FlatFlow $flow, CodeReference $codeReference) : RelativeFileSystem
     {
-        return new PredictiveFileSystem($this->files);
+        return new PredictiveFileSystem(
+            $this->files,
+            null !== $this->decoratedFilesystemResolver ? $this->decoratedFilesystemResolver->getFileSystem($flow, $codeReference) : null
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getFileSystemWithBucketContainer(CodeReference $codeReference, BucketContainer $bucketContainer)
+    public function supports(FlatFlow $flow): bool
     {
-        return new PredictiveFileSystem($this->files);
+        return true;
     }
 }

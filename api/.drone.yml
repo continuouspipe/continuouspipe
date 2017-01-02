@@ -17,7 +17,7 @@ build:
 
         # Smoke tests
         - app/console doctrine:migrations:migrate --no-interaction
-        - bin/behat -f progress --profile=smoke
+        - bin/behat --profile=smoke
 
 cache:
     mount:

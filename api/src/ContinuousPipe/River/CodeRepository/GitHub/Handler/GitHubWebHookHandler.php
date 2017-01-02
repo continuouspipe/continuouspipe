@@ -4,10 +4,11 @@ namespace ContinuousPipe\River\CodeRepository\GitHub\Handler;
 
 use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
 use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
-use ContinuousPipe\River\Event\GitHub\BranchDeleted;
+use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
+use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\Event\GitHub\CodePushed;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
-use ContinuousPipe\River\Event\GitHub\PullRequestOpened;
+use ContinuousPipe\River\CodeRepository\Event\PullRequestOpened;
 use ContinuousPipe\River\Event\GitHub\PullRequestSynchronized;
 use ContinuousPipe\River\Event\GitHub\StatusUpdated;
 use ContinuousPipe\River\Notifications\GitHub\CommitStatus\GitHubCommitStatusNotifier;
@@ -99,15 +100,18 @@ class GitHubWebHookHandler
     private function handlePullRequestEvent(UuidInterface $flowUuid, PullRequestEvent $event)
     {
         $codeReference = $this->codeReferenceResolver->fromPullRequestEvent($event);
+        $pullRequest = new PullRequest(
+            $event->getNumber()
+        );
 
         if ($event->getAction() == PullRequestEvent::ACTION_OPENED) {
-            $this->eventBus->handle(new PullRequestOpened($flowUuid, $codeReference, $event));
+            $this->eventBus->handle(new PullRequestOpened($flowUuid, $codeReference, $pullRequest));
         } elseif ($event->getAction() == PullRequestEvent::ACTION_CLOSED) {
-            $this->eventBus->handle(new PullRequestClosed($flowUuid, $codeReference, $event));
+            $this->eventBus->handle(new PullRequestClosed($flowUuid, $codeReference, $pullRequest));
         } elseif ($event->getAction() == PullRequestEvent::ACTION_SYNCHRONIZED) {
-            $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $event));
+            $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $pullRequest));
         } elseif ($event->getAction() == PullRequestEvent::ACTION_LABELED) {
-            $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $event));
+            $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $pullRequest));
         }
     }
 

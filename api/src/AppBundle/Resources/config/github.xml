@@ -5,6 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="river.github.file_system_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubFileSystemResolver">
+            <argument type="service" id="river.github.client_factory" />
+            <argument type="service" id="river.github.repository_address_descriptor" />
+        </service>
+
         <service id="repository_river.github.request.github_request_param_converter" class="GitHub\WebHook\Request\ParamConverter\GitHubRequestConverter">
             <argument type="service" id="repository_river.github.request_validator" />
             <argument type="service" id="repository_river.github.request_deserializer" />
@@ -78,39 +83,30 @@
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="jms_serializer" />
         </service>
-        <service id="river.commit_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCommitResolver">
+        <service id="river.github.commit_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCommitResolver">
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="river.github.repository_address_descriptor" />
-        </service>
-
-        <service id="river.listener.github.pull_request.comment_deployment_environment_endpoints" class="ContinuousPipe\River\EventListener\GitHub\PullRequestOpened\CommentDeploymentEnvironmentEndpoints">
-            <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.notifications.tide_listener" />
-            <argument type="service" id="river.tide_event_store" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestOpened"/>
         </service>
 
         <service id="river.listener.github.pull_request.delete_related_environment" class="ContinuousPipe\River\EventListener\GitHub\BranchDeleted\DeleteRelatedEnvironment">
             <argument type="service" id="command_bus" />
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\BranchDeleted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\BranchDeleted" />
         </service>
 
-        <service id="river.listener.github.eventually_create_and_start_tide" class="ContinuousPipe\River\EventListener\GitHub\EventuallyCreateAndStartTide">
-            <argument type="service" id="command_bus" />
-            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+        <service id="river.code_repository.github.explorer" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubRepositoryExplorer">
+            <argument type="service" id="river.github.client_factory" />
+            <argument type="service" id="jms_serializer" />
         </service>
 
-        <service id="river.listener.github.locked.eventually_create_and_start_tide"
-                 class="ContinuousPipe\River\Tide\Concurrency\EventListener\GitHub\LockTheStartDecisionOfATide">
-            <argument type="service" id="river.listener.github.eventually_create_and_start_tide" />
-            <argument type="service" id="river.tide.concurrency.locker" />
+        <service id="river.code_repository.github.pull_request_comment_manipulator" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubPullRequestCommentManipulator">
+            <argument type="service" id="river.github.client_factory" />
+        </service>
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\CodePushed"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestOpened"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestSynchronized"/>
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestLabeled"/>
+        <service id="river.code_repository.github.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\Builder\GitHubBuildRequestSourceResolver">
+            <argument type="service" id="logger" />
+            <argument type="service" id="github.integration.installation_repository" />
+            <argument type="service" id="github.integration.installation_token_resolver" />
         </service>
     </services>
 </container>

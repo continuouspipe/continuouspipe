@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.code_repository.explorer" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToTheExplorerThatSupportsTheAccountExplorer">
+            <argument type="collection">
+                <argument type="service" id="river.code_repository.github.explorer" />
+                <argument type="service" id="river.code_repository.bitbucket.explorer" />
+            </argument>
+        </service>
+
+        <service id="river.commit_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\CommitResolverDelegator">
+            <argument type="collection">
+                <argument type="service" id="river.github.commit_resolver" />
+                <argument type="service" id="river.bitbucket.commit_resolver" />
+            </argument>
+        </service>
+
+        <service id="river.file_system_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\FileSystemResolverDelegator">
+            <argument type="collection">
+                <argument type="service" id="river.bitbucket.file_system_resolver" />
+                <argument type="service" id="river.github.file_system_resolver" />
+            </argument>
+        </service>
+
+        <service id="river.pull_request_comment_manipulator" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToPullRequestCommentManipulatorThatSupports">
+            <argument type="collection">
+                <argument type="service" id="river.bitbucket.pull_request_comment_manipulator" />
+                <argument type="service" id="river.code_repository.github.pull_request_comment_manipulator" />
+            </argument>
+        </service>
+
+        <service id="river.pull_request_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToPullRequestResolver">
+            <argument type="collection">
+                <argument type="service" id="river.bitbucket.pull_request_resolver" />
+                <argument type="service" id="river.github.pull_request_resolver" />
+            </argument>
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="findPullRequestWithHeadReference"
+                 runner="tolerance.operation_runners.array_placeholdered" />
+        </service>
+
+        <service id="river.listener.eventually_create_and_start_tide" class="ContinuousPipe\River\EventListener\EventuallyCreateAndStartTide">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+        </service>
+
+        <service id="river.listener.pull_request.comment_deployment_environment_endpoints" class="ContinuousPipe\River\EventListener\GitHub\PullRequestOpened\CommentDeploymentEnvironmentEndpoints">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.notifications.tide_listener" />
+            <argument type="service" id="river.tide_event_store" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\PullRequestOpened"/>
+        </service>
+
+        <service id="river.listener.locked.eventually_create_and_start_tide"
+                 class="ContinuousPipe\River\Tide\Concurrency\EventListener\LockTheStartDecisionOfATide">
+            <argument type="service" id="river.listener.eventually_create_and_start_tide" />
+            <argument type="service" id="river.tide.concurrency.locker" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\CodePushed"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\PullRequestOpened"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestSynchronized"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestLabeled"/>
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\CodePushed"/>
+        </service>
+    </services>
+</container>

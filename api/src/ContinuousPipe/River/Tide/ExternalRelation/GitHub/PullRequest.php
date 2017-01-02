@@ -2,45 +2,53 @@
 
 namespace ContinuousPipe\River\Tide\ExternalRelation\GitHub;
 
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Tide\ExternalRelation\ExternalRelation;
-use GitHub\WebHook\Model\PullRequest as GitHubPullRequest;
-use JMS\Serializer\Annotation as JMS;
 
 class PullRequest implements ExternalRelation
 {
     /**
      * @var string
      */
+    private $type;
+
+    /**
+     * @var string
+     */
     private $link;
 
     /**
-     * @param GitHubPullRequest $pullRequest
+     * @param CodeRepository\PullRequest $pullRequest
      *
      * @return PullRequest
      */
-    public static function fromGitHub(GitHubCodeRepository $codeRepository, GitHubPullRequest $pullRequest)
+    public static function fromCodeRepository(CodeRepository $codeRepository, CodeRepository\PullRequest $pullRequest)
     {
         $relation = new self();
-        $relation->link = sprintf(
-            'https://github.com/%s/%s/pull/%d',
-            $codeRepository->getOrganisation(),
-            $codeRepository->getName(),
-            $pullRequest->getNumber()
-        );
+
+        if ($codeRepository instanceof GitHubCodeRepository) {
+            $relation->type = 'github';
+            $relation->link = sprintf(
+                'https://github.com/%s/%s/pull/%d',
+                $codeRepository->getOrganisation(),
+                $codeRepository->getName(),
+                $pullRequest->getIdentifier()
+            );
+        } else {
+            $relation->type = 'unknown';
+            $relation->link = $codeRepository->getAddress();
+        }
 
         return $relation;
     }
 
     /**
-     * @JMS\VirtualProperty
-     * @JMS\SerializedName("type")
-     *
      * {@inheritdoc}
      */
     public function getType()
     {
-        return 'github';
+        return $this->type;
     }
 
     /**

@@ -1,0 +1,145 @@
+{
+  "data": {
+    "push": {
+      "changes": [
+        {
+          "forced": false,
+          "closed": true,
+          "created": false,
+          "new": null,
+          "old": {
+            "type": "branch",
+            "target": {
+              "type": "commit",
+              "message": "Merge pull request #20 from continuouspipe/my/new/feature\n\nThat is my new feature",
+              "date": "2016-11-24T16:50:21+00:00",
+              "hash": "e197bb320423d0126b31d60ef932d358ed12dd33",
+              "parents": [
+                {
+                  "type": "commit",
+                  "hash": "8aaf524ee9d6161b61f6f26b9de8b285c7fc94b0",
+                  "links": {
+                    "html": {
+                      "href": "https://bitbucket.org/sroze/testing-stuff/commits/8aaf524ee9d6161b61f6f26b9de8b285c7fc94b0"
+                    },
+                    "self": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/sroze/testing-stuff/commit/8aaf524ee9d6161b61f6f26b9de8b285c7fc94b0"
+                    }
+                  }
+                },
+                {
+                  "type": "commit",
+                  "hash": "0009b4eed75a79425139795663162a7257d0e0e0",
+                  "links": {
+                    "html": {
+                      "href": "https://bitbucket.org/sroze/testing-stuff/commits/0009b4eed75a79425139795663162a7257d0e0e0"
+                    },
+                    "self": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/sroze/testing-stuff/commit/0009b4eed75a79425139795663162a7257d0e0e0"
+                    }
+                  }
+                }
+              ],
+              "links": {
+                "html": {
+                  "href": "https://bitbucket.org/sroze/testing-stuff/commits/e197bb320423d0126b31d60ef932d358ed12dd33"
+                },
+                "self": {
+                  "href": "https://api.bitbucket.org/2.0/repositories/sroze/testing-stuff/commit/e197bb320423d0126b31d60ef932d358ed12dd33"
+                }
+              },
+              "author": {
+                "raw": "Samuel ROZE <samuel.roze@gmail.com>",
+                "user": {
+                  "type": "user",
+                  "username": "sroze",
+                  "display_name": "Samuel ROZE",
+                  "uuid": "{555f5ea4-c626-40eb-bdb3-bad6b42fe8a8}",
+                  "links": {
+                    "html": {
+                      "href": "https://bitbucket.org/sroze/"
+                    },
+                    "avatar": {
+                      "href": "https://bitbucket.org/account/sroze/avatar/32/"
+                    },
+                    "self": {
+                      "href": "https://api.bitbucket.org/2.0/users/sroze"
+                    }
+                  }
+                }
+              }
+            },
+            "name": "well-lets-have-a-look",
+            "links": {
+              "html": {
+                "href": "https://bitbucket.org/sroze/testing-stuff/branch/well-lets-have-a-look"
+              },
+              "commits": {
+                "href": "https://api.bitbucket.org/2.0/repositories/sroze/testing-stuff/commits/well-lets-have-a-look"
+              },
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/sroze/testing-stuff/refs/branches/well-lets-have-a-look"
+              }
+            }
+          },
+          "truncated": false
+        }
+      ]
+    },
+    "repository": {
+      "type": "repository",
+      "is_private": true,
+      "owner": {
+        "type": "user",
+        "username": "sroze",
+        "display_name": "Samuel ROZE",
+        "uuid": "{555f5ea4-c626-40eb-bdb3-bad6b42fe8a8}",
+        "links": {
+          "html": {
+            "href": "https://bitbucket.org/sroze/"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/sroze/avatar/32/"
+          },
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/users/sroze"
+          }
+        }
+      },
+      "name": "testing-stuff",
+      "website": "",
+      "scm": "git",
+      "full_name": "sroze/testing-stuff",
+      "uuid": "{425318ef-381b-45d0-ae76-dd00a88ae1b1}",
+      "links": {
+        "html": {
+          "href": "https://bitbucket.org/sroze/testing-stuff"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/sroze/testing-stuff/avatar/32/"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/sroze/testing-stuff"
+        }
+      }
+    },
+    "actor": {
+      "type": "user",
+      "username": "sroze",
+      "display_name": "Samuel ROZE",
+      "uuid": "{555f5ea4-c626-40eb-bdb3-bad6b42fe8a8}",
+      "links": {
+        "html": {
+          "href": "https://bitbucket.org/sroze/"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/sroze/avatar/32/"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/sroze"
+        }
+      }
+    }
+  },
+  "event": "repo:push"
+}

@@ -52,7 +52,6 @@
 
         <service id="river.flow_factory" class="ContinuousPipe\River\FlowFactory">
             <argument type="service" id="security.user_context" />
-            <argument type="service" id="repository_river.code_repository_repository" />
             <argument type="service" id="event_bus"/>
             <argument type="service" id="river.flow.projections.flat_flow_repository"/>
         </service>

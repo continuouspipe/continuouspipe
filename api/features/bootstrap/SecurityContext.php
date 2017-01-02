@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Security\Account\BitBucketAccount;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
@@ -26,6 +27,11 @@ class SecurityContext implements Context
      * @var InMemoryAuthenticatorClient
      */
     private $inMemoryAuthenticatorClient;
+
+    /**
+     * @var User|null
+     */
+    private $currentUser;
 
     /**
      * @param TokenStorageInterface $tokenStorage
@@ -57,6 +63,8 @@ class SecurityContext implements Context
         $token = new JWTUserToken(['ROLE_USER']);
         $token->setUser(new SecurityUser($user));
         $this->tokenStorage->setToken($token);
+
+        $this->currentUser = $user;
     }
 
     /**
@@ -139,5 +147,22 @@ class SecurityContext implements Context
         $user->setRoles(array_merge($user->getRoles(), ['ROLE_GHOST']));
 
         $this->inMemoryAuthenticatorClient->addUser($user);
+    }
+
+    /**
+     * @Given I have a BitBucket account :uuid for the user :username
+     */
+    public function iHaveABitbucketAccountForTheUser($uuid, $username)
+    {
+        $this->inMemoryAuthenticatorClient->addAccount(
+            $this->currentUser,
+            new BitBucketAccount(
+                Uuid::fromString($uuid),
+                $username,
+                $username,
+                $username.'@example.com',
+                'refresh-token'
+            )
+        );
     }
 }

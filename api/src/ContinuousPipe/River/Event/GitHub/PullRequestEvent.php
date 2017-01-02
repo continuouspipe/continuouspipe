@@ -3,17 +3,12 @@
 namespace ContinuousPipe\River\Event\GitHub;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\Event\CodeRepositoryEvent;
-use GitHub\WebHook\Event\PullRequestEvent as GitHubPullRequestEvent;
 use Ramsey\Uuid\UuidInterface;
 
 abstract class PullRequestEvent implements CodeRepositoryEvent
 {
-    /**
-     * @var GitHubPullRequestEvent
-     */
-    private $event;
-
     /**
      * @var CodeReference
      */
@@ -25,23 +20,28 @@ abstract class PullRequestEvent implements CodeRepositoryEvent
     private $flowUuid;
 
     /**
-     * @param UuidInterface          $flowUuid
-     * @param CodeReference          $codeReference
-     * @param GitHubPullRequestEvent $event
+     * @var PullRequest
      */
-    public function __construct(UuidInterface $flowUuid, CodeReference $codeReference, GitHubPullRequestEvent $event)
+    private $pullRequest;
+
+    /**
+     * @param UuidInterface $flowUuid
+     * @param CodeReference $codeReference
+     * @param PullRequest   $pullRequest
+     */
+    public function __construct(UuidInterface $flowUuid, CodeReference $codeReference, PullRequest $pullRequest)
     {
         $this->flowUuid = $flowUuid;
         $this->codeReference = $codeReference;
-        $this->event = $event;
+        $this->pullRequest = $pullRequest;
     }
 
     /**
-     * @return GitHubPullRequestEvent
+     * @return PullRequest|null
      */
-    public function getEvent()
+    public function getPullRequest()
     {
-        return $this->event;
+        return $this->pullRequest;
     }
 
     /**

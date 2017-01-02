@@ -6,7 +6,6 @@ use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 use ContinuousPipe\River\Notifications\NotificationException;
-use ContinuousPipe\River\Notifications\NotificationNotSupported;
 use ContinuousPipe\River\Notifications\Notifier;
 use ContinuousPipe\River\Tide\Status\Status;
 use ContinuousPipe\River\View\Tide;
@@ -40,9 +39,7 @@ class GitHubCommitStatusNotifier implements Notifier
      */
     public function notify(Tide $tide, Status $status, array $configuration)
     {
-        if (!array_key_exists('github_commit_status', $configuration)) {
-            throw new NotificationNotSupported('The notifier only supports the "github_commit_status" notification');
-        } elseif (false === $configuration['github_commit_status']) {
+        if (array_key_exists('github_commit_status', $configuration) && false === $configuration['github_commit_status']) {
             return;
         }
 
@@ -87,6 +84,6 @@ class GitHubCommitStatusNotifier implements Notifier
      */
     public function supports(Tide $tide, Status $status, array $configuration)
     {
-        return array_key_exists('github_commit_status', $configuration) && $configuration['github_commit_status'];
+        return $tide->getCodeReference()->getRepository() instanceof GitHubCodeRepository;
     }
 }

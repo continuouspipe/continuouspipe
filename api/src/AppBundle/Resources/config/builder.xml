@@ -20,10 +20,16 @@
                  runner="tolerance.operation_runners.builder" />
         </service>
 
+        <service id="builder.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToBuildRequestSourceResolverAdapater">
+            <argument type="collection">
+                <argument type="service" id="river.code_repository.github.build_request_source_resolver" />
+                <argument type="service" id="river.code_repository.bitbucket.build_request_source_resolver" />
+            </argument>
+        </service>
+
         <service id="builder.build_request_creator" class="ContinuousPipe\Builder\BuildRequestCreator">
             <argument type="service" id="logger" />
-            <argument type="service" id="github.integration.installation_repository" />
-            <argument type="service" id="github.integration.installation_token_resolver" />
+            <argument type="service" id="builder.build_request_source_resolver" />
         </service>
     </services>
 </container>

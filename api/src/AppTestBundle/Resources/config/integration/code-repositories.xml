@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.commit_resolver.predictable"
+                 class="ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver"
+                 decorates="river.commit_resolver">
+            <argument type="service" id="river.commit_resolver.predictable.inner" />
+        </service>
+
+        <service id="river.file_system_resolver.fake"
+                 class="ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver"
+                 decorates="river.file_system_resolver">
+            <argument type="service" id="river.file_system_resolver.fake.inner" />
+        </service>
+    </services>
+</container>

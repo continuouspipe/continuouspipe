@@ -64,7 +64,7 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
     public function findByCodeRepository(CodeRepository $repository) : array
     {
         return $this->getRepository()->findBy([
-            'repository.identifier' => $repository->getIdentifier(),
+            'repository' => $repository->getIdentifier(),
         ]);
     }
 
@@ -84,17 +84,19 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
      */
     public function save(FlatFlow $flow)
     {
-        $merged = $this->entityManager->merge($flow);
-        $this->entityManager->persist($merged);
+        $pipelines = $flow->getPipelines();
 
-        $collection = $flow->getPipelines();
-        foreach ($collection->getIterator() as $key => $value) {
-            $value->setFlow($flow);
+        $repository = $this->entityManager->merge($flow->getRepository());
+        $flow = $this->entityManager->merge($flow);
 
-            $merged = $this->entityManager->merge($value);
-            $this->entityManager->persist($merged);
+        $this->entityManager->persist($repository);
+        $this->entityManager->persist($flow);
 
-            $collection->set($key, $merged);
+        foreach ($pipelines as $key => $pipeline) {
+            $pipeline->setFlow($flow);
+
+            $pipeline = $this->entityManager->merge($pipeline);
+            $this->entityManager->persist($pipeline);
         }
 
         $this->entityManager->flush();

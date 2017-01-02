@@ -1,0 +1,37 @@
+{
+    "key": "continuous-pipe",
+    "name": "ContinuousPipe Add-on",
+    "description": "ContinuousPipe add-on for Bitbucket",
+    "vendor": {
+        "name": "ContinuousPipe",
+        "url": "https://continuouspipe.io"
+    },
+    "baseUrl": "{{ url('atlassian_addon_descriptor') }}",
+    "authentication": {
+        "type": "jwt"
+    },
+    "lifecycle": {
+        "installed": "/installed",
+        "uninstalled": "/uninstalled"
+    },
+    "modules": {
+        "oauthConsumer": {
+            "clientId": "CssUvjttsWEqskL9n7"
+        },
+        "webhooks": [
+            {
+                "event": "*",
+                "url": "/webhook"
+            }
+        ]
+    },
+    "scopes": [
+        "account",
+        "repository",
+        "issue",
+        "pullrequest:write"
+    ],
+    "contexts": [
+        "account"
+    ]
+}

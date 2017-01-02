@@ -10,6 +10,7 @@ use JMS\Serializer\Annotation as JMS;
  *
  * @JMS\Discriminator(field="type", map={
  *    "github": "ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository",
+ *    "bitbucket": "ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository",
  * })
  */
 abstract class AbstractCodeRepository implements CodeRepository
@@ -21,6 +22,11 @@ abstract class AbstractCodeRepository implements CodeRepository
      * @var string
      */
     protected $identifier;
+
+    public function __construct(string $identifier)
+    {
+        $this->identifier = $identifier;
+    }
 
     /**
      * {@inheritdoc}

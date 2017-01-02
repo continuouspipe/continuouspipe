@@ -33,6 +33,7 @@
                  decoration-priority="-10">
             <argument type="service" id="river.pipeline.tide_generator.creates_failing_tide_for_configuration_issues.inner" />
             <argument type="service" id="log_stream.logger_factory"/>
+            <argument type="service" id="logger" />
         </service>
 
         <service id="river.pipeline.handler.generate_tides_handler" class="ContinuousPipe\River\Pipeline\Handler\GenerateTidesHandler">

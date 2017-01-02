@@ -2,26 +2,10 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
-use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use ContinuousPipe\Security\Credentials\BucketContainer;
 
 interface CommitResolver
 {
-    /**
-     * @param BucketContainer $bucketContainer
-     * @param CodeRepository  $repository
-     * @param string          $branch
-     *
-     * @throws CommitResolverException
-     *
-     * @deprecated The commit resolver is related to a flow. The `getHeadCommitOfBranch` method
-     *             should be used
-     *
-     * @return string
-     */
-    public function getLegacyHeadCommitOfBranch(BucketContainer $bucketContainer, CodeRepository $repository, $branch);
-
     /**
      * @param FlatFlow $flow
      * @param string   $branch
@@ -31,4 +15,13 @@ interface CommitResolver
      * @return string
      */
     public function getHeadCommitOfBranch(FlatFlow $flow, $branch);
+
+    /**
+     * Returns true if the commit resolver supports the given flow.
+     *
+     * @param FlatFlow $flow
+     *
+     * @return bool
+     */
+    public function supports(FlatFlow $flow) : bool;
 }

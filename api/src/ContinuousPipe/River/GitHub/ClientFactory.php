@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\GitHub;
 
+use ContinuousPipe\Security\Account\GitHubAccount;
 use ContinuousPipe\Security\Credentials\Bucket;
 use Github\Client;
 use ContinuousPipe\Security\User\User;
@@ -50,6 +51,9 @@ interface ClientFactory
     public function createClientFromBucketUuid(Uuid $bucketUuid);
 
     /**
+     * @deprecated This is a bad practice to rely on the current state. Please use the
+     *             `createClientForUser` method
+     *
      * @return Client
      */
     public function createClientForCurrentUser();
@@ -62,4 +66,13 @@ interface ClientFactory
      * @return Client
      */
     public function createClientFromInstallation(Installation $installation);
+
+    /**
+     * @param GitHubAccount $account
+     *
+     * @throws GitHubClientException
+     *
+     * @return Client
+     */
+    public function createClientFromAccount(GitHubAccount $account);
 }

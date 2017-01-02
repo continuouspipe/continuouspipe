@@ -6,7 +6,6 @@ use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Flow\Request\FlowCreationRequest;
 use ContinuousPipe\River\Flow\Request\FlowUpdateRequest;
-use ContinuousPipe\River\Repository\CodeRepositoryRepository;
 use ContinuousPipe\Security\Authenticator\UserContext;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
@@ -21,11 +20,6 @@ class FlowFactory
     private $userContext;
 
     /**
-     * @var CodeRepositoryRepository
-     */
-    private $codeRepositoryRepository;
-
-    /**
      * @var MessageBus
      */
     private $eventBus;
@@ -36,15 +30,13 @@ class FlowFactory
     private $flatFlowRepository;
 
     /**
-     * @param UserContext              $userContext
-     * @param CodeRepositoryRepository $codeRepositoryRepository
-     * @param MessageBus               $eventBus
-     * @param FlatFlowRepository       $flatFlowRepository
+     * @param UserContext        $userContext
+     * @param MessageBus         $eventBus
+     * @param FlatFlowRepository $flatFlowRepository
      */
-    public function __construct(UserContext $userContext, CodeRepositoryRepository $codeRepositoryRepository, MessageBus $eventBus, FlatFlowRepository $flatFlowRepository)
+    public function __construct(UserContext $userContext, MessageBus $eventBus, FlatFlowRepository $flatFlowRepository)
     {
         $this->userContext = $userContext;
-        $this->codeRepositoryRepository = $codeRepositoryRepository;
         $this->eventBus = $eventBus;
         $this->flatFlowRepository = $flatFlowRepository;
     }
@@ -66,7 +58,7 @@ class FlowFactory
             $uuid,
             $team,
             $this->userContext->getCurrent(),
-            $this->codeRepositoryRepository->findByIdentifier($creationRequest->getRepository())
+            $creationRequest->getRepository()
         );
 
         foreach ($flow->raisedEvents() as $event) {

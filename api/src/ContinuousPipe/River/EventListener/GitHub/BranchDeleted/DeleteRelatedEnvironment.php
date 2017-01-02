@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\EventListener\GitHub\BranchDeleted;
 
 use ContinuousPipe\River\Command\DeleteEnvironments;
-use ContinuousPipe\River\Event\GitHub\BranchDeleted;
+use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use SimpleBus\Message\Bus\MessageBus;
 
 class DeleteRelatedEnvironment
@@ -22,7 +22,7 @@ class DeleteRelatedEnvironment
     }
 
     /**
-     * @param BranchDeleted $event
+     * @param \ContinuousPipe\River\CodeRepository\Event\BranchDeleted $event
      */
     public function notify(BranchDeleted $event)
     {

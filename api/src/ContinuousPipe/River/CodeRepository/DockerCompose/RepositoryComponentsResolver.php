@@ -9,7 +9,6 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class RepositoryComponentsResolver implements ComponentsResolver
 {
@@ -41,21 +40,6 @@ class RepositoryComponentsResolver implements ComponentsResolver
         try {
             return $this->resolveWithFilesystem(
                 $this->fileSystemResolver->getFileSystem($flow, $codeReference),
-                $codeReference
-            );
-        } catch (CodeRepositoryException $e) {
-            throw new ResolveException($e->getMessage(), $e->getCode(), $e);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function resolveByCodeReferenceAndBucket(CodeReference $codeReference, BucketContainer $bucketContainer)
-    {
-        try {
-            return $this->resolveWithFilesystem(
-                $this->fileSystemResolver->getFileSystemWithBucketContainer($codeReference, $bucketContainer),
                 $codeReference
             );
         } catch (CodeRepositoryException $e) {

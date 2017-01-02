@@ -21,11 +21,6 @@ class FlatFlow
     private $uuid;
 
     /**
-     * @var CodeRepository
-     */
-    private $repository;
-
-    /**
      * @var Team
      */
     private $team;
@@ -41,7 +36,7 @@ class FlatFlow
     private $configuration;
 
     /**
-     * @var ArrayCollection|FlatPipeline[]
+     * @var Collection|FlatPipeline[]
      */
     private $pipelines;
 
@@ -49,6 +44,11 @@ class FlatFlow
      * @var Tide[]
      */
     private $tides;
+
+    /**
+     * @var CodeRepository|null
+     */
+    private $repository;
 
     public function __construct()
     {
@@ -64,12 +64,12 @@ class FlatFlow
     {
         $view = new self();
         $view->uuid = $flow->getUuid();
-        $view->repository = $flow->getCodeRepository();
         $view->team = $flow->getTeam();
         $view->configuration = $flow->getConfiguration() ?: [];
         $view->ymlConfiguration = Yaml::dump($view->configuration);
         $view->user = $flow->getUser();
         $view->pipelines = new ArrayCollection($flow->getPipelines());
+        $view->repository = $flow->getCodeRepository();
 
         return $view;
     }
@@ -93,7 +93,7 @@ class FlatFlow
         return $this->uuid;
     }
 
-    public function getRepository() : CodeRepository
+    public function getRepository()
     {
         return $this->repository;
     }

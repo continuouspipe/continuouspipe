@@ -8,39 +8,34 @@ use GitHub\WebHook\Model\Organisation;
 class GitHubOrganisation implements OrganisationInterface
 {
     /**
-     * @var Organisation
+     * @var string
      */
-    private $organisation;
+    private $identifier;
 
     /**
-     * @param Organisation $organisation
+     * @var string|null
      */
-    public function __construct(Organisation $organisation)
+    private $avatarUrl;
+
+    public function __construct(string $identifier, string $avatarUrl = null)
     {
-        $this->organisation = $organisation;
+        $this->identifier = $identifier;
+        $this->avatarUrl = $avatarUrl;
     }
 
-    /**
-     * @return Organisation
-     */
-    public function getOrganisation()
+    public static function fromGitHubOrganisation(Organisation $organisation)
     {
-        return $this->organisation;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getIdentifier()
-    {
-        return $this->organisation->getLogin();
+        return new self(
+            $organisation->getLogin(),
+            $organisation->getAvatarUrl()
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getReposUrl()
+    public function getIdentifier() : string
     {
-        return $this->organisation->getReposUrl();
+        return $this->identifier;
     }
 }

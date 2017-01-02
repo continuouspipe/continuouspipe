@@ -3,28 +3,30 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Notifications\GitHub\CommitStatus\GitHubStateResolver;
 use ContinuousPipe\River\Notifications\TraceableNotifier;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\TestHttpClient;
-use ContinuousPipe\River\Tests\CodeRepository\Status\FakeCodeStatusUpdater;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestDeploymentNotifier;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver;
+use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use GitHub\Integration\InMemoryInstallationRepository;
 use GitHub\Integration\InMemoryInstallationTokenResolver;
 use GitHub\Integration\Installation;
 use GitHub\Integration\InstallationAccount;
 use GitHub\Integration\InstallationToken;
+use GitHub\WebHook\Model\Repository;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class GitHubContext implements Context
+class GitHubContext implements CodeRepositoryContext
 {
     /**
      * @var TideContext
@@ -74,6 +76,10 @@ class GitHubContext implements Context
      * @var InMemoryInstallationTokenResolver
      */
     private $inMemoryInstallationTokenResolver;
+    /**
+     * @var InMemoryCodeRepositoryRepository
+     */
+    private $inMemoryCodeRepositoryRepository;
 
     /**
      * @param Kernel $kernel
@@ -84,8 +90,9 @@ class GitHubContext implements Context
      * @param TestHttpClient $gitHubHttpClient
      * @param InMemoryInstallationRepository $inMemoryInstallationRepository
      * @param InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver
+     * @param InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository
      */
-    public function __construct(Kernel $kernel, TraceableNotifier $gitHubTraceableNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore, TestHttpClient $gitHubHttpClient, InMemoryInstallationRepository $inMemoryInstallationRepository, InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver)
+    public function __construct(Kernel $kernel, TraceableNotifier $gitHubTraceableNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore, TestHttpClient $gitHubHttpClient, InMemoryInstallationRepository $inMemoryInstallationRepository, InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver, InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository)
     {
         $this->kernel = $kernel;
         $this->fakePullRequestResolver = $fakePullRequestResolver;
@@ -95,6 +102,7 @@ class GitHubContext implements Context
         $this->gitHubTraceableNotifier = $gitHubTraceableNotifier;
         $this->inMemoryInstallationRepository = $inMemoryInstallationRepository;
         $this->inMemoryInstallationTokenResolver = $inMemoryInstallationTokenResolver;
+        $this->inMemoryCodeRepositoryRepository = $inMemoryCodeRepositoryRepository;
     }
 
     /**
@@ -132,7 +140,29 @@ class GitHubContext implements Context
     }
 
     /**
+     * @Given the GitHub repository :identifier exists
+     * @Given there is a repository identifier :identifier
+     */
+    public function thereIsARepositoryIdentified($identifier = null) : CodeRepository
+    {
+        $repository = GitHubCodeRepository::fromRepository(
+            new Repository(
+                new \GitHub\WebHook\Model\User('sroze'),
+                'docker-php-example',
+                'https://github.com/sroze/docker-php-example',
+                false,
+                $identifier ?: 37856553
+            )
+        );
+
+        $this->inMemoryCodeRepositoryRepository->add($repository);
+
+        return $repository;
+    }
+
+    /**
      * @Given the created GitHub comment will have the ID :id
+     * @Given the created comment will have the ID :id
      */
     public function theCreatedGithubCommentWillHaveTheId($id)
     {
@@ -204,11 +234,11 @@ class GitHubContext implements Context
     }
 
     /**
-     * @When the commit :sha is pushed to the branch :branch
+     * @When the GitHub commit :sha is pushed to the branch :branch
      */
     public function theCommitIsPushedToTheBranch($sha, $branch)
     {
-        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/push-master.json'), true);
+        $contents = \GuzzleHttp\json_decode($this->readFixture('push-master.json'), true);
         $contents['ref'] = 'refs/heads/'.$branch;
         $contents['after'] = $sha;
         $contents['head_commit']['id'] = $sha;
@@ -221,7 +251,7 @@ class GitHubContext implements Context
      */
     public function thePullRequestIsOpened($number)
     {
-        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
         $contents['number'] = $number;
 
         $this->sendWebHook('pull_request', json_encode($contents));
@@ -232,7 +262,7 @@ class GitHubContext implements Context
      */
     public function thePullRequestIsOpenedWithHeadAndTheCommit($number, $branch, $sha)
     {
-        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
         $contents['number'] = $number;
         $contents['pull_request']['head']['ref'] = $branch;
         $contents['pull_request']['head']['label'] = $branch;
@@ -246,7 +276,7 @@ class GitHubContext implements Context
      */
     public function thePullRequestIsOpenedWithHeadFromAnotherRepositoryLabelled($number, $reference, $repositoryLabel)
     {
-        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
 
         $contents['number'] = $number;
         $contents['pull_request']['head']['ref'] = $reference;
@@ -262,7 +292,7 @@ class GitHubContext implements Context
      */
     public function thePullRequestIsSynchronizedWithHeadAndTheCommit($number, $branch, $sha)
     {
-        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
         $contents['action'] = 'synchronize';
         $contents['number'] = $number;
         $contents['pull_request']['head']['ref'] = $branch;
@@ -277,7 +307,7 @@ class GitHubContext implements Context
      */
     public function thePullRequestIsSynchronized($number)
     {
-        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
         $contents['number'] = $number;
         $contents['action'] = 'synchronize';
 
@@ -289,7 +319,7 @@ class GitHubContext implements Context
      */
     public function thePullRequestIsLabeled($number)
     {
-        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
         $contents['number'] = $number;
         $contents['action'] = 'labeled';
 
@@ -301,7 +331,7 @@ class GitHubContext implements Context
      */
     public function thePullRequestIsLabeledWithHeadAndTheCommand($number, $branch, $sha)
     {
-        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/pull_request-created.json'), true);
+        $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
         $contents['number'] = $number;
         $contents['action'] = 'labeled';
         $contents['pull_request']['head']['ref'] = $branch;
@@ -350,9 +380,7 @@ class GitHubContext implements Context
      */
     public function aPushWebhookIsReceived()
     {
-        $contents = file_get_contents(__DIR__.'/../fixtures/push-master.json');
-
-        $this->sendWebHook('push', $contents);
+        $this->sendWebHook('push', $this->readFixture('push-master.json'));
     }
 
     /**
@@ -360,7 +388,7 @@ class GitHubContext implements Context
      */
     public function aStatusWebhookIsReceivedWithTheContextAndTheValue($context, $state)
     {
-        $decoded = json_decode(file_get_contents(__DIR__.'/../fixtures/status-pending.json'), true);
+        $decoded = json_decode($this->readFixture('status-pending.json'), true);
         $decoded['context'] = $context;
         $decoded['state'] = $state;
 
@@ -379,7 +407,7 @@ class GitHubContext implements Context
      */
     public function aStatusWebhookIsReceivedWithTheContextAndTheValueForADifferentCodeReference($context, $state)
     {
-        $decoded = json_decode(file_get_contents(__DIR__.'/../fixtures/status-pending.json'), true);
+        $decoded = json_decode($this->readFixture('status-pending.json'), true);
         $decoded['context'] = $context;
         $decoded['state'] = $state;
 
@@ -393,7 +421,7 @@ class GitHubContext implements Context
      */
     public function theBranchIsDeleted($branch, $sha1)
     {
-        $contents = \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/push-deleted-pr-branch.json'), true);
+        $contents = \GuzzleHttp\json_decode($this->readFixture('push-deleted-pr-branch.json'), true);
         $contents['ref'] = 'refs/head/'.$branch;
         $contents['before'] = $sha1;
         $contents['after'] = CodeReferenceResolver::EMPTY_COMMIT;
@@ -420,11 +448,12 @@ class GitHubContext implements Context
 
     /**
      * @Given the pull-request #:number contains the tide-related commit
+     * @Given the GitHub pull-request #:number contains the tide-related commit
      */
     public function aPullRequestContainsTheTideRelatedCommit($number)
     {
         $this->fakePullRequestResolver->willResolve([
-            new \GitHub\WebHook\Model\PullRequest($number, $number),
+            new CodeRepository\PullRequest($number),
         ]);
     }
 
@@ -483,14 +512,6 @@ class GitHubContext implements Context
     }
 
     /**
-     * @Given a comment identified :commentId was already added
-     */
-    public function aCommentIdentifiedWasAlreadyAdded($commentId)
-    {
-        $this->eventStore->add(new CommentedTideFeedback($this->tideContext->getCurrentTideUuid(), $commentId));
-    }
-
-    /**
      * @Then the comment :commentId should have been deleted
      */
     public function theCommentShouldHaveBeenDeleted($commentId)
@@ -511,10 +532,10 @@ class GitHubContext implements Context
     public function aPullRequestIsCreatedWithHeadCommit($branch, $sha)
     {
         $this->fakePullRequestResolver->willResolve([
-            new \GitHub\WebHook\Model\PullRequest(1, 1),
+            new CodeRepository\PullRequest(1),
         ]);
 
-        $contents = file_get_contents(__DIR__.'/../fixtures/pull_request-created.json');
+        $contents = $this->readFixture('pull_request-created.json');
         $decoded = json_decode($contents, true);
         $decoded['pull_request']['head']['sha'] = $sha;
         $decoded['pull_request']['head']['ref'] = $branch;
@@ -540,7 +561,7 @@ class GitHubContext implements Context
      */
     public function aPullRequestIsClosedWithHeadCommit($sha)
     {
-        $contents = file_get_contents(__DIR__.'/../fixtures/pull_request-closed.json');
+        $contents = $this->readFixture('pull_request-closed.json');
         $decoded = json_decode($contents, true);
         $decoded['pull_request']['head']['sha'] = $sha;
         $contents = json_encode($decoded);
@@ -551,30 +572,6 @@ class GitHubContext implements Context
             'HTTP_X_GITHUB_EVENT' => 'pull_request',
             'HTTP_X_GITHUB_DELIVERY' => '1234',
         ], $contents));
-    }
-
-    /**
-     * @Then the environment should be deleted
-     */
-    public function theEnvironmentShouldBeDeleted()
-    {
-        $deletions = $this->traceableClient->getDeletions();
-
-        if (0 == count($deletions)) {
-            throw new \RuntimeException('No deleted environment found');
-        }
-    }
-
-    /**
-     * @Then the environment should not be deleted
-     */
-    public function theEnvironmentShouldNotBeDeleted()
-    {
-        $deletions = $this->traceableClient->getDeletions();
-
-        if (0 != count($deletions)) {
-            throw new \RuntimeException('Deleted environment(s) found');
-        }
     }
 
     /**
@@ -616,5 +613,10 @@ class GitHubContext implements Context
         }
 
         return $notifications[count($notifications) - 1];
+    }
+
+    private function readFixture(string $fixture) : string
+    {
+        return file_get_contents(__DIR__.'/../integrations/code-repositories/github/fixtures/'.$fixture);
     }
 }

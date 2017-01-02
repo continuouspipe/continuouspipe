@@ -30,8 +30,8 @@
         "sroze/log-stream": "~0.4.1",
         "tolerance/tolerance": "dev-master",
         "continuous-pipe/model": "~2.2.8",
-        "continuous-pipe/security": "~2.2.1",
-        "simple-bus/rabbitmq-bundle-bridge": "dev-allow-the-producer-interface",
+        "continuous-pipe/security": "^2.3.0",
+        "simple-bus/rabbitmq-bundle-bridge": "~3.1.0",
         "simple-bus/jms-serializer-bundle-bridge": "^2.0",
         "knplabs/github-api": "^1.5",
         "symfony/expression-language": "^2.7",
@@ -48,7 +48,8 @@
         "jms/aop-bundle": "^1.2",
         "dbellettini/eventstore-client": "^0.8.0",
         "mhujer/jms-serializer-uuid-bundle": "^1.0",
-        "kreait/firebase-php": "^2.0"
+        "kreait/firebase-php": "^2.0",
+        "adlogix/guzzle-atlassian-connect-middleware": "~1.1.2"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -116,10 +117,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/continuouspipe/model"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/sroze/RabbitMQBundleBridge"
         }
     ]
 }

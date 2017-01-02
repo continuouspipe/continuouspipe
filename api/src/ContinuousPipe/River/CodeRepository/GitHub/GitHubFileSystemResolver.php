@@ -2,12 +2,12 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub;
 
+use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\GitHub\GitHubClientException;
-use ContinuousPipe\Security\Credentials\BucketContainer;
 
 class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
 {
@@ -34,23 +34,7 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
     /**
      * {@inheritdoc}
      */
-    public function getFileSystemWithBucketContainer(CodeReference $codeReference, BucketContainer $bucketContainer)
-    {
-        try {
-            return new CodeRepository\GitHubRelativeFileSystem(
-                $this->gitHubClientFactory->createClientFromBucketUuid($bucketContainer->getBucketUuid()),
-                $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
-                $codeReference->getCommitSha()
-            );
-        } catch (GitHubClientException $e) {
-            throw new CodeRepository\CodeRepositoryException($e->getMessage(), $e->getCode(), $e);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getFileSystem(FlatFlow $flow, CodeReference $codeReference)
+    public function getFileSystem(FlatFlow $flow, CodeReference $codeReference) : RelativeFileSystem
     {
         try {
             return new CodeRepository\GitHubRelativeFileSystem(
@@ -61,5 +45,13 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
         } catch (GitHubClientException $e) {
             throw new CodeRepository\CodeRepositoryException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(FlatFlow $flow): bool
+    {
+        return $flow->getRepository() instanceof GitHubCodeRepository;
     }
 }

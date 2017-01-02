@@ -4,9 +4,70 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b887b2b97cc268b4f304a0a114fa440e",
-    "content-hash": "49c590d3a31b91746a1d0d1e1fa9ba1d",
+    "hash": "57de40d6ee3733950be960c0e42e39a1",
+    "content-hash": "f9b3c15dcec77be539349d7a3656106a",
     "packages": [
+        {
+            "name": "adlogix/guzzle-atlassian-connect-middleware",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/adlogix/guzzle-atlassian-connect-middleware.git",
+                "reference": "d3380c04c87fab6314bf753d4591eeb66527ae69"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/adlogix/guzzle-atlassian-connect-middleware/zipball/d3380c04c87fab6314bf753d4591eeb66527ae69",
+                "reference": "d3380c04c87fab6314bf753d4591eeb66527ae69",
+                "shasum": ""
+            },
+            "require": {
+                "firebase/php-jwt": "^3.0 || ^4.0",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^6.2",
+                "phpunit/phpunit": "^5.6",
+                "silex/silex": "^2.0",
+                "twig/twig": "^1.26"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "For using this library as it was created for Guzzle6. But you should be able to use it with any PSR-7 HTTP Client"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Adlogix\\GuzzleAtlassianConnect\\": [
+                        "src/",
+                        "tests/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cedric Michaux",
+                    "email": "cedric@adlogix.eu",
+                    "homepage": "http://www.adlogix.eu"
+                }
+            ],
+            "description": "An Atlassian Connect authentication middleware for Guzzle",
+            "keywords": [
+                "Authentication",
+                "Confluence",
+                "Guzzle",
+                "QSH",
+                "atlassian",
+                "connect",
+                "jira",
+                "jwt",
+                "middleware"
+            ],
+            "time": "2016-12-26 11:03:41"
+        },
         {
             "name": "beberlei/assert",
             "version": "v2.6.8",
@@ -225,16 +286,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.2.1",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "93f025a3a558cacf449491516b85a1a3f7e85935"
+                "reference": "7436749f68fc8ccea01a47f90ea12e8d7ce83ec6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/93f025a3a558cacf449491516b85a1a3f7e85935",
-                "reference": "93f025a3a558cacf449491516b85a1a3f7e85935",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/7436749f68fc8ccea01a47f90ea12e8d7ce83ec6",
+                "reference": "7436749f68fc8ccea01a47f90ea12e8d7ce83ec6",
                 "shasum": ""
             },
             "require": {
@@ -254,10 +315,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.2.1",
+                "source": "https://github.com/continuouspipe/security/tree/2.3.0",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2016-11-07 22:36:22"
+            "time": "2016-12-26 21:10:53"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -4582,16 +4643,16 @@
         },
         {
             "name": "simple-bus/rabbitmq-bundle-bridge",
-            "version": "dev-allow-the-producer-interface",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/sroze/RabbitMQBundleBridge.git",
-                "reference": "fd5a6fe5fd8aa8e45da96c523591c552442518b5"
+                "url": "https://github.com/SimpleBus/RabbitMQBundleBridge.git",
+                "reference": "4ef340c1e96343cbbe2ce26d1a3dcb2c243fa712"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/RabbitMQBundleBridge/zipball/fd5a6fe5fd8aa8e45da96c523591c552442518b5",
-                "reference": "fd5a6fe5fd8aa8e45da96c523591c552442518b5",
+                "url": "https://api.github.com/repos/SimpleBus/RabbitMQBundleBridge/zipball/4ef340c1e96343cbbe2ce26d1a3dcb2c243fa712",
+                "reference": "4ef340c1e96343cbbe2ce26d1a3dcb2c243fa712",
                 "shasum": ""
             },
             "require": {
@@ -4618,38 +4679,31 @@
                     "SimpleBus\\RabbitMQBundleBridge\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "SimpleBus\\RabbitMQBundleBridge\\Tests\\": "tests"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "Cliff Odijk",
-                    "email": "cliff@jcid.nl"
-                },
-                {
                     "name": "Matthias Noback",
                     "email": "matthiasnoback@gmail.com",
                     "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                },
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
                 }
             ],
             "description": "Use OldSoundRabbitMQBundle with SimpleBus/AsynchronousBundle",
             "homepage": "http://github.com/SimpleBus/RabbitMQBundleBridge",
             "keywords": [
-                "RabbitMQ",
                 "command bus",
                 "event bus",
                 "message bus",
-                "messages"
+                "messages",
+                "rabbitmq"
             ],
-            "support": {
-                "source": "https://github.com/sroze/RabbitMQBundleBridge/tree/allow-the-producer-interface"
-            },
-            "time": "2016-11-16 20:40:22"
+            "time": "2016-12-17 12:51:17"
         },
         {
             "name": "simple-bus/serialization",
@@ -5750,12 +5804,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Tolerance/Tolerance.git",
-                "reference": "e4375fae60e044c8b6288ae669e72c8e8bbde1ee"
+                "reference": "949de1c287ab5a8dfdcf80835d588364321cd44a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/e4375fae60e044c8b6288ae669e72c8e8bbde1ee",
-                "reference": "e4375fae60e044c8b6288ae669e72c8e8bbde1ee",
+                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/949de1c287ab5a8dfdcf80835d588364321cd44a",
+                "reference": "949de1c287ab5a8dfdcf80835d588364321cd44a",
                 "shasum": ""
             },
             "require": {
@@ -5791,7 +5845,7 @@
                 "MIT"
             ],
             "description": "Fault tolerance library and micro-services helpers",
-            "time": "2016-12-14 12:33:33"
+            "time": "2016-12-30 23:02:12"
         },
         {
             "name": "twig/twig",
@@ -7708,8 +7762,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 20,
-        "tolerance/tolerance": 20,
-        "simple-bus/rabbitmq-bundle-bridge": 20
+        "tolerance/tolerance": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

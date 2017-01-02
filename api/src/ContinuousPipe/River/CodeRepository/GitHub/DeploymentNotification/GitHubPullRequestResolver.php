@@ -2,14 +2,14 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification;
 
-use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use Github\Client;
+use ContinuousPipe\River\View\Tide;
 use GitHub\WebHook\Model\PullRequest;
+use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\Serializer;
-use Ramsey\Uuid\UuidInterface;
 
 class GitHubPullRequestResolver implements PullRequestResolver
 {
@@ -36,21 +36,11 @@ class GitHubPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference)
+    public function findPullRequestWithHeadReference(Tide $tide) : array
     {
-        $client = $this->gitHubClientFactory->createClientForFlow($flowUuid);
+        $client = $this->gitHubClientFactory->createClientForFlow($tide->getFlowUuid());
 
-        return $this->findPullRequestFromClient($client, $codeReference);
-    }
-
-    /**
-     * @param Client        $client
-     * @param CodeReference $codeReference
-     *
-     * @return array
-     */
-    private function findPullRequestFromClient(Client $client, CodeReference $codeReference)
-    {
+        $codeReference = $tide->getCodeReference();
         $repository = $codeReference->getRepository();
         if (!$repository instanceof GitHubCodeRepository) {
             throw new \RuntimeException(sprintf(
@@ -59,19 +49,37 @@ class GitHubPullRequestResolver implements PullRequestResolver
             ));
         }
 
-        $rawPullRequests = $client->pullRequests()->all(
-            $repository->getOrganisation(),
-            $repository->getName(),
-            [
-                'state' => 'open',
-            ]
-        );
+        try {
+            $rawPullRequests = $client->pullRequests()->all(
+                $repository->getOrganisation(),
+                $repository->getName(),
+                [
+                    'state' => 'open',
+                ]
+            );
+        } catch (RequestException $e) {
+            throw new CodeRepositoryException($e->getMessage(), $e->getCode(), $e);
+        }
 
         $jsonEncoded = json_encode($rawPullRequests);
         $pullRequests = $this->serializer->deserialize($jsonEncoded, 'array<'.PullRequest::class.'>', 'json');
 
-        return array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
+        $matchingPullRequests = array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
             return $codeReference->getCommitSha() == $pullRequest->getHead()->getSha1();
         }));
+
+        return array_map(function (PullRequest $pullRequest) {
+            return new \ContinuousPipe\River\CodeRepository\PullRequest(
+                $pullRequest->getNumber()
+            );
+        }, $matchingPullRequests);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Tide $tide): bool
+    {
+        return $tide->getCodeReference()->getRepository() instanceof GitHubCodeRepository;
     }
 }

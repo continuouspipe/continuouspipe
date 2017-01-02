@@ -40,6 +40,9 @@ security:
         - { path: ^/pipe/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/runner/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
+        # TODO: Secure with Atlassian's IPs
+        - { path: ^/connect/service/bitbucket/addon/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
         # Required by GCE healthchecks
         - { path: ^/$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 

@@ -7,7 +7,7 @@ use JMS\Serializer\Annotation as JMS;
 class CodeReference
 {
     /**
-     * @JMS\Type("ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository")
+     * @JMS\Type("ContinuousPipe\River\AbstractCodeRepository")
      * @JMS\Groups({"Default"})
      *
      * @var CodeRepository

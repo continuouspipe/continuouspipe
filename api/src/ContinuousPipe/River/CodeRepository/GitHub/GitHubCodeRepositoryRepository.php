@@ -44,18 +44,16 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
     {
         $client = $this->gitHubClientFactory->createClientForUser($user);
 
-        $paginator = new ResultPager($client);
-        $repositories = $paginator->fetch($client->user(), 'repositories', [$user->getUsername()]);
-
-        while ($paginator->hasNext()) {
-            $repositories = array_merge($repositories, $paginator->fetchNext());
-
-            if (count($repositories) > self::LIMIT) {
-                break;
-            }
-        }
-
-        return $this->parseRepositories($repositories);
+        return $this->parseRepositories(
+            $this->fetchAll(
+                $client,
+                $client->user(),
+                'repositories',
+                [
+                    $user->getUsername(),
+                ]
+            )
+        );
     }
 
     /**
@@ -121,5 +119,29 @@ class GitHubCodeRepositoryRepository implements CodeRepositoryRepository
         return array_map(function (Repository $repository) {
             return GitHubCodeRepository::fromRepository($repository);
         }, $repositories);
+    }
+
+    /**
+     * @param $client
+     * @param $api
+     * @param $method
+     * @param $parameters
+     *
+     * @return array|mixed
+     */
+    private function fetchAll($client, $api, $method, $parameters)
+    {
+        $paginator = new ResultPager($client);
+        $repositories = $paginator->fetch($api, $method, $parameters);
+
+        while ($paginator->hasNext()) {
+            $repositories = array_merge($repositories, $paginator->fetchNext());
+
+            if (count($repositories) > self::LIMIT) {
+                break;
+            }
+        }
+
+        return $repositories;
     }
 }

@@ -16,7 +16,8 @@
             <argument type="collection">
                 <argument type="service" id="river.notifications.notifier.slack" />
                 <argument type="service" id="river.notifications.notifier.github.commit_status" />
-                <argument type="service" id="river.notifications.notifier.github.pull_request" />
+                <argument type="service" id="river.notifications.notifier.pull_request" />
+                <argument type="service" id="river.notifications.notifier.bitbucket.build_status" />
             </argument>
         </service>
 
@@ -57,13 +58,14 @@
         </service>
         <service id="river.notifications.notifier.github.commit_status" alias="river.notifications.notifier.github.commit_status.http" />
 
-        <!-- GitHub Pull Request -->
-        <service id="river.notifications.notifier.github.pull_request" class="ContinuousPipe\River\Notifications\GitHub\PullRequest\GitHubPullRequestStatusNotifier">
-            <argument type="service" id="river.github.pull_request_resolver" />
-            <argument type="service" id="river.github.client_factory" />
+        <!-- Pull Requests -->
+        <service id="river.notifications.notifier.pull_request" class="ContinuousPipe\River\Notifications\CodeRepository\PullRequestCommentNotifier">
+            <argument type="service" id="river.pull_request_resolver" />
+            <argument type="service" id="river.pull_request_comment_manipulator" />
             <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.pipe.public_endpoint_writer" />
+            <argument type="service" id="logger" />
         </service>
     </services>
 </container>

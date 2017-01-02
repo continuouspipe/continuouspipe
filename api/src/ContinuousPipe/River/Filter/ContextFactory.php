@@ -13,7 +13,6 @@ use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\TideContext;
-use GitHub\WebHook\Model\PullRequest;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
 
@@ -109,11 +108,21 @@ class ContextFactory
         $repository = $context->getCodeRepository();
 
         if (null !== ($event = $context->getCodeRepositoryEvent()) && $event instanceof PullRequestEvent) {
-            $pullRequest = $event->getEvent()->getPullRequest();
+            $pullRequest = $event->getPullRequest();
         } else {
             $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference(
-                $context->getFlowUuid(),
-                $context->getCodeReference()
+                \ContinuousPipe\River\View\Tide::create(
+                    $tide->getUuid(),
+                    $tide->getFlowUuid(),
+                    $tide->getCodeReference(),
+                    $tide->getLog(),
+                    $tide->getTeam(),
+                    $tide->getUser(),
+                    $tide->getConfiguration(),
+                    new \DateTime(),
+                    $tide->getGenerationUuid(),
+                    $tide->getPipeline()
+                )
             );
 
             $pullRequest = count($matchingPullRequests) > 0 ? current($matchingPullRequests) : null;
@@ -128,21 +137,20 @@ class ContextFactory
         }
 
         return new ArrayObject([
-            'number' => $pullRequest->getNumber(),
-            'state' => $pullRequest->getState(),
+            'number' => $pullRequest->getIdentifier(),
             'labels' => $this->getPullRequestLabelNames($context->getFlowUuid(), $context, $repository, $pullRequest),
         ]);
     }
 
     /**
-     * @param UuidInterface  $flowUuid
-     * @param TideContext    $context
-     * @param CodeRepository $codeRepository
-     * @param PullRequest    $pullRequest
+     * @param UuidInterface              $flowUuid
+     * @param TideContext                $context
+     * @param CodeRepository             $codeRepository
+     * @param CodeRepository\PullRequest $pullRequest
      *
      * @return array
      */
-    private function getPullRequestLabelNames(UuidInterface $flowUuid, TideContext $context, CodeRepository $codeRepository, PullRequest $pullRequest)
+    private function getPullRequestLabelNames(UuidInterface $flowUuid, TideContext $context, CodeRepository $codeRepository, CodeRepository\PullRequest $pullRequest)
     {
         if (!$codeRepository instanceof CodeRepository\GitHub\GitHubCodeRepository) {
             return [];
@@ -163,7 +171,7 @@ class ContextFactory
             $labels = $client->issue()->labels()->all(
                 $codeRepository->getOrganisation(),
                 $codeRepository->getName(),
-                $pullRequest->getNumber()
+                $pullRequest->getIdentifier()
             );
         } catch (\Exception $e) {
             $this->logger->error('Unable to get pull-request labels, the communication with the GH API wasn\'t successful', [

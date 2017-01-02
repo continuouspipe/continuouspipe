@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Context\Environment\InitializedContextEnvironment;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
@@ -35,6 +36,11 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var \SecurityContext
      */
     private $securityContext;
+
+    /**
+     * @var InitializedContextEnvironment
+     */
+    private $environment;
 
     /**
      * @var string
@@ -121,7 +127,8 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      */
     public function gatherContexts(BeforeScenarioScope $scope)
     {
-        $this->securityContext = $scope->getEnvironment()->getContext('SecurityContext');
+        $this->environment = $scope->getEnvironment();
+        $this->securityContext = $this->environment->getContext('SecurityContext');
     }
 
     /**
@@ -157,16 +164,6 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
-     * @Given the GitHub repository :id exists
-     */
-    public function theGitHubRepositoryExists($id)
-    {
-        $this->codeRepositoryRepository->add(CodeRepository\GitHub\GitHubCodeRepository::fromRepository(
-            new Repository(new \GitHub\WebHook\Model\User('foo'), 'foo', 'bar', false, $id)
-        ));
-    }
-
-    /**
      * @Given the flow configuration version is :arg1
      */
     public function theFlowConfigurationVersionIs($arg1)
@@ -184,10 +181,15 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
+     * @When I request the flow
      * @When I request the flow with UUID :uuid
      */
-    public function iRequestTheFlowWithUuid($uuid)
+    public function iRequestTheFlowWithUuid($uuid = null)
     {
+        if (null === $uuid) {
+            $uuid = (string) $this->getCurrentUuid();
+        }
+        
         $this->response = $this->kernel->handle(Request::create('/flows/'.$uuid));
 
         $this->assertResponseCode(200);
@@ -207,15 +209,22 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
-     * @When I send a flow creation request for the team :team with the following parameters:
+     * @When I send a flow creation request for the team :teamUuid with the :repositoryType repository :repositoryIdentifier
+     * @When I send a flow creation request for the team :teamUuid with the :repositoryType repository :repositoryIdentifier and the UUID :uuid
      */
-    public function iSendAFlowCreationRequestForTheTeamWithTheFollowingParameters($team, TableNode $parameters)
+    public function iSendAFlowCreationRequestForTheTeamWithTheGithubRepositoryAndTheUuid($teamUuid, $repositoryType, $repositoryIdentifier, $uuid = null)
     {
-        $creationRequest = json_encode($parameters->getHash()[0]);
-
-        $this->response = $this->kernel->handle(Request::create('/teams/'.$team.'/flows', 'POST', [], [], [], [
+        $this->response = $this->kernel->handle(Request::create('/teams/'.$teamUuid.'/flows', 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
-        ], $creationRequest));
+        ], json_encode([
+            'repository' => [
+                'type' => strtolower($repositoryType),
+                'identifier' => $repositoryIdentifier,
+                'organisation' => 'sroze',
+                'name' => 'php-example',
+            ],
+            'uuid' => $uuid,
+        ])));
 
         $flowView = json_decode($this->response->getContent(), true);
         if (array_key_exists('uuid', $flowView)) {
@@ -409,6 +418,25 @@ EOF;
         }
 
         return $this->currentFlow;
+    }
+
+    /**
+     * @Given I have a flow with a BitBucket repository :name owned by user :username
+     */
+    public function iHaveAFlowWithABitBucketRepositoryOwnerByUser($name, $username)
+    {
+        $this->createFlow(null, [], null, new CodeRepository\BitBucket\BitBucketCodeRepository(
+            Uuid::uuid5(Uuid::NIL, $name)->toString(),
+            new CodeRepository\BitBucket\BitBucketAccount(
+                '{UUID}',
+                $username,
+                'user'
+            ),
+            $name,
+            'https://api.bitbucket.org/2.0/repositories/'.$username.'/'.$name,
+            'master',
+            true
+        ));
     }
 
     /**
@@ -612,56 +640,83 @@ EOF;
     }
 
     /**
-     * @Then the configuration should be:
+     * @When I request the :uuid account's personal repositories
      */
-    public function theConfigurationShouldBe(PyStringNode $string)
+    public function iRequestTheAccountSPersonalRepositories($uuid)
     {
-        throw new PendingException();
+        $this->response = $this->kernel->handle(Request::create(
+            '/account/'.$uuid.'/repositories'
+        ));
+
+        $this->assertResponseCode(200);
     }
 
     /**
-     * @Then the flow configuration version should be :arg1
+     * @When I request the :uuid account's organisations
      */
-    public function theFlowConfigurationVersionShouldBe($arg1)
+    public function iRequestTheAccountSOrganisations($uuid)
     {
-        throw new PendingException();
+        $this->response = $this->kernel->handle(Request::create(
+            '/account/'.$uuid.'/organisations'
+        ));
+
+        $this->assertResponseCode(200);
     }
 
     /**
-     * @Then the flow configuration should be saved successfully
+     * @Then I should see the following organisations:
      */
-    public function theFlowConfigurationShouldBeSavedSuccessfully()
+    public function iShouldSeeTheFollowingOrganisations(TableNode $table)
     {
-        throw new PendingException();
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        foreach ($table->getHash() as $row) {
+            if (!$this->responseHasRow($json, $row)) {
+                throw new \RuntimeException('The response do not contain the organisation');
+            }
+        }
     }
 
     /**
-     * @Then the flow configuration update should be rejected
+     * @When I request the :uuid account's repositories of the organisation :organisation
      */
-    public function theFlowConfigurationUpdateShouldBeRejected()
+    public function iRequestTheAccountSRepositoriesOfTheOrganisation($uuid, $organisation)
     {
-        throw new PendingException();
+        $this->response = $this->kernel->handle(Request::create(
+            '/account/'.$uuid.'/organisations/'.$organisation.'/repositories'
+        ));
+
+        $this->assertResponseCode(200);
+    }
+
+    /**
+     * @Then I should see the following repositories:
+     */
+    public function iShouldSeeTheFollowingRepositories(TableNode $table)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        foreach ($table->getHash() as $row) {
+            if (!$this->responseHasRow($json, $row)) {
+                throw new \RuntimeException('The response do not contain the repository');
+            }
+        }
     }
 
     /**
      * @param Uuid $uuid
      * @param array $configuration
+     * @param Team $team
+     * @param CodeRepository $codeRepository
+     *
      * @return Flow
      */
-    public function createFlow(Uuid $uuid = null, array $configuration = [], Team $team = null)
+    public function createFlow(Uuid $uuid = null, array $configuration = [], Team $team = null, CodeRepository $codeRepository = null)
     {
         $uuid = $uuid ?: Uuid::uuid1();
         $team = $team ?: $this->securityContext->theTeamExists('samuel');
         $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
-        $repository = CodeRepository\GitHub\GitHubCodeRepository::fromRepository(
-            new Repository(
-                new \GitHub\WebHook\Model\User('sroze'),
-                'docker-php-example',
-                'https://github.com/sroze/docker-php-example',
-                false,
-                37856553
-            )
-        );
+        $repository = $codeRepository ?: $this->generateRepository();
 
         array_map(function($event) use ($uuid) {
             $this->eventBus->handle($event);
@@ -688,6 +743,30 @@ EOF;
     }
 
     /**
+     * @Then the environment should be deleted
+     */
+    public function theEnvironmentShouldBeDeleted()
+    {
+        $deletions = $this->traceablePipeClient->getDeletions();
+
+        if (0 == count($deletions)) {
+            throw new \RuntimeException('No deleted environment found');
+        }
+    }
+
+    /**
+     * @Then the environment should not be deleted
+     */
+    public function theEnvironmentShouldNotBeDeleted()
+    {
+        $deletions = $this->traceablePipeClient->getDeletions();
+
+        if (0 != count($deletions)) {
+            throw new \RuntimeException('Deleted environment(s) found');
+        }
+    }
+
+    /**
      * @return Flow
      */
     public function getCurrentFlow()
@@ -708,5 +787,40 @@ EOF;
                 $this->response->getStatusCode()
             ));
         }
+    }
+
+    private function responseHasRow(array $json, array $row): bool
+    {
+        foreach ($json as $repository) {
+            $matching = true;
+            foreach ($row as $key => $value) {
+                if ($repository[$key] !== $value) {
+                    $matching = false;
+                }
+            }
+
+            if ($matching) {
+                return $matching;
+            }
+        }
+
+        return false;
+    }
+
+    private function generateRepository()
+    {
+        if ($this->environment->hasContextClass(GitHubContext::class)) {
+            $context = $this->environment->getContext(GitHubContext::class);
+        } elseif ($this->environment->hasContextClass(BitBucketContext::class)) {
+            $context = $this->environment->getContext(BitBucketContext::class);
+        } else {
+            throw new \RuntimeException('Unable to find the code repository context');
+        }
+
+        if (!$context instanceof CodeRepositoryContext) {
+            throw new \RuntimeException('The code repository context must implement the '.CodeRepositoryContext::class.' interface');
+        }
+
+        return $context->thereIsARepositoryIdentified();
     }
 }

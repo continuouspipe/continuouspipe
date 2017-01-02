@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Tests\CodeRepository\GitHub;
 
 use ContinuousPipe\River\GitHub\ClientFactory;
+use ContinuousPipe\Security\Account\GitHubAccount;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\User\User;
 use Github\Client;
@@ -62,6 +63,14 @@ class TestClientFactory implements ClientFactory
      * {@inheritdoc}
      */
     public function createClientFromInstallation(Installation $installation)
+    {
+        return new Client($this->httpClient);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createClientFromAccount(GitHubAccount $account)
     {
         return new Client($this->httpClient);
     }

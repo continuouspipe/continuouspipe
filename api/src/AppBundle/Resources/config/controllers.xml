@@ -5,16 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.controller.wizard.repositories" class="AppBundle\Controller\Wizard\RepositoriesController">
-            <argument type="service" id="repository_river.code_repository_repository" />
-        </service>
-        <service id="app.controller.wizard.organisations" class="AppBundle\Controller\Wizard\OrganisationsController">
-            <argument type="service" id="repository_river.organisation_repository" />
-        </service>
-        <service id="app.controller.wizard.components" class="AppBundle\Controller\Wizard\ComponentsController">
-            <argument type="service" id="river.docker_compose.repository_components_resolver" />
-            <argument type="service" id="river.commit_resolver" />
-        </service>
         <service id="app.controller.flow.alerts" class="AppBundle\Controller\FlowAlertsController">
             <argument type="service" id="river.alerts.repository" />
         </service>
@@ -45,7 +35,6 @@
         <service id="app.controller.manual_approval" class="AppBundle\Controller\ManualApprovalController">
             <argument type="service" id="command_bus" />
         </service>
-
         <service id="app.controller.builder_notification" class="AppBundle\Controller\BuilderNotificationController">
             <argument type="service" id="simple_bus.event_bus" />
         </service>
@@ -70,6 +59,9 @@
             <argument type="service" id="river.flow.environment_client" />
             <argument type="service" id="authenticator.bucket_repository" />
             <argument type="service" id="river.k8s_watcher" />
+        </service>
+        <service id="app.controller.account" class="AppBundle\Controller\AccountController">
+            <argument type="service" id="river.code_repository.explorer" />
         </service>
 
         <!-- Param converters -->
@@ -96,6 +88,12 @@
             <argument type="service" id="authenticator.team_repository" />
 
             <tag name="request.param_converter" converter="team" />
+        </service>
+
+        <service id="app.request.param_converter.account" class="ContinuousPipe\Security\Request\ParamConverter\AccountParamConverter">
+            <argument type="service" id="authenticator.account_repository" />
+
+            <tag name="request.param_converter" converter="account" />
         </service>
 
         <service id="serializer.uuid_handler" class="ContinuousPipe\River\Serializer\UuidHandler">

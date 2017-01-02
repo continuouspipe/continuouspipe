@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="atlassian_addon.installation_repository.doctrine" class="ContinuousPipe\AtlassianAddon\Infrastructure\Doctrine\DoctrineInstallationRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="atlassian_addon.installation_repository" alias="atlassian_addon.installation_repository.doctrine" />
+
+        <service id="atlassian_addon.controllers.installation" class="ContinuousPipe\AtlassianAddonBundle\Controller\InstallationController">
+            <argument type="service" id="atlassian_addon.installation_repository" />
+        </service>
+        <service id="atlassian_addon.controllers.web_hook" class="ContinuousPipe\AtlassianAddonBundle\Controller\WebHookController">
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="atlassian_addon.request.param_converter.web_hook" class="ContinuousPipe\AtlassianAddonBundle\Request\ParamConverter\WebHookParamConverter">
+            <argument type="service" id="jms_serializer" />
+
+            <tag name="request.param_converter" converter="bitbucket_webhook" />
+        </service>
+    </services>
+</container>

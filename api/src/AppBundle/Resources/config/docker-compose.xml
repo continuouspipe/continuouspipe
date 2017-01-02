@@ -20,12 +20,6 @@
             <argument type="service" id="river.docker_compose.parser.project.v2_compatibility.inner" />
         </service>
 
-        <service id="river.github.file_system_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubFileSystemResolver">
-            <argument type="service" id="river.github.client_factory" />
-            <argument type="service" id="river.github.repository_address_descriptor" />
-        </service>
-        <service id="river.file_system_resolver" alias="river.github.file_system_resolver" />
-
         <service id="pipe.docker_compose.component_transformer" class="ContinuousPipe\DockerCompose\Transformer\ComponentTransformer" />
         <service id="pipe.docker_compose.environment_transformer" class="ContinuousPipe\DockerCompose\Transformer\EnvironmentTransformer">
             <argument type="service" id="pipe.docker_compose.component_transformer" />

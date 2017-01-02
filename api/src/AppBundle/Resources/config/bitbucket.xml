@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.code_repository.bitbucket.explorer.http_client.handler"
+                 class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+        </service>
+
+        <service id="river.code_repository.bitbucket.explorer.http_client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument key="handler" type="service" id="river.code_repository.bitbucket.explorer.http_client.handler" />
+            </argument>
+
+            <tag name="csa_guzzle.client" />
+        </service>
+
+        <service id="river.code_repository.bitbucket.explorer" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketRepositoryExplorer">
+            <argument type="service" id="river.code_repository.bitbucket.explorer.http_client" />
+            <argument>%bitbucket_oauth_key%</argument>
+            <argument>%bitbucket_oauth_secret%</argument>
+        </service>
+        <service id="river.bitbucket.client_factory" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientFactory">
+            <argument type="service" id="atlassian_addon.installation_repository" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="river.code_repository.bitbucket.explorer.http_client.handler" />
+            <argument type="service" id="jms_serializer" />
+            <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
+        </service>
+        <service id="river.bitbucket.commit_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCommitResolver">
+            <argument type="service" id="river.bitbucket.client_factory" />
+        </service>
+
+        <service id="river.bitbucket.file_system_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\Filesystem\BitBucketFileSystemResolver">
+            <argument type="service" id="river.bitbucket.client_factory" />
+        </service>
+
+        <service id="river.bitbucket.handler.handle_event" class="ContinuousPipe\River\CodeRepository\BitBucket\Handler\BitBucketEventHandler">
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="logger" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\CodeRepository\BitBucket\Command\HandleBitBucketEvent" />
+        </service>
+
+        <service id="river.bitbucket.pull_request_comment_manipulator" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketPullRequestCommentManipulator">
+            <argument type="service" id="river.bitbucket.client_factory" />
+        </service>
+
+        <service id="river.bitbucket.pull_request_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketPullRequestResolver">
+            <argument type="service" id="river.bitbucket.client_factory" />
+        </service>
+
+        <service id="river.code_repository.bitbucket.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\Builder\BitBucketBuildRequestSourceResolver">
+            <argument type="service" id="atlassian_addon.installation_repository" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <!-- Notifications -->
+        <service id="river.notifications.notifier.bitbucket.build_status" class="ContinuousPipe\River\CodeRepository\BitBucket\Notifications\BitBucketBuildStatusNotifier">
+            <argument type="service" id="river.bitbucket.client_factory" />
+        </service>
+    </services>
+</container>

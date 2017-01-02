@@ -9,10 +9,5 @@ interface Organisation
      *
      * @return string
      */
-    public function getIdentifier();
-
-    /**
-     * @return string
-     */
-    public function getReposUrl();
+    public function getIdentifier() : string;
 }
