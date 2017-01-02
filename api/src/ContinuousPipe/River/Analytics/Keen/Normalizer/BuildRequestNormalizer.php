@@ -8,7 +8,7 @@ class BuildRequestNormalizer
 {
     public function normalize(BuildRequest $buildRequest)
     {
-        return [
+        $request = [
             'environment' => $buildRequest->getEnvironment(),
             'image' => [
                 'name' => $buildRequest->getImage()->getName(),
@@ -18,10 +18,21 @@ class BuildRequestNormalizer
                 'docker_file_path' => $buildRequest->getContext()->getDockerFilePath(),
                 'sub_directory' => $buildRequest->getContext()->getRepositorySubDirectory(),
             ],
-            'repository' => [
-                'address' => $buildRequest->getRepository()->getAddress(),
-                'branch' => $buildRequest->getRepository()->getBranch(),
-            ],
         ];
+
+        if (null !== ($repository = $buildRequest->getRepository())) {
+            $request['repository'] = [
+                'address' => $repository->getAddress(),
+                'branch' => $repository->getBranch(),
+            ];
+        }
+
+        if (null !== ($archive = $buildRequest->getArchive())) {
+            $request['archive'] = [
+                'url' => parse_url($archive->getUrl()),
+            ];
+        }
+
+        return $request;
     }
 }
