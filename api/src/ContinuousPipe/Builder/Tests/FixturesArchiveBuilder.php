@@ -5,7 +5,7 @@ namespace ContinuousPipe\Builder\Tests;
 use ContinuousPipe\Builder\Archive\ArchiveCreationException;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\Builder\Tests\Archive\FileSystemArchive;
+use ContinuousPipe\Builder\Tests\Archive\NonDeletableFileSystemArchive;
 use LogStream\Logger;
 
 class FixturesArchiveBuilder implements ArchiveBuilder
@@ -48,7 +48,7 @@ class FixturesArchiveBuilder implements ArchiveBuilder
             ));
         }
 
-        return new FileSystemArchive($fixturesDirectoryPath);
+        return new NonDeletableFileSystemArchive($fixturesDirectoryPath);
     }
 
     /**
@@ -56,8 +56,10 @@ class FixturesArchiveBuilder implements ArchiveBuilder
      */
     public function supports(BuildRequest $request)
     {
-        $repositoryAddress = $request->getRepository()->getAddress();
+        if (null === ($repository = $request->getRepository())) {
+            return false;
+        }
 
-        return strpos($repositoryAddress, self::ADDRESS_PREFIX) !== false;
+        return strpos($repository->getAddress(), self::ADDRESS_PREFIX) !== false;
     }
 }

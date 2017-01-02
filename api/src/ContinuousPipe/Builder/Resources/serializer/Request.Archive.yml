@@ -1,0 +1,4 @@
+ContinuousPipe\Builder\Request\Archive:
+    properties:
+        url:
+            type: string

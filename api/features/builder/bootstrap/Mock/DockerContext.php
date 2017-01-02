@@ -44,6 +44,13 @@ class DockerContext implements Context
     }
 
     /**
+     * @Then the file :path in the image :image should exists
+     */
+    public function theFileInTheImageShouldExists($path, $image)
+    {
+    }
+
+    /**
      * @Then the file :path in the image :image should contain :contents
      */
     public function theFileInTheImageShouldContain($path, $image, $contents)

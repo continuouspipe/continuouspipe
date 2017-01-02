@@ -39,7 +39,7 @@ class InjectGitHubTokenBuilderDecorator implements ArchiveBuilder
     {
         $repository = $buildRequest->getRepository();
 
-        if (null === $repository->getToken()) {
+        if (null !== $repository && null === $repository->getToken()) {
             $token = $this->getGitHubToken($buildRequest);
 
             $buildRequest = new BuildRequest(

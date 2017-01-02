@@ -1,17 +1,15 @@
 <?php
 
-namespace ContinuousPipe\Builder\GitHub;
+namespace ContinuousPipe\Builder\Archive;
 
-use ContinuousPipe\Builder\Archive\ArchiveCreationException;
-use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Context;
-use ContinuousPipe\Builder\Repository;
+use ContinuousPipe\Builder\Request\Archive;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
-class ArchivePacker
+class HttpArchivePacker implements ArchivePacker
 {
     /**
      * @var Client
@@ -19,40 +17,31 @@ class ArchivePacker
     private $client;
 
     /**
-     * @var Repository
+     * @param Client $client
      */
-    private $repository;
-
-    /**
-     * @param Client     $client
-     * @param Repository $repository
-     */
-    public function __construct(Client $client, Repository $repository)
+    public function __construct(Client $client)
     {
         $this->client = $client;
-        $this->repository = $repository;
     }
 
     /**
      * Create an archive from the given archive.
      *
      * @param Context $context
-     * @param string  $url
-     *
-     * @throws ArchiveCreationException
+     * @param Archive $archive
      *
      * @return FileSystemArchive
+     *
+     * @throws ArchiveCreationException
      */
-    public function createFromUrl(Context $context, $url)
+    public function createFromArchiveRequest(Context $context, Archive $archive)
     {
-        $archiveFile = $this->getTemporaryFilePath('gharchive');
+        $archiveFile = $this->getTemporaryFilePath('archive');
 
         try {
-            $this->client->get($url, [
+            $this->client->get($archive->getUrl(), [
                 'save_to' => $archiveFile,
-                'headers' => [
-                    'Authorization' => 'token '.$this->repository->getToken(),
-                ],
+                'headers' => $archive->getHeaders(),
             ]);
         } catch (RequestException $e) {
             throw new ArchiveCreationException('Unable to download the code archive: '.$e->getMessage(), $e->getCode(), $e);
@@ -70,7 +59,7 @@ class ArchivePacker
     }
 
     /**
-     * Repackage the archive that come from GitHub in a tar, with files at root directory instead of
+     * Repackage the archive that come from the tar, with files at root directory instead of
      * using a sub-directory.
      *
      * This methods returns the local temporary path of the created tar archive.
@@ -111,7 +100,7 @@ class ArchivePacker
      */
     private function extractGitHubArchive($archiveFilePath)
     {
-        $temporaryDirectory = $this->getTemporaryFilePath('extractedGHArchive');
+        $temporaryDirectory = $this->getTemporaryFilePath('extractedArchive');
         mkdir($temporaryDirectory);
 
         $process = new Process(sprintf('/usr/bin/env tar -xzf %s', $archiveFilePath), $temporaryDirectory);
@@ -173,7 +162,7 @@ class ArchivePacker
 
         if (1 !== count($directories)) {
             throw new ArchiveCreationException(sprintf(
-                'Expected 1 directory at the root of GitHub archive, found %d: %s',
+                'Expected 1 directory at the root of the archive, found %d: %s',
                 count($directories),
                 implode(', ', $directories)
             ));

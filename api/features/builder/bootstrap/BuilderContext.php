@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Article\TraceableArchiveBuilder;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
@@ -292,6 +293,34 @@ EOF;
 
         if (count($matchingRequests) == 0) {
             throw new \RuntimeException('No matching request with this token');
+        }
+    }
+
+    /**
+     * @Then the archive should contain the file :file
+     */
+    public function theArchiveShouldContainTheFile($file)
+    {
+        $archives = $this->traceableArchiveBuilder->getArchives();
+        if (count($archives) != 1) {
+            throw new \RuntimeException(sprintf(
+                'Expected 1 archive, found %d',
+                count($archives)
+            ));
+        }
+
+        $archive = $archives[0];
+        if (!$archive instanceof FileSystemArchive) {
+            throw new \RuntimeException('Do not support non-filesystem archives yet');
+        }
+
+        $filePath = $archive->getDirectory().DIRECTORY_SEPARATOR.$file;
+        if (!file_exists($filePath)) {
+            throw new \RuntimeException(sprintf(
+                'File "%s" do not exists (looked in: %s)',
+                $file,
+                $archive->getDirectory()
+            ));
         }
     }
 }

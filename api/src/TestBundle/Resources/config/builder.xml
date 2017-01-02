@@ -10,11 +10,27 @@
             <argument>%kernel.root_dir%/../features/fixtures</argument>
         </service>
 
+        <service id="builder.archive.http_archive_builder.http_client.handler.matching" class="ContinuousPipe\Guzzle\MatchingHandler">
+            <argument type="service" id="logger" />
+        </service>
+        <service id="builder.archive.http_archive_builder.http_client.handler"
+                 class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+
+            <argument type="service" id="builder.archive.http_archive_builder.http_client.handler.matching" />
+        </service>
+
         <service id="builder.archive_builder" class="ContinuousPipe\Builder\Archive\Builder\AdaptativeArchiveBuilder">
             <argument type="collection">
                 <argument type="service" id="builder.archive_builder.fixtures" />
-                <argument type="service" id="builder.archive_builder.github" />
+                <argument type="service" id="builder.archive.http_archive_builder" />
             </argument>
+        </service>
+
+        <service id="builder.archive_builder.replace_with_non_deletable_archives"
+                 class="ContinuousPipe\Builder\Archive\ReplaceWithTestFileSystemArchives"
+                 decorates="builder.archive_builder">
+            <argument type="service" id="builder.archive_builder.replace_with_non_deletable_archives.inner" />
         </service>
 
         <service id="builder.archive_builder.traceable"

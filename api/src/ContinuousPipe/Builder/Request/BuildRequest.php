@@ -17,6 +17,11 @@ class BuildRequest
     private $repository;
 
     /**
+     * @var Archive
+     */
+    private $archive;
+
+    /**
      * @var Image
      */
     private $image;
@@ -47,16 +52,23 @@ class BuildRequest
     private $environment;
 
     /**
-     * @param Repository   $repository
-     * @param Image        $image
-     * @param Context      $context
-     * @param Notification $notification
-     * @param Logging      $logging
-     * @param array        $environment
+     * @param Repository|Archive $repositoryOrArchive
+     * @param Image              $image
+     * @param Context            $context
+     * @param Notification       $notification
+     * @param Logging            $logging
+     * @param array              $environment
      */
-    public function __construct(Repository $repository, Image $image, Context $context = null, Notification $notification = null, Logging $logging = null, array $environment = [])
+    public function __construct($repositoryOrArchive, Image $image, Context $context = null, Notification $notification = null, Logging $logging = null, array $environment = [])
     {
-        $this->repository = $repository;
+        if ($repositoryOrArchive instanceof Repository) {
+            $this->repository = $repositoryOrArchive;
+        } elseif ($repositoryOrArchive instanceof Archive) {
+            $this->archive = $repositoryOrArchive;
+        } else {
+            throw new \InvalidArgumentException('Expected a repository or an archive');
+        }
+
         $this->image = $image;
         $this->notification = $notification;
         $this->logging = $logging;
@@ -70,6 +82,14 @@ class BuildRequest
     public function getRepository()
     {
         return $this->repository;
+    }
+
+    /**
+     * @return Archive
+     */
+    public function getArchive()
+    {
+        return $this->archive;
     }
 
     /**
