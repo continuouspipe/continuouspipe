@@ -5,8 +5,8 @@
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <embeddable name="ContinuousPipe\Builder\Repository">
-        <field name="address" type="string" />
-        <field name="branch" type="string" />
+        <field name="address" type="string" nullable="true" />
+        <field name="branch" type="string" nullable="true" />
     </embeddable>
 
 </doctrine-mapping>

@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\Builder\Docker;
 
+use Docker\Stream\TarStream;
+use GuzzleHttp\Psr7\Stream;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use ContinuousPipe\Builder\Docker\HttpClient\OutputHandler;
 use ContinuousPipe\Builder\RegistryCredentials;
@@ -10,9 +12,7 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use Docker\Docker;
-use Docker\Manager\ContainerManager;
 use Docker\Manager\ImageManager;
-use GuzzleHttp\Stream\Stream;
 use LogStream\Logger;
 use LogStream\Node\Text;
 use Psr\Log\LoggerInterface;
@@ -68,7 +68,7 @@ class HttpClient implements Client
         try {
             return $this->doBuild($archive, $request, $logger);
         } catch (\Http\Client\Exception $e) {
-            $this->logger->notice('An error appeared while building an image', [
+            $this->logger->notice('An error appeared while building the Docker image', [
                 'buildRequest' => $request,
                 'exception' => $e,
             ]);
@@ -124,6 +124,8 @@ class HttpClient implements Client
      * @param BuildRequest $request
      * @param Logger       $logger
      *
+     * @throws DockerException
+     *
      * @return Image
      */
     private function doBuild(Archive $archive, BuildRequest $request, Logger $logger)
@@ -146,10 +148,10 @@ class HttpClient implements Client
             $parameters['buildargs'] = json_encode($environment);
         }
 
-        $content = $archive->isStreamed() ? new Stream($archive->read()) : $archive->read();
+        $content = $archive->isStreamed() ? new TarStream($archive->read()) : $archive->read();
 
         // Allow a build to be up to half an hour
-        $buildStream = $this->docker->getImageManager()->build($content, $parameters, ContainerManager::FETCH_STREAM);
+        $buildStream = $this->docker->getImageManager()->build($content, $parameters, ImageManager::FETCH_STREAM);
         $buildStream->onFrame($this->getOutputCallback($logger));
 
         try {

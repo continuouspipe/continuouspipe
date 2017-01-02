@@ -29,14 +29,26 @@ class AdaptativeArchiveBuilder implements ArchiveBuilder
     public function getArchive(BuildRequest $buildRequest, Logger $logger)
     {
         foreach ($this->builders as $builder) {
-            if ($builder instanceof ConditionalArchiveBuilder && !$builder->supports($buildRequest)) {
-                continue;
+            if ($builder->supports($buildRequest)) {
+                return $builder->getArchive($buildRequest, $logger);
             }
-
-            return $builder->getArchive($buildRequest, $logger);
         }
 
         throw new ArchiveCreationException('No archive builder support such archives');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(BuildRequest $request)
+    {
+        foreach ($this->builders as $builder) {
+            if ($builder->supports($request)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

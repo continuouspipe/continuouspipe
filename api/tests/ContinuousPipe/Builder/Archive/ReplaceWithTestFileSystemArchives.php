@@ -1,28 +1,18 @@
 <?php
 
-namespace ContinuousPipe\Builder\Article;
+namespace ContinuousPipe\Builder\Archive;
 
-use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Request\BuildRequest;
+use ContinuousPipe\Builder\Tests\Archive\NonDeletableFileSystemArchive;
 use LogStream\Logger;
 
-class TraceableArchiveBuilder implements ArchiveBuilder
+class ReplaceWithTestFileSystemArchives implements ArchiveBuilder
 {
     /**
      * @var ArchiveBuilder
      */
     private $decoratedBuilder;
-
-    /**
-     * @var BuildRequest[]
-     */
-    private $requests;
-
-    /**
-     * @var Archive[]
-     */
-    private $archives;
 
     /**
      * @param ArchiveBuilder $decoratedBuilder
@@ -39,8 +29,11 @@ class TraceableArchiveBuilder implements ArchiveBuilder
     {
         $archive = $this->decoratedBuilder->getArchive($buildRequest, $logger);
 
-        $this->requests[] = $buildRequest;
-        $this->archives[] = $archive;
+        if ($archive instanceof FileSystemArchive) {
+            $archive = new NonDeletableFileSystemArchive(
+                $archive->getDirectory()
+            );
+        }
 
         return $archive;
     }
@@ -51,21 +44,5 @@ class TraceableArchiveBuilder implements ArchiveBuilder
     public function supports(BuildRequest $request)
     {
         return $this->decoratedBuilder->supports($request);
-    }
-
-    /**
-     * @return BuildRequest[]
-     */
-    public function getRequests()
-    {
-        return $this->requests;
-    }
-
-    /**
-     * @return Archive[]
-     */
-    public function getArchives()
-    {
-        return $this->archives;
     }
 }

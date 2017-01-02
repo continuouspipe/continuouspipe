@@ -39,7 +39,7 @@ class InjectGitHubTokenBuilderDecorator implements ArchiveBuilder
     {
         $repository = $buildRequest->getRepository();
 
-        if (null === $repository->getToken()) {
+        if (null !== $repository && null === $repository->getToken()) {
             $token = $this->getGitHubToken($buildRequest);
 
             $buildRequest = new BuildRequest(
@@ -83,5 +83,13 @@ class InjectGitHubTokenBuilderDecorator implements ArchiveBuilder
         }
 
         return $tokens->first()->getAccessToken();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(BuildRequest $request)
+    {
+        return $this->decoratedBuilder->supports($request);
     }
 }

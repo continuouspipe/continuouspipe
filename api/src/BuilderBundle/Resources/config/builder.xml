@@ -19,24 +19,48 @@
             <argument type="service" id="builder.dockerfile_command_extractor" />
         </service>
 
-        <service id="builder.archive_builder.github" class="ContinuousPipe\Builder\GitHub\GitHubArchiveBuilder">
-            <argument type="service" id="builder.github.repository_address_descriptor" />
-            <argument type="service" id="builder.github.http_client" />
-            <argument type="service" id="authenticator.bucket_repository" />
+        <service id="builder.archive.http_archive_builder.http_client.handler"
+                 class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+        </service>
+
+        <service id="builder.archive.http_archive_builder.http_client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument key="handler" type="service" id="builder.archive.http_archive_builder.http_client.handler" />
+            </argument>
+
+            <tag name="csa_guzzle.client" />
+        </service>
+
+        <service id="builder.archive.http_archive_packer" class="ContinuousPipe\Builder\Archive\HttpArchivePacker">
+            <argument type="service" id="builder.archive.http_archive_builder.http_client" />
+        </service>
+
+        <service id="builder.archive.http_archive_builder" class="ContinuousPipe\Builder\Archive\HttpArchiveBuilder">
+            <argument type="service" id="builder.archive.http_archive_packer" />
         </service>
 
         <service id="builder.archive_builder" class="ContinuousPipe\Builder\Archive\Builder\AdaptativeArchiveBuilder">
             <argument type="collection">
-                <argument type="service" id="builder.archive_builder.github" />
+                <argument type="service" id="builder.archive.http_archive_builder" />
             </argument>
+        </service>
+
+        <service id="builder.archive_builder.github_repository_compatibility"
+                 class="ContinuousPipe\Builder\GitHub\Archive\ReplaceTheGitHubRepositoryByAnArchiveDecorator"
+                 decorates="builder.archive_builder"
+                 decoration-priority="5">
+            <argument type="service" id="builder.archive_builder.github_repository_compatibility.inner" />
         </service>
 
         <service id="builder.archive_builder.inject_github_token"
                  class="ContinuousPipe\Builder\GitHub\Archive\InjectGitHubTokenBuilderDecorator"
-                 decorates="builder.archive_builder">
+                 decorates="builder.archive_builder"
+                 decoration-priority="4">
             <argument type="service" id="builder.archive_builder.inject_github_token.inner" />
             <argument type="service" id="authenticator.bucket_repository" />
         </service>
+
         <service id="builder.builder" class="ContinuousPipe\Builder\Docker\DockerBuilder">
             <argument type="service" id="builder.archive_builder" />
             <argument type="service" id="builder.docker.client" />
