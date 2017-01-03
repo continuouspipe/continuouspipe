@@ -53,12 +53,12 @@ class BuildRequest
 
     /**
      * @param Repository|Archive $repositoryOrArchive
-     * @param Image        $image
-     * @param Context      $context
-     * @param Notification $notification
-     * @param Logging      $logging
-     * @param array        $environment
-     * @param Uuid         $credentialsBucket
+     * @param Image              $image
+     * @param Context            $context
+     * @param Notification       $notification
+     * @param Logging            $logging
+     * @param array              $environment
+     * @param Uuid               $credentialsBucket
      */
     public function __construct($repositoryOrArchive, Image $image, Context $context = null, Notification $notification = null, Logging $logging = null, array $environment = [], Uuid $credentialsBucket = null)
     {

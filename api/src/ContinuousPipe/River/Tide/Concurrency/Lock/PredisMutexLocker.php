@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Tide\Concurrency\Lock;
 
+use malkusch\lock\exception\MutexException;
 use malkusch\lock\mutex\PredisMutex;
 use Predis\Client;
 
@@ -34,6 +35,10 @@ class PredisMutexLocker implements Locker
     {
         $mutex = new PredisMutex([$this->client], $name, $this->timeout);
 
-        return $mutex->synchronized($callable);
+        try {
+            return $mutex->synchronized($callable);
+        } catch (MutexException $e) {
+            throw new LockerException('Unable to synchronized the operation', $e->getCode(), $e);
+        }
     }
 }

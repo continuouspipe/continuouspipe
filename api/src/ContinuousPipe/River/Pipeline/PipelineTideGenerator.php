@@ -11,6 +11,8 @@ interface PipelineTideGenerator
      *
      * @param TideGenerationRequest $request
      *
+     * @throws TideGenerationException
+     *
      * @return Tide[]
      */
     public function generate(TideGenerationRequest $request) : array;

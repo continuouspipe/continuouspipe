@@ -27,6 +27,7 @@ class BitBucketBuildRequestSourceResolver implements BuildRequestSourceResolverA
 
     /**
      * BitBucketBuildRequestSourceResolver constructor.
+     *
      * @param InstallationRepository $installationRepository
      */
     public function __construct(InstallationRepository $installationRepository, LoggerInterface $logger)

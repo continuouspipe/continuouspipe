@@ -20,7 +20,7 @@ class BuildRequestCreator
     private $buildRequestSourceResolver;
 
     /**
-     * @param LoggerInterface $logger
+     * @param LoggerInterface            $logger
      * @param BuildRequestSourceResolver $buildRequestSourceResolver
      */
     public function __construct(LoggerInterface $logger, BuildRequestSourceResolver $buildRequestSourceResolver)

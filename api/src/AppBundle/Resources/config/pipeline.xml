@@ -36,9 +36,24 @@
             <argument type="service" id="logger" />
         </service>
 
+        <service id="river.pipeline.tide_generator.dispatch_generated_tides_events"
+                 class="ContinuousPipe\River\Pipeline\Generation\DispatchGeneratedTideEvents"
+                 decorates="river.pipeline.tide_generator"
+                 decoration-priority="-15">
+            <argument type="service" id="river.pipeline.tide_generator.dispatch_generated_tides_events.inner" />
+            <argument type="service" id="event_bus" />
+        </service>
+
+        <service id="river.pipeline.tide_generator.synchronized_generation"
+                 class="ContinuousPipe\River\Tide\Concurrency\TideGeneration\SynchronizedTideGeneration"
+                 decorates="river.pipeline.tide_generator"
+                 decoration-priority="-20">
+            <argument type="service" id="river.pipeline.tide_generator.synchronized_generation.inner" />
+            <argument type="service" id="river.tide.concurrency.locker" />
+        </service>
+
         <service id="river.pipeline.handler.generate_tides_handler" class="ContinuousPipe\River\Pipeline\Handler\GenerateTidesHandler">
             <argument type="service" id="river.pipeline.tide_generator" />
-            <argument type="service" id="event_bus" />
             <argument type="service" id="logger" />
 
             <tag name="command_handler" handles="ContinuousPipe\River\Pipeline\Command\GenerateTides" />

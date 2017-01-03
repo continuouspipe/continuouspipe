@@ -2,9 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub\Builder;
 
-use ContinuousPipe\Builder\BuildRequestSourceResolver;
 use ContinuousPipe\Builder\Repository;
-use ContinuousPipe\Builder\Request\Archive;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use GitHub\Integration\InstallationNotFound;
