@@ -422,10 +422,13 @@ EOF;
 
     /**
      * @Given I have a flow with a BitBucket repository :name owned by user :username
+     * @Given I have a flow :uuid with a BitBucket repository :name owned by user :username
      */
-    public function iHaveAFlowWithABitBucketRepositoryOwnerByUser($name, $username)
+    public function iHaveAFlowWithABitBucketRepositoryOwnerByUser($name, $username, $uuid = null)
     {
-        $this->createFlow(null, [], null, new CodeRepository\BitBucket\BitBucketCodeRepository(
+        $this->createFlow(
+            $uuid !== null ? Uuid::fromString($uuid) : null,
+            [], null, new CodeRepository\BitBucket\BitBucketCodeRepository(
             Uuid::uuid5(Uuid::NIL, $name)->toString(),
             new CodeRepository\BitBucket\BitBucketAccount(
                 '{UUID}',

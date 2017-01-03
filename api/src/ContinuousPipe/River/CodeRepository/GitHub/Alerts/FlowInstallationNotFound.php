@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River\Alerts\OnRuntime\GitHub;
+namespace ContinuousPipe\River\CodeRepository\GitHub\Alerts;
 
 use ContinuousPipe\River\Alerts\Alert;
 use ContinuousPipe\River\Alerts\AlertAction;
