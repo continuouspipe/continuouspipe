@@ -16,7 +16,7 @@ class Archive
 
     /**
      * @param string $url
-     * @param array $headers
+     * @param array  $headers
      */
     public function __construct(string $url, array $headers = [])
     {
