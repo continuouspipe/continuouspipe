@@ -11,7 +11,7 @@ $inner-toolbar-button-background: #52A6FF;
 $inner-toolbar-button-color: #fff;
 $inner-background-color-grey: #f2f4f6;
 $border-grey: #a1a1a1;
-$inactive-grey: #e7e7e7;
+$inactive-grey: #cfcfcf;
 $active-grey: #9f9f9f;
 
 $logo-size: 40px;
@@ -583,17 +583,21 @@ pre.deployment-logs {
     display: flex;
     flex-direction: row;
     background-color: $inner-toolbar-background;
-    border: 1px solid $border-grey;
-    margin-bottom: 20px;
+    margin-bottom: 0;
     text-align: center;
     overflow: scroll;
+    font-size: 0.8em;
+}
+
+.even{
+  background-color: #f8f9fa;
 }
 
 .cp-pipeline_flex-item {
     padding: 0 10px;
 
     &.--tide {
-      border-right: 1px solid $border-grey;
+
     }
 
     &.--task {
@@ -623,7 +627,7 @@ pre.deployment-logs {
 
   & md-icon {
       right: 70px;
-      font-size: 40px;
+      font-size: 30px;
   }
 }
 
@@ -672,7 +676,7 @@ pre.deployment-logs {
 .cp-pipeline-title {
     &::after {
        font-family: "Material Icons";
-       font-size: 25px;
+       font-size: 20px;
        padding: 5px 0 0 5px;
     }
 }
