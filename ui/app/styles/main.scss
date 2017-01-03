@@ -650,14 +650,15 @@ pre.deployment-logs {
   }
 }
 
-.status-failure {
-    color: $pipeline-failure-color;
+.status-failure,
+.status-failed {
+    color: $failure-dark-color;
 
   &::after {
       position: relative;
       top: 5px;
       content: 'error';
-      color: $pipeline-failure-color;
+      color: $failure-dark-color;
   }
 }
 
