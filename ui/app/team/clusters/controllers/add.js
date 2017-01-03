@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamAddClusterController', function($scope, $state, $http, ClusterRepository, GoogleRepository, AUTHENTICATOR_API_URL) {
+    .controller('TeamAddClusterController', function($scope, $state, $http, ClusterRepository, AccountRepository, AUTHENTICATOR_API_URL) {
         var clusterFromGkeCluster = function(gkeCluster) {
             return {
                 type: 'kubernetes',
@@ -38,7 +38,7 @@ angular.module('continuousPipeRiver')
 
         $scope.connectAccountUrl = AUTHENTICATOR_API_URL + '/account/';
         $scope.loadGoogleAccounts = function() {
-            return GoogleRepository.findMyAccounts().then(function(accounts) {
+            return AccountRepository.findMine().then(function(accounts) {
                 $scope.googleAccounts = accounts.filter(function(account) {
                     return account.type == 'google';
                 });
@@ -48,7 +48,7 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.loadGoogleProjects = function(account) {
-            return GoogleRepository.findProjects(account.uuid).then(function(projects) {
+            return AccountRepository.findGoogleProjects(account.uuid).then(function(projects) {
                 $scope.googleProjects = projects;
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occured while loading your Google projects", "error");
@@ -56,7 +56,7 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.loadGoogleCluster = function(account, project) {
-            return GoogleRepository.findClusters(account.uuid, project.projectId).then(function(clusters) {
+            return AccountRepository.findGoogleClusters(account.uuid, project.projectId).then(function(clusters) {
                 $scope.googleClusters = clusters;
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occured while loading your GKE clusters", "error");

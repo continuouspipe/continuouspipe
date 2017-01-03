@@ -387,35 +387,38 @@ body {
             padding: 0;
         }
 
-        .step-repository {
-            md-list-item {
-                &.selected {
-                    background: #efefef;
-                }
-            }
-
-            .organisation-list {
-                md-list-item {
-                    .md-avatar {
-                        border-radius: 0;
-                    }
-                }
-            }
-
-            .filter-repository-toolbar {
-                background: #EFEFEF;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-                padding-top: 20px;
-                min-height: 69px;
-                height: 69px;
+        md-list-item {
+            &.selected {
+                background: #737373;
+                color: #fff;
 
                 md-icon {
-                    color: grey;
+                    color: #fff;                    
                 }
+            }
+        }
 
-                md-input-container.md-block {
-                    width: 100%;
+        .organisation-list {
+            md-list-item {
+                .md-avatar {
+                    border-radius: 0;
                 }
+            }
+        }
+
+        .filter-repository-toolbar {
+            background: #EFEFEF;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+            padding-top: 20px;
+            min-height: 69px;
+            height: 69px;
+
+            md-icon {
+                color: grey;
+            }
+
+            md-input-container.md-block {
+                width: 100%;
             }
         }
 
