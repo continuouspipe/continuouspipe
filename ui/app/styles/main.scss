@@ -627,8 +627,8 @@ pre.deployment-logs {
   }
 }
 
-.status-successful,
-.status-success {
+.cp-pipeline-status-successful,
+.cp-pipeline-status-success {
     color: $pipeline-success-color;
 
   &::after {
@@ -639,7 +639,7 @@ pre.deployment-logs {
   }
 }
 
-.status-pending {
+.cp-pipeline-status-pending {
     color: $pending-color;
 
   &::after {
@@ -650,8 +650,8 @@ pre.deployment-logs {
   }
 }
 
-.status-failure,
-.status-failed {
+.cp-pipeline-status-failure,
+.cp-pipeline-status-failed {
     color: $failure-dark-color;
 
   &::after {
