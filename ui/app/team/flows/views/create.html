@@ -4,9 +4,29 @@
             <h2>
                 <span>Select your code repository</span>
             </h2>
+            <span flex></span>
+            <md-input-container>
+                <label>Account</label>
+                <md-select ng-model="account">
+                    <md-option ng-repeat="account in accounts" ng-value="account">{{ account.username }} ({{ account.type }})</md-option>
+                </md-select>
+            </md-input-container>
         </div>
     </md-toolbar>
-    <md-content flex layout="row" class="step-repository">
+    <md-content flex layout="row" ng-if="!account">
+        <remote-resource resource-name="accounts" flex>
+            <div class="zero-content-help" ng-if="accounts.length == 0">
+                <h3>You don't have any code repository account</h3>
+                <p>In order to list the different repositories you could use, ContinuousPipe needs you to link at least one code repository. <a href="{{ linkAccountUrl }}">Click here to link some accounts.</a></p>
+            </div>
+            <div class="zero-content-help" ng-if="accounts.length > 0">
+                <i class="cp-icon-arrow-right-up top-right-arrow"></i>
+                <h3>Which account do you want to use?</h3>
+                <p>Select the account ContinuousPipe should use to list the different repositories.</p>
+            </div>
+        </remote-resource>
+    </md-content>    
+    <md-content flex layout="row" ng-if="account">
         <md-sidenav md-is-locked-open="true" class="organisation-list md-whiteframe-3dp">
             <md-list flex>
                 <md-list-item class="md-1-line" ng-click="wizard.organisation = null;" ng-class="{'selected': !wizard.organisation}">
@@ -20,9 +40,9 @@
                 <md-divider ></md-divider>
                 <remote-resource resource-name="organisations">
                     <md-list-item class="md-1-line" ng-repeat="organisation in organisations" ng-click="wizard.organisation = organisation;" ng-class="{'selected': wizard.organisation == organisation}">
-                        <img ng-src="{{ organisation.organisation.avatar_url }}" class="md-avatar" />
+                        <img ng-src="{{ organisation.avatar_url }}" class="md-avatar" />
                         <div class="md-list-item-text" layout="column">
-                            <p>{{ organisation.organisation.login }}</p>
+                            <p>{{ organisation.identifier }}</p>
                         </div>
                     </md-list-item>
                 </remote-resource>
@@ -44,6 +64,8 @@
                             <md-icon class="md-avatar-icon" ng-if="repository.private">lock</md-icon>
                             <md-icon class="md-avatar-icon" ng-if="!repository.private">public</md-icon>
                             <p>{{ repository.name }}</p>
+                            <span flex></span>
+                            <md-icon ng-show="wizard.repository == repository">done</md-icon>
                         </md-list-item>
                     </md-list>
                 </remote-resource>

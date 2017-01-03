@@ -77,6 +77,10 @@ angular
                 message = body[0] && body[0].message;
             }
 
+            if (typeof message == 'object') {
+                message = message.message;
+            }
+
             return message;
         };
     })
