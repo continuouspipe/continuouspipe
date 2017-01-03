@@ -224,6 +224,13 @@ body {
                         color: $inner-toolbar-button-color !important;
                     }
                 }
+
+                
+                .md-toolbar-tools {
+                    .md-icon-button {
+                        padding: 0;
+                    }
+                }
             }
         }
     }

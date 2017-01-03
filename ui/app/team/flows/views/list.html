@@ -22,7 +22,7 @@
                 </md-card-avatar>
                 <md-card-header-text>
                     <span class="md-title">{{ flow.repository.name }}</span>
-                    <span class="md-subhead">{{ flow.repository.organisation }}</span>
+                    <span class="md-subhead">{{ flow.repository.organisation || flow.repository.owner.username }}</span>
                 </md-card-header-text>
             </md-card-header>
 

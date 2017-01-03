@@ -26,10 +26,13 @@ angular.module('continuousPipeRiver')
                 organisation: null
             };
 
-            // 1. Select the repository
+            $scope.organisations = [];
             $remoteResource.load('organisations', WizardRepository.findOrganisations(account)).then(function (organisations) {
                 $scope.organisations = organisations;
             });
+
+            $scope.repositories = [];
+            loadRepositoryList(WizardRepository.findRepositoryByCurrentUser($scope.account));
         });
 
         var loadRepositoryList = function(repositories) {
