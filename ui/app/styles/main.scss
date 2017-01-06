@@ -11,8 +11,8 @@ $inner-toolbar-button-background: #52A6FF;
 $inner-toolbar-button-color: #fff;
 $inner-background-color-grey: #f2f4f6;
 $border-grey: #a1a1a1;
-$inactive-grey: #cfcfcf;
-$active-grey: #9f9f9f;
+$inactive-grey: #a5a5a5;
+$active-grey: #676767;
 
 $logo-size: 40px;
 $header-height: 64px;
@@ -29,6 +29,12 @@ $failure-dark-color: #F28282;
 $pipeline-success-color: #3d9e47;
 $pipeline-failure-color: #222732;
 $pending-color: #1075AD;
+$success-tide-color: #ebf5ec;
+$success-tide-color-even: #d3dcd4;
+$failure-tide-color: #fdecec;
+$failure-tide-color-even: #e3d4d4;
+$pending-tide-color: #cfe3ee;
+$pending-tide-color-even: #baccd6;
 
 .title-text {
     text-transform: uppercase;
@@ -679,4 +685,25 @@ pre.deployment-logs {
        font-size: 20px;
        padding: 5px 0 0 5px;
     }
+}
+
+.cp-pipeline-tide-status-failure {
+  background-color: $failure-tide-color;
+  &.even {
+    background-color: $failure-tide-color-even;
+  }
+}
+
+.cp-pipeline-tide-status-success {
+  background-color: $success-tide-color;
+  &.even {
+    background-color: $success-tide-color-even;
+  }
+}
+
+.cp-pipeline-tide-status-pending {
+  background-color: $pending-tide-color;
+  &.even {
+    background-color: $pending-tide-color-even;
+  }
 }

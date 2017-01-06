@@ -9,10 +9,10 @@
     <remote-resource resource-name="tides">
         <div class="cp-pipeline-content" ng-show="tides.length">
             <div  class= "cp-pipeline_flex" ng-repeat="tide in tides | orderBy: '-creation_date'" ng-class-even="'even'">
-                <div class="cp-pipeline_flex-item --tide">
+                <div class="cp-pipeline_flex-item --tide" ng-class="'cp-pipeline-tide-status-'+tide.status" ng-class-even="'even'">
                     <p class="cp-pipeline-title --tide"><strong>Tide #{{ tide.uuid }}</strong></p>
                     <p><code>{{ tide.code_reference.branch }}</code> (<code>{{ tide.code_reference.sha1 }}</code>)</p>
-                    <p><em>{{ tide.creation_date | timeAgo }}</em></p>
+                    <p><em>{{ tide.creation_date | timeAgo }}</em></p
                     <p>{{ tide.status }}</p>
                 </div>
                 <div ng-repeat="task in tide.tasks" ng-class="'tasks--status-'+task.status" class="cp-pipeline_flex-item --task">
