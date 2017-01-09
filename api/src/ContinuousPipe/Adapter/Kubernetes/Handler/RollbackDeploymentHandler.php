@@ -66,7 +66,7 @@ class RollbackDeploymentHandler implements DeploymentHandler
     /**
      * @param Uuid $deploymentUuid
      *
-     * @return ComponentsCreated
+     * @return ComponentsCreated|null
      */
     private function getComponentsCreatedEvent(Uuid $deploymentUuid)
     {

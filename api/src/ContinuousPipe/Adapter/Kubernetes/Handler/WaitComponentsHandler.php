@@ -19,7 +19,6 @@ use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodSpecification;
 use Kubernetes\Client\Model\PodStatus;
-use Kubernetes\Client\Model\PodStatusCondition;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\NamespaceClient;
 use LogStream\Log;

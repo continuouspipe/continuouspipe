@@ -123,8 +123,8 @@ class ComponentTransformer
     }
 
     /**
-     * @param NamespaceClient                  $namespaceClient
-     * @param ReplicationController|Deployment $object
+     * @param NamespaceClient  $namespaceClient
+     * @param KubernetesObject $object
      *
      * @return Component\Status
      */
