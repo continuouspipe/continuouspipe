@@ -70,16 +70,6 @@ class FirebaseTideViewStorage implements TideViewStorage
                 (string) $pipeline->getUuid(),
                 (string) $tide->getUuid()
             ))->set($this->normalizeTide($tide));
-
-            // Updates the pipelines' view
-            $database->getReference(sprintf(
-                'flows/%s/pipelines/%s',
-                (string) $tide->getFlowUuid(),
-                (string) $pipeline->getUuid()
-            ))->update([
-                'uuid' => (string) $pipeline->getUuid(),
-                'name' => $pipeline->getName(),
-            ]);
         } catch (ApiException $e) {
             $this->logger->warning('Unable to save the tide view into Firebase', [
                 'exception' => $e,
