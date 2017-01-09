@@ -8,7 +8,7 @@
         <service id="river.notifications.status_factory" class="ContinuousPipe\River\Notifications\StatusFactory">
             <argument type="service" id="river.time_resolver" />
             <argument type="service" id="logger" />
-            <argument type="service" id="river.tide_event_store" />
+            <argument type="service" id="river.repository.tide" />
             <argument>%river_ui_url%</argument>
         </service>
 

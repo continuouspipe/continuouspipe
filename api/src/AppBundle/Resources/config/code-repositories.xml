@@ -59,7 +59,6 @@
         <service id="river.listener.pull_request.comment_deployment_environment_endpoints" class="ContinuousPipe\River\EventListener\GitHub\PullRequestOpened\CommentDeploymentEnvironmentEndpoints">
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.notifications.tide_listener" />
-            <argument type="service" id="river.tide_event_store" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\PullRequestOpened"/>
         </service>
