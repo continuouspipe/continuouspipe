@@ -113,10 +113,6 @@ class RunTask extends EventDrivenTask
     {
         parent::apply($event);
 
-        if ($event instanceof RunStarted || $event instanceof RunFailed || $event instanceof RunSuccessful) {
-            //            var_dump('run', $this->getIdentifier(), get_class($event));
-        }
-
         if ($event instanceof RunStarted) {
             $this->startedRunUuid = $event->getRunUuid();
         }
@@ -132,11 +128,7 @@ class RunTask extends EventDrivenTask
                 return false;
             }
 
-            $equals = $this->startedRunUuid->equals($event->getRunUuid());
-
-            var_dump($this->getIdentifier(), get_class($event), $equals);
-
-            return $equals;
+            return $this->startedRunUuid->equals($event->getRunUuid());
         }
 
         return parent::accept($event);

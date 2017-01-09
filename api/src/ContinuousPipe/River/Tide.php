@@ -30,14 +30,6 @@ class Tide
     private $taskRunner;
 
     /**
-     * This flag is set to true when we need to reconstruct a tide. It is locked
-     * to prevent starting tasks.
-     *
-     * @var bool
-     */
-    private $locked = false;
-
-    /**
      * @var EventCollection
      */
     private $events;
@@ -79,8 +71,6 @@ class Tide
         $this->events = $events;
         $this->events->onRaised(function (TideEvent $event) {
             $this->apply($event);
-
-            var_dump('raised', get_class($event));
             $this->hop();
         });
     }
@@ -101,7 +91,7 @@ class Tide
      * @param TideContext           $context
      * @param TideGenerationRequest $generationRequest
      * @param FlatPipeline          $pipeline
-     * @param EventCollection       $events
+     * @param EventCollection       $eventCollection
      *
      * @return Tide
      */
@@ -137,13 +127,9 @@ class Tide
     public static function fromEvents(TaskRunner $taskRunner, TaskList $tasks, EventCollection $events)
     {
         $tide = new self($taskRunner, $tasks, $events);
-        $tide->locked = true;
         foreach ($events as $event) {
             $tide->apply($event);
         }
-
-        $tide->popNewEvents();
-        $tide->locked = false;
 
         return $tide;
     }
@@ -163,9 +149,6 @@ class Tide
         } elseif (!$event instanceof TideFailed) {
             $this->tasks->apply($event);
         }
-
-        // FIXME Add these events in here?
-        // $this->events->add($event);
     }
 
     /**

@@ -574,12 +574,5 @@ class BuildContext implements Context
                 $response->getStatusCode()
             ));
         }
-
-        /**
-        $this->eventBus->handle(new BuildSuccessful(
-            $this->tideContext->getCurrentTideUuid(),
-            $build
-        ));
-         */
     }
 }
