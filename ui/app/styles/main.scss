@@ -43,6 +43,15 @@ $pending-tide-color-even: #baccd6;
     font-size: 14px;
 }
 
+.md-button.md-success.md-raised {
+    color: rgba(255, 255, 255, 0.87);
+    background-color: rgb(63, 181, 68);
+
+    &:hover {
+        background-color: #248e28;
+    }
+}
+
 table.table {
     border-top: 1px solid #F3F4F8;
     border-collapse: collapse;
@@ -228,6 +237,13 @@ body {
                         color: $inner-toolbar-button-color !important;
                     }
                 }
+
+                
+                .md-toolbar-tools {
+                    .md-icon-button {
+                        padding: 0;
+                    }
+                }
             }
         }
     }
@@ -391,35 +407,38 @@ body {
             padding: 0;
         }
 
-        .step-repository {
-            md-list-item {
-                &.selected {
-                    background: #efefef;
-                }
-            }
-
-            .organisation-list {
-                md-list-item {
-                    .md-avatar {
-                        border-radius: 0;
-                    }
-                }
-            }
-
-            .filter-repository-toolbar {
-                background: #EFEFEF;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-                padding-top: 20px;
-                min-height: 69px;
-                height: 69px;
+        md-list-item {
+            &.selected {
+                background: #737373;
+                color: #fff;
 
                 md-icon {
-                    color: grey;
+                    color: #fff;                    
                 }
+            }
+        }
 
-                md-input-container.md-block {
-                    width: 100%;
+        .organisation-list {
+            md-list-item {
+                .md-avatar {
+                    border-radius: 0;
                 }
+            }
+        }
+
+        .filter-repository-toolbar {
+            background: #EFEFEF;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+            padding-top: 20px;
+            min-height: 69px;
+            height: 69px;
+
+            md-icon {
+                color: grey;
+            }
+
+            md-input-container.md-block {
+                width: 100%;
             }
         }
 

@@ -30,3 +30,5 @@ tasks:
                               value: pipe.continuouspipe.io
                             - name: RIVER_API_URL
                               value: river.continuouspipe.io
+                            - name: SENTRY_DSN
+                              value: http://cca81e898c654780baac3dfae5c67cc3@sentry.tools.sroze.io/16

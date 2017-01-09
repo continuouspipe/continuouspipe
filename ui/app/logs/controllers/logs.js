@@ -53,4 +53,33 @@ angular.module('continuousPipeRiver')
                 source: 'pods-log'
             });
         };
+    })
+    .controller('LogsManualApprovalController', function($scope, $resource, RIVER_API_URL) {
+        var resource = $resource(RIVER_API_URL+'/tides/:uuid/tasks/:task/:choice'),
+            doChoice = function(log, choice) {
+                $scope.isLoading = true;
+                resource.save({uuid: log.tide_uuid, task: log.task_identifier, choice: choice}, {}).$promise.then(function() {}, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occured while deleting the environment", "error");
+                })['finally'](function() {
+                    $scope.isLoading = false;
+                });
+            };
+
+        $scope.approve = function(log) {
+            doChoice(log, 'approve');
+        };
+
+        $scope.reject = function(log) {
+            swal({
+                title: "Are you sure?",
+                text: "The tide will be rejected and the following tasks won\'t be ran.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, reject it!",
+                closeOnConfirm: true
+            }, function() {
+                doChoice(log, 'reject');
+            });
+        };
     });

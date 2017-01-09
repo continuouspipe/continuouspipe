@@ -11,7 +11,6 @@
 angular
     .module('continuousPipeRiver', [
         'config',
-        'ngRaven',
         'ngAnimate',
         'ngMessages',
         'ngSanitize',
@@ -40,7 +39,7 @@ angular
             .setAccount('UA-71216332-2')
             .setPageEvent('$stateChangeSuccess')
         ;
-
+        
         $mdThemingProvider.theme('blue');
 
         firebase.initializeApp({
@@ -48,6 +47,19 @@ angular
             authDomain: "continuous-pipe.firebaseapp.com",
             databaseURL: "https://continuous-pipe.firebaseio.com",
         });
+    })
+    .factory('$exceptionHandler', function ($window, $log, SENTRY_DSN) {
+        if (SENTRY_DSN) {
+            Raven.config(SENTRY_DSN).install();
+        }
+
+        return function (exception, cause) {
+            $log.error.apply($log, arguments);
+
+            if (SENTRY_DSN) {
+                Raven.captureException(exception);
+            }
+        };
     })
     // We need to inject it at least once to have automatic tracking
     .run(function(Analytics, $rootScope, $http) {
@@ -69,6 +81,10 @@ angular
             if (!message && response.status == 400) {
                 // We are seeing a constraint violation list here, let's return the first one 
                 message = body[0] && body[0].message;
+            }
+
+            if (typeof message == 'object') {
+                message = message.message;
             }
 
             return message;

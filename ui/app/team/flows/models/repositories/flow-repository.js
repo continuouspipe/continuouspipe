@@ -34,7 +34,7 @@ angular.module('continuousPipeRiver')
                     team: team.slug
                 },
                 {
-                    repository: repository.identifier
+                    repository: repository
                 }
             ).$promise;
         };

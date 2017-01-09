@@ -2,24 +2,18 @@
 
 angular.module('continuousPipeRiver')
     .service('WizardRepository', function($resource, RIVER_API_URL) {
-        this.findOrganisations = function() {
-            return $resource(RIVER_API_URL+'/wizard/organisations').query().$promise;
+        this.findOrganisations = function(account) {
+            return $resource(RIVER_API_URL+'/account/:uuid/organisations').query({uuid: account.uuid}).$promise;
         };
 
-        this.findRepositoryByCurrentUser = function() {
-            return $resource(RIVER_API_URL+'/wizard/repositories').query().$promise;
+        this.findRepositoryByCurrentUser = function(account) {
+            return $resource(RIVER_API_URL+'/account/:uuid/repositories').query({uuid: account.uuid}).$promise;
         };
 
-        this.findRepositoryByOrganisation = function(organisation) {
-            return $resource(RIVER_API_URL+'/wizard/organisations/:login/repositories').query({
-                login: organisation.organisation.login
-            }).$promise;
-        };
-
-        this.findComponentsByRepositoryAndBranch = function(repository, branch) {
-            return $resource(RIVER_API_URL+'/wizard/repositories/:id/components/:branch').query({
-                id: repository.identifier,
-                branch: branch
+        this.findRepositoryByOrganisation = function(account, organisation) {
+            return $resource(RIVER_API_URL+'/account/:uuid/organisations/:identifier/repositories').query({
+                uuid: account.uuid,
+                identifier: organisation.identifier
             }).$promise;
         };
     });
