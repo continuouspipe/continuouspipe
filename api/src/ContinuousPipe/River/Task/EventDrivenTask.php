@@ -23,11 +23,6 @@ abstract class EventDrivenTask implements Task
     protected $events;
 
     /**
-     * @var array
-     */
-    protected $newEvents = [];
-
-    /**
      * @param TaskContext     $context
      * @param EventCollection $events
      */
@@ -117,17 +112,6 @@ abstract class EventDrivenTask implements Task
     protected function numberOfEventsOfType($eventType)
     {
         return count($this->getEventsOfType($eventType));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function popNewEvents()
-    {
-        $events = $this->newEvents;
-        $this->newEvents = [];
-
-        return $events;
     }
 
     /**

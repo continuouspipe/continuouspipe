@@ -45,11 +45,6 @@ class Tide
     private $context;
 
     /**
-     * @var TideEvent[]
-     */
-    private $newEvents = [];
-
-    /**
      * @var UuidInterface|null
      */
     private $generationUuid;
@@ -103,12 +98,30 @@ class Tide
         FlatPipeline $pipeline,
         EventCollection $eventCollection
     ) {
-        $tide = new self($taskRunner, $tasks, $eventCollection);
-        $events = [
+        return self::createFromEvents($taskRunner, $tasks, $eventCollection, [
             new TideCreated($context),
             new TideGenerated($context->getTideUuid(), $context->getFlowUuid(), $generationRequest->getGenerationUuid(), $pipeline),
             new TideValidated($context->getTideUuid()),
-        ];
+        ]);
+    }
+
+    /**
+     * Create the tide from a set of events.
+     *
+     * @param TaskRunner      $taskRunner
+     * @param TaskList        $tasks
+     * @param EventCollection $eventCollection
+     * @param TideEvent[]     $events
+     *
+     * @return Tide
+     */
+    public static function createFromEvents(
+        TaskRunner $taskRunner,
+        TaskList $tasks,
+        EventCollection $eventCollection,
+        array $events
+    ) {
+        $tide = new self($taskRunner, $tasks, $eventCollection);
 
         foreach ($events as $event) {
             $eventCollection->raiseAndApply($event);
@@ -156,19 +169,7 @@ class Tide
      */
     public function popNewEvents()
     {
-        $events = $this->newEvents;
-        $this->newEvents = [];
-
-        // Get tasks' events
-        foreach ($this->tasks->getTasks() as $task) {
-            foreach ($task->popNewEvents() as $event) {
-                $events[] = $event;
-            }
-        }
-
-        foreach ($this->events->getRaised() as $raised) {
-            $events[] = $raised;
-        }
+        $events = $this->events->getRaised();
 
         $this->events->clearRaised();
 
@@ -253,14 +254,6 @@ class Tide
     public function isSuccessful()
     {
         return 0 < $this->events->numberOfEventsOfType(TideSuccessful::class);
-    }
-
-    /**
-     * @param TideEvent $event
-     */
-    public function pushNewEvent(TideEvent $event)
-    {
-        $this->newEvents[] = $event;
     }
 
     public function getFlowUuid() : UuidInterface

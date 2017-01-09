@@ -50,35 +50,30 @@ class CreateFailingTideWhenConfigurationIsWrong implements PipelineTideGenerator
             $logger->child(new Text($e->getMessage()));
 
             $tideUuid = Uuid::uuid4();
-            $events = new EventCollection([
-                new TideCreated(TideContext::createTide(
-                    $request->getFlow()->getUuid(),
-                    $request->getFlow()->getTeam(),
-                    $request->getFlow()->getUser(),
-                    $tideUuid,
-                    $request->getCodeReference(),
-                    $logger->getLog(),
-                    [],
-                    $request->getGenerationTrigger()->getCodeRepositoryEvent()
-                )),
-                new TideGenerated($tideUuid, $request->getFlow()->getUuid(), $request->getGenerationUuid(), FlatPipeline::fromPipeline(Pipeline::withConfiguration(
-                    $request->getFlow(),
-                    [
-                        'name' => 'Default pipeline',
-                    ]
-                ))),
-                new TideFailed($tideUuid, $e->getMessage()),
-            ]);
-
-            $tide = Tide::fromEvents(
+            $tide = Tide::createFromEvents(
                 new NullRunner(),
                 new TaskList([]),
-                $events
+                new EventCollection(),
+                [
+                    new TideCreated(TideContext::createTide(
+                        $request->getFlow()->getUuid(),
+                        $request->getFlow()->getTeam(),
+                        $request->getFlow()->getUser(),
+                        $tideUuid,
+                        $request->getCodeReference(),
+                        $logger->getLog(),
+                        [],
+                        $request->getGenerationTrigger()->getCodeRepositoryEvent()
+                    )),
+                    new TideGenerated($tideUuid, $request->getFlow()->getUuid(), $request->getGenerationUuid(), FlatPipeline::fromPipeline(Pipeline::withConfiguration(
+                        $request->getFlow(),
+                        [
+                            'name' => 'Default pipeline',
+                        ]
+                    ))),
+                    new TideFailed($tideUuid, $e->getMessage()),
+                ]
             );
-
-            foreach ($events as $event) {
-                $tide->pushNewEvent($event);
-            }
 
             return [
                 $tide,

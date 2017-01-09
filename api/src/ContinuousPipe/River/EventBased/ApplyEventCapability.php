@@ -2,10 +2,8 @@
 
 namespace ContinuousPipe\River\EventBased;
 
-trait ApplyAndRaiseEventCapability
+trait ApplyEventCapability
 {
-    private $raisedEvents = [];
-
     public static function fromEvents(array $events)
     {
         $self = new static();
@@ -15,21 +13,6 @@ trait ApplyAndRaiseEventCapability
         }
 
         return $self;
-    }
-
-    protected function raise($event)
-    {
-        $this->raisedEvents[] = $event;
-    }
-
-    public function raisedEvents() : array
-    {
-        return $this->raisedEvents;
-    }
-
-    public function eraseEvents()
-    {
-        $this->raisedEvents = [];
     }
 
     public function apply($event)

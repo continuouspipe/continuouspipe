@@ -3,7 +3,8 @@
 namespace ContinuousPipe\River\Task\ManualApproval;
 
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\EventBased\ApplyAndRaiseEventCapability;
+use ContinuousPipe\River\EventBased\ApplyEventCapability;
+use ContinuousPipe\River\EventBased\RaiseEventCapability;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\ManualApproval\Event\Approved;
 use ContinuousPipe\River\Task\ManualApproval\Event\ManualApprovalChoiceEvent;
@@ -23,7 +24,7 @@ use LogStream\Node\Text;
 
 final class ManualApprovalTask implements Task
 {
-    use ApplyAndRaiseEventCapability {
+    use ApplyEventCapability {
         apply as doApply;
     }
 
@@ -190,18 +191,6 @@ final class ManualApprovalTask implements Task
     public function getStatus(): string
     {
         return $this->status;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function popNewEvents()
-    {
-        $events = $this->raisedEvents();
-
-        $this->eraseEvents();
-
-        return $events;
     }
 
     /**
