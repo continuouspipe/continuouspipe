@@ -25,7 +25,7 @@ class PublicEndpointWriter
         $address = array_shift($addresses);
 
         if (count($addresses) > 0) {
-            $address .= '('.implode(', ', $addresses).')';
+            $address .= ' ('.implode(', ', $addresses).')';
         }
 
         return $address;
