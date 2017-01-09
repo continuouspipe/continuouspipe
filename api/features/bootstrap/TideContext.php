@@ -1515,4 +1515,16 @@ EOF;
     {
         return $this->tideRepository->find($this->tideUuid);
     }
+
+    /**
+     * @return \ContinuousPipe\River\Tide[]
+     */
+    public function getCreatedTides()
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        return array_map(function(array $tide) {
+            return $this->tideRepository->find(Uuid::fromString($tide['uuid']));
+        }, $json);
+    }
 }

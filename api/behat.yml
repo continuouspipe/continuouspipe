@@ -70,6 +70,8 @@ default:
                 - ClusterHealthContext:
                     - @river.k8s_health_checker.http.guzzle_client.stack
                     - @kernel
+                - FirebaseContext:
+                    - @csa_guzzle.data_collector.history_bag
 
                 # TBR:
                 - GitHubContext:
@@ -167,6 +169,8 @@ default:
                 - ClusterHealthContext:
                     - @river.k8s_health_checker.http.guzzle_client.stack
                     - @kernel
+                - FirebaseContext:
+                    - @csa_guzzle.data_collector.history_bag
 
         bitbucket:
             paths:
@@ -250,6 +254,8 @@ default:
                 - ClusterHealthContext:
                     - @river.k8s_health_checker.http.guzzle_client.stack
                     - @kernel
+                - FirebaseContext:
+                    - @csa_guzzle.data_collector.history_bag
 
     extensions:
         Behat\Symfony2Extension:

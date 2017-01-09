@@ -11,6 +11,19 @@ use Psr\Http\Message\RequestInterface;
 class InMemoryDatabaseFactory implements DatabaseFactory
 {
     /**
+     * @var callable
+     */
+    private $historyMiddleware;
+
+    /**
+     * @param callable $historyMiddleware
+     */
+    public function __construct(callable $historyMiddleware)
+    {
+        $this->historyMiddleware = $historyMiddleware;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function create(string $uri): Database
@@ -20,6 +33,8 @@ class InMemoryDatabaseFactory implements DatabaseFactory
                 new Response(200, ['Content-Type' => 'application/json'], '{}')
             );
         });
+
+        $handler->push($this->historyMiddleware);
 
         $client = new Client(['handler' => $handler]);
 
