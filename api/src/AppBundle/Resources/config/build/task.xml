@@ -25,9 +25,7 @@
         </service>
 
         <service id="river.task.build.saga" class="ContinuousPipe\River\Task\Build\BuildSaga">
-            <argument type="service" id="river.repository.tide"/>
-            <argument type="service" id="logger"/>
-            <argument type="service" id="event_bus"/>
+            <argument type="service" id="river.tide.transaction_manager" />
 
             <tag name="command_handler" handles="ContinuousPipe\River\Task\Build\Command\ReceiveBuildNotification" />
         </service>

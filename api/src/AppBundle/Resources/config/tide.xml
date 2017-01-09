@@ -155,6 +155,12 @@
             <tag name="event_bus_middleware" />
         </service>
 
+        <!-- Transactions -->
+        <service id="river.tide.transaction_manager" class="ContinuousPipe\River\Tide\Transaction\PopAndDispatchEventsTransactionManager">
+            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="event_bus" />
+        </service>
+
         <!-- Concurrency -->
         <service id="river.tide.concurrency_manager" class="ContinuousPipe\River\Tide\Concurrency\ViewRepositoryBasedConcurrencyManager">
             <argument type="service" id="river.view.tide_repository" />
@@ -186,6 +192,13 @@
             <argument>%locker_timeout%</argument>
         </service>
         <service id="river.tide.concurrency.locker" alias="river.tide.concurrency.locker.predis_locker" />
+
+        <service id="river.tide.transaction_manager.pessimistic_locking"
+                 class="ContinuousPipe\River\Tide\Concurrency\PessimisticTransactionManager"
+                 decorates="river.tide.transaction_manager">
+            <argument type="service" id="river.tide.transaction_manager.pessimistic_locking.inner" />
+            <argument type="service" id="river.tide.concurrency.locker" />
+        </service>
 
         <!-- Filters -->
         <service id="river.tide.filter.filter_hash_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\FilterHash\DoctrineFilterHashRepository">

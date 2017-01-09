@@ -12,9 +12,7 @@
         </service>
 
         <service id="continuous_pipe.river.task.wait.wait_saga" class="ContinuousPipe\River\Task\Wait\WaitSaga">
-            <argument type="service" id="river.repository.tide" />
-            <argument type="service" id="logger" />
-            <argument type="service" id="event_bus" />
+            <argument type="service" id="river.tide.transaction_manager" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\StatusUpdated" />
         </service>
