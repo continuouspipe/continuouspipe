@@ -95,7 +95,7 @@ class DeploymentRequestFactory
     {
         return 'https://'.$this->riverHostname.$this->urlGenerator->generate('runner_notification_post', [
             'tideUuid' => $tide->getUuid(),
-        ], UrlGeneratorInterface::ABSOLUTE_URL);
+        ], UrlGeneratorInterface::ABSOLUTE_PATH);
     }
 
     /**
