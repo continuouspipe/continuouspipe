@@ -60,7 +60,7 @@ tasks:
                               value: http://pipe-continuouspipe-io-12bhda8pihd6.runscope.net
                             - name: RIVER_UI_URL
                               value: https://ui.continuouspipe.io
-                            - name: RIVER_URL
+                            - name: RIVER_HOST
                               value: river-continuouspipe-io-8h5eecqzu4bp.runscope.net
                             - name: KEEN_PROJECT_ID
                               value: ${KEEN_PROJECT_ID}

@@ -30,15 +30,26 @@ class DeploymentRequestFactory
     private $deploymentRequestEnhancer;
 
     /**
-     * @param UrlGeneratorInterface     $urlGenerator
-     * @param TargetEnvironmentFactory  $targetEnvironmentFactory
-     * @param DeploymentRequestEnhancer $deploymentRequestEnhancer
+     * @var string
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory, DeploymentRequestEnhancer $deploymentRequestEnhancer)
-    {
+    private $riverHostname;
+
+    /**
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param TargetEnvironmentFactory $targetEnvironmentFactory
+     * @param DeploymentRequestEnhancer $deploymentRequestEnhancer
+     * @param string $riverHostname
+     */
+    public function __construct(
+        UrlGeneratorInterface $urlGenerator,
+        TargetEnvironmentFactory $targetEnvironmentFactory,
+        DeploymentRequestEnhancer $deploymentRequestEnhancer,
+        string $riverHostname
+    ) {
         $this->urlGenerator = $urlGenerator;
         $this->targetEnvironmentFactory = $targetEnvironmentFactory;
         $this->deploymentRequestEnhancer = $deploymentRequestEnhancer;
+        $this->riverHostname = $riverHostname;
     }
 
     /**
@@ -82,7 +93,7 @@ class DeploymentRequestFactory
      */
     private function getNotificationUrl(Tide $tide)
     {
-        return $this->urlGenerator->generate('runner_notification_post', [
+        return 'https://'.$this->riverHostname.$this->urlGenerator->generate('runner_notification_post', [
             'tideUuid' => $tide->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }

@@ -40,23 +40,33 @@ class BuildImageHandler
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var string
+     */
+    private $riverHostname;
 
     /**
-     * @param BuilderClient         $builderClient
-     * @param TideRepository        $tideRepository
-     * @param MessageBus            $eventBus
+     * @param BuilderClient $builderClient
+     * @param TideRepository $tideRepository
+     * @param MessageBus $eventBus
      * @param UrlGeneratorInterface $urlGenerator
-     * @param LoggerInterface       $logger
-     *
-     * @internal param LoggerFactory $loggerFactory
+     * @param LoggerInterface $logger
+     * @param string $riverHostname
      */
-    public function __construct(BuilderClient $builderClient, TideRepository $tideRepository, MessageBus $eventBus, UrlGeneratorInterface $urlGenerator, LoggerInterface $logger)
-    {
+    public function __construct(
+        BuilderClient $builderClient,
+        TideRepository $tideRepository,
+        MessageBus $eventBus,
+        UrlGeneratorInterface $urlGenerator,
+        LoggerInterface $logger,
+        string $riverHostname
+    ) {
         $this->builderClient = $builderClient;
         $this->eventBus = $eventBus;
         $this->tideRepository = $tideRepository;
         $this->urlGenerator = $urlGenerator;
         $this->logger = $logger;
+        $this->riverHostname = $riverHostname;
     }
 
     /**
@@ -93,9 +103,9 @@ class BuildImageHandler
      */
     private function getBuildRequestWithNotificationConfiguration(Uuid $tideUuid, BuildRequest $buildRequest, $parentLogId)
     {
-        $address = $this->urlGenerator->generate('builder_notification_post', [
+        $address = 'https://'.$this->riverHostname.$this->urlGenerator->generate('builder_notification_post', [
             'tideUuid' => (string) $tideUuid,
-        ], UrlGeneratorInterface::ABSOLUTE_URL);
+        ], UrlGeneratorInterface::ABSOLUTE_PATH);
 
         $buildRequest = new BuildRequest(
             $buildRequest->getRepository() ?: $buildRequest->getArchive(),
