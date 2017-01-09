@@ -176,7 +176,7 @@ class WaitComponentsHandler implements DeploymentHandler
         // Display status of the deployment
         $statusLogger = $logger->child(new Text('Deployment is starting'));
         $deploymentStatusPromise = (new PromiseBuilder($loop))
-            ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $statusLogger, $deployment, $statusLogger) {
+            ->retry($this->checkInternal, function (React\Promise\Deferred $deferred) use ($client, $statusLogger, $deployment) {
                 $foundDeployment = $client->getDeploymentRepository()->findOneByName($deployment->getMetadata()->getName());
                 $status = $foundDeployment->getStatus();
 
