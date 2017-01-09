@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\Pipe;
 
-use ContinuousPipe\Adapter\Provider;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Security\Credentials\Cluster;
 use LogStream\Log;
@@ -62,16 +61,6 @@ class DeploymentContext
     public function getLog()
     {
         return $this->log;
-    }
-
-    /**
-     * @return Provider
-     *
-     * @deprecated
-     */
-    public function getProvider()
-    {
-        return $this->provider;
     }
 
     /**

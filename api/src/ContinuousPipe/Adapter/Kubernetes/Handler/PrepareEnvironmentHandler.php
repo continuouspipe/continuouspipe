@@ -113,7 +113,6 @@ class PrepareEnvironmentHandler implements DeploymentHandler
      */
     private function createNamespaceIfNotExists(Client $client, DeploymentContext $context)
     {
-        $logger = $this->loggerFactory->from($context->getLog());
         $environment = $context->getEnvironment();
 
         $namespaceRepository = $client->getNamespaceRepository();

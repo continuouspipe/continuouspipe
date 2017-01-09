@@ -106,8 +106,6 @@
 
         <!-- Synchronous event listeners -->
         <service id="pipe.adapter.kubernetes.listener.before_creating_component.create_persistent_volume_claim" class="ContinuousPipe\Adapter\Kubernetes\Listener\BeforeCreatingComponent\CreatePersistentVolumeClaim">
-            <argument type="service" id="log_stream.logger_factory" />
-
             <tag name="kernel.event_subscriber" />
         </service>
         <service id="pipe.adapter.kubernetes.listener.after_creating_component.attach_component" class="ContinuousPipe\Adapter\Kubernetes\Listener\AfterCreatingComponent\AttachComponent">

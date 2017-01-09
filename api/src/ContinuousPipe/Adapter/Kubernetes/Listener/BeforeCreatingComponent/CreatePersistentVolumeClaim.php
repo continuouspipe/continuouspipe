@@ -11,25 +11,10 @@ use Kubernetes\Client\Model\PersistentVolumeClaimSpecification;
 use Kubernetes\Client\Model\ResourceRequirements;
 use Kubernetes\Client\Model\ResourceRequirementsRequests;
 use Kubernetes\Client\NamespaceClient;
-use LogStream\Logger;
-use LogStream\LoggerFactory;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CreatePersistentVolumeClaim implements EventSubscriberInterface
 {
-    /**
-     * @var LoggerFactory
-     */
-    private $loggerFactory;
-
-    /**
-     * @param LoggerFactory $loggerFactory
-     */
-    public function __construct(LoggerFactory $loggerFactory)
-    {
-        $this->loggerFactory = $loggerFactory;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -54,9 +39,8 @@ class CreatePersistentVolumeClaim implements EventSubscriberInterface
             return;
         }
 
-        $logger = $this->loggerFactory->from($event->getContext()->getLog());
         foreach ($persistentVolumes as $persistentVolume) {
-            $this->createPersistentVolumeClaimIfNotExists($event->getClient(), $logger, $persistentVolume);
+            $this->createPersistentVolumeClaimIfNotExists($event->getClient(), $persistentVolume);
         }
     }
 
@@ -66,7 +50,7 @@ class CreatePersistentVolumeClaim implements EventSubscriberInterface
      * @param NamespaceClient   $client
      * @param Volume\Persistent $persistentVolume
      */
-    private function createPersistentVolumeClaimIfNotExists(NamespaceClient $client, Logger $logger, Volume\Persistent $persistentVolume)
+    private function createPersistentVolumeClaimIfNotExists(NamespaceClient $client, Volume\Persistent $persistentVolume)
     {
         $persistentVolumeClaimRepository = $client->getPersistentVolumeClaimRepository();
 
