@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\ManualApproval;
 
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\ManualApproval\Event\TaskCreated;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
@@ -12,14 +13,17 @@ class ManualApprovalTaskFactory implements TaskFactory
     /**
      * {@inheritdoc}
      */
-    public function create(TaskContext $taskContext, array $configuration)
+    public function create(EventCollection $events, TaskContext $taskContext, array $configuration)
     {
-        return ManualApprovalTask::fromEvents([
-            new TaskCreated(
-                $taskContext->getTideUuid(),
-                $taskContext->getTaskId()
-            ),
-        ]);
+        return new ManualApprovalTask(
+            $events,
+            [
+                new TaskCreated(
+                    $taskContext->getTideUuid(),
+                    $taskContext->getTaskId()
+                ),
+            ]
+        );
     }
 
     /**

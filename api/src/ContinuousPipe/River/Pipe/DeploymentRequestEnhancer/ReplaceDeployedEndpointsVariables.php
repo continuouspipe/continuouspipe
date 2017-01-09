@@ -6,8 +6,9 @@ use ContinuousPipe\Model\Component\EnvironmentVariable;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues;
+use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
-use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\Tide;
 
 class ReplaceDeployedEndpointsVariables implements DeploymentRequestEnhancer
 {
@@ -29,17 +30,17 @@ class ReplaceDeployedEndpointsVariables implements DeploymentRequestEnhancer
      */
     public function enhance(Tide $tide, DeploymentRequest $deploymentRequest)
     {
-        $successfulDeployments = $this->eventStore->findByTideUuidAndType($tide->getUuid(), DeploymentSuccessful::class);
-        $publicEndpointMappings = array_reduce($successfulDeployments, function ($carry, DeploymentSuccessful $event) {
-            foreach ($event->getDeployment()->getPublicEndpoints() as $publicEndpoint) {
+        /** @var DeployTask[] $tasks */
+        $tasks = $tide->getTasks()->ofType(DeployTask::class);
+        $publicEndpointMappings = [];
+        foreach ($tasks as $task) {
+            foreach ($task->getPublicEndpoints() as $publicEndpoint) {
                 $serviceName = $publicEndpoint->getName();
                 $environName = sprintf('SERVICE_%s_PUBLIC_ENDPOINT', strtoupper($serviceName));
 
-                $carry[$environName] = $publicEndpoint->getAddress();
+                $publicEndpointMappings[$environName] = $publicEndpoint->getAddress();
             }
-
-            return $carry;
-        }, []);
+        }
 
         foreach ($deploymentRequest->getSpecification()->getComponents() as $component) {
             $replacedVariables = array_map(function (EnvironmentVariable $environmentVariable) use ($publicEndpointMappings) {

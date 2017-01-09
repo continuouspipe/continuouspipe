@@ -12,4 +12,12 @@ class NullRunner implements TaskRunner
     public function run(Tide $tide, Task $task)
     {
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Tide $tide, Task $task): bool
+    {
+        return true;
+    }
 }

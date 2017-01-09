@@ -2,8 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
-use ContinuousPipe\Model\Environment;
-use Ramsey\Uuid\Uuid;
+use ContinuousPipe\River\Tide;
 
 class DefaultEnvironmentExpressionDecorator implements EnvironmentNamingStrategy
 {
@@ -30,22 +29,12 @@ class DefaultEnvironmentExpressionDecorator implements EnvironmentNamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function getName(Uuid $tideUuid, $expression = null)
+    public function getName(Tide $tide, $expression = null)
     {
         if (null === $expression) {
             $expression = $this->defaultExpression;
         }
 
-        return $this->environmentNamingStrategy->getName($tideUuid, $expression);
-    }
-
-    /**
-     * FIXME That should be (re)moved from here.
-     *
-     * {@inheritdoc}
-     */
-    public function isEnvironmentPartOfFlow(Uuid $flowUuid, Environment $environment)
-    {
-        return strpos($environment->getName(), (string) $flowUuid) === 0;
+        return $this->environmentNamingStrategy->getName($tide, $expression);
     }
 }

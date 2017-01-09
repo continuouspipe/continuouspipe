@@ -156,13 +156,21 @@ class RunContext implements Context
     public function theSecondRunTaskSucceed()
     {
         $deployments = $this->traceablePipeClient->getDeployments();
-        if (1 >= count($deployments)) {
-            throw new \RuntimeException('1 or 0 deployment found, expected at least 2');
-        }
 
         /** @var RunTask $task */
         $task = $this->tideTasksContext->getTasksOfType(RunTask::class)[1];
-        $this->sendRunTaskNotification($task, $deployments[1]->getRequest(), Deployment::STATUS_SUCCESS);
+        $matchingDeployments = array_values(array_filter($deployments, function(Deployment $deployment) use ($task) {
+            return null !== $task->getStartedRunUuid() && $deployment->getUuid()->equals($task->getStartedRunUuid());
+        }));
+
+        if (1 != count($matchingDeployments)) {
+            throw new \RuntimeException(sprintf(
+                'Found %d deployments, expected 1',
+                count($deployments)
+            ));
+        }
+
+        $this->sendRunTaskNotification($task, $matchingDeployments[0]->getRequest(), Deployment::STATUS_SUCCESS);
     }
 
     /**
@@ -554,20 +562,8 @@ class RunContext implements Context
      */
     private function sendRunTaskNotification(RunTask $task, DeploymentRequest $deploymentRequest, $status)
     {
-        $events = $this->tideTasksContext->getTaskEvents($task);
-        $runStartedEvents = array_values(array_filter($events->getEvents(), function($event) {
-            return $event instanceof RunStarted;
-        }));
-
-        if (0 === count($runStartedEvents)) {
-            throw new \RuntimeException('No run started events');
-        }
-
-        /** @var RunStarted $runStartedEvent */
-        $runStartedEvent = $runStartedEvents[0];
-
         $this->sendRunnerNotification(
-            new Deployment($runStartedEvent->getRunUuid(), $deploymentRequest, $status)
+            new Deployment($task->getStartedRunUuid(), $deploymentRequest, $status)
         );
     }
 

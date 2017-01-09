@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\Model\Component\Port;
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Flow\Configuration;
 use ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory;
 use ContinuousPipe\River\Task\Deploy\Configuration\Environment;
@@ -46,8 +47,12 @@ class DeployTaskFactory implements TaskFactory
      * @param ComponentFactory $componentFactory
      * @param string           $defaultEnvironmentExpression
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, ComponentFactory $componentFactory, $defaultEnvironmentExpression)
-    {
+    public function __construct(
+        MessageBus $commandBus,
+        LoggerFactory $loggerFactory,
+        ComponentFactory $componentFactory,
+        $defaultEnvironmentExpression
+    ) {
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
         $this->componentFactory = $componentFactory;
@@ -57,9 +62,10 @@ class DeployTaskFactory implements TaskFactory
     /**
      * {@inheritdoc}
      */
-    public function create(TaskContext $taskContext, array $configuration)
+    public function create(EventCollection $events, TaskContext $taskContext, array $configuration)
     {
         return new DeployTask(
+            $events,
             $this->commandBus,
             $this->loggerFactory,
             DeployContext::createDeployContext($taskContext),

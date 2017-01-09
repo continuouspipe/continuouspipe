@@ -4,8 +4,8 @@ namespace ContinuousPipe\River\Task\Wait;
 
 use ContinuousPipe\River\Event\GitHub\StatusUpdated;
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\EventDrivenTask;
-use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\Wait\Event\WaitFailed;
 use ContinuousPipe\River\Task\Wait\Event\WaitStarted;
@@ -31,13 +31,19 @@ class WaitTask extends EventDrivenTask
     private $configuration;
 
     /**
+     * @var WaitStarted|null
+     */
+    private $startedEvent;
+
+    /**
+     * @param EventCollection       $eventCollection
      * @param LoggerFactory         $loggerFactory
      * @param TaskContext           $context
      * @param WaitTaskConfiguration $configuration
      */
-    public function __construct(LoggerFactory $loggerFactory, TaskContext $context, WaitTaskConfiguration $configuration)
+    public function __construct(EventCollection $eventCollection, LoggerFactory $loggerFactory, TaskContext $context, WaitTaskConfiguration $configuration)
     {
-        parent::__construct($context);
+        parent::__construct($context, $eventCollection);
 
         $this->loggerFactory = $loggerFactory;
         $this->context = $context;
@@ -57,23 +63,27 @@ class WaitTask extends EventDrivenTask
             $status->getState()
         )))->getLog();
 
-        $this->newEvents[] = new WaitStarted(
+        $this->events->raiseAndApply(new WaitStarted(
             $this->context->getTideUuid(),
             $log,
             $this->context->getTaskId()
-        );
+        ));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function accept(TideEvent $event)
+    public function statusUpdated(StatusUpdated $event)
     {
-        if ($event instanceof StatusUpdated) {
-            return true;
+        $gitHubEvent = $event->getGitHubStatusEvent();
+        $waitingStatus = $this->configuration->getStatus();
+
+        if ($gitHubEvent->getContext() != $waitingStatus->getContext()) {
+            return;
         }
 
-        return parent::accept($event);
+        if ($gitHubEvent->getState() == $waitingStatus->getState()) {
+            $this->events->raiseAndApply(new WaitSuccessful($this->startedEvent));
+        } else {
+            $this->events->raiseAndApply(new WaitFailed($this->startedEvent));
+        }
     }
 
     /**
@@ -81,8 +91,8 @@ class WaitTask extends EventDrivenTask
      */
     public function apply(TideEvent $event)
     {
-        if ($event instanceof StatusUpdated && $this->getStatus() == Task::STATUS_RUNNING) {
-            $this->applyStatusUpdated($event);
+        if ($event instanceof WaitStarted) {
+            $this->startedEvent = $event;
         }
 
         parent::apply($event);
@@ -110,33 +120,5 @@ class WaitTask extends EventDrivenTask
     public function isPending()
     {
         return 0 === $this->numberOfEventsOfType(WaitStarted::class);
-    }
-
-    /**
-     * @return WaitStarted
-     */
-    private function getWaitStartedEvent()
-    {
-        return $this->getEventsOfType(WaitStarted::class)[0];
-    }
-
-    /**
-     * @param StatusUpdated $event
-     */
-    private function applyStatusUpdated(StatusUpdated $event)
-    {
-        $gitHubEvent = $event->getGitHubStatusEvent();
-        $waitingStatus = $this->configuration->getStatus();
-
-        if ($gitHubEvent->getContext() != $waitingStatus->getContext()) {
-            return;
-        }
-
-        $waitStartedEvent = $this->getWaitStartedEvent();
-        if ($gitHubEvent->getState() == $waitingStatus->getState()) {
-            $this->newEvents[] = new WaitSuccessful($waitStartedEvent);
-        } else {
-            $this->newEvents[] = new WaitFailed($waitStartedEvent);
-        }
     }
 }

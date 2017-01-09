@@ -117,20 +117,23 @@ class TideContext implements Context
      * @var PredictableTimeResolver
      */
     private $predictableTimeResolver;
-
     /**
-     * @param MessageBus $commandBus
-     * @param MessageBus $eventBus
-     * @param EventStore $eventStore
-     * @param FakeFileSystemResolver $fakeFileSystemResolver
-     * @param TideFactory $tideFactory
-     * @param TideRepository $viewTideRepository
-     * @param Kernel $kernel
-     * @param TracedDelayedCommandBus $tracedDelayedMessageProducer
-     * @param PredictableTimeResolver $predictableTimeResolver
+     * @var \ContinuousPipe\River\Repository\TideRepository
      */
-    public function __construct(MessageBus $commandBus, MessageBus $eventBus, EventStore $eventStore, FakeFileSystemResolver $fakeFileSystemResolver, TideFactory $tideFactory, TideRepository $viewTideRepository, Kernel $kernel, TracedDelayedCommandBus $tracedDelayedMessageProducer, PredictableTimeResolver $predictableTimeResolver)
-    {
+    private $tideRepository;
+
+    public function __construct(
+        MessageBus $commandBus,
+        MessageBus $eventBus,
+        EventStore $eventStore,
+        FakeFileSystemResolver $fakeFileSystemResolver,
+        TideFactory $tideFactory,
+        TideRepository $viewTideRepository,
+        Kernel $kernel,
+        TracedDelayedCommandBus $tracedDelayedMessageProducer,
+        PredictableTimeResolver $predictableTimeResolver,
+        \ContinuousPipe\River\Repository\TideRepository $tideRepository
+    ) {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
         $this->fakeFileSystemResolver = $fakeFileSystemResolver;
@@ -140,6 +143,7 @@ class TideContext implements Context
         $this->kernel = $kernel;
         $this->tracedDelayedMessageProducer = $tracedDelayedMessageProducer;
         $this->predictableTimeResolver = $predictableTimeResolver;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -191,6 +195,15 @@ EOF;
         ]);
 
         $this->createTide($branch, $sha);
+    }
+
+    /**
+     * @Given a tide is started for branch :branch and commit :commit with a deploy task
+     */
+    public function aTideIsStartedForBranchAndCommitWithADeployTask($branch, $commit)
+    {
+        $this->aTideIsCreatedForBranchAndCommitWithADeployTask($branch, $commit);
+        $this->startTide();
     }
 
     /**
@@ -593,7 +606,7 @@ EOF;
     public function aTideIsStartedBasedOnThatWorkflow()
     {
         $this->createTide();
-        $this->eventBus->handle(new TideStarted(
+        $this->commandBus->handle(new StartTideCommand(
             $this->tideUuid
         ));
     }
@@ -693,50 +706,6 @@ EOF;
                 implode(', ', $environmentNames)
             ));
         }
-    }
-
-    /**
-     * @Given a deployment for a commit :sha on branch :branch is successful
-     */
-    public function aDeploymentForACommitIsSuccessful($sha, $branch)
-    {
-        $this->thereIsApplicationImagesInTheRepository(1);
-        $this->flowContext->iHaveAFlow();
-
-        $continuousPipeFile = <<<EOF
-tasks:
-    - deploy:
-          cluster: fake/provider
-EOF;
-
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'continuous-pipe.yml' => $continuousPipeFile
-        ]);
-
-        $this->createTide($branch, $sha);
-        $this->startTide();
-
-        $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
-        if (count($deploymentStartedEvents) == 0) {
-            throw new \LogicException('Found 0 deployment started events');
-        }
-
-        /** @var DeploymentStarted $deploymentStarted */
-        $deploymentStarted = current($deploymentStartedEvents);
-        $startedDeployment = $deploymentStarted->getDeployment();
-
-        $this->eventBus->handle(new DeploymentSuccessful(
-            $this->getCurrentTideUuid(),
-            new Deployment(
-                $startedDeployment->getUuid(),
-                $startedDeployment->getRequest(),
-                Deployment::STATUS_SUCCESS,
-                array_merge($startedDeployment->getPublicEndpoints(), [
-                    new PublicEndpoint('fake', '1.2.3.4'),
-                ]),
-                $startedDeployment->getComponentStatuses()
-            )
-        ));
     }
 
     /**
@@ -1494,5 +1463,10 @@ EOF;
         return $this->viewTideRepository->find(
             $this->tideUuid
         );
+    }
+
+    public function getCurrentTideAggregate()
+    {
+        return $this->tideRepository->find($this->tideUuid);
     }
 }

@@ -2,17 +2,21 @@
 
 namespace ContinuousPipe\River\Task\Run;
 
+use ContinuousPipe\Pipe\Client;
+use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\EventDrivenTask;
-use ContinuousPipe\River\Task\Run\Command\StartRunCommand;
 use ContinuousPipe\River\Task\Run\Event\RunFailed;
 use ContinuousPipe\River\Task\Run\Event\RunStarted;
 use ContinuousPipe\River\Task\Run\Event\RunSuccessful;
+use ContinuousPipe\River\Task\Run\RunRequest\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Task\TaskQueued;
+use ContinuousPipe\River\Tide;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class RunTask extends EventDrivenTask
@@ -38,14 +42,20 @@ class RunTask extends EventDrivenTask
     private $configuration;
 
     /**
+     * @var Uuid|null
+     */
+    private $startedRunUuid;
+
+    /**
+     * @param EventCollection      $events
      * @param LoggerFactory        $loggerFactory
      * @param MessageBus           $commandBus
      * @param RunContext           $context
      * @param RunTaskConfiguration $configuration
      */
-    public function __construct(LoggerFactory $loggerFactory, MessageBus $commandBus, RunContext $context, RunTaskConfiguration $configuration)
+    public function __construct(EventCollection $events, LoggerFactory $loggerFactory, MessageBus $commandBus, RunContext $context, RunTaskConfiguration $configuration)
     {
-        parent::__construct($context);
+        parent::__construct($context, $events);
 
         $this->loggerFactory = $loggerFactory;
         $this->commandBus = $commandBus;
@@ -53,10 +63,7 @@ class RunTask extends EventDrivenTask
         $this->configuration = $configuration;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function start()
+    public function run(Tide $tide, DeploymentRequestFactory $deploymentRequestFactory, Client $pipeClient)
     {
         $logger = $this->loggerFactory->from($this->context->getLog());
 
@@ -66,13 +73,53 @@ class RunTask extends EventDrivenTask
         )))->getLog();
 
         $this->context->setTaskLog($log);
-        $this->newEvents[] = TaskQueued::fromContext($this->context);
+        $this->events->raiseAndApply(TaskQueued::fromContext($this->context));
 
-        $this->commandBus->handle(new StartRunCommand(
-            $this->context->getTideUuid(),
+        $deploymentRequest = $deploymentRequestFactory->createDeploymentRequest(
+            $tide,
             new TaskDetails($this->context->getTaskId(), $log->getId()),
             $this->configuration
+        );
+
+        $deployment = $pipeClient->start($deploymentRequest, $tide->getUser());
+
+        $this->events->raiseAndApply(new RunStarted(
+            $tide->getUuid(),
+            $this->getIdentifier(),
+            $deployment->getUuid()
         ));
+    }
+
+    public function receiveDeploymentNotification(Deployment $deployment)
+    {
+        if (null === $this->startedRunUuid || $deployment->getUuid() != $this->startedRunUuid) {
+            return;
+        }
+
+        if ($deployment->isSuccessful()) {
+            $this->events->raiseAndApply(new RunSuccessful(
+                $this->context->getTideUuid(),
+                $deployment
+            ));
+        } elseif ($deployment->isFailed()) {
+            $this->events->raiseAndApply(new RunFailed(
+                $this->context->getTideUuid(),
+                $deployment
+            ));
+        }
+    }
+
+    public function apply(TideEvent $event)
+    {
+        parent::apply($event);
+
+        if ($event instanceof RunStarted || $event instanceof RunFailed || $event instanceof RunSuccessful) {
+            //            var_dump('run', $this->getIdentifier(), get_class($event));
+        }
+
+        if ($event instanceof RunStarted) {
+            $this->startedRunUuid = $event->getRunUuid();
+        }
     }
 
     /**
@@ -80,16 +127,16 @@ class RunTask extends EventDrivenTask
      */
     public function accept(TideEvent $event)
     {
-        if ($event instanceof DeploymentSuccessful) {
-            return true;
-        }
-
         if ($event instanceof RunFailed || $event instanceof RunSuccessful) {
-            if (!$this->isStarted()) {
+            if (null === $this->startedRunUuid) {
                 return false;
             }
 
-            return $this->getRunStartedEvent()->getRunUuid()->equals($event->getRunUuid());
+            $equals = $this->startedRunUuid->equals($event->getRunUuid());
+
+            var_dump($this->getIdentifier(), get_class($event), $equals);
+
+            return $equals;
         }
 
         return parent::accept($event);
@@ -112,18 +159,10 @@ class RunTask extends EventDrivenTask
     }
 
     /**
-     * @return bool
+     * @return null|Uuid
      */
-    private function isStarted()
+    public function getStartedRunUuid()
     {
-        return 0 < $this->numberOfEventsOfType(RunStarted::class);
-    }
-
-    /**
-     * @return RunStarted
-     */
-    private function getRunStartedEvent()
-    {
-        return $this->getEventsOfType(RunStarted::class)[0];
+        return $this->startedRunUuid;
     }
 }

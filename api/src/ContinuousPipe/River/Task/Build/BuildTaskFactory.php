@@ -2,14 +2,20 @@
 
 namespace ContinuousPipe\River\Task\Build;
 
+use ContinuousPipe\Builder\BuildRequestCreator;
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration;
+use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
+use ContinuousPipe\River\Task\TaskRunner;
+use ContinuousPipe\River\Task\TaskRunnerException;
+use ContinuousPipe\River\Tide;
 use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
-class BuildTaskFactory implements TaskFactory
+class BuildTaskFactory implements TaskFactory, TaskRunner
 {
     /**
      * @var MessageBus
@@ -22,26 +28,54 @@ class BuildTaskFactory implements TaskFactory
     private $loggerFactory;
 
     /**
-     * @param MessageBus    $commandBus
-     * @param LoggerFactory $loggerFactory
+     * @var BuildRequestCreator
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory)
+    private $buildRequestCreator;
+
+    /**
+     * @param MessageBus          $commandBus
+     * @param LoggerFactory       $loggerFactory
+     * @param BuildRequestCreator $buildRequestCreator
+     */
+    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, BuildRequestCreator $buildRequestCreator)
     {
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
+        $this->buildRequestCreator = $buildRequestCreator;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function create(TaskContext $taskContext, array $configuration)
+    public function create(EventCollection $events, TaskContext $taskContext, array $configuration)
     {
         return new BuildTask(
+            $events,
             $this->commandBus,
             $this->loggerFactory,
             BuildContext::createBuildContext($taskContext),
             $this->createConfiguration($configuration)
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function run(Tide $tide, Task $task)
+    {
+        if (!$task instanceof BuildTask) {
+            throw new TaskRunnerException('This runner only supports build tasks', 0, null, $task);
+        }
+
+        return $task->buildImages($this->buildRequestCreator);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Tide $tide, Task $task) : bool
+    {
+        return $task instanceof BuildTask;
     }
 
     /**

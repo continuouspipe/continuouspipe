@@ -46,7 +46,11 @@ class ApplyTideEvents implements TideSaga
         $tide->apply($event);
 
         $events = $tide->popNewEvents();
+
         foreach ($events as $newEvent) {
+            var_dump('applied', $event, 'got', get_class($newEvent));
+            exit;
+
             $this->eventBus->handle($newEvent);
         }
     }

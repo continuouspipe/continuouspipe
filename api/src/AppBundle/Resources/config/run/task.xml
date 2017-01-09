@@ -11,5 +11,10 @@
 
             <tag name="river.task_factory" task="run" />
         </service>
+
+        <service id="river.task.run_runner" class="ContinuousPipe\River\Task\Run\RunTaskRunner">
+            <argument type="service" id="river.task.run.deployment_request_factory" />
+            <argument type="service" id="river.pipe_client" />
+        </service>
     </services>
 </container>

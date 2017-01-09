@@ -48,9 +48,13 @@ class TaskList
      */
     public function hasRunning()
     {
-        return 0 < count(array_filter($this->tasks, function (Task $task) {
-            return $task->getStatus() == Task::STATUS_RUNNING;
-        }));
+        foreach ($this->tasks as $task) {
+            if ($task->getStatus() == Task::STATUS_RUNNING) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -62,11 +66,11 @@ class TaskList
      */
     public function getFailedTask()
     {
-        $failedTasks = array_filter($this->tasks, function (Task $task) {
-            return $task->getStatus() == Task::STATUS_FAILED;
-        });
-
-        return count($failedTasks) ? current($failedTasks) : null;
+        foreach ($this->tasks as $task) {
+            if ($task->getStatus() == Task::STATUS_FAILED) {
+                return $task;
+            }
+        }
     }
 
     /**
@@ -79,8 +83,6 @@ class TaskList
                 return $task;
             }
         }
-
-        return;
     }
 
     /**
@@ -105,5 +107,23 @@ class TaskList
         }
 
         return;
+    }
+
+    /**
+     * @param string $taskType
+     *
+     * @return Task[]
+     */
+    public function ofType(string $taskType) : array
+    {
+        $matchingTasks = [];
+
+        foreach ($this->tasks as $task) {
+            if (get_class($task) == $taskType) {
+                $matchingTasks[] = $task;
+            }
+        }
+
+        return $matchingTasks;
     }
 }

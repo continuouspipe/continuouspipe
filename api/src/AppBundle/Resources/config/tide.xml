@@ -88,7 +88,24 @@
             <argument type="service" id="river.repository.flow" />
         </service>
 
-        <service id="river.tide.task_runner" class="ContinuousPipe\River\Task\StartTaskRunner" />
+        <service id="river.tide.task_runner.start_method" class="ContinuousPipe\River\Task\StartTaskRunner" />
+        <service id="river.tide.task_runner" class="ContinuousPipe\River\Task\DelegatesToSupportingTaskRunner">
+            <argument type="collection">
+                <argument type="service" id="river.task.manual_approval.runner" />
+                <argument type="service" id="river.task.build_factory" />
+                <argument type="service" id="river.tide.task_runner.start_method" />
+                <argument type="service" id="river.task.deploy_runner" />
+                <argument type="service" id="river.task.run_runner" />
+                <argument type="service" id="river.task.web_hook_factory" />
+            </argument>
+        </service>
+        <service id="river.tide.task_runner.logging"
+                 class="ContinuousPipe\River\Recover\FailedTask\ErrorTheTaskRunnerExceptions"
+                 decorates="river.tide.task_runner">
+            <argument type="service" id="river.tide.task_runner.logging.inner" />
+            <argument type="service" id="logger" />
+        </service>
+
         <service id="river.task_filter.expression_language_filter_evaluator" class="ContinuousPipe\River\Filter\ExpressionLanguageFilterEvaluator">
             <argument type="service" id="river.task_filter.context_factory" />
         </service>
@@ -99,6 +116,7 @@
             <argument type="service" id="river.task_filter.expression_language_filter_evaluator" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="logger" />
+            <argument type="service" id="log_stream.logger_factory" />
         </service>
         <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
             <argument type="service" id="log_stream.logger_factory" />

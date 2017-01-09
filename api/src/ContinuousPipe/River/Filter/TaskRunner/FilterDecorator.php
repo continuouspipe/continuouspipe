@@ -6,9 +6,10 @@ use ContinuousPipe\River\Filter\FilterEvaluator;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Task\TaskRunnerException;
-use ContinuousPipe\River\Task\TaskSkipped;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideConfigurationException;
+use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -35,17 +36,24 @@ class FilterDecorator implements TaskRunner
     private $logger;
 
     /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
+
+    /**
      * @param TaskRunner      $taskRunner
      * @param FilterEvaluator $filterEvaluator
      * @param MessageBus      $eventBus
      * @param LoggerInterface $logger
+     * @param LoggerFactory   $loggerFactory
      */
-    public function __construct(TaskRunner $taskRunner, FilterEvaluator $filterEvaluator, MessageBus $eventBus, LoggerInterface $logger)
+    public function __construct(TaskRunner $taskRunner, FilterEvaluator $filterEvaluator, MessageBus $eventBus, LoggerInterface $logger, LoggerFactory $loggerFactory)
     {
         $this->taskRunner = $taskRunner;
         $this->filterEvaluator = $filterEvaluator;
         $this->eventBus = $eventBus;
         $this->logger = $logger;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -65,7 +73,13 @@ class FilterDecorator implements TaskRunner
         }
 
         if ($shouldBeSkipped) {
-            $this->eventBus->handle(new TaskSkipped($tide->getUuid(), $task->getIdentifier(), $task->getLogIdentifier()));
+            $logger = $this->loggerFactory->fromId($task->getLogIdentifier());
+            $logger->child(new Text(sprintf(
+                'Skipping task "%s" based on filters',
+                $task->getIdentifier()
+            )));
+
+            $tide->skipTask($task);
         } else {
             $this->taskRunner->run($tide, $task);
         }
@@ -107,5 +121,13 @@ class FilterDecorator implements TaskRunner
         }
 
         throw new TideConfigurationException(sprintf('Configuration of task "%s" cannot be found', $identifier));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Tide $tide, Task $task): bool
+    {
+        return $this->taskRunner->supports($tide, $task);
     }
 }

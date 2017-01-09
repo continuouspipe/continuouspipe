@@ -2,10 +2,12 @@
 
 namespace ContinuousPipe\River\Task\Build;
 
+use ContinuousPipe\Builder\BuilderException;
+use ContinuousPipe\Builder\BuildRequestCreator;
 use ContinuousPipe\Builder\Client\BuilderBuild;
-use ContinuousPipe\River\BuildNotFound;
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\Task\Build\Command\BuildImagesCommand;
+use ContinuousPipe\River\EventCollection;
+use ContinuousPipe\River\Task\Build\Command\BuildImageCommand;
 use ContinuousPipe\River\Task\Build\Event\BuildFailed;
 use ContinuousPipe\River\Task\Build\Event\BuildStarted;
 use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
@@ -14,6 +16,7 @@ use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\TaskQueued;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use SimpleBus\Message\Bus\MessageBus;
@@ -41,19 +44,106 @@ class BuildTask extends EventDrivenTask
     private $configuration;
 
     /**
+     * @var Log|null
+     */
+    private $log;
+
+    /**
+     * @var BuilderBuild[]
+     */
+    private $startedBuilds = [];
+
+    /**
+     * @var BuilderBuild[]
+     */
+    private $successfulBuilds = [];
+
+    /**
+     * @param EventCollection        $events
      * @param MessageBus             $commandBus
      * @param LoggerFactory          $loggerFactory
      * @param BuildContext           $context
      * @param BuildTaskConfiguration $configuration
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, BuildContext $context, BuildTaskConfiguration $configuration)
+    public function __construct(EventCollection $events, MessageBus $commandBus, LoggerFactory $loggerFactory, BuildContext $context, BuildTaskConfiguration $configuration)
     {
-        parent::__construct($context);
+        parent::__construct($context, $events);
 
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
         $this->context = $context;
         $this->configuration = $configuration;
+    }
+
+    public function buildImages(BuildRequestCreator $buildRequestCreator)
+    {
+        $logger = $this->loggerFactory->from($this->context->getLog());
+        $logger = $logger->child(new Text('Building application images'));
+        $logger->updateStatus(Log::RUNNING);
+
+        $this->context->setTaskLog($logger->getLog());
+        $this->events->raiseAndApply(TaskQueued::fromContext($this->context));
+
+        try {
+            $buildRequests = $buildRequestCreator->createBuildRequests(
+                $this->context->getCodeReference(),
+                $this->configuration,
+                $this->context->getTeam()->getBucketUuid()
+            );
+        } catch (BuilderException $e) {
+            $logger->child(new Text($e->getMessage()));
+            $this->events->raiseAndApply(new ImageBuildsFailed(
+                $this->context->getTideUuid(),
+                $logger->getLog()
+            ));
+
+            return;
+        }
+
+        foreach ($buildRequests as $buildRequest) {
+            $this->commandBus->handle(new BuildImageCommand(
+                $this->context->getTideUuid(),
+                $buildRequest,
+                $logger->getLog()->getId()
+            ));
+        }
+
+        $this->events->raiseAndApply(new ImageBuildsStarted(
+            $this->context->getTideUuid(),
+            $buildRequests,
+            $logger->getLog()
+        ));
+
+        if (empty($buildRequests)) {
+            $logger->child(new Text('Found no image to build'));
+            $this->events->raiseAndApply(new ImageBuildsSuccessful($this->context->getTideUuid(), $logger->getLog()));
+        }
+    }
+
+    public function receiveBuildNotification(BuilderBuild $build)
+    {
+        if ($build->isSuccessful()) {
+            $this->events->raiseAndApply(new BuildSuccessful(
+                $this->context->getTideUuid(),
+                $build
+            ));
+
+            if ($this->allImageBuildsSuccessful()) {
+                $this->events->raiseAndApply(new ImageBuildsSuccessful(
+                    $this->context->getTideUuid(),
+                    $this->log
+                ));
+            }
+        } elseif ($build->isErrored()) {
+            $this->events->raiseAndApply(new BuildFailed(
+                $this->context->getTideUuid(),
+                $build
+            ));
+
+            $this->events->raiseAndApply(
+                new ImageBuildsFailed($this->context->getTideUuid(), $this->log)
+            );
+        }
     }
 
     /**
@@ -63,88 +153,13 @@ class BuildTask extends EventDrivenTask
     {
         parent::apply($event);
 
-        if ($event instanceof BuildSuccessful) {
-            $this->applyBuildSuccessful($event);
-        } elseif ($event instanceof BuildFailed) {
-            $this->applyBuildFailed($event);
+        if ($event instanceof ImageBuildsStarted) {
+            $this->log = $event->getLog();
+        } elseif ($event instanceof BuildStarted) {
+            $this->startedBuilds[] = $event->getBuild();
+        } elseif ($event instanceof BuildSuccessful) {
+            $this->successfulBuilds[] = $event->getBuild();
         }
-    }
-
-    /**
-     * @param BuildSuccessful $event
-     */
-    private function applyBuildSuccessful(BuildSuccessful $event)
-    {
-        if ($this->allImageBuildsSuccessful()) {
-            $eventImageBuildsStarted = $this->getImageBuildsStartedEvent();
-
-            $this->newEvents[] = new ImageBuildsSuccessful($event->getTideUuid(), $eventImageBuildsStarted->getLog());
-        }
-    }
-
-    /**
-     * @param BuildFailed $event
-     */
-    private function applyBuildFailed(BuildFailed $event)
-    {
-        $eventImageBuildsStarted = $this->getImageBuildsStartedEvent();
-
-        $this->newEvents[] = new ImageBuildsFailed($event->getTideUuid(), $eventImageBuildsStarted->getLog());
-    }
-
-    /**
-     * Check if all the started builds are successful.
-     *
-     * @return bool
-     *
-     * @throws BuildNotFound
-     */
-    private function allImageBuildsSuccessful()
-    {
-        /** @var BuildStarted[] $buildStartedEvents */
-        $buildStartedEvents = $this->getEventsOfType(BuildStarted::class);
-        if (count($buildStartedEvents) == 0) {
-            throw new BuildNotFound('No started build found');
-        }
-
-        foreach ($buildStartedEvents as $buildStartedEvent) {
-            if (!$this->isBuildSuccessful($buildStartedEvent->getBuild())) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @return ImageBuildsStarted
-     */
-    private function getImageBuildsStartedEvent()
-    {
-        $events = $this->getEventsOfType(ImageBuildsStarted::class);
-        if (0 === count($events)) {
-            throw new \RuntimeException('No `ImageBuildsStarted` event found');
-        }
-
-        return current($events);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function start()
-    {
-        $logger = $this->loggerFactory->from($this->context->getLog());
-        $log = $logger->child(new Text('Building application images'))->getLog();
-
-        $this->context->setTaskLog($log);
-        $this->newEvents[] = TaskQueued::fromContext($this->context);
-
-        $this->commandBus->handle(new BuildImagesCommand(
-            $this->context->getTideUuid(),
-            $this->configuration,
-            $log->getId()
-        ));
     }
 
     /**
@@ -163,20 +178,25 @@ class BuildTask extends EventDrivenTask
         return 0 < $this->numberOfEventsOfType(ImageBuildsFailed::class);
     }
 
-    /**
-     * Return true if the given build is successful.
-     *
-     * @param BuilderBuild $build
-     *
-     * @return bool
-     */
-    private function isBuildSuccessful(BuilderBuild $build)
+    private function allImageBuildsSuccessful() : bool
     {
-        $buildSuccessfulEvents = $this->getEventsOfType(BuildSuccessful::class);
-        $matchingEvents = array_filter($buildSuccessfulEvents, function (BuildSuccessful $event) use ($build) {
-            return $event->getBuild()->getUuid() == $build->getUuid();
-        });
+        foreach ($this->startedBuilds as $build) {
+            if (!$this->isBuildSuccessful($build)) {
+                return false;
+            }
+        }
 
-        return count($matchingEvents) > 0;
+        return true;
+    }
+
+    private function isBuildSuccessful(BuilderBuild $build) : bool
+    {
+        foreach ($this->successfulBuilds as $successfulBuild) {
+            if ($successfulBuild->getUuid() == $build->getUuid()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

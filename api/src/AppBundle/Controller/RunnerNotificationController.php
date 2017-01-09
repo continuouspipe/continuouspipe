@@ -3,8 +3,8 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\River\Task\Run\Event\RunFailed;
-use ContinuousPipe\River\Task\Run\Event\RunSuccessful;
+use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\Task\Run\RunTask;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -22,11 +22,18 @@ class RunnerNotificationController
     private $eventBus;
 
     /**
-     * @param MessageBus $eventBus
+     * @var TideRepository
      */
-    public function __construct(MessageBus $eventBus)
+    private $tideRepository;
+
+    /**
+     * @param MessageBus     $eventBus
+     * @param TideRepository $tideRepository
+     */
+    public function __construct(MessageBus $eventBus, TideRepository $tideRepository)
     {
         $this->eventBus = $eventBus;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -38,15 +45,15 @@ class RunnerNotificationController
     {
         $tideUuid = Uuid::fromString($tideUuid);
 
-        if ($deployment->getStatus() == Deployment::STATUS_SUCCESS) {
-            $this->eventBus->handle(new RunSuccessful($tideUuid, $deployment));
-        } elseif ($deployment->getStatus() == Deployment::STATUS_FAILURE) {
-            $this->eventBus->handle(new RunFailed($tideUuid, $deployment));
-        } else {
-            throw new \RuntimeException(sprintf(
-                'Got a status of "%s" from runner',
-                $deployment->getStatus()
-            ));
+        $tide = $this->tideRepository->find($tideUuid);
+        $tasks = $tide->getTasks()->ofType(RunTask::class);
+
+        foreach ($tasks as $task) {
+            $task->receiveDeploymentNotification($deployment);
+        }
+
+        foreach ($tide->popNewEvents() as $event) {
+            $this->eventBus->handle($event);
         }
     }
 }

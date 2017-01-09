@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Pipeline\Generation;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Event\TideGenerated;
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Pipeline\PipelineTideGenerator;
@@ -49,7 +50,7 @@ class CreateFailingTideWhenConfigurationIsWrong implements PipelineTideGenerator
             $logger->child(new Text($e->getMessage()));
 
             $tideUuid = Uuid::uuid4();
-            $events = [
+            $events = new EventCollection([
                 new TideCreated(TideContext::createTide(
                     $request->getFlow()->getUuid(),
                     $request->getFlow()->getTeam(),
@@ -67,7 +68,7 @@ class CreateFailingTideWhenConfigurationIsWrong implements PipelineTideGenerator
                     ]
                 ))),
                 new TideFailed($tideUuid, $e->getMessage()),
-            ];
+            ]);
 
             $tide = Tide::fromEvents(
                 new NullRunner(),

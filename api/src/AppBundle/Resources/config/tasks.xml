@@ -8,17 +8,5 @@
         <service id="river.task_factory_registry" class="ContinuousPipe\River\Task\TaskFactoryRegistry">
             <argument type="service" id="service_container" />
         </service>
-
-        <service id="river.event_listener.task.task_failed.logging_listener" class="ContinuousPipe\River\EventListener\TaskFailed\LoggingListener">
-            <argument type="service" id="log_stream.logger_factory" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\TaskFailed"/>
-        </service>
-
-        <service id="river.event_listener.task.task_skipped.logging_listener" class="ContinuousPipe\River\EventListener\TaskSkipped\LoggingListener">
-            <argument type="service" id="log_stream.logger_factory" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\TaskSkipped"/>
-        </service>
     </services>
 </container>

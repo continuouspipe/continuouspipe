@@ -6,7 +6,7 @@ use ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\DeploymentRequestEnhance
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
 use ContinuousPipe\River\Task\TaskDetails;
-use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\Tide;
 
 class EnhancedDeploymentRequestFactory implements DeploymentRequestFactory
 {

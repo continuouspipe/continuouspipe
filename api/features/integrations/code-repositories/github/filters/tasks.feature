@@ -3,13 +3,15 @@ Feature:
   As a developer
   I want to be able to filter tasks based on the pull-request status
 
+  Background:
+    Given there is 1 application images in the repository
+
   Scenario: Filtering on pull request without pull-request
     Given I have a flow with the following configuration:
     """
     tasks:
         images:
-            build:
-                services: []
+            build: ~
 
         environment:
             deploy:
@@ -32,8 +34,7 @@ Feature:
     """
     tasks:
         images:
-            build:
-                services: []
+            build: ~
 
         environment:
             deploy:
@@ -56,8 +57,7 @@ Feature:
     """
     tasks:
         images:
-            build:
-                services: []
+            build: ~
 
         environment:
             deploy:
@@ -83,8 +83,7 @@ Feature:
     """
     tasks:
         images:
-            build:
-                services: []
+            build: ~
 
         environment:
             deploy:
@@ -110,8 +109,7 @@ Feature:
     """
     tasks:
         images:
-            build:
-                services: []
+            build: ~
 
         environment:
             deploy:

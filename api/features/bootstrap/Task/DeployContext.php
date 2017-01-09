@@ -239,18 +239,16 @@ class DeployContext implements Context
      */
     private function theDeploymentSucceedWithTheFollowingAdditionalEndpoints(array $endpoints)
     {
-        $startedDeployment = $this->getDeployment();
+        $startedDeployment = $this->deployment ?: $this->getDeployment();
+        $deployment = new Deployment(
+            $startedDeployment->getUuid(),
+            $startedDeployment->getRequest(),
+            Deployment::STATUS_SUCCESS,
+            array_merge($startedDeployment->getPublicEndpoints(), $endpoints),
+            $startedDeployment->getComponentStatuses()
+        );
 
-        $this->eventBus->handle(new DeploymentSuccessful(
-            $this->tideContext->getCurrentTideUuid(),
-            new Deployment(
-                $startedDeployment->getUuid(),
-                $startedDeployment->getRequest(),
-                Deployment::STATUS_SUCCESS,
-                array_merge($startedDeployment->getPublicEndpoints(), $endpoints),
-                $startedDeployment->getComponentStatuses()
-            )
-        ));
+        $this->sendDeploymentNotification($deployment);
     }
 
     /**
@@ -557,7 +555,8 @@ class DeployContext implements Context
     public function theNameOfTheDeployedEnvironmentShouldBe($expectedName)
     {
         $foundName = $this->environmentNamingStrategy->getName(
-            $this->tideContext->getCurrentTideUuid(), $this->getDeployTask()->getConfiguration()->getEnvironmentName()
+            $this->tideContext->getCurrentTideAggregate(),
+            $this->getDeployTask()->getConfiguration()->getEnvironmentName()
         );
 
         if ($foundName != $expectedName) {
@@ -575,7 +574,7 @@ class DeployContext implements Context
     public function theNameOfTheDeployedEnvironmentShouldNotBe($name)
     {
         $foundName = $this->environmentNamingStrategy->getName(
-            $this->tideContext->getCurrentTideUuid(),
+            $this->tideContext->getCurrentTideAggregate(),
             $this->getDeployTask()->getConfiguration()->getEnvironmentName()
         );
 
@@ -593,7 +592,7 @@ class DeployContext implements Context
     public function theNameOfTheDeployedEnvironmentShouldBeLessOrEqualsThanCharactersLong($characters)
     {
         $foundName = $this->environmentNamingStrategy->getName(
-            $this->tideContext->getCurrentTideUuid(),
+            $this->tideContext->getCurrentTideAggregate(),
             $this->getDeployTask()->getConfiguration()->getEnvironmentName()
         );
 
@@ -716,7 +715,7 @@ class DeployContext implements Context
         /** @var DeploymentStarted $deploymentStartedEvent */
         $deploymentStartedEvent = $deploymentStartedEvents[0];
 
-        $this->sendRunnerNotification(
+        $this->sendDeploymentNotification(
             new Deployment(
                 $deploymentStartedEvent->getDeployment()->getUuid(),
                 $deploymentStartedEvent->getDeployment()->getRequest(),
@@ -728,7 +727,7 @@ class DeployContext implements Context
     /**
      * @param Deployment $deployment
      */
-    private function sendRunnerNotification(Deployment $deployment)
+    private function sendDeploymentNotification(Deployment $deployment)
     {
         $response = $this->kernel->handle(Request::create(
             sprintf('/pipe/notification/tide/%s', (string)$this->tideContext->getCurrentTideUuid()),

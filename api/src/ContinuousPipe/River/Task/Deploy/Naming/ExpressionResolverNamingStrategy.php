@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Task\Deploy\Naming;
 
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\River\Filter\ContextFactory;
-use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -18,24 +18,17 @@ class ExpressionResolverNamingStrategy implements EnvironmentNamingStrategy
     private $contextFactory;
 
     /**
-     * @var TideRepository
-     */
-    private $tideRepository;
-
-    /**
      * @param ContextFactory $contextFactory
-     * @param TideRepository $tideRepository
      */
-    public function __construct(ContextFactory $contextFactory, TideRepository $tideRepository)
+    public function __construct(ContextFactory $contextFactory)
     {
         $this->contextFactory = $contextFactory;
-        $this->tideRepository = $tideRepository;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName(Uuid $tideUuid, $expression = null)
+    public function getName(Tide $tide, $expression = null)
     {
         if (null === $expression) {
             throw new UnresolvedEnvironmentNameException('The environment name expression must not be blank');
@@ -43,7 +36,6 @@ class ExpressionResolverNamingStrategy implements EnvironmentNamingStrategy
             throw new UnresolvedEnvironmentNameException('The environment name expression should be a string');
         }
 
-        $tide = $this->tideRepository->find($tideUuid);
         $context = $this->contextFactory->create($tide);
 
         return $this->resolveExpression($expression, $context);

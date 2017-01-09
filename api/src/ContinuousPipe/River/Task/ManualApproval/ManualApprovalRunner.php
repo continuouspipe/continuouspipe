@@ -4,28 +4,22 @@ namespace ContinuousPipe\River\Task\ManualApproval;
 
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskRunner;
+use ContinuousPipe\River\Task\TaskRunnerException;
 use ContinuousPipe\River\Tide;
 use LogStream\LoggerFactory;
 
 class ManualApprovalRunner implements TaskRunner
 {
     /**
-     * @var TaskRunner
-     */
-    private $nextRunner;
-
-    /**
      * @var LoggerFactory
      */
     private $loggerFactory;
 
     /**
-     * @param TaskRunner    $nextRunner
      * @param LoggerFactory $loggerFactory
      */
-    public function __construct(TaskRunner $nextRunner, LoggerFactory $loggerFactory)
+    public function __construct(LoggerFactory $loggerFactory)
     {
-        $this->nextRunner = $nextRunner;
         $this->loggerFactory = $loggerFactory;
     }
 
@@ -35,9 +29,17 @@ class ManualApprovalRunner implements TaskRunner
     public function run(Tide $tide, Task $task)
     {
         if (!$task instanceof ManualApprovalTask) {
-            return $this->nextRunner->run($tide, $task);
+            throw new TaskRunnerException('This runner only supports ManualApproval tasks', 0, null, $task);
         }
 
         return $task->start($tide, $this->loggerFactory);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Tide $tide, Task $task): bool
+    {
+        return $task instanceof ManualApprovalTask;
     }
 }

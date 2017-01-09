@@ -189,32 +189,6 @@ class TasksContext implements Context
     }
 
     /**
-     * @When the build task succeed
-     */
-    public function theBuildTaskSucceed()
-    {
-        $tide = $this->getCurrentTide();
-
-        $this->eventBus->handle(new ImageBuildsSuccessful(
-            $tide->getUuid(),
-            $tide->getContext()->getLog()
-        ));
-    }
-
-    /**
-     * @When the build task failed
-     */
-    public function theBuildTaskFailed()
-    {
-        $tide = $this->getCurrentTide();
-
-        $this->eventBus->handle(new ImageBuildsFailed(
-            $tide->getUuid(),
-            $tide->getContext()->getLog()
-        ));
-    }
-
-    /**
      * @Then the tide should have the task :identifier
      */
     public function theTideShouldHaveTheTask($identifier)

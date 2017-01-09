@@ -9,15 +9,21 @@
             <argument type="service" id="command_bus" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.task.deploy.configuration.component_factory" />
+            <argument type="service" id="river.task.deploy.deployment_request_factory"/>
+            <argument type="service" id="river.pipe_client"/>
             <argument>%default_environment_expression%</argument>
 
             <tag name="river.task_factory" task="deploy" />
         </service>
 
+        <service id="river.task.deploy_runner" class="ContinuousPipe\River\Task\Deploy\DeployTaskRunner">
+            <argument type="service" id="river.task.deploy.deployment_request_factory"/>
+            <argument type="service" id="river.pipe_client"/>
+        </service>
+
         <!-- Naming strategies -->
         <service id="river.task.deploy.naming.expression_resolver" class="ContinuousPipe\River\Task\Deploy\Naming\ExpressionResolverNamingStrategy">
             <argument type="service" id="river.task_filter.context_factory" />
-            <argument type="service" id="river.repository.tide" />
         </service>
 
         <service id="river.task.deploy.naming.default_environment_expression"
@@ -47,17 +53,6 @@
                  decorates="river.task.deploy.deployment_request_factory">
             <argument type="service" id="river.task.deploy.deployment_request_factory.enhanced.inner" />
             <argument type="service" id="river.pipe.deployment_request_enhancer" />
-        </service>
-
-        <service id="river.handler.start_deploy" class="ContinuousPipe\River\Task\Deploy\Handler\StartDeploymentHandler">
-            <argument type="service" id="river.task.deploy.deployment_request_factory" />
-            <argument type="service" id="river.pipe_client" />
-            <argument type="service" id="simple_bus.event_bus" />
-            <argument type="service" id="log_stream.logger_factory" />
-            <argument type="service" id="river.view.tide_repository"/>
-            <argument type="service" id="logger" />
-
-            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand" />
         </service>
 
         <service id="river.task.deploy.configuration.component_factory" class="ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory">

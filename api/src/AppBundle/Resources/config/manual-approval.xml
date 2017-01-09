@@ -9,10 +9,7 @@
             <tag name="river.task_factory" task="manual_approval" />
         </service>
 
-        <service id="river.task.manual_approval.runner"
-                 class="ContinuousPipe\River\Task\ManualApproval\ManualApprovalRunner"
-                 decorates="river.tide.task_runner">
-            <argument type="service" id="river.task.manual_approval.runner.inner" />
+        <service id="river.task.manual_approval.runner" class="ContinuousPipe\River\Task\ManualApproval\ManualApprovalRunner">
             <argument type="service" id="log_stream.logger_factory" />
         </service>
 

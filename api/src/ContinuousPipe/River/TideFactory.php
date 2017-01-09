@@ -74,6 +74,7 @@ class TideFactory
         $log = $this->loggerFactory->create()->getLog();
         $trigger = $request->getGenerationTrigger();
 
+        $events = new EventCollection();
         $tideUuid = $tideUuid ?: Uuid::uuid4();
         $tideContext = TideContext::createTide(
             $flow->getUuid(),
@@ -86,9 +87,9 @@ class TideFactory
             $trigger->getCodeRepositoryEvent()
         );
 
-        $taskList = $this->createTideTaskList($tideContext);
+        $taskList = $this->createTideTaskList($events, $tideContext);
 
-        $tide = Tide::create($this->taskRunner, $taskList, $tideContext, $request, FlatPipeline::fromPipeline($pipeline));
+        $tide = Tide::create($this->taskRunner, $taskList, $tideContext, $request, FlatPipeline::fromPipeline($pipeline), $events);
 
         return $tide;
     }
@@ -109,21 +110,24 @@ class TideFactory
             throw new \RuntimeException('Can\'t recreate a tide from events without the created event');
         }
 
+        $events = new EventCollection($events);
+
         $tideCreatedEvent = $tideCreatedEvents[0];
         $tideContext = $tideCreatedEvent->getTideContext();
-        $taskList = $this->createTideTaskList($tideContext);
+        $taskList = $this->createTideTaskList($events, $tideContext);
 
         return Tide::fromEvents($this->taskRunner, $taskList, $events);
     }
 
     /**
-     * @param TideContext $tideContext
+     * @param TideContext     $tideContext
+     * @param EventCollection $events
      *
      * @throws Task\TaskFactoryNotFound
      *
      * @return TaskList
      */
-    private function createTideTaskList(TideContext $tideContext)
+    private function createTideTaskList(EventCollection $events, TideContext $tideContext)
     {
         $configuration = $tideContext->getConfiguration();
         $tasksConfiguration = array_key_exists('tasks', $configuration) ? $configuration['tasks'] : [];
@@ -143,7 +147,7 @@ class TideFactory
                 $taskId
             );
 
-            $tasks[] = $taskFactory->create($taskContext, $taskConfiguration);
+            $tasks[] = $taskFactory->create($events, $taskContext, $taskConfiguration);
         }
 
         return new TaskList($tasks);

@@ -3,8 +3,8 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
-use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\Task\Deploy\DeployTask;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -22,11 +22,18 @@ class PipeNotificationController
     private $eventBus;
 
     /**
-     * @param MessageBus $eventBus
+     * @var TideRepository
      */
-    public function __construct(MessageBus $eventBus)
+    private $tideRepository;
+
+    /**
+     * @param MessageBus     $eventBus
+     * @param TideRepository $tideRepository
+     */
+    public function __construct(MessageBus $eventBus, TideRepository $tideRepository)
     {
         $this->eventBus = $eventBus;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -38,10 +45,15 @@ class PipeNotificationController
     {
         $tideUuid = Uuid::fromString($tideUuid);
 
-        if ($deployment->isSuccessful()) {
-            $this->eventBus->handle(new DeploymentSuccessful($tideUuid, $deployment));
-        } elseif ($deployment->isFailed()) {
-            $this->eventBus->handle(new DeploymentFailed($tideUuid, $deployment));
+        $tide = $this->tideRepository->find($tideUuid);
+        $tasks = $tide->getTasks()->ofType(DeployTask::class);
+
+        foreach ($tasks as $task) {
+            $task->receiveDeploymentNotification($deployment);
+        }
+
+        foreach ($tide->popNewEvents() as $event) {
+            $this->eventBus->handle($event);
         }
     }
 }
