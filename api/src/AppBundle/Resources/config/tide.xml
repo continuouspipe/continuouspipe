@@ -6,18 +6,6 @@
 
     <services>
         <service id="river.time_resolver" class="ContinuousPipe\River\Infrastructure\InMemory\NativeTimeResolver" />
-        <service id="river.tide.saga.apply_tide_events" class="ContinuousPipe\River\ApplyTideEvents">
-            <argument type="service" id="event_bus" />
-            <argument type="service" id="river.repository.tide" />
-        </service>
-        <service id="river.tide.saga" alias="river.tide.saga.apply_tide_events" />
-
-        <service id="river.event_bus.middleware.tide_saga_apply" class="ContinuousPipe\River\EventBus\TideSagaApplyMiddleware">
-            <argument type="service" id="service_container" />
-
-            <tag name="event_bus_middleware" priority="0" />
-        </service>
-
         <service id="river.repository.tide" class="ContinuousPipe\River\Repository\EventBusTideRepository">
             <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="river.tide_factory" />
@@ -198,12 +186,6 @@
             <argument>%locker_timeout%</argument>
         </service>
         <service id="river.tide.concurrency.locker" alias="river.tide.concurrency.locker.predis_locker" />
-        <service id="river.tide.concurrency.lock_tide_while_saga"
-                 class="ContinuousPipe\River\Tide\Concurrency\Saga\LockTideWhileSaga"
-                 decorates="river.tide.saga">
-            <argument type="service" id="river.tide.concurrency.lock_tide_while_saga.inner" />
-            <argument type="service" id="river.tide.concurrency.locker" />
-        </service>
 
         <!-- Filters -->
         <service id="river.tide.filter.filter_hash_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\FilterHash\DoctrineFilterHashRepository">
