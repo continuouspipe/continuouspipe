@@ -685,3 +685,50 @@ Feature:
                                 image: sroze/my-image
                             command: [ node, /app/api.js ]
     """
+
+  Scenario: CP's image have the priority
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        image: sroze/my-image
+
+        kube:
+            deploy:
+                cluster: foo
+                services:
+                    redis:
+                        specification:
+                            source:
+                                image: sroze/my-image
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        image: foo
+
+    redis:
+        image: redis
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        image: sroze/my-image
+
+        kube:
+            deploy:
+                cluster: foo
+                services:
+                    redis:
+                        specification:
+                            source:
+                                image: sroze/my-image
+    """
