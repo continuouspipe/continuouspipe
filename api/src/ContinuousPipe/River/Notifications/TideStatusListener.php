@@ -8,6 +8,7 @@ use ContinuousPipe\River\View\Tide;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\UuidInterface;
 
 class TideStatusListener
 {
@@ -56,8 +57,17 @@ class TideStatusListener
      */
     public function notify(TideEvent $event)
     {
-        $tide = $this->tideRepository->find($event->getTideUuid());
-        $status = $this->statusFactory->createFromTideAndEvent($tide, $event);
+        $this->triggerNotifications(
+            $this->tideRepository->find($event->getTideUuid())
+        );
+    }
+
+    /**
+     * @param Tide $tide
+     */
+    public function triggerNotifications(Tide $tide)
+    {
+        $status = $this->statusFactory->createFromTideAndEvent($tide);
         $notifications = $this->findNotifications($tide);
 
         foreach ($notifications as $notification) {

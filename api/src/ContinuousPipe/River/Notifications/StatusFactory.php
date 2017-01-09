@@ -3,15 +3,11 @@
 namespace ContinuousPipe\River\Notifications;
 
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
-use ContinuousPipe\River\Event\TideCreated;
-use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\Event\TideFailed;
-use ContinuousPipe\River\Event\TideStarted;
-use ContinuousPipe\River\Event\TideSuccessful;
-use ContinuousPipe\River\EventBus\EventStore;
-use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\Tide\Status\Status;
 use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\Tide as TideAggregate;
 use ContinuousPipe\River\View\TimeResolver;
 use Psr\Log\LoggerInterface;
 
@@ -28,9 +24,9 @@ class StatusFactory
     private $logger;
 
     /**
-     * @var EventStore
+     * @var TideRepository
      */
-    private $eventStore;
+    private $tideRepository;
 
     /**
      * @var string
@@ -38,90 +34,75 @@ class StatusFactory
     private $uiBaseUrl;
 
     /**
-     * @param TimeResolver    $timeResolver
+     * @param TimeResolver $timeResolver
      * @param LoggerInterface $logger
-     * @param EventStore      $eventStore
-     * @param string          $uiBaseUrl
+     * @param TideRepository $tideRepository
+     * @param string $uiBaseUrl
      */
-    public function __construct(TimeResolver $timeResolver, LoggerInterface $logger, EventStore $eventStore, $uiBaseUrl)
+    public function __construct(TimeResolver $timeResolver, LoggerInterface $logger, TideRepository $tideRepository, $uiBaseUrl)
     {
         $this->timeResolver = $timeResolver;
         $this->logger = $logger;
-        $this->eventStore = $eventStore;
+        $this->tideRepository = $tideRepository;
         $this->uiBaseUrl = $uiBaseUrl;
     }
 
     /**
-     * @param Tide      $tide
-     * @param TideEvent $event
+     * @param Tide $tideView
      *
      * @return Status
      */
-    public function createFromTideAndEvent(Tide $tide, TideEvent $event)
+    public function createFromTideAndEvent(Tide $tideView)
     {
-        $description = $this->generateDescription($tide, $event);
-        $url = $this->generateUrl($tide);
+        $tide = $this->tideRepository->find($tideView->getUuid());
 
-        if ($event instanceof TideCreated) {
-            $status = Status::STATE_PENDING;
-        } elseif ($event instanceof TideSuccessful) {
-            $status = Status::STATE_SUCCESS;
-        } elseif ($event instanceof TideFailed) {
-            $status = Status::STATE_FAILURE;
-        } elseif ($event instanceof TideStarted) {
-            $status = Status::STATE_RUNNING;
-        } else {
-            $status = Status::STATE_UNKNOWN;
+        switch ($tideView->getStatus()) {
+            case Tide::STATUS_RUNNING:
+                $status = Status::STATE_RUNNING;
+                $description = 'Running';
+                break;
+            case Tide::STATUS_FAILURE:
+                $status = Status::STATE_FAILURE;
+                $description = $tide->getFailureReason();
+                break;
+            case Tide::STATUS_SUCCESS:
+                $status = Status::STATE_SUCCESS;
+                $description = sprintf('Successfully ran in %s', $this->getDurationString($tideView));
+                break;
+            default:
+                $status = Status::STATE_PENDING;
+                $description = 'Pending';
+                break;
         }
 
-        return new Status($status, $description, $url, $this->getPublicEndpoints($tide, $event));
+        return new Status(
+            $status,
+            $description,
+            $this->generateUrl($tideView),
+            $this->getPublicEndpoints($tide)
+        );
     }
 
     /**
-     * @param Tide      $tide
-     * @param TideEvent $event
+     * @param TideAggregate $tide
      *
      * @return PublicEndpoint[]
      */
-    private function getPublicEndpoints(Tide $tide, TideEvent $event)
+    private function getPublicEndpoints(TideAggregate $tide)
     {
-        $tideEvents = $this->eventStore->findByTideUuid($tide->getUuid());
-        $tideEvents[] = $event;
+        /** @var DeployTask[] $tasks */
+        $tasks = $tide->getTasks()->ofType(DeployTask::class);
+        $endpoints = [];
 
-        $deploymentSuccessfulEvents = array_values(array_filter($tideEvents, function (TideEvent $event) {
-            return $event instanceof DeploymentSuccessful;
-        }));
-
-        $endpoints = array_reduce($deploymentSuccessfulEvents, function ($endpoints, DeploymentSuccessful $deploymentSuccessful) {
-            return array_merge($endpoints, $deploymentSuccessful->getDeployment()->getPublicEndpoints());
-        }, []);
-
-        return $endpoints;
-    }
-
-    /**
-     * @param Tide      $tide
-     * @param TideEvent $event
-     *
-     * @return string
-     */
-    private function generateDescription(Tide $tide, TideEvent $event)
-    {
-        if ($event instanceof TideCreated) {
-            return 'Pending';
-        } elseif ($event instanceof TideStarted) {
-            return 'Running';
-        } elseif ($event instanceof TideSuccessful) {
-            return sprintf('Successfully ran in %s', $this->getDurationString($tide));
-        } elseif ($event instanceof TideFailed) {
-            return $event->getReason();
+        foreach ($tasks as $task) {
+            foreach ($task->getPublicEndpoints() as $publicEndpoint) {
+                if (!in_array($publicEndpoint, $endpoints)) {
+                    $endpoints[] = $publicEndpoint;
+                }
+            }
         }
 
-        $this->logger->warning('Generated an unknown notification description', [
-            'tide' => (string) $tide->getUuid(),
-        ]);
-
-        return 'Unknown';
+        return $endpoints;
     }
 
     /**

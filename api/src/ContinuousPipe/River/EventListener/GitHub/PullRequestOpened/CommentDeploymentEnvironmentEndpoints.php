@@ -20,19 +20,12 @@ class CommentDeploymentEnvironmentEndpoints
     private $tideStatusListener;
 
     /**
-     * @var EventStore
-     */
-    private $eventStore;
-
-    /**
      * @param TideRepository     $tideRepository
      * @param TideStatusListener $tideStatusListener
-     * @param EventStore         $eventStore
      */
-    public function __construct(TideRepository $tideRepository, TideStatusListener $tideStatusListener, EventStore $eventStore)
+    public function __construct(TideRepository $tideRepository, TideStatusListener $tideStatusListener)
     {
         $this->tideRepository = $tideRepository;
-        $this->eventStore = $eventStore;
         $this->tideStatusListener = $tideStatusListener;
     }
 
@@ -44,12 +37,7 @@ class CommentDeploymentEnvironmentEndpoints
         $tides = $this->tideRepository->findByCodeReference($event->getFlowUuid(), $event->getCodeReference());
 
         foreach ($tides as $tide) {
-            $events = $this->eventStore->findByTideUuid($tide->getUuid());
-            if (false === ($lastEvent = end($events))) {
-                continue;
-            }
-
-            $this->tideStatusListener->notify($lastEvent);
+            $this->tideStatusListener->triggerNotifications($tide);
         }
     }
 }

@@ -55,6 +55,11 @@ class Tide
     private $pipeline;
 
     /**
+     * @var string|null
+     */
+    private $failureReason;
+
+    /**
      * @param TaskRunner      $taskRunner
      * @param TaskList        $taskList
      * @param EventCollection $events
@@ -161,6 +166,10 @@ class Tide
             $this->pipeline = $event->getFlatPipeline();
         } elseif (!$event instanceof TideFailed) {
             $this->tasks->apply($event);
+        }
+
+        if ($event instanceof TideFailed) {
+            $this->failureReason = $event->getReason();
         }
     }
 
@@ -342,5 +351,13 @@ class Tide
             $task->getIdentifier(),
             $task->getLogIdentifier()
         ));
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFailureReason()
+    {
+        return $this->failureReason;
     }
 }
