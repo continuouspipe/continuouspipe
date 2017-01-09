@@ -5,6 +5,8 @@ namespace AppBundle\Controller;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Run\RunTask;
+use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\Tide\Transaction\TransactionManager;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -17,23 +19,16 @@ use FOS\RestBundle\Controller\Annotations\View;
 class RunnerNotificationController
 {
     /**
-     * @var MessageBus
+     * @var TransactionManager
      */
-    private $eventBus;
+    private $transactionManager;
 
     /**
-     * @var TideRepository
+     * @param TransactionManager $transactionManager
      */
-    private $tideRepository;
-
-    /**
-     * @param MessageBus     $eventBus
-     * @param TideRepository $tideRepository
-     */
-    public function __construct(MessageBus $eventBus, TideRepository $tideRepository)
+    public function __construct(TransactionManager $transactionManager)
     {
-        $this->eventBus = $eventBus;
-        $this->tideRepository = $tideRepository;
+        $this->transactionManager = $transactionManager;
     }
 
     /**
@@ -41,19 +36,15 @@ class RunnerNotificationController
      * @ParamConverter("deployment", converter="fos_rest.request_body")
      * @View
      */
-    public function postAction($tideUuid, Deployment $deployment)
+    public function postAction(string $tideUuid, Deployment $deployment)
     {
-        $tideUuid = Uuid::fromString($tideUuid);
+        $this->transactionManager->apply(Uuid::fromString($tideUuid), function (Tide $tide) use ($deployment) {
+            /** @var RunTask[] $tasks */
+            $tasks = $tide->getTasks()->ofType(RunTask::class);
 
-        $tide = $this->tideRepository->find($tideUuid);
-        $tasks = $tide->getTasks()->ofType(RunTask::class);
-
-        foreach ($tasks as $task) {
-            $task->receiveDeploymentNotification($deployment);
-        }
-
-        foreach ($tide->popNewEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
+            foreach ($tasks as $task) {
+                $task->receiveDeploymentNotification($deployment);
+            }
+        });
     }
 }

@@ -13,11 +13,6 @@ use SimpleBus\Message\Bus\MessageBus;
 class StartTideHandler
 {
     /**
-     * @var MessageBus
-     */
-    private $eventBus;
-
-    /**
      * @var ViewTideRepository
      */
     private $viewTideRepository;
@@ -33,29 +28,26 @@ class StartTideHandler
     private $logger;
 
     /**
-     * @var TideRepository
+     * @var Tide\Transaction\TransactionManager
      */
-    private $tideRepository;
+    private $transactionManager;
 
     /**
-     * @param MessageBus                              $eventBus
-     * @param ViewTideRepository                      $viewTideRepository
+     * @param ViewTideRepository $viewTideRepository
      * @param Tide\Concurrency\TideConcurrencyManager $concurrencyManager
-     * @param LoggerInterface                         $logger
-     * @param TideRepository                          $tideRepository
+     * @param LoggerInterface $logger
+     * @param Tide\Transaction\TransactionManager $transactionManager
      */
     public function __construct(
-        MessageBus $eventBus,
         ViewTideRepository $viewTideRepository,
         Tide\Concurrency\TideConcurrencyManager $concurrencyManager,
         LoggerInterface $logger,
-        TideRepository $tideRepository
+        Tide\Transaction\TransactionManager $transactionManager
     ) {
-        $this->eventBus = $eventBus;
         $this->viewTideRepository = $viewTideRepository;
         $this->concurrencyManager = $concurrencyManager;
         $this->logger = $logger;
-        $this->tideRepository = $tideRepository;
+        $this->transactionManager = $transactionManager;
     }
 
     /**
@@ -82,11 +74,8 @@ class StartTideHandler
 
     private function startTide(StartTideCommand $command)
     {
-        $tide = $this->tideRepository->find($command->getTideUuid());
-        $tide->start();
-
-        foreach ($tide->popNewEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
+        $this->transactionManager->apply($command->getTideUuid(), function (Tide $tide) {
+            $tide->start();
+        });
     }
 }
