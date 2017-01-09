@@ -15,4 +15,12 @@ interface TaskRunner
      * @throws TaskRunnerException
      */
     public function run(Tide $tide, Task $task);
+
+    /**
+     * @param Tide $tide
+     * @param Task $task
+     *
+     * @return bool
+     */
+    public function supports(Tide $tide, Task $task): bool;
 }

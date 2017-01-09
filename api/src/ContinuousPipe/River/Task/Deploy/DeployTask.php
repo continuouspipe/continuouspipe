@@ -2,19 +2,23 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
+use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\Client\ComponentStatus;
+use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\Task\Deploy\Command\StartDeploymentCommand;
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\TaskDetails;
+use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\TaskQueued;
 use ContinuousPipe\River\Tide\Configuration\WildcardObject;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class DeployTask extends EventDrivenTask
@@ -47,14 +51,25 @@ class DeployTask extends EventDrivenTask
     private $configuration;
 
     /**
+     * @var Deployment|null
+     */
+    private $startedDeployment;
+
+    /**
+     * @var Client\PublicEndpoint[]
+     */
+    private $publicEndpoints = [];
+
+    /**
+     * @param EventCollection         $events
      * @param MessageBus              $commandBus
      * @param LoggerFactory           $loggerFactory
      * @param DeployContext           $context
      * @param DeployTaskConfiguration $configuration
      */
-    public function __construct(MessageBus $commandBus, LoggerFactory $loggerFactory, DeployContext $context, DeployTaskConfiguration $configuration)
+    public function __construct(EventCollection $events, MessageBus $commandBus, LoggerFactory $loggerFactory, DeployContext $context, DeployTaskConfiguration $configuration)
     {
-        parent::__construct($context);
+        parent::__construct($context, $events);
 
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
@@ -62,22 +77,71 @@ class DeployTask extends EventDrivenTask
         $this->configuration = $configuration;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function start()
+    public function startDeployment(Tide $tide, DeploymentRequestFactory $deploymentRequestFactory, Client $pipeClient)
     {
         $logger = $this->loggerFactory->from($this->context->getLog());
         $log = $logger->child(new Text('Deploying environment'))->getLog();
 
         $this->context->setTaskLog($log);
-        $this->newEvents[] = TaskQueued::fromContext($this->context);
+        $this->events->raiseAndApply(TaskQueued::fromContext($this->context));
 
-        $this->commandBus->handle(new StartDeploymentCommand(
-            $this->context->getTideUuid(),
+        $deploymentRequest = $deploymentRequestFactory->create(
+            $tide,
             new TaskDetails($this->context->getTaskId(), $log->getId()),
             $this->configuration
-        ));
+        );
+
+        try {
+            $deployment = $pipeClient->start($deploymentRequest, $tide->getUser());
+            $this->events->raiseAndApply(new DeploymentStarted(
+                $this->context->getTideUuid(),
+                $deployment,
+                $this->getIdentifier()
+            ));
+        } catch (\Exception $e) {
+            $this->events->raiseAndApply(new DeploymentFailed(
+                $this->context->getTideUuid(),
+                new Client\Deployment(Uuid::fromString(Uuid::NIL), $deploymentRequest, Client\Deployment::STATUS_FAILURE),
+                $this->getIdentifier()
+            ));
+
+            $logger->child(new Text(sprintf(
+                'Something went wrong when starting the deployment: %s',
+                $e->getMessage()
+            )));
+        }
+    }
+
+    public function receiveDeploymentNotification(Deployment $deployment)
+    {
+        if (null === $this->startedDeployment || $deployment->getUuid() != $this->startedDeployment->getUuid()) {
+            return;
+        }
+
+        if ($deployment->isSuccessful()) {
+            $this->events->raiseAndApply(new DeploymentSuccessful(
+                $this->context->getTideUuid(),
+                $deployment,
+                $this->getIdentifier()
+            ));
+        } elseif ($deployment->isFailed()) {
+            $this->events->raiseAndApply(new DeploymentFailed(
+                $this->context->getTideUuid(),
+                $deployment,
+                $this->getIdentifier()
+            ));
+        }
+    }
+
+    public function apply(TideEvent $event)
+    {
+        parent::apply($event);
+
+        if ($event instanceof DeploymentStarted) {
+            $this->startedDeployment = $event->getDeployment();
+        } elseif ($event instanceof DeploymentSuccessful) {
+            $this->publicEndpoints = array_merge($this->publicEndpoints, $event->getDeployment()->getPublicEndpoints());
+        }
     }
 
     public function accept(TideEvent $event)
@@ -158,5 +222,13 @@ class DeployTask extends EventDrivenTask
     public function getConfiguration()
     {
         return $this->configuration;
+    }
+
+    /**
+     * @return Client\PublicEndpoint[]
+     */
+    public function getPublicEndpoints() : array
+    {
+        return $this->publicEndpoints;
     }
 }

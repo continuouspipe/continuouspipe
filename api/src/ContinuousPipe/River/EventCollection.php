@@ -2,9 +2,28 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\River\Event\TideEvent;
+
 class EventCollection implements \IteratorAggregate
 {
     private $events = [];
+    private $onRaisedHooks = [];
+    private $raised = [];
+
+    public function __construct(array $events = [])
+    {
+        $this->events = $events;
+    }
+
+    public function raiseAndApply(TideEvent $event)
+    {
+        $this->events[] = $event;
+        $this->raised[] = $event;
+
+        foreach ($this->onRaisedHooks as $hook) {
+            $hook($event);
+        }
+    }
 
     /**
      * @param $event
@@ -18,14 +37,6 @@ class EventCollection implements \IteratorAggregate
                 break;
             }
         }
-    }
-
-    /**
-     * @param $event
-     */
-    public function add($event)
-    {
-        $this->events[] = $event;
     }
 
     /**
@@ -64,5 +75,20 @@ class EventCollection implements \IteratorAggregate
     public function clear()
     {
         $this->events = [];
+    }
+
+    public function onRaised(callable $callable)
+    {
+        $this->onRaisedHooks[] = $callable;
+    }
+
+    public function getRaised()
+    {
+        return $this->raised;
+    }
+
+    public function clearRaised()
+    {
+        $this->raised = [];
     }
 }

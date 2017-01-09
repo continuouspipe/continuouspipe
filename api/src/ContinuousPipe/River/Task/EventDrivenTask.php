@@ -9,6 +9,9 @@ use LogStream\Node\Text;
 
 abstract class EventDrivenTask implements Task
 {
+    private $pending = true;
+    private $skipped = false;
+
     /**
      * @var TaskContext
      */
@@ -20,17 +23,13 @@ abstract class EventDrivenTask implements Task
     protected $events;
 
     /**
-     * @var array
+     * @param TaskContext     $context
+     * @param EventCollection $events
      */
-    protected $newEvents = [];
-
-    /**
-     * @param TaskContext $context
-     */
-    public function __construct(TaskContext $context)
+    public function __construct(TaskContext $context, EventCollection $events)
     {
         $this->context = $context;
-        $this->events = new EventCollection();
+        $this->events = $events;
     }
 
     /**
@@ -38,7 +37,37 @@ abstract class EventDrivenTask implements Task
      */
     public function apply(TideEvent $event)
     {
-        $this->events->add($event);
+        if ($event instanceof TaskQueued) {
+            $this->pending = false;
+        }
+
+        if ($event instanceof TaskSkipped) {
+            $this->skipped = true;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isRunning()
+    {
+        return !$this->isFailed() && !$this->isSuccessful() && !$this->isPending();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPending()
+    {
+        return $this->pending;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSkipped()
+    {
+        return $this->skipped;
     }
 
     /**
@@ -56,6 +85,9 @@ abstract class EventDrivenTask implements Task
     /**
      * @param string $className
      *
+     * @deprecated Should build the tasks' states in the classes, rather than base
+     *             anything on the list of events
+     *
      * @return TideEvent[]
      */
     protected function getEventsOfType($className)
@@ -65,7 +97,11 @@ abstract class EventDrivenTask implements Task
             return get_class($event) == $className || is_subclass_of($event, $className);
         });
 
-        return array_values($matchingEvents);
+        $taskEvents = array_filter($matchingEvents, function (TideEvent $event) {
+            return $this->accept($event);
+        });
+
+        return array_values($taskEvents);
     }
 
     /**
@@ -76,41 +112,6 @@ abstract class EventDrivenTask implements Task
     protected function numberOfEventsOfType($eventType)
     {
         return count($this->getEventsOfType($eventType));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isRunning()
-    {
-        return !$this->isFailed() && !$this->isSuccessful() && !$this->isPending();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isPending()
-    {
-        return 0 === $this->numberOfEventsOfType(TaskQueued::class);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSkipped()
-    {
-        return $this->numberOfEventsOfType(TaskSkipped::class) > 0;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function popNewEvents()
-    {
-        $events = $this->newEvents;
-        $this->newEvents = [];
-
-        return $events;
     }
 
     /**

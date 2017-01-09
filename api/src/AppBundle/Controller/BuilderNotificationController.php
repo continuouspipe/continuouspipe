@@ -3,8 +3,7 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Builder\Client\BuilderBuild;
-use ContinuousPipe\River\Task\Build\Event\BuildFailed;
-use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
+use ContinuousPipe\River\Task\Build\Command\ReceiveBuildNotification;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -19,14 +18,14 @@ class BuilderNotificationController
     /**
      * @var MessageBus
      */
-    private $eventBus;
+    private $commandBus;
 
     /**
-     * @param MessageBus $eventBus
+     * @param MessageBus $commandBus
      */
-    public function __construct(MessageBus $eventBus)
+    public function __construct(MessageBus $commandBus)
     {
-        $this->eventBus = $eventBus;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -36,12 +35,9 @@ class BuilderNotificationController
      */
     public function postAction($tideUuid, BuilderBuild $build)
     {
-        $tideUuid = Uuid::fromString($tideUuid);
-
-        if ($build->isSuccessful()) {
-            $this->eventBus->handle(new BuildSuccessful($tideUuid, $build));
-        } elseif ($build->isErrored()) {
-            $this->eventBus->handle(new BuildFailed($tideUuid, $build));
-        }
+        $this->commandBus->handle(new ReceiveBuildNotification(
+            Uuid::fromString($tideUuid),
+            $build
+        ));
     }
 }

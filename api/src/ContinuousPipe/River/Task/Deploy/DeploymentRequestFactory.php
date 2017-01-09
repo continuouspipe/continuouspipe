@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Task\TaskDetails;
-use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\Tide;
 
 interface DeploymentRequestFactory
 {

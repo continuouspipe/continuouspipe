@@ -17,4 +17,12 @@ class StartTaskRunner implements TaskRunner
 
         throw new TaskRunnerException('Unable to find a way to start the task', 0, null, $task);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(Tide $tide, Task $task): bool
+    {
+        return method_exists($task, 'start');
+    }
 }

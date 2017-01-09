@@ -20,6 +20,7 @@ default:
                     - @kernel
                     - @river.queue.delayed_command_bus.traced
                     - @river.time_resolver.predictable
+                    - @river.repository.tide
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -41,6 +42,8 @@ default:
                 - Task\BuildContext:
                     - @river.tide_event_store
                     - @event_bus
+                    - @kernel
+                    - @jms_serializer
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -114,6 +117,7 @@ default:
                     - @kernel
                     - @river.queue.delayed_command_bus.traced
                     - @river.time_resolver.predictable
+                    - @river.repository.tide
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -135,6 +139,8 @@ default:
                 - Task\BuildContext:
                     - @river.tide_event_store
                     - @event_bus
+                    - @kernel
+                    - @jms_serializer
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -194,6 +200,7 @@ default:
                     - @kernel
                     - @river.queue.delayed_command_bus.traced
                     - @river.time_resolver.predictable
+                    - @river.repository.tide
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -215,6 +222,8 @@ default:
                 - Task\BuildContext:
                     - @river.tide_event_store
                     - @event_bus
+                    - @kernel
+                    - @jms_serializer
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -277,6 +286,7 @@ smoke:
                     - @kernel
                     - @river.queue.delayed_command_bus.traced
                     - @river.time_resolver.predictable
+                    - @river.repository.tide
                 - GitHubContext:
                     - @kernel
                     - @river.notifications.notifier.github.commit_status.traceable
@@ -299,6 +309,8 @@ smoke:
                 - Task\BuildContext:
                     - @river.tide_event_store
                     - @event_bus
+                    - @kernel
+                    - @jms_serializer
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
 

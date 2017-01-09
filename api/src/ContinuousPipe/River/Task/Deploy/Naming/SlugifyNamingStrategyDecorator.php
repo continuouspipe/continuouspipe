@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
 use Cocur\Slugify\Slugify;
-use Ramsey\Uuid\Uuid;
+use ContinuousPipe\River\Tide;
 
 class SlugifyNamingStrategyDecorator implements EnvironmentNamingStrategy
 {
@@ -23,10 +23,10 @@ class SlugifyNamingStrategyDecorator implements EnvironmentNamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function getName(Uuid $tideUuid, $expression = null)
+    public function getName(Tide $tide, $expression = null)
     {
         return (new Slugify())->slugify(
-            $this->decoratedStrategy->getName($tideUuid, $expression)
+            $this->decoratedStrategy->getName($tide, $expression)
         );
     }
 }

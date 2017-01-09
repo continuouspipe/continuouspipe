@@ -3,19 +3,19 @@
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
 use ContinuousPipe\Model\Environment;
-use Ramsey\Uuid\Uuid;
+use ContinuousPipe\River\Tide;
 
 interface EnvironmentNamingStrategy
 {
     /**
      * Get name of the environment.
      *
-     * @param Uuid        $tideUuid
+     * @param Tide        $tide
      * @param string|null $expression
      *
      * @throws UnresolvedEnvironmentNameException
      *
      * @return string
      */
-    public function getName(Uuid $tideUuid, $expression = null);
+    public function getName(Tide $tide, $expression = null);
 }

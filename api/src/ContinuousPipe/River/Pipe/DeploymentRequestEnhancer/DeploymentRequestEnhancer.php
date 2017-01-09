@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Pipe\DeploymentRequestEnhancer;
 
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
-use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\Tide;
 
 interface DeploymentRequestEnhancer
 {

@@ -35,11 +35,6 @@ interface Task
      */
     public function getStatus() : string;
 
-    /**
-     * @return TideEvent[]
-     */
-    public function popNewEvents();
-
     public function getIdentifier() : string;
     public function getLogIdentifier() : string;
     public function getLabel() : string;

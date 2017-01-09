@@ -12,10 +12,10 @@ use ContinuousPipe\River\Event\TideValidated;
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Task\Task;
-use ContinuousPipe\River\Task\TaskFailed;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Task\TaskRunnerException;
+use ContinuousPipe\River\Task\TaskSkipped;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use LogStream\Log;
@@ -28,14 +28,6 @@ class Tide
      * @var TaskRunner
      */
     private $taskRunner;
-
-    /**
-     * This flag is set to true when we need to reconstruct a tide. It is locked
-     * to prevent starting tasks.
-     *
-     * @var bool
-     */
-    private $locked = false;
 
     /**
      * @var EventCollection
@@ -53,11 +45,6 @@ class Tide
     private $context;
 
     /**
-     * @var TideEvent[]
-     */
-    private $newEvents = [];
-
-    /**
      * @var UuidInterface|null
      */
     private $generationUuid;
@@ -68,14 +55,19 @@ class Tide
     private $pipeline;
 
     /**
-     * @param TaskRunner $taskRunner
-     * @param TaskList   $taskList
+     * @param TaskRunner      $taskRunner
+     * @param TaskList        $taskList
+     * @param EventCollection $events
      */
-    public function __construct(TaskRunner $taskRunner, TaskList $taskList)
+    public function __construct(TaskRunner $taskRunner, TaskList $taskList, EventCollection $events)
     {
         $this->taskRunner = $taskRunner;
         $this->tasks = $taskList;
-        $this->events = new EventCollection();
+        $this->events = $events;
+        $this->events->onRaised(function (TideEvent $event) {
+            $this->apply($event);
+            $this->hop();
+        });
     }
 
     /**
@@ -94,6 +86,7 @@ class Tide
      * @param TideContext           $context
      * @param TideGenerationRequest $generationRequest
      * @param FlatPipeline          $pipeline
+     * @param EventCollection       $eventCollection
      *
      * @return Tide
      */
@@ -102,41 +95,54 @@ class Tide
         TaskList $tasks,
         TideContext $context,
         TideGenerationRequest $generationRequest,
-        FlatPipeline $pipeline
+        FlatPipeline $pipeline,
+        EventCollection $eventCollection
     ) {
-        $tide = new self($taskRunner, $tasks);
-        $events = [
+        return self::createFromEvents($taskRunner, $tasks, $eventCollection, [
             new TideCreated($context),
             new TideGenerated($context->getTideUuid(), $context->getFlowUuid(), $generationRequest->getGenerationUuid(), $pipeline),
             new TideValidated($context->getTideUuid()),
-        ];
+        ]);
+    }
+
+    /**
+     * Create the tide from a set of events.
+     *
+     * @param TaskRunner      $taskRunner
+     * @param TaskList        $tasks
+     * @param EventCollection $eventCollection
+     * @param TideEvent[]     $events
+     *
+     * @return Tide
+     */
+    public static function createFromEvents(
+        TaskRunner $taskRunner,
+        TaskList $tasks,
+        EventCollection $eventCollection,
+        array $events
+    ) {
+        $tide = new self($taskRunner, $tasks, $eventCollection);
 
         foreach ($events as $event) {
-            $tide->apply($event);
+            $eventCollection->raiseAndApply($event);
         }
-
-        $tide->newEvents = $events;
 
         return $tide;
     }
 
     /**
-     * @param TaskRunner  $taskRunner
-     * @param TaskList    $tasks
-     * @param TideEvent[] $events
+     * @param TaskRunner      $taskRunner
+     * @param TaskList        $tasks
+     * @param EventCollection $events
      *
      * @return Tide
      */
-    public static function fromEvents(TaskRunner $taskRunner, TaskList $tasks, $events)
+    public static function fromEvents(TaskRunner $taskRunner, TaskList $tasks, EventCollection $events)
     {
-        $tide = new self($taskRunner, $tasks);
-        $tide->locked = true;
+        $tide = new self($taskRunner, $tasks, $events);
         foreach ($events as $event) {
             $tide->apply($event);
         }
-
-        $tide->popNewEvents();
-        $tide->locked = false;
 
         return $tide;
     }
@@ -149,19 +155,13 @@ class Tide
     public function apply(TideEvent $event)
     {
         if ($event instanceof TideCreated) {
-            $this->applyTideCreated($event);
+            $this->context = $event->getTideContext();
         } elseif ($event instanceof TideGenerated) {
             $this->generationUuid = $event->getGenerationUuid();
             $this->pipeline = $event->getFlatPipeline();
         } elseif (!$event instanceof TideFailed) {
             $this->tasks->apply($event);
-
-            if (($event instanceof TideStarted || $this->isRunning()) && !$this->locked) {
-                $this->handleTasks($event);
-            }
         }
-
-        $this->events->add($event);
     }
 
     /**
@@ -169,15 +169,9 @@ class Tide
      */
     public function popNewEvents()
     {
-        $events = $this->newEvents;
-        $this->newEvents = [];
+        $events = $this->events->getRaised();
 
-        // Get tasks' events
-        foreach ($this->tasks->getTasks() as $task) {
-            foreach ($task->popNewEvents() as $event) {
-                $events[] = $event;
-            }
-        }
+        $this->events->clearRaised();
 
         return $events;
     }
@@ -214,38 +208,6 @@ class Tide
         }
 
         throw new \InvalidArgumentException(sprintf('The task identified "%s" is not found', $identifier));
-    }
-
-    /**
-     * @param TideCreated $event
-     */
-    private function applyTideCreated(TideCreated $event)
-    {
-        $this->context = $event->getTideContext();
-    }
-
-    /**
-     * @param TideEvent $event
-     */
-    private function handleTasks(TideEvent $event)
-    {
-        if (null !== ($failedTask = $this->tasks->getFailedTask())) {
-            $this->newEvents[] = new TideFailed(
-                $event->getTideUuid(),
-                sprintf('Task "%s" failed', $failedTask->getIdentifier())
-            );
-        } elseif ($this->tasks->allSuccessful()) {
-            $this->newEvents[] = new TideSuccessful($event->getTideUuid());
-        } elseif (!$this->tasks->hasRunning() && !$event instanceof TaskFailed) {
-            try {
-                $this->nextTask();
-            } catch (TaskRunnerException $e) {
-                $task = $e->getTask();
-
-                $this->newEvents[] = new TaskFailed($event->getTideUuid(), $task->getIdentifier(), $task->getLogIdentifier(), $e->getMessage());
-                $this->newEvents[] = new TideFailed($event->getTideUuid(), $e->getMessage());
-            }
-        }
     }
 
     /**
@@ -292,14 +254,6 @@ class Tide
     public function isSuccessful()
     {
         return 0 < $this->events->numberOfEventsOfType(TideSuccessful::class);
-    }
-
-    /**
-     * @param TideEvent $event
-     */
-    public function pushNewEvent(TideEvent $event)
-    {
-        $this->newEvents[] = $event;
     }
 
     public function getFlowUuid() : UuidInterface
@@ -350,5 +304,43 @@ class Tide
         }
 
         return $this->pipeline;
+    }
+
+    public function start()
+    {
+        $this->events->raiseAndApply(new TideStarted(
+            $this->getUuid()
+        ));
+    }
+
+    private function hop()
+    {
+        if (!$this->isRunning()) {
+            return;
+        }
+
+        if (null !== ($failedTask = $this->tasks->getFailedTask())) {
+            $this->events->raiseAndApply(new TideFailed(
+                $this->getUuid(),
+                sprintf('Task "%s" failed', $failedTask->getIdentifier())
+            ));
+        } elseif ($this->tasks->allSuccessful()) {
+            $this->events->raiseAndApply(new TideSuccessful($this->getUuid()));
+        } elseif (!$this->tasks->hasRunning() && !$this->isFailed()) {
+            try {
+                $this->nextTask();
+            } catch (TaskRunnerException $e) {
+                $this->events->raiseAndApply(new TideFailed($this->getUuid(), $e->getMessage()));
+            }
+        }
+    }
+
+    public function skipTask(Task $task)
+    {
+        $this->events->raiseAndApply(new TaskSkipped(
+            $this->getUuid(),
+            $task->getIdentifier(),
+            $task->getLogIdentifier()
+        ));
     }
 }

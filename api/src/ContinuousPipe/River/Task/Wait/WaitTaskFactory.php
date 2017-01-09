@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Wait;
 
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
 use ContinuousPipe\River\Task\Wait\Configuration\Status;
@@ -26,9 +27,10 @@ class WaitTaskFactory implements TaskFactory
     /**
      * {@inheritdoc}
      */
-    public function create(TaskContext $taskContext, array $configuration)
+    public function create(EventCollection $events, TaskContext $taskContext, array $configuration)
     {
         return new WaitTask(
+            $events,
             $this->loggerFactory,
             $taskContext,
             $this->createConfiguration($configuration)

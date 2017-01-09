@@ -3,7 +3,8 @@
 namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\Event\TideGenerated;
-use ContinuousPipe\River\EventBased\ApplyAndRaiseEventCapability;
+use ContinuousPipe\River\EventBased\RaiseEventCapability;
+use ContinuousPipe\River\EventBased\ApplyEventCapability;
 use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
 use ContinuousPipe\River\Flow\Event\FlowCreated;
 use ContinuousPipe\River\Flow\Event\PipelineCreated;
@@ -14,7 +15,8 @@ use Ramsey\Uuid\UuidInterface;
 
 final class Flow
 {
-    use ApplyAndRaiseEventCapability;
+    use RaiseEventCapability,
+        ApplyEventCapability;
 
     /**
      * @var UuidInterface

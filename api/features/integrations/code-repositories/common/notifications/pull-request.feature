@@ -14,7 +14,9 @@ Feature:
     Then the addresses of the environment should be commented on the pull-request
 
   Scenario: The addresses are automatically commented if the deployment is already done
-    Given a deployment for a commit "123" on branch "foo" is successful
+    Given there is 1 application images in the repository
+    And a tide is started for branch "foo" and commit "123" with a deploy task
+    And the deployment succeed
     When a pull-request is created from branch "foo" with head commit "123"
     Then the addresses of the environment should be commented on the pull-request
 

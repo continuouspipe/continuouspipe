@@ -16,8 +16,12 @@ use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use ContinuousPipe\River\Task\Task;
+use JMS\Serializer\SerializerInterface;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class BuildContext implements Context
 {
@@ -47,13 +51,26 @@ class BuildContext implements Context
     private $eventBus;
 
     /**
+     * @var KernelInterface
+     */
+    private $kernel;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * @param EventStore $eventStore
      * @param MessageBus $eventBus
+     * @param KernelInterface $kernel
+     * @param SerializerInterface $serializer
      */
-    public function __construct(EventStore $eventStore, MessageBus $eventBus)
+    public function __construct(EventStore $eventStore, MessageBus $eventBus, KernelInterface $kernel, SerializerInterface $serializer)
     {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
+        $this->kernel = $kernel;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -172,13 +189,14 @@ class BuildContext implements Context
 
     /**
      * @When the build is failing
+     * @When the build task failed
      */
     public function theBuildIsFailing()
     {
-        $this->eventBus->handle(new BuildFailed(
-            $this->tideContext->getCurrentTideUuid(),
-            $this->getLastBuild()
-        ));
+        $this->dispatchBuildStatus(
+            $this->getLastBuild(),
+            BuilderBuild::STATUS_ERROR
+        );
     }
 
     /**
@@ -186,10 +204,10 @@ class BuildContext implements Context
      */
     public function theBuildSucceed()
     {
-        $this->eventBus->handle(new BuildSuccessful(
-            $this->tideContext->getCurrentTideUuid(),
-            $this->getLastBuild()
-        ));
+        $this->dispatchBuildStatus(
+            $this->getLastBuild(),
+            BuilderBuild::STATUS_SUCCESS
+        );
     }
 
     /**
@@ -220,7 +238,7 @@ class BuildContext implements Context
      */
     public function oneImageBuildIsSuccessful()
     {
-        $this->dispatchBuildSuccessful($this->getLastBuild());
+        $this->dispatchBuildStatus($this->getLastBuild(), BuilderBuild::STATUS_SUCCESS);
     }
 
     /**
@@ -269,7 +287,7 @@ class BuildContext implements Context
             $events = $this->getBuildStartedEvents();
             $firstEvent = $events[$number];
 
-            $this->dispatchBuildSuccessful($firstEvent->getBuild());
+            $this->dispatchBuildStatus($firstEvent->getBuild(), BuilderBuild::STATUS_SUCCESS);
         }
     }
 
@@ -281,7 +299,7 @@ class BuildContext implements Context
         $events = $this->getBuildStartedEvents();
         $firstEvent = $events[0];
 
-        $this->dispatchBuildSuccessful($firstEvent->getBuild());
+        $this->dispatchBuildStatus($firstEvent->getBuild(), BuilderBuild::STATUS_SUCCESS);
     }
 
     /**
@@ -304,13 +322,16 @@ class BuildContext implements Context
 
     /**
      * @When all the image builds are successful
+     * @When the build task succeed
      */
     public function allTheImageBuildsAreSuccessful()
     {
-        $tideUuid = $this->tideContext->getCurrentTideUuid();
-
-        $imageBuildsStartedEvent = $this->getImageBuildsStartedEvent();
-        $this->eventBus->handle(new ImageBuildsSuccessful($tideUuid, $imageBuildsStartedEvent->getLog()));
+        foreach ($this->getBuildStartedEvents() as $event) {
+            $this->dispatchBuildStatus(
+                $event->getBuild(),
+                BuilderBuild::STATUS_SUCCESS
+            );
+        }
     }
 
     /**
@@ -519,17 +540,39 @@ class BuildContext implements Context
      */
     private function getLastBuild()
     {
+        if (count($this->getBuildStartedEvents()) == 0) {
+            throw new \RuntimeException('No build started');
+        }
+
         return $this->getBuildStartedEvents()[0]->getBuild();
     }
 
     /**
      * @param BuilderBuild $build
+     * @param string $status
      */
-    private function dispatchBuildSuccessful(BuilderBuild $build)
+    private function dispatchBuildStatus(BuilderBuild $build, string $status)
     {
-        $this->eventBus->handle(new BuildSuccessful(
-            $this->tideContext->getCurrentTideUuid(),
-            $build
+        $build = new BuilderBuild(
+            $build->getUuid(),
+            $status,
+            $build->getRequest()
+        );
+
+        $response = $this->kernel->handle(Request::create(
+            '/builder/notification/tide/'. (string) $this->tideContext->getCurrentTideUuid(),
+            'POST',
+            [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $this->serializer->serialize($build, 'json')
         ));
+
+        if ($response->getStatusCode() != Response::HTTP_NO_CONTENT) {
+            throw new \RuntimeException(sprintf(
+                'Expected status code %d, got %d',
+                Response::HTTP_NO_CONTENT,
+                $response->getStatusCode()
+            ));
+        }
     }
 }

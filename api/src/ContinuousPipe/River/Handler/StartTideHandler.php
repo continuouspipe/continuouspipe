@@ -3,10 +3,10 @@
 namespace ContinuousPipe\River\Handler;
 
 use ContinuousPipe\River\Command\StartTideCommand;
-use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Repository\TideNotFound;
+use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Tide;
-use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\River\View\TideRepository as ViewTideRepository;
 use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -18,9 +18,9 @@ class StartTideHandler
     private $eventBus;
 
     /**
-     * @var TideRepository
+     * @var ViewTideRepository
      */
-    private $tideRepository;
+    private $viewTideRepository;
 
     /**
      * @var Tide\Concurrency\TideConcurrencyManager
@@ -33,17 +33,29 @@ class StartTideHandler
     private $logger;
 
     /**
+     * @var TideRepository
+     */
+    private $tideRepository;
+
+    /**
      * @param MessageBus                              $eventBus
-     * @param TideRepository                          $tideRepository
+     * @param ViewTideRepository                      $viewTideRepository
      * @param Tide\Concurrency\TideConcurrencyManager $concurrencyManager
      * @param LoggerInterface                         $logger
+     * @param TideRepository                          $tideRepository
      */
-    public function __construct(MessageBus $eventBus, TideRepository $tideRepository, Tide\Concurrency\TideConcurrencyManager $concurrencyManager, LoggerInterface $logger)
-    {
+    public function __construct(
+        MessageBus $eventBus,
+        ViewTideRepository $viewTideRepository,
+        Tide\Concurrency\TideConcurrencyManager $concurrencyManager,
+        LoggerInterface $logger,
+        TideRepository $tideRepository
+    ) {
         $this->eventBus = $eventBus;
-        $this->tideRepository = $tideRepository;
+        $this->viewTideRepository = $viewTideRepository;
         $this->concurrencyManager = $concurrencyManager;
         $this->logger = $logger;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -52,7 +64,7 @@ class StartTideHandler
     public function handle(StartTideCommand $command)
     {
         try {
-            $tide = $this->tideRepository->find($command->getTideUuid());
+            $tide = $this->viewTideRepository->find($command->getTideUuid());
         } catch (TideNotFound $e) {
             $this->logger->error('Tide not found, so not started', [
                 'tideUuid' => (string) $command->getTideUuid(),
@@ -62,9 +74,19 @@ class StartTideHandler
         }
 
         if ($this->concurrencyManager->shouldTideStart($tide)) {
-            $this->eventBus->handle(new TideStarted($command->getTideUuid()));
+            $this->startTide($command);
         } else {
             $this->concurrencyManager->postPoneTideStart($tide);
+        }
+    }
+
+    private function startTide(StartTideCommand $command)
+    {
+        $tide = $this->tideRepository->find($command->getTideUuid());
+        $tide->start();
+
+        foreach ($tide->popNewEvents() as $event) {
+            $this->eventBus->handle($event);
         }
     }
 }

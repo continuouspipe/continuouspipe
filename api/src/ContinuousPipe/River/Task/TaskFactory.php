@@ -2,17 +2,19 @@
 
 namespace ContinuousPipe\River\Task;
 
+use ContinuousPipe\River\EventCollection;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 
 interface TaskFactory
 {
     /**
-     * @param TaskContext $taskContext
-     * @param array       $configuration
+     * @param EventCollection $events
+     * @param TaskContext     $taskContext
+     * @param array           $configuration
      *
      * @return Task
      */
-    public function create(TaskContext $taskContext, array $configuration);
+    public function create(EventCollection $events, TaskContext $taskContext, array $configuration);
 
     /**
      * @return NodeDefinition

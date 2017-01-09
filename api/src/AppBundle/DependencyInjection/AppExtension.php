@@ -37,8 +37,6 @@ class AppExtension extends Extension
         $loader->load('k8s-watcher.xml');
         $loader->load('k8s-health-checker.xml');
         $loader->load('build/task.xml');
-        $loader->load('build/handlers.xml');
-        $loader->load('build/logging.xml');
         $loader->load('deploy/task.xml');
         $loader->load('deploy/logging.xml');
         $loader->load('run/task.xml');

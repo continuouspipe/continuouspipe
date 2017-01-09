@@ -4,14 +4,16 @@ namespace ContinuousPipe\River\Task\WebHook;
 
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskQueued;
-use ContinuousPipe\River\Task\WebHook\Command\SendWebHook;
 use ContinuousPipe\River\Task\WebHook\Event\WebHookFailed;
 use ContinuousPipe\River\Task\WebHook\Event\WebHookSent;
 use ContinuousPipe\River\WebHook\WebHook;
+use ContinuousPipe\River\WebHook\WebHookClient;
+use ContinuousPipe\River\WebHook\WebHookException;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Ramsey\Uuid\Uuid;
@@ -40,24 +42,22 @@ class WebHookTask extends EventDrivenTask
     private $publicEndpoints = [];
 
     /**
-     * @param TaskContext   $context
-     * @param LoggerFactory $loggerFactory
-     * @param MessageBus    $commandBus
-     * @param array         $configuration
+     * @param EventCollection $events
+     * @param TaskContext     $context
+     * @param LoggerFactory   $loggerFactory
+     * @param MessageBus      $commandBus
+     * @param array           $configuration
      */
-    public function __construct(TaskContext $context, LoggerFactory $loggerFactory, MessageBus $commandBus, array $configuration)
+    public function __construct(EventCollection $events, TaskContext $context, LoggerFactory $loggerFactory, MessageBus $commandBus, array $configuration)
     {
-        parent::__construct($context);
+        parent::__construct($context, $events);
 
         $this->loggerFactory = $loggerFactory;
         $this->commandBus = $commandBus;
         $this->configuration = $configuration;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function start()
+    public function send(WebHookClient $webHookClient)
     {
         $context = $this->getContext();
         $logger = $this->loggerFactory->fromId($this->getIdentifier());
@@ -70,9 +70,24 @@ class WebHookTask extends EventDrivenTask
             $this->publicEndpoints
         );
 
-        $this->commandBus->handle(new SendWebHook($context->getTideUuid(), $context->getTaskId(), $log->getId(), $webHook));
+        $this->events->raiseAndApply(new TaskQueued($context->getTideUuid(), $context->getTaskId(), $log));
 
-        $this->newEvents[] = new TaskQueued($context->getTideUuid(), $context->getTaskId(), $log);
+        try {
+            $webHookClient->send($webHook);
+
+            $this->events->raiseAndApply(new WebHookSent(
+                $context->getTideUuid(),
+                $this->getIdentifier(),
+                $webHook
+            ));
+        } catch (WebHookException $e) {
+            $this->events->raiseAndApply(new WebHookFailed(
+                $context->getTideUuid(),
+                $this->getIdentifier(),
+                $webHook,
+                $e
+            ));
+        }
     }
 
     /**
@@ -93,7 +108,7 @@ class WebHookTask extends EventDrivenTask
     public function apply(TideEvent $event)
     {
         if ($event instanceof DeploymentSuccessful) {
-            $this->applyDeploymentSuccessful($event);
+            $this->publicEndpoints = array_merge($this->publicEndpoints, $event->getDeployment()->getPublicEndpoints());
         }
 
         parent::apply($event);
@@ -113,13 +128,5 @@ class WebHookTask extends EventDrivenTask
     public function isFailed()
     {
         return $this->numberOfEventsOfType(WebHookFailed::class) > 0;
-    }
-
-    /**
-     * @param DeploymentSuccessful $event
-     */
-    private function applyDeploymentSuccessful(DeploymentSuccessful $event)
-    {
-        $this->publicEndpoints = array_merge($this->publicEndpoints, $event->getDeployment()->getPublicEndpoints());
     }
 }

@@ -3,7 +3,9 @@
 namespace ContinuousPipe\River\Task\ManualApproval;
 
 use ContinuousPipe\River\Event\TideEvent;
-use ContinuousPipe\River\EventBased\ApplyAndRaiseEventCapability;
+use ContinuousPipe\River\EventBased\ApplyEventCapability;
+use ContinuousPipe\River\EventBased\RaiseEventCapability;
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\ManualApproval\Event\Approved;
 use ContinuousPipe\River\Task\ManualApproval\Event\ManualApprovalChoiceEvent;
 use ContinuousPipe\River\Task\ManualApproval\Event\Rejected;
@@ -22,7 +24,7 @@ use LogStream\Node\Text;
 
 final class ManualApprovalTask implements Task
 {
-    use ApplyAndRaiseEventCapability {
+    use ApplyEventCapability {
         apply as doApply;
     }
 
@@ -43,6 +45,20 @@ final class ManualApprovalTask implements Task
      */
     private $choiceUser;
 
+    /**
+     * @var EventCollection
+     */
+    private $eventCollection;
+
+    public function __construct(EventCollection $eventCollection, array $events)
+    {
+        $this->eventCollection = $eventCollection;
+
+        foreach ($events as $event) {
+            $this->apply($event);
+        }
+    }
+
     public function start(Tide $tide, LoggerFactory $loggerFactory)
     {
         if ($this->status == Task::STATUS_RUNNING) {
@@ -54,7 +70,7 @@ final class ManualApprovalTask implements Task
 
         $choiceLog = $logger->child($this->createManualApprovalLogNode());
 
-        $this->raiseAndApply(new WaitingApproval(
+        $this->eventCollection->raiseAndApply(new WaitingApproval(
             $this->tideUuid,
             $this->identifier,
             $logger->getLog()->getId(),
@@ -90,7 +106,7 @@ final class ManualApprovalTask implements Task
         $loggerFactory->fromId($this->logIdentifier)->updateStatus($this->status == self::STATUS_SUCCESSFUL ? Log::SUCCESS : Log::FAILURE);
         $loggerFactory->fromId($this->approvalLogIdentifier)->update($this->createManualApprovalLogNode());
 
-        $this->raise($event);
+        $this->eventCollection->raiseAndApply($event);
     }
 
     public function applyWaitingApproval(WaitingApproval $event)
@@ -127,12 +143,6 @@ final class ManualApprovalTask implements Task
     {
         $this->identifier = $event->getTaskId();
         $this->tideUuid = $event->getTideUuid();
-    }
-
-    private function raiseAndApply(TideEvent $event)
-    {
-        $this->raise($event);
-        $this->apply($event);
     }
 
     /**
@@ -181,18 +191,6 @@ final class ManualApprovalTask implements Task
     public function getStatus(): string
     {
         return $this->status;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function popNewEvents()
-    {
-        $events = $this->raisedEvents();
-
-        $this->eraseEvents();
-
-        return $events;
     }
 
     /**

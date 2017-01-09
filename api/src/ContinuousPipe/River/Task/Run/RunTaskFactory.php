@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Run;
 
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
 use LogStream\LoggerFactory;
@@ -33,9 +34,10 @@ class RunTaskFactory implements TaskFactory
     /**
      * {@inheritdoc}
      */
-    public function create(TaskContext $taskContext, array $configuration)
+    public function create(EventCollection $events, TaskContext $taskContext, array $configuration)
     {
         return new RunTask(
+            $events,
             $this->loggerFactory,
             $this->commandBus,
             RunContext::createRunContext($taskContext),

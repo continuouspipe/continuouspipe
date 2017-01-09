@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Naming;
 
-use Ramsey\Uuid\Uuid;
+use ContinuousPipe\River\Tide;
 
 class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
 {
@@ -31,13 +31,14 @@ class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function getName(Uuid $flowUuid, $expression = null)
+    public function getName(Tide $tide, $expression = null)
     {
-        $name = $this->namingStrategy->getName($flowUuid, $expression);
+        $name = $this->namingStrategy->getName($tide, $expression);
         if (strlen($name) <= $this->maxLength) {
             return $name;
         }
 
+        $flowUuid = $tide->getFlowUuid();
         $flowUuidLength = strlen((string) $flowUuid);
         $strippedName = substr($name, 0, $flowUuidLength + 1);
         $branchIdentifier = substr($name, strlen($strippedName));
