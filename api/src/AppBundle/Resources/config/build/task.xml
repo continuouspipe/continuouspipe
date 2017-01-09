@@ -19,6 +19,7 @@
             <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="router" />
             <argument type="service" id="logger" />
+            <argument>%river_host%</argument>
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Build\Command\BuildImageCommand" />
         </service>

@@ -23,13 +23,20 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
     private $targetEnvironmentFactory;
 
     /**
-     * @param UrlGeneratorInterface    $urlGenerator
-     * @param TargetEnvironmentFactory $targetEnvironmentFactory
+     * @var string
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory)
+    private $riverHostname;
+
+    /**
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param TargetEnvironmentFactory $targetEnvironmentFactory
+     * @param string $riverHostname
+     */
+    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory, string $riverHostname)
     {
         $this->urlGenerator = $urlGenerator;
         $this->targetEnvironmentFactory = $targetEnvironmentFactory;
+        $this->riverHostname = $riverHostname;
     }
 
     /**
@@ -37,9 +44,9 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
      */
     public function create(Tide $tide, TaskDetails $taskDetails, DeployTaskConfiguration $configuration)
     {
-        $callbackUrl = $this->urlGenerator->generate('pipe_notification_post', [
+        $callbackUrl = 'https://'.$this->riverHostname.$this->urlGenerator->generate('pipe_notification_post', [
             'tideUuid' => $tide->getUuid(),
-        ], UrlGeneratorInterface::ABSOLUTE_URL);
+        ], UrlGeneratorInterface::ABSOLUTE_PATH);
 
         $bucketUuid = $tide->getTeam()->getBucketUuid();
 

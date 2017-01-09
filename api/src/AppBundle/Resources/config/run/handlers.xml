@@ -9,6 +9,7 @@
             <argument type="service" id="router" />
             <argument type="service" id="river.pipe.target_environment_factory" />
             <argument type="service" id="river.pipe.deployment_request_enhancer" />
+            <argument>%river_host%</argument>
         </service>
     </services>
 </container>

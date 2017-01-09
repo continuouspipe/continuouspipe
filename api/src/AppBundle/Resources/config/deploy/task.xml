@@ -46,6 +46,7 @@
         <service id="river.task.deploy.deployment_request_factory" class="ContinuousPipe\River\Task\Deploy\DeploymentRequest\FlattenDeploymentRequestFactory">
             <argument type="service" id="router" />
             <argument type="service" id="river.pipe.target_environment_factory" />
+            <argument>%river_host%</argument>
         </service>
 
         <service id="river.task.deploy.deployment_request_factory.enhanced"
