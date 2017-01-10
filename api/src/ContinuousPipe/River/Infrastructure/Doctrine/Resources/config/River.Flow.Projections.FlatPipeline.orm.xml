@@ -8,7 +8,7 @@
         <id name="uuid" type="uuid" />
         <field name="name" type="string" />
         <many-to-one field="flow" target-entity="ContinuousPipe\River\Flow\Projections\FlatFlow" inversed-by="pipelines">
-            <join-column name="flow_uuid" referenced-column-name="uuid" />
+            <join-column name="flow_uuid" referenced-column-name="uuid" on-delete="CASCADE" />
         </many-to-one>
     </entity>
 </doctrine-mapping>
