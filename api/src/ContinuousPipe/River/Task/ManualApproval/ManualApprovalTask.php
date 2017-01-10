@@ -148,7 +148,7 @@ final class ManualApprovalTask implements Task
 
     public function applyTideCancelled()
     {
-        if (in_array($this->status, [Task::STATUS_PENDING, Task::STATUS_RUNNING])) {
+        if (in_array($this->status, [Task::STATUS_RUNNING])) {
             $this->status = Task::STATUS_CANCELLED;
         }
     }

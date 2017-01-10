@@ -43,7 +43,7 @@ abstract class EventDrivenTask implements Task
             $this->pending = false;
         } elseif ($event instanceof TaskSkipped) {
             $this->skipped = true;
-        } elseif ($event instanceof TideCancelled && !$this->isDone()) {
+        } elseif ($event instanceof TideCancelled && $this->isRunning()) {
             $this->cancelled = true;
         }
     }
@@ -62,11 +62,6 @@ abstract class EventDrivenTask implements Task
     public function isPending()
     {
         return $this->pending;
-    }
-
-    private function isDone()
-    {
-        return $this->isSuccessful() || $this->isFailed();
     }
 
     /**

@@ -22,7 +22,7 @@ Feature:
     When I cancel the tide
     Then the tide should be cancelled
 
-  Scenario: It cancels the tasks
+  Scenario: It cancels the running task
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -50,4 +50,4 @@ Feature:
     When I cancel the tide
     Then the task named "images" should be successful
     And the task named "deployment" should be cancelled
-    And the task named "fixtures" should be cancelled
+    And the task named "fixtures" should be pending

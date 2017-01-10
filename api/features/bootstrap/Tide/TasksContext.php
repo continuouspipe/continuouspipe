@@ -230,6 +230,14 @@ class TasksContext implements Context
         $this->assertTaskStatus($name, Task::STATUS_CANCELLED);
     }
 
+    /**
+     * @Then the task named :name should be pending
+     */
+    public function theTaskNamedShouldBePending($name)
+    {
+        $this->assertTaskStatus($name, Task::STATUS_PENDING);
+    }
+
     private function assertTaskStatus(string $taskName, string $status)
     {
         $task = $this->getTask($taskName);
