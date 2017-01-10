@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\EventBus\EventStore;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class EnvironmentContext implements Context
 {

@@ -32,7 +32,6 @@ use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Model\ServiceAccount;
 use Kubernetes\Client\Model\Status;
 use LogStream\LoggerFactory;
-use Rhumsaa\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 
 class NamespaceContext implements Context, SnippetAcceptingContext

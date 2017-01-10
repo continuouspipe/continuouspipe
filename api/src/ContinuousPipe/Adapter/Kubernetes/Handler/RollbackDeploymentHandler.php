@@ -16,7 +16,7 @@ use Kubernetes\Client\Exception\ReplicationControllerNotFound;
 use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\Deployment\DeploymentRollback;
 use Kubernetes\Client\Model\Deployment\RollbackConfiguration;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class RollbackDeploymentHandler implements DeploymentHandler
 {

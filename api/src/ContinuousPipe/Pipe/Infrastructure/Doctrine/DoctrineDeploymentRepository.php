@@ -7,7 +7,7 @@ use ContinuousPipe\Pipe\Infrastructure\Doctrine\Entity\DeploymentViewDto;
 use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use Doctrine\ORM\EntityManager;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class DoctrineDeploymentRepository implements DeploymentRepository
 {

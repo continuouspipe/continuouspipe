@@ -6,7 +6,7 @@ use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\EventBus\EventStore;
 use ContinuousPipe\Pipe\Infrastructure\Doctrine\Entity\EventDto;
 use Doctrine\ORM\EntityManager;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class DoctrineEventStore implements EventStore
 {

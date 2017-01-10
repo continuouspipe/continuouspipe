@@ -4,7 +4,7 @@ namespace ContinuousPipe\Pipe\EventBus;
 
 use ContinuousPipe\Pipe\Deployment;
 use ContinuousPipe\Pipe\DeploymentRepository;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class EventStoreDeploymentRepository implements DeploymentRepository
 {

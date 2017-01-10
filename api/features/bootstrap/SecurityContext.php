@@ -11,7 +11,7 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamNotFound;
 use ContinuousPipe\Security\Team\TeamRepository;
 use JMS\Serializer\Serializer;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class SecurityContext implements Context
 {

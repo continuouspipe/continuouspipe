@@ -89,7 +89,7 @@ class InjectPublicEndpointsAsVariable
      */
     private function getEndpointName(PublicEndpoint $endpoint)
     {
-        $name = (new Slugify('/([^A-Za-z0-9])+/'))->slugify($endpoint->getName(), '_');
+        $name = (new Slugify(['regex' => '/([^A-Za-z0-9])+/']))->slugify($endpoint->getName(), '_');
 
         return strtoupper($name);
     }

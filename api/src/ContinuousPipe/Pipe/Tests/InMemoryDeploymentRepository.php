@@ -5,7 +5,7 @@ namespace ContinuousPipe\Pipe\Tests;
 use ContinuousPipe\Pipe\DeploymentNotFound;
 use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class InMemoryDeploymentRepository implements DeploymentRepository
 {

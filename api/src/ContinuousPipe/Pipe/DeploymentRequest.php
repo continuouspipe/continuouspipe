@@ -5,7 +5,7 @@ namespace ContinuousPipe\Pipe;
 use ContinuousPipe\Pipe\DeploymentRequest\Notification;
 use ContinuousPipe\Pipe\DeploymentRequest\Specification;
 use ContinuousPipe\Pipe\DeploymentRequest\Target;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class DeploymentRequest
 {
