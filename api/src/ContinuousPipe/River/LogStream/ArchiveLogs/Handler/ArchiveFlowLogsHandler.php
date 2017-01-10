@@ -64,7 +64,7 @@ class ArchiveFlowLogsHandler
         // Only archive tides finished before yesterday
         $yesterday = (new \DateTime())->sub(new \DateInterval('P1D'));
         $tides = array_filter($tides, function (Tide $tide) use ($yesterday) {
-            return in_array($tide->getStatus(), [Tide::STATUS_FAILURE, Tide::STATUS_SUCCESS])
+            return in_array($tide->getStatus(), [Tide::STATUS_FAILURE, Tide::STATUS_SUCCESS, Tide::STATUS_CANCELLED])
                 && $tide->getFinishDate() < $yesterday;
         });
 

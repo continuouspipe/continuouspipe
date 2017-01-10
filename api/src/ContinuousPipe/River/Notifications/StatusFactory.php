@@ -62,6 +62,7 @@ class StatusFactory
                 $description = 'Running';
                 break;
             case Tide::STATUS_FAILURE:
+            case Tide::STATUS_CANCELLED:
                 $status = Status::STATE_FAILURE;
                 $description = $tide->getFailureReason();
                 break;

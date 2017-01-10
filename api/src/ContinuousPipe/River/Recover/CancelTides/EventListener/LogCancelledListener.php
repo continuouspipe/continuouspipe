@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Recover\CancelTides\EventListener;
 
-use ContinuousPipe\River\Recover\CancelTides\Event\TideCancelled;
+use ContinuousPipe\River\Event\TideCancelled;
 use ContinuousPipe\River\View\TideRepository;
 use LogStream\Log;
 use LogStream\LoggerFactory;
@@ -31,7 +31,7 @@ class LogCancelledListener
     }
 
     /**
-     * @param TideCancelled $event
+     * @param \ContinuousPipe\River\Event\TideCancelled $event
      */
     public function notify(TideCancelled $event)
     {

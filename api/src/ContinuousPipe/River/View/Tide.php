@@ -17,6 +17,7 @@ class Tide
     const STATUS_RUNNING = 'running';
     const STATUS_FAILURE = 'failure';
     const STATUS_SUCCESS = 'success';
+    const STATUS_CANCELLED = 'cancelled';
 
     /**
      * @JMS\Groups({"Default"})
