@@ -944,13 +944,23 @@ EOF;
     /**
      * @Given I tide is started with the following configurations:
      */
-    public function iTideIsStartedWithTheFollowingConfigurations(TableNode $tasks)
+    public function iTideIsStartedWithTheFollowingConfigurations(TableNode $tasksTable)
     {
-        $tasks = array_map(function($task) {
+        $tasks = [];
+
+        foreach ($tasksTable->getHash() as $task) {
             $configuration = !empty($task['configuration']) ? json_decode($task['configuration'], true) : [];
 
-            return [$task['name'] => $configuration];
-        }, $tasks->getHash());
+            if (!array_key_exists('name', $task)) {
+                $task['name'] = count($tasks);
+            }
+
+            $taskConfiguration = [$task['type'] => $configuration];
+            if (isset($task['filter']) && !empty($task['filter'])) {
+                $taskConfiguration['filter'] = ['expression' => $task['filter']];
+            }
+            $tasks[$task['name']] = $taskConfiguration;
+        }
 
         $this->aTideIsStartedWithTasks($tasks);
     }

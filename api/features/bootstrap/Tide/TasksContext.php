@@ -238,6 +238,22 @@ class TasksContext implements Context
         $this->assertTaskStatus($name, Task::STATUS_PENDING);
     }
 
+    /**
+     * @Then the task named :name should be running
+     */
+    public function theTaskNamedShouldBeRunning($name)
+    {
+        $this->assertTaskStatus($name, Task::STATUS_RUNNING);
+    }
+
+    /**
+     * @Then the task named :name should be skipped
+     */
+    public function theTaskNamedShouldBeSkipped($name)
+    {
+        $this->assertTaskStatus($name, Task::STATUS_SKIPPED);
+    }
+
     private function assertTaskStatus(string $taskName, string $status)
     {
         $task = $this->getTask($taskName);

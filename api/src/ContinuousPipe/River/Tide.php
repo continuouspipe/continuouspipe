@@ -220,6 +220,7 @@ class Tide
             } catch (TaskRunnerException $e) {
                 $this->events->raiseAndApply(new TideFailed($this->getUuid(), $e->getMessage()));
             }
+
         }
     }
 
@@ -239,10 +240,6 @@ class Tide
     {
         if (null !== ($nextTask = $this->tasks->next())) {
             $this->taskRunner->run($this, $nextTask);
-
-            if ($nextTask->getStatus() == Task::STATUS_SKIPPED) {
-                $this->nextTask();
-            }
         }
     }
 
