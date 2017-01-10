@@ -21,3 +21,33 @@ Feature:
     Given a tide is created with just a build task
     When I cancel the tide
     Then the tide should be cancelled
+
+  Scenario: It cancels the tasks
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    mysql:
+                        specification:
+                            source:
+                                image: mysql
+
+        fixtures:
+            run:
+                cluster: foo
+                image: busybox
+                commands:
+                    - foo
+    """
+    And a tide is started
+    And all the image builds are successful
+    When I cancel the tide
+    Then the task named "images" should be successful
+    And the task named "deployment" should be cancelled
+    And the task named "fixtures" should be cancelled

@@ -12,6 +12,7 @@ interface Task
     const STATUS_RUNNING = 'running';
     const STATUS_FAILED = 'failed';
     const STATUS_SUCCESSFUL = 'successful';
+    const STATUS_CANCELLED = 'cancelled';
 
     /**
      * @param TideEvent $event

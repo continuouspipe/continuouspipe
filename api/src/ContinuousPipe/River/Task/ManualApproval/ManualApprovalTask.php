@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\ManualApproval;
 
+use ContinuousPipe\River\Event\TideCancelled;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBased\ApplyEventCapability;
 use ContinuousPipe\River\EventBased\RaiseEventCapability;
@@ -145,12 +146,25 @@ final class ManualApprovalTask implements Task
         $this->tideUuid = $event->getTideUuid();
     }
 
+    public function applyTideCancelled()
+    {
+        if (in_array($this->status, [Task::STATUS_PENDING, Task::STATUS_RUNNING])) {
+            $this->status = Task::STATUS_CANCELLED;
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
     public function accept(TideEvent $event)
     {
-        return $event instanceof TaskEvent && $event->getTaskId() == $this->getIdentifier();
+        return
+            // Is an event of the task
+            ($event instanceof TaskEvent && $event->getTaskId() == $this->getIdentifier())
+            ||
+            // Is a tide-cancelled event
+            $event instanceof TideCancelled
+        ;
     }
 
     /**
