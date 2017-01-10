@@ -53,6 +53,9 @@
         <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\HttpClientFactory">
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="pipe.adapter.kubernetes.guzzle_client" />
+            <argument type="service" id="pipe.adapter.kubernetes.fault_tolerance_configurator" />
+        </service>
+        <service id="pipe.adapter.kubernetes.fault_tolerance_configurator" class="ContinuousPipe\Adapter\Kubernetes\Client\FaultToleranceConfigurator">
         </service>
         <service id="pipe.adapter.kubernetes.environment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\KubernetesEnvironmentClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />

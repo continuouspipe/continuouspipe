@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Client;
 
 use ContinuousPipe\Security\Credentials\Cluster;
+use GuzzleHttp\Client as GuzzleClient;
 use JMS\Serializer\Serializer;
 use Kubernetes\Client\Adapter\Http\AuthenticationMiddleware;
 use Kubernetes\Client\Adapter\Http\GuzzleHttpClient;
@@ -19,18 +20,23 @@ class HttpClientFactory implements KubernetesClientFactory
     private $serializer;
 
     /**
-     * @var \GuzzleHttp\Client
+     * @var GuzzleClient
      */
     private $guzzleClient;
 
     /**
-     * @param Serializer         $serializer
-     * @param \GuzzleHttp\Client $guzzleClient
+     * @var FaultToleranceConfigurator
      */
-    public function __construct(Serializer $serializer, \GuzzleHttp\Client $guzzleClient)
+    private $faultToleranceConfigurator;
+
+    public function __construct(
+        Serializer                 $serializer,
+        GuzzleClient               $guzzleClient,
+        FaultToleranceConfigurator $faultToleranceConfigurator)
     {
         $this->serializer = $serializer;
         $this->guzzleClient = $guzzleClient;
+        $this->faultToleranceConfigurator = $faultToleranceConfigurator;
     }
 
     /**
@@ -40,6 +46,8 @@ class HttpClientFactory implements KubernetesClientFactory
      */
     public function getByCluster(Cluster\Kubernetes $cluster)
     {
+        $this->faultToleranceConfigurator->configureToBeFaultTolerant($this->guzzleClient);
+
         $httpClient = new GuzzleHttpClient(
             $this->guzzleClient,
             $cluster->getAddress(),
