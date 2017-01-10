@@ -11,6 +11,7 @@ use ContinuousPipe\River\Event\TideSuccessful;
 use ContinuousPipe\River\Event\TideValidated;
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
+use ContinuousPipe\River\Event\TideCancelled;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
@@ -24,6 +25,12 @@ use Ramsey\Uuid\UuidInterface;
 
 class Tide
 {
+    const STATUS_PENDING = 'pending';
+    const STATUS_RUNNING = 'running';
+    const STATUS_FAILURE = 'failure';
+    const STATUS_SUCCESS = 'success';
+    const STATUS_CANCELLED = 'cancelled';
+
     /**
      * @var TaskRunner
      */
@@ -60,6 +67,11 @@ class Tide
     private $failureReason;
 
     /**
+     * @var string;
+     */
+    private $status = Tide::STATUS_PENDING;
+
+    /**
      * @param TaskRunner      $taskRunner
      * @param TaskList        $taskList
      * @param EventCollection $events
@@ -73,14 +85,6 @@ class Tide
             $this->apply($event);
             $this->hop();
         });
-    }
-
-    /**
-     * @return Uuid
-     */
-    public function getUuid()
-    {
-        return $this->getContext()->getTideUuid();
     }
 
     /**
@@ -168,8 +172,74 @@ class Tide
             $this->tasks->apply($event);
         }
 
-        if ($event instanceof TideFailed) {
+        if ($event instanceof TideCreated) {
+            $this->status = self::STATUS_PENDING;
+        } elseif ($event instanceof TideStarted) {
+            $this->status = self::STATUS_RUNNING;
+        } elseif ($event instanceof TideSuccessful) {
+            $this->status = self::STATUS_SUCCESS;
+        } elseif ($event instanceof TideFailed) {
+            $this->status = self::STATUS_FAILURE;
             $this->failureReason = $event->getReason();
+        } elseif ($event instanceof TideCancelled) {
+            $this->status = self::STATUS_CANCELLED;
+            $this->failureReason = 'Tide was cancelled';
+        }
+    }
+
+    public function start()
+    {
+        $this->events->raiseAndApply(new TideStarted(
+            $this->getUuid()
+        ));
+    }
+
+    public function cancel()
+    {
+        $this->events->raiseAndApply(new TideCancelled(
+            $this->getUuid()
+        ));
+    }
+
+    private function hop()
+    {
+        if (!$this->is(self::STATUS_RUNNING)) {
+            return;
+        }
+
+        if (null !== ($failedTask = $this->tasks->getFailedTask())) {
+            $this->events->raiseAndApply(new TideFailed(
+                $this->getUuid(),
+                sprintf('Task "%s" failed', $failedTask->getIdentifier())
+            ));
+        } elseif ($this->tasks->allSuccessful()) {
+            $this->events->raiseAndApply(new TideSuccessful($this->getUuid()));
+        } elseif (!$this->tasks->hasRunning() && !$this->is(self::STATUS_FAILURE)) {
+            try {
+                $this->nextTask();
+            } catch (TaskRunnerException $e) {
+                $this->events->raiseAndApply(new TideFailed($this->getUuid(), $e->getMessage()));
+            }
+
+        }
+    }
+
+    public function skipTask(Task $task)
+    {
+        $this->events->raiseAndApply(new TaskSkipped(
+            $this->getUuid(),
+            $task->getIdentifier(),
+            $task->getLogIdentifier()
+        ));
+    }
+
+    /**
+     * Run the next task if possible.
+     */
+    private function nextTask()
+    {
+        if (null !== ($nextTask = $this->tasks->next())) {
+            $this->taskRunner->run($this, $nextTask);
         }
     }
 
@@ -183,22 +253,6 @@ class Tide
         $this->events->clearRaised();
 
         return $events;
-    }
-
-    /**
-     * @return TideContext
-     */
-    public function getContext()
-    {
-        return $this->context;
-    }
-
-    /**
-     * @return TaskList
-     */
-    public function getTasks()
-    {
-        return $this->tasks;
     }
 
     /**
@@ -219,50 +273,19 @@ class Tide
         throw new \InvalidArgumentException(sprintf('The task identified "%s" is not found', $identifier));
     }
 
-    /**
-     * Run the next task if possible.
-     */
-    private function nextTask()
+    public function getUuid() : UuidInterface
     {
-        if (null !== ($nextTask = $this->tasks->next())) {
-            $this->taskRunner->run($this, $nextTask);
-
-            if ($nextTask->getStatus() == Task::STATUS_SKIPPED) {
-                $this->nextTask();
-            }
-        }
+        return $this->getContext()->getTideUuid();
     }
 
-    /**
-     * @return bool
-     */
-    public function isRunning()
+    public function getContext() : TideContext
     {
-        return $this->isStarted() && !$this->isFailed() && !$this->isSuccessful();
+        return $this->context;
     }
 
-    /**
-     * @return bool
-     */
-    public function isStarted()
+    public function getTasks() : TaskList
     {
-        return 0 < $this->events->numberOfEventsOfType(TideStarted::class);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isFailed()
-    {
-        return 0 < $this->events->numberOfEventsOfType(TideFailed::class);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSuccessful()
-    {
-        return 0 < $this->events->numberOfEventsOfType(TideSuccessful::class);
+        return $this->tasks;
     }
 
     public function getFlowUuid() : UuidInterface
@@ -315,49 +338,21 @@ class Tide
         return $this->pipeline;
     }
 
-    public function start()
-    {
-        $this->events->raiseAndApply(new TideStarted(
-            $this->getUuid()
-        ));
-    }
-
-    private function hop()
-    {
-        if (!$this->isRunning()) {
-            return;
-        }
-
-        if (null !== ($failedTask = $this->tasks->getFailedTask())) {
-            $this->events->raiseAndApply(new TideFailed(
-                $this->getUuid(),
-                sprintf('Task "%s" failed', $failedTask->getIdentifier())
-            ));
-        } elseif ($this->tasks->allSuccessful()) {
-            $this->events->raiseAndApply(new TideSuccessful($this->getUuid()));
-        } elseif (!$this->tasks->hasRunning() && !$this->isFailed()) {
-            try {
-                $this->nextTask();
-            } catch (TaskRunnerException $e) {
-                $this->events->raiseAndApply(new TideFailed($this->getUuid(), $e->getMessage()));
-            }
-        }
-    }
-
-    public function skipTask(Task $task)
-    {
-        $this->events->raiseAndApply(new TaskSkipped(
-            $this->getUuid(),
-            $task->getIdentifier(),
-            $task->getLogIdentifier()
-        ));
-    }
-
     /**
      * @return null|string
      */
     public function getFailureReason()
     {
         return $this->failureReason;
+    }
+
+    public function getStatus() : string
+    {
+        return $this->status;
+    }
+
+    public function is(string $status) : bool
+    {
+        return $this->status == $status;
     }
 }

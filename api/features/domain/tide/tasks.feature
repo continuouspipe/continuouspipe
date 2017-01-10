@@ -35,7 +35,7 @@ Feature:
 
   Scenario: I can have different tasks of the same time in a flow
     Given I tide is started with the following configurations:
-      | name   | configuration                                                    |
+      | type   | configuration                                                    |
       | build  | {"services": []}                                                 |
       | run    | {"cluster": "foo", "image": "foo", "commands": ["bin/foo"]} |
       | deploy | {"cluster": "foo", "services": []}                          |
@@ -49,7 +49,7 @@ Feature:
 
   Scenario: I can have different tasks of the same time in a flow
     Given I tide is started with the following configurations:
-      | name   | configuration                                                    |
+      | type   | configuration                                                    |
       | build  | {"services": []}                                                 |
       | run    | {"cluster": "foo", "image": "foo", "commands": ["bin/foo"]} |
       | deploy | {"cluster": "foo", "services": []}                          |
@@ -63,7 +63,7 @@ Feature:
 
   Scenario: I can have different tasks of the same time in a flow
     Given I tide is started with the following configurations:
-      | name   | configuration                                                    |
+      | type   | configuration                                                    |
       | build  | {"services": []}                                                 |
       | deploy | {"cluster": "foo", "services": []}                          |
       | run    | {"cluster": "foo", "image": "bar", "commands": ["bin/bar"]} |
@@ -72,3 +72,34 @@ Feature:
     And the first deploy succeed
     And the first run succeed
     Then the second deploy task should be running
+
+  Scenario: A run is blocking until the other other is ran
+    Given I tide is started with the following configurations:
+      | name  | type   | configuration                                               |
+      | build | build  | {"services": []}                                            |
+      | run1  | run    | {"cluster": "foo", "image": "bar", "commands": ["bin/bar"]} |
+      | run2  | run    | {"cluster": "foo", "image": "bar", "commands": ["bin/bar"]} |
+    When the build task succeed
+    Then the task named "run1" should be running
+    And the task named "run2" should be pending
+
+  Scenario: A failing run will fail the tide
+    Given I tide is started with the following configurations:
+      | name  | type   | configuration                                               |
+      | build | build  | {"services": []}                                            |
+      | run1  | run    | {"cluster": "foo", "image": "bar", "commands": ["bin/bar"]} |
+      | run2  | run    | {"cluster": "foo", "image": "bar", "commands": ["bin/bar"]} |
+    When the build task succeed
+    And the first run failed
+    And the task named "run2" should be pending
+    And the tide should be failed
+
+  Scenario:
+    Given I tide is started with the following configurations:
+      | name  | type   | configuration                                               | filter                            |
+      | build | build  | {"services": []}                                            | code_reference.branch != 'master' |
+      | run1  | run    | {"cluster": "foo", "image": "bar", "commands": ["bin/bar"]} |                                   |
+      | run2  | run    | {"cluster": "foo", "image": "bar", "commands": ["bin/bar"]} |                                   |
+    Then the task named "build" should be skipped
+    Then the task named "run1" should be running
+    Then the task named "run2" should be pending

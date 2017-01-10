@@ -19,6 +19,7 @@ use ContinuousPipe\River\Pipeline\Command\GenerateTides;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Pipeline\TideGenerationTrigger;
+use ContinuousPipe\River\Recover\CancelTides\Command\CancelTideCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\TimedOutTideRepository;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
@@ -265,6 +266,16 @@ EOF;
     }
 
     /**
+     * @When the tide for branch :branch and commit :sha1 is cancelled
+     */
+    public function theTideForCommitIsCancelled($branch, $sha1)
+    {
+        $tide = $this->getTideByCodeReference($branch, $sha1);
+
+        $this->commandBus->handle(new CancelTideCommand($tide->getUuid()));
+    }
+
+    /**
      * @When the tide failed
      */
     public function theTideFailed()
@@ -275,10 +286,10 @@ EOF;
     /**
      * @When I cancel the tide
      */
-    public function iCancelTheTide()
+    public function iCancelTheTide($uuid = null)
     {
         $response = $this->kernel->handle(Request::create(
-            sprintf('/tides/%s/cancel', (string) $this->getCurrentTideUuid()),
+            sprintf('/tides/%s/cancel', $uuid ?: (string) $this->getCurrentTideUuid()),
             'POST'
         ));
 
@@ -336,6 +347,21 @@ EOF;
             throw new \Exception(sprintf(
                 'Found %d tide failed event, expected 1',
                 $numberOfTideFailedEvents
+            ));
+        }
+    }
+
+    /**
+     * @Then the tide should be cancelled
+     */
+    public function theTideShouldBeCancelled()
+    {
+        $tide = $this->getCurrentTide();
+        if ($tide->getStatus() !== Tide::STATUS_CANCELLED) {
+            throw new \Exception(sprintf(
+                'Found status "%s", expected "%s"',
+                $tide->getStatus(),
+                Tide::STATUS_CANCELLED
             ));
         }
     }
@@ -465,7 +491,7 @@ EOF;
      */
     public function theTideIsRepresentedAsPending()
     {
-        $this->assertTideStatusIs(ContinuousPipe\River\View\Tide::STATUS_PENDING);
+        $this->assertTideStatusIs(Tide::STATUS_PENDING);
     }
 
     /**
@@ -473,7 +499,7 @@ EOF;
      */
     public function theTideIsRepresentedAsRunning()
     {
-        $this->assertTideStatusIs(ContinuousPipe\River\View\Tide::STATUS_RUNNING);
+        $this->assertTideStatusIs(Tide::STATUS_RUNNING);
     }
 
     /**
@@ -481,7 +507,7 @@ EOF;
      */
     public function theTideIsRepresentedAsFailed()
     {
-        $this->assertTideStatusIs(ContinuousPipe\River\View\Tide::STATUS_FAILURE);
+        $this->assertTideStatusIs(Tide::STATUS_FAILURE);
     }
 
     /**
@@ -489,7 +515,7 @@ EOF;
      */
     public function theTideIsRepresentedAsSuccessful()
     {
-        $this->assertTideStatusIs(ContinuousPipe\River\View\Tide::STATUS_SUCCESS);
+        $this->assertTideStatusIs(Tide::STATUS_SUCCESS);
     }
 
     /**
@@ -918,13 +944,23 @@ EOF;
     /**
      * @Given I tide is started with the following configurations:
      */
-    public function iTideIsStartedWithTheFollowingConfigurations(TableNode $tasks)
+    public function iTideIsStartedWithTheFollowingConfigurations(TableNode $tasksTable)
     {
-        $tasks = array_map(function($task) {
+        $tasks = [];
+
+        foreach ($tasksTable->getHash() as $task) {
             $configuration = !empty($task['configuration']) ? json_decode($task['configuration'], true) : [];
 
-            return [$task['name'] => $configuration];
-        }, $tasks->getHash());
+            if (!array_key_exists('name', $task)) {
+                $task['name'] = count($tasks);
+            }
+
+            $taskConfiguration = [$task['type'] => $configuration];
+            if (isset($task['filter']) && !empty($task['filter'])) {
+                $taskConfiguration['filter'] = ['expression' => $task['filter']];
+            }
+            $tasks[$task['name']] = $taskConfiguration;
+        }
 
         $this->aTideIsStartedWithTasks($tasks);
     }

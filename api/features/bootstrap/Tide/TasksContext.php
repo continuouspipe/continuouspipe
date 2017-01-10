@@ -17,6 +17,7 @@ use ContinuousPipe\River\Task\Run\RunTask;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tide;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
 class TasksContext implements Context
@@ -214,6 +215,59 @@ class TasksContext implements Context
     }
 
     /**
+     * @Then the task named :name should be successful
+     */
+    public function theTaskNamedShouldBeSuccessful($name)
+    {
+        $this->assertTaskStatus($name, Task::STATUS_SUCCESSFUL);
+    }
+
+    /**
+     * @Then the task named :name should be cancelled
+     */
+    public function theTaskNamedShouldBeCancelled($name)
+    {
+        $this->assertTaskStatus($name, Task::STATUS_CANCELLED);
+    }
+
+    /**
+     * @Then the task named :name should be pending
+     */
+    public function theTaskNamedShouldBePending($name)
+    {
+        $this->assertTaskStatus($name, Task::STATUS_PENDING);
+    }
+
+    /**
+     * @Then the task named :name should be running
+     */
+    public function theTaskNamedShouldBeRunning($name)
+    {
+        $this->assertTaskStatus($name, Task::STATUS_RUNNING);
+    }
+
+    /**
+     * @Then the task named :name should be skipped
+     */
+    public function theTaskNamedShouldBeSkipped($name)
+    {
+        $this->assertTaskStatus($name, Task::STATUS_SKIPPED);
+    }
+
+    private function assertTaskStatus(string $taskName, string $status)
+    {
+        $task = $this->getTask($taskName);
+        if ($task->getStatus() != $status) {
+            throw new \RuntimeException(sprintf(
+                'Expected status "%s" but found "%s"',
+                $status,
+                $task->getStatus()
+            ));
+        }
+    }
+
+
+    /**
      * @param string $taskType
      * @param Uuid $tideUuid
      *
@@ -253,5 +307,27 @@ class TasksContext implements Context
         $property->setAccessible(true);
 
         return $property->getValue($task);
+    }
+
+    /**
+     * @param string $taskName
+     * @param UuidInterface $tideUuid
+     *
+     * @return Task
+     */
+    private function getTask(string $taskName, UuidInterface $tideUuid = null): Task
+    {
+        $tide = null === $tideUuid ? $this->getCurrentTide() : $this->tideRepository->find($tideUuid);
+        $tasks = $tide->getTasks()->getTasks();
+        foreach ($tasks as $task) {
+            if ($task->getIdentifier() == $taskName) {
+                return $task;
+            }
+        }
+
+        throw new \RuntimeException(sprintf(
+            'Task named "%s" not found',
+            $taskName
+        ));
     }
 }

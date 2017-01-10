@@ -151,6 +151,21 @@ class RunContext implements Context
     }
 
     /**
+     * @When the first run failed
+     */
+    public function theFirstRunFailed()
+    {
+        $deployments = $this->traceablePipeClient->getDeployments();
+        if (0 === count($deployments)) {
+            throw new \RuntimeException('No deployment found');
+        }
+
+        /** @var RunTask $task */
+        $task = $this->tideTasksContext->getTasksOfType(RunTask::class)[0];
+        $this->sendRunTaskNotification($task, $deployments[0]->getRequest(), Deployment::STATUS_FAILURE);
+    }
+
+    /**
      * @When the second run task succeed
      */
     public function theSecondRunTaskSucceed()

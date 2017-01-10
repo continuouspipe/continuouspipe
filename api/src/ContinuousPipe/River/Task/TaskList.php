@@ -79,7 +79,7 @@ class TaskList
     public function next()
     {
         foreach ($this->tasks as $task) {
-            if ($task->getStatus() == Task::STATUS_PENDING && $task->getStatus() != Task::STATUS_SKIPPED) {
+            if ($task->getStatus() == Task::STATUS_PENDING) {
                 return $task;
             }
         }

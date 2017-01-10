@@ -59,6 +59,8 @@ class TideReportListener
             $status = 'success';
         } elseif ($tide->getStatus() == Tide::STATUS_FAILURE) {
             $status = 'failure';
+        } elseif ($tide->getStatus() == Tide::STATUS_CANCELLED) {
+            $status = 'cancelled';
         } else {
             $status = 'unknown';
         }

@@ -4,22 +4,24 @@ namespace ContinuousPipe\River\Recover\CancelTides\Handler;
 
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\Recover\CancelTides\Command\CancelTideCommand;
-use ContinuousPipe\River\Recover\CancelTides\Event\TideCancelled;
+use ContinuousPipe\River\Event\TideCancelled;
+use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\Tide\Transaction\TransactionManager;
 use SimpleBus\Message\Bus\MessageBus;
 
 class CancelTide
 {
     /**
-     * @var MessageBus
+     * @var TransactionManager
      */
-    private $eventBus;
+    private $transactionManager;
 
     /**
-     * @param MessageBus $eventBus
+     * @param TransactionManager $transactionManager
      */
-    public function __construct(MessageBus $eventBus)
+    public function __construct(TransactionManager $transactionManager)
     {
-        $this->eventBus = $eventBus;
+        $this->transactionManager = $transactionManager;
     }
 
     /**
@@ -27,7 +29,8 @@ class CancelTide
      */
     public function handle(CancelTideCommand $command)
     {
-        $this->eventBus->handle(new TideCancelled($command->getTideUuid()));
-        $this->eventBus->handle(new TideFailed($command->getTideUuid(), 'Manually cancelled'));
+        $this->transactionManager->apply($command->getTideUuid(), function(Tide $tide) {
+            $tide->cancel();
+        });
     }
 }

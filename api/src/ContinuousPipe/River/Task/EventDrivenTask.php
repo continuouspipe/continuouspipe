@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task;
 
+use ContinuousPipe\River\Event\TideCancelled;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
@@ -11,6 +12,7 @@ abstract class EventDrivenTask implements Task
 {
     private $pending = true;
     private $skipped = false;
+    private $cancelled = false;
 
     /**
      * @var TaskContext
@@ -39,10 +41,10 @@ abstract class EventDrivenTask implements Task
     {
         if ($event instanceof TaskQueued) {
             $this->pending = false;
-        }
-
-        if ($event instanceof TaskSkipped) {
+        } elseif ($event instanceof TaskSkipped) {
             $this->skipped = true;
+        } elseif ($event instanceof TideCancelled && $this->isRunning()) {
+            $this->cancelled = true;
         }
     }
 
@@ -60,14 +62,6 @@ abstract class EventDrivenTask implements Task
     public function isPending()
     {
         return $this->pending;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSkipped()
-    {
-        return $this->skipped;
     }
 
     /**
@@ -188,8 +182,10 @@ abstract class EventDrivenTask implements Task
      */
     public function getStatus(): string
     {
-        if ($this->isSkipped()) {
+        if ($this->skipped) {
             return Task::STATUS_SKIPPED;
+        } elseif ($this->cancelled) {
+            return Task::STATUS_CANCELLED;
         } elseif ($this->isPending()) {
             return Task::STATUS_PENDING;
         } elseif ($this->isSuccessful()) {

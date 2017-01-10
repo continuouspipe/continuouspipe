@@ -38,3 +38,11 @@ Feature:
     When the tide for branch "master" and commit "000000000000000000000000000000000000000" is successful
     Then the tide for the branch "master" and commit "111111111111111111111111111111111111111" should be started
     Then the tide for the branch "master" and commit "222222222222222222222222222222222222222" should not be started
+
+  Scenario: It continues after a tide is cancelled
+    Given the commit "000000000000000000000000000000000000000" is pushed to the branch "master"
+    And the tide for the branch "master" and commit "000000000000000000000000000000000000000" is tentatively started
+    And the commit "111111111111111111111111111111111111111" is pushed to the branch "master"
+    And the tide for the branch "master" and commit "111111111111111111111111111111111111111" is tentatively started
+    When the tide for branch "master" and commit "000000000000000000000000000000000000000" is cancelled
+    Then the tide for the branch "master" and commit "111111111111111111111111111111111111111" should be started

@@ -73,18 +73,10 @@ class TideViewFactory
 
         $view->setStartDate($startedAt);
         $view->setFinishDate($finishedAt);
-        $view->setStatus(Tide::STATUS_PENDING);
+        $view->setStatus($tide->getStatus());
         $view->setTasks(array_map(function (Task $task) {
             return TideTaskView::fromTask($task);
         }, $tide->getTasks()->getTasks()));
-
-        if ($tide->isRunning()) {
-            $view->setStatus(Tide::STATUS_RUNNING);
-        } elseif ($tide->isFailed()) {
-            $view->setStatus(Tide::STATUS_FAILURE);
-        } elseif ($tide->isSuccessful()) {
-            $view->setStatus(Tide::STATUS_SUCCESS);
-        }
 
         return $view;
     }
