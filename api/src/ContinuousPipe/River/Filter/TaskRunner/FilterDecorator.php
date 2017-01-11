@@ -115,7 +115,11 @@ class FilterDecorator implements TaskRunner
         $configuration = $tide->getContext()->getConfiguration();
 
         foreach ($configuration['tasks'] as $key => $task) {
-            if (isset($task['identifier']) && $task['identifier'] == $identifier || $key == $identifier) {
+            if ((isset($task['identifier']) && $task['identifier'] == $identifier)
+                    ||
+                (is_string($key) && $key === $identifier
+                )
+            ) {
                 return $task;
             }
         }

@@ -7,8 +7,10 @@ use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\River\Pipeline\Pipeline;
+use ContinuousPipe\River\Pipeline\TideGenerationException;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Task\TaskContext;
+use ContinuousPipe\River\Task\TaskFactoryNotFound;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
@@ -65,6 +67,8 @@ class TideFactory
      * @param Pipeline              $pipeline
      * @param TideGenerationRequest $request
      * @param UuidInterface         $tideUuid
+     *
+     * @throws TideGenerationException
      *
      * @return Tide
      */
@@ -123,7 +127,7 @@ class TideFactory
      * @param TideContext     $tideContext
      * @param EventCollection $events
      *
-     * @throws Task\TaskFactoryNotFound
+     * @throws TideGenerationException
      *
      * @return TaskList
      */
@@ -134,14 +138,19 @@ class TideFactory
 
         $tasks = [];
         foreach ($tasksConfiguration as $taskId => $taskConfig) {
-            $taskName = array_keys($taskConfig)[0];
+            $taskName = $this->getTaskType($taskId, $taskConfig);
             $taskConfiguration = $taskConfig[$taskName];
 
             if (is_int($taskId) && isset($taskConfig['identifier'])) {
                 $taskId = $taskConfig['identifier'];
             }
 
-            $taskFactory = $this->taskFactoryRegistry->find($taskName);
+            try {
+                $taskFactory = $this->taskFactoryRegistry->find($taskName);
+            } catch (TaskFactoryNotFound $e) {
+                throw new TideGenerationException($e->getMessage(), $e->getCode(), $e);
+            }
+
             $taskContext = TaskContext::createTaskContext(
                 new ContextTree(ArrayContext::fromRaw($taskConfiguration ?: []), $tideContext),
                 $taskId
@@ -151,5 +160,35 @@ class TideFactory
         }
 
         return new TaskList($tasks);
+    }
+
+    /**
+     * @param string $taskId
+     * @param array $taskConfig
+     *
+     * @throws TideGenerationException
+     *
+     * @return string
+     */
+    private function getTaskType(string $taskId, array $taskConfig) : string
+    {
+        $matching = array_filter(array_keys($taskConfig), function(string $key) {
+            return !in_array($key, ['filter', 'identifier']);
+        });
+
+        if (count($matching) == 0) {
+            throw new TideGenerationException(sprintf(
+                'Unable to get the type of the task "%s"',
+                $taskId
+            ));
+        } elseif (count($matching) != 1) {
+            throw new TideGenerationException(sprintf(
+                'Ambiguous type for the task "%s": found %s',
+                $taskId,
+                implode(', ', $matching)
+            ));
+        }
+
+        return current($matching);
     }
 }
