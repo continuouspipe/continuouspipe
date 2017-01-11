@@ -7,7 +7,10 @@
         <md-button class="md-raised" aria-label="Start manually" ui-sref="flow.create-tide"><md-icon>play_arrow</md-icon> Start manually</md-button>
     </div>
 </md-toolbar>
-<md-content flex id="content">
+<md-content flex id="content" ng-if="isLoading">
+    <remote-resource resource-name="tides"></remote-resource>
+</md-content>
+<md-content flex id="content" ng-if="!isLoading">
     <md-subheader class="md-primary">Pipelines</md-subheader>
     <md-card class="pipeline-card" ng-repeat="pipeline in pipelines" ng-class="['status-'+pipeline.lastTides[0].status]">
         <md-card-content layout="column">
