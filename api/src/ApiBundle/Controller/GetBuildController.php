@@ -2,7 +2,7 @@
 
 namespace ApiBundle\Controller;
 
-use ContinuousPipe\Builder\BuildRepository;
+use ContinuousPipe\Builder\View\BuildViewRepository;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,14 +13,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class GetBuildController
 {
     /**
-     * @var BuildRepository
+     * @var BuildViewRepository
      */
     private $buildRepository;
 
     /**
-     * @param BuildRepository $buildRepository
+     * @param BuildViewRepository $buildRepository
      */
-    public function __construct(BuildRepository $buildRepository)
+    public function __construct(BuildViewRepository $buildRepository)
     {
         $this->buildRepository = $buildRepository;
     }

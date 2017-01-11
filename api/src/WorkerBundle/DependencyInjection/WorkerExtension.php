@@ -15,8 +15,6 @@ class WorkerExtension extends Extension
     public function load(array $config, ContainerBuilder $container)
     {
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('notification.xml');
-        $loader->load('worker.xml');
         $loader->load('logging.xml');
     }
 }

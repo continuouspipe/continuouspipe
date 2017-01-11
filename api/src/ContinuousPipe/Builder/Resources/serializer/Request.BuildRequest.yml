@@ -1,19 +1,11 @@
 ContinuousPipe\Builder\Request\BuildRequest:
     properties:
-        repository:
-            type: ContinuousPipe\Builder\Repository
-        archive:
-            type: ContinuousPipe\Builder\Request\Archive
-        image:
-            type: ContinuousPipe\Builder\Image
         notification:
             type: ContinuousPipe\Builder\Notification
         logging:
             type: ContinuousPipe\Builder\Logging
-        context:
-            type: ContinuousPipe\Builder\Context
         credentialsBucket:
             type: string
             serialized_name: credentialsBucket
-        environment:
-            type: array<string, string>
+        steps:
+            type: array<ContinuousPipe\Builder\BuildStepConfiguration>

@@ -5,7 +5,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="builder.build_repository" class="ContinuousPipe\Builder\Tests\Infrastructure\InMemory\InMemoryBuildRepository" />
+        <service id="builder.event_store" class="ContinuousPipe\Events\EventStore\InMemoryEventStore" />
+
         <service id="builder.archive_builder.fixtures" class="ContinuousPipe\Builder\Tests\FixturesArchiveBuilder">
             <argument>%kernel.root_dir%/../features/fixtures</argument>
         </service>

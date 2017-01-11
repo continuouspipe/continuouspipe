@@ -6,18 +6,19 @@
 
     <services>
         <service id="api.controller.get_build" class="ApiBundle\Controller\GetBuildController">
-            <argument type="service" id="builder.build_repository" />
+            <argument type="service" id="builder.view.build_repository" />
         </service>
 
         <service id="api.controller.create_build" class="ApiBundle\Controller\CreateBuildController">
-            <argument type="service" id="command_bus" />
-            <argument type="service" id="builder.build_repository" />
-            <argument type="service" id="security.user_context" />
+            <argument type="service" id="builder.build.transaction_manager" />
             <argument type="service" id="validator" />
+            <argument type="service" id="builder.build.build_factory" />
+            <argument type="service" id="builder.view.build_repository" />
         </service>
 
         <service id="builder.request.build_request_param_converter" class="ApiBundle\Request\ParamConverter\BuildRequestParamConverter">
             <argument type="service" id="jms_serializer" />
+
             <tag name="request.param_converter" priority="0" converter="build_request" />
         </service>
     </services>

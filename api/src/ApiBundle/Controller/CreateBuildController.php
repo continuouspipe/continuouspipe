@@ -2,14 +2,12 @@
 
 namespace ApiBundle\Controller;
 
-use ContinuousPipe\Builder\Build;
-use ContinuousPipe\Builder\BuildRepository;
-use ContinuousPipe\Builder\Command\StartBuildCommand;
+use ContinuousPipe\Builder\Aggregate\BuildFactory;
+use ContinuousPipe\Builder\View\BuildViewRepository;
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\Security\Authenticator\UserContext;
+use ContinuousPipe\Events\Transaction\TransactionManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use SimpleBus\Message\Bus\MessageBus;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -19,35 +17,41 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class CreateBuildController
 {
     /**
-     * @var BuildRepository
-     */
-    private $buildRepository;
-
-    /**
-     * @var MessageBus
-     */
-    private $commandBus;
-    /**
-     * @var UserContext
-     */
-    private $userContext;
-    /**
      * @var ValidatorInterface
      */
     private $validator;
 
     /**
-     * @param MessageBus         $commandBus
-     * @param BuildRepository    $buildRepository
-     * @param UserContext        $userContext
-     * @param ValidatorInterface $validator
+     * @var BuildFactory
      */
-    public function __construct(MessageBus $commandBus, BuildRepository $buildRepository, UserContext $userContext, ValidatorInterface $validator)
-    {
-        $this->buildRepository = $buildRepository;
-        $this->commandBus = $commandBus;
-        $this->userContext = $userContext;
+    private $buildFactory;
+
+    /**
+     * @var TransactionManager
+     */
+    private $transactionManager;
+
+    /**
+     * @var BuildViewRepository
+     */
+    private $buildViewRepository;
+
+    /**
+     * @param TransactionManager $transactionManager
+     * @param ValidatorInterface $validator
+     * @param BuildFactory $buildFactory
+     * @param BuildViewRepository $buildViewRepository
+     */
+    public function __construct(
+        TransactionManager $transactionManager,
+        ValidatorInterface $validator,
+        BuildFactory $buildFactory,
+        BuildViewRepository $buildViewRepository
+    ) {
         $this->validator = $validator;
+        $this->buildFactory = $buildFactory;
+        $this->transactionManager = $transactionManager;
+        $this->buildViewRepository = $buildViewRepository;
     }
 
     /**
@@ -62,13 +66,12 @@ class CreateBuildController
             return \FOS\RestBundle\View\View::create($violations->get(0), 400);
         }
 
-        $user = $this->userContext->getCurrent();
+        $build = $this->buildFactory->fromRequest($request);
 
-        $build = Build::fromRequest($request, $user);
-        $this->buildRepository->save($build);
+        $this->transactionManager->apply($build->getIdentifier(), function (\ContinuousPipe\Builder\Aggregate\Build $build) {
+            $build->start();
+        });
 
-        $this->commandBus->handle(StartBuildCommand::forBuild($build));
-
-        return $build->jsonSerialize();
+        return $this->buildViewRepository->find($build->getIdentifier());
     }
 }

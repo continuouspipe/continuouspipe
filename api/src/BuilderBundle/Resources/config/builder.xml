@@ -69,8 +69,14 @@
             <argument type="service" id="log_stream.logger_factory" />
         </service>
 
-        <service id="builder.build_repository" class="ContinuousPipe\Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
-            <argument type="service" id="doctrine.orm.entity_manager" />
+        <!--
+        <service id="builder.listener.notification_when_finished" class="ContinuousPipe\Builder\EventListener\SendNotificationWhenBuildFinishes">
+            <argument type="service" id="builder.notifier" />
+            <argument type="service" id="builder.build_repository" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Event\BuildFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Event\BuildSuccessful" />
         </service>
+        -->
     </services>
 </container>

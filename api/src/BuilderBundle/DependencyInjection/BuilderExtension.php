@@ -15,10 +15,12 @@ class BuilderExtension extends Extension
     public function load(array $config, ContainerBuilder $container)
     {
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('build.xml');
         $loader->load('builder.xml');
         $loader->load('docker.xml');
         $loader->load('github.xml');
         $loader->load('logging.xml');
         $loader->load('credentials.xml');
+        $loader->load('notification.xml');
     }
 }

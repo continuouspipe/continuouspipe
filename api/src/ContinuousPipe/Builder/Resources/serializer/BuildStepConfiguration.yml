@@ -1,0 +1,12 @@
+ContinuousPipe\Builder\BuildStepConfiguration:
+    properties:
+        repository:
+            type: ContinuousPipe\Builder\Repository
+        archive:
+            type: ContinuousPipe\Builder\Request\Archive
+        image:
+            type: ContinuousPipe\Builder\Image
+        context:
+            type: ContinuousPipe\Builder\Context
+        environment:
+            type: array<string, string>
