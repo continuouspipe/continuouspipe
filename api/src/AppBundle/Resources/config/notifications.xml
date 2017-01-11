@@ -36,6 +36,7 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCancelled"/>
         </service>
 
         <!-- Slack -->
