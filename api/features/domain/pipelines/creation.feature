@@ -206,3 +206,24 @@ Feature:
     And the tide starts
     Then the task named "first" should be skipped
     And the task named "second" should be running
+
+  Scenario: It can use matches in the conditions
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        first:
+            run:
+                cluster: foo
+                image: busybox
+                commands:
+                    - echo first
+
+    pipelines:
+        - name: To master
+          condition: code_reference.branch matches "/^cpdev/"
+          tasks:
+              - first
+    """
+    When I send a tide creation request for branch "cpdev-user" and commit "1234"
+    And the tide starts
+    And the task named "first" should be running

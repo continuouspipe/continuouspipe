@@ -2,10 +2,13 @@
 
 namespace ContinuousPipe\River\Pipeline\Generation;
 
+use ContinuousPipe\River\Filter\FilterException;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Pipeline\PipelineTideGenerator;
+use ContinuousPipe\River\Pipeline\TideGenerationException;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
+use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
 use ContinuousPipe\River\TideFactory;
 use Psr\Log\LoggerInterface;
@@ -57,7 +60,13 @@ class TideForEachPipelineGenerator implements PipelineTideGenerator
         }
 
         foreach ($pipelines as $pipeline) {
-            if (!$pipeline->matchesCondition($request->getCodeReference())) {
+            try {
+                $matchesCondition = $pipeline->matchesCondition($request->getCodeReference());
+            } catch (FilterException $e) {
+                throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
+            }
+
+            if (!$matchesCondition) {
                 $this->logger->debug('Pipeline condition not matched, skipping it', [
                     'flow_uuid' => $request->getFlow()->getUuid(),
                     'pipeline' => $pipeline->getName(),

@@ -41,6 +41,10 @@ final class Filter
             throw new FilterException('The filter seems to be wrong, we will investigate', $e->getCode(), $e);
         }
 
+        if (is_int($evaluated)) {
+            $evaluated = (bool) $evaluated;
+        }
+
         if (!is_bool($evaluated)) {
             throw new FilterException(sprintf(
                 'Expression "%s" is not valid as it does not return a boolean',
