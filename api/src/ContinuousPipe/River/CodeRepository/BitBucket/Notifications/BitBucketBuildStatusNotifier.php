@@ -32,6 +32,10 @@ class BitBucketBuildStatusNotifier implements Notifier
      */
     public function notify(Tide $tide, Status $status, array $configuration)
     {
+        if (array_key_exists('commit', $configuration) && false === $configuration['commit']) {
+            return;
+        }
+
         $buildStatus = (new BuildStatus('CP'))
             ->withState(BitBucketStateResolver::fromStatus($status))
             ->withDescription($status->getDescription())

@@ -494,6 +494,23 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
+     * @Then a commit status should have been sent
+     */
+    public function aCommitStatusShouldHaveBeenSent()
+    {
+        foreach ($this->guzzleHistory as $request) {
+            /** @var \GuzzleHttp\Psr7\Request $request */
+            if ($request->getMethod() == 'POST'
+                && preg_match('#^https\:\/\/api\.bitbucket\.org\/2\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/commit\/(?<sha1>[a-z0-9_-]+)\/statuses\/build$#i', (string)$request->getUri(), $matches)
+            ) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('No build status found');
+    }
+
+    /**
      * @Then the client should not be created because of the missing add-on installation
      */
     public function theClientShouldNotBeCreatedBecauseOfTheMissingAddOnInstallation()

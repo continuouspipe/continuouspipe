@@ -19,6 +19,6 @@ class NullGitHubNotifier implements Notifier
      */
     public function supports(Tide $tide, Status $status, array $configuration)
     {
-        return array_key_exists('github_commit_status', $configuration) && $configuration['github_commit_status'];
+        return array_key_exists('commit', $configuration) && $configuration['commit'];
     }
 }

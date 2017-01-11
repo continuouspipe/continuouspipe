@@ -575,6 +575,14 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @Then a commit status should have been sent
+     */
+    public function aCommitStatusShouldHaveBeenSent()
+    {
+        $this->getLastGitHubNotification();
+    }
+
+    /**
      * @param string $type
      * @param string $contents
      */

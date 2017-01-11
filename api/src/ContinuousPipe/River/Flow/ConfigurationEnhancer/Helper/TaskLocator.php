@@ -22,6 +22,10 @@ trait TaskLocator
 
             if (array_key_exists('pipelines', $config)) {
                 foreach ($config['pipelines'] as $key => $pipeline) {
+                    if (!is_array($pipeline)) {
+                        continue;
+                    }
+
                     foreach ($this->findPathsInConfig($pipeline) as $path => $taskName) {
                         $paths['[pipelines]['.$key.']'.$path] = $taskName;
                     }

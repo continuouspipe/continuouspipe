@@ -62,7 +62,13 @@ class CreateFailingTideWhenConfigurationIsWrong implements PipelineTideGenerator
                         $tideUuid,
                         $request->getCodeReference(),
                         $logger->getLog(),
-                        [],
+                        [
+                            'notifications' => [
+                                [
+                                    'commit' => true,
+                                ]
+                            ]
+                        ],
                         $request->getGenerationTrigger()->getCodeRepositoryEvent()
                     )),
                     new TideGenerated($tideUuid, $request->getFlow()->getUuid(), $request->getGenerationUuid(), FlatPipeline::fromPipeline(Pipeline::withConfiguration(
