@@ -132,9 +132,9 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     }
 
     /**
-     * @When I send a build request for the fixture repository :repository with the following environment:
+     * @When I send a build request for the image :image from the fixture repository :repository with the following environment:
      */
-    public function iSendABuildRequestForTheFixtureRepositoryWithTheFollowingEnvironment($repository, TableNode $table)
+    public function iSendABuildRequestForTheFixtureRepositoryWithTheFollowingEnvironment($image, $repository, TableNode $table)
     {
         $environmentVariables = array_reduce($table->getHash(), function($list, $env) {
             $list[$env['name']] = $env['value'];
@@ -147,8 +147,8 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         $contents = <<<EOF
 {
   "image": {
-    "name": "my/image",
-    "tag": "master"
+    "name": "$image",
+    "tag": "latest"
   },
   "repository": {
     "address": "fixtures://$repository",
