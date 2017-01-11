@@ -4,6 +4,18 @@ angular.module('continuousPipeRiver')
     .controller('FlowTidesController', function($scope, $remoteResource, TideRepository, EnvironmentRepository, flow) {
         $scope.flow = flow;
 
+        /**
+        $remoteResource.load('tides', $authenticatedFirebaseDatabase.get(flow).then(function(database) {
+            $scope.pipelines = $firebaseArray(
+                database.ref().child('flows/'+flow.uuid+'/pipelines')
+            );
+
+            return $scope.pipelines.$loaded().then(function() {
+
+            });
+        });
+        **/
+
         $remoteResource.load('tides', TideRepository.findByFlow(flow)).then(function (tides) {
             $scope.tides = tides;
         });

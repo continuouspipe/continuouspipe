@@ -41,6 +41,12 @@ angular
         ;
         
         $mdThemingProvider.theme('blue');
+
+        firebase.initializeApp({
+            apiKey: "AIzaSyDIK_08syPHkRxcf2n8zJ48XAVPHWpTsp0",
+            authDomain: "continuous-pipe.firebaseapp.com",
+            databaseURL: "https://continuous-pipe.firebaseio.com",
+        });
     })
     .factory('$exceptionHandler', function ($window, $log, SENTRY_DSN) {
         if (SENTRY_DSN) {

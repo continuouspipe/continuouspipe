@@ -20,7 +20,10 @@ angular.module('continuousPipeRiver')
                 },
                 views: {
                     'aside@': {
-                        templateUrl: 'flow/views/layout/aside.html'
+                        templateUrl: 'flow/views/layout/aside.html',
+                        controller: function($scope, flow) {
+                            $scope.flow = flow;
+                        }
                     },
                     'title@layout': {
                         template: '<a ui-sref="flows({team: team.slug})">{{ team.name || team.slug }}</a> / {{ flow.repository.name }}',
@@ -42,6 +45,16 @@ angular.module('continuousPipeRiver')
                     'content@': {
                         templateUrl: 'flow/views/tides/list.html',
                         controller: 'FlowTidesController'
+                    }
+                },
+                aside: true
+            })
+            .state('flow.dashboard', {
+                url: '/dashboard',
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/dashboard.html',
+                        controller: 'FlowDashboardController'
                     }
                 },
                 aside: true

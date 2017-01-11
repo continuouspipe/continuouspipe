@@ -1,0 +1,61 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Dashboard</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Start manually" ui-sref="flow.create-tide"><md-icon>play_arrow</md-icon> Start manually</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content" ng-if="isLoading">
+    <remote-resource resource-name="tides"></remote-resource>
+</md-content>
+<md-content flex id="content" ng-if="!isLoading">
+    <md-subheader class="md-primary">Pipelines</md-subheader>
+    <md-card class="pipeline-card" ng-repeat="pipeline in pipelines" ng-class="['status-'+pipeline.lastTides[0].status]">
+        <md-card-content layout="column">
+            <div layout="row">
+                <span class="md-headline">{{ pipeline.name }}</span>
+                <span flex></span>
+                <span>
+                    <i class="cp-icon-git-branch"></i> {{ pipeline.lastTides[0].code_reference.branch }}              
+                    <md-icon>code</md-icon> {{ pipeline.lastTides[0].code_reference.sha1 | limitTo:7 }}
+                    <span>
+                        <md-tooltip md-direction="bottom">{{ pipeline.lastTides[0].creation_date | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+                        <md-icon>schedule</md-icon> {{ pipeline.lastTides[0].creation_date | timeAgo }}
+                    </span>
+                </span>
+            </div>
+            <div layout="row">
+                <span class="status-text" ng-class="['status-'+pipeline.lastTides[0].status]">{{ pipeline.lastTides[0].status }}</span>
+                <span flex></span>
+                <task-list tide="pipeline.lastTides[0]" />
+            </div>
+        </md-card-content>
+    </md-card>
+    
+    <md-subheader class="md-primary">Last 10 tides per pipeline</md-subheader>
+    <ul class="tide-list">
+        <li class="header">
+            <a>
+            <div class="tide-status">Status</div>
+            <div class="tide-source">Source</div>
+            <div class="tide-tasks">Tasks</div>
+            <div class="tide-creation-date">Creation date</div>
+            </a>
+        </li>
+        <li ng-repeat="tide in tides | orderBy: '-creation_date'" ng-class="['status-'+tide.status]">
+            <a ui-sref="tide.logs({tideUuid: tide.uuid})">
+                <div class="tide-status status-text" ng-class="['status-'+tide.status]">{{ tide.status }}</div>
+                <div class="tide-source"><i class="cp-icon-git-branch"></i> <code>{{ tide.code_reference.branch }}</code></div>
+                <div class="tide-tasks">
+                    <task-list tide="tide" />
+                </div>
+                <div class="tide-creation-date">
+                    <md-tooltip md-direction="left">{{ tide.creation_date | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+                    {{ tide.creation_date | timeAgo }}
+                </div>
+            </a>
+        </li>
+    </ul>
+</md-content>

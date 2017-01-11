@@ -9,6 +9,10 @@ $inner-toolbar-background: white;
 $inner-toolbar-color: #6D6D6D;
 $inner-toolbar-button-background: #52A6FF;
 $inner-toolbar-button-color: #fff;
+$inner-background-color-grey: #f2f4f6;
+$border-grey: #a1a1a1;
+$inactive-grey: #a5a5a5;
+$active-grey: #676767;
 
 $logo-size: 40px;
 $header-height: 64px;
@@ -22,6 +26,13 @@ $running-color: #E6F2FB;
 $running-dark-color: #1D8CD9;
 $failure-color: #FDE3E3;
 $failure-dark-color: #F28282;
+
+$skipped-color: $inactive-grey;
+$skipped-dark-color: $active-grey;
+$cancelled-color: #ffb10a;
+$cancelled-dark-color: #966600;
+$pending-color: #e5e5e5;
+$pending-dark-color: #bcbcbc;
 
 .title-text {
     text-transform: uppercase;
@@ -95,7 +106,7 @@ body {
     .md-open-menu-container {
         z-index: 500;
     }
-    
+
     > md-toolbar {
         background: $header-background !important;
         height: 40px;
@@ -130,13 +141,13 @@ body {
                     color: #fff;
                     text-decoration: none;
                 }
-                
+
                 span.branch {
                     background: rgba(255, 255, 255, 0.4);
                     padding: 4px 10px 6px 5px;
                     margin-left: 10px;
                     color: #fff;
-                    
+
                     > md-icon {
                         text-align: center;
                     }
@@ -171,7 +182,7 @@ body {
         }
     }
 
-    md-content {
+    md-content {            
         .error-content {
             padding: 40px;
         }
@@ -186,6 +197,7 @@ body {
         }
 
         &.content {
+            font-size: 14px;
             background: $content-background;
 
             md-content {
@@ -282,7 +294,7 @@ body {
             box-shadow: none;
             border: 1px solid #efefef;
             float: left;
-            
+
             md-card-header {
                 cursor: pointer;
             }
@@ -518,7 +530,7 @@ body {
         .form-variable-container {
             padding-top: 0;
             padding-bottom: 0;
-        
+
             form {
                 padding-top: 0 !important;
                 padding-bottom: 0 !important;
@@ -529,6 +541,153 @@ body {
 
                 .md-button.md-fab {
                     z-index: 1;
+                }
+            }
+        }
+    }
+
+    .pipeline-card {
+        border: 1px solid $pending-dark-color;
+        border-left-width: 5px;
+    }
+
+    ul.tide-list li, .pipeline-card {
+        &.status-success {
+            border-color: $success-dark-color;
+        }
+        &.status-failure {
+            border-color: $failure-dark-color;
+        }
+        &.status-cancelled {
+            border-color: $cancelled-dark-color;
+        }
+        &.status-running {
+            border-color: $running-dark-color;
+        }
+    }
+
+    ul.tide-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+            border-left: 4px solid grey;
+            background: #fff;
+
+            &:nth-child(2n) {
+                background: #fcfcfc;
+            }
+
+            &.header {
+                color: #80868D;
+                text-transform: uppercase;
+                font-weight: bold;
+                background: #F2F4F6;
+                border-bottom: 1px solid #ccc;
+            }
+
+            a {
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: space-between;
+                align-items: center;
+                height: 40px;
+                text-decoration: none;
+                color: #333;
+                padding-left: 10px;
+                border-bottom: 1px solid #efefef;
+
+                &:hover {
+                    background: #efefef;
+                }
+
+                .tide-status {
+                    flex: 0 0 5em;                   
+                }
+                .tide-source {
+                    flex: 1 1 20%;
+                    white-space: nowrap;
+                }
+                .tide-tasks {
+                    flex: 1 1 20%;
+                }
+                .tide-creation-date {
+                    flex: 0 0 10em;                   
+                }
+            }
+            
+            code {
+                font-size: 12px;
+            }
+        }
+    } 
+
+    .task-list {
+        padding: 0px;
+
+        .task {
+            display: inline-block;
+            width: 30px;
+            height: 20px;
+            background: $pending-color;
+            border: 1px solid $pending-dark-color;
+            border-radius: 20px;
+            margin-right: 2px;
+            text-align: center;
+
+            md-icon {
+                font-size: 14px;
+                line-height: 20px;
+                text-align: center;
+            }
+
+            &.status-successful {
+                background: $success-color;
+                border-color: $success-dark-color;
+
+                md-icon {
+                    color: $success-dark-color;
+                }
+            }
+            &.status-failed {
+                background: $failure-color;
+                border-color: $failure-dark-color;
+
+                md-icon {
+                    color: $failure-dark-color;
+                }
+            }
+            &.status-running {
+                background: $running-color;
+                border-color: $running-dark-color;
+
+                md-icon {
+                    color: $running-dark-color;
+                }
+            }
+            &.status-skipped {
+                background: $skipped-color;
+                border-color: $skipped-dark-color;
+
+                md-icon {
+                    color: $skipped-dark-color;
+                }
+            }
+            &.status-cancelled {
+                background: $cancelled-color;
+                border-color: $cancelled-dark-color;
+
+                md-icon {
+                    color: $cancelled-dark-color;
+                }
+            }
+            &.status-pending {
+                background: $pending-color;
+                border-color: $pending-dark-color;
+
+                md-icon {
+                    color: $pending-dark-color;
                 }
             }
         }
@@ -586,3 +745,4 @@ pre.deployment-logs {
     text-align: center;
     padding: 10px;
 }
+

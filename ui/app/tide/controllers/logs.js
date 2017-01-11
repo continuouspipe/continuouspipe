@@ -40,7 +40,7 @@ angular.module('continuousPipeRiver')
                 sha1: tide.code_reference.sha1
             }).then(function(created) {
                 if (created.length > 1) {
-                    $state.go('flow.tides', {
+                    $state.go('flow.dashboard', {
                         uuid: flow.uuid
                     });
                 } else if (created.length == 1) {

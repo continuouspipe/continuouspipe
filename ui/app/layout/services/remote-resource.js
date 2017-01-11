@@ -24,12 +24,14 @@ angular.module('continuousPipeRiver')
                 resource.status = 'loaded';
 
                 // Handle the paginated lists
-                if (result.pagination) {
+                if (result && result.pagination) {
                     resource.more = result.pagination.hasMore;
                     resource.loadMore = function() {
                         return resourceController.load(name, result.pagination.loadMore());
                     };
                 }
+
+                return result;
             }, function(error) {
                 resource.status = 'error';
                 resource.error = $http.getError(error) || 'An error appeared while loading '+name;
