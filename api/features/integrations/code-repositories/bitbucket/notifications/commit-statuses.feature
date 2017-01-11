@@ -23,3 +23,8 @@ Feature:
     Given a tide is created for branch "master" and commit "12345" with a deploy task
     When the tide is successful
     Then the BitBucket build status of the commit "12345" should be successful
+
+  Scenario: The status is stopped when the tide is cancelled
+    Given a tide is created for branch "master" and commit "12345" with a deploy task
+    When the tide is cancelled
+    Then the BitBucket build status of the commit "12345" should be stopped

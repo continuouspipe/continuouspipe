@@ -20,6 +20,11 @@ Feature:
     When the tide is successful
     Then the GitHub commit status should be "success"
 
+  Scenario: Set the failed status when cancelled
+    Given a tide is started with a build task
+    When the tide is cancelled
+    Then the GitHub commit status should be "failure"
+
   Scenario: The description should describe the failure
     Given a tide is started with a build and deploy task
     And the build is failing

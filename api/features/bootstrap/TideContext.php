@@ -565,6 +565,16 @@ EOF;
     }
 
     /**
+     * @When the tide is cancelled
+     */
+    public function theTideIsCancelled()
+    {
+        $this->commandBus->handle(new CancelTideCommand(
+            $this->tideUuid
+        ));
+    }
+
+    /**
      * @Then the tide should be created
      */
     public function theTideShouldBeCreated()
