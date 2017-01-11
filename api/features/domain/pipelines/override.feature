@@ -12,6 +12,12 @@ Feature:
     And there is 1 application images in the repository
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
+    variables:
+        - name: RICHARD
+          value: MILLER
+        - name: BAR_VALUE
+          value: bar
+
     defaults:
         environment:
             name: '"ui-" ~ code_reference.branch'
@@ -30,7 +36,9 @@ Feature:
                                 - name: FOO
                                   value: foo
                                 - name: BAR
-                                  value: bar
+                                  value: ${BAR_VALUE}
+                                - name: RICHARD
+                                  value: ${RICHARD}
                     database:
                         specification:
                             source:
@@ -47,11 +55,13 @@ Feature:
                             specification:
                                 environment_variables:
                                     - name: FOO
-                                      value: bar
-
+                                      value: ${BAR_VALUE}
 
         - name: Only the branches
           condition: code_reference.branch != 'master'
+          variables:
+              - name: RICHARD
+                value: JONES
           tasks:
               - imports: deployment
                 deploy:
@@ -92,3 +102,19 @@ Feature:
     And the tide for the branch "feature/my-branch" and commit "9012" is tentatively started
     Then a tide should be created
     And the component "app" should be deployed as accessible from outside
+
+  Scenario: It is using variables normally
+    When I send a tide creation request for branch "master" and commit "5678"
+    And the tide for the branch "master" and commit "5678" is tentatively started
+    Then a tide should be created
+    And the component "app" should be deployed with the following environment variables:
+      | name    | value  |
+      | RICHARD | MILLER |
+
+  Scenario: It can override some variables
+    When I send a tide creation request for branch "a-feature" and commit "5678"
+    And the tide for the branch "a-feature" and commit "5678" is tentatively started
+    Then a tide should be created
+    And the component "app" should be deployed with the following environment variables:
+      | name    | value  |
+      | RICHARD | JONES  |

@@ -51,18 +51,27 @@
                 <argument type="service" id="river.tide.configuration_enhancer.deploy.get_images_name_from_built_services" />
             </argument>
             <argument type="collection">
-                <argument type="service" id="river.tide.configuration_finalizer.merge_environment_variables" />
-                <argument type="service" id="river.tide.configuration_finalizer.replace_environ_values" />
+                <argument type="service" id="river.tide.configuration_finalizer.merge_environment_variables_of_tasks" />
                 <argument type="service" id="river.pipeline.tide_configuration_finalizer.create_default_pipeline" />
                 <argument type="service" id="river.pipeline.tide_configuration_finalizer.import_pipeline_configuration" />
+                <argument type="service" id="river.tide.configuration_finalizer.merge_environment_variables_of_pipelines" />
+                <argument type="service" id="river.tide.configuration_finalizer.replace_environ_values" />
             </argument>
         </service>
 
-        <service id="river.tide.configuration_finalizer.merge_environment_variables"
+        <service id="river.tide.configuration_finalizer.merge_environment_variables_of_tasks"
                  class="ContinuousPipe\River\Flow\ConfigurationFinalizer\MergeEnvironmentVariables">
             <argument type="collection">
                 <argument>[variables]</argument>
                 <argument>[tasks][*][deploy][services][*][specification][environment_variables]</argument>
+            </argument>
+        </service>
+
+        <service id="river.tide.configuration_finalizer.merge_environment_variables_of_pipelines"
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\MergeEnvironmentVariables">
+            <argument type="collection">
+                <argument>[pipelines][*][variables]</argument>
+                <argument>[pipelines][*][tasks][*][deploy][services][*][specification][environment_variables]</argument>
             </argument>
         </service>
 

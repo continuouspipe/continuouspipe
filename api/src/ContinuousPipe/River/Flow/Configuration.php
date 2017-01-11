@@ -200,6 +200,7 @@ class Configuration implements ConfigurationInterface
                 ->children()
                     ->scalarNode('name')->isRequired()->end()
                     ->scalarNode('condition')->end()
+                    ->append(self::getVariablesNode('variables'))
                     ->node('tasks', 'key-indexed-array')
                         ->isRequired()
                         ->prototype('array')

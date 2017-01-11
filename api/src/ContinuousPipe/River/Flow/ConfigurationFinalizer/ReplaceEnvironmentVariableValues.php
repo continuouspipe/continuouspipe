@@ -17,9 +17,17 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
      */
     public function finalize(FlatFlow $flow, CodeReference $codeReference, array $configuration)
     {
-        $variables = $this->resolveVariables($configuration, $this->createContext($flow, $codeReference));
+        // Replace the pipeline variables first
+        foreach ($configuration['pipelines'] as &$pipeline) {
+            $variables = $this->resolveVariables($pipeline, $this->createContext($flow, $codeReference));
+            $pipeline = self::replaceValues($pipeline, $variables);
+        }
 
-        return self::replaceValues($configuration, $variables);
+        // Replace the tasks variables
+        $variables = $this->resolveVariables($configuration, $this->createContext($flow, $codeReference));
+        $configuration = self::replaceValues($configuration, $variables);
+
+        return $configuration;
     }
 
     /**
