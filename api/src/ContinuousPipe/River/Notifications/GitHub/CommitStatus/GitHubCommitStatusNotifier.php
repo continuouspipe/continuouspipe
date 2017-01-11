@@ -39,7 +39,7 @@ class GitHubCommitStatusNotifier implements Notifier
      */
     public function notify(Tide $tide, Status $status, array $configuration)
     {
-        if (array_key_exists('github_commit_status', $configuration) && false === $configuration['github_commit_status']) {
+        if (array_key_exists('commit', $configuration) && false === $configuration['commit']) {
             return;
         }
 

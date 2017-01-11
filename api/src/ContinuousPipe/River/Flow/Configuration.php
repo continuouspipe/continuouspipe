@@ -147,14 +147,35 @@ class Configuration implements ConfigurationInterface
         $node
             ->useAttributeAsKey('name')
             ->prototype('array')
+                ->beforeNormalization()
+                    ->always(function (array $config) {
+                        if (isset($config['github_commit_status']) && !isset($config['commit'])) {
+                            // move existing values to the right key
+                            $config['commit'] = $config['github_commit_status'];
+
+                            // remove invalid key
+                            unset($config['github_commit_status']);
+                        }
+
+                        if (isset($config['github_pull_request']) && !isset($config['pull_request'])) {
+                            // move existing values to the right key
+                            $config['pull_request'] = $config['github_pull_request'];
+
+                            // remove invalid key
+                            unset($config['github_pull_request']);
+                        }
+
+                        return $config;
+                    })
+                ->end()
                 ->children()
                     ->arrayNode('slack')
                         ->children()
                             ->scalarNode('webhook_url')->isRequired()->end()
                         ->end()
                     ->end()
-                    ->booleanNode('github_commit_status')->end()
-                    ->booleanNode('github_pull_request')->end()
+                    ->booleanNode('commit')->end()
+                    ->booleanNode('pull_request')->end()
                     ->arrayNode('when')
                         ->defaultValue(['success', 'failure', 'running', 'pending'])
                         ->prototype('scalar')->end()

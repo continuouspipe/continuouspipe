@@ -35,6 +35,10 @@ class ImportPipelineConfiguration implements ConfigurationFinalizer
         $tasksConfigurationDefinition->setupTasksPrototype($node);
 
         foreach ($configuration['pipelines'] as &$pipeline) {
+            if (!isset($pipeline['tasks'])) {
+                continue;
+            }
+
             foreach ($pipeline['tasks'] as &$task) {
                 if (!isset($task['imports'])) {
                     continue;
