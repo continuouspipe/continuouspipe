@@ -27,8 +27,8 @@ $running-dark-color: #1D8CD9;
 $failure-color: #FDE3E3;
 $failure-dark-color: #F28282;
 
-$skipped-color: $active-grey;
-$skipped-dark-color: $inactive-grey;
+$skipped-color: $inactive-grey;
+$skipped-dark-color: $active-grey;
 $cancelled-color: #ffb10a;
 $cancelled-dark-color: #966600;
 $pending-color: #e5e5e5;
@@ -182,7 +182,7 @@ body {
         }
     }
 
-    md-content {
+    md-content {            
         .error-content {
             padding: 40px;
         }
@@ -197,6 +197,7 @@ body {
         }
 
         &.content {
+            font-size: 14px;
             background: $content-background;
 
             md-content {
@@ -566,31 +567,43 @@ body {
     }
 
     ul.tide-list {
-        margin: 10px;
+        margin: 0;
         padding: 0;
         list-style: none;
 
         li {
             border-left: 4px solid grey;
-            margin-bottom: 10px;
+            background: #fff;
+
+            &:nth-child(2n) {
+                background: #fcfcfc;
+            }
+
+            &.header {
+                color: #80868D;
+                text-transform: uppercase;
+                font-weight: bold;
+                background: #F2F4F6;
+                border-bottom: 1px solid #ccc;
+            }
 
             a {
                 display: flex;
                 flex-flow: row nowrap;
                 justify-content: space-between;
                 align-items: center;
-                height: 34px;
+                height: 40px;
                 text-decoration: none;
                 color: #333;
                 padding-left: 10px;
-                background: #fff;
+                border-bottom: 1px solid #efefef;
 
                 &:hover {
                     background: #efefef;
                 }
 
                 .tide-status {
-                    flex: 0 0 4em;                   
+                    flex: 0 0 5em;                   
                 }
                 .tide-source {
                     flex: 1 1 20%;
@@ -603,43 +616,79 @@ body {
                     flex: 0 0 10em;                   
                 }
             }
+            
+            code {
+                font-size: 12px;
+            }
         }
     } 
 
     .task-list {
-        padding: 10px;
+        padding: 0px;
 
         .task {
             display: inline-block;
-            width: 50px;
-            height: 25px;
-
+            width: 30px;
+            height: 20px;
             background: $pending-color;
             border: 1px solid $pending-dark-color;
+            border-radius: 20px;
+            margin-right: 2px;
+            text-align: center;
+
+            md-icon {
+                font-size: 14px;
+                line-height: 20px;
+                text-align: center;
+            }
 
             &.status-successful {
                 background: $success-color;
                 border-color: $success-dark-color;
+
+                md-icon {
+                    color: $success-dark-color;
+                }
             }
             &.status-failed {
                 background: $failure-color;
                 border-color: $failure-dark-color;
+
+                md-icon {
+                    color: $failure-dark-color;
+                }
             }
             &.status-running {
                 background: $running-color;
                 border-color: $running-dark-color;
+
+                md-icon {
+                    color: $running-dark-color;
+                }
             }
             &.status-skipped {
                 background: $skipped-color;
                 border-color: $skipped-dark-color;
+
+                md-icon {
+                    color: $skipped-dark-color;
+                }
             }
             &.status-cancelled {
                 background: $cancelled-color;
                 border-color: $cancelled-dark-color;
+
+                md-icon {
+                    color: $cancelled-dark-color;
+                }
             }
             &.status-pending {
                 background: $pending-color;
                 border-color: $pending-dark-color;
+
+                md-icon {
+                    color: $pending-dark-color;
+                }
             }
         }
     }
