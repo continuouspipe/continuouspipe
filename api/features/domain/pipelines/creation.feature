@@ -173,3 +173,36 @@ Feature:
     And the tide should have the task "images"
     And the tide should have the task "deployment"
     And the tide should not have the task "tests"
+
+  Scenario: It should keep the tasks' filter
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        first:
+            filter:
+                expression: code_reference.branch != 'master'
+
+            run:
+                cluster: foo
+                image: busybox
+                commands:
+                    - echo first
+
+        second:
+            run:
+                cluster: foo
+                image: busybox
+                commands:
+                    - echo second
+
+    pipelines:
+        - name: To master
+          condition: code_reference.branch == 'master'
+          tasks:
+              - first
+              - second
+    """
+    When I send a tide creation request for branch "master" and commit "1234"
+    And the tide starts
+    Then the task named "first" should be skipped
+    And the task named "second" should be running
