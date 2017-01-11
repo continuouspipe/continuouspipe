@@ -1,10 +1,6 @@
 <md-menu-content>
     <md-menu-item>
-        <md-button ui-sref-active="selected" ui-sref="flow.pipeline"><md-icon>all_inclusive</md-icon> Pipeline</md-button>
-        <md-menu>
-            <md-menu-item ng-repeat="pipeline in flow.pipelines" ui-sref-active="selected" ui-sref="flow.pipeline({pipeline: pipeline.uuid})"><md-button >Default pipeline</md-button></md-menu-item>
-            <md-menu-item><md-button>My other pipeline</md-button></md-menu-item>
-        </md-menu>
+        <md-button ui-sref-active="selected" ui-sref="flow.dashboard"><md-icon>dashboard</md-icon> Overview</md-button>
     </md-menu-item>
     <md-menu-item>
         <md-button ui-sref-active="selected" ui-sref="flow.tides"><md-icon>reorder</md-icon> Tides</md-button>

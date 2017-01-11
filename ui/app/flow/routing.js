@@ -49,25 +49,12 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
-            .state('flow.pipeline', {
-                url: '/pipeline/:pipeline',
+            .state('flow.dashboard', {
+                url: '/dashboard',
                 views: {
                     'content@': {
-                        templateUrl: 'flow/views/pipeline/tides.html',
-                        controller: 'FlowPipelineController'
-                    }
-                },
-                resolve: {
-                    pipeline: function($stateParams, flow) {
-                        var matchingPipelines = flow.pipelines.filter(function(pipeline) {
-                            return pipeline.uuid == $stateParams.pipeline;
-                        });
-
-                        if (matchingPipelines.length == 1) {
-                            return matchingPipelines[0];
-                        }
-
-                        return $q.reject(new Error('Pipeline not found'));
+                        templateUrl: 'flow/views/dashboard.html',
+                        controller: 'FlowDashboardController'
                     }
                 },
                 aside: true

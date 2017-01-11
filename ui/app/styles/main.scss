@@ -26,15 +26,13 @@ $running-color: #E6F2FB;
 $running-dark-color: #1D8CD9;
 $failure-color: #FDE3E3;
 $failure-dark-color: #F28282;
-$pipeline-success-color: #3d9e47;
-$pipeline-failure-color: #222732;
-$pending-color: #1075AD;
-$success-tide-color: #ebf5ec;
-$success-tide-color-even: #d3dcd4;
-$failure-tide-color: #fdecec;
-$failure-tide-color-even: #e3d4d4;
-$pending-tide-color: #cfe3ee;
-$pending-tide-color-even: #baccd6;
+
+$skipped-color: $active-grey;
+$skipped-dark-color: $inactive-grey;
+$cancelled-color: #ffb10a;
+$cancelled-dark-color: #966600;
+$pending-color: #e5e5e5;
+$pending-dark-color: #bcbcbc;
 
 .title-text {
     text-transform: uppercase;
@@ -546,6 +544,105 @@ body {
             }
         }
     }
+
+    .pipeline-card {
+        border: 1px solid $pending-dark-color;
+        border-left-width: 5px;
+    }
+
+    ul.tide-list li, .pipeline-card {
+        &.status-success {
+            border-color: $success-dark-color;
+        }
+        &.status-failure {
+            border-color: $failure-dark-color;
+        }
+        &.status-cancelled {
+            border-color: $cancelled-dark-color;
+        }
+        &.status-running {
+            border-color: $running-dark-color;
+        }
+    }
+
+    ul.tide-list {
+        margin: 10px;
+        padding: 0;
+        list-style: none;
+
+        li {
+            border-left: 4px solid grey;
+            margin-bottom: 10px;
+
+            a {
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: space-between;
+                align-items: center;
+                height: 34px;
+                text-decoration: none;
+                color: #333;
+                padding-left: 10px;
+                background: #fff;
+
+                &:hover {
+                    background: #efefef;
+                }
+
+                .tide-status {
+                    flex: 0 0 4em;                   
+                }
+                .tide-source {
+                    flex: 1 1 20%;
+                    white-space: nowrap;
+                }
+                .tide-tasks {
+                    flex: 1 1 20%;
+                }
+                .tide-creation-date {
+                    flex: 0 0 10em;                   
+                }
+            }
+        }
+    } 
+
+    .task-list {
+        padding: 10px;
+
+        .task {
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+
+            background: $pending-color;
+            border: 1px solid $pending-dark-color;
+
+            &.status-successful {
+                background: $success-color;
+                border-color: $success-dark-color;
+            }
+            &.status-failed {
+                background: $failure-color;
+                border-color: $failure-dark-color;
+            }
+            &.status-running {
+                background: $running-color;
+                border-color: $running-dark-color;
+            }
+            &.status-skipped {
+                background: $skipped-color;
+                border-color: $skipped-dark-color;
+            }
+            &.status-cancelled {
+                background: $cancelled-color;
+                border-color: $cancelled-dark-color;
+            }
+            &.status-pending {
+                background: $pending-color;
+                border-color: $pending-dark-color;
+            }
+        }
+    }
 }
 
 $loader-color: rgb(66, 133, 244);
@@ -600,129 +697,3 @@ pre.deployment-logs {
     padding: 10px;
 }
 
-.cp-pipeline-content {
-    margin-top: 20px;
-    width: 100%;
-}
-.cp-pipeline_flex {
-    display: flex;
-    flex-direction: row;
-    background-color: $inner-toolbar-background;
-    margin-bottom: 0;
-    text-align: center;
-    overflow: scroll;
-    font-size: 0.8em;
-}
-
-.even{
-  background-color: #f8f9fa;
-}
-
-.cp-pipeline_flex-item {
-    padding: 0 10px;
-
-    &.--tide {
-
-    }
-
-    &.--task {
-        min-width: 250px;
-        position: relative;
-
-      &::after {
-          content: 'keyboard_arrow_right';
-          font-family: "Material Icons";
-          font-size: 50px;
-          color: $active-grey;
-          position: absolute;
-          top: 50%;
-          margin-top: -25px;
-          right: 5px;
-      }
-
-      &:last-child::after{
-         content: "";
-      }
-    }
-}
-
-.cp-pipeline-item_content {
-   padding: 0 50px 35px 0;
-   position: relative;
-
-  & md-icon {
-      right: 70px;
-      font-size: 30px;
-  }
-}
-
-.cp-pipeline-status-successful,
-.cp-pipeline-status-success {
-    color: $pipeline-success-color;
-
-  &::after {
-      position: relative;
-      top: 5px;
-      content: 'check_box';
-      color: $pipeline-success-color;
-  }
-}
-
-.cp-pipeline-status-pending {
-    color: $pending-color;
-
-  &::after {
-      position: relative;
-      top: 5px;
-      content: 'autorenew';
-      color: $pending-color;
-  }
-}
-
-.cp-pipeline-status-failure,
-.cp-pipeline-status-failed {
-    color: $failure-dark-color;
-
-  &::after {
-      position: relative;
-      top: 5px;
-      content: 'error';
-      color: $failure-dark-color;
-  }
-}
-
-.tasks--status-skipped {
-    color: $inactive-grey;
-    md-icon {
-      color: $inactive-grey;
-    }
-}
-
-.cp-pipeline-title {
-    &::after {
-       font-family: "Material Icons";
-       font-size: 20px;
-       padding: 5px 0 0 5px;
-    }
-}
-
-.cp-pipeline-tide-status-failure {
-  background-color: $failure-tide-color;
-  &.even {
-    background-color: $failure-tide-color-even;
-  }
-}
-
-.cp-pipeline-tide-status-success {
-  background-color: $success-tide-color;
-  &.even {
-    background-color: $success-tide-color-even;
-  }
-}
-
-.cp-pipeline-tide-status-pending {
-  background-color: $pending-tide-color;
-  &.even {
-    background-color: $pending-tide-color-even;
-  }
-}
