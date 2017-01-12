@@ -16,6 +16,7 @@ class BuilderExtension extends Extension
     {
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('build.xml');
+        $loader->load('build-step.xml');
         $loader->load('builder.xml');
         $loader->load('docker.xml');
         $loader->load('github.xml');

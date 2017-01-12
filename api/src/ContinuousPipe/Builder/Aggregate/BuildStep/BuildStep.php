@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Builder\Aggregate;
+namespace ContinuousPipe\Builder\Aggregate\BuildStep;
 
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\DockerImageBuilt;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed;
@@ -20,20 +20,31 @@ class BuildStep
      * @var int
      */
     private $position;
+
     /**
      * @var BuildStepConfiguration
      */
     private $configuration;
+
     /**
      * @var string
      */
     private $buildIdentifier;
 
-    public function __construct(string $buildIdentifier, int $position, BuildStepConfiguration $configuration)
+    private function __construct()
     {
-        $this->position = $position;
-        $this->configuration = $configuration;
-        $this->buildIdentifier = $buildIdentifier;
+    }
+
+    public static function create(string $buildIdentifier, int $position, BuildStepConfiguration $configuration)
+    {
+        $build = new self();
+        $build->raise(new StepStarted(
+            $buildIdentifier,
+            $position,
+            $configuration
+        ));
+
+        return $build;
     }
 
     public function start()
@@ -74,4 +85,14 @@ class BuildStep
             ));
         }
     }
+
+    public function applyStepStarted(StepStarted $event)
+    {
+        $this->buildIdentifier = $event->getBuildIdentifier();
+        $this->position = $event->getStepPosition();
+        $this->configuration = $event->getStepConfiguration();
+    }
+
+    private function applyDockerImageBuilt()
+    {}
 }

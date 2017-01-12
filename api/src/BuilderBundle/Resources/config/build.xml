@@ -47,13 +47,5 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFinished" />
         </service>
-
-        <service id="builder.build_step_saga" class="ContinuousPipe\Builder\Aggregate\BuildStepSaga">
-            <argument type="service" id="builder.builder" />
-            <argument type="service" id="builder.build.transaction_manager" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepStarted" />
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\DockerImageBuilt" />
-        </service>
     </services>
 </container>

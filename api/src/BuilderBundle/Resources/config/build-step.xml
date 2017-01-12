@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Events storage -->
+        <service id="builder.build_step.event_store" class="ContinuousPipe\Events\EventStore\InMemoryEventStore" />
+        <service id="builder.build_step.event_stream_resolver" class="ContinuousPipe\Builder\Aggregate\BuildStep\FromEvents\BuildStepEventStreamResolver" />
+
+        <!-- Event bus -->
+        <service id="builder.event_bus.middleware.build_step_event_store" class="ContinuousPipe\Events\SimpleBus\StoreEventsMiddleware">
+            <argument type="service" id="builder.build_step.event_store" />
+            <argument type="service" id="builder.build_step.event_stream_resolver" />
+
+            <tag name="event_bus_middleware" priority="10" />
+        </service>
+
+        <!-- Aggregate -->
+        <service id="builder.build_step.repository" class="ContinuousPipe\Builder\Aggregate\BuildStep\FromEvents\FromEventsBuildStepRepository">
+            <argument type="service" id="builder.build_step.event_store" />
+        </service>
+
+        <!-- Saga -->
+        <service id="builder.build_step_saga" class="ContinuousPipe\Builder\Aggregate\BuildStep\BuildStepSaga">
+            <argument type="service" id="builder.builder" />
+            <argument type="service" id="builder.build_step.repository" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepStarted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\DockerImageBuilt" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildStepStarted" />
+        </service>
+    </services>
+</container>

@@ -5,12 +5,16 @@ namespace ContinuousPipe\Builder\Aggregate\BuildStep\Event;
 use ContinuousPipe\Builder\Aggregate\Event\BuildEvent;
 use ContinuousPipe\Builder\BuildStepConfiguration;
 
-abstract class StepEvent extends BuildEvent
+abstract class StepEvent
 {
     /**
      * @var int
      */
     private $stepPosition;
+    /**
+     * @var string
+     */
+    private $buildIdentifier;
 
     /**
      * @param string $buildIdentifier
@@ -18,9 +22,8 @@ abstract class StepEvent extends BuildEvent
      */
     public function __construct(string $buildIdentifier, int $stepPosition)
     {
-        parent::__construct($buildIdentifier);
-
         $this->stepPosition = $stepPosition;
+        $this->buildIdentifier = $buildIdentifier;
     }
 
     /**
@@ -29,5 +32,13 @@ abstract class StepEvent extends BuildEvent
     public function getStepPosition(): int
     {
         return $this->stepPosition;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBuildIdentifier(): string
+    {
+        return $this->buildIdentifier;
     }
 }
