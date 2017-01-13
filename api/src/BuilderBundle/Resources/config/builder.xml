@@ -70,15 +70,6 @@
             </argument>
         </service>
 
-        <!-- TBR -->
-        <service id="builder.builder" class="ContinuousPipe\Builder\Docker\DockerBuilder">
-            <argument type="service" id="builder.archive_builder" />
-            <argument type="service" id="builder.docker.client" />
-            <argument type="service" id="builder.docker.authenticator_credentials_repository" />
-            <argument type="service" id="builder.command_extractor" />
-            <argument type="service" id="log_stream.logger_factory" />
-        </service>
-
         <!-- Notification(s) -->
         <service id="builder.listener.notification_when_finished" class="ContinuousPipe\Builder\EventListener\SendNotificationWhenBuildFinishes">
             <argument type="service" id="builder.notifier" />

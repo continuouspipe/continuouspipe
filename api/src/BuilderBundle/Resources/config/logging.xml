@@ -11,11 +11,5 @@
             <argument type="service" id="builder.docker.logged_client.inner" />
             <argument type="service" id="log_stream.logger_factory" />
         </service>
-
-        <service id="builder.logged_builder"
-                 class="ContinuousPipe\Builder\Logging\Docker\LoggedDockerBuilder"
-                 decorates="builder.builder">
-            <argument type="service" id="builder.logged_builder.inner" />
-        </service>
     </services>
 </container>
