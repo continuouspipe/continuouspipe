@@ -202,6 +202,11 @@
             <argument>%locker_timeout%</argument>
         </service>
         <service id="river.tide.concurrency.locker" alias="river.tide.concurrency.locker.predis_locker" />
+        <service id="river.tide.concurrency.locker.prevent_deep_locking"
+                 class="ContinuousPipe\River\Tide\Concurrency\Lock\PreventDeepLocking"
+                 decorates="river.tide.concurrency.locker">
+            <argument type="service" id="river.tide.concurrency.locker.prevent_deep_locking.inner" />
+        </service>
 
         <service id="river.tide.transaction_manager.pessimistic_locking"
                  class="ContinuousPipe\River\Tide\Concurrency\PessimisticTransactionManager"
