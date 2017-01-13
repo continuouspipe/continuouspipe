@@ -113,5 +113,5 @@ Feature:
       | build3 | build  | {}            |
     When the first build task succeed
     Then the task named "build1" should be successful
-    Then the task named "build2" should be running
-    Then the task named "build3" should be pending
+    And the task named "build2" should be running
+    And the task named "build3" should be pending
