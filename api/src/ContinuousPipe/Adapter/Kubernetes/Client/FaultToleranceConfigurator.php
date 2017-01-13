@@ -30,7 +30,7 @@ class FaultToleranceConfigurator
      */
     private function getRetryDecider() : callable
     {
-        $maxRetries = 5;
+        $maxTries = 5;
 
         return
             function (
@@ -38,9 +38,9 @@ class FaultToleranceConfigurator
                 RequestInterface $request,
                 ResponseInterface $response = null,
                 RequestException $exception = null
-            ) use ($maxRetries) : bool
+            ) use ($maxTries) : bool
             {
-                if ($retries >= $maxRetries) {
+                if ($retries + 1 >= $maxTries) {
                     return false;
                 }
                 return null == $response || $response->getStatusCode() >= 500;
