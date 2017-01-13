@@ -227,3 +227,16 @@ Feature:
     When I send a tide creation request for branch "cpdev-user" and commit "1234"
     And the tide starts
     And the task named "first" should be running
+
+  Scenario: It creates a tide when no valid configuration is found
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        first:
+            run:
+                cluster: foo
+                this_is_not_valid: true
+    """
+    When I send a tide creation request for branch "master" and commit "1234"
+    Then a tide should be created
+    And the tide should be failed

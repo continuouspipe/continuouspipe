@@ -79,16 +79,16 @@ class ConfigurationFactory implements TideConfigurationFactory
             $configs = $enhancer->enhance($flow, $codeReference, $configs);
         }
 
-        // Create the normalized configuration
-        $configTree = (new Configuration($this->taskFactoryRegistry))->getConfigTreeBuilder()->buildTree();
-        $configuration = $this->mergeConfigurations($configTree, $configs);
-
-        // Enhance this configuration as much as possible
-        foreach ($this->configurationFinalizers as $finalizer) {
-            $configuration = $finalizer->finalize($flow, $codeReference, $configuration);
-        }
-
         try {
+            // Create the normalized configuration
+            $configTree = (new Configuration($this->taskFactoryRegistry))->getConfigTreeBuilder()->buildTree();
+            $configuration = $this->mergeConfigurations($configTree, $configs);
+
+            // Enhance this configuration as much as possible
+            foreach ($this->configurationFinalizers as $finalizer) {
+                $configuration = $finalizer->finalize($flow, $codeReference, $configuration);
+            }
+
             $configuration = $configTree->finalize($configuration);
         } catch (InvalidConfigurationException $e) {
             throw new TideConfigurationException($e->getMessage(), 0, $e);
