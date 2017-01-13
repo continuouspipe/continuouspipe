@@ -5,8 +5,11 @@ namespace ContinuousPipe\Builder;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
+use LogStream\Log;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class BuildRequestCreator
 {
@@ -18,30 +21,47 @@ class BuildRequestCreator
      * @var BuildRequestSourceResolver
      */
     private $buildRequestSourceResolver;
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGenerator;
+    /**
+     * @var string
+     */
+    private $riverHostname;
 
     /**
-     * @param LoggerInterface            $logger
+     * @param LoggerInterface $logger
      * @param BuildRequestSourceResolver $buildRequestSourceResolver
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param string $riverHostname
      */
-    public function __construct(LoggerInterface $logger, BuildRequestSourceResolver $buildRequestSourceResolver)
+    public function __construct(LoggerInterface $logger, BuildRequestSourceResolver $buildRequestSourceResolver, UrlGeneratorInterface $urlGenerator, string $riverHostname)
     {
         $this->logger = $logger;
         $this->buildRequestSourceResolver = $buildRequestSourceResolver;
+        $this->urlGenerator = $urlGenerator;
+        $this->riverHostname = $riverHostname;
     }
 
     /**
-     * @param CodeReference          $codeReference
+     * @param CodeReference $codeReference
      * @param BuildTaskConfiguration $configuration
-     * @param Uuid                   $credentialsBucketUuid
+     * @param Uuid $credentialsBucketUuid
+     * @param Log $parentLog
      *
-     * @return Request\BuildRequest[]
+     * @return BuildRequest[]
      */
-    public function createBuildRequests(CodeReference $codeReference, BuildTaskConfiguration $configuration, Uuid $credentialsBucketUuid)
+    public function createBuildRequests(UuidInterface $tideUuid, CodeReference $codeReference, BuildTaskConfiguration $configuration, Uuid $credentialsBucketUuid, Log $parentLog)
     {
         $this->logger->info('Creating build requests', [
             'codeReference' => $codeReference,
             'configuration' => $configuration,
         ]);
+
+        $address = 'https://'.$this->riverHostname.$this->urlGenerator->generate('builder_notification_post', [
+            'tideUuid' => (string) $tideUuid,
+        ], UrlGeneratorInterface::ABSOLUTE_PATH);
 
         $buildRequests = [];
         foreach ($configuration->getServices() as $serviceName => $service) {
@@ -53,7 +73,8 @@ class BuildRequestCreator
                     $service->getDockerFilePath(),
                     $service->getBuildDirectory()
                 ),
-                null, null,
+                Notification::withHttp(HttpNotification::fromAddress($address)),
+                Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLog->getId())),
                 $service->getEnvironment(),
                 $credentialsBucketUuid
             );

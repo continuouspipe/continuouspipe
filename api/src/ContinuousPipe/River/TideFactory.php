@@ -172,7 +172,7 @@ class TideFactory
      */
     private function getTaskType(string $taskId, array $taskConfig) : string
     {
-        $matching = array_filter(array_keys($taskConfig), function(string $key) {
+        $matching = array_filter(array_keys($taskConfig), function (string $key) {
             return !in_array($key, ['filter', 'identifier']);
         });
 

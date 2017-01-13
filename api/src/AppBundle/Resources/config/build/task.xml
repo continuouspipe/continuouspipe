@@ -13,20 +13,11 @@
             <tag name="river.task_factory" task="build" />
         </service>
 
-        <service id="river.handler.build_image" class="ContinuousPipe\River\Task\Build\Handler\BuildImageHandler">
-            <argument type="service" id="builder.client" />
-            <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="simple_bus.event_bus" />
-            <argument type="service" id="router" />
-            <argument type="service" id="logger" />
-            <argument>%river_host%</argument>
-
-            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Task\Build\Command\BuildImageCommand" />
-        </service>
-
         <service id="river.task.build.saga" class="ContinuousPipe\River\Task\Build\BuildSaga">
             <argument type="service" id="river.tide.transaction_manager" />
+            <argument type="service" id="builder.client"/>
 
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted" />
             <tag name="command_handler" handles="ContinuousPipe\River\Task\Build\Command\ReceiveBuildNotification" />
         </service>
 

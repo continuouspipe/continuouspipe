@@ -30,6 +30,8 @@
         <service id="builder.build_request_creator" class="ContinuousPipe\Builder\BuildRequestCreator">
             <argument type="service" id="logger" />
             <argument type="service" id="builder.build_request_source_resolver" />
+            <argument type="service" id="router" />
+            <argument>%river_host%</argument>
         </service>
     </services>
 </container>
