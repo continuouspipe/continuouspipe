@@ -4,6 +4,7 @@ namespace ContinuousPipe\Builder\Aggregate;
 
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFinished;
+use ContinuousPipe\Builder\Aggregate\Event\BuildStarted;
 use ContinuousPipe\Events\Transaction\TransactionManager;
 
 class BuildSaga
@@ -24,7 +25,7 @@ class BuildSaga
             $this->transactionManager->apply($event->getBuildIdentifier(), function (Build $build) {
                 $build->fail();
             });
-        } elseif ($event instanceof StepFinished) {
+        } elseif ($event instanceof StepFinished || $event instanceof BuildStarted) {
             $this->transactionManager->apply($event->getBuildIdentifier(), function (Build $build) use ($event) {
                 $build->nextStep();
             });

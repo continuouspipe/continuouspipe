@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Article\TraceableArchiveBuilder;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
+use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Notifier\HookableNotifier;
 use ContinuousPipe\Builder\Notifier\NotificationException;
@@ -14,6 +15,7 @@ use ContinuousPipe\Builder\Notifier\TraceableNotifier;
 use ContinuousPipe\Builder\Repository;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
+use ContinuousPipe\Builder\Tests\Docker\TraceableDockerDockerFacade;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
@@ -286,9 +288,9 @@ EOF;
      */
     public function theArchiveShouldBeDownloadedUsingTheToken($token)
     {
-        $requests = $this->traceableArchiveBuilder->getRequests();
-        $matchingRequests = array_filter($requests, function(BuildRequest $request) use ($token) {
-            return $request->getRepository()->getToken() == $token;
+        $requests = $this->traceableArchiveBuilder->getSteps();
+        $matchingRequests = array_filter($requests, function(BuildStepConfiguration $step) use ($token) {
+            return $step->getRepository()->getToken() == $token;
         });
 
         if (count($matchingRequests) == 0) {

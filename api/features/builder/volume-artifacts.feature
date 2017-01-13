@@ -11,7 +11,7 @@ Feature:
       | identifier | token |
       | sroze      | 12345 |
 
-  @integration
+  @integration @wip
   Scenario: I use a build container
     When I send the following build request:
     """

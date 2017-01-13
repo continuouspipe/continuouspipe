@@ -18,14 +18,18 @@ Feature:
     When I send the following build request:
     """
     {
-      "image": {
-        "name": "sroze/php-example",
-        "tag": "continuous"
-      },
-      "repository": {
-        "address": "fixtures://php-example",
-        "branch": "747850e8c821a443a7b5cee28a48581069049739"
-      },
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "continuous"
+          },
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "747850e8c821a443a7b5cee28a48581069049739"
+          }
+        }
+      ],
       "credentialsBucket": "00000000-0000-0000-0000-000000000000"
     }
     """
@@ -37,16 +41,19 @@ Feature:
     When I send the following build request:
     """
     {
-      "image": {
-        "name": "sroze/php-example",
-        "tag": "continuous"
-      },
-      "repository": {
-        "address": "fixtures://php-example",
-        "branch": "747850e8c821a443a7b5cee28a48581069049739"
-      },
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "continuous"
+          },
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "747850e8c821a443a7b5cee28a48581069049739"
+          }
+        }
+      ],
       "credentialsBucket": "00000000-0000-0000-0000-000000000000"
     }
     """
     Then the build should be errored
-    And the image "sroze/php-example:continuous" should be built

@@ -22,7 +22,7 @@ class DockerBuilder implements Builder
     private $archiveBuilder;
 
     /**
-     * @var Client
+     * @var DockerFacade
      */
     private $dockerClient;
 
@@ -43,12 +43,12 @@ class DockerBuilder implements Builder
 
     /**
      * @param ArchiveBuilder        $archiveBuilder
-     * @param Client                $dockerClient
+     * @param DockerFacade                $dockerClient
      * @param CredentialsRepository $credentialsRepository
      * @param CommandExtractor      $commandExtractor
      * @param LoggerFactory         $loggerFactory
      */
-    public function __construct(ArchiveBuilder $archiveBuilder, Client $dockerClient, CredentialsRepository $credentialsRepository, CommandExtractor $commandExtractor, LoggerFactory $loggerFactory)
+    public function __construct(ArchiveBuilder $archiveBuilder, DockerFacade $dockerClient, CredentialsRepository $credentialsRepository, CommandExtractor $commandExtractor, LoggerFactory $loggerFactory)
     {
         $this->archiveBuilder = $archiveBuilder;
         $this->dockerClient = $dockerClient;
@@ -65,7 +65,7 @@ class DockerBuilder implements Builder
         $request = $build->getRequest();
 
         try {
-            $archive = $this->archiveBuilder->getArchive($request, $logger);
+            $archive = $this->archiveBuilder->createArchive($request, $logger);
         } catch (ArchiveCreationException $e) {
             throw new BuildException(sprintf('Unable to create archive: %s', $e->getMessage()), $e->getCode(), $e);
         }

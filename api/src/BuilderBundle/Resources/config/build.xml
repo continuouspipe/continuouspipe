@@ -44,6 +44,7 @@
         <service id="builder.build_saga" class="ContinuousPipe\Builder\Aggregate\BuildSaga">
             <argument type="service" id="builder.build.transaction_manager" />
 
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildStarted" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFinished" />
         </service>

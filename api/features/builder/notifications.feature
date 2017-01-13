@@ -17,14 +17,18 @@ Feature:
     When I send the following build request:
     """
     {
-      "image": {
-        "name": "sroze/php-example",
-        "tag": "continuous"
-      },
-      "repository": {
-        "address": "fixtures://php-example",
-        "branch": "747850e8c821a443a7b5cee28a48581069049739"
-      },
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "continuous"
+          },
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "747850e8c821a443a7b5cee28a48581069049739"
+          }
+        }
+      ],
       "notification": {
         "http": {
           "address": "https://example.com"
@@ -42,14 +46,18 @@ Feature:
     When I send the following build request:
     """
     {
-      "image": {
-        "name": "sroze/php-example",
-        "tag": "continuous"
-      },
-      "repository": {
-        "address": "fixtures://php-example",
-        "branch": "747850e8c821a443a7b5cee28a48581069049739"
-      },
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "continuous"
+          },
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "747850e8c821a443a7b5cee28a48581069049739"
+          }
+        }
+      ],
       "notification": {
         "http": {
           "address": "https://example.com"

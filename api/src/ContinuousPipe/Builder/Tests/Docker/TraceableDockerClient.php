@@ -3,16 +3,18 @@
 namespace ContinuousPipe\Builder\Tests\Docker;
 
 use ContinuousPipe\Builder\Archive;
-use ContinuousPipe\Builder\Docker\Client;
+use ContinuousPipe\Builder\Docker\BuildContext;
+use ContinuousPipe\Builder\Docker\DockerFacade;
+use ContinuousPipe\Builder\Docker\PushContext;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 
-class TraceableDockerClient implements Client
+class TraceableDockerClient implements DockerFacade
 {
     /**
-     * @var BuildRequest[]
+     * @var BuildContext[]
      */
     private $builds = [];
 
@@ -24,22 +26,17 @@ class TraceableDockerClient implements Client
     /**
      * @var array
      */
-    private $runs = [];
-
-    /**
-     * @var array
-     */
     private $commits = [];
 
     /**
-     * @var Client
+     * @var DockerFacade
      */
     private $client;
 
     /**
-     * @param Client $client
+     * @param DockerFacade $client
      */
-    public function __construct(Client $client)
+    public function __construct(DockerFacade $client)
     {
         $this->client = $client;
     }
@@ -47,11 +44,11 @@ class TraceableDockerClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function build(Archive $archive, BuildRequest $request, Logger $logger)
+    public function build(BuildContext $context, Archive $archive) : Image
     {
-        $image = $this->client->build($archive, $request, $logger);
+        $image = $this->client->build($context, $archive);
 
-        $this->builds[] = $request;
+        $this->builds[] = $context;
 
         return $image;
     }
@@ -59,28 +56,15 @@ class TraceableDockerClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
+    public function push(PushContext $context, Image $image)
     {
-        $this->client->push($image, $credentials, $logger);
+        $this->client->push($context, $image);
 
         $this->pushes[] = $image;
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function runAndCommit(Image $image, Logger $logger, $command)
-    {
-        $image = $this->client->runAndCommit($image, $logger, $command);
-
-        $this->runs[] = ['image' => $image, 'command' => $command];
-        $this->commits[] = ['image' => $image];
-
-        return $image;
-    }
-
-    /**
-     * @return \ContinuousPipe\Builder\Request\BuildRequest[]
+     * @return BuildContext[]
      */
     public function getBuilds()
     {
@@ -93,14 +77,6 @@ class TraceableDockerClient implements Client
     public function getPushes()
     {
         return $this->pushes;
-    }
-
-    /**
-     * @return array
-     */
-    public function getRuns()
-    {
-        return $this->runs;
     }
 
     /**

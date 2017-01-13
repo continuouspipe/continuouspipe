@@ -5,6 +5,8 @@ namespace ContinuousPipe\Builder\Archive\Builder;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Archive\ArchiveCreationException;
 use ContinuousPipe\Builder\ArchiveBuilder;
+use ContinuousPipe\Builder\BuildStepConfiguration;
+use ContinuousPipe\Builder\Request\ArchiveSource;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 
@@ -26,11 +28,11 @@ class AdaptativeArchiveBuilder implements ArchiveBuilder
     /**
      * {@inheritdoc}
      */
-    public function getArchive(BuildRequest $buildRequest, Logger $logger)
+    public function createArchive(BuildStepConfiguration $buildStepConfiguration) : Archive
     {
         foreach ($this->builders as $builder) {
-            if ($builder->supports($buildRequest)) {
-                return $builder->getArchive($buildRequest, $logger);
+            if ($builder->supports($buildStepConfiguration)) {
+                return $builder->createArchive($buildStepConfiguration);
             }
         }
 
@@ -40,10 +42,10 @@ class AdaptativeArchiveBuilder implements ArchiveBuilder
     /**
      * {@inheritdoc}
      */
-    public function supports(BuildRequest $request)
+    public function supports(BuildStepConfiguration $buildStepConfiguration) : bool
     {
         foreach ($this->builders as $builder) {
-            if ($builder->supports($request)) {
+            if ($builder->supports($buildStepConfiguration)) {
                 return true;
             }
         }

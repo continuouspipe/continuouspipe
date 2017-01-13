@@ -60,4 +60,12 @@ class BuildRequest
     {
         return $this->steps;
     }
+
+    public function withSteps(array $steps) : BuildRequest
+    {
+        $request = clone $this;
+        $request->steps = $steps;
+
+        return $request;
+    }
 }

@@ -3,8 +3,11 @@
 namespace ContinuousPipe\Builder\Logging\Docker;
 
 use ContinuousPipe\Builder\Archive;
-use ContinuousPipe\Builder\Docker\Client;
+use ContinuousPipe\Builder\Docker\BuildContext;
+use ContinuousPipe\Builder\Docker\DockerContext;
+use ContinuousPipe\Builder\Docker\DockerFacade;
 use ContinuousPipe\Builder\Docker\DockerException;
+use ContinuousPipe\Builder\Docker\PushContext;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
@@ -14,10 +17,10 @@ use LogStream\LoggerFactory;
 use LogStream\Node\Raw;
 use LogStream\Node\Text;
 
-class LoggedDockerClient implements Client
+class LoggedDockerClient implements DockerFacade
 {
     /**
-     * @var Client
+     * @var DockerFacade
      */
     private $client;
 
@@ -27,10 +30,10 @@ class LoggedDockerClient implements Client
     private $loggerFactory;
 
     /**
-     * @param Client        $client
+     * @param DockerFacade        $client
      * @param LoggerFactory $loggerFactory
      */
-    public function __construct(Client $client, LoggerFactory $loggerFactory)
+    public function __construct(DockerFacade $client, LoggerFactory $loggerFactory)
     {
         $this->client = $client;
         $this->loggerFactory = $loggerFactory;
@@ -39,57 +42,57 @@ class LoggedDockerClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function build(Archive $archive, BuildRequest $request, Logger $logger)
+    public function build(BuildContext $context, Archive $archive) : Image
     {
-        $title = sprintf('Building Docker image <code>%s</code>', $this->getImageName($request->getImage()));
-        $logger = $logger->child(new Text($title))->updateStatus(Log::RUNNING);
+        $title = $context->getImage() === null
+            ? 'TODO identify the message'
+            : sprintf('Building Docker image <code>%s</code>', $this->getImageName($context->getImage()));
 
-        try {
-            $image = $this->client->build($archive, $request, $logger->child(new Raw()));
-
-            $logger->updateStatus(Log::SUCCESS);
-        } catch (DockerException $e) {
-            $logger->updateStatus(Log::FAILURE);
-
-            throw $e;
-        }
-
-        return $image;
+        return $this->wraps(
+            $title,
+            $context,
+            function ($context) use ($archive) {
+                return $this->client->build($context, $archive);
+            }
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
+    public function push(PushContext $context, Image $image)
     {
-        $title = sprintf('Pushing Docker image <code>%s</code>', $this->getImageName($image));
-        $logger = $logger->child(new Text($title))->updateStatus(Log::RUNNING);
-
-        try {
-            $this->client->push($image, $credentials, $logger->child(new Raw()));
-
-            $logger->updateStatus(Log::SUCCESS);
-        } catch (DockerException $e) {
-            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
-            $logger->updateStatus(Log::FAILURE);
-
-            throw $e;
-        }
+        return $this->wraps(
+            sprintf('Pushing Docker image <code>%s</code>', $this->getImageName($image)),
+            $context,
+            function ($context) use ($image) {
+                return $this->client->push($context, $image);
+            }
+        );
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $title
+     * @param DockerContext $context
+     * @param callable $callable
+     *
+     * @throws DockerException
+     *
+     * @return mixed
      */
-    public function runAndCommit(Image $image, Logger $logger, $command)
+    private function wraps(string $title, DockerContext $context, callable $callable)
     {
-        $logger = $logger->child(new Text(sprintf('Running "%s"', $command)))->updateStatus(Log::RUNNING);
+        $logger = $this->loggerFactory->fromId($context->getLogStreamIdentifier())->child(new Text($title))->updateStatus(Log::RUNNING);
+
+        $context = $context->withLogStreamIdentifier(
+            $logger->child(new Raw())->getLog()->getId()
+        );
 
         try {
-            $image = $this->client->runAndCommit($image, $logger->child(new Raw()), $command);
+            $image = $callable($context);
 
             $logger->updateStatus(Log::SUCCESS);
         } catch (DockerException $e) {
-            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
             $logger->updateStatus(Log::FAILURE);
 
             throw $e;

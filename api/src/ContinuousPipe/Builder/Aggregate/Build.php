@@ -63,7 +63,6 @@ class Build implements Aggregate
     public function start()
     {
         $this->raiseAndApply(new BuildStarted($this->identifier));
-        $this->nextStep();
     }
 
     public function nextStep()
@@ -71,15 +70,13 @@ class Build implements Aggregate
         $nextStepIndex = $this->currentStepCursor + 1;
         $steps = $this->request->getSteps();
 
-        if (isset($steps[$nextStepIndex])) {
-            $this->raiseAndApply(new BuildStepStarted(
-                $this->identifier,
-                $nextStepIndex,
-                $steps[$nextStepIndex]
-            ));
-        } else {
+        if (!isset($steps[$nextStepIndex])) {
             $this->raiseAndApply(new BuildFinished($this->identifier));
+            return;
         }
+
+        $stepConfiguration = $steps[$nextStepIndex];
+        $this->raiseAndApply(new BuildStepStarted($this->identifier, $nextStepIndex, $stepConfiguration));
     }
 
     public function fail()

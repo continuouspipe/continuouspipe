@@ -3,7 +3,7 @@ ContinuousPipe\Builder\BuildStepConfiguration:
         repository:
             type: ContinuousPipe\Builder\Repository
         archive:
-            type: ContinuousPipe\Builder\Request\Archive
+            type: ContinuousPipe\Builder\Request\ArchiveSource
         image:
             type: ContinuousPipe\Builder\Image
         context:

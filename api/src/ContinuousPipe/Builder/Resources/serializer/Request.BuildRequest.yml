@@ -5,7 +5,7 @@ ContinuousPipe\Builder\Request\BuildRequest:
         logging:
             type: ContinuousPipe\Builder\Logging
         credentialsBucket:
-            type: string
+            type: uuid
             serialized_name: credentialsBucket
         steps:
             type: array<ContinuousPipe\Builder\BuildStepConfiguration>

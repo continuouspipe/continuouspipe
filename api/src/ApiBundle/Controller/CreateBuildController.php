@@ -3,6 +3,7 @@
 namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
+use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\View\BuildViewRepository;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Events\Transaction\TransactionManager;
@@ -35,23 +36,30 @@ class CreateBuildController
      * @var BuildViewRepository
      */
     private $buildViewRepository;
+    /**
+     * @var BuildRequestTransformer
+     */
+    private $buildRequestTransformer;
 
     /**
      * @param TransactionManager $transactionManager
      * @param ValidatorInterface $validator
      * @param BuildFactory $buildFactory
      * @param BuildViewRepository $buildViewRepository
+     * @param BuildRequestTransformer $buildRequestTransformer
      */
     public function __construct(
         TransactionManager $transactionManager,
         ValidatorInterface $validator,
         BuildFactory $buildFactory,
-        BuildViewRepository $buildViewRepository
+        BuildViewRepository $buildViewRepository,
+        BuildRequestTransformer $buildRequestTransformer
     ) {
         $this->validator = $validator;
         $this->buildFactory = $buildFactory;
         $this->transactionManager = $transactionManager;
         $this->buildViewRepository = $buildViewRepository;
+        $this->buildRequestTransformer = $buildRequestTransformer;
     }
 
     /**
@@ -66,6 +74,7 @@ class CreateBuildController
             return \FOS\RestBundle\View\View::create($violations->get(0), 400);
         }
 
+        $request = $this->buildRequestTransformer->transform($request);
         $build = $this->buildFactory->fromRequest($request);
 
         $this->transactionManager->apply($build->getIdentifier(), function (\ContinuousPipe\Builder\Aggregate\Build $build) {

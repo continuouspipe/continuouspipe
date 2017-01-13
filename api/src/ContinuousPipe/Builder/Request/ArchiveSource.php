@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Builder\Request;
 
-class Archive
+class ArchiveSource
 {
     /**
      * @var string

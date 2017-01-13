@@ -16,18 +16,22 @@ Feature:
     When I send the following build request:
     """
     {
-      "image": {
-        "name": "docker.io/continuouspipepublicrobot/test",
-        "tag": "build-args"
-      },
-      "repository": {
-        "address": "fixtures://build-args",
-        "branch": "master"
-      },
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
-      "environment": {
-        "MY_CUSTOM_ENV": "foo"
-      }
+      "steps": [
+        {
+          "image": {
+            "name": "docker.io/continuouspipepublicrobot/test",
+            "tag": "build-args"
+          },
+          "repository": {
+            "address": "fixtures://build-args",
+            "branch": "master"
+          },
+          "environment": {
+            "MY_CUSTOM_ENV": "foo"
+          }
+        }
+      ],
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
     }
     """
     Then the build should be successful
