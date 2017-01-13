@@ -13,6 +13,7 @@ use Github\Api\ApiInterface;
 use Github\Client;
 use Github\ResultPager;
 use GitHub\WebHook\Model\Repository;
+use GuzzleHttp\Exception\ClientException;
 use JMS\Serializer\SerializerInterface;
 use GitHub\WebHook\Model\Organisation as GitHubModelOrganisation;
 
@@ -50,10 +51,10 @@ class GitHubRepositoryExplorer implements CodeRepositoryExplorer
         return $this->parseRepositories(
             $this->fetchAll(
                 $client,
-                $client->user(),
+                $client->currentUser(),
                 'repositories',
                 [
-                    $account->getUsername(),
+                    'owner',
                 ]
             )
         );
@@ -139,14 +140,27 @@ class GitHubRepositoryExplorer implements CodeRepositoryExplorer
     private function fetchAll(Client $client, ApiInterface $api, string $method, array $parameters = []) : array
     {
         $paginator = new ResultPager($client);
-        $repositories = $paginator->fetch($api, $method, $parameters);
 
-        while ($paginator->hasNext()) {
-            $repositories = array_merge($repositories, $paginator->fetchNext());
+        try {
+            $repositories = $paginator->fetch($api, $method, $parameters);
 
-            if (count($repositories) > self::LIMIT) {
-                break;
+            while ($paginator->hasNext()) {
+                $repositories = array_merge($repositories, $paginator->fetchNext());
+
+                if (count($repositories) > self::LIMIT) {
+                    break;
+                }
             }
+        } catch (ClientException $e) {
+            $message = 'Unable to list the code repositories';
+            if (null !== ($response = $e->getResponse())) {
+                if ($response->getStatusCode() == 401) {
+                    $message .= ', GitHub un-authorized the request. Could you unlink and link your GitHub account again? '.
+                                '(Click on the "Account" dropdown, on the top-right)';
+                }
+            }
+
+            throw new CodeRepositoryException($message, $e->getCode(), $e);
         }
 
         return $repositories;
