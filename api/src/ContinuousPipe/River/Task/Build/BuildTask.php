@@ -5,9 +5,12 @@ namespace ContinuousPipe\River\Task\Build;
 use ContinuousPipe\Builder\BuilderException;
 use ContinuousPipe\Builder\BuildRequestCreator;
 use ContinuousPipe\Builder\Client\BuilderBuild;
+use ContinuousPipe\Builder\Client\BuilderClient;
+use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\Build\Command\BuildImageCommand;
+use ContinuousPipe\River\Task\Build\Event\BuildEvent;
 use ContinuousPipe\River\Task\Build\Event\BuildFailed;
 use ContinuousPipe\River\Task\Build\Event\BuildStarted;
 use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;
@@ -86,42 +89,57 @@ class BuildTask extends EventDrivenTask
 
         try {
             $buildRequests = $buildRequestCreator->createBuildRequests(
+                $this->context->getTideUuid(),
                 $this->context->getCodeReference(),
                 $this->configuration,
-                $this->context->getTeam()->getBucketUuid()
+                $this->context->getTeam()->getBucketUuid(),
+                $logger->getLog()
             );
         } catch (BuilderException $e) {
             $logger->child(new Text($e->getMessage()));
             $this->events->raiseAndApply(new ImageBuildsFailed(
                 $this->context->getTideUuid(),
+                $this->getIdentifier(),
                 $logger->getLog()
             ));
 
             return;
         }
 
-        foreach ($buildRequests as $buildRequest) {
-            $this->commandBus->handle(new BuildImageCommand(
-                $this->context->getTideUuid(),
-                $buildRequest,
-                $logger->getLog()->getId()
-            ));
-        }
-
         $this->events->raiseAndApply(new ImageBuildsStarted(
             $this->context->getTideUuid(),
+            $this->getIdentifier(),
             $buildRequests,
             $logger->getLog()
         ));
 
         if (empty($buildRequests)) {
             $logger->child(new Text('Found no image to build'));
-            $this->events->raiseAndApply(new ImageBuildsSuccessful($this->context->getTideUuid(), $logger->getLog()));
+            $this->events->raiseAndApply(new ImageBuildsSuccessful(
+                $this->context->getTideUuid(),
+                $this->getIdentifier(),
+                $logger->getLog()
+            ));
         }
+    }
+
+    public function build(BuilderClient $client, BuildRequest $request)
+    {
+        $build = $client->build($request, $this->context->getUser());
+
+        $this->events->raiseAndApply(new BuildStarted(
+            $this->context->getTideUuid(),
+            $this->getIdentifier(),
+            $build
+        ));
     }
 
     public function receiveBuildNotification(BuilderBuild $build)
     {
+        if (!$this->hasStartedBuild($build)) {
+            return;
+        }
+
         if ($build->isSuccessful()) {
             $this->events->raiseAndApply(new BuildSuccessful(
                 $this->context->getTideUuid(),
@@ -131,6 +149,7 @@ class BuildTask extends EventDrivenTask
             if ($this->allImageBuildsSuccessful()) {
                 $this->events->raiseAndApply(new ImageBuildsSuccessful(
                     $this->context->getTideUuid(),
+                    $this->getIdentifier(),
                     $this->log
                 ));
             }
@@ -140,9 +159,11 @@ class BuildTask extends EventDrivenTask
                 $build
             ));
 
-            $this->events->raiseAndApply(
-                new ImageBuildsFailed($this->context->getTideUuid(), $this->log)
-            );
+            $this->events->raiseAndApply(new ImageBuildsFailed(
+                $this->context->getTideUuid(),
+                $this->getIdentifier(),
+                $this->log
+            ));
         }
     }
 
@@ -160,6 +181,18 @@ class BuildTask extends EventDrivenTask
         } elseif ($event instanceof BuildSuccessful) {
             $this->successfulBuilds[] = $event->getBuild();
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function accept(TideEvent $event)
+    {
+        if ($event instanceof BuildFailed || $event instanceof BuildSuccessful) {
+            return $this->hasStartedBuild($event->getBuild());
+        }
+
+        return parent::accept($event);
     }
 
     /**
@@ -193,6 +226,17 @@ class BuildTask extends EventDrivenTask
     {
         foreach ($this->successfulBuilds as $successfulBuild) {
             if ($successfulBuild->getUuid() == $build->getUuid()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function hasStartedBuild(BuilderBuild $build) : bool
+    {
+        foreach ($this->startedBuilds as $startedBuild) {
+            if ($startedBuild->getUuid() == $build->getUuid()) {
                 return true;
             }
         }

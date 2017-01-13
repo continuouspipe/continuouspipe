@@ -172,22 +172,6 @@ class BuildContext implements Context
     }
 
     /**
-     * @Given an image build was started
-     */
-    public function anImageBuildWasStarted()
-    {
-        $build = new BuilderBuild(
-            (string) Uuid::uuid1(),
-            BuilderBuild::STATUS_PENDING
-        );
-
-        $this->eventBus->handle(new BuildStarted(
-            $this->tideContext->getCurrentTideUuid(),
-            $build
-        ));
-    }
-
-    /**
      * @When the build is failing
      * @When the build task failed
      */
@@ -219,6 +203,7 @@ class BuildContext implements Context
 
         $this->eventBus->handle(new ImageBuildsFailed(
             $this->tideContext->getCurrentTideUuid(),
+            $imageBuildsStartedEvent->getTaskId(),
             $imageBuildsStartedEvent->getLog()
         ));
     }
@@ -293,6 +278,7 @@ class BuildContext implements Context
 
     /**
      * @When the first image build is successful
+     * @When the first build task succeed
      */
     public function theFirstImageBuildIsSuccessful()
     {

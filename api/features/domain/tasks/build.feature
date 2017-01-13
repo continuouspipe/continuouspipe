@@ -15,7 +15,6 @@ Feature:
   Scenario: If a build fails, the task should fail at the same time
     Given there is 1 application images in the repository
     When a build task is started
-    And an image build was started
     And the build is failing
     Then the build task should be failed
 

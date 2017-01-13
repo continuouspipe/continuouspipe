@@ -220,7 +220,6 @@ class Tide
             } catch (TaskRunnerException $e) {
                 $this->events->raiseAndApply(new TideFailed($this->getUuid(), $e->getMessage()));
             }
-
         }
     }
 

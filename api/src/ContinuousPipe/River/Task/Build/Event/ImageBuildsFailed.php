@@ -3,10 +3,11 @@
 namespace ContinuousPipe\River\Task\Build\Event;
 
 use ContinuousPipe\River\Event\TideEvent;
+use ContinuousPipe\River\Task\TaskEvent;
 use LogStream\Log;
 use Ramsey\Uuid\Uuid;
 
-class ImageBuildsFailed implements TideEvent
+class ImageBuildsFailed implements TideEvent, TaskEvent
 {
     /**
      * @var Uuid
@@ -16,15 +17,21 @@ class ImageBuildsFailed implements TideEvent
      * @var Log
      */
     private $log;
+    /**
+     * @var string
+     */
+    private $taskIdentifier;
 
     /**
      * @param Uuid $tideUuid
-     * @param Log  $log
+     * @param string $taskIdentifier
+     * @param Log $log
      */
-    public function __construct(Uuid $tideUuid, Log $log)
+    public function __construct(Uuid $tideUuid, string $taskIdentifier, Log $log)
     {
         $this->tideUuid = $tideUuid;
         $this->log = $log;
+        $this->taskIdentifier = $taskIdentifier;
     }
 
     /**
@@ -41,5 +48,13 @@ class ImageBuildsFailed implements TideEvent
     public function getLog()
     {
         return $this->log;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTaskId()
+    {
+        return $this->taskIdentifier;
     }
 }
