@@ -44,6 +44,7 @@ default:
                     - @event_bus
                     - @kernel
                     - @jms_serializer
+                    - @builder.client.traceable
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -143,6 +144,7 @@ default:
                     - @event_bus
                     - @kernel
                     - @jms_serializer
+                    - @builder.client.traceable
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -228,6 +230,7 @@ default:
                     - @event_bus
                     - @kernel
                     - @jms_serializer
+                    - @builder.client.traceable
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -317,6 +320,7 @@ smoke:
                     - @event_bus
                     - @kernel
                     - @jms_serializer
+                    - @builder.client.traceable
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
 

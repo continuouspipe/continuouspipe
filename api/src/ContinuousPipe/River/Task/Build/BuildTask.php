@@ -9,8 +9,6 @@ use ContinuousPipe\Builder\Client\BuilderClient;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
-use ContinuousPipe\River\Task\Build\Command\BuildImageCommand;
-use ContinuousPipe\River\Task\Build\Event\BuildEvent;
 use ContinuousPipe\River\Task\Build\Event\BuildFailed;
 use ContinuousPipe\River\Task\Build\Event\BuildStarted;
 use ContinuousPipe\River\Task\Build\Event\BuildSuccessful;

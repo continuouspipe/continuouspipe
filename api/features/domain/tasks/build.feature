@@ -6,6 +6,7 @@ Feature:
     Given there is 1 application images in the repository
     When a build task is started
     Then it should build the application images
+    And it should have sent a build request
 
   Scenario:
     Given there is 2 application images in the repository

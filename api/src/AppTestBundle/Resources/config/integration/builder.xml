@@ -6,5 +6,10 @@
 
     <services>
         <service id="builder.client" class="ContinuousPipe\River\Tests\Builder\EmptyBuilderClient" />
+        <service id="builder.client.traceable"
+                 class="ContinuousPipe\Builder\Client\TraceableBuilderClient"
+                 decorates="builder.client">
+            <argument type="service" id="builder.client.traceable.inner" />
+        </service>
     </services>
 </container>
