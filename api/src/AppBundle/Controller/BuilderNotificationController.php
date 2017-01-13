@@ -3,7 +3,10 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Builder\Client\BuilderBuild;
+use ContinuousPipe\River\Task\Build\BuildTask;
 use ContinuousPipe\River\Task\Build\Command\ReceiveBuildNotification;
+use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\Tide\Transaction\TransactionManager;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -16,16 +19,16 @@ use FOS\RestBundle\Controller\Annotations\View;
 class BuilderNotificationController
 {
     /**
-     * @var MessageBus
+     * @var TransactionManager
      */
-    private $commandBus;
+    private $transactionManager;
 
     /**
-     * @param MessageBus $commandBus
+     * @param TransactionManager $transactionManager
      */
-    public function __construct(MessageBus $commandBus)
+    public function __construct(TransactionManager $transactionManager)
     {
-        $this->commandBus = $commandBus;
+        $this->transactionManager = $transactionManager;
     }
 
     /**
@@ -35,9 +38,13 @@ class BuilderNotificationController
      */
     public function postAction($tideUuid, BuilderBuild $build)
     {
-        $this->commandBus->handle(new ReceiveBuildNotification(
-            Uuid::fromString($tideUuid),
-            $build
-        ));
+        $this->transactionManager->apply(Uuid::fromString($tideUuid), function (Tide $tide) use ($build) {
+            /** @var BuildTask[] $tasks */
+            $tasks = $tide->getTasks()->ofType(BuildTask::class);
+
+            foreach ($tasks as $task) {
+                $task->receiveBuildNotification($build);
+            }
+        });
     }
 }

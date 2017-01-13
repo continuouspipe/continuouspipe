@@ -29,8 +29,4 @@ class BuildTaskConfiguration
     {
         return $this->services;
     }
-
-    public function getTideUuid()
-    {
-    }
 }

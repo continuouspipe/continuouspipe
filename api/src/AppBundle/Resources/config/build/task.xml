@@ -18,7 +18,6 @@
             <argument type="service" id="builder.client"/>
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted" />
-            <tag name="command_handler" handles="ContinuousPipe\River\Task\Build\Command\ReceiveBuildNotification" />
         </service>
 
         <!-- Event subscribers -->

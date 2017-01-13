@@ -36,7 +36,7 @@
             <argument type="service" id="command_bus" />
         </service>
         <service id="app.controller.builder_notification" class="AppBundle\Controller\BuilderNotificationController">
-            <argument type="service" id="command_bus" />
+            <argument type="service" id="river.tide.transaction_manager" />
         </service>
         <service id="app.controller.pipe_notification" class="AppBundle\Controller\PipeNotificationController">
             <argument type="service" id="river.tide.transaction_manager" />
