@@ -6,6 +6,14 @@ environment_variables:
     - name: BUILDER_URL
       value: http://eu--west1--b-builder-continuouspipe-io-arbp8o5f7a1t.runscope.net
 
+pipelines:
+    - name: Production
+      condition: code_reference.branch == 'master'
+      tasks: [ images, production, migrations ]
+    - name: Feature branches
+      condition: code_reference.branch != 'master'
+      tasks: [ images ]
+
 tasks:
     images:
         build:
