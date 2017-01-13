@@ -127,6 +127,10 @@ fos_rest:
             - { path: '^/$', priorities: ['html'], fallback_format: html, prefer_extension: false }
             - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
 
+    exception:
+        messages:
+            'ContinuousPipe\River\CodeRepository\CodeRepositoryException': true
+
 sensio_framework_extra:
     view:    { annotations: false }
     request: { converters: true }
