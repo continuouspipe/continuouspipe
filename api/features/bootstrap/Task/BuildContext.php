@@ -6,6 +6,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Builder\Client\BuilderBuild;
+use ContinuousPipe\Builder\Client\TraceableBuilderClient;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Task\Build\BuildTask;
@@ -58,19 +59,25 @@ class BuildContext implements Context
      * @var SerializerInterface
      */
     private $serializer;
+    /**
+     * @var TraceableBuilderClient
+     */
+    private $traceableBuilderClient;
 
     /**
      * @param EventStore $eventStore
      * @param MessageBus $eventBus
      * @param KernelInterface $kernel
      * @param SerializerInterface $serializer
+     * @param TraceableBuilderClient $traceableBuilderClient
      */
-    public function __construct(EventStore $eventStore, MessageBus $eventBus, KernelInterface $kernel, SerializerInterface $serializer)
+    public function __construct(EventStore $eventStore, MessageBus $eventBus, KernelInterface $kernel, SerializerInterface $serializer, TraceableBuilderClient $traceableBuilderClient)
     {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
         $this->kernel = $kernel;
         $this->serializer = $serializer;
+        $this->traceableBuilderClient = $traceableBuilderClient;
     }
 
     /**
@@ -444,6 +451,17 @@ class BuildContext implements Context
     public function theSecondBuildShouldBeStartedWithTheFollowingEnvironmentVariables(TableNode $environs)
     {
         $this->assertBuildIsStartedWithTheFollowingEnvironmentVariables(1, $environs);
+    }
+
+    /**
+     * @Then it should have sent a build request
+     */
+    public function itShouldHaveSentABuildRequest()
+    {
+        $requests = $this->traceableBuilderClient->getRequests();
+        if (0 === count($requests)) {
+            throw new \RuntimeException('Expected requests, found nothing');
+        }
     }
 
     private function assertBuildIsStartedWithTheFollowingEnvironmentVariables($index, TableNode $environs)
