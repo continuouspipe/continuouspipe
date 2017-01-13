@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\RequestInterface;
 
 class FaultToleranceConfigurator
 {
@@ -35,7 +35,7 @@ class FaultToleranceConfigurator
         return
             function (
                 int $retries,
-                ServerRequestInterface $request,
+                RequestInterface $request,
                 ResponseInterface $response = null,
                 RequestException $exception = null
             ) use ($maxRetries) : bool
