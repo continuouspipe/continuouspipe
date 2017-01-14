@@ -6,6 +6,8 @@ use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use JMS\Serializer\SerializerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 
@@ -50,13 +52,18 @@ class HttpBuilderClient implements BuilderClient
     public function build(BuildRequest $buildRequest, User $user)
     {
         $token = $this->jwtManager->create(new SecurityUser($user));
-        $response = $this->httpClient->post($this->baseUrl.'/build', [
-            'body' => $this->serializer->serialize($buildRequest, 'json'),
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer '.$token,
-            ],
-        ]);
+
+        try {
+            $response = $this->httpClient->post($this->baseUrl . '/build', [
+                'body' => $this->serializer->serialize($buildRequest, 'json'),
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+            ]);
+        } catch (GuzzleException $e) {
+            throw new BuilderException($e->getMessage(), $e->getCode(), $e);
+        }
 
         $body = $response->getBody();
         if ($body->isSeekable()) {
