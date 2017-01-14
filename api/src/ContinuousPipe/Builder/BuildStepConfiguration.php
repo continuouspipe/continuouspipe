@@ -111,7 +111,7 @@ class BuildStepConfiguration
         return $this->imageRegistryCredentials;
     }
 
-    public function withArchiveSource(ArchiveSource $archive) : BuildStepConfiguration
+    public function withArchiveSource(ArchiveSource $archive = null) : BuildStepConfiguration
     {
         $step = clone $this;
         $step->archive = $archive;
@@ -143,10 +143,34 @@ class BuildStepConfiguration
         return $step;
     }
 
-    public function withContext(Context $context) : BuildStepConfiguration
+    public function withContext(Context $context = null) : BuildStepConfiguration
     {
         $step = clone $this;
         $step->context = $context;
+
+        return $step;
+    }
+
+    public function withImage(Image $image = null) : BuildStepConfiguration
+    {
+        $step = clone $this;
+        $step->image = $image;
+
+        return $step;
+    }
+
+    public function withRepository(Repository $repository = null) : self
+    {
+        $step = clone $this;
+        $step->repository = $repository;
+
+        return $step;
+    }
+
+    public function withEnvironment(array $environment = []) : self
+    {
+        $step = clone $this;
+        $step->environment = $environment;
 
         return $step;
     }

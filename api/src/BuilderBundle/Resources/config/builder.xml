@@ -6,6 +6,7 @@
 
     <services>
         <!-- Build requests -->
+        <service id="builder.request_transformer.non_steps_bc_layer" class="ContinuousPipe\Builder\Request\Transformers\PreviousStepsBackwardCompatibilityTransformer" />
         <service id="builder.request_transformer.add_default_context" class="ContinuousPipe\Builder\Request\Transformers\AddDefaultContext" />
         <service id="builder.request_transformer.replace_github_repository_by_archive" class="ContinuousPipe\Builder\GitHub\BuildRequestTransformer\ReplaceTheGitHubRepositoryByAnArchive">
             <argument type="service" id="logger" />
@@ -20,6 +21,7 @@
 
         <service id="builder.request_transformer" class="ContinuousPipe\Builder\Request\Transformers\ChainBuildRequestTransformer">
             <argument type="collection">
+                <argument type="service" id="builder.request_transformer.non_steps_bc_layer" />
                 <argument type="service" id="builder.request_transformer.add_default_context" />
                 <argument type="service" id="builder.request_transformer.replace_github_repository_by_archive" />
                 <argument type="service" id="builder.request_transformer.dispatch_log_stream_identifier" />
