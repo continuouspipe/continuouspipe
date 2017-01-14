@@ -11,5 +11,11 @@
             <argument type="service" id="builder.docker.logged_client.inner" />
             <argument type="service" id="log_stream.logger_factory" />
         </service>
+
+        <service id="builder.logging.display_the_steps_errors" class="ContinuousPipe\Builder\Logging\DisplayTheErrors">
+            <argument type="service" id="log_stream.logger_factory" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed" />
+        </service>
     </services>
 </container>

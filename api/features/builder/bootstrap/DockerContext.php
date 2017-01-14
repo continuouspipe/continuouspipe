@@ -20,6 +20,7 @@ class DockerContext implements Context
      * @var \Exception|null
      */
     private $exception;
+
     /**
      * @var LoggerFactory
      */

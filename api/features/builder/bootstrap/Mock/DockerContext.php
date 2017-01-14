@@ -45,6 +45,16 @@ class DockerContext implements Context
     }
 
     /**
+     * @Given the Docker build will fail because of :reason
+     */
+    public function theDockerBuildWillFailBecauseOf($reason)
+    {
+        $this->callbackDockerClient->setBuildCallback(function() use ($reason) {
+            throw new DaemonException($reason);
+        });
+    }
+
+    /**
      * @Then the file :path in the image :image should exists
      */
     public function theFileInTheImageShouldExists($path, $image)

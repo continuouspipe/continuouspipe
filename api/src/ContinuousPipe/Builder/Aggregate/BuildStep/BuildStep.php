@@ -126,7 +126,9 @@ class BuildStep
     {
         $this->raise(new StepFailed(
             $this->buildIdentifier,
-            $this->position
+            $this->position,
+            $exception,
+            $this->configuration->getLogStreamIdentifier()
         ));
     }
 
