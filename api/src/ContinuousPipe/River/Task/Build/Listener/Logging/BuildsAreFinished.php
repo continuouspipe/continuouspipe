@@ -6,6 +6,7 @@ use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use LogStream\Log;
 use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 
 class BuildsAreFinished
 {
@@ -25,7 +26,13 @@ class BuildsAreFinished
     public function notify($event)
     {
         if ($event instanceof ImageBuildsFailed) {
-            $this->loggerFactory->from($event->getLog())->updateStatus(Log::FAILURE);
+            $logger = $this->loggerFactory->from($event->getLog())
+                ->updateStatus(Log::FAILURE)
+            ;
+
+            if (null !== ($reason = $event->getReason())) {
+                $logger->child(new Text($reason->getMessage()))->updateStatus(Log::FAILURE);
+            }
         } elseif ($event instanceof ImageBuildsSuccessful) {
             $this->loggerFactory->from($event->getLog())->updateStatus(Log::SUCCESS);
         }

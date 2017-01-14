@@ -109,8 +109,16 @@ class BuildContext implements Context
      */
     public function theBuildRequestWillFail()
     {
-        $this->hookableBuilderClient->addHook(function() {
-            throw new BuilderException('That failure is expected');
+        $this->theBuildRequestWillFailWithTheReason('Something went wrong');
+    }
+
+    /**
+     * @Given the build request will fail with the reason :reason
+     */
+    public function theBuildRequestWillFailWithTheReason($reason)
+    {
+        $this->hookableBuilderClient->addHook(function() use ($reason) {
+            throw new BuilderException($reason);
         });
     }
 
@@ -237,16 +245,6 @@ class BuildContext implements Context
             $imageBuildsStartedEvent->getTaskId(),
             $imageBuildsStartedEvent->getLog()
         ));
-    }
-
-    /**
-     * @Given :number images builds were started
-     */
-    public function imagesBuildsWereStarted($number)
-    {
-        while ($number-- > 0) {
-            $this->anImageBuildWasStarted();
-        }
     }
 
     /**

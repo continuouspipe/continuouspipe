@@ -165,12 +165,13 @@ class BuildTask extends EventDrivenTask
         }
     }
 
-    private function fail(\Throwable $e = null)
+    private function fail(\Throwable $reason = null)
     {
         $this->events->raiseAndApply(new ImageBuildsFailed(
             $this->context->getTideUuid(),
             $this->getIdentifier(),
-            $this->log
+            $this->log,
+            $reason
         ));
     }
 

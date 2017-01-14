@@ -116,6 +116,20 @@ class LoggingContext implements Context
     }
 
     /**
+     * @Then a log containing :contents should be created
+     */
+    public function aLogContainingShouldBeCreated($contents)
+    {
+        $matchingLogs = array_values(array_filter($this->findAllLogs(), function (array $log) use ($contents) {
+            return array_key_exists('contents', $log) && false !== strpos($log['contents'], $contents);
+        }));
+
+        if (0 === count($matchingLogs)) {
+            throw new \RuntimeException('No matching logs found');
+        }
+    }
+
+    /**
      * @param string           $contents
      * @param array $logCollection
      *
