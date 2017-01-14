@@ -3,10 +3,13 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Security\Credentials\DockerRegistry;
+use JMS\Serializer\Annotation as JMS;
 
 class RegistryCredentials
 {
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $authenticationString;

@@ -10,3 +10,9 @@ ContinuousPipe\Builder\BuildStepConfiguration:
             type: ContinuousPipe\Builder\Context
         environment:
             type: array<string, string>
+        logStreamIdentifier:
+            type: string
+        dockerRegistries:
+            type: array<ContinuousPipe\Security\Credentials\DockerRegistry>
+        imageRegistryCredentials:
+            type: ContinuousPipe\Builder\RegistryCredentials

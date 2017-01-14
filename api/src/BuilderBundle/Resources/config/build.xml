@@ -7,6 +7,8 @@
     <services>
         <!-- Events storage -->
         <service id="builder.event_store.http" class="ContinuousPipe\Events\EventStore\HttpEventStoreAdapter">
+            <argument type="service" id="jms_serializer.serializer" />
+            <argument>%event_store_host%</argument>
         </service>
         <service id="builder.event_store" alias="builder.event_store.http" />
         <service id="builder.build.event_stream_resolver" class="ContinuousPipe\Builder\Aggregate\FromEvents\BuildEventStreamResolver" />

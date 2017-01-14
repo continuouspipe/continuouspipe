@@ -7,15 +7,20 @@ use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class BuildStepStarted extends BuildEvent
 {
     /**
+     * @JMS\Type("integer")
+     *
      * @var int
      */
     private $stepPosition;
 
     /**
+     * @JMS\Type("ContinuousPipe\Builder\BuildStepConfiguration")
+     *
      * @var BuildStepConfiguration
      */
     private $stepConfiguration;

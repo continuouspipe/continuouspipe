@@ -6,15 +6,20 @@ use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class BuildCreated extends BuildEvent
 {
     /**
+     * @JMS\Type("ContinuousPipe\Builder\Request\BuildRequest")
+     *
      * @var BuildRequest
      */
     private $request;
 
     /**
+     * @JMS\Type("ContinuousPipe\Security\User\User")
+     *
      * @var User
      */
     private $user;

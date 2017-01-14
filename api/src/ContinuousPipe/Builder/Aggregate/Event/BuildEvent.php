@@ -2,9 +2,13 @@
 
 namespace ContinuousPipe\Builder\Aggregate\Event;
 
+use JMS\Serializer\Annotation as JMS;
+
 abstract class BuildEvent
 {
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $buildIdentifier;
