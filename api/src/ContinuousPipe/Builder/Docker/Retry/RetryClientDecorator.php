@@ -3,22 +3,26 @@
 namespace ContinuousPipe\Builder\Docker\Retry;
 
 use ContinuousPipe\Builder\Archive;
-use ContinuousPipe\Builder\Docker\Client;
+use ContinuousPipe\Builder\BuildStepConfiguration;
+use ContinuousPipe\Builder\Docker\BuildContext;
+use ContinuousPipe\Builder\Docker\DockerFacade;
 use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Docker\Exception\DaemonException;
 use ContinuousPipe\Builder\Docker\Exception\PushAlreadyInProgress;
+use ContinuousPipe\Builder\Docker\PushContext;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
+use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Psr\Log\LoggerInterface;
 use Tolerance\Waiter\SleepWaiter;
 
-class RetryClientDecorator implements Client
+class RetryClientDecorator implements DockerFacade
 {
     /**
-     * @var Client
+     * @var DockerFacade
      */
     private $client;
 
@@ -26,6 +30,11 @@ class RetryClientDecorator implements Client
      * @var LoggerInterface
      */
     private $logger;
+
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
 
     /**
      * @var int
@@ -38,45 +47,39 @@ class RetryClientDecorator implements Client
     private $retryInterval;
 
     /**
-     * @param Client          $client
+     * @param DockerFacade $client
      * @param LoggerInterface $logger
-     * @param int             $maxRetries
-     * @param int             $retryInterval
+     * @param LoggerFactory $loggerFactory
+     * @param int $maxRetries
+     * @param int $retryInterval
      */
-    public function __construct(Client $client, LoggerInterface $logger, $maxRetries = 10, $retryInterval = 30)
+    public function __construct(DockerFacade $client, LoggerInterface $logger, LoggerFactory $loggerFactory, $maxRetries = 10, $retryInterval = 30)
     {
         $this->client = $client;
+        $this->loggerFactory = $loggerFactory;
+        $this->logger = $logger;
         $this->maxRetries = $maxRetries;
         $this->retryInterval = $retryInterval;
-        $this->logger = $logger;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function runAndCommit(Image $image, Logger $logger, $command)
+    public function build(BuildContext $context, Archive $archive) : Image
     {
-        return $this->client->runAndCommit($image, $logger, $command);
+        return $this->client->build($context, $archive);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function build(Archive $archive, BuildRequest $request, Logger $logger)
-    {
-        return $this->client->build($archive, $request, $logger);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
+    public function push(PushContext $context, Image $image)
     {
         $remainingAttempts = $this->maxRetries;
 
         do {
             try {
-                return $this->client->push($image, $credentials, $logger);
+                return $this->client->push($context, $image);
             } catch (DockerException $e) {
                 if (!$this->shouldRetryBasedOnException($e)) {
                     throw $e;
@@ -88,7 +91,7 @@ class RetryClientDecorator implements Client
                 'exception' => $e,
             ]);
 
-            $logger->child(new Text(sprintf(
+            $this->loggerFactory->fromId($context->getLogStreamIdentifier())->child(new Text(sprintf(
                 "\n".'Detected a Docker error, retrying in %d seconds: %s'."\n",
                 $this->retryInterval,
                 $e->getMessage()

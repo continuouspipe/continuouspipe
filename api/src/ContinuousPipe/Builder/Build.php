@@ -42,32 +42,17 @@ class Build implements \JsonSerializable
      */
     private $status;
 
-    private function __construct()
-    {
-    }
-
     /**
+     * @param string $uuid
      * @param BuildRequest $request
-     * @param User         $user
-     *
-     * @return Build
-     */
-    public static function fromRequest(BuildRequest $request, User $user)
-    {
-        $build = new self();
-        $build->uuid = Uuid::uuid1();
-        $build->request = $request;
-        $build->user = $user;
-        $build->status = self::STATUS_PENDING;
-
-        return $build;
-    }
-
-    /**
+     * @param User $user
      * @param string $status
      */
-    public function updateStatus($status)
+    public function __construct(string $uuid, BuildRequest $request, User $user, string $status)
     {
+        $this->uuid = $uuid;
+        $this->request = $request;
+        $this->user = $user;
         $this->status = $status;
     }
 

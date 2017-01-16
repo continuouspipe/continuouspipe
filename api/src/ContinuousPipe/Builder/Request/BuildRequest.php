@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Builder\Request;
 
+use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Context;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Logging;
@@ -11,21 +12,6 @@ use Ramsey\Uuid\Uuid;
 
 class BuildRequest
 {
-    /**
-     * @var Repository
-     */
-    private $repository;
-
-    /**
-     * @var Archive
-     */
-    private $archive;
-
-    /**
-     * @var Image
-     */
-    private $image;
-
     /**
      * @var Notification
      */
@@ -37,68 +23,49 @@ class BuildRequest
     private $logging;
 
     /**
-     * @var Context
-     */
-    private $context;
-
-    /**
      * @var Uuid
      */
     private $credentialsBucket;
 
     /**
-     * @var array
+     * @var BuildStepConfiguration[]
+     */
+    private $steps;
+
+    /**
+     * @deprecated Should use the `steps` instead.
+     *
+     * @var Repository|null
+     */
+    private $repository;
+
+    /**
+     * @deprecated Should use the `steps` instead.
+     *
+     * @var ArchiveSource|null
+     */
+    private $archive;
+
+    /**
+     * @deprecated Should use the `steps` instead.
+     *
+     * @var Image|null
+     */
+    private $image;
+
+    /**
+     * @deprecated Should use the `steps` instead.
+     *
+     * @var Context|null
+     */
+    private $context;
+
+    /**
+     * @deprecated Should use the `steps` instead.
+     *
+     * @var array|null
      */
     private $environment;
-
-    /**
-     * @param Repository|Archive $repositoryOrArchive
-     * @param Image              $image
-     * @param Context            $context
-     * @param Notification       $notification
-     * @param Logging            $logging
-     * @param array              $environment
-     */
-    public function __construct($repositoryOrArchive, Image $image, Context $context = null, Notification $notification = null, Logging $logging = null, array $environment = [])
-    {
-        if ($repositoryOrArchive instanceof Repository) {
-            $this->repository = $repositoryOrArchive;
-        } elseif ($repositoryOrArchive instanceof Archive) {
-            $this->archive = $repositoryOrArchive;
-        } else {
-            throw new \InvalidArgumentException('Expected a repository or an archive');
-        }
-
-        $this->image = $image;
-        $this->notification = $notification;
-        $this->logging = $logging;
-        $this->context = $context;
-        $this->environment = $environment;
-    }
-
-    /**
-     * @return Repository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
-    }
-
-    /**
-     * @return Archive
-     */
-    public function getArchive()
-    {
-        return $this->archive;
-    }
-
-    /**
-     * @return Image
-     */
-    public function getImage()
-    {
-        return $this->image;
-    }
 
     /**
      * @return Notification
@@ -117,30 +84,76 @@ class BuildRequest
     }
 
     /**
-     * @return Context
-     */
-    public function getContext()
-    {
-        return $this->context ?: new Context('', '');
-    }
-
-    /**
-     * @return array
-     */
-    public function getEnvironment()
-    {
-        return $this->environment ?: [];
-    }
-
-    /**
      * @return Uuid
      */
     public function getCredentialsBucket()
     {
-        if (is_string($this->credentialsBucket)) {
-            $this->credentialsBucket = Uuid::fromString($this->credentialsBucket);
-        }
-
         return $this->credentialsBucket;
+    }
+
+    /**
+     * @return BuildStepConfiguration[]
+     */
+    public function getSteps()
+    {
+        return $this->steps;
+    }
+
+    public function withSteps(array $steps) : BuildRequest
+    {
+        $request = clone $this;
+        $request->steps = $steps;
+
+        return $request;
+    }
+
+    /**
+     * @deprecated Should be using the build steps instead.
+     *
+     * @return Repository|null
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
+
+    /**
+     * @deprecated Should be using the build steps instead.
+     *
+     * @return ArchiveSource|null
+     */
+    public function getArchive()
+    {
+        return $this->archive;
+    }
+
+    /**
+     * @deprecated Should be using the build steps instead.
+     *
+     * @return Image|null
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @deprecated Should be using the build steps instead.
+     *
+     * @return Context|null
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * @deprecated Should be using the build steps instead.
+     *
+     * @return array|null
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
     }
 }

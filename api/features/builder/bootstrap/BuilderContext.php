@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Article\TraceableArchiveBuilder;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Builder;
+use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Notifier\HookableNotifier;
 use ContinuousPipe\Builder\Notifier\NotificationException;
@@ -14,6 +15,7 @@ use ContinuousPipe\Builder\Notifier\TraceableNotifier;
 use ContinuousPipe\Builder\Repository;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
+use ContinuousPipe\Builder\Tests\Docker\TraceableDockerDockerFacade;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
@@ -132,9 +134,9 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     }
 
     /**
-     * @When I send a build request for the fixture repository :repository with the following environment:
+     * @When I send a build request for the image :image from the fixture repository :repository with the following environment:
      */
-    public function iSendABuildRequestForTheFixtureRepositoryWithTheFollowingEnvironment($repository, TableNode $table)
+    public function iSendABuildRequestForTheFixtureRepositoryWithTheFollowingEnvironment($image, $repository, TableNode $table)
     {
         $environmentVariables = array_reduce($table->getHash(), function($list, $env) {
             $list[$env['name']] = $env['value'];
@@ -147,8 +149,8 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         $contents = <<<EOF
 {
   "image": {
-    "name": "my/image",
-    "tag": "master"
+    "name": "$image",
+    "tag": "latest"
   },
   "repository": {
     "address": "fixtures://$repository",
@@ -286,9 +288,9 @@ EOF;
      */
     public function theArchiveShouldBeDownloadedUsingTheToken($token)
     {
-        $requests = $this->traceableArchiveBuilder->getRequests();
-        $matchingRequests = array_filter($requests, function(BuildRequest $request) use ($token) {
-            return $request->getRepository()->getToken() == $token;
+        $requests = $this->traceableArchiveBuilder->getSteps();
+        $matchingRequests = array_filter($requests, function(BuildStepConfiguration $step) use ($token) {
+            return $step->getRepository()->getToken() == $token;
         });
 
         if (count($matchingRequests) == 0) {

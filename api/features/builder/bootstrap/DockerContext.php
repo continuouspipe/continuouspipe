@@ -1,7 +1,8 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Builder\Docker\Client;
+use ContinuousPipe\Builder\Docker\DockerFacade;
+use ContinuousPipe\Builder\Docker\PushContext;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use LogStream\EmptyLogger;
@@ -11,7 +12,7 @@ use LogStream\Tests\InMemory\InMemoryLogger;
 class DockerContext implements Context
 {
     /**
-     * @var Client
+     * @var DockerFacade
      */
     private $client;
 
@@ -19,16 +20,17 @@ class DockerContext implements Context
      * @var \Exception|null
      */
     private $exception;
+
     /**
      * @var LoggerFactory
      */
     private $loggerFactory;
 
     /**
-     * @param Client $client
+     * @param DockerFacade $client
      * @param LoggerFactory $loggerFactory
      */
-    public function __construct(Client $client, LoggerFactory $loggerFactory)
+    public function __construct(DockerFacade $client, LoggerFactory $loggerFactory)
     {
         $this->client = $client;
         $this->loggerFactory = $loggerFactory;
@@ -40,7 +42,13 @@ class DockerContext implements Context
     public function aBuiltImageIsPushed()
     {
         try {
-            $this->client->push(new Image('name', 'tag'), new RegistryCredentials(), $this->loggerFactory->create());
+            $this->client->push(
+                new PushContext(
+                    '',
+                    RegistryCredentials::fromAuthenticationString('')
+                ),
+                new Image('name', 'tag')
+            );
         } catch (\Exception $e) {
             $this->exception = $e;
         }

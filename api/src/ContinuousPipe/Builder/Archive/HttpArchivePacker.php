@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Builder\Archive;
 
 use ContinuousPipe\Builder\Context;
-use ContinuousPipe\Builder\Request\Archive;
+use ContinuousPipe\Builder\Request\ArchiveSource;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Finder\Finder;
@@ -28,13 +28,13 @@ class HttpArchivePacker implements ArchivePacker
      * Create an archive from the given archive.
      *
      * @param Context $context
-     * @param Archive $archive
+     * @param ArchiveSource $archive
      *
      * @return FileSystemArchive
      *
      * @throws ArchiveCreationException
      */
-    public function createFromArchiveRequest(Context $context, Archive $archive)
+    public function createFromArchiveRequest(Context $context, ArchiveSource $archive)
     {
         $archiveFile = $this->getTemporaryFilePath('archive');
 

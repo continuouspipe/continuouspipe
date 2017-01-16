@@ -6,17 +6,33 @@ Feature:
   Background:
     Given I am authenticated
     And there is the bucket "00000000-0000-0000-0000-000000000000"
-    And the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
-      | username | password | serverAddress | email                 |
-      | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
+    And the bucket "00000000-0000-0000-0000-000000000000" contains the Docker Registry credentials
     And the bucket "00000000-0000-0000-0000-000000000000" contains the following github tokens:
       | identifier | token |
       | sroze      | 12345 |
 
   @integration
-  Scenario:
-    When I send a build request for the fixture repository "build-args" with the following environment:
-      | name          | value |
-      | MY_CUSTOM_ENV | foo   |
+  Scenario: It injects build arguments
+    When I send the following build request:
+    """
+    {
+      "steps": [
+        {
+          "image": {
+            "name": "docker.io/continuouspipepublicrobot/test",
+            "tag": "build-args"
+          },
+          "repository": {
+            "address": "fixtures://build-args",
+            "branch": "master"
+          },
+          "environment": {
+            "MY_CUSTOM_ENV": "foo"
+          }
+        }
+      ],
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+    }
+    """
     Then the build should be successful
-    And the file "/result" in the image "my/image:master" should contain "foo"
+    And the file "/result" in the image "docker.io/continuouspipepublicrobot/test:build-args" should contain "foo"

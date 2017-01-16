@@ -1,0 +1,9 @@
+FROM busybox
+
+ARG TOKEN
+RUN mkdir /dist && \
+    if [ "$TOKEN" = "secret-token" ]; then \
+        echo "SUCCESS" > /dist/index.html; \
+    else \
+        echo "FAILURE" > /dist/index.html; \
+    fi

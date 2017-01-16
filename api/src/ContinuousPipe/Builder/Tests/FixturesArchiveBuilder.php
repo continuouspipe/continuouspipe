@@ -2,8 +2,11 @@
 
 namespace ContinuousPipe\Builder\Tests;
 
+use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Archive\ArchiveCreationException;
 use ContinuousPipe\Builder\ArchiveBuilder;
+use ContinuousPipe\Builder\BuildStepConfiguration;
+use ContinuousPipe\Builder\Request\ArchiveSource;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Tests\Archive\NonDeletableFileSystemArchive;
 use LogStream\Logger;
@@ -28,9 +31,9 @@ class FixturesArchiveBuilder implements ArchiveBuilder
     /**
      * {@inheritdoc}
      */
-    public function getArchive(BuildRequest $buildRequest, Logger $logger)
+    public function createArchive(BuildStepConfiguration $buildStepConfiguration) : Archive
     {
-        $repositoryAddress = $buildRequest->getRepository()->getAddress();
+        $repositoryAddress = $buildStepConfiguration->getRepository()->getAddress();
         if (strpos($repositoryAddress, self::ADDRESS_PREFIX) === false) {
             throw new ArchiveCreationException(sprintf(
                 'The repository address "%s" is not supported to get an archive',
@@ -54,9 +57,9 @@ class FixturesArchiveBuilder implements ArchiveBuilder
     /**
      * {@inheritdoc}
      */
-    public function supports(BuildRequest $request)
+    public function supports(BuildStepConfiguration $buildStepConfiguration) : bool
     {
-        if (null === ($repository = $request->getRepository())) {
+        if (null === ($repository = $buildStepConfiguration->getRepository())) {
             return false;
         }
 

@@ -3,13 +3,15 @@
 namespace ContinuousPipe\Builder\Tests\Docker;
 
 use ContinuousPipe\Builder\Archive;
-use ContinuousPipe\Builder\Docker\Client;
+use ContinuousPipe\Builder\Docker\BuildContext;
+use ContinuousPipe\Builder\Docker\DockerFacade;
+use ContinuousPipe\Builder\Docker\PushContext;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 
-class CallbackDockerClient implements Client
+class CallbackDockerClient implements DockerFacade
 {
     /**
      * @var callable|null
@@ -24,7 +26,7 @@ class CallbackDockerClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function build(Archive $archive, BuildRequest $request, Logger $logger)
+    public function build(BuildContext $context, Archive $archive) : Image
     {
         if (null === $this->buildCallback) {
             $this->buildCallback = self::getBuildSuccessCallback();
@@ -32,13 +34,13 @@ class CallbackDockerClient implements Client
 
         $callback = $this->buildCallback;
 
-        return $callback($archive, $request, $logger);
+        return $callback($context, $archive);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
+    public function push(PushContext $context, Image $image)
     {
         if (null === $this->pushCallback) {
             $this->pushCallback = self::getPushSuccessCallback();
@@ -46,15 +48,7 @@ class CallbackDockerClient implements Client
 
         $callback = $this->pushCallback;
 
-        return $callback($image, $credentials, $logger);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function runAndCommit(Image $image, Logger $logger, $command)
-    {
-        return $image;
+        return $callback($context, $image);
     }
 
     /**
@@ -62,7 +56,7 @@ class CallbackDockerClient implements Client
      */
     public static function getPushSuccessCallback()
     {
-        return function (Image $image, RegistryCredentials $credentials, Logger $logger) {
+        return function (PushContext $context, Image $image) {
             return;
         };
     }
@@ -72,8 +66,8 @@ class CallbackDockerClient implements Client
      */
     public static function getBuildSuccessCallback()
     {
-        return function (Archive $archive, BuildRequest $request, Logger $logger) {
-            return $request->getImage();
+        return function (BuildContext $context, Archive $archive) {
+            return $context->getImage();
         };
     }
 

@@ -5,6 +5,32 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <!-- Build requests -->
+        <service id="builder.request_transformer.non_steps_bc_layer" class="ContinuousPipe\Builder\Request\Transformers\PreviousStepsBackwardCompatibilityTransformer" />
+        <service id="builder.request_transformer.add_default_context" class="ContinuousPipe\Builder\Request\Transformers\AddDefaultContext" />
+        <service id="builder.request_transformer.replace_github_repository_by_archive" class="ContinuousPipe\Builder\GitHub\BuildRequestTransformer\ReplaceTheGitHubRepositoryByAnArchive">
+            <argument type="service" id="logger" />
+        </service>
+        <service id="builder.request_transformer.dispatch_log_stream_identifier" class="ContinuousPipe\Builder\Request\Transformers\DispatchLogStreamIdentifierToSteps" />
+        <service id="builder.request_transformer.find_image_registry_credentials" class="ContinuousPipe\Builder\Request\Transformers\FindImageRegistryCredentials">
+            <argument type="service" id="builder.docker.authenticator_credentials_repository" />
+        </service>
+        <service id="builder.request_transformer.load_docker_registries" class="ContinuousPipe\Builder\Request\Transformers\LoadRegistriesFromCredentialsBucket">
+            <argument type="service" id="authenticator.bucket_repository" />
+        </service>
+
+        <service id="builder.request_transformer" class="ContinuousPipe\Builder\Request\Transformers\ChainBuildRequestTransformer">
+            <argument type="collection">
+                <argument type="service" id="builder.request_transformer.non_steps_bc_layer" />
+                <argument type="service" id="builder.request_transformer.add_default_context" />
+                <argument type="service" id="builder.request_transformer.replace_github_repository_by_archive" />
+                <argument type="service" id="builder.request_transformer.dispatch_log_stream_identifier" />
+                <argument type="service" id="builder.request_transformer.find_image_registry_credentials" />
+                <argument type="service" id="builder.request_transformer.load_docker_registries" />
+            </argument>
+        </service>
+
+        <!-- Archives -->
         <service id="builder.archive_reader" class="ContinuousPipe\Builder\Archive\Reader\DownloaderArchiveReader" />
         <service id="builder.archive_manipulator_factory" class="ContinuousPipe\Builder\Archive\Manipulator\ArchiveManipulatorFactory">
             <argument type="service" id="builder.archive_reader" />
@@ -46,31 +72,13 @@
             </argument>
         </service>
 
-        <service id="builder.archive_builder.github_repository_compatibility"
-                 class="ContinuousPipe\Builder\GitHub\Archive\ReplaceTheGitHubRepositoryByAnArchiveDecorator"
-                 decorates="builder.archive_builder"
-                 decoration-priority="5">
-            <argument type="service" id="builder.archive_builder.github_repository_compatibility.inner" />
-        </service>
+        <!-- Notification(s) -->
+        <service id="builder.listener.notification_when_finished" class="ContinuousPipe\Builder\EventListener\SendNotificationWhenBuildFinishes">
+            <argument type="service" id="builder.notifier" />
+            <argument type="service" id="builder.view.build_repository" />
 
-        <service id="builder.archive_builder.inject_github_token"
-                 class="ContinuousPipe\Builder\GitHub\Archive\InjectGitHubTokenBuilderDecorator"
-                 decorates="builder.archive_builder"
-                 decoration-priority="4">
-            <argument type="service" id="builder.archive_builder.inject_github_token.inner" />
-            <argument type="service" id="authenticator.bucket_repository" />
-        </service>
-
-        <service id="builder.builder" class="ContinuousPipe\Builder\Docker\DockerBuilder">
-            <argument type="service" id="builder.archive_builder" />
-            <argument type="service" id="builder.docker.client" />
-            <argument type="service" id="builder.docker.authenticator_credentials_repository" />
-            <argument type="service" id="builder.command_extractor" />
-            <argument type="service" id="log_stream.logger_factory" />
-        </service>
-
-        <service id="builder.build_repository" class="ContinuousPipe\Builder\Infrastructure\Doctrine\DoctrineBuildRepository">
-            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFinished" />
         </service>
     </services>
 </container>

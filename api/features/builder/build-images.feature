@@ -10,8 +10,54 @@ Feature:
       | identifier | token |
       | sroze      | 12345 |
 
+  Scenario: Successful build
+    Given the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
+      | username | password | serverAddress | email                 |
+      | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
+    When I send the following build request:
+    """
+    {
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "continuous"
+          },
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "747850e8c821a443a7b5cee28a48581069049739"
+          }
+        }
+      ],
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+    }
+    """
+    Then the build should be successful
+    And the image "sroze/php-example:continuous" should be built
+    And the image "sroze/php-example:continuous" should be pushed
 
-  Scenario:
+  Scenario: The build should fail without Docker Registry credentials
+    When I send the following build request:
+    """
+    {
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "continuous"
+          },
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "747850e8c821a443a7b5cee28a48581069049739"
+          }
+        }
+      ],
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+    }
+    """
+    Then the build should be errored
+
+  Scenario: Successful build using the previous non-steps API
     Given the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
       | username | password | serverAddress | email                 |
       | samuel   | samuel   | docker.io     | samuel.roze@gmail.com |
@@ -32,21 +78,3 @@ Feature:
     Then the build should be successful
     And the image "sroze/php-example:continuous" should be built
     And the image "sroze/php-example:continuous" should be pushed
-
-  Scenario: The build should fail without Docker Registry credentials
-    When I send the following build request:
-    """
-    {
-      "image": {
-        "name": "sroze/php-example",
-        "tag": "continuous"
-      },
-      "repository": {
-        "address": "fixtures://php-example",
-        "branch": "747850e8c821a443a7b5cee28a48581069049739"
-      },
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
-    }
-    """
-    Then the build should be errored
-    And the image "sroze/php-example:continuous" should be built

@@ -2,7 +2,10 @@
 
 namespace ContinuousPipe\Builder\Archive;
 
+use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\ArchiveBuilder;
+use ContinuousPipe\Builder\BuildStepConfiguration;
+use ContinuousPipe\Builder\Context;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use GuzzleHttp\Exception\ClientException;
 use LogStream\Logger;
@@ -25,10 +28,13 @@ class HttpArchiveBuilder implements ArchiveBuilder
     /**
      * {@inheritdoc}
      */
-    public function getArchive(BuildRequest $buildRequest, Logger $logger)
+    public function createArchive(BuildStepConfiguration $buildStepConfiguration) : Archive
     {
         try {
-            $archive = $this->archivePacker->createFromArchiveRequest($buildRequest->getContext(), $buildRequest->getArchive());
+            $archive = $this->archivePacker->createFromArchiveRequest(
+                $buildStepConfiguration->getContext(),
+                $buildStepConfiguration->getArchive()
+            );
         } catch (ClientException $e) {
             throw new ArchiveCreationException($e->getMessage(), $e->getCode(), $e);
         }
@@ -39,8 +45,8 @@ class HttpArchiveBuilder implements ArchiveBuilder
     /**
      * {@inheritdoc}
      */
-    public function supports(BuildRequest $request)
+    public function supports(BuildStepConfiguration $buildStepConfiguration) : bool
     {
-        return $request->getArchive() !== null;
+        return $buildStepConfiguration->getArchive() !== null;
     }
 }

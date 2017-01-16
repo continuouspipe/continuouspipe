@@ -1,10 +1,6 @@
 ContinuousPipe\Builder\Request\BuildRequest:
-    constraints:
-        - Expression:
-            expression: "this.getArchive() != null || this.getRepository() != null"
-            message: "A build request needs to have source: either a repository or an archive"
     properties:
-        image:
-            - NotNull: ~
         credentialsBucket:
             - NotBlank: ~
+        steps:
+            - Valid: ~

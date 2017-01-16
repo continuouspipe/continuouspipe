@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Builder\Archive;
 
 use ContinuousPipe\Builder\Archive;
-use ContinuousPipe\Builder\Request\Archive as ArchiveRequest;
+use ContinuousPipe\Builder\Request\ArchiveSource as ArchiveRequest;
 use ContinuousPipe\Builder\Context;
 
 interface ArchivePacker

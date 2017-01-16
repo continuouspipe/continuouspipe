@@ -10,6 +10,7 @@ use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class SecurityContext implements Context
@@ -25,13 +26,20 @@ class SecurityContext implements Context
     private $tokenStorage;
 
     /**
+     * @var KernelInterface
+     */
+    private $kernel;
+
+    /**
      * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
      * @param TokenStorageInterface $tokenStorage
+     * @param KernelInterface $kernel
      */
-    public function __construct(InMemoryAuthenticatorClient $inMemoryAuthenticatorClient, TokenStorageInterface $tokenStorage)
+    public function __construct(InMemoryAuthenticatorClient $inMemoryAuthenticatorClient, TokenStorageInterface $tokenStorage, KernelInterface $kernel)
     {
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->tokenStorage = $tokenStorage;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -61,6 +69,19 @@ class SecurityContext implements Context
         $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid(Uuid::fromString($uuid));
 
         foreach ($table->getHash() as $row) {
+            $bucket->getDockerRegistries()->add(new DockerRegistry($row['username'], $row['password'], $row['email'], $row['serverAddress']));
+        }
+    }
+
+    /**
+     * @Given the bucket :uuid contains the Docker Registry credentials
+     */
+    public function theBucketContainsTheDockerRegistryCredentials($uuid)
+    {
+        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid(Uuid::fromString($uuid));
+        $testCredentials = $this->kernel->getContainer()->getParameter('test_docker_credentials');
+
+        foreach ($testCredentials as $row) {
             $bucket->getDockerRegistries()->add(new DockerRegistry($row['username'], $row['password'], $row['email'], $row['serverAddress']));
         }
     }

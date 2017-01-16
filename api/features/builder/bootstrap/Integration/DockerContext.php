@@ -5,9 +5,8 @@ namespace Integration;
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Builder\Docker\HttpClient\OutputHandler;
 use ContinuousPipe\Builder\Docker\HttpClient\RawOutputHandler;
-use Docker\Container;
+use Docker\API\Model\ContainerConfig;
 use Docker\Docker;
-use Docker\Image;
 
 class DockerContext implements Context
 {
@@ -37,8 +36,8 @@ class DockerContext implements Context
     {
         list($name, $tag) = explode(':', $image);
 
-        $inspection = $this->docker->getImageManager()->inspect(new Image($name, $tag));
-        $foundCommand = implode(' ', $inspection['Config']['Cmd']);
+        $inspection = $this->docker->getImageManager()->find($name, ['tag' => $tag]);
+        $foundCommand = implode(' ', $inspection->getConfig()->getCmd());
 
         if ($foundCommand != $command) {
             throw new \RuntimeException(sprintf(
@@ -55,23 +54,30 @@ class DockerContext implements Context
     public function theFileInTheImageShouldContain($path, $image, $contents)
     {
         $containerManager = $this->docker->getContainerManager();
-        $container = new Container([
-            'Image' => $image,
-            'Cmd' => [
-                '/bin/sh', '-c', 'cat '.$path,
-            ],
+        $containerConfig = new ContainerConfig();
+        $containerConfig->setImage($image);
+        $containerConfig->setCmd(['/bin/sh', '-c', 'cat '.$path]);
+
+        $containerCreateResult = $containerManager->create($containerConfig);
+        $attachStream = $containerManager->attach($containerCreateResult->getId(), [
+            'stream' => true,
+            'stdin' => true,
+            'stdout' => true,
+            'stderr' => true
         ]);
 
+        $containerManager->start($containerCreateResult->getId());
         $output = '';
-        $successful = $containerManager->run($container, function($raw) use (&$output) {
-            $output .= $this->outputHandler->handle($raw);
+        $attachStream->onStdout(function ($stdout) use (&$output) {
+            $output .= $stdout;
+        });
+        $attachStream->onStderr(function ($stderr) use (&$output) {
+            $output .= $stderr;
         });
 
-        if (!$successful) {
-            throw new \RuntimeException('The command is not successful');
-        }
+        $attachStream->wait();
 
-        if (false === strpos($output, $container)) {
+        if (false === strpos($output, $contents)) {
             throw new \RuntimeException('String not found in '.$output);
         }
     }

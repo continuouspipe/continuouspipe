@@ -4,6 +4,7 @@ namespace ContinuousPipe\Builder\Docker;
 
 use Docker\Stream\TarStream;
 use GuzzleHttp\Psr7\Stream;
+use LogStream\LoggerFactory;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use ContinuousPipe\Builder\Docker\HttpClient\OutputHandler;
 use ContinuousPipe\Builder\RegistryCredentials;
@@ -17,7 +18,7 @@ use LogStream\Logger;
 use LogStream\Node\Text;
 use Psr\Log\LoggerInterface;
 
-class HttpClient implements Client
+class HttpClient implements DockerFacade
 {
     /**
      * @var Docker
@@ -43,33 +44,45 @@ class HttpClient implements Client
      * @var BucketRepository
      */
     private $bucketRepository;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
 
     /**
-     * @param Docker             $docker
+     * @param Docker $docker
      * @param DockerfileResolver $dockerfileResolver
-     * @param LoggerInterface    $logger
-     * @param OutputHandler      $outputHandler
-     * @param BucketRepository   $bucketRepository
+     * @param LoggerInterface $logger
+     * @param OutputHandler $outputHandler
+     * @param BucketRepository $bucketRepository
+     * @param LoggerFactory $loggerFactory
      */
-    public function __construct(Docker $docker, DockerfileResolver $dockerfileResolver, LoggerInterface $logger, OutputHandler $outputHandler, BucketRepository $bucketRepository)
-    {
+    public function __construct(
+        Docker $docker,
+        DockerfileResolver $dockerfileResolver,
+        LoggerInterface $logger,
+        OutputHandler $outputHandler,
+        BucketRepository $bucketRepository,
+        LoggerFactory $loggerFactory
+    ) {
         $this->docker = $docker;
         $this->dockerfileResolver = $dockerfileResolver;
         $this->logger = $logger;
         $this->outputHandler = $outputHandler;
         $this->bucketRepository = $bucketRepository;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function build(Archive $archive, BuildRequest $request, Logger $logger)
+    public function build(BuildContext $context, Archive $archive) : Image
     {
         try {
-            return $this->doBuild($archive, $request, $logger);
+            return $this->doBuild($context, $archive);
         } catch (\Http\Client\Exception $e) {
             $this->logger->notice('An error appeared while building the Docker image', [
-                'buildRequest' => $request,
+                'context' => $context,
                 'exception' => $e,
             ]);
 
@@ -84,18 +97,18 @@ class HttpClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function push(Image $image, RegistryCredentials $credentials, Logger $logger)
+    public function push(PushContext $context, Image $image)
     {
         try {
             $createImageStream = $this->docker->getImageManager()->push(
                 $image->getName(), [
                     'tag' => $image->getTag(),
-                    'X-Registry-Auth' => $credentials->getAuthenticationString(),
+                    'X-Registry-Auth' => $context->getCredentials()->getAuthenticationString(),
                 ],
                 ImageManager::FETCH_STREAM
             );
 
-            $createImageStream->onFrame($this->getOutputCallback($logger));
+            $createImageStream->onFrame($this->getOutputCallback($context));
             $createImageStream->wait();
         } catch (\Http\Client\Exception $e) {
             if ($e->getPrevious() instanceof DockerException) {
@@ -112,38 +125,29 @@ class HttpClient implements Client
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function runAndCommit(Image $image, Logger $logger, $command)
-    {
-        throw new DockerException('This is a deprecated feature you wouldn\'t have to use anymore');
-    }
-
-    /**
+     * @param BuildContext $context
      * @param Archive      $archive
-     * @param BuildRequest $request
-     * @param Logger       $logger
      *
      * @throws DockerException
      *
      * @return Image
      */
-    private function doBuild(Archive $archive, BuildRequest $request, Logger $logger)
+    private function doBuild(BuildContext $context, Archive $archive)
     {
-        $image = $request->getImage();
+        $image = $context->getImage() ?: new Image('TODO-RANDOM', 'master');
 
         $parameters = [
             'q' => (int) false,
             't' => $this->getImageName($image),
             'nocache' => (int) false,
             'rm' => (int) false,
-            'dockerfile' => $this->dockerfileResolver->getFilePath($request->getContext()),
+            'dockerfile' => $this->dockerfileResolver->getFilePath($context->getContext()),
             'Content-type' => 'application/tar',
-            'X-Registry-Config' => $this->generateHttpRegistryConfig($request),
+            'X-Registry-Config' => $this->generateHttpRegistryConfig($context),
             'pull' => (int) true,
         ];
 
-        $environment = $request->getEnvironment();
+        $environment = $context->getEnvironment();
         if (!empty($environment)) {
             $parameters['buildargs'] = json_encode($environment);
         }
@@ -152,7 +156,7 @@ class HttpClient implements Client
 
         // Allow a build to be up to half an hour
         $buildStream = $this->docker->getImageManager()->build($content, $parameters, ImageManager::FETCH_STREAM);
-        $buildStream->onFrame($this->getOutputCallback($logger));
+        $buildStream->onFrame($this->getOutputCallback($context));
 
         try {
             $buildStream->wait();
@@ -179,16 +183,15 @@ class HttpClient implements Client
     }
 
     /**
-     * @param BuildRequest $request
+     * @param BuildContext $context
      *
      * @return string
      */
-    private function generateHttpRegistryConfig(BuildRequest $request)
+    private function generateHttpRegistryConfig(BuildContext $context)
     {
-        $bucket = $this->bucketRepository->find($request->getCredentialsBucket());
         $registryConfig = [];
 
-        foreach ($bucket->getDockerRegistries() as $dockerRegistry) {
+        foreach ($context->getDockerRegistries() as $dockerRegistry) {
             $registryConfig[$dockerRegistry->getServerAddress()] = [
                 'username' => $dockerRegistry->getUsername(),
                 'password' => $dockerRegistry->getPassword(),
@@ -205,12 +208,14 @@ class HttpClient implements Client
     /**
      * Get the client stream callback.
      *
-     * @param Logger $logger
+     * @param DockerContext $context
      *
      * @return callable
      */
-    private function getOutputCallback(Logger $logger)
+    private function getOutputCallback(DockerContext $context)
     {
+        $logger = $this->loggerFactory->fromId($context->getLogStreamIdentifier());
+
         return function ($output) use ($logger) {
             $output = $this->outputHandler->handle($output);
 

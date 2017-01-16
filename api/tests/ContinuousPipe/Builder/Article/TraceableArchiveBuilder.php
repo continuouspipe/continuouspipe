@@ -4,6 +4,7 @@ namespace ContinuousPipe\Builder\Article;
 
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\ArchiveBuilder;
+use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 
@@ -15,9 +16,9 @@ class TraceableArchiveBuilder implements ArchiveBuilder
     private $decoratedBuilder;
 
     /**
-     * @var BuildRequest[]
+     * @var BuildStepConfiguration[]
      */
-    private $requests;
+    private $steps;
 
     /**
      * @var Archive[]
@@ -35,11 +36,11 @@ class TraceableArchiveBuilder implements ArchiveBuilder
     /**
      * {@inheritdoc}
      */
-    public function getArchive(BuildRequest $buildRequest, Logger $logger)
+    public function createArchive(BuildStepConfiguration $buildStepConfiguration) : Archive
     {
-        $archive = $this->decoratedBuilder->getArchive($buildRequest, $logger);
+        $archive = $this->decoratedBuilder->createArchive($buildStepConfiguration);
 
-        $this->requests[] = $buildRequest;
+        $this->steps[] = $buildStepConfiguration;
         $this->archives[] = $archive;
 
         return $archive;
@@ -48,17 +49,17 @@ class TraceableArchiveBuilder implements ArchiveBuilder
     /**
      * {@inheritdoc}
      */
-    public function supports(BuildRequest $request)
+    public function supports(BuildStepConfiguration $buildStepConfiguration) : bool
     {
-        return $this->decoratedBuilder->supports($request);
+        return $this->decoratedBuilder->supports($buildStepConfiguration);
     }
 
     /**
-     * @return BuildRequest[]
+     * @return BuildStepConfiguration[]
      */
-    public function getRequests()
+    public function getSteps()
     {
-        return $this->requests;
+        return $this->steps;
     }
 
     /**
