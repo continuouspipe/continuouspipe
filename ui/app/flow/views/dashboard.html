@@ -47,7 +47,12 @@
         <li ng-repeat="tide in tides | orderBy: '-creation_date'" ng-class="['status-'+tide.status]">
             <a ui-sref="tide.logs({tideUuid: tide.uuid})">
                 <div class="tide-status status-text" ng-class="['status-'+tide.status]">{{ tide.status }}</div>
-                <div class="tide-source"><i class="cp-icon-git-branch"></i> <code>{{ tide.code_reference.branch }}</code></div>
+                <div class="tide-source">
+                    <span>
+                        <md-tooltip md-direction="bottom">{{ tide.code_reference.branch }} ({{ tide.code_reference.sha1 }})</md-tooltip>
+                        <i class="cp-icon-git-branch"></i> <code>{{ tide.code_reference.branch }}</code>
+                    </span>
+                </div>
                 <div class="tide-tasks">
                     <task-list tide="tide" />
                 </div>
