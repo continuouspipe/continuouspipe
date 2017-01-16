@@ -25,8 +25,10 @@ class DisplayTheErrors
     public function notify(StepFailed $event)
     {
         $logger = $this->loggerFactory->fromId($event->getLogStreamIdentifier());
-        $logger->child(new Text(
+        $child = $logger->child(new Text(
             $event->getReason()->getMessage()
-        ))->updateStatus(Log::FAILURE);
+        ));
+
+        $child->updateStatus(Log::FAILURE);
     }
 }

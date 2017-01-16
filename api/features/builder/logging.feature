@@ -32,3 +32,4 @@ Feature:
     }
     """
     Then a log containing "This specific thing went wrong" should be created
+    And the log containing "This specific thing went wrong" should be failed

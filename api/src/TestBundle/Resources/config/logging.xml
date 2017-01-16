@@ -5,9 +5,10 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="log_stream.client" class="LogStream\Tests\InMemoryLogClient">
+        <service id="log_stream.client.in_memory" class="LogStream\Tests\InMemoryLogClient">
             <argument type="service" id="log_stream.tree.log_normalizer" />
         </service>
+        <service id="log_stream.client" alias="log_stream.client.in_memory" />
 
         <service id="log_stream.client.traceable"
                  class="LogStream\TraceableClient"
