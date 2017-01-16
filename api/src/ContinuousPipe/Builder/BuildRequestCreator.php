@@ -29,19 +29,25 @@ class BuildRequestCreator
      * @var string
      */
     private $riverHostname;
+    /**
+     * @var bool
+     */
+    private $useSsl;
 
     /**
      * @param LoggerInterface $logger
      * @param BuildRequestSourceResolver $buildRequestSourceResolver
      * @param UrlGeneratorInterface $urlGenerator
      * @param string $riverHostname
+     * @param bool $useSsl
      */
-    public function __construct(LoggerInterface $logger, BuildRequestSourceResolver $buildRequestSourceResolver, UrlGeneratorInterface $urlGenerator, string $riverHostname)
+    public function __construct(LoggerInterface $logger, BuildRequestSourceResolver $buildRequestSourceResolver, UrlGeneratorInterface $urlGenerator, string $riverHostname, bool $useSsl)
     {
         $this->logger = $logger;
         $this->buildRequestSourceResolver = $buildRequestSourceResolver;
         $this->urlGenerator = $urlGenerator;
         $this->riverHostname = $riverHostname;
+        $this->useSsl = $useSsl;
     }
 
     /**
@@ -59,7 +65,7 @@ class BuildRequestCreator
             'configuration' => $configuration,
         ]);
 
-        $address = 'https://'.$this->riverHostname.$this->urlGenerator->generate('builder_notification_post', [
+        $address = 'http'.($this->useSsl ? 's' : '').'://'.$this->riverHostname.$this->urlGenerator->generate('builder_notification_post', [
             'tideUuid' => (string) $tideUuid,
         ], UrlGeneratorInterface::ABSOLUTE_PATH);
 

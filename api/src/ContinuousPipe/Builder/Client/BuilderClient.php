@@ -12,6 +12,8 @@ interface BuilderClient
      *
      * @param BuildRequest $buildRequest
      *
+     * @throws BuilderException
+     *
      * @return BuilderBuild
      */
     public function build(BuildRequest $buildRequest, User $user);

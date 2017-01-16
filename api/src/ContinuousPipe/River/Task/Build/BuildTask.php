@@ -123,13 +123,17 @@ class BuildTask extends EventDrivenTask
 
     public function build(BuilderClient $client, BuildRequest $request)
     {
-        $build = $client->build($request, $this->context->getUser());
+        try {
+            $build = $client->build($request, $this->context->getUser());
 
-        $this->events->raiseAndApply(new BuildStarted(
-            $this->context->getTideUuid(),
-            $this->getIdentifier(),
-            $build
-        ));
+            $this->events->raiseAndApply(new BuildStarted(
+                $this->context->getTideUuid(),
+                $this->getIdentifier(),
+                $build
+            ));
+        } catch (BuilderException $e) {
+            $this->fail($e);
+        }
     }
 
     public function receiveBuildNotification(BuilderBuild $build)
@@ -157,12 +161,18 @@ class BuildTask extends EventDrivenTask
                 $build
             ));
 
-            $this->events->raiseAndApply(new ImageBuildsFailed(
-                $this->context->getTideUuid(),
-                $this->getIdentifier(),
-                $this->log
-            ));
+            $this->fail();
         }
+    }
+
+    private function fail(\Throwable $reason = null)
+    {
+        $this->events->raiseAndApply(new ImageBuildsFailed(
+            $this->context->getTideUuid(),
+            $this->getIdentifier(),
+            $this->log,
+            $reason
+        ));
     }
 
     /**

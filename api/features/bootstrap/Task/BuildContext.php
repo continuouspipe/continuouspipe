@@ -6,6 +6,8 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Builder\Client\BuilderBuild;
+use ContinuousPipe\Builder\Client\BuilderException;
+use ContinuousPipe\Builder\Client\HookableBuilderClient;
 use ContinuousPipe\Builder\Client\TraceableBuilderClient;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
@@ -63,6 +65,10 @@ class BuildContext implements Context
      * @var TraceableBuilderClient
      */
     private $traceableBuilderClient;
+    /**
+     * @var HookableBuilderClient
+     */
+    private $hookableBuilderClient;
 
     /**
      * @param EventStore $eventStore
@@ -70,14 +76,22 @@ class BuildContext implements Context
      * @param KernelInterface $kernel
      * @param SerializerInterface $serializer
      * @param TraceableBuilderClient $traceableBuilderClient
+     * @param HookableBuilderClient $hookableBuilderClient
      */
-    public function __construct(EventStore $eventStore, MessageBus $eventBus, KernelInterface $kernel, SerializerInterface $serializer, TraceableBuilderClient $traceableBuilderClient)
-    {
+    public function __construct(
+        EventStore $eventStore,
+        MessageBus $eventBus,
+        KernelInterface $kernel,
+        SerializerInterface $serializer,
+        TraceableBuilderClient $traceableBuilderClient,
+        HookableBuilderClient $hookableBuilderClient
+    ) {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
         $this->kernel = $kernel;
         $this->serializer = $serializer;
         $this->traceableBuilderClient = $traceableBuilderClient;
+        $this->hookableBuilderClient = $hookableBuilderClient;
     }
 
     /**
@@ -88,6 +102,24 @@ class BuildContext implements Context
         $this->tideContext = $scope->getEnvironment()->getContext('TideContext');
         $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
         $this->tideTasksContext = $scope->getEnvironment()->getContext('Tide\TasksContext');
+    }
+
+    /**
+     * @Given the build request will fail
+     */
+    public function theBuildRequestWillFail()
+    {
+        $this->theBuildRequestWillFailWithTheReason('Something went wrong');
+    }
+
+    /**
+     * @Given the build request will fail with the reason :reason
+     */
+    public function theBuildRequestWillFailWithTheReason($reason)
+    {
+        $this->hookableBuilderClient->addHook(function() use ($reason) {
+            throw new BuilderException($reason);
+        });
     }
 
     /**
@@ -213,16 +245,6 @@ class BuildContext implements Context
             $imageBuildsStartedEvent->getTaskId(),
             $imageBuildsStartedEvent->getLog()
         ));
-    }
-
-    /**
-     * @Given :number images builds were started
-     */
-    public function imagesBuildsWereStarted($number)
-    {
-        while ($number-- > 0) {
-            $this->anImageBuildWasStarted();
-        }
     }
 
     /**

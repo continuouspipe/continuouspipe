@@ -11,5 +11,10 @@
                  decorates="builder.client">
             <argument type="service" id="builder.client.traceable.inner" />
         </service>
+        <service id="builder.client.hookable"
+                 class="ContinuousPipe\Builder\Client\HookableBuilderClient"
+                 decorates="builder.client">
+            <argument type="service" id="builder.client.hookable.inner" />
+        </service>
     </services>
 </container>

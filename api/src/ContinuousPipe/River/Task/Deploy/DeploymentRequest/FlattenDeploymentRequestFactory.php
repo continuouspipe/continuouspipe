@@ -26,17 +26,23 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
      * @var string
      */
     private $riverHostname;
+    /**
+     * @var bool
+     */
+    private $useSsl;
 
     /**
      * @param UrlGeneratorInterface $urlGenerator
      * @param TargetEnvironmentFactory $targetEnvironmentFactory
      * @param string $riverHostname
+     * @param bool $useSsl
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory, string $riverHostname)
+    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory, string $riverHostname, bool $useSsl)
     {
         $this->urlGenerator = $urlGenerator;
         $this->targetEnvironmentFactory = $targetEnvironmentFactory;
         $this->riverHostname = $riverHostname;
+        $this->useSsl = $useSsl;
     }
 
     /**
@@ -44,7 +50,7 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
      */
     public function create(Tide $tide, TaskDetails $taskDetails, DeployTaskConfiguration $configuration)
     {
-        $callbackUrl = 'https://'.$this->riverHostname.$this->urlGenerator->generate('pipe_notification_post', [
+        $callbackUrl = 'http'.($this->useSsl ? 's' : '').'://'.$this->riverHostname.$this->urlGenerator->generate('pipe_notification_post', [
             'tideUuid' => $tide->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_PATH);
 
