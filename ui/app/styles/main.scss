@@ -478,6 +478,18 @@ body {
             border-left: 2px solid $success-dark-color;
         }
 
+        &.status-pending {
+            background: $pending-color;
+            color: $pending-dark-color;
+            border-left: 2px solid $pending-dark-color;
+        }
+
+        &.status-cancelled {
+            background: $cancelled-color;
+            color: $cancelled-dark-color;
+            border-left: 2px solid $cancelled-dark-color;
+        }
+
         &.status-running {
             background: $running-color;
             color: $running-dark-color;
@@ -495,13 +507,17 @@ body {
         &.status-failure {
             color: $failure-dark-color;
         }
-
         &.status-success {
             color: $success-dark-color;
         }
-
         &.status-running {
             color: $running-dark-color;
+        }
+        &.status-pending {
+            color: $pending-dark-color;
+        }
+        &.status-cancelled {
+            color: $cancelled-dark-color;
         }
     }
 
@@ -608,6 +624,8 @@ body {
                 .tide-source {
                     flex: 1 1 20%;
                     white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
                 }
                 .tide-tasks {
                     flex: 1 1 20%;
