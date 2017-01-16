@@ -10,7 +10,7 @@
         </service>
 
         <service id="api.controller.create_build" class="ApiBundle\Controller\CreateBuildController">
-            <argument type="service" id="builder.build.transaction_manager" />
+            <argument type="service" id="command_bus" />
             <argument type="service" id="validator" />
             <argument type="service" id="builder.build.build_factory" />
             <argument type="service" id="builder.view.build_repository" />

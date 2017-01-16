@@ -3,6 +3,7 @@
 namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
+use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\View\BuildViewRepository;
 use ContinuousPipe\Builder\Request\BuildRequest;
@@ -10,6 +11,7 @@ use ContinuousPipe\Events\Transaction\TransactionManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
+use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -28,11 +30,6 @@ class CreateBuildController
     private $buildFactory;
 
     /**
-     * @var TransactionManager
-     */
-    private $transactionManager;
-
-    /**
      * @var BuildViewRepository
      */
     private $buildViewRepository;
@@ -40,24 +37,28 @@ class CreateBuildController
      * @var BuildRequestTransformer
      */
     private $buildRequestTransformer;
+    /**
+     * @var MessageBus
+     */
+    private $commandBus;
 
     /**
-     * @param TransactionManager $transactionManager
+     * @param MessageBus $commandBus
      * @param ValidatorInterface $validator
      * @param BuildFactory $buildFactory
      * @param BuildViewRepository $buildViewRepository
      * @param BuildRequestTransformer $buildRequestTransformer
      */
     public function __construct(
-        TransactionManager $transactionManager,
+        MessageBus $commandBus,
         ValidatorInterface $validator,
         BuildFactory $buildFactory,
         BuildViewRepository $buildViewRepository,
         BuildRequestTransformer $buildRequestTransformer
     ) {
+        $this->commandBus = $commandBus;
         $this->validator = $validator;
         $this->buildFactory = $buildFactory;
-        $this->transactionManager = $transactionManager;
         $this->buildViewRepository = $buildViewRepository;
         $this->buildRequestTransformer = $buildRequestTransformer;
     }
@@ -77,9 +78,7 @@ class CreateBuildController
         $request = $this->buildRequestTransformer->transform($request);
         $build = $this->buildFactory->fromRequest($request);
 
-        $this->transactionManager->apply($build->getIdentifier(), function (\ContinuousPipe\Builder\Aggregate\Build $build) {
-            $build->start();
-        });
+        $this->commandBus->handle(new StartBuild($build->getIdentifier()));
 
         return $this->buildViewRepository->find($build->getIdentifier());
     }
