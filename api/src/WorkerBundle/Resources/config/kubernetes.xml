@@ -40,9 +40,7 @@
         <!-- Kubernetes client -->
         <service id="pipe.adapter.kubernetes.guzzle_client" class="GuzzleHttp\Client">
             <argument type="collection">
-                <argument key="defaults" type="collection">
-                    <argument key="verify">false</argument>
-                </argument>
+                <argument key="verify">false</argument>
             </argument>
 
             <tag name="csa_guzzle.client" />
