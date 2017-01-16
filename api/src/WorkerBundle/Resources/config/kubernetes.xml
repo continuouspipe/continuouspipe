@@ -54,6 +54,7 @@
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="pipe.adapter.kubernetes.guzzle_client" />
             <argument type="service" id="pipe.adapter.kubernetes.fault_tolerance_configurator" />
+            <argument type="service" id="logger" />
         </service>
         <service id="pipe.adapter.kubernetes.fault_tolerance_configurator" class="ContinuousPipe\Adapter\Kubernetes\Client\FaultToleranceConfigurator">
         </service>

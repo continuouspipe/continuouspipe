@@ -11,6 +11,7 @@ use Kubernetes\Client\Adapter\Http\HttpConnector;
 use Kubernetes\Client\Adapter\Http\HttpAdapter;
 use Kubernetes\Client\Client;
 use Kubernetes\Client\Serializer\JmsSerializerAdapter;
+use Psr\Log\LoggerInterface;
 
 class HttpClientFactory implements KubernetesClientFactory
 {
@@ -29,14 +30,21 @@ class HttpClientFactory implements KubernetesClientFactory
      */
     private $faultToleranceConfigurator;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         Serializer                 $serializer,
         GuzzleClient               $guzzleClient,
-        FaultToleranceConfigurator $faultToleranceConfigurator)
-    {
+        FaultToleranceConfigurator $faultToleranceConfigurator,
+        LoggerInterface            $logger
+    ) {
         $this->serializer = $serializer;
         $this->guzzleClient = $guzzleClient;
         $this->faultToleranceConfigurator = $faultToleranceConfigurator;
+        $this->logger = $logger;
     }
 
     /**
@@ -62,7 +70,8 @@ class HttpClientFactory implements KubernetesClientFactory
             new HttpAdapter(
                 new HttpConnector(
                     $httpClient,
-                    new JmsSerializerAdapter($this->serializer)
+                    new JmsSerializerAdapter($this->serializer),
+                    $this->logger
                 )
             )
         );
