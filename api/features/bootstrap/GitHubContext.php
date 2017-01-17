@@ -82,6 +82,13 @@ class GitHubContext implements CodeRepositoryContext
     private $inMemoryCodeRepositoryRepository;
 
     /**
+     * Used to put in-memory commits before sending them.
+     *
+     * @var array
+     */
+    private $commitBuilder = [];
+
+    /**
      * @param Kernel $kernel
      * @param TraceableNotifier $gitHubTraceableNotifier
      * @param FakePullRequestResolver $fakePullRequestResolver
@@ -240,6 +247,60 @@ class GitHubContext implements CodeRepositoryContext
     {
         $contents = \GuzzleHttp\json_decode($this->readFixture('push-master.json'), true);
         $contents['ref'] = 'refs/heads/'.$branch;
+        $contents['after'] = $sha;
+        $contents['head_commit']['id'] = $sha;
+
+        $this->sendWebHook('push', json_encode($contents));
+    }
+
+    /**
+     * @When the commit :sha is pushed to the branch :branch by the user :user with an email :email
+     */
+    public function theCommitIsPushedToTheBranchByTheUserWithAnEmail($sha, $branch, $user, $email)
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('push-master.json'), true);
+        $contents['ref'] = 'refs/heads/'.$branch;
+        $contents['after'] = $sha;
+        $contents['head_commit']['id'] = $sha;
+        $contents['commits'][0]['id'] = $sha;
+        $contents['commits'][0]['author']['username'] = $user;
+        $contents['commits'][0]['author']['name'] = $user;
+        $contents['commits'][0]['author']['email'] = $email;
+        $contents['commits'][0]['committer']['username'] = $user;
+        $contents['commits'][0]['committer']['name'] = $user;
+        $contents['commits'][0]['committer']['email'] = $email;
+
+        $this->sendWebHook('push', json_encode($contents));
+    }
+
+    /**
+     * @Given the commit :sha1 has been written by the user :username with an email :email
+     */
+    public function theCommitHasBeenWrittenByTheUserWithAnEmail($sha1, $username, $email)
+    {
+        $this->commitBuilder[$sha1] = ['username' => $username, 'name' => $username, 'email' => $email];
+    }
+
+    /**
+     * @When the commits :commits are pushed to the branch :branch
+     */
+    public function theCommitsArePushedToTheBranch($commits, $branch)
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('push-master.json'), true);
+        $contents['ref'] = 'refs/heads/'.$branch;
+
+        $commitTemplate = $contents['commits'][0];
+        $contents['commits'] = [];
+
+        foreach (explode(',', $commits) as $index => $sha) {
+            $commitAuthor = $this->commitBuilder[$sha];
+
+            $contents['commits'][$index] = $commitTemplate;
+            $contents['commits'][$index]['id'] = $sha;
+            $contents['commits'][$index]['author'] = $commitAuthor;
+            $contents['commits'][$index]['committer'] = $commitAuthor;
+        }
+
         $contents['after'] = $sha;
         $contents['head_commit']['id'] = $sha;
 

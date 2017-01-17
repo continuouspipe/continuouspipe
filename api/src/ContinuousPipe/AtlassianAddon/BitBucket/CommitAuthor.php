@@ -19,4 +19,20 @@ class CommitAuthor
      * @var User
      */
     private $user;
+
+    /**
+     * @return string
+     */
+    public function getRaw(): string
+    {
+        return $this->raw;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
 }

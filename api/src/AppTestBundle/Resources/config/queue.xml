@@ -19,5 +19,13 @@
                  decorates="river.queue.delayed_command_bus">
             <argument type="service" id="river.queue.delayed_command_bus.traced.inner" />
         </service>
+
+        <service id="river.user_activity.in_memory_dispatcher" class="ContinuousPipe\Activity\InMemoryDispatcher" />
+        <service id="river.user_activity.dispatcher" alias="river.user_activity.in_memory_dispatcher" />
+        <service id="river.user_activity.traceable_dispatcher"
+                 class="ContinuousPipe\Activity\TraceableUserActivityDispatcher"
+                 decorates="river.user_activity.dispatcher">
+            <argument type="service" id="river.user_activity.traceable_dispatcher.inner" />
+        </service>
     </services>
 </container>

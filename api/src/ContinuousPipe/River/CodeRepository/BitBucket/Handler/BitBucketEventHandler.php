@@ -11,6 +11,7 @@ use ContinuousPipe\AtlassianAddon\BitBucket\PullRequest as BitBucketPullRequest;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
 use ContinuousPipe\River\CodeRepository\BitBucket\Command\HandleBitBucketEvent;
+use ContinuousPipe\River\CodeRepository\CodeRepositoryUser;
 use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use ContinuousPipe\River\CodeRepository\Event\CodePushed;
 use ContinuousPipe\River\CodeRepository\Event\PullRequestOpened;
@@ -64,7 +65,8 @@ class BitBucketEventHandler
         if (null !== ($reference = $change->getNew())) {
             $this->eventBus->handle(new CodePushed(
                 $command->getFlowUuid(),
-                $this->createCodeReference($event, $reference)
+                $this->createCodeReference($event, $reference),
+                $this->resolveUsers($change)
             ));
         } elseif (null !== ($reference = $change->getOld())) {
             $this->eventBus->handle(new BranchDeleted(
@@ -96,5 +98,26 @@ class BitBucketEventHandler
             $pullRequest->getSource()->getCommit()->getHash(),
             $pullRequest->getSource()->getBranch()->getName()
         );
+    }
+
+    /**
+     * @param Change $change
+     *
+     * @return CodeRepositoryUser[]
+     */
+    private function resolveUsers(Change $change)
+    {
+        $users = [];
+
+        foreach ($change->getCommits() as $commit) {
+            $commitUser = $commit->getAuthor()->getUser();
+            $user = new CodeRepositoryUser($commitUser->getUsername(), null, $commitUser->getDisplayName());
+
+            if (!in_array($user, $users)) {
+                $users[] = $user;
+            }
+        }
+
+        return $users;
     }
 }

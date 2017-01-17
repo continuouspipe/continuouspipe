@@ -74,6 +74,11 @@ class BitBucketContext implements CodeRepositoryContext
      */
     private $inMemoryCodeRepositoryRepository;
 
+    /**
+     * @var array
+     */
+    private $commitBuilder = [];
+
     public function __construct(
         MatchingHandler $bitBucketMatchingClientHandler,
         KernelInterface $kernel,
@@ -325,6 +330,63 @@ class BitBucketContext implements CodeRepositoryContext
         $body['data']['push']['changes'][0]['new']['type'] = 'branch';
         $body['data']['push']['changes'][0]['new']['name'] = $branch;
         $body['data']['push']['changes'][0]['new']['target']['hash'] = $sha1;
+
+        $this->sendWebhook($body);
+    }
+
+    /**
+     * @When the commit :sha is pushed to the branch :branch by the user :username with an email :email
+     */
+    public function theCommitIsPushedToTheBranchByTheUserWithAnEmail($sha, $branch, $username, $email)
+    {
+        $body = $this->webhookBoilerplate('webhook/pushed-in-branch.json');
+        $body['data']['push']['changes'][0]['new']['type'] = 'branch';
+        $body['data']['push']['changes'][0]['new']['name'] = $branch;
+        $body['data']['push']['changes'][0]['new']['target']['hash'] = $sha;
+
+        $commitTemplate = $body['data']['push']['changes'][0]['commits'][0];
+        $commitTemplate['author']['raw'] = $username.' <'.$email.'>';
+        $commitTemplate['author']['user']['username'] = $username;
+        $commitTemplate['author']['user']['display_name'] = $username;
+
+        $body['data']['push']['changes'][0]['commits'] = [$commitTemplate];
+
+        $this->sendWebhook($body);
+    }
+
+    /**
+     * @Given the commit :sha has been written by the user :username with an email :email
+     */
+    public function theCommitHasBeenWrittenByTheUserWithAnEmail($sha, $username, $email)
+    {
+        $this->commitBuilder[$sha] = ['username' => $username, 'email' => $email];
+    }
+
+    /**
+     * @When the commits :commits are pushed to the branch :branch
+     */
+    public function theCommitsArePushedToTheBranch($commits, $branch)
+    {
+        $sha1s = explode(',', $commits);
+        $body = $this->webhookBoilerplate('webhook/pushed-in-branch.json');
+        $body['data']['push']['changes'][0]['new']['type'] = 'branch';
+        $body['data']['push']['changes'][0]['new']['name'] = $branch;
+        $body['data']['push']['changes'][0]['new']['target']['hash'] = end($sha1s);
+
+        $commitTemplate = $body['data']['push']['changes'][0]['commits'][0];
+        $body['data']['push']['changes'][0]['commits'] = [];
+
+        foreach ($sha1s as $sha) {
+            $commitDetails = $this->commitBuilder[$sha];
+
+            $commit = $commitTemplate;
+            $commit['hash'] = $sha;
+            $commit['author']['raw'] = $commitDetails['username'] . ' <' . $commitDetails['email'] . '>';
+            $commit['author']['user']['username'] = $commitDetails['username'];
+            $commit['author']['user']['display_name'] = $commitDetails['username'];
+
+            $body['data']['push']['changes'][0]['commits'][] = $commit;
+        }
 
         $this->sendWebhook($body);
     }

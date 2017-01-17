@@ -36,7 +36,7 @@ class PreventDeepLocking implements Locker
         }
 
         $this->lockedCollection->add($name);
-        return $this->decoratedLocker->lock($name, function() use ($name, $callable) {
+        return $this->decoratedLocker->lock($name, function () use ($name, $callable) {
             try {
                 return $callable();
             } finally {
