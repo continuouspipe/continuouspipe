@@ -48,6 +48,16 @@ class BuildStepConfiguration
     private $imageRegistryCredentials;
 
     /**
+     * @var Artifact[]
+     */
+    private $readArtifacts;
+
+    /**
+     * @var Artifact[]
+     */
+    private $writeArtifacts;
+
+    /**
      * @return Repository|null
      */
     public function getRepository()
@@ -109,6 +119,22 @@ class BuildStepConfiguration
     public function getImageRegistryCredentials()
     {
         return $this->imageRegistryCredentials;
+    }
+
+    /**
+     * @return Artifact[]
+     */
+    public function getReadArtifacts(): array
+    {
+        return $this->readArtifacts ?: [];
+    }
+
+    /**
+     * @return Artifact[]
+     */
+    public function getWriteArtifacts(): array
+    {
+        return $this->writeArtifacts ?: [];
     }
 
     public function withArchiveSource(ArchiveSource $archive = null) : BuildStepConfiguration

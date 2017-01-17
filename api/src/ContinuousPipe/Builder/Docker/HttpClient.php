@@ -2,8 +2,12 @@
 
 namespace ContinuousPipe\Builder\Docker;
 
+use Docker\API\Model\ContainerConfig;
+use Docker\API\Model\ContainerCreateResult;
 use Docker\Stream\TarStream;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Stream;
+use GuzzleHttp\Psr7\StreamWrapper;
 use LogStream\LoggerFactory;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use ContinuousPipe\Builder\Docker\HttpClient\OutputHandler;
@@ -18,7 +22,7 @@ use LogStream\Logger;
 use LogStream\Node\Text;
 use Psr\Log\LoggerInterface;
 
-class HttpClient implements DockerFacade
+class HttpClient implements DockerFacade, DockerImageReader
 {
     /**
      * @var Docker
@@ -134,7 +138,7 @@ class HttpClient implements DockerFacade
      */
     private function doBuild(BuildContext $context, Archive $archive)
     {
-        $image = $context->getImage() ?: new Image('TODO-RANDOM', 'master');
+        $image = $context->getImage();
 
         $parameters = [
             'q' => (int) false,
@@ -223,5 +227,36 @@ class HttpClient implements DockerFacade
                 $logger->child(new Text($output));
             }
         };
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function read(Image $image, string $path): Archive
+    {
+        $containerManager = $this->docker->getContainerManager();
+
+        $containerConfig = new ContainerConfig();
+        $containerConfig->setImage($image->getName().':'.$image->getTag());
+        $containerConfig->setCmd(['echo']);
+
+        $containerCreateResult = $containerManager->create($containerConfig);
+        if (!$containerCreateResult instanceof ContainerCreateResult) {
+            throw new DockerException('Something went wrong while creating the container');
+        }
+
+        $identifier = $containerCreateResult->getId();
+
+        try {
+            $response = $containerManager->getArchive($identifier, [
+                'path' => $path,
+            ]);
+        } catch (RequestException $e) {
+            throw new DockerException('Unable to get the archive', $e->getCode(), $e);
+        }
+
+        return Archive\FileSystemArchive::fromStream(
+            StreamWrapper::getResource($response->getBody())
+        );
     }
 }

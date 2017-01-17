@@ -1,0 +1,6 @@
+ContinuousPipe\Builder\Artifact:
+    properties:
+        identifier:
+            type: string
+        path:
+            type: string

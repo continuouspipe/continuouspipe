@@ -11,7 +11,7 @@ Feature:
       | identifier | token |
       | sroze      | 12345 |
 
-  @integration @wip
+  @integration
   Scenario: I use a build container
     When I send the following build request:
     """
@@ -32,7 +32,7 @@ Feature:
           "write_artifacts": [
             {
               "identifier": "artifact-00000000-0000-0000-0000-000000000000",
-              "path": "/dist"
+              "path": "/app/dist"
             }
           ]
         },
@@ -47,7 +47,7 @@ Feature:
           "read_artifacts": [
             {
               "identifier": "artifact-00000000-0000-0000-0000-000000000000",
-              "path": "./dist"
+              "path": "/sub-directory/dist-renamed"
             }
           ],
           "image": {

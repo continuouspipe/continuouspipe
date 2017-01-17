@@ -4,12 +4,17 @@ namespace ContinuousPipe\Builder\Aggregate\BuildStep;
 
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\CodeArchiveCreated;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\DockerImageBuilt;
+use ContinuousPipe\Builder\Aggregate\BuildStep\Event\ReadArtifacts;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFinished;
+use ContinuousPipe\Builder\Aggregate\BuildStep\Event\WroteArtifacts;
 use ContinuousPipe\Builder\Aggregate\Event\BuildFinished;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepStarted;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\ArchiveBuilder;
+use ContinuousPipe\Builder\Artifact\ArtifactException;
+use ContinuousPipe\Builder\Artifact\ArtifactReader;
+use ContinuousPipe\Builder\Artifact\ArtifactWriter;
 use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Docker\BuildContext;
 use ContinuousPipe\Builder\Docker\CredentialsRepository;
@@ -82,6 +87,13 @@ class BuildStep
 
     public function buildImage(DockerFacade $dockerFacade)
     {
+        $image = $this->configuration->getImage();
+
+        // We want to build an image but not to push it apparently
+        if (null === $image) {
+            $image = new Image($this->buildIdentifier, 'step-'.$this->position);
+        }
+
         try {
             $this->raise(new DockerImageBuilt(
                 $this->buildIdentifier,
@@ -92,7 +104,7 @@ class BuildStep
                         $this->configuration->getContext(),
                         $this->configuration->getEnvironment(),
                         $this->configuration->getDockerRegistries(),
-                        $this->configuration->getImage()
+                        $image
                     ),
                     $this->archive
                 )
@@ -104,6 +116,12 @@ class BuildStep
 
     public function pushImage(DockerFacade $dockerFacade)
     {
+        // We don't want to push the built image
+        if (null === $this->configuration->getImage()) {
+            $this->finish();
+            return;
+        }
+
         try {
             $dockerFacade->push(
                 new PushContext(
@@ -113,13 +131,18 @@ class BuildStep
                 $this->image
             );
 
-            $this->raise(new StepFinished(
-                $this->buildIdentifier,
-                $this->position
-            ));
+            $this->finish();
         } catch (DockerException $e) {
             $this->failed($e);
         }
+    }
+
+    private function finish()
+    {
+        $this->raise(new StepFinished(
+            $this->buildIdentifier,
+            $this->position
+        ));
     }
 
     private function failed(\Throwable $exception)
@@ -137,6 +160,50 @@ class BuildStep
         $this->buildIdentifier = $event->getBuildIdentifier();
         $this->position = $event->getStepPosition();
         $this->configuration = $event->getStepConfiguration();
+    }
+
+    public function readArtifacts(ArtifactReader $artifactReader)
+    {
+        foreach ($this->configuration->getReadArtifacts() as $artifact) {
+            try {
+                $artifactReader->read($artifact, $this->archive);
+            } catch (ArtifactException $e) {
+                $this->failed($e);
+            }
+        }
+
+        $this->raise(new ReadArtifacts(
+            $this->buildIdentifier,
+            $this->position
+        ));
+    }
+
+    public function writeArtifacts(ArtifactWriter $artifactWriter)
+    {
+        foreach ($this->configuration->getWriteArtifacts() as $artifact) {
+            try {
+                $artifactWriter->write($this->image, $artifact);
+            } catch (ArtifactException $e) {
+                $this->failed($e);
+            }
+        }
+
+        $this->raise(new WroteArtifacts(
+            $this->buildIdentifier,
+            $this->position
+        ));
+    }
+
+    private function applyReadArtifacts()
+    {
+    }
+
+    private function applyWroteArtifacts()
+    {
+    }
+
+    private function applyStepFailed()
+    {
     }
 
     private function applyDockerImageBuilt(DockerImageBuilt $event)
