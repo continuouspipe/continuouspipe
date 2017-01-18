@@ -3,29 +3,23 @@
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Builder\Aggregate\Build;
+use ContinuousPipe\Builder\Aggregate\BuildRepository;
+use ContinuousPipe\Builder\Aggregate\BuildStep\BuildStep;
+use ContinuousPipe\Builder\Aggregate\BuildStep\BuildStepRepository;
 use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Article\TraceableArchiveBuilder;
-use ContinuousPipe\Builder\Build;
-use ContinuousPipe\Builder\Builder;
 use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Notifier\HookableNotifier;
 use ContinuousPipe\Builder\Notifier\NotificationException;
 use ContinuousPipe\Builder\Notifier\TraceableNotifier;
-use ContinuousPipe\Builder\Repository;
-use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
-use ContinuousPipe\Builder\Tests\Docker\TraceableDockerDockerFacade;
+use ContinuousPipe\Events\AggregateNotFound;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
-use ContinuousPipe\Security\User\SecurityUser;
-use ContinuousPipe\Security\User\User;
-use LogStream\EmptyLogger;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 
 class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
@@ -61,23 +55,33 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var TraceableArchiveBuilder
      */
     private $traceableArchiveBuilder;
-
     /**
-     * @param Kernel $kernel
-     * @param TraceableDockerClient $traceableDockerClient
-     * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
-     * @param TraceableNotifier $traceableNotifier
-     * @param HookableNotifier $hookableNotifier
-     * @param TraceableArchiveBuilder $traceableArchiveBuilder
+     * @var BuildRepository
      */
-    public function __construct(Kernel $kernel, TraceableDockerClient $traceableDockerClient, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient, TraceableNotifier $traceableNotifier, HookableNotifier $hookableNotifier, TraceableArchiveBuilder $traceableArchiveBuilder)
-    {
+    private $buildRepository;
+    /**
+     * @var BuildStepRepository
+     */
+    private $buildStepRepository;
+
+    public function __construct(
+        Kernel $kernel,
+        TraceableDockerClient $traceableDockerClient,
+        InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
+        TraceableNotifier $traceableNotifier,
+        HookableNotifier $hookableNotifier,
+        TraceableArchiveBuilder $traceableArchiveBuilder,
+        BuildRepository $buildRepository,
+        BuildStepRepository $buildStepRepository
+    ) {
         $this->kernel = $kernel;
         $this->traceableDockerClient = $traceableDockerClient;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->traceableNotifier = $traceableNotifier;
         $this->hookableNotifier = $hookableNotifier;
         $this->traceableArchiveBuilder = $traceableArchiveBuilder;
+        $this->buildRepository = $buildRepository;
+        $this->buildStepRepository = $buildStepRepository;
     }
 
     /**
@@ -173,13 +177,7 @@ EOF;
      */
     public function theBuildShouldBeSuccessful()
     {
-        if ($this->response->getStatusCode() !== 200) {
-            echo $this->response->getContent();
-            throw new \RuntimeException(sprintf(
-                'Got response code %d, expected 200',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCode(200);
 
         $json = json_decode($this->response->getContent(), true);
         if (false === $json) {
@@ -197,6 +195,7 @@ EOF;
 
     /**
      * @Then the build should be errored
+     * @Then the build should be failed
      */
     public function theBuildShouldBeErrored()
     {
@@ -324,5 +323,66 @@ EOF;
                 $archive->getDirectory()
             ));
         }
+    }
+
+    /**
+     * @Then the step #:stepIdentifier should be :status
+     */
+    public function theStepShouldBeFailed($stepIdentifier, $status)
+    {
+        $foundStatus = $this->getBuildStep($stepIdentifier)->getStatus();
+
+        if ($foundStatus != $status) {
+            throw new \RuntimeException(sprintf(
+                'Found status "%s" while expecting "%s"',
+                $foundStatus,
+                $status
+            ));
+        }
+    }
+
+    /**
+     * @Then the step #:stepIdentifier should not be started
+     */
+    public function theStepShouldNotBeStarted($stepIdentifier)
+    {
+        try {
+            $this->getBuildStep($stepIdentifier);
+
+            throw new \RuntimeException('Step is found apparently');
+        } catch (AggregateNotFound $e) {
+            // Great.
+        }
+    }
+
+    /**
+     * @param int $status
+     */
+    private function assertResponseCode($status)
+    {
+        if ($this->response->getStatusCode() !== $status) {
+            echo $this->response->getContent();
+            throw new \RuntimeException(sprintf(
+                'Got response code %d, expected %d',
+                $this->response->getStatusCode(),
+                $status
+            ));
+        }
+    }
+
+    private function getBuild() : Build
+    {
+        $this->assertResponseCode(200);
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        return $this->buildRepository->find($json['uuid']);
+    }
+
+    private function getBuildStep(int $stepPosition) : BuildStep
+    {
+        return $this->buildStepRepository->find(
+            $this->getBuild()->getIdentifier(),
+            $stepPosition
+        );
     }
 }

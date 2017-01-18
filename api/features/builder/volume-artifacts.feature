@@ -60,3 +60,29 @@ Feature:
     """
     Then the build should be successful
     And the file "/var/www/html/index.html" in the image "docker.io/continuouspipepublicrobot/test:build-container-with-artifacts" should contain "SUCCESS"
+
+  Scenario: If the first step fail then it will fail the build
+    Given the Docker build will fail because of "something"
+    When I send the following build request:
+    """
+    {
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "steps": [
+        {
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "master"
+          }
+        },
+        {
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "master-second"
+          }
+        }
+      ]
+    }
+    """
+    Then the build should be failed
+    And the step #0 should be failed
+    And the step #1 should not be started

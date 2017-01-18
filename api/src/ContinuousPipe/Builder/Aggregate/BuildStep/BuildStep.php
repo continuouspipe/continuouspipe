@@ -28,6 +28,11 @@ use ContinuousPipe\Security\Credentials\BucketRepository;
 
 class BuildStep
 {
+    const STATUS_PENDING = 'pending';
+    const STATUS_RUNNING = 'running';
+    const STATUS_FAILED = 'failed';
+    const STATUS_SUCCESSFUL = 'successful';
+
     use RaiseEventCapability,
         ApplyEventCapability;
 
@@ -55,6 +60,11 @@ class BuildStep
      * @var Image
      */
     private $image;
+
+    /**
+     * @var string
+     */
+    private $status = self::STATUS_PENDING;
 
     private function __construct()
     {
@@ -155,13 +165,6 @@ class BuildStep
         ));
     }
 
-    public function applyStepStarted(StepStarted $event)
-    {
-        $this->buildIdentifier = $event->getBuildIdentifier();
-        $this->position = $event->getStepPosition();
-        $this->configuration = $event->getStepConfiguration();
-    }
-
     public function readArtifacts(ArtifactReader $artifactReader)
     {
         foreach ($this->configuration->getReadArtifacts() as $artifact) {
@@ -194,6 +197,14 @@ class BuildStep
         ));
     }
 
+    public function applyStepStarted(StepStarted $event)
+    {
+        $this->status = self::STATUS_RUNNING;
+        $this->buildIdentifier = $event->getBuildIdentifier();
+        $this->position = $event->getStepPosition();
+        $this->configuration = $event->getStepConfiguration();
+    }
+
     private function applyReadArtifacts()
     {
     }
@@ -204,6 +215,12 @@ class BuildStep
 
     private function applyStepFailed()
     {
+        $this->status = self::STATUS_FAILED;
+    }
+
+    private function applyStepFinish()
+    {
+        $this->status = self::STATUS_SUCCESSFUL;
     }
 
     private function applyDockerImageBuilt(DockerImageBuilt $event)
@@ -217,18 +234,10 @@ class BuildStep
     }
 
     /**
-     * @return Archive
+     * @return string
      */
-    public function getArchive(): Archive
+    public function getStatus(): string
     {
-        return $this->archive;
-    }
-
-    /**
-     * @return Image
-     */
-    public function getImage(): Image
-    {
-        return $this->image;
+        return $this->status;
     }
 }
