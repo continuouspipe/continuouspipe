@@ -18,6 +18,7 @@ use ContinuousPipe\Builder\Builder;
 use ContinuousPipe\Builder\BuildException;
 use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Docker\DockerFacade;
+use ContinuousPipe\Builder\Docker\DockerImageReader;
 use ContinuousPipe\Builder\Request\ArchiveSource;
 use ContinuousPipe\Events\Transaction\TransactionManager;
 use Http\Client\Common\Plugin\DecoderPlugin;
@@ -49,6 +50,10 @@ class BuildStepSaga
      * @var ArtifactWriter
      */
     private $artifactWriter;
+    /**
+     * @var DockerImageReader
+     */
+    private $dockerImageReader;
 
     public function __construct(
         BuildStepRepository $buildStepRepository,
@@ -56,7 +61,8 @@ class BuildStepSaga
         ArchiveBuilder $archiveBuilder,
         DockerFacade $dockerFacade,
         ArtifactReader $artifactReader,
-        ArtifactWriter $artifactWriter
+        ArtifactWriter $artifactWriter,
+        DockerImageReader $dockerImageReader
     ) {
         $this->buildStepRepository = $buildStepRepository;
         $this->eventBus = $eventBus;
@@ -64,6 +70,7 @@ class BuildStepSaga
         $this->dockerFacade = $dockerFacade;
         $this->artifactReader = $artifactReader;
         $this->artifactWriter = $artifactWriter;
+        $this->dockerImageReader = $dockerImageReader;
     }
 
     public function notify($event)
@@ -94,7 +101,7 @@ class BuildStepSaga
         } elseif ($event instanceof ReadArtifacts) {
             $step->buildImage($this->dockerFacade);
         } elseif ($event instanceof DockerImageBuilt) {
-            $step->writeArtifacts($this->artifactWriter);
+            $step->writeArtifacts($this->dockerImageReader, $this->artifactWriter);
         } elseif ($event instanceof WroteArtifacts) {
             $step->pushImage($this->dockerFacade);
         }

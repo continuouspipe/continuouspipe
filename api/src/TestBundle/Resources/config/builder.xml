@@ -34,12 +34,5 @@
                  decoration-priority="5">
             <argument type="service" id="builder.archive_builder.traceable.inner" />
         </service>
-
-        <service id="builder.artifact_manager.file_system" class="ContinuousPipe\Builder\Artifact\FileSystemArtifactManager">
-            <argument type="service" id="builder.docker_image_reader" />
-        </service>
-
-        <service id="builder.artifact_reader" alias="builder.artifact_manager.file_system" />
-        <service id="builder.artifact_writer" alias="builder.artifact_manager.file_system" />
     </services>
 </container>

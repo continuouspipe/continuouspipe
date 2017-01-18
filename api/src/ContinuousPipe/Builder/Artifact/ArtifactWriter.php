@@ -2,18 +2,18 @@
 
 namespace ContinuousPipe\Builder\Artifact;
 
+use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Artifact;
-use ContinuousPipe\Builder\Image;
 
 interface ArtifactWriter
 {
     /**
      * Create the artifact from the given image.
      *
-     * @param Image $source
+     * @param Archive  $source
      * @param Artifact $artifact
      *
      * @throws ArtifactException
      */
-    public function write(Image $source, Artifact $artifact);
+    public function write(Archive $source, Artifact $artifact);
 }

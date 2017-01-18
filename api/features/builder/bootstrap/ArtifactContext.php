@@ -25,9 +25,9 @@ class ArtifactContext implements Context
      */
     public function theArtifactContainsTheFixturesFolder($uuid, $fixturesFolder)
     {
-        $this->fileSystemArtifactManager->append(
-            new Artifact($uuid, ''),
-            FileSystemArchive::copyFrom(__DIR__.'/../fixtures/'.$fixturesFolder)
+        $this->fileSystemArtifactManager->write(
+            FileSystemArchive::copyFrom(__DIR__.'/../fixtures/'.$fixturesFolder),
+            new Artifact($uuid, '')
         );
     }
 }

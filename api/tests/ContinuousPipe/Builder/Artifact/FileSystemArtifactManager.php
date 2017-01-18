@@ -15,66 +15,34 @@ class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter
      */
     private $directory;
 
-    /**
-     * @var DockerImageReader
-     */
-    private $dockerImageReader;
-
-    /**
-     * @param DockerImageReader $dockerImageReader
-     */
-    public function __construct(DockerImageReader $dockerImageReader)
+    public function __construct()
     {
-        $this->dockerImageReader = $dockerImageReader;
         $this->directory = Archive\FileSystemArchive::createDirectory('fs-artifacts');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function read(Artifact $artifact, Archive $into) : Archive
+    public function read(Artifact $artifact) : Archive
     {
         $localArtifactPath = $this->directory.DIRECTORY_SEPARATOR.$artifact->getIdentifier();
         if (!file_exists($localArtifactPath)) {
             throw new ArtifactException(sprintf('Artifact "%s" is not found (searched: %s)', $artifact->getIdentifier(), $localArtifactPath));
         }
 
-        try {
-            $into->write($artifact->getPath(), Archive\FileSystemArchive::fromStream(fopen($localArtifactPath, 'r')));
-        } catch (Archive\ArchiveException $e) {
-            throw new ArtifactException('Unable to write artifact', $e->getCode(), $e);
-        }
-
-        return $into;
+        return Archive\FileSystemArchive::fromStream(fopen($localArtifactPath, 'r'));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function write(Image $source, Artifact $artifact)
-    {
-        try {
-            $archive = $this->dockerImageReader->read($source, $artifact->getPath());
-        } catch (DockerException $e) {
-            throw new ArtifactException('Unable to create an archive from the image', $e->getCode(), $e);
-        }
-
-        $this->append($artifact, $archive);
-    }
-
-    /**
-     * @param Artifact $artifact
-     * @param Archive $archive
-     *
-     * @throws ArtifactException
-     */
-    public function append(Artifact $artifact, Archive $archive)
+    public function write(Archive $source, Artifact $artifact)
     {
         $localArtifactPath = $this->directory.DIRECTORY_SEPARATOR.$artifact->getIdentifier();
         $artifactStream = fopen($localArtifactPath, 'w');
 
         try {
-            if (false === stream_copy_to_stream($archive->read(), $artifactStream)) {
+            if (false === stream_copy_to_stream($source->read(), $artifactStream)) {
                 throw new ArtifactException('Something went wrong while copying stream to file');
             }
         } finally {

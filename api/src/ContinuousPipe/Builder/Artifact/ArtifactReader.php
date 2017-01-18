@@ -9,11 +9,10 @@ interface ArtifactReader
 {
     /**
      * @param Artifact $artifact
-     * @param Archive $into
      *
      * @throws ArtifactException
      *
      * @return Archive
      */
-    public function read(Artifact $artifact, Archive $into) : Archive;
+    public function read(Artifact $artifact) : Archive;
 }

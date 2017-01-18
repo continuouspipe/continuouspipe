@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="builder.artifact_manager.file_system" class="ContinuousPipe\Builder\Artifact\GoogleCloudStorage\GoogleCloudStorageArtifactManager">
+            <argument>%google_storage_project_id%</argument>
+            <argument>%google_storage_key_file_path%</argument>
+            <argument>%google_storage_bucket%</argument>
+        </service>
+        <service id="builder.artifact_reader" alias="builder.artifact_manager.file_system" />
+        <service id="builder.artifact_writer" alias="builder.artifact_manager.file_system" />
+    </services>
+</container>

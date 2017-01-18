@@ -20,6 +20,7 @@ use ContinuousPipe\Builder\Docker\BuildContext;
 use ContinuousPipe\Builder\Docker\CredentialsRepository;
 use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Docker\DockerFacade;
+use ContinuousPipe\Builder\Docker\DockerImageReader;
 use ContinuousPipe\Builder\Docker\PushContext;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Events\Capabilities\ApplyEventCapability;
@@ -169,11 +170,15 @@ class BuildStep
     {
         foreach ($this->configuration->getReadArtifacts() as $artifact) {
             try {
-                $artifactReader->read($artifact, $this->archive);
+                $artifactArchive = $artifactReader->read($artifact);
             } catch (ArtifactException $e) {
-                $this->failed($e);
+                return $this->failed($e);
+            }
 
-                return;
+            try {
+                $this->archive->write($artifact->getPath(), $artifactArchive);
+            } catch (Archive\ArchiveException $e) {
+                return $this->failed($e);
             }
         }
 
@@ -183,15 +188,19 @@ class BuildStep
         ));
     }
 
-    public function writeArtifacts(ArtifactWriter $artifactWriter)
+    public function writeArtifacts(DockerImageReader $dockerImageReader, ArtifactWriter $artifactWriter)
     {
         foreach ($this->configuration->getWriteArtifacts() as $artifact) {
             try {
-                $artifactWriter->write($this->image, $artifact);
-            } catch (ArtifactException $e) {
-                $this->failed($e);
+                $archive = $dockerImageReader->read($this->image, $artifact->getPath());
+            } catch (DockerException $e) {
+                return $this->failed($e);
+            }
 
-                return;
+            try {
+                $artifactWriter->write($archive, $artifact);
+            } catch (ArtifactException $e) {
+                return $this->failed($e);
             }
         }
 

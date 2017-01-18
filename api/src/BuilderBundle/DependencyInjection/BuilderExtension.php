@@ -23,5 +23,6 @@ class BuilderExtension extends Extension
         $loader->load('logging.xml');
         $loader->load('credentials.xml');
         $loader->load('notification.xml');
+        $loader->load('google-cloud.xml');
     }
 }
