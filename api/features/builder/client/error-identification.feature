@@ -57,3 +57,8 @@ Feature:
   Scenario: Get timeout
     When the Docker daemon returns the error "Get https://quay.io/v2/auth?account=sroze&scope=repository%3Asroze%2Fft%3Apush%2Cpull&service=quay.io: net/http: request canceled (Client.Timeout exceeded while awaiting headers)"
     Then the identified error should be a daemon network error
+
+  Scenario: Get timeout
+    When the Docker daemon returns the error "Get https://quay.io/v2/continuouspipe/magento2-nginx-php7/manifests/v1.0: Get https://quay.io/v2/auth?scope=repository%3Acontinuouspipe%2Fmagento2-nginx-php7%3Apull&service=quay.io: net/http: request canceled (Client.Timeout exceeded while awaiting headers)"
+    Then the identified error should be a daemon network error
+
