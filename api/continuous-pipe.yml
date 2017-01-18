@@ -92,6 +92,8 @@ tasks:
                               value: http://zipkin.zipkin-master.svc.cluster.local:9411
                             - name: APP_USER_LOCAL
                               value: false
+                            - name: STACK_RABBITMQ_HOST
+                              value: rabbitmq.stack-master.svc.cluster.local
 
                     deployment_strategy:
                         readiness_probe:

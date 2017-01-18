@@ -169,10 +169,26 @@ old_sound_rabbit_mq:
             keepalive: false
             heartbeat: 0
 
+        stack:
+            host:     %stack_rabbitmq_host%
+            port:     5672
+            user:     %stack_rabbitmq_user%
+            password: %stack_rabbitmq_password%
+            vhost:    %stack_rabbitmq_vhost%
+            lazy:     true
+            connection_timeout: 3
+            read_write_timeout: 3
+            keepalive: false
+            heartbeat: 0
+
     producers:
         asynchronous_commands:
             connection:       default
             exchange_options: { name: %rabbitmq_queue_name%, type: direct }
+
+        stack_user_activity:
+            connection:       stack
+            exchange_options: { name: user_activities, type: fanout }
 
 simple_bus_rabbit_mq_bundle_bridge:
     commands:

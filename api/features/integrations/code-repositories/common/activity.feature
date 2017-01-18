@@ -16,3 +16,8 @@ Feature:
     When the commits "1234,5678" are pushed to the branch "foo"
     Then the commit activity of the user "samuel" on the flow "00000000-0000-0000-0000-000000000000" should have been dispatched
     And the commit activity of the user "tony" on the flow "00000000-0000-0000-0000-000000000000" should have been dispatched
+
+  Scenario: A failure won't fail the entire process
+    Given the commit activity dispatcher will fail
+    When the commit "sha1" is pushed to the branch "foo" by the user "samuel" with an email "samuel.roze@gmail.com"
+    Then 1 tides should have been created

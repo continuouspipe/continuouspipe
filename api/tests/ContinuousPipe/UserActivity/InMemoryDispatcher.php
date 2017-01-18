@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Activity;
+namespace ContinuousPipe\UserActivity;
 
 use ContinuousPipe\UserActivity\UserActivity;
 use ContinuousPipe\UserActivity\UserActivityDispatcher;

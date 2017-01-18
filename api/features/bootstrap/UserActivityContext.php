@@ -1,7 +1,8 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Activity\TraceableUserActivityDispatcher;
+use ContinuousPipe\UserActivity\MiddlewareSupportingUserActivityDispatcher;
+use ContinuousPipe\UserActivity\TraceableUserActivityDispatcher;
 use Ramsey\Uuid\Uuid;
 
 class UserActivityContext implements Context
@@ -10,10 +11,17 @@ class UserActivityContext implements Context
      * @var TraceableUserActivityDispatcher
      */
     private $traceableUserActivityDispatcher;
+    /**
+     * @var MiddlewareSupportingUserActivityDispatcher
+     */
+    private $middlewareSupportingUserActivityDispatcher;
 
-    public function __construct(TraceableUserActivityDispatcher $traceableUserActivityDispatcher)
-    {
+    public function __construct(
+        TraceableUserActivityDispatcher $traceableUserActivityDispatcher,
+        MiddlewareSupportingUserActivityDispatcher $middlewareSupportingUserActivityDispatcher
+    ) {
         $this->traceableUserActivityDispatcher = $traceableUserActivityDispatcher;
+        $this->middlewareSupportingUserActivityDispatcher = $middlewareSupportingUserActivityDispatcher;
     }
 
     /**
@@ -28,5 +36,15 @@ class UserActivityContext implements Context
         }
 
         throw new \RuntimeException(sprintf('Activity for the user %s on flow %s not found', $username, $flowUuid));
+    }
+
+    /**
+     * @Given the commit activity dispatcher will fail
+     */
+    public function theCommitActivityDispatcherWillFail()
+    {
+        $this->middlewareSupportingUserActivityDispatcher->pushMiddleware(function() {
+            throw new \RuntimeException('The dispatch failed');
+        });
     }
 }

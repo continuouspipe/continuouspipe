@@ -1045,15 +1045,19 @@ EOF;
      */
     public function tidesShouldHaveBeenCreated($count)
     {
-        $this->assertResponseStatus(201);
+        if (null !== $this->response) {
+            $this->assertResponseStatus(201);
 
-        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
-        if (count($tides) != $count) {
-            throw new \RuntimeException(sprintf(
-                'Expected %d tides, but found %d',
-                $count,
-                count($tides)
-            ));
+            $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
+            if (count($tides) != $count) {
+                throw new \RuntimeException(sprintf(
+                    'Expected %d tides, but found %d',
+                    $count,
+                    count($tides)
+                ));
+            }
+        } else if (count($this->getEventsOfType(TideCreated::class)) == 0) {
+            throw new \RuntimeException('No response or no `TideCreated` event found');
         }
     }
 
