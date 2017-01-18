@@ -15,6 +15,16 @@ class Artifact
     private $path;
 
     /**
+     * @param string $identifier
+     * @param string $path
+     */
+    public function __construct($identifier, $path)
+    {
+        $this->identifier = $identifier;
+        $this->path = $path;
+    }
+
+    /**
      * @return string
      */
     public function getIdentifier(): string

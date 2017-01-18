@@ -86,3 +86,27 @@ Feature:
     Then the build should be failed
     And the step #0 should be failed
     And the step #1 should not be started
+
+  Scenario: Cannot write an artifact outside of the archive
+    Given the artifact "artifact-00000000-0000-0000-0000-000000000000" contains the fixtures folder "php-example"
+    When I send the following build request:
+    """
+    {
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "steps": [
+        {
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "master"
+          },
+          "read_artifacts": [
+            {
+              "identifier": "artifact-00000000-0000-0000-0000-000000000000",
+              "path": "/../dist-renamed"
+            }
+          ]
+        }
+      ]
+    }
+    """
+    Then the build should be failed

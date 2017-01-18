@@ -172,6 +172,8 @@ class BuildStep
                 $artifactReader->read($artifact, $this->archive);
             } catch (ArtifactException $e) {
                 $this->failed($e);
+
+                return;
             }
         }
 
@@ -188,6 +190,8 @@ class BuildStep
                 $artifactWriter->write($this->image, $artifact);
             } catch (ArtifactException $e) {
                 $this->failed($e);
+
+                return;
             }
         }
 

@@ -14,6 +14,7 @@ class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter
      * @var string
      */
     private $directory;
+
     /**
      * @var DockerImageReader
      */
@@ -25,12 +26,7 @@ class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter
     public function __construct(DockerImageReader $dockerImageReader)
     {
         $this->dockerImageReader = $dockerImageReader;
-        $this->directory = tempnam(sys_get_temp_dir(), 'fs-artifacts');
-        if (file_exists($this->directory)) {
-            unlink($this->directory);
-        }
-
-        mkdir($this->directory);
+        $this->directory = Archive\FileSystemArchive::createDirectory('fs-artifacts');
     }
 
     /**
@@ -57,17 +53,28 @@ class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter
      */
     public function write(Image $source, Artifact $artifact)
     {
-        $localArtifactPath = $this->directory.DIRECTORY_SEPARATOR.$artifact->getIdentifier();
-
         try {
-            $from = $this->dockerImageReader->read($source, $artifact->getPath());
+            $archive = $this->dockerImageReader->read($source, $artifact->getPath());
         } catch (DockerException $e) {
             throw new ArtifactException('Unable to create an archive from the image', $e->getCode(), $e);
         }
 
+        $this->append($artifact, $archive);
+    }
+
+    /**
+     * @param Artifact $artifact
+     * @param Archive $archive
+     *
+     * @throws ArtifactException
+     */
+    public function append(Artifact $artifact, Archive $archive)
+    {
+        $localArtifactPath = $this->directory.DIRECTORY_SEPARATOR.$artifact->getIdentifier();
         $artifactStream = fopen($localArtifactPath, 'w');
+
         try {
-            if (false === stream_copy_to_stream($from->read(), $artifactStream)) {
+            if (false === stream_copy_to_stream($archive->read(), $artifactStream)) {
                 throw new ArtifactException('Something went wrong while copying stream to file');
             }
         } finally {

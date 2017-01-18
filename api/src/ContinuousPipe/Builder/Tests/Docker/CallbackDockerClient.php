@@ -110,6 +110,6 @@ class CallbackDockerClient implements DockerFacade, DockerImageReader
      */
     public function read(Image $image, string $path): Archive
     {
-        return new Archive\FileSystemArchive(__DIR__);
+        return new Archive\FileSystemArchive(Archive\FileSystemArchive::createDirectory('fake-artifact'));
     }
 }

@@ -13,15 +13,48 @@ class FileSystemArchive extends Context implements Archive
 
     public static function fromStream($resource)
     {
-        $directory = tempnam(sys_get_temp_dir(), 'fs-from-stream');
+        $archive = new self(self::createDirectory('fs-from-stream'));
+        $archive->writeStream('/', $resource);
+
+        return $archive;
+    }
+
+    public static function copyFrom(string $path) : Archive
+    {
+        $directory = self::createDirectory('fs-copied');
+
+        foreach (
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::SELF_FIRST) as $item
+        ) {
+            if ($item->isDir()) {
+                mkdir($directory . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+            } else {
+                copy($item, $directory . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+            }
+        }
+
+        return new self($directory);
+    }
+
+    /**
+     * Create an empty temporary directory with the given prefix.
+     *
+     * @param string $prefix
+     *
+     * @return string
+     */
+    public static function createDirectory(string $prefix)
+    {
+        $directory = tempnam(sys_get_temp_dir(), $prefix);
         if (file_exists($directory)) {
             unlink($directory);
         }
 
-        $archive = new self($directory);
-        $archive->writeStream('/', $resource);
+        mkdir($directory);
 
-        return $archive;
+        return $directory;
     }
 
     /**
@@ -56,10 +89,16 @@ class FileSystemArchive extends Context implements Archive
         ];
 
         $targetPath = $this->getDirectory().$path;
-
-        // TODO Ensure it's still in the `directory`
         if (!file_exists($targetPath)) {
             mkdir($targetPath, 0777, true);
+        }
+
+        $targetRealPath = realpath($targetPath);
+        if (strpos($targetRealPath, $this->getDirectory()) !== 0) {
+            throw new ArchiveException(sprintf(
+                'The path "%s" is not valid or not authorized',
+                $path
+            ));
         }
 
         $this->fileSystemProcess = proc_open('/usr/bin/env tar x --strip-components=1', $pipesDescription, $pipes, $targetPath);
