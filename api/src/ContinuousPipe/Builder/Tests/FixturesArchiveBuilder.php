@@ -51,7 +51,7 @@ class FixturesArchiveBuilder implements ArchiveBuilder
             ));
         }
 
-        return new NonDeletableFileSystemArchive($fixturesDirectoryPath);
+        return new Archive\FileSystemArchive($this->copy($fixturesDirectoryPath));
     }
 
     /**
@@ -64,5 +64,35 @@ class FixturesArchiveBuilder implements ArchiveBuilder
         }
 
         return strpos($repository->getAddress(), self::ADDRESS_PREFIX) !== false;
+    }
+
+    /**
+     * Copy the contents of the given directory and return the path of another one.
+     *
+     * @param string $fixturesDirectoryPath
+     *
+     * @return string
+     */
+    private function copy(string $fixturesDirectoryPath) : string
+    {
+        $directory = tempnam(sys_get_temp_dir(), 'fs-fixtures');
+        if (file_exists($directory)) {
+            unlink($directory);
+            mkdir($directory);
+        }
+
+        foreach (
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($fixturesDirectoryPath, \RecursiveDirectoryIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::SELF_FIRST) as $item
+        ) {
+            if ($item->isDir()) {
+                mkdir($directory . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+            } else {
+                copy($item, $directory . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+            }
+        }
+
+        return $directory;
     }
 }

@@ -28,12 +28,6 @@
             </argument>
         </service>
 
-        <service id="builder.archive_builder.replace_with_non_deletable_archives"
-                 class="ContinuousPipe\Builder\Archive\ReplaceWithTestFileSystemArchives"
-                 decorates="builder.archive_builder">
-            <argument type="service" id="builder.archive_builder.replace_with_non_deletable_archives.inner" />
-        </service>
-
         <service id="builder.archive_builder.traceable"
                  class="ContinuousPipe\Builder\Article\TraceableArchiveBuilder"
                  decorates="builder.archive_builder"
