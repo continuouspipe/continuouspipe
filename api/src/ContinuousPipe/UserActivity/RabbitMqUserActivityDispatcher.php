@@ -19,7 +19,12 @@ class RabbitMqUserActivityDispatcher implements UserActivityDispatcher
     public function dispatch(UserActivity $userActivity)
     {
         $this->producer->publish(
-            $this->serializer->serialize($userActivity, 'json')
+            $this->serializer->serialize($userActivity, 'json'),
+            '',
+            [],
+            [
+                'X-Message-Name' => 'user_activity',
+            ]
         );
     }
 }
