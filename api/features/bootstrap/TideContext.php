@@ -169,13 +169,13 @@ class TideContext implements Context
      * @When a tide is created for the branch :branch
      * @Given a tide is created for branch :branch and commit :sha
      */
-    public function aTideIsCreatedForBranchAndCommit($branch = null, $sha = null)
+    public function aTideIsCreatedForBranchAndCommit($branch = null, $sha = null, Uuid $uuid = null)
     {
         if (null === $this->flowContext->getCurrentFlow()) {
             $this->flowContext->iHaveAFlow();
         }
 
-        $this->createTide($branch ?: 'master', $sha);
+        $this->createTide($branch ?: 'master', $sha, $uuid);
     }
 
     /**
@@ -209,11 +209,12 @@ EOF;
 
     /**
      * @When a tide is started
+     * @When a tide is started with the UUID :uuid
      */
-    public function aTideIsStarted()
+    public function aTideIsStarted($uuid = null)
     {
         if (null === $this->tideUuid) {
-            $this->aTideIsCreatedForBranchAndCommit();
+            $this->aTideIsCreatedForBranchAndCommit(null, null, Uuid::fromString($uuid));
         }
 
         $this->startTide();
