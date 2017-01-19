@@ -98,7 +98,6 @@ class Build implements Aggregate
             try {
                 $artifactRemover->remove($artifact);
             } catch (Artifact\ArtifactException $e) {
-                throw $e;
                 // Ignore if we weren't able to remove an artifact
             }
         }
