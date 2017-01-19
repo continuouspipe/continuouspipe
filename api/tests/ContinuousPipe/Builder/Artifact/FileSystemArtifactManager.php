@@ -7,8 +7,9 @@ use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Docker\DockerImageReader;
 use ContinuousPipe\Builder\Image;
+use Symfony\Component\Filesystem\Filesystem;
 
-class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter
+class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter, ArtifactRemover
 {
     /**
      * @var string
@@ -25,7 +26,7 @@ class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter
      */
     public function read(Artifact $artifact) : Archive
     {
-        $localArtifactPath = $this->directory.DIRECTORY_SEPARATOR.$artifact->getIdentifier();
+        $localArtifactPath = $this->getArtifactPath($artifact);
         if (!file_exists($localArtifactPath)) {
             throw new ArtifactException(sprintf('Artifact "%s" is not found (searched: %s)', $artifact->getIdentifier(), $localArtifactPath));
         }
@@ -38,8 +39,7 @@ class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter
      */
     public function write(Archive $source, Artifact $artifact)
     {
-        $localArtifactPath = $this->directory.DIRECTORY_SEPARATOR.$artifact->getIdentifier();
-        $artifactStream = fopen($localArtifactPath, 'w');
+        $artifactStream = fopen($this->getArtifactPath($artifact), 'w');
 
         try {
             if (false === stream_copy_to_stream($source->read(), $artifactStream)) {
@@ -48,5 +48,30 @@ class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter
         } finally {
             fclose($artifactStream);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove(Artifact $artifact)
+    {
+        $filesystem = new Filesystem();
+        $localArtifactPath = $this->getArtifactPath($artifact);
+
+        if (!$filesystem->exists($localArtifactPath)) {
+            throw new ArtifactException('The artifact was not found');
+        }
+
+        $filesystem->remove($localArtifactPath);
+    }
+
+    /**
+     * @param Artifact $artifact
+     *
+     * @return string
+     */
+    private function getArtifactPath(Artifact $artifact): string
+    {
+        return $this->directory . DIRECTORY_SEPARATOR . $artifact->getIdentifier();
     }
 }

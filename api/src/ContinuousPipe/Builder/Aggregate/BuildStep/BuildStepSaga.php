@@ -7,6 +7,8 @@ use ContinuousPipe\Builder\Aggregate\BuildStep\Event\CodeArchiveCreated;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\DockerImageBuilt;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\ReadArtifacts;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepEvent;
+use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed;
+use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFinished;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepStarted;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\WroteArtifacts;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStepStarted;
@@ -104,6 +106,8 @@ class BuildStepSaga
             $step->writeArtifacts($this->dockerImageReader, $this->artifactWriter);
         } elseif ($event instanceof WroteArtifacts) {
             $step->pushImage($this->dockerFacade);
+        } elseif ($event instanceof StepFinished || $event instanceof StepFailed) {
+            $step->cleanUp();
         }
 
         return $step;

@@ -55,7 +55,12 @@ class BuildStep
     /**
      * @var Archive
      */
-    private $archive;
+    private $codeArchive;
+
+    /**
+     * @var Archive[]
+     */
+    private $createdArchives = [];
 
     /**
      * @var Image
@@ -117,7 +122,7 @@ class BuildStep
                         $this->configuration->getDockerRegistries(),
                         $image
                     ),
-                    $this->archive
+                    $this->codeArchive
                 )
             ));
         } catch (DockerException $e) {
@@ -148,6 +153,15 @@ class BuildStep
         }
     }
 
+    public function cleanUp()
+    {
+        $this->codeArchive->delete();
+
+        foreach ($this->createdArchives as $archive) {
+            $archive->delete();
+        }
+    }
+
     private function finish()
     {
         $this->raise(new StepFinished(
@@ -168,28 +182,35 @@ class BuildStep
 
     public function readArtifacts(ArtifactReader $artifactReader)
     {
+        $archives = [];
+
         foreach ($this->configuration->getReadArtifacts() as $artifact) {
             try {
-                $artifactArchive = $artifactReader->read($artifact);
+                $archive = $artifactReader->read($artifact);
             } catch (ArtifactException $e) {
                 return $this->failed($e);
             }
 
             try {
-                $this->archive->write($artifact->getPath(), $artifactArchive);
+                $this->codeArchive->write($artifact->getPath(), $archive);
             } catch (Archive\ArchiveException $e) {
                 return $this->failed($e);
             }
+
+            $archives[] = $archive;
         }
 
         $this->raise(new ReadArtifacts(
             $this->buildIdentifier,
-            $this->position
+            $this->position,
+            $archives
         ));
     }
 
     public function writeArtifacts(DockerImageReader $dockerImageReader, ArtifactWriter $artifactWriter)
     {
+        $archives = [];
+
         foreach ($this->configuration->getWriteArtifacts() as $artifact) {
             try {
                 $archive = $dockerImageReader->read($this->image, $artifact->getPath());
@@ -202,11 +223,14 @@ class BuildStep
             } catch (ArtifactException $e) {
                 return $this->failed($e);
             }
+
+            $archives[] = $archive;
         }
 
         $this->raise(new WroteArtifacts(
             $this->buildIdentifier,
-            $this->position
+            $this->position,
+            $archives
         ));
     }
 
@@ -218,12 +242,18 @@ class BuildStep
         $this->configuration = $event->getStepConfiguration();
     }
 
-    private function applyReadArtifacts()
+    private function applyReadArtifacts(ReadArtifacts $event)
     {
+        foreach ($event->getArchives() as $archive) {
+            $this->createdArchives[] = $archive;
+        }
     }
 
-    private function applyWroteArtifacts()
+    private function applyWroteArtifacts(WroteArtifacts $event)
     {
+        foreach ($event->getArchives() as $archive) {
+            $this->createdArchives[] = $archive;
+        }
     }
 
     private function applyStepFailed()
@@ -231,7 +261,7 @@ class BuildStep
         $this->status = self::STATUS_FAILED;
     }
 
-    private function applyStepFinish()
+    private function applyStepFinished()
     {
         $this->status = self::STATUS_SUCCESSFUL;
     }
@@ -243,7 +273,7 @@ class BuildStep
 
     private function applyCodeArchiveCreated(CodeArchiveCreated $event)
     {
-        $this->archive = $event->getArchive();
+        $this->codeArchive = $event->getArchive();
     }
 
     /**

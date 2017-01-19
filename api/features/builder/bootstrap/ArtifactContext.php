@@ -8,16 +8,18 @@ use ContinuousPipe\Builder\Artifact\FileSystemArtifactManager;
 class ArtifactContext implements Context
 {
     /**
-     * @var FileSystemArtifactManager
+     * @var Artifact\ArtifactWriter
      */
-    private $fileSystemArtifactManager;
-
+    private $artifactWriter;
     /**
-     * @param FileSystemArtifactManager $fileSystemArtifactManager
+     * @var Artifact\TracedArtifactRemover
      */
-    public function __construct(FileSystemArtifactManager $fileSystemArtifactManager)
+    private $tracedArtifactRemover;
+
+    public function __construct(Artifact\ArtifactWriter $artifactWriter, Artifact\TracedArtifactRemover $tracedArtifactRemover)
     {
-        $this->fileSystemArtifactManager = $fileSystemArtifactManager;
+        $this->artifactWriter = $artifactWriter;
+        $this->tracedArtifactRemover = $tracedArtifactRemover;
     }
 
     /**
@@ -25,9 +27,35 @@ class ArtifactContext implements Context
      */
     public function theArtifactContainsTheFixturesFolder($uuid, $fixturesFolder)
     {
-        $this->fileSystemArtifactManager->write(
+        $this->artifactWriter->write(
             FileSystemArchive::copyFrom(__DIR__.'/../fixtures/'.$fixturesFolder),
             new Artifact($uuid, '')
         );
+    }
+
+    /**
+     * @Then the artifact :identifier should not have been deleted
+     */
+    public function theArtifactShouldNotHaveBeenDeleted($identifier)
+    {
+        foreach ($this->tracedArtifactRemover->getRemoved() as $artifact) {
+            if ($artifact->getIdentifier() == $identifier) {
+                throw new \RuntimeException('Artifact found in the remover history');
+            }
+        }
+    }
+
+    /**
+     * @Then the artifact :identifier should have been deleted
+     */
+    public function theArtifactShouldHaveBeenDeleted($identifier)
+    {
+        foreach ($this->tracedArtifactRemover->getRemoved() as $artifact) {
+            if ($artifact->getIdentifier() == $identifier) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('Artifact not found in the remover history');
     }
 }

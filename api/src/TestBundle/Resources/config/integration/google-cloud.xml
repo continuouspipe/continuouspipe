@@ -8,5 +8,12 @@
         <service id="builder.artifact_manager.file_system" class="ContinuousPipe\Builder\Artifact\FileSystemArtifactManager" />
         <service id="builder.artifact_reader" alias="builder.artifact_manager.file_system" />
         <service id="builder.artifact_writer" alias="builder.artifact_manager.file_system" />
+        <service id="builder.artifact_remover" alias="builder.artifact_manager.file_system" />
+
+        <service id="builder.artifact_remover.traced"
+                 class="ContinuousPipe\Builder\Artifact\TracedArtifactRemover"
+                 decorates="builder.artifact_remover">
+            <argument type="service" id="builder.artifact_remover.traced.inner" />
+        </service>
     </services>
 </container>

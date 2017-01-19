@@ -7,12 +7,13 @@ use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Artifact\ArtifactException;
 use ContinuousPipe\Builder\Artifact\ArtifactReader;
 use ContinuousPipe\Builder\Artifact\ArtifactWriter;
+use ContinuousPipe\Builder\Artifact\ArtifactRemover;
 use Google\Cloud\Exception\GoogleException;
 use Google\Cloud\ServiceBuilder;
 use Google\Cloud\Storage\Bucket;
 use GuzzleHttp\Psr7\StreamWrapper;
 
-class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReader
+class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReader, ArtifactRemover
 {
     /**
      * @var ServiceBuilder
@@ -72,6 +73,18 @@ class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReade
             ]);
         } catch (GoogleException $e) {
             throw new ArtifactException('Unable to write the artifact to the bucket', $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove(Artifact $artifact)
+    {
+        try {
+            $this->getBucket()->object($artifact->getIdentifier())->delete();
+        } catch (GoogleException $e) {
+            throw new ArtifactException('Unable to delete the artifact', $e->getCode(), $e);
         }
     }
 

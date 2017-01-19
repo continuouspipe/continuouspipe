@@ -9,6 +9,7 @@ use ContinuousPipe\Builder\Aggregate\Event\BuildFailed;
 use ContinuousPipe\Builder\Aggregate\Event\BuildFinished;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStarted;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStepStarted;
+use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Events\Aggregate;
 use ContinuousPipe\Events\Capabilities\ApplyEventCapability;
@@ -40,6 +41,11 @@ class Build implements Aggregate
      * @var User
      */
     private $user;
+
+    /**
+     * @var Artifact[]
+     */
+    private $writtenArtifacts = [];
 
     private $currentStepCursor = -1;
     private $status = self::STATUS_PENDING;
@@ -86,9 +92,25 @@ class Build implements Aggregate
         ));
     }
 
+    public function cleanUp(Artifact\ArtifactRemover $artifactRemover)
+    {
+        foreach ($this->writtenArtifacts as $artifact) {
+            try {
+                $artifactRemover->remove($artifact);
+            } catch (Artifact\ArtifactException $e) {
+                throw $e;
+                // Ignore if we weren't able to remove an artifact
+            }
+        }
+    }
+
     private function applyBuildStepStarted(BuildStepStarted $started)
     {
         $this->currentStepCursor = $started->getStepPosition();
+
+        foreach ($started->getStepConfiguration()->getWriteArtifacts() as $artifact) {
+            $this->writtenArtifacts[] = $artifact;
+        }
     }
 
     private function applyBuildCreated(BuildCreated $event)

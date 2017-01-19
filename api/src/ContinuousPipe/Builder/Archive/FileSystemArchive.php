@@ -16,8 +16,6 @@ class FileSystemArchive extends Context implements Archive
         $archive = new self(self::createDirectory('fs-from-stream'));
         $archive->writeStream('/', $resource);
 
-        var_dump('wrote stream to ', $archive->getDirectory());
-
         return $archive;
     }
 
