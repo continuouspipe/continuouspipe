@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Pipe\Event;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class ComponentsReady implements DeploymentEvent
 {

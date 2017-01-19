@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Pipe;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface DeploymentRepository
 {

@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Pipe\View;
 
 use ContinuousPipe\Pipe\DeploymentNotFound;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface DeploymentRepository
 {

@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Pipe\EventBus;
 
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface EventStore
 {

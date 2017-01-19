@@ -5,7 +5,7 @@ namespace ContinuousPipe\Pipe\View;
 use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Security\User\User;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class Deployment
 {

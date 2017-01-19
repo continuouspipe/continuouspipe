@@ -4,7 +4,7 @@ namespace ContinuousPipe\Pipe\Tests\EventBus;
 
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
 use ContinuousPipe\Pipe\EventBus\EventStore;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class InMemoryEventStore implements EventStore
 {
