@@ -131,7 +131,9 @@ class TeamContext implements Context
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'slug' => $slug
+                'team' => [
+                    'slug' => $slug,
+                ],
             ])
         ));
     }
@@ -147,8 +149,10 @@ class TeamContext implements Context
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'slug' => $slug,
-                'name' => $name,
+                'team' => [
+                    'slug' => $slug,
+                    'name' => $name,
+                ],
             ])
         ));
     }

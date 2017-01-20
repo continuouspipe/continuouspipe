@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Authenticator\Team;
 
 use ContinuousPipe\Authenticator\Event\TeamCreationEvent;
+use ContinuousPipe\Authenticator\Team\Request\TeamCreationRequest;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
@@ -41,13 +42,15 @@ class TeamCreator
     /**
      * Create a new team.
      *
-     * @param Team $team
+     * @param TeamCreationRequest $creationRequest
      * @param User $owner
      *
      * @return Team
      */
-    public function create(Team $team, User $owner)
+    public function create(TeamCreationRequest $creationRequest, User $owner)
     {
+        $team = $creationRequest->getTeam();
+
         $this->eventDispatcher->dispatch(TeamCreationEvent::BEFORE_EVENT, new TeamCreationEvent($team, $owner));
 
         $team = $this->teamRepository->save($team);

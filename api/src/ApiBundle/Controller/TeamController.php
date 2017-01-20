@@ -3,6 +3,7 @@
 namespace ApiBundle\Controller;
 
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
+use ContinuousPipe\Authenticator\Team\Request\TeamCreationRequest;
 use ContinuousPipe\Authenticator\Team\TeamCreator;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
@@ -80,19 +81,19 @@ class TeamController
     /**
      * @Route("/teams", methods={"POST"})
      * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
-     * @ParamConverter("team", converter="fos_rest.request_body")
+     * @ParamConverter("creationRequest", converter="fos_rest.request_body")
      * @View(statusCode=201)
      */
-    public function createAction(Team $team, User $user)
+    public function createAction(TeamCreationRequest $creationRequest, User $user)
     {
-        $errors = $this->validator->validate($team);
+        $errors = $this->validator->validate($creationRequest);
         if ($errors->count() > 0) {
             return new JsonResponse([
                 'message' => $errors->get(0)->getMessage(),
             ], 400);
         }
 
-        return $this->teamCreator->create($team, $user);
+        return $this->teamCreator->create($creationRequest, $user);
     }
 
     /**
