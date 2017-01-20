@@ -7,8 +7,11 @@
     <entity name="ContinuousPipe\Security\Team\Team">
         <id name="slug" type="string" />
         <field name="name" type="string" nullable="true" />
-        <one-to-many field="memberships" target-entity="ContinuousPipe\Security\Team\TeamMembership" mapped-by="team" />
         <field name="bucketUuid" type="string" />
+        <one-to-many field="memberships" target-entity="ContinuousPipe\Security\Team\TeamMembership" mapped-by="team" />
+        <many-to-one field="billingProfile" target-entity="ContinuousPipe\Billing\BillingProfile\UserBillingProfile" inversed-by="teams">
+            <join-column name="billing_profile_uuid" referenced-column-name="uuid" />
+        </many-to-one>
     </entity>
 
 </doctrine-mapping>

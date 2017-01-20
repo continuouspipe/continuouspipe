@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\AccountRepository;
 use ContinuousPipe\Security\User\User;
@@ -34,15 +36,20 @@ class AccountController
     private $urlGenerator;
 
     /**
-     * @param AccountRepository     $accountRepository
-     * @param FormFactoryInterface  $formFactory
-     * @param UrlGeneratorInterface $urlGenerator
+     * @var UserBillingProfileRepository
      */
-    public function __construct(AccountRepository $accountRepository, FormFactoryInterface $formFactory, UrlGeneratorInterface $urlGenerator)
-    {
+    private $userBillingProfileRepository;
+
+    public function __construct(
+        AccountRepository $accountRepository,
+        FormFactoryInterface $formFactory,
+        UrlGeneratorInterface $urlGenerator,
+        UserBillingProfileRepository $userBillingProfileRepository
+    ) {
         $this->accountRepository = $accountRepository;
         $this->formFactory = $formFactory;
         $this->urlGenerator = $urlGenerator;
+        $this->userBillingProfileRepository = $userBillingProfileRepository;
     }
 
     /**
@@ -52,9 +59,16 @@ class AccountController
      */
     public function overviewAction(User $user)
     {
+        try {
+            $billingProfile = $this->userBillingProfileRepository->findByUser($user);
+        } catch (UserBillingProfileNotFound $e) {
+            $billingProfile = null;
+        }
+
         return [
             'user' => $user,
             'accounts' => $this->accountRepository->findByUsername($user->getUsername()),
+            'billingProfile' => $billingProfile,
         ];
     }
 

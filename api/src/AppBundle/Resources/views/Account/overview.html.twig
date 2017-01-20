@@ -47,4 +47,24 @@
     <a href="{{ hwi_oauth_login_url('google') }}" class="btn btn-default"><i class="cp-icon-google"></i>Connect a Google account</a>
     <a href="{{ hwi_oauth_login_url('bitbucket') }}" class="btn btn-default"><i class="cp-icon-bitbucket"></i>Connect a BitBucket account</a>
 </p>
+
+<h2>Billing profile</h2>
+{% if billingProfile is null %}
+    <div class="alert alert-warning">Your billing profile is not configured. <a href="{{ path('account_billing_profile') }}" class="btn btn-primary">Configure</a></div>
+{% else %}
+    <p><strong>Name:</strong> {{ billingProfile.name }}</p>
+
+    <div class="panel">
+        <h2>Linked teams</h2>
+        <ul>
+        {% for team in billingProfile.teams %}
+        <li>{{ team.name }}</li>
+        {% else %}
+        <li><em>No linked team.</em></li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <a href="{{ path('account_billing_profile') }}" class="btn btn-primary">Configure</a>
+{% endif %}
 {% endblock %}
