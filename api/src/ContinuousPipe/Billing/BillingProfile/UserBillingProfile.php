@@ -8,25 +8,34 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class UserBillingProfile
 {
     /**
+     * @JMS\Type("uuid")
+     *
      * @var UuidInterface
      */
     private $uuid;
 
     /**
+     * @JMS\Type("ContinuousPipe\Security\User\User")
+     *
      * @var User
      */
     private $user;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $name;
 
     /**
+     * @JMS\Type("array<ContinuousPipe\Security\Team\Team>")
+     *
      * @var Collection
      */
     private $teams;

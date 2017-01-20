@@ -35,6 +35,9 @@
             <argument type="service" id="google.project_repository" />
             <argument type="service" id="google.cluster_repository" />
         </service>
+        <service id="api.controller.billing_profile" class="ApiBundle\Controller\BillingProfileController">
+            <argument type="service" id="app.repository.billing_profile" />
+        </service>
 
         <!-- Authentication -->
         <service id="api.api_key_repository" class="ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository">

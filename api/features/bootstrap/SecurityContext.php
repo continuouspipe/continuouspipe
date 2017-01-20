@@ -107,7 +107,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
     /**
      * @Given there is a user :username
      */
-    public function thereIsAUser($username)
+    public function thereIsAUser($username) : SecurityUser
     {
         try {
             return $this->securityUserRepository->findOneByUsername($username);

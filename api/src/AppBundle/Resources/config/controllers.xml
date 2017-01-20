@@ -13,7 +13,7 @@
         </service>
 
         <service id="app.controller.billing_profile" class="AppBundle\Controller\BillingProfileController">
-            <argument type="service" id="app.billing_profile.doctrine_repository" />
+            <argument type="service" id="app.repository.billing_profile" />
         </service>
 
         <service id="app.controller.invitation" class="AppBundle\Controller\InvitationController">

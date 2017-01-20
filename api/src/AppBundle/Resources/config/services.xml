@@ -91,5 +91,6 @@
         <service id="app.billing_profile.doctrine_repository" class="ContinuousPipe\Billing\Infrastructure\Doctrine\DoctrineUserBillingProfileRepository">
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
+        <service id="app.repository.billing_profile" alias="app.billing_profile.doctrine_repository" />
     </services>
 </container>
