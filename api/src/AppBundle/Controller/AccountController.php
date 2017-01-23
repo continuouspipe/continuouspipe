@@ -70,9 +70,10 @@ class AccountController
     {
         try {
             $billingProfile = $this->userBillingProfileRepository->findByUser($user);
+            $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile);
 
             $activities = [];
-            foreach ($billingProfile->getTeams() as $team) {
+            foreach ($billingProfileTeams as $team) {
                 $activities = array_merge($activities, $this->activityTracker->findBy($team, new \DateTime('-30 days'), new \DateTime()));
             }
 
@@ -81,6 +82,7 @@ class AccountController
             });
         } catch (UserBillingProfileNotFound $e) {
             $billingProfile = null;
+            $billingProfileTeams = [];
             $activities = [];
         }
 
@@ -88,6 +90,7 @@ class AccountController
             'user' => $user,
             'accounts' => $this->accountRepository->findByUsername($user->getUsername()),
             'billingProfile' => $billingProfile,
+            'billingProfileTeams' => $billingProfileTeams,
             'userActivities' => $activities,
         ];
     }

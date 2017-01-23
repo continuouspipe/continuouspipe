@@ -33,19 +33,11 @@ class UserBillingProfile
      */
     private $name;
 
-    /**
-     * @JMS\Type("array<ContinuousPipe\Security\Team\Team>")
-     *
-     * @var Collection
-     */
-    private $teams;
-
     public function __construct(UuidInterface $uuid, User $user, string $name)
     {
         $this->uuid = $uuid;
         $this->user = $user;
         $this->name = $name;
-        $this->teams = new ArrayCollection();
     }
 
     /**
@@ -70,13 +62,5 @@ class UserBillingProfile
     public function getName(): string
     {
         return $this->name;
-    }
-
-    /**
-     * @return Team[]|Collection
-     */
-    public function getTeams()
-    {
-        return $this->teams;
     }
 }
