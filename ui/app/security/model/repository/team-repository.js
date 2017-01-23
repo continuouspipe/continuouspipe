@@ -13,7 +13,7 @@ angular.module('continuousPipeRiver')
         };
 
         this.create = function(team) {
-            return this.resource.save(team).$promise;
+            return this.resource.save({team: team}).$promise;
         };
 
         this.getMembersStatus = function(slug) {
