@@ -11,6 +11,7 @@
         </service>
         <service id="river.user_activity.dispatch_on_repository_event" class="ContinuousPipe\UserActivity\DispatchFromCodeRepositoryEvents">
             <argument type="service" id="river.user_activity.dispatcher"/>
+            <argument type="service" id="river.repository.flow" />
 
             <tag name="tolerance.operation_wrapper"
                  methods="notify"

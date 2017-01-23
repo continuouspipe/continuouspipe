@@ -11,6 +11,13 @@ class UserActivity
     const TYPE_PUSH = 'push';
 
     /**
+     * @JMS\Type("string")
+     *
+     * @var string
+     */
+    private $teamSlug;
+
+    /**
      * @JMS\Type("uuid")
      *
      * @var UuidInterface
@@ -38,12 +45,21 @@ class UserActivity
      */
     private $dateTime;
 
-    public function __construct(UuidInterface $flowUuid, string $type, CodeRepositoryUser $user, \DateTimeInterface $dateTime)
+    public function __construct(string $teamSlug, UuidInterface $flowUuid, string $type, CodeRepositoryUser $user, \DateTimeInterface $dateTime)
     {
+        $this->teamSlug = $teamSlug;
         $this->flowUuid = $flowUuid;
         $this->type = $type;
         $this->user = $user;
         $this->dateTime = $dateTime;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTeamSlug(): string
+    {
+        return $this->teamSlug;
     }
 
     /**
