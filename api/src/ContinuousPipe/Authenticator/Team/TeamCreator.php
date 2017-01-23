@@ -4,6 +4,8 @@ namespace ContinuousPipe\Authenticator\Team;
 
 use ContinuousPipe\Authenticator\Event\TeamCreationEvent;
 use ContinuousPipe\Authenticator\Team\Request\TeamCreationRequest;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
@@ -26,17 +28,21 @@ class TeamCreator
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
-
     /**
-     * @param TeamRepository           $teamRepository
-     * @param TeamMembershipRepository $membershipRepository
-     * @param EventDispatcherInterface $eventDispatcher
+     * @var UserBillingProfileRepository
      */
-    public function __construct(TeamRepository $teamRepository, TeamMembershipRepository $membershipRepository, EventDispatcherInterface $eventDispatcher)
-    {
+    private $userBillingProfileRepository;
+
+    public function __construct(
+        TeamRepository $teamRepository,
+        TeamMembershipRepository $membershipRepository,
+        UserBillingProfileRepository $userBillingProfileRepository,
+        EventDispatcherInterface $eventDispatcher
+    ) {
         $this->teamRepository = $teamRepository;
         $this->membershipRepository = $membershipRepository;
         $this->eventDispatcher = $eventDispatcher;
+        $this->userBillingProfileRepository = $userBillingProfileRepository;
     }
 
     /**
@@ -44,6 +50,8 @@ class TeamCreator
      *
      * @param TeamCreationRequest $creationRequest
      * @param User $owner
+     *
+     * @throws TeamCreationException
      *
      * @return Team
      */
@@ -55,6 +63,17 @@ class TeamCreator
 
         $team = $this->teamRepository->save($team);
         $this->membershipRepository->save(new TeamMembership($team, $owner, [TeamMembership::PERMISSION_ADMIN]));
+
+        if (null !== ($billingProfile = $creationRequest->getBillingProfile())) {
+            $billingProfile = $this->userBillingProfileRepository->find($billingProfile->getUuid());
+            if ($billingProfile->getUser()->getUsername() != $owner->getUsername()) {
+                throw new TeamCreationException('You are not authorized to use this billing profile');
+            }
+
+            $billingProfile->getTeams()->add($team);
+
+            $this->userBillingProfileRepository->save($billingProfile);
+        }
 
         $this->eventDispatcher->dispatch(TeamCreationEvent::AFTER_EVENT, new TeamCreationEvent($team, $owner));
 

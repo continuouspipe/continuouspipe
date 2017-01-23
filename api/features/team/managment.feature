@@ -88,3 +88,16 @@ Feature:
     When I add the user "email@exmaple.com" in the team "my-team"
     Then the user should be added to the team
     And I can see the user "someone" in the team "my-team"
+
+  @smoke
+  Scenario: Create the team with the billing profile
+    Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    When I create a team "continuous-pipe" with the billing profile "00000000-0000-0000-0000-000000000000"
+    Then the team should be successfully created
+    And the billing profile of the team "continuous-pipe" should be "00000000-0000-0000-0000-000000000000"
+
+  Scenario: I can't create a team with another billing profile
+    Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "another"
+    And there is a billing profile "00000000-0000-0000-0000-000000000001" for the user "samuel"
+    When I create a team "continuous-pipe" with the billing profile "00000000-0000-0000-0000-000000000000"
+    Then the team should not be created

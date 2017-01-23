@@ -158,6 +158,27 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I create a team :slug with the billing profile :billingAccountUuid
+     */
+    public function iCreateATeamWithTheBillingProfile($slug, $billingAccountUuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams',
+            'POST',
+            [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'team' => [
+                    'slug' => $slug,
+                ],
+                'billing_profile' => [
+                    'uuid' => $billingAccountUuid,
+                ],
+            ])
+        ));
+    }
+
+    /**
      * @When I request the list of teams
      */
     public function iRequestTheListOfTeams()

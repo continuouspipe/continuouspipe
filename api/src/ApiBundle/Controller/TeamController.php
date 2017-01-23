@@ -4,6 +4,7 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use ContinuousPipe\Authenticator\Team\Request\TeamCreationRequest;
+use ContinuousPipe\Authenticator\Team\TeamCreationException;
 use ContinuousPipe\Authenticator\Team\TeamCreator;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
@@ -93,7 +94,13 @@ class TeamController
             ], 400);
         }
 
-        return $this->teamCreator->create($creationRequest, $user);
+        try {
+            return $this->teamCreator->create($creationRequest, $user);
+        } catch (TeamCreationException $e) {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+            ], 400);
+        }
     }
 
     /**

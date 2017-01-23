@@ -9,6 +9,7 @@ use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\AccountRepository;
 use ContinuousPipe\Security\Account\GitHubAccount;
 use ContinuousPipe\Security\Account\GoogleAccount;
+use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\PredefinedRequestMappingMiddleware;
 use Ramsey\Uuid\Uuid;
@@ -355,6 +356,22 @@ class AccountsContext implements Context
 
         if (count($matchingAccounts) == 0) {
             throw new \RuntimeException('Account is not found');
+        }
+    }
+
+    /**
+     * @Then the billing profile of the team :slug should be :billingProfileUuid
+     */
+    public function theBillingProfileOfTheTeamShouldBe($slug, $billingProfileUuid)
+    {
+        $billingProfile = $this->userBillingProfileRepository->findByTeam(new Team($slug, $slug));
+
+        if (!$billingProfile->getUuid()->equals(Uuid::fromString($billingProfileUuid))) {
+            throw new \RuntimeException(sprintf(
+                'Found %s while expecting %s',
+                $billingProfile->getUuid(),
+                $billingProfileUuid
+            ));
         }
     }
 
