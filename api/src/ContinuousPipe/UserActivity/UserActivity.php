@@ -31,11 +31,19 @@ class UserActivity
      */
     private $user;
 
-    public function __construct(UuidInterface $flowUuid, string $type, CodeRepositoryUser $user)
+    /**
+     * @JMS\Type("DateTime")
+     *
+     * @var \DateTimeInterface
+     */
+    private $dateTime;
+
+    public function __construct(UuidInterface $flowUuid, string $type, CodeRepositoryUser $user, \DateTimeInterface $dateTime)
     {
         $this->flowUuid = $flowUuid;
         $this->type = $type;
         $this->user = $user;
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -60,5 +68,13 @@ class UserActivity
     public function getType() : string
     {
         return $this->type;
+    }
+
+    /**
+     * @return \DateTimeInterface
+     */
+    public function getDateTime(): \DateTimeInterface
+    {
+        return $this->dateTime;
     }
 }

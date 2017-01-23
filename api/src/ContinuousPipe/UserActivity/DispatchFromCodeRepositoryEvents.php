@@ -19,7 +19,8 @@ class DispatchFromCodeRepositoryEvents
             $this->userActivityDispatcher->dispatch(new UserActivity(
                 $event->getFlowUuid(),
                 UserActivity::TYPE_PUSH,
-                $user
+                $user,
+                new \DateTime()
             ));
         }
     }
