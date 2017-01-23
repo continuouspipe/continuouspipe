@@ -4,6 +4,7 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use ContinuousPipe\Authenticator\Team\Request\TeamCreationRequest;
+use ContinuousPipe\Authenticator\Team\Request\TeamPartialUpdateRequest;
 use ContinuousPipe\Authenticator\Team\TeamCreationException;
 use ContinuousPipe\Authenticator\Team\TeamCreator;
 use ContinuousPipe\Security\Team\TeamMembership;
@@ -96,6 +97,25 @@ class TeamController
 
         try {
             return $this->teamCreator->create($creationRequest, $user);
+        } catch (TeamCreationException $e) {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    /**
+     * @Route("/teams/{slug}", methods={"PATCH"})
+     * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @ParamConverter("updateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("team", converter="team")
+     * @Security("is_granted('ADMIN', team)")
+     * @View
+     */
+    public function updateAction(Team $team, TeamPartialUpdateRequest $updateRequest, User $user)
+    {
+        try {
+            return $this->teamCreator->update($team, $user, $updateRequest);
         } catch (TeamCreationException $e) {
             return new JsonResponse([
                 'message' => $e->getMessage(),

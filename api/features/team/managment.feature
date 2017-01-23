@@ -101,3 +101,41 @@ Feature:
     And there is a billing profile "00000000-0000-0000-0000-000000000001" for the user "samuel"
     When I create a team "continuous-pipe" with the billing profile "00000000-0000-0000-0000-000000000000"
     Then the team should not be created
+
+  Scenario: I can update a team I'm administrator of
+    Given there is a team "foo"
+    And the user "samuel" is administrator of the team "foo"
+    When I update the team "foo" with the name "BAR"
+    Then the team should be successfully updated
+    And the name of the team "foo" should be "BAR"
+
+  Scenario: I can't update a team I'm just user
+    Given there is a team "foo"
+    And the user "samuel" is user of the team "foo"
+    When I update the team "foo" with the name "BAR"
+    Then I should be told that I don't have the authorization
+
+  Scenario: I can't update a team I'm not even member
+    Given there is a team "foo"
+    When I update the team "foo" with the name "BAR"
+    Then I should be told that I don't have the authorization
+
+  Scenario: I can't update a team slug
+    Given there is a team "foo"
+    And the user "samuel" is administrator of the team "foo"
+    When I update the team "foo" with the slug "bar"
+    Then the team should not be updated
+
+  Scenario: I can update the team billing profile
+    Given there is a team "foo"
+    And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    And the user "samuel" is administrator of the team "foo"
+    When I update the team "foo" with the billing profile "00000000-0000-0000-0000-000000000000"
+    Then the team should be successfully updated
+
+  Scenario: I can't update with a billing profile of another user
+    Given there is a team "foo"
+    And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "somebody"
+    And the user "samuel" is administrator of the team "foo"
+    When I update the team "foo" with the billing profile "00000000-0000-0000-0000-000000000000"
+    Then the team should not be updated
