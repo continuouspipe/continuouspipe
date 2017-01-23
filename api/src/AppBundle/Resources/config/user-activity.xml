@@ -13,10 +13,6 @@
             <argument type="service" id="river.user_activity.dispatcher"/>
             <argument type="service" id="river.repository.flow" />
 
-            <tag name="tolerance.operation_wrapper"
-                 methods="notify"
-                 runner="tolerance.operation_runners.null_placeholdered" />
-
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\CodePushed" />
         </service>
     </services>

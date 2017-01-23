@@ -43,7 +43,6 @@ class Commit
 
     /**
      * @JMS\Type("GitHub\WebHook\Model\CommitUser")
-     * @JMS\Groups({"commit"})
      *
      * @var CommitUser
      */
@@ -51,7 +50,6 @@ class Commit
 
     /**
      * @JMS\Type("GitHub\WebHook\Model\CommitUser")
-     * @JMS\Groups({"commit"})
      *
      * @var CommitUser
      */
@@ -84,13 +82,30 @@ class Commit
      */
     private $filesModified;
 
-    /**
-     * @param string $id
-     */
-    public function __construct($id)
-    {
+    public function __construct(
+        string $id,
+        bool $distinct,
+        string $message,
+        \DateTime $timestamp,
+        string $url,
+        CommitUser $author,
+        CommitUser $committer,
+        array $filesAdded,
+        array $filesRemoved,
+        array $filesModified
+    ) {
         $this->id = $id;
+        $this->distinct = $distinct;
+        $this->message = $message;
+        $this->timestamp = $timestamp;
+        $this->url = $url;
+        $this->author = $author;
+        $this->committer = $committer;
+        $this->filesAdded = $filesAdded;
+        $this->filesRemoved = $filesRemoved;
+        $this->filesModified = $filesModified;
     }
+
 
     /**
      * @return string
@@ -153,7 +168,7 @@ class Commit
      */
     public function getFilesAdded()
     {
-        return $this->filesAdded;
+        return $this->filesAdded ?: [];
     }
 
     /**
@@ -161,7 +176,7 @@ class Commit
      */
     public function getFilesRemoved()
     {
-        return $this->filesRemoved;
+        return $this->filesRemoved ?: [];
     }
 
     /**
@@ -169,6 +184,6 @@ class Commit
      */
     public function getFilesModified()
     {
-        return $this->filesModified;
+        return $this->filesModified ?: [];
     }
 }

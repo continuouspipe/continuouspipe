@@ -27,6 +27,13 @@ class CommitUser
      */
     private $name;
 
+    public function __construct(string $username, string $email, string $name)
+    {
+        $this->username = $username;
+        $this->email = $email;
+        $this->name = $name;
+    }
+
     /**
      * @return string|null
      */
