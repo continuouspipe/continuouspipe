@@ -15,6 +15,8 @@
         <service id="app.repository.team" class="ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository">
             <argument type="service" id="app.repository.team_membership" />
         </service>
+        <service id="app.billing.activity_tracker.in_memory" class="ContinuousPipe\Billing\ActivityTracker\InMemoryActivityTracker" />
+        <service id="app.billing.activity_tracker" alias="app.billing.activity_tracker.in_memory" />
 
         <service id="google.token_resolver.cached"
                  class="ContinuousPipe\Google\Cache\InMemoryCachedTokenResolver"

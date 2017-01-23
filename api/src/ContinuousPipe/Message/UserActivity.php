@@ -5,7 +5,7 @@ namespace ContinuousPipe\Message;
 use Ramsey\Uuid\UuidInterface;
 use JMS\Serializer\Annotation as JMS;
 
-class UserActivity
+class UserActivity implements Message
 {
     const TYPE_PUSH = 'push';
 
@@ -30,11 +30,19 @@ class UserActivity
      */
     private $user;
 
-    public function __construct(UuidInterface $flowUuid, string $type, UserActivityUser $user)
+    /**
+     * @JMS\Type("DateTime")
+     *
+     * @var \DateTimeInterface
+     */
+    private $dateTime;
+
+    public function __construct(UuidInterface $flowUuid, string $type, UserActivityUser $user, \DateTimeInterface $dateTime)
     {
         $this->flowUuid = $flowUuid;
         $this->type = $type;
         $this->user = $user;
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -51,6 +59,14 @@ class UserActivity
     public function getUser() : UserActivityUser
     {
         return $this->user;
+    }
+
+    /**
+     * @return \DateTimeInterface
+     */
+    public function getDateTime(): \DateTimeInterface
+    {
+        return $this->dateTime;
     }
 
     /**

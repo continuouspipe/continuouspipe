@@ -13,5 +13,17 @@
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="logger" />
         </service>
+
+        <service id="builder.billing.activity_tracker.redis" class="ContinuousPipe\Billing\Infrastructure\Redis\RedisActivityTracker">
+            <argument type="service" id="snc_redis.default_client" />
+            <argument type="service" id="jms_serializer.serializer" />
+            <argument type="service" id="logger"/>
+        </service>
+        <service id="app.billing.activity_tracker" alias="builder.billing.activity_tracker.redis" />
+        <service id="builder.billing.activity_tracker.store_user_activity" class="ContinuousPipe\Billing\ActivityTracker\EventListener\StoreLastUserActivity">
+            <argument type="service" id="app.billing.activity_tracker" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Message\UserActivity" />
+        </service>
     </services>
 </container>

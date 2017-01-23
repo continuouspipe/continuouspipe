@@ -2,19 +2,27 @@
 
 namespace ContinuousPipe\Message;
 
+use JMS\Serializer\Annotation as JMS;
+
 class UserActivityUser
 {
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $username;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string|null
      */
     private $email;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string|null
      */
     private $displayName;
