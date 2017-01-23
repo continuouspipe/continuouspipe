@@ -38,7 +38,7 @@ class CodePushed implements CodeRepositoryEvent
     /**
      * @return CodeRepositoryUser[]
      */
-    public function getUsers()
+    public function getUsers() : array
     {
         return $this->users;
     }
