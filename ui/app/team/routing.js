@@ -141,5 +141,16 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+            .state('configuration', {
+                parent: 'team',
+                url: '/configuration',
+                views: {
+                    'content@': {
+                        templateUrl: 'team/configuration/views/edit.html',
+                        controller: 'TeamConfigurationController'
+                    }
+                },
+                aside: true
+            })
         ;
     });
