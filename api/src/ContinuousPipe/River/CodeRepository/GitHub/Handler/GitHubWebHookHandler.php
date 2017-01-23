@@ -159,21 +159,21 @@ class GitHubWebHookHandler
         $users = [];
 
         foreach ($event->getCommits() as $commit) {
-            if (null === ($committer = $commit->getCommitter())) {
-                $this->logger->warning('Received a commit without an comitted', [
+            if (null === ($author = $commit->getAuthor())) {
+                $this->logger->warning('Received a commit without an author', [
                     'repository_url' => $event->getRepository()->getUrl(),
                     'commit' => $commit->getId(),
                 ]);
-            } elseif (null === ($committer->getUsername())) {
-                $this->logger->warning('Received a commit with a committer that have an empty username', [
+            } elseif (null === ($author->getUsername())) {
+                $this->logger->warning('Received a commit with an autheor that have an empty username', [
                     'repository_url' => $event->getRepository()->getUrl(),
                     'commit' => $commit->getId(),
                 ]);
             } else {
                 $user = new CodeRepositoryUser(
-                    $committer->getUsername(),
-                    $committer->getEmail(),
-                    $committer->getName()
+                    $author->getUsername(),
+                    $author->getEmail(),
+                    $author->getName()
                 );
 
                 if (!in_array($user, $users)) {

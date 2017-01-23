@@ -56,7 +56,6 @@ class PushEvent extends AbstractEvent
 
     /**
      * @JMS\Type("array<GitHub\WebHook\Model\Commit>")
-     * @JMS\Groups({"commit"})
      *
      * @var Commit[]
      */

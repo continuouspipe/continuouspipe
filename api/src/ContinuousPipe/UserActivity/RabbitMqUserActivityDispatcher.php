@@ -4,6 +4,7 @@ namespace ContinuousPipe\UserActivity;
 
 use JMS\Serializer\SerializerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
+use PhpAmqpLib\Wire\AMQPTable;
 
 class RabbitMqUserActivityDispatcher implements UserActivityDispatcher
 {
@@ -21,9 +22,10 @@ class RabbitMqUserActivityDispatcher implements UserActivityDispatcher
         $this->producer->publish(
             $this->serializer->serialize($userActivity, 'json'),
             '',
-            [],
             [
-                'X-Message-Name' => 'user_activity',
+                'application_headers' => new AMQPTable([
+                    'X-Message-Name' => 'user_activity',
+                ]),
             ]
         );
     }
