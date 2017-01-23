@@ -139,3 +139,8 @@ Feature:
     And the user "samuel" is administrator of the team "foo"
     When I update the team "foo" with the billing profile "00000000-0000-0000-0000-000000000000"
     Then the team should not be updated
+
+  Scenario: It uses the creator's billing profile
+    Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    When I create a team "continuous-pipe"
+    Then the billing profile of the team "continuous-pipe" should be "00000000-0000-0000-0000-000000000000"

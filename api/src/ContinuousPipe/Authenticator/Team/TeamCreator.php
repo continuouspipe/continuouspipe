@@ -13,6 +13,7 @@ use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -34,17 +35,23 @@ class TeamCreator
      * @var UserBillingProfileRepository
      */
     private $userBillingProfileRepository;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     public function __construct(
         TeamRepository $teamRepository,
         TeamMembershipRepository $membershipRepository,
         UserBillingProfileRepository $userBillingProfileRepository,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        LoggerInterface $logger
     ) {
         $this->teamRepository = $teamRepository;
         $this->membershipRepository = $membershipRepository;
         $this->eventDispatcher = $eventDispatcher;
         $this->userBillingProfileRepository = $userBillingProfileRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -71,9 +78,18 @@ class TeamCreator
             if ($billingProfile->getUser()->getUsername() != $owner->getUsername()) {
                 throw new TeamCreationException('You are not authorized to use this billing profile');
             }
+        } else {
+            try {
+                $billingProfile = $this->userBillingProfileRepository->findByUser($owner);
+            } catch (UserBillingProfileNotFound $e) {
+                $this->logger->warning('Created a team without billing profile', [
+                    'team' => $team->getSlug(),
+                ]);
+            }
+        }
 
+        if (isset($billingProfile)) {
             $billingProfile->getTeams()->add($team);
-
             $this->userBillingProfileRepository->save($billingProfile);
         }
 
