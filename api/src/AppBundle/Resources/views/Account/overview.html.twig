@@ -65,7 +65,7 @@
                 <!-- List group -->
                 <ul class="list-group">
                     {% for team in billingProfile.teams %}
-                        <li class="list-group-item">{{ team.name }}</li>
+                        <li class="list-group-item">{{ team.name | default(team.slug) }}</li>
                     {% else %}
                         <li class="list-group-item"><em>No linked team.</em></li>
                     {% endfor %}
