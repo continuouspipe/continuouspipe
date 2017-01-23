@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Billing\ActivityTracker;
 
 use ContinuousPipe\Message\UserActivity;
-use Ramsey\Uuid\UuidInterface;
+use ContinuousPipe\Security\Team\Team;
 
 interface ActivityTracker
 {
@@ -17,11 +17,11 @@ interface ActivityTracker
     /**
      * Find the user activity for this flow between start and end ranges.
      *
-     * @param UuidInterface $flowUuid
+     * @param Team $team
      * @param \DateTimeInterface $start
      * @param \DateTimeInterface $end
      *
      * @return UserActivity[]
      */
-    public function findBy(UuidInterface $flowUuid, \DateTimeInterface $start, \DateTimeInterface $end) : array;
+    public function findBy(Team $team, \DateTimeInterface $start, \DateTimeInterface $end) : array;
 }

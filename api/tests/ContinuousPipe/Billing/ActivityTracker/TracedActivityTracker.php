@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Billing\ActivityTracker;
 
 use ContinuousPipe\Message\UserActivity;
-use Ramsey\Uuid\UuidInterface;
+use ContinuousPipe\Security\Team\Team;
 
 class TracedActivityTracker implements ActivityTracker
 {
@@ -38,9 +38,9 @@ class TracedActivityTracker implements ActivityTracker
     /**
      * {@inheritdoc}
      */
-    public function findBy(UuidInterface $flowUuid, \DateTimeInterface $start, \DateTimeInterface $end): array
+    public function findBy(Team $team, \DateTimeInterface $start, \DateTimeInterface $end): array
     {
-        return $this->decoratedTracker->findBy($flowUuid, $start, $end);
+        return $this->decoratedTracker->findBy($team, $start, $end);
     }
 
     /**

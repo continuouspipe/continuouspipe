@@ -10,6 +10,13 @@ class UserActivity implements Message
     const TYPE_PUSH = 'push';
 
     /**
+     * @JMS\Type("string")
+     *
+     * @var string
+     */
+    private $teamSlug;
+
+    /**
      * @JMS\Type("uuid")
      *
      * @var UuidInterface
@@ -67,6 +74,14 @@ class UserActivity implements Message
     public function getDateTime(): \DateTimeInterface
     {
         return $this->dateTime;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTeamSlug(): string
+    {
+        return $this->teamSlug;
     }
 
     /**

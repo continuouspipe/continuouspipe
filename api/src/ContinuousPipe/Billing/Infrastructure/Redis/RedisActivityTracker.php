@@ -4,6 +4,7 @@ namespace ContinuousPipe\Billing\Infrastructure\Redis;
 
 use ContinuousPipe\Billing\ActivityTracker\ActivityTracker;
 use ContinuousPipe\Message\UserActivity;
+use ContinuousPipe\Security\Team\Team;
 use JMS\Serializer\SerializerInterface;
 use Predis\ClientInterface;
 use Psr\Log\LoggerInterface;
@@ -45,7 +46,8 @@ class RedisActivityTracker implements ActivityTracker
     public function track(UserActivity $userActivity)
     {
         $key = sprintf(
-            'activity:%s:%s:%s:%s:%s',
+            'activity:%s:%s:%s:%s:%s:%s',
+            $userActivity->getTeamSlug(),
             (string) $userActivity->getFlowUuid(),
             $userActivity->getDateTime()->format('Y'),
             $userActivity->getDateTime()->format('m'),
@@ -62,9 +64,9 @@ class RedisActivityTracker implements ActivityTracker
     /**
      * {@inheritdoc}
      */
-    public function findBy(UuidInterface $flowUuid, \DateTimeInterface $start, \DateTimeInterface $end): array
+    public function findBy(Team $team, \DateTimeInterface $start, \DateTimeInterface $end): array
     {
-        $keys = $this->redisClient->keys('activity:'.$flowUuid->toString().':*');
+        $keys = $this->redisClient->keys('activity:'.$team->getSlug().':*');
         $activities = [];
 
         foreach ($keys as $key) {

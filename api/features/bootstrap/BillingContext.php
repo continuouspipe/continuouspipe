@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\Billing\ActivityTracker\TracedActivityTracker;
 use ContinuousPipe\Message\UserActivity;
+use ContinuousPipe\Security\Team\Team;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Ramsey\Uuid\Uuid;
@@ -41,12 +42,12 @@ class BillingContext implements Context
     }
 
     /**
-     * @When I request the activity of the flow :flowUuid between :left and :right
+     * @When I request the activity of the team :team between :left and :right
      */
-    public function iRequestTheActivityOfTheFlowBetweenAnd($flowUuid, $left, $right)
+    public function iRequestTheActivityOfTheFlowBetweenAnd($team, $left, $right)
     {
         $this->activities = $this->tracedActivityTracker->findBy(
-            Uuid::fromString($flowUuid),
+            new Team($team, $team),
             \DateTime::createFromFormat(\DateTime::ISO8601, $left),
             \DateTime::createFromFormat(\DateTime::ISO8601, $right)
         );
