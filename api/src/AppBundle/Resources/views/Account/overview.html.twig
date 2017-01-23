@@ -76,7 +76,7 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Last 30 days activity</h3>
+                    <h3 class="panel-title">Last activity per user per day in the last 30 days</h3>
                 </div>
 
                 <!-- List group -->
@@ -84,30 +84,6 @@
                     {% for activity in userActivities %}
                         <li class="list-group-item"><strong>{{ activity.user.username }}</strong> did <strong>{{ activity.type }}</strong> on {{ activity.dateTime | date('d/m/Y H:i:s') }} ({{ activity.teamSlug }}</li>
                     {% else %}
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
-                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
                         <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
                     {% endfor %}
                 </ul>
