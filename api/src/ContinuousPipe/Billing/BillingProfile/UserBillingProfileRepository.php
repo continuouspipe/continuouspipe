@@ -43,4 +43,23 @@ interface UserBillingProfileRepository
      * @param UserBillingProfile $billingProfile
      */
     public function save(UserBillingProfile $billingProfile);
+
+    /**
+     * @param Team $team
+     * @param UserBillingProfile $billingProfile
+     */
+    public function link(Team $team, UserBillingProfile $billingProfile);
+
+    /**
+     * @param Team $team
+     * @param UserBillingProfile $billingProfile
+     */
+    public function unlink(Team $team, UserBillingProfile $billingProfile);
+
+    /**
+     * @param UserBillingProfile $billingProfile
+     *
+     * @return Team[]
+     */
+    public function findRelations(UserBillingProfile $billingProfile);
 }

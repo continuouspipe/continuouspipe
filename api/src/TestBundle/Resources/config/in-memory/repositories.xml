@@ -11,7 +11,9 @@
         <service id="app.repository.account" class="ContinuousPipe\Security\Account\InMemoryAccountRepository" />
         <service id="app.repository.team_membership" class="ContinuousPipe\Security\Tests\Team\InMemoryTeamMembershipRepository" />
         <service id="app.repository.user_invitation" class="ContinuousPipe\Authenticator\Tests\Invitation\InMemoryUserInvitationRepository" />
-        <service id="app.repository.billing_profile" class="ContinuousPipe\Billing\BillingProfile\InMemoryBillingProfileRepository" />
+        <service id="app.repository.billing_profile" class="ContinuousPipe\Billing\BillingProfile\InMemoryBillingProfileRepository">
+            <argument type="service" id="app.repository.team" />
+        </service>
         <service id="app.repository.team" class="ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository">
             <argument type="service" id="app.repository.team_membership" />
         </service>

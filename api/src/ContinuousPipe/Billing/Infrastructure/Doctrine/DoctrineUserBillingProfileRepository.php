@@ -6,6 +6,7 @@ use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\UuidInterface;
@@ -18,11 +19,14 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
     private $entityManager;
 
     /**
-     * @param EntityManager $entityManager
+     * @var TeamRepository
      */
-    public function __construct(EntityManager $entityManager)
+    private $teamRepository;
+
+    public function __construct(EntityManager $entityManager, TeamRepository $teamRepository)
     {
         $this->entityManager = $entityManager;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -30,7 +34,7 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
      */
     public function findByUser(User $user): UserBillingProfile
     {
-        if (null === ($billingProfile = $this->getRepository()->findOneBy(['user' => $user]))) {
+        if (null === ($billingProfile = $this->getUserBillingProfileRepository()->findOneBy(['user' => $user]))) {
             throw new UserBillingProfileNotFound(sprintf('No billing profile found for user "%s"', $user->getUsername()));
         }
 
@@ -48,17 +52,12 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
         $this->entityManager->flush($merged);
     }
 
-    private function getRepository()
-    {
-        return $this->entityManager->getRepository(UserBillingProfile::class);
-    }
-
     /**
      * {@inheritdoc}
      */
     public function find(UuidInterface $uuid): UserBillingProfile
     {
-        if (null === ($billingProfile = $this->getRepository()->find($uuid->toString()))) {
+        if (null === ($billingProfile = $this->getUserBillingProfileRepository()->find($uuid->toString()))) {
             throw new UserBillingProfileNotFound(sprintf(
                 'No billing profile found with identifier %s',
                 $uuid
@@ -71,21 +70,84 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
     /**
      * {@inheritdoc}
      */
+    public function link(Team $team, UserBillingProfile $billingProfile)
+    {
+        $team = $this->entityManager->merge($team);
+        $billingProfile = $this->entityManager->merge($billingProfile);
+
+        $relation = new UserBillingProfileTeamRelation($team, $billingProfile);
+
+        $this->entityManager->persist($relation);
+        $this->entityManager->flush($relation);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unlink(Team $team, UserBillingProfile $billingProfile)
+    {
+        $relation = $this->getUserBillingProfileTeamRelationRepository()->findOneBy([
+            'team' => $team,
+            'billingProfile' => $billingProfile,
+        ]);
+
+        if (null !== $relation) {
+            $this->entityManager->remove($relation);
+            $this->entityManager->flush($relation);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findByTeam(Team $team): UserBillingProfile
     {
-        $query = $this->getRepository()->createQueryBuilder('profile')
-            ->where(':team MEMBER OF profile.teams')
+        $query = $this->getUserBillingProfileTeamRelationRepository()
+            ->createQueryBuilder('relation')
+            ->addSelect('billingProfile')
+            ->join('relation.userBillingProfile', 'billingProfile')
+            ->where('relation.team = :team')
             ->setParameter('team', $team)
             ->getQuery()
         ;
 
-        if (null === ($billingProfile = $query->getOneOrNullResult())) {
+        /** @var UserBillingProfileTeamRelation $billingProfileRelation */
+        if (null === ($billingProfileRelation = $query->getOneOrNullResult())) {
             throw new UserBillingProfileNotFound(sprintf(
                 'No billing profile found for team %s',
                 $team->getSlug()
             ));
         }
 
-        return $billingProfile;
+        return $billingProfileRelation->getUserBillingProfile();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findRelations(UserBillingProfile $billingProfile)
+    {
+        $query = $this->getUserBillingProfileTeamRelationRepository()
+            ->createQueryBuilder('relation')
+            ->addSelect('team')
+            ->join('relation.team', 'team')
+            ->where('relation.userBillingProfile = :billingProfile')
+            ->setParameter('billingProfile', $billingProfile)
+            ->getQuery()
+        ;
+
+        return array_map(function (UserBillingProfileTeamRelation $relation) {
+            return $relation->getTeam();
+        }, $query->getResult());
+    }
+
+    private function getUserBillingProfileTeamRelationRepository()
+    {
+        return $this->entityManager->getRepository(UserBillingProfileTeamRelation::class);
+    }
+
+    private function getUserBillingProfileRepository()
+    {
+        return $this->entityManager->getRepository(UserBillingProfile::class);
     }
 }

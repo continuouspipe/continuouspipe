@@ -35,10 +35,12 @@ class DoctrineTeamRepository implements TeamRepository
      */
     public function save(Team $team)
     {
-        $this->entityManager->persist($team);
+        $merged = $this->entityManager->merge($team);
+
+        $this->entityManager->persist($merged);
         $this->entityManager->flush();
 
-        return $team;
+        return $merged;
     }
 
     /**

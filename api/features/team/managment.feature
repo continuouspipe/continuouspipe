@@ -102,6 +102,7 @@ Feature:
     When I create a team "continuous-pipe" with the billing profile "00000000-0000-0000-0000-000000000000"
     Then the team should not be created
 
+  @smoke
   Scenario: I can update a team I'm administrator of
     Given there is a team "foo"
     And the user "samuel" is administrator of the team "foo"

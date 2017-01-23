@@ -89,8 +89,7 @@ class TeamCreator
         }
 
         if (isset($billingProfile)) {
-            $billingProfile->getTeams()->add($team);
-            $this->userBillingProfileRepository->save($billingProfile);
+            $this->userBillingProfileRepository->link($team, $billingProfile);
         }
 
         $this->eventDispatcher->dispatch(TeamCreationEvent::AFTER_EVENT, new TeamCreationEvent($team, $owner));
@@ -115,6 +114,8 @@ class TeamCreator
             }
         }
 
+        $this->teamRepository->save($team);
+
         if (null !== ($billingProfile = $updateRequest->getBillingProfile())) {
             $billingProfile = $this->userBillingProfileRepository->find($billingProfile->getUuid());
             if ($billingProfile->getUser()->getUsername() != $updater->getUsername()) {
@@ -123,19 +124,14 @@ class TeamCreator
 
             try {
                 $existingBillingProfile = $this->userBillingProfileRepository->findByTeam($team);
-                $existingBillingProfile->getTeams()->removeElement($team);
 
-                $this->userBillingProfileRepository->save($existingBillingProfile);
+                $this->userBillingProfileRepository->unlink($team, $existingBillingProfile);
             } catch (UserBillingProfileNotFound $e) {
                 // No existing billing profile, ignore...
             }
 
-            $billingProfile->getTeams()->add($team);
-
-            $this->userBillingProfileRepository->save($billingProfile);
+            $this->userBillingProfileRepository->link($team, $billingProfile);
         }
-
-        $this->teamRepository->save($team);
 
         return $team;
     }
