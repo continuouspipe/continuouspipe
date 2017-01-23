@@ -7,4 +7,10 @@ angular.module('continuousPipeRiver')
         this.findByUsername = function(username) {
             return this.resource.get({username: username}).$promise
         };
+
+        this.findBillingProfilesForCurrentUser = function() {
+            return $resource(AUTHENTICATOR_API_URL+'/api/me/billing-profile').get().$promise.then(function(profile) {
+                return [profile];
+            });
+        };
     });
