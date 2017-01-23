@@ -96,6 +96,17 @@ class AccountsContext implements Context
     }
 
     /**
+     * @Given the team :team is linked to the billing profile :billingProfileUuid
+     */
+    public function theTeamIsLinkedToTheBillingProfile($team, $billingProfileUuid)
+    {
+        $this->userBillingProfileRepository->link(
+            new Team($team, $team),
+            $this->userBillingProfileRepository->find(Uuid::fromString($billingProfileUuid))
+        );
+    }
+
+    /**
      * @When I request the list of Google project for the account :account
      */
     public function iRequestTheListOfGoogleProjectForTheAccount($account)

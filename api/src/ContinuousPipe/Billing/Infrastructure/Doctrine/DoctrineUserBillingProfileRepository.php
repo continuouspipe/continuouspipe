@@ -88,7 +88,7 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
     {
         $relation = $this->getUserBillingProfileTeamRelationRepository()->findOneBy([
             'team' => $team,
-            'billingProfile' => $billingProfile,
+            'userBillingProfile' => $billingProfile,
         ]);
 
         if (null !== $relation) {

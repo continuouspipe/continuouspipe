@@ -145,3 +145,13 @@ Feature:
     Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
     When I create a team "continuous-pipe"
     Then the billing profile of the team "continuous-pipe" should be "00000000-0000-0000-0000-000000000000"
+
+  @smoke
+  Scenario: Change the billing profile
+    Given there is a team "foo"
+    And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "creator"
+    And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
+    And there is a billing profile "00000000-0000-0000-0000-000000000001" for the user "samuel"
+    And the user "samuel" is administrator of the team "foo"
+    When I update the team "foo" with the billing profile "00000000-0000-0000-0000-000000000001"
+    Then the team should be successfully updated
