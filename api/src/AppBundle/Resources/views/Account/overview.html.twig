@@ -52,19 +52,67 @@
 {% if billingProfile is null %}
     <div class="alert alert-warning">Your billing profile is not configured. <a href="{{ path('account_billing_profile') }}" class="btn btn-primary">Configure</a></div>
 {% else %}
-    <p><strong>Name:</strong> {{ billingProfile.name }}</p>
-
-    <div class="panel">
-        <h2>Linked teams</h2>
-        <ul>
-        {% for team in billingProfile.teams %}
-        <li>{{ team.name }}</li>
-        {% else %}
-        <li><em>No linked team.</em></li>
-        {% endfor %}
-        </ul>
+    <div class="alert alert-info">
+        <a href="{{ path('account_billing_profile') }}" class="btn btn-primary pull-right">Configure</a>
+        <p>Your billing profile is properly set-up.</p>
     </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Linked teams</h3>
+                </div>
+                <!-- List group -->
+                <ul class="list-group">
+                    {% for team in billingProfile.teams %}
+                        <li class="list-group-item">{{ team.name }}</li>
+                    {% else %}
+                        <li class="list-group-item"><em>No linked team.</em></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
 
-    <a href="{{ path('account_billing_profile') }}" class="btn btn-primary">Configure</a>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Last 30 days activity</h3>
+                </div>
+
+                <!-- List group -->
+                <ul class="list-group">
+                    {% for activity in userActivities %}
+                        <li class="list-group-item"><strong>{{ activity.user.username }}</strong> did <strong>{{ activity.type }}</strong> on {{ activity.dateTime | date('d/m/Y H:i:s') }} ({{ activity.teamSlug }}</li>
+                    {% else %}
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                        <li class="list-group-item"><em>No activity related to your billing profile.</em></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
 {% endif %}
 {% endblock %}
