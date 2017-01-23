@@ -106,7 +106,7 @@
                 "zipkin_base_url": "ZIPKIN_BASE_URL",
                 "k8s_health_checker_url": "K8S_HEALTH_CHECKER_URL",
                 "event_store_host": "EVENT_STORE_HOST",
-                "stack_rabbitmq_docker": "STACK_RABBITMQ_HOST"
+                "stack_rabbitmq_host": "STACK_RABBITMQ_HOST"
             }
         }]
     },
