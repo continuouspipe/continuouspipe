@@ -74,6 +74,9 @@ default:
                     - @kernel
                 - FirebaseContext:
                     - @csa_guzzle.data_collector.history_bag
+                - UserActivityContext:
+                    - @river.user_activity.traceable_dispatcher
+                    - @river.user_activity.middleware_supporting_dispatcher
 
                 # TBR:
                 - GitHubContext:
@@ -175,6 +178,9 @@ default:
                     - @kernel
                 - FirebaseContext:
                     - @csa_guzzle.data_collector.history_bag
+                - UserActivityContext:
+                    - @river.user_activity.traceable_dispatcher
+                    - @river.user_activity.middleware_supporting_dispatcher
 
         bitbucket:
             paths:
@@ -262,6 +268,9 @@ default:
                     - @kernel
                 - FirebaseContext:
                     - @csa_guzzle.data_collector.history_bag
+                - UserActivityContext:
+                    - @river.user_activity.traceable_dispatcher
+                    - @river.user_activity.middleware_supporting_dispatcher
 
     extensions:
         Behat\Symfony2Extension:

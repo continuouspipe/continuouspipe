@@ -2,11 +2,12 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub\Handler;
 
+use ContinuousPipe\River\CodeRepository\CodeRepositoryUser;
+use ContinuousPipe\River\CodeRepository\Event\CodePushed;
 use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
 use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
 use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use ContinuousPipe\River\CodeRepository\PullRequest;
-use ContinuousPipe\River\Event\GitHub\CodePushed;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
 use ContinuousPipe\River\CodeRepository\Event\PullRequestOpened;
 use ContinuousPipe\River\Event\GitHub\PullRequestSynchronized;
@@ -16,6 +17,7 @@ use ContinuousPipe\River\View;
 use GitHub\WebHook\Event\PullRequestEvent;
 use GitHub\WebHook\Event\PushEvent;
 use GitHub\WebHook\Event\StatusEvent;
+use GitHub\WebHook\Model\Commit;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
 use SimpleBus\Message\Bus\MessageBus;
@@ -89,7 +91,7 @@ class GitHubWebHookHandler
         if ($event->isDeleted()) {
             $this->eventBus->handle(new BranchDeleted($flowUuid, $codeReference));
         } elseif ($codeReference->getCommitSha() !== null) {
-            $this->eventBus->handle(new CodePushed($flowUuid, $event, $codeReference));
+            $this->eventBus->handle(new CodePushed($flowUuid, $codeReference, $this->resolveUsers($event)));
         }
     }
 
@@ -143,5 +145,43 @@ class GitHubWebHookHandler
                 $event
             ));
         }
+    }
+
+    /**
+     * Get the users from the given GitHub event.
+     *
+     * @param PushEvent $event
+     *
+     * @return CodeRepositoryUser[]
+     */
+    private function resolveUsers(PushEvent $event)
+    {
+        $users = [];
+
+        foreach ($event->getCommits() as $commit) {
+            if (null === ($committer = $commit->getCommitter())) {
+                $this->logger->warning('Received a commit without an comitted', [
+                    'repository_url' => $event->getRepository()->getUrl(),
+                    'commit' => $commit->getId(),
+                ]);
+            } elseif (null === ($committer->getUsername())) {
+                $this->logger->warning('Received a commit with a committer that have an empty username', [
+                    'repository_url' => $event->getRepository()->getUrl(),
+                    'commit' => $commit->getId(),
+                ]);
+            } else {
+                $user = new CodeRepositoryUser(
+                    $committer->getUsername(),
+                    $committer->getEmail(),
+                    $committer->getName()
+                );
+
+                if (!in_array($user, $users)) {
+                    $users[] = $user;
+                }
+            }
+        }
+
+        return $users;
     }
 }

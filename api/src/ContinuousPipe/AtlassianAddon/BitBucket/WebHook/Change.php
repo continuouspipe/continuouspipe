@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\AtlassianAddon\BitBucket\WebHook;
 
+use ContinuousPipe\AtlassianAddon\BitBucket\Commit;
 use ContinuousPipe\AtlassianAddon\BitBucket\Reference;
 use JMS\Serializer\Annotation as JMS;
 
@@ -20,6 +21,13 @@ class Change
      * @var Reference
      */
     private $old;
+
+    /**
+     * @JMS\Type("array<ContinuousPipe\AtlassianAddon\BitBucket\Commit>")
+     *
+     * @var Commit[]
+     */
+    private $commits;
 
     /**
      * @JMS\Type("boolean")
@@ -63,6 +71,14 @@ class Change
     public function getOld()
     {
         return $this->old;
+    }
+
+    /**
+     * @return Commit[]
+     */
+    public function getCommits(): array
+    {
+        return $this->commits ?: [];
     }
 
     /**

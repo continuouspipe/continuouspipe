@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\CodeRepositoryUser;
 use ContinuousPipe\River\CodeRepository\Event\CodePushed;
 use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
@@ -81,7 +82,13 @@ class CodeRepositoriesContext implements Context
                     $flow->getCodeRepository(),
                     $sha1,
                     $branch
-                )
+                ),
+                [
+                    new CodeRepositoryUser(
+                        $flow->getUser()->getUsername(),
+                        $flow->getUser()->getEmail()
+                    ),
+                ]
             )
         );
     }

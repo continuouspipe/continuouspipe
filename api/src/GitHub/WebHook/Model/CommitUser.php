@@ -26,4 +26,28 @@ class CommitUser
      * @var string
      */
     private $name;
+
+    /**
+     * @return string|null
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 }
