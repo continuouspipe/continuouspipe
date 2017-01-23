@@ -2,6 +2,10 @@
 
 namespace AppBundle\Controller;
 
+use ContinuousPipe\Billing\ActivityTracker\ActivityTracker;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
+use ContinuousPipe\Message\UserActivity;
 use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\AccountRepository;
 use ContinuousPipe\Security\User\User;
@@ -34,15 +38,27 @@ class AccountController
     private $urlGenerator;
 
     /**
-     * @param AccountRepository     $accountRepository
-     * @param FormFactoryInterface  $formFactory
-     * @param UrlGeneratorInterface $urlGenerator
+     * @var UserBillingProfileRepository
      */
-    public function __construct(AccountRepository $accountRepository, FormFactoryInterface $formFactory, UrlGeneratorInterface $urlGenerator)
-    {
+    private $userBillingProfileRepository;
+
+    /**
+     * @var ActivityTracker
+     */
+    private $activityTracker;
+
+    public function __construct(
+        AccountRepository $accountRepository,
+        FormFactoryInterface $formFactory,
+        UrlGeneratorInterface $urlGenerator,
+        UserBillingProfileRepository $userBillingProfileRepository,
+        ActivityTracker $activityTracker
+    ) {
         $this->accountRepository = $accountRepository;
         $this->formFactory = $formFactory;
         $this->urlGenerator = $urlGenerator;
+        $this->userBillingProfileRepository = $userBillingProfileRepository;
+        $this->activityTracker = $activityTracker;
     }
 
     /**
@@ -52,9 +68,27 @@ class AccountController
      */
     public function overviewAction(User $user)
     {
+        try {
+            $billingProfile = $this->userBillingProfileRepository->findByUser($user);
+
+            $activities = [];
+            foreach ($billingProfile->getTeams() as $team) {
+                $activities = array_merge($activities, $this->activityTracker->findBy($team, new \DateTime('-30 days'), new \DateTime()));
+            }
+
+            usort($activities, function(UserActivity $left, UserActivity $right) {
+                return $left->getDateTime() > $right->getDateTime() ? -1 : 1;
+            });
+        } catch (UserBillingProfileNotFound $e) {
+            $billingProfile = null;
+            $activities = [];
+        }
+
         return [
             'user' => $user,
             'accounts' => $this->accountRepository->findByUsername($user->getUsername()),
+            'billingProfile' => $billingProfile,
+            'userActivities' => $activities,
         ];
     }
 

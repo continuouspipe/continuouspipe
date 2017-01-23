@@ -31,5 +31,15 @@
                 margin-top: 0;
             }
         }
+
+        .alert > .btn {
+            margin-top: -6px;
+            margin-right: -7px;
+        }
+
+        .panel ul.list-group {
+            max-height: 400px;
+            overflow: auto;
+        }
     }
 }

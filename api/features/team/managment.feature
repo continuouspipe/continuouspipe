@@ -88,3 +88,59 @@ Feature:
     When I add the user "email@exmaple.com" in the team "my-team"
     Then the user should be added to the team
     And I can see the user "someone" in the team "my-team"
+
+  @smoke
+  Scenario: Create the team with the billing profile
+    Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    When I create a team "continuous-pipe" with the billing profile "00000000-0000-0000-0000-000000000000"
+    Then the team should be successfully created
+    And the billing profile of the team "continuous-pipe" should be "00000000-0000-0000-0000-000000000000"
+
+  Scenario: I can't create a team with another billing profile
+    Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "another"
+    And there is a billing profile "00000000-0000-0000-0000-000000000001" for the user "samuel"
+    When I create a team "continuous-pipe" with the billing profile "00000000-0000-0000-0000-000000000000"
+    Then the team should not be created
+
+  Scenario: I can update a team I'm administrator of
+    Given there is a team "foo"
+    And the user "samuel" is administrator of the team "foo"
+    When I update the team "foo" with the name "BAR"
+    Then the team should be successfully updated
+    And the name of the team "foo" should be "BAR"
+
+  Scenario: I can't update a team I'm just user
+    Given there is a team "foo"
+    And the user "samuel" is user of the team "foo"
+    When I update the team "foo" with the name "BAR"
+    Then I should be told that I don't have the authorization
+
+  Scenario: I can't update a team I'm not even member
+    Given there is a team "foo"
+    When I update the team "foo" with the name "BAR"
+    Then I should be told that I don't have the authorization
+
+  Scenario: I can't update a team slug
+    Given there is a team "foo"
+    And the user "samuel" is administrator of the team "foo"
+    When I update the team "foo" with the slug "bar"
+    Then the team should not be updated
+
+  Scenario: I can update the team billing profile
+    Given there is a team "foo"
+    And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    And the user "samuel" is administrator of the team "foo"
+    When I update the team "foo" with the billing profile "00000000-0000-0000-0000-000000000000"
+    Then the team should be successfully updated
+
+  Scenario: I can't update with a billing profile of another user
+    Given there is a team "foo"
+    And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "somebody"
+    And the user "samuel" is administrator of the team "foo"
+    When I update the team "foo" with the billing profile "00000000-0000-0000-0000-000000000000"
+    Then the team should not be updated
+
+  Scenario: It uses the creator's billing profile
+    Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    When I create a team "continuous-pipe"
+    Then the billing profile of the team "continuous-pipe" should be "00000000-0000-0000-0000-000000000000"

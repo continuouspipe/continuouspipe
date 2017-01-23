@@ -1,11 +1,16 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\AccountRepository;
 use ContinuousPipe\Security\Account\GitHubAccount;
 use ContinuousPipe\Security\Account\GoogleAccount;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
 use GuzzleHttp\PredefinedRequestMappingMiddleware;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,15 +40,33 @@ class AccountsContext implements Context
     private $predefinedRequestMappingMiddleware;
 
     /**
-     * @param AccountRepository $accountRepository
-     * @param KernelInterface $kernel
-     * @param PredefinedRequestMappingMiddleware $predefinedRequestMappingMiddleware
+     * @var UserBillingProfileRepository
      */
-    public function __construct(AccountRepository $accountRepository, KernelInterface $kernel, PredefinedRequestMappingMiddleware $predefinedRequestMappingMiddleware)
-    {
+    private $userBillingProfileRepository;
+
+    /**
+     * @var \SecurityContext
+     */
+    private $securityContext;
+
+    public function __construct(
+        AccountRepository $accountRepository,
+        KernelInterface $kernel,
+        PredefinedRequestMappingMiddleware $predefinedRequestMappingMiddleware,
+        UserBillingProfileRepository $userBillingProfileRepository
+    ) {
         $this->accountRepository = $accountRepository;
         $this->kernel = $kernel;
         $this->predefinedRequestMappingMiddleware = $predefinedRequestMappingMiddleware;
+        $this->userBillingProfileRepository = $userBillingProfileRepository;
+    }
+
+    /**
+     * @BeforeScenario
+     */
+    public function gatherContexts(BeforeScenarioScope $scope)
+    {
+        $this->securityContext = $scope->getEnvironment()->getContext('SecurityContext');
     }
 
     /**
@@ -61,11 +84,31 @@ class AccountsContext implements Context
     }
 
     /**
+     * @Given there is a billing profile :uuid for the user :username
+     */
+    public function thereIsABillingProfileForTheUser($uuid, $username)
+    {
+        $this->userBillingProfileRepository->save(new UserBillingProfile(
+            Uuid::fromString($uuid),
+            $this->securityContext->thereIsAUser($username)->getUser(),
+            'NAME'
+        ));
+    }
+
+    /**
      * @When I request the list of Google project for the account :account
      */
     public function iRequestTheListOfGoogleProjectForTheAccount($account)
     {
         $this->response = $this->kernel->handle(Request::create('/api/accounts/' . $account . '/google/projects'));
+    }
+
+    /**
+     * @When I request my billing profile
+     */
+    public function iRequestMyBillingProfile()
+    {
+        $this->response = $this->kernel->handle(Request::create('/api/me/billing-profile'));
     }
 
     /**
@@ -83,11 +126,7 @@ class AccountsContext implements Context
      */
     public function iShouldSeeTheProject($projectId)
     {
-        if ($this->response->getStatusCode() != 200) {
-            echo $this->response->getContent();
-
-            throw new \RuntimeException('Expected to see response 200');
-        }
+        $this->assertResponseCode(200);
 
         $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
         $matchingProjects = array_filter($json, function(array $project) use ($projectId) {
@@ -97,6 +136,26 @@ class AccountsContext implements Context
         if (count($matchingProjects) == 0) {
             throw new \RuntimeException('No matching project found');
         }
+    }
+
+    /**
+     * @Then I should see the billing profile :uuid
+     */
+    public function iShouldSeeTheBillingProfile($uuid)
+    {
+        $this->assertResponseCode(200);
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        if ($json['uuid'] != $uuid) {
+            throw new \RuntimeException(sprintf('Found UUID %s while expecting %s', $json['uuid'], $uuid));
+        }
+    }
+
+    /**
+     * @Then I should see the billing profile to be not found
+     */
+    public function iShouldSeeTheBillingProfileToBeNotFound()
+    {
+        $this->assertResponseCode(404);
     }
 
     /**
@@ -228,15 +287,7 @@ class AccountsContext implements Context
      */
     public function iShouldSeeTheDetailsOfTheAccount($uuid)
     {
-        if ($this->response->getStatusCode() != 200) {
-            echo $this->response->getContent();
-
-            throw new \RuntimeException(sprintf(
-                'Expected status code 200, got %d',
-                $this->response->getStatusCode()
-            ));
-        }
-
+        $this->assertResponseCode(200);
         $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
 
         if ($json['uuid'] != $uuid) {
@@ -308,6 +359,22 @@ class AccountsContext implements Context
         }
     }
 
+    /**
+     * @Then the billing profile of the team :slug should be :billingProfileUuid
+     */
+    public function theBillingProfileOfTheTeamShouldBe($slug, $billingProfileUuid)
+    {
+        $billingProfile = $this->userBillingProfileRepository->findByTeam(new Team($slug, $slug));
+
+        if (!$billingProfile->getUuid()->equals(Uuid::fromString($billingProfileUuid))) {
+            throw new \RuntimeException(sprintf(
+                'Found %s while expecting %s',
+                $billingProfile->getUuid(),
+                $billingProfileUuid
+            ));
+        }
+    }
+
     private function findAccountInResponse(Response $response, $type, $uuid)
     {
         if ($response->getStatusCode() != 200) {
@@ -327,5 +394,17 @@ class AccountsContext implements Context
         });
 
         return current($matchingAccount) ?: null;
+    }
+
+    /**
+     * @param $expectedStatus
+     */
+    private function assertResponseCode($expectedStatus)
+    {
+        if ($this->response->getStatusCode() != $expectedStatus) {
+            echo $this->response->getContent();
+
+            throw new \RuntimeException(sprintf('Got status %d while expected to see %d', $this->response->getStatusCode(), $expectedStatus));
+        }
     }
 }

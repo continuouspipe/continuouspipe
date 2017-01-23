@@ -10,5 +10,11 @@
                  decorates="app.intercom.client">
             <argument type="service" id="app.intercom.traceable_client.inner" />
         </service>
+
+        <service id="app.billing.activity_tracker.traced"
+                 class="ContinuousPipe\Billing\ActivityTracker\TracedActivityTracker"
+                 decorates="app.billing.activity_tracker">
+            <argument type="service" id="app.billing.activity_tracker.traced.inner" />
+        </service>
     </services>
 </container>

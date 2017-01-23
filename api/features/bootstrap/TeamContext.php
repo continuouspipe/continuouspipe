@@ -131,7 +131,9 @@ class TeamContext implements Context
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'slug' => $slug
+                'team' => [
+                    'slug' => $slug,
+                ],
             ])
         ));
     }
@@ -147,8 +149,85 @@ class TeamContext implements Context
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'slug' => $slug,
-                'name' => $name,
+                'team' => [
+                    'slug' => $slug,
+                    'name' => $name,
+                ],
+            ])
+        ));
+    }
+
+    /**
+     * @When I create a team :slug with the billing profile :billingAccountUuid
+     */
+    public function iCreateATeamWithTheBillingProfile($slug, $billingAccountUuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams',
+            'POST',
+            [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'team' => [
+                    'slug' => $slug,
+                ],
+                'billing_profile' => [
+                    'uuid' => $billingAccountUuid,
+                ],
+            ])
+        ));
+    }
+
+    /**
+     * @When I update the team :slug with the name :name
+     */
+    public function iUpdateTheTeamWithTheName($slug, $name)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams/'.$slug,
+            'PATCH',
+            [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'team' => [
+                    'name' => $name,
+                ],
+            ])
+        ));
+    }
+
+    /**
+     * @When I update the team :slug with the slug :updatedSlug
+     */
+    public function iUpdateTheTeamWithTheSlug($slug, $updatedSlug)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams/'.$slug,
+            'PATCH',
+            [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'team' => [
+                    'slug' => $updatedSlug,
+                ],
+            ])
+        ));
+    }
+
+    /**
+     * @When I update the team :slug with the billing profile :billingProfileUuid
+     */
+    public function iUpdateTheTeamWithTheBillingProfile($slug, $billingProfileUuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams/'.$slug,
+            'PATCH',
+            [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'billing_profile' => [
+                    'uuid' => $billingProfileUuid,
+                ],
             ])
         ));
     }
@@ -299,7 +378,16 @@ class TeamContext implements Context
     }
 
     /**
+     * @Then the team should be successfully updated
+     */
+    public function theTeamShouldBeSuccessfullyUpdated()
+    {
+        $this->assertResponseCodeIs($this->response, 200);
+    }
+
+    /**
      * @Then the team should not be created
+     * @Then the team should not be updated
      */
     public function theTeamShouldNotBeCreated()
     {
@@ -374,6 +462,22 @@ class TeamContext implements Context
 
         if ($this->isUserInTeam($team, $username)) {
             throw new \RuntimeException('User found in teams');
+        }
+    }
+
+    /**
+     * @Then the name of the team :slug should be :name
+     */
+    public function theNameOfTheTeamShouldBe($slug, $name)
+    {
+        $team = $this->teamRepository->find($slug);
+
+        if ($team->getName() != $name) {
+            throw new \RuntimeException(sprintf(
+                'Expected name "%s" but found "%s"',
+                $name,
+                $team->getName()
+            ));
         }
     }
 

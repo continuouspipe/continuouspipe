@@ -1,0 +1,13 @@
+{% extends "AppBundle:Account:layout.html.twig" %}
+{% block account_title %}
+<h1>Billing profile</h1>
+{% endblock %}
+{% block account_content %}
+<h2>Personal information</h2>
+<form action="" method="POST">
+    <ul>
+        <li><input type="radio" name="plan" value="trial" /> Trial</li>
+    </ul>
+    <button type="submit">Update</button>
+</form>
+{% endblock %}
