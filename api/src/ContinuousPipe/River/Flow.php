@@ -7,6 +7,7 @@ use ContinuousPipe\River\EventBased\RaiseEventCapability;
 use ContinuousPipe\River\EventBased\ApplyEventCapability;
 use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
 use ContinuousPipe\River\Flow\Event\FlowCreated;
+use ContinuousPipe\River\Flow\Event\FlowRecovered;
 use ContinuousPipe\River\Flow\Event\PipelineCreated;
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\Security\Team\Team;
@@ -154,6 +155,10 @@ final class Flow
     public function applyFlowConfigurationUpdated(FlowConfigurationUpdated $event)
     {
         $this->configuration = $event->getConfiguration();
+    }
+
+    public function applyFlowRecovered(FlowRecovered $event)
+    {
     }
 
     public function getUuid() : UuidInterface
