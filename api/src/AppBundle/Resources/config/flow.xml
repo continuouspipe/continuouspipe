@@ -61,6 +61,7 @@
             <argument type="service" id="river.repository.flow" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowRecovered" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\PipelineCreated" />
         </service>

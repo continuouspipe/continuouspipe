@@ -2,7 +2,10 @@
 
 namespace AdminBundle\Controller;
 
+use ContinuousPipe\River\Flow\Event\FlowRecovered;
 use ContinuousPipe\River\Flow\Migrations\ToEventSourced\Migrator;
+use Ramsey\Uuid\Uuid;
+use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -32,15 +35,26 @@ class MigrationsController
     private $urlGenerator;
 
     /**
-     * @param Session               $session
-     * @param Migrator              $migrator
-     * @param UrlGeneratorInterface $urlGenerator
+     * @var MessageBus
      */
-    public function __construct(Session $session, Migrator $migrator, UrlGeneratorInterface $urlGenerator)
-    {
+    private $eventBus;
+
+    /**
+     * @param Session $session
+     * @param Migrator $migrator
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param MessageBus $eventBus
+     */
+    public function __construct(
+        Session $session,
+        Migrator $migrator,
+        UrlGeneratorInterface $urlGenerator,
+        MessageBus $eventBus
+    ) {
         $this->session = $session;
         $this->migrator = $migrator;
         $this->urlGenerator = $urlGenerator;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -55,12 +69,16 @@ class MigrationsController
     /**
      * @Route("/migrations/{migration}/migrate", name="admin_migrate", methods={"POST"})
      */
-    public function migrateAction($migration)
+    public function migrateAction(Request $request, string $migration)
     {
         if ($migration == 'to-event-sourced') {
             $count = $this->migrator->migrate();
 
-            $this->session->getFlashBag()->add('success', 'Migration successful. Migrated '.$count.' flows!');
+            $this->session->getFlashBag()->add('success', 'Migration successful. Migrated ' . $count . ' flows!');
+        } elseif ($migration == 'recover-flow') {
+            $this->eventBus->handle(new FlowRecovered(
+                Uuid::fromString($request->request->get('_uuid'))
+            ));
         } else {
             $this->session->getFlashBag()->add('danger', 'Unknown migration "'.$migration.'"');
         }
