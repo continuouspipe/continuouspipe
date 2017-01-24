@@ -31,7 +31,7 @@ class BuildsAreFinished
             ;
 
             if (null !== ($reason = $event->getReason())) {
-                $logger->child(new Text($reason->getMessage()))->updateStatus(Log::FAILURE);
+                $logger->child(new Text($reason))->updateStatus(Log::FAILURE);
             }
         } elseif ($event instanceof ImageBuildsSuccessful) {
             $this->loggerFactory->from($event->getLog())->updateStatus(Log::SUCCESS);
