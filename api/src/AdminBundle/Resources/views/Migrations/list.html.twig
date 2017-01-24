@@ -14,6 +14,18 @@
     <tbody>
         <tr>
             <td>
+                <p><strong>Re-create a flow</strong></p>
+                <p>Re-create a flow from its events.</p>
+            </td>
+            <td>
+                <form action="{{ path('admin_migrate', {'migration': 'recover-flow'}) }}" method="POST">
+                    <input type="text" name="_uuid" placeholder="Flow UUID" />
+                    <button class="btn btn-danger">Recover</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <p><strong>To event sourced</strong></p>
                 <p>Migrate the flows from the deprecated read model with `FlowContext`s to an event sourced aggregate.</p>
             </td>

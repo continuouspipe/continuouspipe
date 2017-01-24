@@ -20,6 +20,7 @@
             <argument type="service" id="session" />
             <argument type="service" id="river.flow.migrations.to_event_sourced.migrator"/>
             <argument type="service" id="router" />
+            <argument type="service" id="event_bus" />
         </service>
 
         <service id="admin.controller.tide" class="AdminBundle\Controller\TideController">
