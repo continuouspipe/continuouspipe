@@ -171,7 +171,7 @@ class BuildTask extends EventDrivenTask
             $this->context->getTideUuid(),
             $this->getIdentifier(),
             $this->log,
-            $reason
+            null !== $reason ? $reason->getMessage() : null
         ));
     }
 

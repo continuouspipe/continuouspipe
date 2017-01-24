@@ -22,7 +22,7 @@ class ImageBuildsFailed implements TideEvent, TaskEvent
      */
     private $taskIdentifier;
     /**
-     * @var \Throwable|null
+     * @var string|null
      */
     private $reason;
 
@@ -30,9 +30,9 @@ class ImageBuildsFailed implements TideEvent, TaskEvent
      * @param Uuid $tideUuid
      * @param string $taskIdentifier
      * @param Log $log
-     * @param \Throwable|null $reason
+     * @param string|null $reason
      */
-    public function __construct(Uuid $tideUuid, string $taskIdentifier, Log $log, \Throwable $reason = null)
+    public function __construct(Uuid $tideUuid, string $taskIdentifier, Log $log, string $reason = null)
     {
         $this->tideUuid = $tideUuid;
         $this->log = $log;
@@ -65,7 +65,7 @@ class ImageBuildsFailed implements TideEvent, TaskEvent
     }
 
     /**
-     * @return null|\Throwable
+     * @return null|string
      */
     public function getReason()
     {
