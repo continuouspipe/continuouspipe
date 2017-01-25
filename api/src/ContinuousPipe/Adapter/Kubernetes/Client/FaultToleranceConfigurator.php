@@ -38,8 +38,7 @@ class FaultToleranceConfigurator
                 RequestInterface $request,
                 ResponseInterface $response = null,
                 RequestException $exception = null
-            ) use ($maxTries) : bool
-            {
+            ) use ($maxTries) : bool {
                 if ($retries + 1 >= $maxTries) {
                     return false;
                 }
@@ -52,7 +51,7 @@ class FaultToleranceConfigurator
      */
     private function getRetryDelayCalculator() : callable
     {
-        return function( $numberOfRetries ) {
+        return function ($numberOfRetries) {
             return $numberOfRetries * 500;
         };
     }

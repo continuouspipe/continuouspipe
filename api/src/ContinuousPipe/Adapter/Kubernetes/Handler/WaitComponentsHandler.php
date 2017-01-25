@@ -277,7 +277,7 @@ class WaitComponentsHandler implements DeploymentHandler
             return false;
         }
 
-        $allContainersAreReady = array_reduce($status->getContainerStatuses(), function(bool $allAreReady, ContainerStatus $containerStatus) {
+        $allContainersAreReady = array_reduce($status->getContainerStatuses(), function (bool $allAreReady, ContainerStatus $containerStatus) {
             return $allAreReady && $containerStatus->isReady();
         }, true);
 

@@ -17,5 +17,10 @@ class AppExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('controllers.xml');
         $loader->load('deployment.xml');
+        $loader->load('handler.xml');
+        $loader->load('adapter.xml');
+        $loader->load('kubernetes.xml');
+        $loader->load('notification.xml');
+        $loader->load('tolerance.xml');
     }
 }
