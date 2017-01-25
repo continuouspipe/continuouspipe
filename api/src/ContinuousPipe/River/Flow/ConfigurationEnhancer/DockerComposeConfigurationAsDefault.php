@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Flow\ConfigurationEnhancer;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\DockerCompose\ComponentsResolver;
+use ContinuousPipe\River\CodeRepository\DockerCompose\Configuration\PortIdentifier;
 use ContinuousPipe\River\CodeRepository\DockerCompose\DockerComposeComponent;
 use ContinuousPipe\River\CodeRepository\DockerCompose\ResolveException;
 use ContinuousPipe\River\Flow\ConfigurationEnhancer;
@@ -183,7 +184,7 @@ class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
 
                 foreach ($component->getExposedPorts() as $exposedPort) {
                     $configuration['specification']['ports'][] = [
-                        'identifier' => $component->getName().((string) $exposedPort),
+                        'identifier' => (string)PortIdentifier::fromNameAndPort($component->getName(), $exposedPort),
                         'port' => $exposedPort,
                     ];
                 }

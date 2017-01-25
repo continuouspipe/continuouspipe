@@ -507,6 +507,48 @@ Feature:
                                   port: 80
     """
 
+  Scenario: It shortens long service names in port identifier
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+        second:
+            deploy:
+                cluster: foo
+                services:
+                    elasticsearch: ~
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    elasticsearch:
+        image: elasticsearch
+        expose:
+            - 9200
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        first:
+            deploy:
+                services:
+                    elasticsearch:
+                        specification:
+                            ports:
+                                - identifier: elasticsear9200
+                                  port: 9200
+        second:
+            deploy:
+                services:
+                    elasticsearch:
+                        specification:
+                            ports:
+                                - identifier: elasticsear9200
+                                  port: 9200
+    """
+
   Scenario: It loads everything from the v2 of Docker Compose
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
