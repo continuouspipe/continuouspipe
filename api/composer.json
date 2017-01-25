@@ -49,7 +49,8 @@
         "dbellettini/eventstore-client": "^0.8.0",
         "mhujer/jms-serializer-uuid-bundle": "^1.0",
         "kreait/firebase-php": "^2.0",
-        "adlogix/guzzle-atlassian-connect-middleware": "~1.1.2"
+        "adlogix/guzzle-atlassian-connect-middleware": "~1.1.2",
+        "continuous-pipe/worker-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -106,7 +107,8 @@
                 "zipkin_base_url": "ZIPKIN_BASE_URL",
                 "k8s_health_checker_url": "K8S_HEALTH_CHECKER_URL",
                 "event_store_host": "EVENT_STORE_HOST",
-                "stack_rabbitmq_host": "STACK_RABBITMQ_HOST"
+                "stack_rabbitmq_host": "STACK_RABBITMQ_HOST",
+                "tideways_api_key": "TIDEWAYS_API_KEY"
             }
         }]
     },
@@ -118,6 +120,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/continuouspipe/model"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/continuouspipe/WorkerBundle"
         }
     ]
 }
