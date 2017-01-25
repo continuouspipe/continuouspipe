@@ -335,3 +335,5 @@ tolerance:
 
 worker:
     service: simple_bus.rabbit_mq_bundle_bridge.commands_consumer
+    tideways:
+        api_key: %tideways_api_key%
