@@ -10,7 +10,14 @@
 <md-content flex id="content" ng-if="isLoading">
     <remote-resource resource-name="tides"></remote-resource>
 </md-content>
-<md-content flex id="content" ng-if="!isLoading">
+<md-content flex id="content" ng-if="!isLoading && tides.length == 0">
+    <div class="zero-content-help">
+        <i class="cp-icon-commit" style="font-size: 60px;"></i>
+        <h3>Push something to your repository! Or manually run a deployment.</h3>
+        <p>By default, a tide starts automatically when you push to your code repository. Learn how to <a href="https://continuouspipe.io/docs/configure/introduction/" target="_blank">configure your flow</a> to <a href="https://continuouspipe.io/docs/configure/images/" target="_blank">build your Docker images</a>, <a href="https://continuouspipe.io/docs/configure/deployments/" target="_blank">deploy your services</a> or manage the <a href="https://continuouspipe.io/docs/configure/notifications/">notifications</a>.</p>
+    </div>
+</md-content>
+<md-content flex id="content" ng-if="!isLoading && tides.length != 0">
     <md-subheader class="md-primary">Pipelines</md-subheader>
     <md-card class="pipeline-card" ng-repeat="pipeline in pipelines" ng-class="['status-'+pipeline.lastTides[0].status]">
         <md-card-content layout="column">
