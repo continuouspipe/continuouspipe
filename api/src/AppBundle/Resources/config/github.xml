@@ -76,7 +76,7 @@
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="logger" />
 
-            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent" />
+            <tag name="command_handler" handles="ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent" />
         </service>
 
         <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\GitHubPullRequestResolver">
