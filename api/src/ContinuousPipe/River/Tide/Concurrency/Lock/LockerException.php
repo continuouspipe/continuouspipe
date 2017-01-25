@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River\Tide\Concurrency\Lock;
 
-class LockerException extends \Exception
+use ContinuousPipe\Worker\TemporaryException;
+
+class LockerException extends \Exception implements TemporaryException
 {
 }
