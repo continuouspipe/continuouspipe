@@ -5,6 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="river.jms_serializer.object_serializer" class="ContinuousPipe\River\Serializer\JMSSerializerObjectSerializer">
+            <argument type="service" id="jms_serializer" />
+            <argument>json</argument>
+        </service>
+
         <!-- Command handlers -->
         <service id="river.handler.start_tide" class="ContinuousPipe\River\Handler\StartTideHandler">
             <argument type="service" id="river.view.tide_repository" />

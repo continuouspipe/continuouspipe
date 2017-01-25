@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "57de40d6ee3733950be960c0e42e39a1",
-    "content-hash": "f9b3c15dcec77be539349d7a3656106a",
+    "hash": "5419478730a6c12c6d0799d51c403c75",
+    "content-hash": "3a6193ba9d667f33a5805272aeb745c3",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -319,6 +319,36 @@
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
             "time": "2016-12-26 21:10:53"
+        },
+        {
+            "name": "continuous-pipe/worker-bundle",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/WorkerBundle.git",
+                "reference": "4c01faddcc6c311c77084874a39c4f7456c6e6cd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/WorkerBundle/zipball/4c01faddcc6c311c77084874a39c4f7456c6e6cd",
+                "reference": "4c01faddcc6c311c77084874a39c4f7456c6e6cd",
+                "shasum": ""
+            },
+            "require": {
+                "php-amqplib/rabbitmq-bundle": "^1.12",
+                "symfony/symfony": "^2.8 || ^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/continuouspipe/WorkerBundle/tree/master",
+                "issues": "https://github.com/continuouspipe/WorkerBundle/issues"
+            },
+            "time": "2017-01-18 17:49:12"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -7762,7 +7792,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 20,
-        "tolerance/tolerance": 20
+        "tolerance/tolerance": 20,
+        "continuous-pipe/worker-bundle": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

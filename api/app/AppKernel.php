@@ -27,8 +27,8 @@ class AppKernel extends Kernel
             new Beberlei\Bundle\MetricsBundle\BeberleiMetricsBundle(),
             new Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\ToleranceBundle(),
             new ContinuousPipe\AtlassianAddonBundle\AtlassianAddonBundle(),
+            new ContinuousPipe\WorkerBundle\WorkerBundle(),
             new LogStream\LogStreamBundle(),
-            new WorkerBundle\WorkerBundle(),
             new AdminBundle\AdminBundle(),
             new AppBundle\AppBundle(),
         );
