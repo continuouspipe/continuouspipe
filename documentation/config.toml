@@ -1,0 +1,67 @@
+baseurl = "https://docs.continuouspipe.io/"
+languageCode = "en-gb"
+title = "ContinuousPipe Docs"
+theme = "hugo-material-docs"
+metadataformat = "yaml"
+canonifyurls = true
+# Enable Google Analytics by entering your tracking id
+googleAnalytics = ""
+
+[params]
+	# General information
+	author = "Samuel Rozé"
+	description = "Documentation for ContinuousPipe"
+	copyright = "Released under the MIT license"
+
+	# Repository
+	provider = "GitHub"
+	repo_url = "https://github.com/digitalcraftsman/hugo-material-docs"
+
+	version = "1.0.0"
+	logo = "images/logo.png"
+	favicon = ""
+
+	permalink = "#"
+
+	# Custom assets
+	custom_css = []
+	custom_js  = []
+
+	# Syntax highlighting theme
+	highlight_css  = ""
+
+	[params.palette]
+    	primary = "blue"
+    	accent  = "teal"
+
+    [params.font]
+    	text = "Open Sans"
+    	code = "Ubuntu Mono"
+
+
+[social]
+	twitter = "continuouspipe"
+	github  = "continuouspipe"
+	email   = "support@continuouspipe.io"
+
+
+[[menu.main]]
+	name   = "Welcome"
+	url    = "/"
+	weight = 0
+
+[[menu.main]]
+	name   = "Basics"
+	url    = "basics/introduction"
+	weight = 10
+
+[[menu.main]]
+	name   = "Configuration"
+	url    = "configuration/"
+	weight = 20
+
+[blackfriday]
+	smartypants	= true
+	fractions = true
+	smartDashes = true
+	plainIDAnchors = true
