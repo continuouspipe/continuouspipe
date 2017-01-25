@@ -23,7 +23,7 @@ class BuildContext extends DockerContext
         Context $context,
         array $environment,
         array $dockerRegistries,
-        Image $image = null
+        Image $image
     ) {
         parent::__construct($logStreamIdentifier);
 
@@ -34,9 +34,9 @@ class BuildContext extends DockerContext
     }
 
     /**
-     * @return Image|null
+     * @return Image
      */
-    public function getImage()
+    public function getImage() : Image
     {
         return $this->image;
     }

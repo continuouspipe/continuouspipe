@@ -1,3 +1,3 @@
 FROM nginx
 
-COPY ./dist /var/www/html
+COPY ./sub-directory/dist-renamed /var/www/html

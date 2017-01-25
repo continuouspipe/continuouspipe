@@ -16,3 +16,7 @@ ContinuousPipe\Builder\BuildStepConfiguration:
             type: array<ContinuousPipe\Security\Credentials\DockerRegistry>
         imageRegistryCredentials:
             type: ContinuousPipe\Builder\RegistryCredentials
+        readArtifacts:
+            type: array<ContinuousPipe\Builder\Artifact>
+        writeArtifacts:
+            type: array<ContinuousPipe\Builder\Artifact>

@@ -51,7 +51,7 @@ class FixturesArchiveBuilder implements ArchiveBuilder
             ));
         }
 
-        return new NonDeletableFileSystemArchive($fixturesDirectoryPath);
+        return Archive\FileSystemArchive::copyFrom($fixturesDirectoryPath);
     }
 
     /**

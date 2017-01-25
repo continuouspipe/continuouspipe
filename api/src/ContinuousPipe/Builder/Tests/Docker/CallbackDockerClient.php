@@ -4,14 +4,16 @@ namespace ContinuousPipe\Builder\Tests\Docker;
 
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Docker\BuildContext;
+use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Docker\DockerFacade;
+use ContinuousPipe\Builder\Docker\DockerImageReader;
 use ContinuousPipe\Builder\Docker\PushContext;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use LogStream\Logger;
 
-class CallbackDockerClient implements DockerFacade
+class CallbackDockerClient implements DockerFacade, DockerImageReader
 {
     /**
      * @var callable|null
@@ -101,5 +103,13 @@ class CallbackDockerClient implements DockerFacade
     public function getPushCallback()
     {
         return $this->pushCallback;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function read(Image $image, string $path): Archive
+    {
+        return new Archive\FileSystemArchive(Archive\FileSystemArchive::createDirectory('fake-artifact'));
     }
 }

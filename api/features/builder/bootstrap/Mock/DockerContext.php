@@ -28,13 +28,6 @@ class DockerContext implements Context
     }
 
     /**
-     * @Then the command of the image :name should be :command
-     */
-    public function theCommandOfTheImageShouldBe($image, $command)
-    {
-    }
-
-    /**
      * @Given the push will fail because of a daemon error the first time
      */
     public function thePushWillFailBecauseOfADaemonErrorTheFirstTime()

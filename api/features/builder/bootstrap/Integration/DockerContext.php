@@ -30,25 +30,6 @@ class DockerContext implements Context
     }
 
     /**
-     * @Then the command of the image :name should be :command
-     */
-    public function theCommandOfTheImageShouldBe($image, $command)
-    {
-        list($name, $tag) = explode(':', $image);
-
-        $inspection = $this->docker->getImageManager()->find($name, ['tag' => $tag]);
-        $foundCommand = implode(' ', $inspection->getConfig()->getCmd());
-
-        if ($foundCommand != $command) {
-            throw new \RuntimeException(sprintf(
-                'Found command "%s" while expecting "%s"',
-                $foundCommand,
-                $command
-            ));
-        }
-    }
-
-    /**
      * @Then the file :path in the image :image should contain :contents
      */
     public function theFileInTheImageShouldContain($path, $image, $contents)

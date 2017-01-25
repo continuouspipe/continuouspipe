@@ -19,6 +19,7 @@ class TestExtension extends Extension
 
         if ($environment != 'integration') {
             $loader->load('integration/docker.xml');
+            $loader->load('integration/google-cloud.xml');
         }
 
         $loader->load('integration/authenticator.xml');

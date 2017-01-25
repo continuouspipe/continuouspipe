@@ -1,9 +1,9 @@
 FROM busybox
 
 ARG TOKEN
-RUN mkdir /dist && \
+RUN mkdir -p /app/dist && \
     if [ "$TOKEN" = "secret-token" ]; then \
-        echo "SUCCESS" > /dist/index.html; \
+        echo "SUCCESS" > /app/dist/index.html; \
     else \
-        echo "FAILURE" > /dist/index.html; \
+        echo "FAILURE" > /app/dist/index.html; \
     fi

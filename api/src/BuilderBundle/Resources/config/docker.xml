@@ -24,7 +24,7 @@
             <argument type="service" id="builder.docker.client.output_handler.exception_resolver.inner" />
         </service>
 
-        <service id="builder.docker.client" class="ContinuousPipe\Builder\Docker\HttpClient">
+        <service id="builder.docker.client.http" class="ContinuousPipe\Builder\Docker\HttpClient">
             <argument type="service" id="docker" />
             <argument type="service" id="builder.docker_file_resolver" />
             <argument type="service" id="logger" />
@@ -32,6 +32,9 @@
             <argument type="service" id="authenticator.bucket_repository"/>
             <argument type="service" id="log_stream.logger_factory"/>
         </service>
+
+        <service id="builder.docker_image_reader" alias="builder.docker.client.http" />
+        <service id="builder.docker.client" alias="builder.docker.client.http" />
 
         <service id="builder.docker.client.retry_decorator"
                  class="ContinuousPipe\Builder\Docker\Retry\RetryClientDecorator"

@@ -32,7 +32,6 @@ Feature:
     """
     Then the build should be successful
     And the archive should have been downloaded from the URL "https://bitbucket.org/sroze/testing-stuff/get/001823eef762ac0325b79293f8530feafec3fdcc.tar.gz"
-    And the archive should contain the file "README.md"
 
   Scenario: It uses custom HTTP headers
     Given the URL "https://bitbucket.org/sroze/testing-stuff/get/001823eef762ac0325b79293f8530feafec3fdcc.tar.gz" will return the archive "001823eef762ac0325b79293f8530feafec3fdcc.tar.gz"
