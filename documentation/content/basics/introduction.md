@@ -1,5 +1,6 @@
 ---
 date: 2017-01-25T10:39:54Z
+LinkTitle: 'Introduction' # notice how this overrides what's shown in the menu
 title: Introduction to ContinuousPipe
 menu:
   main:

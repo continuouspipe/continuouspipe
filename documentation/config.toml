@@ -6,6 +6,7 @@ metadataformat = "yaml"
 canonifyurls = true
 # Enable Google Analytics by entering your tracking id
 googleAnalytics = ""
+PygmentsCodeFences = true
 
 [params]
 	# General information
