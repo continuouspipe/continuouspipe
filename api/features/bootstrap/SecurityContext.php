@@ -15,6 +15,9 @@ use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class SecurityContext implements Context
@@ -27,20 +30,29 @@ class SecurityContext implements Context
      * @var InMemoryAuthenticatorClient
      */
     private $inMemoryAuthenticatorClient;
+    /**
+     * @var KernelInterface
+     */
+    private $kernel;
+
+    /**
+     * @var Response|null
+     */
+    private $response;
 
     /**
      * @var User|null
      */
     private $currentUser;
 
-    /**
-     * @param TokenStorageInterface $tokenStorage
-     * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
-     */
-    public function __construct(TokenStorageInterface $tokenStorage, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient)
-    {
+    public function __construct(
+        TokenStorageInterface $tokenStorage,
+        InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
+        KernelInterface $kernel
+    ) {
         $this->tokenStorage = $tokenStorage;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -164,5 +176,27 @@ class SecurityContext implements Context
                 'refresh-token'
             )
         );
+    }
+
+    /**
+     * @Given I send a :method request to the path :path
+     */
+    public function iSendARequestToThePath($method, $path)
+    {
+        $this->response = $this->kernel->handle(Request::create($path, $method));
+    }
+
+    /**
+     * @Then the status code of the response should be :code
+     */
+    public function theStatusCodeOfTheResponseShouldBe($code)
+    {
+        if ($this->response->getStatusCode() != $code) {
+            throw new \RuntimeException(sprintf(
+                'Expected code %d but got %d',
+                $code,
+                $this->response->getStatusCode()
+            ));
+        }
     }
 }

@@ -8,6 +8,7 @@ default:
                 - SecurityContext:
                     - @security.token_storage
                     - @security.authenticator.client
+                    - @kernel
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -112,6 +113,7 @@ default:
                 - SecurityContext:
                     - @security.token_storage
                     - @security.authenticator.client
+                    - @kernel
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -202,6 +204,7 @@ default:
                 - SecurityContext:
                     - @security.token_storage
                     - @security.authenticator.client
+                    - @kernel
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -288,6 +291,7 @@ smoke:
                 - SecurityContext:
                     - @security.token_storage
                     - @security.authenticator.client
+                    - @kernel
                 - FlowContext:
                     - @kernel
                     - @river.repository.flow
