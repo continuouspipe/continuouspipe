@@ -5,6 +5,7 @@ angular.module('continuousPipeRiver')
         $scope.flow = flow;
         $scope.tidesPerPipeline = [];
         $scope.isLoading = true;
+        $scope.tides = [];
 
         var mergeTidesIntoOneArray = function() {
             var tides = [];
