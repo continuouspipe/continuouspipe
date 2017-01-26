@@ -68,3 +68,36 @@ Feature:
     """
     When I request the flow configuration
     Then the variable "FOO" should not be missing
+
+  Scenario: Dynamic variables are not missing
+    Given I have a flow
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        infrastructure:
+            deploy:
+                cluster: foo
+                services:
+                    foo:
+                        specification:
+                            source:
+                                image: foo
+
+        application:
+            deploy:
+                cluster: foo
+                services:
+                    bar:
+                        specification:
+                            source:
+                                image: bar
+
+                            environment_variables:
+                                - name: ENDPOINT
+                                  value: ${SERVICE_FOO_PUBLIC_ENDPOINT}
+                                - name: ENDPOINT2
+                                  value: ${ENDPOINT_HTTPS_API_PUBLIC_ENDPOINT}
+    """
+    When I request the flow configuration
+    Then the variable "SERVICE_FOO_PUBLIC_ENDPOINT" should not be missing
+    And the variable "ENDPOINT_HTTPS_API_PUBLIC_ENDPOINT" should not be missing

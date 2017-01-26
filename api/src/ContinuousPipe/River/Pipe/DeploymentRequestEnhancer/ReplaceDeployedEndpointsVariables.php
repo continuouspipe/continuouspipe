@@ -6,6 +6,7 @@ use ContinuousPipe\Model\Component\EnvironmentVariable;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues;
+use ContinuousPipe\River\Pipe\DeploymentRequest\DynamicVariable\ServiceVariable;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Tide;
@@ -35,10 +36,11 @@ class ReplaceDeployedEndpointsVariables implements DeploymentRequestEnhancer
         $publicEndpointMappings = [];
         foreach ($tasks as $task) {
             foreach ($task->getPublicEndpoints() as $publicEndpoint) {
-                $serviceName = $publicEndpoint->getName();
-                $environName = sprintf('SERVICE_%s_PUBLIC_ENDPOINT', strtoupper($serviceName));
+                $serviceVariable = ServiceVariable::fromNameAndAddress(
+                    $publicEndpoint->getName(), $publicEndpoint->getAddress()
+                );
 
-                $publicEndpointMappings[$environName] = $publicEndpoint->getAddress();
+                $publicEndpointMappings[$serviceVariable->getVariableName()] = (string)$serviceVariable;
             }
         }
 
