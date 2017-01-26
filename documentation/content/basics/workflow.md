@@ -1,6 +1,10 @@
 ---
 date: 2017-01-25T10:40:13Z
 title: A workflow that suits you
+menu:
+  main:
+    parent: 'Basics'
+    weight: 20
 ---
 Adding a simple feature to a brand’s website should be a piece of cake. But too often the process is hampered by long lead times and slow feedback loops that cost the site owner time and money.
 

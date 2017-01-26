@@ -1,6 +1,10 @@
 ---
 date: 2017-01-25T10:40:21Z
 title: Docker Images
+menu:
+  main:
+    parent: 'Basics'
+    weight: 30
 ---
 
 Every time you need to deploy and/or run tests on your codebase, ContinuousPipe will build and push a Docker image from your code base to any Docker Registry.
