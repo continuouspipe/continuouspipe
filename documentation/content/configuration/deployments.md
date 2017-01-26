@@ -34,7 +34,7 @@ tasks:
                         image: mysql
 ```
 
-# Image source
+## Image source
 If you have a [`build` task]({{< relref "tasks.md" >}}) before the deployment task and an image for the service having the same name have been built just before, it'll use this image name, you have nothing to configure.
 
 If it's not the case, the first way is to explicitly mentioning the image name. Note that this value is automatically guessed if you have a service having the same name in your project's `docker-compose.yml` file.
@@ -51,7 +51,7 @@ source:
     from_service: web
 ```
 
-# Environment name
+## Environment name
 You can configure the name of the deployed environment (the namespace in Kubernetes terms) using an expression:
 
 ``` yaml
@@ -59,7 +59,7 @@ environment:
     name: '"my-app-" ~ code_reference.branch'
 ```
 
-# Deployment strategy
+## Deployment strategy
 The deployment strategy describe how would you like the container(s) to be deployed.
 
 ``` yaml
@@ -77,7 +77,7 @@ deployment_strategy:
     reset: false
 ```
 
-# Environment variables
+## Environment variables
 You can set environment variables that are going to be injected in the running containers.
 
 ``` yaml
@@ -89,7 +89,7 @@ specification:
           value: ${USING_A_VARIABLE}
 ```
 
-# Ports
+## Ports
 In order to expose some services to other ones or through a load-balancer, you need to precise which ports are exposed by this service.
 
 ``` yaml
@@ -100,7 +100,7 @@ specification:
 
 Note: if you have an `expose` configuration in your `docker-compose.yml` file, this configuration will be filled automatically.
 
-# Accessibility
+## Accessibility
 ``` yaml
 specification:
     accessibility:
@@ -111,7 +111,7 @@ specification:
         from_external: false
 ```
 
-# Endpoints
+## Endpoints
 Note: for most of the cases, the `from_external` accessibility value is enough.
 
 If you are using a cluster that supports Ingress and SSL certificates, then you can use the `endpoints` configuration to define these endpoints:
@@ -128,14 +128,14 @@ endpoints:
                 key: ${WILDCARD_SSL_KEY}
 ```
 
-# Conditional services
+## Conditional services
 If you need to not deploy some services on a given condition, you can use the `condition` expression:
 
 ``` yaml
 condition: code_reference.branch not in ["production", "uat", "integration"]
 ```
 
-# Persistent volumes
+## Persistent volumes
 If you want some volumes containing data that will be persistent across the deployments, you can mount some persistent volumes:
 
 ``` yaml
@@ -150,7 +150,7 @@ specification:
           mount_path: /data
 ```
 
-# Resources
+## Resources
 You can define the amount of requested resources, as well as the resource limits for your services. This will be applied to only one replica of your container.
 
 ``` yaml
@@ -164,7 +164,7 @@ specification:
             memory: 500Mi
 ```
 
-# Health-checks
+## Health-checks
 Health-checks (also called probes) helps to identify when a container is ready during a deployment and when a container is still alive when deployed.
 
 ``` yaml

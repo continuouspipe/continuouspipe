@@ -12,7 +12,7 @@ The entire configuration is represented as a YAML file. The final configuration 
 * The YAML file named `continuous-pipe.yml` in your code repository
 * The YAML file named `continuous-pipe.[branch].yml` in your code repository
 
-# Tasks
+## Tasks
 
 The main objects of this configuration file are the `tasks`. Each task has a name, and will run chronologically.
 
@@ -35,7 +35,7 @@ tasks:
 
 You will learn more about each task in the [tasks overview section]({{< relref "tasks.md" >}}).
 
-# Variables
+## Variables
 Prevent copy/pasting by using variables inside your configuration files. The following example shows you how to prevent putting values inside your project's `continuous-pipe.yml` by using variables that are defined in the configuration stored on ContinuousPipe.
 
 
@@ -51,12 +51,12 @@ tasks:
         deploy:
             cluster: ${CLUSTER}
 
-            # ...  
+            # ...
 ```
 
 Once the configuration files are merged, the variables are resolved. That means that the final configuration will contain the `my-production-cluster` value at the `cluster` key of the deployment task.
 
-# Conditional variables
+## Conditional variables
 Because you may want to change the value of the cluster depending on the branch name for instance, you can use a variable's conditions:
 
 ``` yaml

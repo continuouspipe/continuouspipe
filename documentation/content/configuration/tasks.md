@@ -13,7 +13,7 @@ As you've seen in the configuration files section, most of ContinuousPipe's conf
 * `run`: Will run some [commands]({{< relref "commands.md" >}}) inside a deployed context
 * `wait`: Will [wait]({{< relref "wait-statuses.md" >}}) for some other GitHub statuses
 
-# Conditional tasks
+## Conditional tasks
 You can filter the execution of each task by using the `filter` configuration in the YML file. This can be done with an expression, as you can see in the following sample configuration:
 
 ``` yaml
@@ -34,7 +34,7 @@ As with the conditional variables, this expression has access to a context of ob
 * `pull_request` contains the following properties:
   - `labels` an array of the labels on the pull-request.
 
-## Task-related informations
+### Task-related information
 
 Under the `tasks` value, you can have access to information that come from the previous tasks. You need to use named tasks, as in the previous examples, to access to them by their names.
 

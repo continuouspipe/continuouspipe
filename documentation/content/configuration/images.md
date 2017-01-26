@@ -4,9 +4,9 @@ title: Building the Docker Images
 menu:
   main:
     parent: 'configuration'
-    weight: 30
+    weight: 35
 ---
-# The YAML bit
+## The YAML bit
 
 Before deploying anything, you will most of the time want ContinuousPipe to build your Docker images. Being probably the simple task, the only mandatory parameter being the image name you want to build.
 
@@ -23,7 +23,7 @@ You can obviously use any other image name as long as it contains the Docker reg
 
 ContinuousPipe is guessing parameters from your `docker-compose.yml` file. The image is the only required value if you have such a Docker Compose file.
 
-# Naming strategy
+## Naming strategy
 At the moment, there are two naming strategies: the default one being the `sha1` strategy, that basically builds a tag per commit SHA1. If you require it you can use the `branch` strategy that will create a tag per branch.
 
 ``` yaml
@@ -40,7 +40,7 @@ tasks:
 we do not recommend the branch naming strategy as when updated, some clusters might not force pull the new image while rolling-updating the services.
 {{< /warning >}}
 
-# Arguments
+## Arguments
 
 If you need to inject token or strings in your build process in order to download private dependencies for instance, you can use [Docker build arguments](https://docs.docker.com/engine/reference/builder/#/arg).
 
