@@ -1,4 +1,4 @@
-baseurl = "https://docs.continuouspipe.io/"
+baseurl = "https://continuouspipe.github.io/documentation/"
 languageCode = "en-gb"
 title = "ContinuousPipe Docs"
 theme = "hugo-material-docs"
