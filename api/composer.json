@@ -50,6 +50,7 @@
         "mhujer/jms-serializer-uuid-bundle": "^1.0",
         "kreait/firebase-php": "^2.0",
         "adlogix/guzzle-atlassian-connect-middleware": "~1.1.2",
+        "twig/twig": "^1.12",
         "continuous-pipe/worker-bundle": "dev-master"
     },
     "require-dev": {
