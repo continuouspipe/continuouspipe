@@ -4,6 +4,8 @@ namespace ContinuousPipe\River\Flow\MissingVariables;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Pipe\DeploymentRequest\DynamicVariable\EndpointVariable;
+use ContinuousPipe\River\Pipe\DeploymentRequest\DynamicVariable\ServiceVariable;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
 
@@ -45,6 +47,11 @@ class ConfigurationMissingVariableResolver implements MissingVariableResolver
                 $missingVariables[] = $variable;
             }
         }
+
+        $missingVariables = array_filter($missingVariables, function ($variable) {
+            return !ServiceVariable::isValidVariableName($variable)
+                && !EndpointVariable::isValidVariableName($variable);
+        });
 
         return array_unique($missingVariables);
     }
