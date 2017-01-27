@@ -6,7 +6,7 @@
 
     <services>
         <service id="river.security.voter.flow" class="AppBundle\Security\Voter\FlowSecurityVoter" public="false">
-            <argument type="service" id="authenticator.team_repository"/>
+            <argument type="service" id="authenticator.team_membership_finder"/>
 
             <tag name="security.voter" />
         </service>

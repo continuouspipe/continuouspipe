@@ -6,5 +6,6 @@
 
     <services>
         <service id="security.authenticator.client" class="ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient" />
+        <service id="security.authenticator.client_in_memory" class="ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient" decorates="security.authenticator.client" />
     </services>
 </container>

@@ -13,7 +13,7 @@ web_profiler:
     intercept_redirects: false
 
 continuous_pipe_security:
-    cache: false
+    cache: true
 
 beberlei_metrics:
     collectors:

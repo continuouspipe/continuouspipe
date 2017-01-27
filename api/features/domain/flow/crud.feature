@@ -22,7 +22,8 @@ Feature:
   @smoke
   Scenario: I can update the configuration of a flow
     Given the team "samuel" exists
-    And the user "samuel" is "ADMIN" of the team "samuel"
+    And I am authenticated as "Alice"
+    And the user "Alice" is "ADMIN" of the team "samuel"
     And I have a flow in the team "samuel"
     When I send an update request with a configuration
     Then the flow is successfully saved
@@ -30,7 +31,8 @@ Feature:
 
   Scenario: Only administrators can update a flow
     Given the team "samuel" exists
-    And the user "samuel" is "USER" of the team "samuel"
+    And I am authenticated as "Bob"
+    And the user "Bob" is "USER" of the team "samuel"
     And I have a flow in the team "samuel"
     When I send an update request with a configuration
     Then the flow is not saved because of an authorization exception

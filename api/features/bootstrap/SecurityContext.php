@@ -22,6 +22,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class SecurityContext implements Context
 {
+    const CACHE_SERVICE_ID = 'security.authenticator.cache';
     /**
      * @var TokenStorageInterface
      */
@@ -197,6 +198,18 @@ class SecurityContext implements Context
                 $code,
                 $this->response->getStatusCode()
             ));
+        }
+    }
+
+    /**
+     * @Given the authenticator cache is on
+     */
+    public function securityCacheIsOn()
+    {
+        if (!$this->kernel->getContainer()->has(self::CACHE_SERVICE_ID)) {
+            throw new \RuntimeException(
+                sprintf('Authenticator cache is disabled. Undefined service "%s".', self::CACHE_SERVICE_ID)
+            );
         }
     }
 }
