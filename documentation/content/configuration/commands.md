@@ -12,10 +12,10 @@ The `run` task allows to run commands in containers, in the deployed environment
 
 Most of the options are shared with the [`deploy` task]({{< relref "deployments.md" >}}):
 
-* `cluster`, to select the cluster on which the container will run
-* `image`, to select the image that will be used to run the commands
-* `environment`, to select the name of the environment on which the container will be created
-* `environment_variables`, to inject some environment variables in the container
+* `cluster`, to select the [cluster]({{< relref "deployments.md#cluster" >}}) on which the container will run
+* `image`, to select the [image]({{< relref "deployments.md#image-source" >}}) that will be used to run the commands
+* `environment`, to select the [name of the environment]({{< relref "deployments.md#environment-name" >}}) on which the container will be created
+* `environment_variables`, to inject some [environment variables]({{< relref "deployments.md#environment-variables" >}})  in the container
 
 Once you've configured these options according to your needs, you only have to define the `commands` options as in the following example.
 
@@ -38,4 +38,4 @@ tasks:
                 - name: DATABASE_PASSWORD
                   value: ${THE_PRIVATE_DATABASE_PASSWORD_VARIABLE}
 ```
-That example will run the some migration commands in a container created from the image of the web service. It will run on the cluster named `my-cluster` and will have the environment variable named `DATABASE_PASSWORD` injected with the value of a `THE_PRIVATE_DATABASE_PASSWORD_VARIABLE` variable previously defined.
+That example will run the some migration commands in a container created from the image of the web service. It will run on the cluster named `my-cluster` and will have the environment variable named `DATABASE_PASSWORD` injected with the value of a `THE_PRIVATE_DATABASE_PASSWORD_VARIABLE` [variable previously defined]({{< relref "configuration-files.md#variables" >}}).

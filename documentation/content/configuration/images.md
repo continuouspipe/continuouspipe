@@ -21,7 +21,7 @@ tasks:
 
 You can obviously use any other image name as long as it contains the Docker registry as first part of it. You can also see that it's configured per _service_, here we have only one (named `web`) that we need to deploy.
 
-ContinuousPipe is guessing parameters from your `docker-compose.yml` file. The image is the only required value if you have such a Docker Compose file.
+ContinuousPipe is guessing parameters from your `docker-compose.yml` file. The `image` is the only required value if you have such a Docker Compose file.
 
 ## Naming strategy
 At the moment, there are two naming strategies: the default one being the `sha1` strategy, that basically builds a tag per commit SHA1. If you require it you can use the `branch` strategy that will create a tag per branch.
@@ -47,7 +47,7 @@ If you need to inject token or strings in your build process in order to downloa
 The following example shows how to be able to install PHP private dependencies (using [Composer](http://getcomposer.org/)) using a private GitHub token:
 
 ``` yaml
-DOCKERFILE
+# Dockerfile
 
 # ...
 
@@ -58,6 +58,7 @@ RUN composer config github-oauth.github.com $GITHUB_TOKEN && \
     composer clear-cache
 
 # continuous-pipe.yml
+
 tasks:
     images:
         build:
@@ -67,4 +68,4 @@ tasks:
 
             # ...
 ```
-Note: this assume that you have defined the `GITHUB_TOKEN` variable somewhere. You can refer to the [variable section]({{< relref "configuration-files.md" >}}).
+Note: this assume that you have defined the `GITHUB_TOKEN` variable somewhere. You can refer to the [variable section]({{< relref "configuration-files.md#variables" >}}).

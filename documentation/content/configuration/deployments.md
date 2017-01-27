@@ -22,7 +22,7 @@ tasks:
                 web: ~
                 database: ~
 ```
-For each of this service, you can then fine-tune a lot of options that are presented in the following paragraphs. Therefore, the full YAML structure won't be presented but assume that every option is under a service configuration, for example:
+For each of these services, you can fine-tune a lot of options that are presented in the following paragraphs. Therefore, the full YAML structure won't be presented but assume that every option is under a service configuration, for example:
 
 ``` yaml
 tasks:
@@ -112,7 +112,7 @@ specification:
 ```
 
 ## Endpoints
-Note: for most of the cases, the `from_external` accessibility value is enough.
+Note: in most cases, the `from_external` accessibility value is enough.
 
 If you are using a cluster that supports Ingress and SSL certificates, then you can use the `endpoints` configuration to define these endpoints:
 

@@ -65,7 +65,7 @@ environment_variables:
     - { name: CLUSTER, condition: 'code_reference.branch not in ["production", "uat"]', value: my-development-cluster }
 ```
 
-As the conditional tasks, the `condition` value is an expression. In this context, this expression has access to the following variables:
+As the [conditional tasks] ({{< relref "tasks.md#filters" >}}), the `condition` value is an expression. In this context, this expression has access to the following variables:
 
 * `code_reference` that contains the following properties:
   - `branch` which is the name of the branch

@@ -1,6 +1,7 @@
 ---
 date: 2017-01-26T14:09:09Z
 title: Task List
+LinkTitle: Tasks overview
 menu:
   main:
     parent: 'configuration'
@@ -26,7 +27,7 @@ tasks:
             expression: code_reference.branch == 'master'
 ```
 
-As with the conditional variables, this expression has access to a context of objects. The first part of this context is tide-related values:
+As with the [conditional variables]({{< relref "configuration-files.md#conditional-variables" >}}), this expression has access to a context of objects. The first part of this context is tide-related values:
 
 * `code_reference` that contains the following properties:
   - `branch` which is the name of the branch
