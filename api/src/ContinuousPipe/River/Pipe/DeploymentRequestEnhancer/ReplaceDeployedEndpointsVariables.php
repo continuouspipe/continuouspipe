@@ -36,11 +36,8 @@ class ReplaceDeployedEndpointsVariables implements DeploymentRequestEnhancer
         $publicEndpointMappings = [];
         foreach ($tasks as $task) {
             foreach ($task->getPublicEndpoints() as $publicEndpoint) {
-                $serviceVariable = ServiceVariable::fromNameAndAddress(
-                    $publicEndpoint->getName(), $publicEndpoint->getAddress()
-                );
-
-                $publicEndpointMappings[$serviceVariable->getVariableName()] = (string)$serviceVariable;
+                $serviceVariable = ServiceVariable::fromPublicEndpoint($publicEndpoint);
+                $publicEndpointMappings[$serviceVariable->getVariableName()] = $serviceVariable->getAddress();
             }
         }
 

@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River\Pipe\DeploymentRequest\DynamicVariable;
 
+use ContinuousPipe\Pipe\Client\PublicEndpoint;
+
 /**
  * This value object represents a dynamic service variable
  *
@@ -20,18 +22,17 @@ final class ServiceVariable
     private $address;
 
     /**
-     * Create new instance from service name and address
+     * Create new instance from a public endpoint object
      *
-     * @param string $name Service name.
-     * @param string|null $address Service network address.
+     * @param PublicEndpoint $endpoint
      *
      * @return ServiceVariable
      */
-    public static function fromNameAndAddress($name, $address)
+    public static function fromPublicEndpoint(PublicEndpoint $endpoint)
     {
         $instance = new self();
-        $instance->name = $name;
-        $instance->address = $address;
+        $instance->name = $endpoint->getName();
+        $instance->address = $endpoint->getAddress();
         return $instance;
     }
 
@@ -44,7 +45,7 @@ final class ServiceVariable
      */
     public static function isValidVariableName($name): bool
     {
-        return preg_match('/^SERVICE_[^_a-z]+_PUBLIC_ENDPOINT$/', $name) === 1;
+        return preg_match('/^SERVICE_[^a-z]+_PUBLIC_ENDPOINT$/', $name) === 1;
     }
 
     /**
@@ -52,7 +53,7 @@ final class ServiceVariable
      */
     public function getVariableName(): string
     {
-        $name = str_replace('_', '', mb_strtoupper($this->name));
+        $name = mb_strtoupper($this->name);
         return sprintf('SERVICE_%s_PUBLIC_ENDPOINT', $name);
     }
 
@@ -62,11 +63,6 @@ final class ServiceVariable
     public function getAddress()
     {
         return $this->address;
-    }
-
-    public function __toString()
-    {
-        return (string)$this->getAddress();
     }
 
     private function __construct()
