@@ -1,0 +1,16 @@
+tasks:
+  build:
+    build:
+      services:
+        web:
+          image: docker.io/inviqasession/cp-documentation
+  deployment:
+      deploy:
+        cluster: ${CLUSTER}
+        environment:
+          name: '"documentation-" ~ code_reference.branch'
+        services:
+          web:
+            specification:
+              accessibility:
+                from_external: true
