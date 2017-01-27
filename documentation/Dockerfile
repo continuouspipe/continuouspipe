@@ -21,7 +21,7 @@ COPY . /app
 
 
 # Automatically build site
-RUN git submodule update \
+RUN git clone https://github.com/digitalcraftsman/hugo-material-docs themes \
   && hugo -d /usr/share/nginx/html/
 
 # By default, serve site
