@@ -21,7 +21,8 @@ COPY . /app
 
 
 # Automatically build site
-RUN git clone https://github.com/digitalcraftsman/hugo-material-docs themes \
+RUN rm -rf themes/hugo-material-docs \
+  && git clone https://github.com/digitalcraftsman/hugo-material-docs themes/hugo-material-docs \
   && hugo -d /usr/share/nginx/html/
 
 # By default, serve site
