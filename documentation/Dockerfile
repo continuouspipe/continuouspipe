@@ -21,7 +21,8 @@ COPY . /app
 
 
 # Automatically build site
-RUN hugo -d /usr/share/nginx/html/
+RUN git submodule update \
+  && hugo -d /usr/share/nginx/html/
 
 # By default, serve site
 ENV HUGO_BASE_URL http://localhost
