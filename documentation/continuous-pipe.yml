@@ -14,3 +14,6 @@ tasks:
             specification:
               accessibility:
                 from_external: true
+              environment_variables:
+                - name: HUGO_BASE_URL
+                  value: http://${SERVICE_WEB_PUBLIC_ENDPOINT}
