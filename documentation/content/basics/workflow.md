@@ -1,6 +1,7 @@
 ---
 date: 2017-01-25T10:40:13Z
 title: A workflow that suits you
+LinkTitle: Workflow
 menu:
   main:
     parent: 'Basics'
@@ -16,8 +17,8 @@ We believe the typical web development workflow *can be improved* by parallelisi
 
 ![](/images/workflow-with-continuous-pipe.png)
 
-# Integrated with your code repository
+## Integrated with your code repository
 
 GitHub is more than a code repository. It’s also your project repository. Your default branch can be `production` or `uat` so the developers know to which environment they deploy. ContinuousPipe will do the rest with rolling updates to your environment for zero-downtime deployments.
 
-Using task filters you can control the steps ran for a given branch or pull-request. You can even use GitHub's labels to control the tasks that had to be run, or your own custom integration through the hooks tasks.
+Using [task filters]({{< relref "tasks.md#filters" >}}) you can control the steps ran for a given branch or pull-request. You can even use GitHub's labels to control the tasks that had to be run, or your own custom integration through the hooks tasks.

@@ -13,7 +13,7 @@ As you've seen in the configuration files section, most of ContinuousPipe's conf
 * `run`: Will run some [commands]({{< relref "commands.md" >}}) inside a deployed context
 * `wait`: Will [wait]({{< relref "wait-statuses.md" >}}) for some other GitHub statuses
 
-## Conditional tasks
+## Conditional tasks {#filters}
 You can filter the execution of each task by using the `filter` configuration in the YML file. This can be done with an expression, as you can see in the following sample configuration:
 
 ``` yaml

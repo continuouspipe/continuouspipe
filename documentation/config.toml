@@ -46,20 +46,20 @@ PygmentsCodeFences = true
 	email   = "support@continuouspipe.io"
 
 
-[[menu.main]]
-	name   = "Welcome"
-	url    = "/"
-	weight = 0
-
-[[menu.main]]
-	name   = "Basics"
-	url    = "basics/introduction"
-	weight = 10
-
-[[menu.main]]
-	name   = "Configuration"
-	url    = "configuration/"
-	weight = 20
+# [[menu.main]]
+# 	name   = "Welcome"
+# 	url    = "/"
+# 	weight = 0
+#
+# [[menu.main]]
+# 	name   = "Basics"
+# 	url    = "basics/introduction"
+# 	weight = 10
+#
+# [[menu.main]]
+# 	name   = "Configuration"
+# 	url    = "configuration/introduction"
+# 	weight = 20
 
 [blackfriday]
 	smartypants	= true
