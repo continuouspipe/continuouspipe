@@ -12,4 +12,12 @@ interface SubscriptionClient
      * @return Subscription[]
      */
     public function findSubscriptionsForBillingProfile(UserBillingProfile $billingProfile) : array;
+
+    /**
+     * @param UserBillingProfile $billingProfile
+     * @param Subscription $subscription
+     *
+     * @return Subscription
+     */
+    public function cancel(UserBillingProfile $billingProfile, Subscription $subscription) : Subscription;
 }

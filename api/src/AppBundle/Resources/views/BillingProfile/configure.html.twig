@@ -21,7 +21,7 @@
                 <input id="users-slider" name="quantity" type="text" style="width: 100%" />
             </div>
             <div class="panel-footer">
-                <button type="submit" class="btn btn-primary" data-action="subscribe">Subscribe</button>
+                <button type="submit" name="_operation" value="subscribe" class="btn btn-primary" data-action="subscribe">Subscribe</button>
             </div>
         </div>
     </div>
@@ -61,6 +61,19 @@
             </div>
             <div class="panel-footer">
                 <a href="#recurly-account" class="btn btn-primary" data-action="details">Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-danger">
+            <div class="panel-body">
+                <form action="" method="POST">
+                    <input type="submit" name="_operation" value="cancel" class="pull-right btn btn-danger" data-action="cancel" />
+                    <input type="hidden" name="_subscription_uuid" value="{{ subscription.uuid }}" />
+                    <p>You can cancel your subscription by clicking this button.</p>
+                </form>
             </div>
         </div>
     </div>

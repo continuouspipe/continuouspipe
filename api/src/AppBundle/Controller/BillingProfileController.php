@@ -5,7 +5,9 @@ namespace AppBundle\Controller;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
+use ContinuousPipe\Billing\Subscription\Subscription;
 use ContinuousPipe\Billing\Subscription\SubscriptionClient;
+use ContinuousPipe\Billing\Subscription\SubscriptionException;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -53,25 +55,49 @@ class BillingProfileController
             );
         }
 
+        // Load subscriptions
+        $subscriptions = $this->subscriptionClient->findSubscriptionsForBillingProfile($billingProfile);
+
         if ($request->isMethod('POST')) {
             $this->userBillingProfileRepository->save($billingProfile);
+            $operation = $request->request->get('_operation');
 
-            // Redirect to the subscription page
-            return new RedirectResponse(sprintf(
-                'https://continuouspipe.recurly.com/subscribe/%s/%s/%s?%s',
-                'single-user', // Plan name
-                $billingProfile->getUuid()->toString(),
-                urlencode($user->getUsername()),
-                http_build_query([
-                    'quantity' => $request->request->get('quantity', 1),
-                    'email' => $user->getEmail()
-                ])
-            ));
+            if ('subscribe' === $operation) {
+                // Redirect to the subscription page
+                return new RedirectResponse(sprintf(
+                    'https://continuouspipe.recurly.com/subscribe/%s/%s/%s?%s',
+                    'single-user', // Plan name
+                    $billingProfile->getUuid()->toString(),
+                    urlencode($user->getUsername()),
+                    http_build_query([
+                        'quantity' => $request->request->get('quantity', 1),
+                        'email' => $user->getEmail()
+                    ])
+                ));
+            } elseif ('cancel' === $operation) {
+                $subscriptionUuid = $request->request->get('_subscription_uuid');
+                $matchingSubscriptions = array_filter($subscriptions, function(Subscription $subscription) use ($subscriptionUuid) {
+                    return $subscription->getUuid() == $subscriptionUuid;
+                });
+
+                if (count($matchingSubscriptions) != 1) {
+                    $request->getSession()->getFlashBag()->add('warning', 'You can\'t cancel this subscription');
+                } else {
+                    $subscription = current($subscriptions);
+
+                    try {
+                        $this->subscriptionClient->cancel($billingProfile, $subscription);
+                        $request->getSession()->getFlashBag()->add('success', 'Subscription successfully canceled');
+                    } catch (SubscriptionException $e) {
+                        $request->getSession()->getFlashBag()->add('danger', $e->getMessage());
+                    }
+                }
+            }
         }
 
         return [
             'billingProfile' => $billingProfile,
-            'subscriptions' => $this->subscriptionClient->findSubscriptionsForBillingProfile($billingProfile),
+            'subscriptions' => $subscriptions,
         ];
     }
 }

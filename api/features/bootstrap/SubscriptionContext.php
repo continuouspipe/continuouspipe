@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Billing\Subscription\InMemorySubscriptionClient;
 use ContinuousPipe\Billing\Subscription\Subscription;
+use ContinuousPipe\Billing\Subscription\TracedSubscriptionClient;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,10 +25,18 @@ class SubscriptionContext implements Context
      * @var InMemorySubscriptionClient
      */
     private $inMemorySubscriptionClient;
+    /**
+     * @var TracedSubscriptionClient
+     */
+    private $tracedSubscriptionClient;
 
-    public function __construct(KernelInterface $kernel, InMemorySubscriptionClient $inMemorySubscriptionClient)
-    {
+    public function __construct(
+        KernelInterface $kernel,
+        InMemorySubscriptionClient $inMemorySubscriptionClient,
+        TracedSubscriptionClient $tracedSubscriptionClient
+    ) {
         $this->kernel = $kernel;
+        $this->tracedSubscriptionClient = $tracedSubscriptionClient;
         $this->inMemorySubscriptionClient = $inMemorySubscriptionClient;
     }
 
@@ -60,6 +69,7 @@ class SubscriptionContext implements Context
     {
         $this->response = $this->kernel->handle(Request::create('/account/billing-profile', 'POST', [
             'quantity' => $count,
+            '_operation' => 'subscribe',
         ], [
             'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
         ]));
@@ -92,7 +102,7 @@ class SubscriptionContext implements Context
             $this->inMemorySubscriptionClient->addSubscription(
                 Uuid::fromString($billingAccountUuid),
                 new Subscription(
-                    Uuid::uuid4(),
+                    array_key_exists('uuid', $row) ? Uuid::fromString($row['uuid']) : Uuid::uuid4(),
                     $row['plan'],
                     $row['state'],
                     (int) $row['quantity'],
@@ -115,6 +125,45 @@ class SubscriptionContext implements Context
         if (false === strpos($this->response->getContent(), $expectedMarkup)) {
             throw new \RuntimeException('Did not found \''.$expectedMarkup.'\' in the page');
         }
+    }
+
+    /**
+     * @Then I should be able to cancel my subscription
+     */
+    public function iShouldBeAbleToCancelMySubscription()
+    {
+        $this->assertStatusCode(200);
+
+        if (false === strpos($this->response->getContent(), 'data-action="cancel"')) {
+            throw new \RuntimeException('Did not found \'data-action="cancel"\' in the page');
+        }
+    }
+
+    /**
+     * @When I cancel my subscription :subscriptionUuid
+     */
+    public function iCancelMySubscription($subscriptionUuid)
+    {
+        $this->response = $this->kernel->handle(Request::create('/account/billing-profile', 'POST', [
+            '_subscription_uuid' => $subscriptionUuid,
+            '_operation' => 'cancel',
+        ], [
+            'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
+        ]));
+    }
+
+    /**
+     * @Then the subscription :subscriptionUuid should have been cancelled
+     */
+    public function theSubscriptionShouldHaveBeenCancelled($subscriptionUuid)
+    {
+        foreach ($this->tracedSubscriptionClient->getCanceledSubscriptions() as $subscription) {
+            if ($subscription->getUuid() == $subscriptionUuid) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('The subscription was not cancelled');
     }
 
     private function assertStatusCode(int $code)

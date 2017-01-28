@@ -4,6 +4,9 @@ namespace ContinuousPipe\Billing\Subscription;
 
 class Subscription
 {
+    const STATE_ACTIVE = 'active';
+    const STATE_CANCELED = 'canceled';
+
     /**
      * @var string
      */
