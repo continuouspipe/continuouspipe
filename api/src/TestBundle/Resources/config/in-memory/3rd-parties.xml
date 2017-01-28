@@ -10,5 +10,6 @@
         <service id="google.http.client_factory" class="ContinuousPipe\Google\Http\PredictableClientFactory">
             <argument type="service" id="google.http.middleware.predictable_request_mapping" />
         </service>
+        <service id="builder.billing.subscription_client" class="ContinuousPipe\Billing\Subscription\InMemorySubscriptionClient" />
     </services>
 </container>

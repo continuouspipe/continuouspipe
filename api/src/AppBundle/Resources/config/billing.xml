@@ -25,5 +25,10 @@
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Message\UserActivity" />
         </service>
+
+        <!-- Subscription -->
+        <service id="builder.billing.subscription_client" class="ContinuousPipe\Billing\Subscription\Recurly\RecurlySubscriptionClient">
+
+        </service>
     </services>
 </container>

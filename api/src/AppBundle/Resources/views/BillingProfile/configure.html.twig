@@ -7,8 +7,9 @@
 <h1>Billing profile</h1>
 {% endblock %}
 {% block account_content %}
-<h2>Personal information</h2>
 <form action="" method="POST">
+{% if subscriptions is empty %}
+<h2>Subscribe</h2>
 <div class="row">
     <div class="col-md-6">
         <div class="panel panel-default">
@@ -16,6 +17,7 @@
                 <h3 class="panel-title">Number of users</h3>
             </div>
             <div class="panel-body">
+                <p>Select the number of users you would like to subscribe for.</p>
                 <input id="users-slider" name="quantity" type="text" style="width: 100%" />
             </div>
             <div class="panel-footer">
@@ -23,9 +25,49 @@
             </div>
         </div>
     </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">What is a user?</h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    A user is an individual interacting with the various environments. In practical terms, it will be anybody who
+                    is pushing some code to the code repositories or creating/removing environments from the UI.
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 </form>
-
+{% else %}
+{% for subscription in subscriptions %}
+<h2>My subscription</h2>
+<form action="" method="POST">
+<input type="hidden" name="_subscription_uuid" value="{{ subscription.uuid }}" />
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Current plan</h3>
+            </div>
+            <div class="panel-body">
+                <p>You subscribed to <strong data-current-plan-quantity="{{ subscription.quantity }}">{{ subscription.quantity }}</strong> <strong>{{ subscription.plan }}</strong> plan(s).</p>
+                <p>
+                    Your subscription is <strong>{{ subscription.state }}</strong>
+                    {% if subscription.expirationDate is not null %}and will expire on {{ subscription.expirationDate | date('d/m/Y H:i:s') }}.{% endif %}
+                </p>
+                <p>The current billing period started on {{ subscription.currentBillingPeriodStartedAt | date('d/m/Y H:i:s') }} and will end on {{ subscription.currentBillingPeriodEndsAt | date('d/m/Y H:i:s') }}</p>
+            </div>
+            <div class="panel-footer">
+                <a href="#recurly-account" class="btn btn-primary" data-action="details">Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+{% endfor %}
+{% endif %}
 {% endblock %}
 {% block javascripts %}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.0/bootstrap-slider.min.js"></script>

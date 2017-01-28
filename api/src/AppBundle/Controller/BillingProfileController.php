@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
+use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -22,10 +23,17 @@ class BillingProfileController
      * @var UserBillingProfileRepository
      */
     private $userBillingProfileRepository;
+    /**
+     * @var SubscriptionClient
+     */
+    private $subscriptionClient;
 
-    public function __construct(UserBillingProfileRepository $userBillingProfileRepository)
-    {
+    public function __construct(
+        UserBillingProfileRepository $userBillingProfileRepository,
+        SubscriptionClient $subscriptionClient
+    ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
+        $this->subscriptionClient = $subscriptionClient;
     }
 
     /**
@@ -63,6 +71,7 @@ class BillingProfileController
 
         return [
             'billingProfile' => $billingProfile,
+            'subscriptions' => $this->subscriptionClient->findSubscriptionsForBillingProfile($billingProfile),
         ];
     }
 }

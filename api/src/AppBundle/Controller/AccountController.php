@@ -77,7 +77,7 @@ class AccountController
                 $activities = array_merge($activities, $this->activityTracker->findBy($team, new \DateTime('-30 days'), new \DateTime()));
             }
 
-            usort($activities, function(UserActivity $left, UserActivity $right) {
+            usort($activities, function (UserActivity $left, UserActivity $right) {
                 return $left->getDateTime() > $right->getDateTime() ? -1 : 1;
             });
         } catch (UserBillingProfileNotFound $e) {

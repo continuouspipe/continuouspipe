@@ -16,9 +16,10 @@ Feature:
     When I subscribe for 10 users
     Then I should be redirected to the Recurly subscription page of the account "00000000-0000-0000-0000-000000000000"
 
-  @wip
-  Scenario: Recurly's subscription is successful
-    Given the Recurly account "00000000-0000-0000-0000-000000000000" have 10 active subscriptions "single-user"
+  Scenario: Subscription is displayed on the billing page
+    Given the billing account "00000000-0000-0000-0000-000000000000" have the following subscriptions:
+     | plan        | quantity | state  |
+     | single-user | 10       | active |
     And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
     When I configure my billing profile
     Then I should see that my current plan is for 10 users

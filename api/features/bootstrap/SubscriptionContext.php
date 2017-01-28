@@ -1,6 +1,10 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Billing\Subscription\InMemorySubscriptionClient;
+use ContinuousPipe\Billing\Subscription\Subscription;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -16,13 +20,15 @@ class SubscriptionContext implements Context
      * @var Response|null
      */
     private $response;
-
     /**
-     * @param KernelInterface $kernel
+     * @var InMemorySubscriptionClient
      */
-    public function __construct(KernelInterface $kernel)
+    private $inMemorySubscriptionClient;
+
+    public function __construct(KernelInterface $kernel, InMemorySubscriptionClient $inMemorySubscriptionClient)
     {
         $this->kernel = $kernel;
+        $this->inMemorySubscriptionClient = $inMemorySubscriptionClient;
     }
 
     /**
@@ -74,6 +80,40 @@ class SubscriptionContext implements Context
                 'The location "%s" is not matching the expected expression',
                 $location
             ));
+        }
+    }
+
+    /**
+     * @Given the billing account :billingAccountUuid have the following subscriptions:
+     */
+    public function theBillingAccountHaveTheFollowingSubscriptions($billingAccountUuid, TableNode $table)
+    {
+        foreach ($table->getHash() as $row) {
+            $this->inMemorySubscriptionClient->addSubscription(
+                Uuid::fromString($billingAccountUuid),
+                new Subscription(
+                    Uuid::uuid4(),
+                    $row['plan'],
+                    $row['state'],
+                    (int) $row['quantity'],
+                    0,
+                    new \DateTime(),
+                    new \DateTime()
+                )
+            );
+        }
+    }
+
+    /**
+     * @Then I should see that my current plan is for :numberOfUsers users
+     */
+    public function iShouldSeeThatMyCurrentPlanIsForUsers($numberOfUsers)
+    {
+        $this->assertStatusCode(200);
+
+        $expectedMarkup = 'data-current-plan-quantity="'.$numberOfUsers.'"';
+        if (false === strpos($this->response->getContent(), $expectedMarkup)) {
+            throw new \RuntimeException('Did not found \''.$expectedMarkup.'\' in the page');
         }
     }
 
