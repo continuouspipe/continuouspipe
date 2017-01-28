@@ -1,13 +1,40 @@
 {% extends "AppBundle:Account:layout.html.twig" %}
+{% block stylesheets %}
+{{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.0/css/bootstrap-slider.min.css" />
+{% endblock %}
 {% block account_title %}
 <h1>Billing profile</h1>
 {% endblock %}
 {% block account_content %}
 <h2>Personal information</h2>
 <form action="" method="POST">
-    <ul>
-        <li><input type="radio" name="plan" value="trial" /> Trial</li>
-    </ul>
-    <button type="submit">Update</button>
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Number of users</h3>
+            </div>
+            <div class="panel-body">
+                <input id="users-slider" name="quantity" type="text" style="width: 100%" />
+            </div>
+            <div class="panel-footer">
+                <button type="submit" class="btn btn-primary" data-action="subscribe">Subscribe</button>
+            </div>
+        </div>
+    </div>
+</div>
 </form>
+
+{% endblock %}
+{% block javascripts %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.0/bootstrap-slider.min.js"></script>
+<script type="text/javascript">
+new Slider("#users-slider", {
+    ticks:           [1, 2, 5,  10, 15, 20, 25, 30, 40, 50, 65, 80, 100, 125, 150, 200, 250, 300, 500],
+    ticks_positions: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60,  67,   75, 82,  88,  95,  100],
+    ticks_labels:    [1, 2, 5,  10, 15, 20, 25, 30, 40, 50, 65, 80, 100, 125, 150, 200, 250, 300, 500],
+    ticks_snap_bounds: 500
+});
+</script>
 {% endblock %}

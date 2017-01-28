@@ -10,6 +10,7 @@ use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -46,6 +47,18 @@ class BillingProfileController
 
         if ($request->isMethod('POST')) {
             $this->userBillingProfileRepository->save($billingProfile);
+
+            // Redirect to the subscription page
+            return new RedirectResponse(sprintf(
+                'https://continuouspipe.recurly.com/subscribe/%s/%s/%s?%s',
+                'single-user', // Plan name
+                $billingProfile->getUuid()->toString(),
+                urlencode($user->getUsername()),
+                http_build_query([
+                    'quantity' => $request->request->get('quantity', 1),
+                    'email' => $user->getEmail()
+                ])
+            ));
         }
 
         return [
