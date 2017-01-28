@@ -28,7 +28,8 @@
 
         <!-- Subscription -->
         <service id="builder.billing.subscription_client" class="ContinuousPipe\Billing\Subscription\Recurly\RecurlySubscriptionClient">
-
+            <argument>%recurly_subdomain%</argument>
+            <argument>%recurly_api_key%</argument>
         </service>
     </services>
 </container>

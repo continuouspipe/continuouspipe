@@ -17,6 +17,8 @@ interface SubscriptionClient
      * @param UserBillingProfile $billingProfile
      * @param Subscription $subscription
      *
+     * @throws SubscriptionException
+     *
      * @return Subscription
      */
     public function cancel(UserBillingProfile $billingProfile, Subscription $subscription) : Subscription;
