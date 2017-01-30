@@ -57,15 +57,10 @@ class Subscription
     private $unitAmountInCents;
 
     /**
-     * @param string $uuid
-     * @param string $plan
-     * @param string $state
-     * @param int $quantity
-     * @param int $unitAmountInCents
-     * @param \DateTimeInterface $currentBillingPeriodStartedAt
-     * @param \DateTimeInterface $currentBillingPeriodEndsAt
-     * @param \DateTimeInterface $expirationDate
+     * @var string|null
      */
+    private $hostedDetailsUrl;
+
     public function __construct(
         string $uuid,
         string $plan,
@@ -74,7 +69,8 @@ class Subscription
         int $unitAmountInCents,
         \DateTimeInterface $currentBillingPeriodStartedAt,
         \DateTimeInterface $currentBillingPeriodEndsAt,
-        \DateTimeInterface $expirationDate = null
+        \DateTimeInterface $expirationDate = null,
+        string $hostedDetailsUrl = null
     ) {
         $this->uuid = $uuid;
         $this->plan = $plan;
@@ -84,6 +80,7 @@ class Subscription
         $this->currentBillingPeriodStartedAt = $currentBillingPeriodStartedAt;
         $this->currentBillingPeriodEndsAt = $currentBillingPeriodEndsAt;
         $this->expirationDate = $expirationDate;
+        $this->hostedDetailsUrl = $hostedDetailsUrl;
     }
 
     /**
@@ -148,6 +145,14 @@ class Subscription
     public function getUnitAmountInCents(): int
     {
         return $this->unitAmountInCents;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getHostedDetailsUrl()
+    {
+        return $this->hostedDetailsUrl;
     }
 
     public function withQuantity(int $quantity) : self

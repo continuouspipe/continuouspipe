@@ -60,7 +60,7 @@
                 <p>The current billing period started on {{ subscription.currentBillingPeriodStartedAt | date('d/m/Y H:i:s') }} and will end on {{ subscription.currentBillingPeriodEndsAt | date('d/m/Y H:i:s') }}</p>
             </div>
             <div class="panel-footer">
-                <a href="#recurly-account" class="btn btn-primary" data-action="details">Details</a>
+                <a href="{{ subscription.hostedDetailsUrl }}" class="btn btn-primary" data-action="details">Manage & Details</a>
             </div>
         </div>
     </div>

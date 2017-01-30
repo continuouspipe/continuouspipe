@@ -9,8 +9,15 @@ use ContinuousPipe\Billing\Subscription\SubscriptionException;
 
 class RecurlySubscriptionClient implements SubscriptionClient
 {
+    /**
+     * @var string
+     */
+    private $subdomain;
+
     public function __construct(string $subdomain, string $apiKey)
     {
+        $this->subdomain = $subdomain;
+
         \Recurly_Client::$subdomain = $subdomain;
         \Recurly_Client::$apiKey = $apiKey;
     }
@@ -29,7 +36,7 @@ class RecurlySubscriptionClient implements SubscriptionClient
         $subscriptions = [];
         foreach ($recurlySubscriptions as $recurlySubscription) {
             /** @var \Recurly_Subscription $recurlySubscription */
-            $subscriptions[] = $this->transformRecurlySubscription($recurlySubscription);
+            $subscriptions[] = $this->transformRecurlySubscription($billingProfile, $recurlySubscription);
         }
 
         return $subscriptions;
@@ -47,7 +54,7 @@ class RecurlySubscriptionClient implements SubscriptionClient
             throw new SubscriptionException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return $this->transformRecurlySubscription($recurlySubscription);
+        return $this->transformRecurlySubscription($billingProfile, $recurlySubscription);
     }
 
     /**
@@ -63,11 +70,22 @@ class RecurlySubscriptionClient implements SubscriptionClient
             throw new SubscriptionException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return $this->transformRecurlySubscription($recurlySubscription);
+        return $this->transformRecurlySubscription($billingProfile, $recurlySubscription);
     }
 
-    private function transformRecurlySubscription(\Recurly_Subscription $recurlySubscription) : Subscription
+    private function transformRecurlySubscription(UserBillingProfile $billingProfile, \Recurly_Subscription $recurlySubscription) : Subscription
     {
+        try {
+            $hostedAccountToken = \Recurly_Account::get($billingProfile->getUuid())->hosted_login_token;
+            $hostedAccountUrl = sprintf(
+                'https://%s.recurly.com/account/%s',
+                $this->subdomain,
+                $hostedAccountToken
+            );
+        } catch (\Recurly_NotFoundError $e) {
+            $hostedAccountUrl = null;
+        }
+
         $rawValues = $recurlySubscription->getValues();
 
         /** @var \Recurly_Plan $plan */
@@ -81,7 +99,8 @@ class RecurlySubscriptionClient implements SubscriptionClient
             $rawValues['unit_amount_in_cents'],
             $rawValues['current_period_started_at'],
             $rawValues['current_period_ends_at'],
-            array_key_exists('expires_at', $rawValues) ? $rawValues['expires_at'] : null
+            array_key_exists('expires_at', $rawValues) ? $rawValues['expires_at'] : null,
+            $hostedAccountUrl
         );
     }
 }
