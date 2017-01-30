@@ -149,4 +149,20 @@ class Subscription
     {
         return $this->unitAmountInCents;
     }
+
+    public function withQuantity(int $quantity) : self
+    {
+        $subscription = clone $this;
+        $subscription->quantity = $quantity;
+
+        return $subscription;
+    }
+
+    public function withState(string $state) : self
+    {
+        $subscription = clone $this;
+        $subscription->state = $state;
+
+        return $subscription;
+    }
 }

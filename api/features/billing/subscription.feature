@@ -40,6 +40,10 @@ Feature:
     When I cancel my subscription "00000000-1111-1111-1111-000000000000"
     Then the subscription "00000000-1111-1111-1111-000000000000" should have been cancelled
 
-  Scenario: I do have a subscription, I upgrade
-
-  Scenario: I do have a subscription, I downgrade
+  Scenario: I do have a subscription, I update it
+    Given the billing account "00000000-0000-0000-0000-000000000000" have the following subscriptions:
+      | uuid                                 | plan        | quantity | state  |
+      | 00000000-1111-1111-1111-000000000000 | single-user | 1        | active |
+    And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    When I update my subscription "00000000-1111-1111-1111-000000000000" with a quantity of 4
+    Then the subscription "00000000-1111-1111-1111-000000000000" should have been updated with a quantity of 4

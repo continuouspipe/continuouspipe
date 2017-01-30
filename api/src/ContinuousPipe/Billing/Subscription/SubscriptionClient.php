@@ -22,4 +22,14 @@ interface SubscriptionClient
      * @return Subscription
      */
     public function cancel(UserBillingProfile $billingProfile, Subscription $subscription) : Subscription;
+
+    /**
+     * @param UserBillingProfile $billingProfile
+     * @param Subscription $subscription
+     *
+     * @throws SubscriptionException
+     *
+     * @return Subscription
+     */
+    public function update(UserBillingProfile $billingProfile, Subscription $subscription) : Subscription;
 }

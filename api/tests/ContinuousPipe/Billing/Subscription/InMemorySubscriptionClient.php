@@ -29,17 +29,18 @@ class InMemorySubscriptionClient implements SubscriptionClient
      */
     public function cancel(UserBillingProfile $billingProfile, Subscription $subscription): Subscription
     {
-        $subscription = new Subscription(
-            $subscription->getUuid(),
-            $subscription->getPlan(),
-            Subscription::STATE_CANCELED,
-            $subscription->getQuantity(),
-            $subscription->getUnitAmountInCents(),
-            $subscription->getCurrentBillingPeriodStartedAt(),
-            $subscription->getCurrentBillingPeriodEndsAt(),
-            $subscription->getExpirationDate()
-        );
+        $subscription = $subscription->withState(Subscription::STATE_CANCELED);
 
+        $this->addSubscription($billingProfile->getUuid(), $subscription);
+
+        return $subscription;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(UserBillingProfile $billingProfile, Subscription $subscription): Subscription
+    {
         $this->addSubscription($billingProfile->getUuid(), $subscription);
 
         return $subscription;

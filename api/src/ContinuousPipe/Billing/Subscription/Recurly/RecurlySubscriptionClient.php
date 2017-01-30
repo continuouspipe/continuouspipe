@@ -41,13 +41,29 @@ class RecurlySubscriptionClient implements SubscriptionClient
     public function cancel(UserBillingProfile $billingProfile, Subscription $subscription): Subscription
     {
         try {
-            $subscription = \Recurly_Subscription::get($subscription->getUuid());
-            $subscription->cancel();
+            $recurlySubscription = \Recurly_Subscription::get($subscription->getUuid());
+            $recurlySubscription->cancel();
         } catch (\Recurly_Error $e) {
             throw new SubscriptionException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return $this->transformRecurlySubscription($subscription);
+        return $this->transformRecurlySubscription($recurlySubscription);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(UserBillingProfile $billingProfile, Subscription $subscription): Subscription
+    {
+        try {
+            $recurlySubscription = \Recurly_Subscription::get($subscription->getUuid());
+            $recurlySubscription->quantity = $subscription->getQuantity();
+            $recurlySubscription->updateImmediately();
+        } catch (\Recurly_Error $e) {
+            throw new SubscriptionException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return $this->transformRecurlySubscription($recurlySubscription);
     }
 
     private function transformRecurlySubscription(\Recurly_Subscription $recurlySubscription) : Subscription

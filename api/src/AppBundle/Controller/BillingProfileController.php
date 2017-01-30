@@ -74,20 +74,32 @@ class BillingProfileController
                         'email' => $user->getEmail()
                     ])
                 ));
-            } elseif ('cancel' === $operation) {
+            } elseif ('cancel' === $operation || 'update' == $operation) {
                 $subscriptionUuid = $request->request->get('_subscription_uuid');
-                $matchingSubscriptions = array_filter($subscriptions, function(Subscription $subscription) use ($subscriptionUuid) {
+                $matchingSubscriptions = array_filter($subscriptions, function (Subscription $subscription) use ($subscriptionUuid) {
                     return $subscription->getUuid() == $subscriptionUuid;
                 });
 
                 if (count($matchingSubscriptions) != 1) {
                     $request->getSession()->getFlashBag()->add('warning', 'You can\'t cancel this subscription');
                 } else {
-                    $subscription = current($subscriptions);
+                    $subscriptionIndex = current(array_keys($subscriptions));
+                    $subscription = $subscriptions[$subscriptionIndex];
 
                     try {
-                        $this->subscriptionClient->cancel($billingProfile, $subscription);
-                        $request->getSession()->getFlashBag()->add('success', 'Subscription successfully canceled');
+                        if ('cancel' == $operation) {
+                            $this->subscriptionClient->cancel($billingProfile, $subscription);
+                            $request->getSession()->getFlashBag()->add('success', 'Subscription successfully canceled');
+                        } elseif ('update' == $operation) {
+                            $subscription = $subscription->withQuantity(
+                                $request->request->get('quantity', $subscription->getQuantity())
+                            );
+
+                            $this->subscriptionClient->update($billingProfile, $subscription);
+                            $request->getSession()->getFlashBag()->add('success', 'Subscription successfully updated');
+
+                            $subscriptions[$subscriptionIndex] = $subscription;
+                        }
                     } catch (SubscriptionException $e) {
                         $request->getSession()->getFlashBag()->add('danger', $e->getMessage());
                     }

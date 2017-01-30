@@ -166,6 +166,41 @@ class SubscriptionContext implements Context
         throw new \RuntimeException('The subscription was not cancelled');
     }
 
+    /**
+     * @When I update my subscription :subscriptionUuid with a quantity of :quantity
+     */
+    public function iUpdateMySubscriptionWithAQuantityOf($subscriptionUuid, $quantity)
+    {
+        $this->response = $this->kernel->handle(Request::create('/account/billing-profile', 'POST', [
+            '_subscription_uuid' => $subscriptionUuid,
+            '_operation' => 'update',
+            'quantity' => $quantity,
+        ], [
+            'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
+        ]));
+    }
+
+    /**
+     * @Then the subscription :subscriptionUuid should have been updated with a quantity of :quantity
+     */
+    public function theSubscriptionShouldHaveBeenUpdatedWithAQuantityOf($subscriptionUuid, $quantity)
+    {
+        foreach ($this->tracedSubscriptionClient->getUpdatedSubscriptions() as $subscription) {
+            if ($subscription->getUuid() == $subscriptionUuid) {
+                if ($subscription->getQuantity() == $quantity) {
+                    return;
+                }
+
+                throw new \RuntimeException(sprintf(
+                    'Updated with a quantity of %d instead',
+                    $subscription->getQuantity()
+                ));
+            }
+        }
+
+        throw new \RuntimeException('The subscription was not updated');
+    }
+
     private function assertStatusCode(int $code)
     {
         if ($this->response->getStatusCode() != $code) {

@@ -17,6 +17,11 @@ class TracedSubscriptionClient implements SubscriptionClient
     private $canceledSubscriptions = [];
 
     /**
+     * @var Subscription[]
+     */
+    private $updatedSubscriptions = [];
+
+    /**
      * @param SubscriptionClient $decoratedClient
      */
     public function __construct(SubscriptionClient $decoratedClient)
@@ -45,10 +50,30 @@ class TracedSubscriptionClient implements SubscriptionClient
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function update(UserBillingProfile $billingProfile, Subscription $subscription): Subscription
+    {
+        $subscription = $this->decoratedClient->update($billingProfile, $subscription);
+
+        $this->updatedSubscriptions[] = $subscription;
+
+        return $subscription;
+    }
+
+    /**
      * @return Subscription[]
      */
     public function getCanceledSubscriptions(): array
     {
         return $this->canceledSubscriptions;
+    }
+
+    /**
+     * @return Subscription[]
+     */
+    public function getUpdatedSubscriptions(): array
+    {
+        return $this->updatedSubscriptions;
     }
 }
