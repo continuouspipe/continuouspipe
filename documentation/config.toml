@@ -25,8 +25,8 @@ PygmentsCodeFences = true
 	permalink = "#"
 
 	# Custom assets
-	custom_css = []
-	custom_js  = []
+	custom_css = [ "stylesheets/custom.css" ]
+	custom_js  = [ "javascripts/jquery-3.1.1.min.js" , "javascripts/menu.js" ]
 
 	# Syntax highlighting theme
 	highlight_css  = ""
@@ -43,6 +43,24 @@ PygmentsCodeFences = true
 	twitter = "continuouspipe"
 	github  = "continuouspipe"
 	email   = "support@continuouspipe.io"
+
+[[menu.main]]
+	name   = "Quick Start"
+	url    = "quick-start/"
+	identifier = "quick-start"
+	weight = "-10"
+
+[[menu.main]]
+	name   = "Basics"
+	url    = "basics/"
+	identifier = "basics"
+	weight = "-5"
+
+[[menu.main]]
+	name   = "Configuration"
+	url    = "configuration/"
+	identifier = "configuration"
+	weight = "0"
 
 [blackfriday]
 	smartypants	= true
