@@ -1,5 +1,4 @@
 ---
-date: 2017-01-26T14:08:53Z
 title: Configuration files
 menu:
   main:

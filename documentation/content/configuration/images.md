@@ -1,5 +1,4 @@
 ---
-date: 2017-01-26T14:09:26Z
 title: Building the Docker Images
 menu:
   main:

@@ -1,5 +1,4 @@
 ---
-date: 2017-01-26T14:09:46Z
 title: Commands
 LinkTitle: Running commands
 menu:

@@ -1,5 +1,4 @@
 ---
-date: 2017-01-26T14:09:09Z
 title: Task List
 LinkTitle: Tasks overview
 menu:

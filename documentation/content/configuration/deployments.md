@@ -1,5 +1,4 @@
 ---
-date: 2017-01-26T14:09:38Z
 title: Deployments
 LinkTitle: Deploying Services # notice how this overrides what's shown in the menu
 

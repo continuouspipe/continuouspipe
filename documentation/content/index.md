@@ -1,5 +1,4 @@
 ---
-date: 2017-01-30T18:06:00Z
 title: What is ContinuousPipe?
 type: index
 weight: 0

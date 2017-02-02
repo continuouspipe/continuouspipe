@@ -1,5 +1,4 @@
 ---
-date: 2017-02-01T14:37:31Z
 title: Configuring a Cluster
 tags: [ "Cluster", "Team", "Kubernetes" ]
 menu:

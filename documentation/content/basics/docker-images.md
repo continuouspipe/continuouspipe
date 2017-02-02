@@ -1,5 +1,4 @@
 ---
-date: 2017-01-25T10:40:21Z
 title: Docker Images
 menu:
   main:

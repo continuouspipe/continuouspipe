@@ -1,5 +1,4 @@
 ---
-date: 2017-01-31T14:26:26Z
 title: Creating a Team
 tags: [ "Team" ]
 menu:
@@ -23,3 +22,6 @@ The Team will not be created until a unique identifier is found. You will be tol
 The new Team will now be visible in the Team overview screen.
 
 ![](/images/quick-start/team-overview-new-team.png)
+
+## TODO:
+- [ ] Replace first screenshot with one showing no teams, demonstrating "action prompt"

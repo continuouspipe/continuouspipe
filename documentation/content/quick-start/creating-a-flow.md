@@ -1,5 +1,4 @@
 ---
-date: 2017-01-31T14:26:26Z
 title: Creating a Flow
 tags: [ "Flow", "Github", "Bitbucket", "Google", "code repository" ]
 menu:

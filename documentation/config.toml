@@ -62,6 +62,12 @@ PygmentsCodeFences = true
 	identifier = "configuration"
 	weight = "0"
 
+[[menu.main]]
+	name   = "FAQ"
+	url    = "faq/"
+	identifier = "faq"
+	weight = "10"
+
 [blackfriday]
 	smartypants	= true
 	fractions = true

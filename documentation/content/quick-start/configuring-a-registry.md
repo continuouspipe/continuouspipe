@@ -1,5 +1,4 @@
 ---
-date: 2017-02-01T14:52:10Z
 title: Configuring a Registry
 tags: [ "Registry", "Team", "Docker" ]
 menu:
@@ -19,7 +18,7 @@ You will then be asked to choose from the following:
 * **Quay.io Registry**
 * **Custom Registry**
 
-Foe each of these options you will first need to have set up an account. You will then need to supply the following credentials: 
+**For each of these options you will first need to have set up an account with the respective service.** You will then need to supply the following credentials: 
 
 * **Username** - The username to access the registry
 * **Email** - The email address to access the registry
