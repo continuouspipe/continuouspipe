@@ -50,5 +50,6 @@ class AppExtension extends Extension
         $loader->load('recover/timed-out-tides.xml');
         $loader->load('recover/cancel.xml');
         $loader->load('github/integration.xml');
+        $loader->load('command.xml');
     }
 }

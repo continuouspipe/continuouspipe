@@ -1,5 +1,6 @@
 <?php
 
+use AppBundle\Command\Config\GenerateDocumentationCommand;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Environment\InitializedContextEnvironment;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
@@ -21,6 +22,8 @@ use ContinuousPipe\River\FlowContext as RiverFlowContext;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +31,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserTo
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use GitHub\WebHook\Model\Repository;
+use Symfony\Component\VarDumper\Test\VarDumperTestTrait;
 use Symfony\Component\Yaml\Yaml;
 
 class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
@@ -99,6 +103,16 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var MessageBus
      */
     private $eventBus;
+
+    /**
+     * @var \Symfony\Component\Config\Definition\ConfigurationInterface
+     */
+    private $flowConfiguration;
+
+    /**
+     * @var string
+     */
+    private $output;
 
     /**
      * @param Kernel $kernel
@@ -775,6 +789,41 @@ EOF;
     public function getCurrentFlow()
     {
         return $this->currentFlow;
+    }
+
+
+    /**
+     * @Given the configuration schema is defined
+     */
+    public function theConfigurationSchemaIsDefined()
+    {
+        $this->flowConfiguration = new Flow\TestConfiguration();
+    }
+
+    /**
+     * @When I run the documentation generator console command
+     */
+    public function iRunTheDocumentationGeneratorConsoleCommand()
+    {
+        $input = new ArrayInput([]);
+        $output = new BufferedOutput();
+
+        $command = new GenerateDocumentationCommand('test:config:generate', $this->flowConfiguration);
+        $command->run($input, $output);
+
+        $this->output = $output->fetch();
+    }
+
+    /**
+     * @Then I should see the following output:
+     */
+    public function iShouldSeeTheFollowingOutput(PyStringNode $string)
+    {
+        if ($string->getRaw() !== $this->output) {
+            $diff = new Diff($string->getStrings(), explode("\n", $this->output));
+            $renderer = new Diff_Renderer_Text_Unified();
+            throw new \UnexpectedValueException($diff->render($renderer));
+        }
     }
 
     /**
