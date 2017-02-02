@@ -111,8 +111,20 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
                     ->useAttributeAsKey('name')
                     ->prototype('array')
                         ->children()
-                            ->scalarNode('image')->isRequired()->end()
-                            ->scalarNode('tag')->isRequired()->end()
+                            ->scalarNode('image')
+                                ->isRequired()
+                                ->validate()
+                                ->ifTrue($this->getDockerImageNameValidator())
+                                    ->thenInvalid('Invalid Docker image name.')
+                                ->end()
+                            ->end()
+                            ->scalarNode('tag')
+                                ->isRequired()
+                                ->validate()
+                                ->ifTrue($this->getDockerImageTagValidator())
+                                    ->thenInvalid('Invalid Docker image tag.')
+                                ->end()
+                            ->end()
                             ->scalarNode('build_directory')->defaultNull()->end()
                             ->scalarNode('docker_file_path')->defaultNull()->end()
                             ->enumNode('naming_strategy')
@@ -174,5 +186,53 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
                 $this->flattenEnvironmentVariables($service['environment'] ?: [])
             );
         }, $services);
+    }
+
+    /**
+     * Return a validator callback
+     *
+     * Docker image name reference @link https://github.com/docker/distribution/blob/master/reference/regexp.go#L53-L56.
+     *
+     * @return \Closure
+     */
+    private function getDockerImageNameValidator()
+    {
+        return function ($imageName) {
+            $domainComponentRegexp = '(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])';
+            $optionalDotRegexp = '(\.' . $domainComponentRegexp . ')?';
+            $optionalPortRegexp = '(?::[0-9]+)?';
+            $domainRegexp = $domainComponentRegexp . $optionalDotRegexp . $optionalPortRegexp;
+            $alphaNumericRegexp = '[a-z0-9]+';
+            $optionalSeparatorRegexp = '(?:[._]|__|[-]*)';
+            $nameComponentRegexp = $alphaNumericRegexp . '(?:'. $optionalSeparatorRegexp . $alphaNumericRegexp .')';
+            $pattern =
+                '#^'.
+                '(?:' . $domainRegexp . '\/)?' .
+                $nameComponentRegexp .
+                '(?:\/' . $nameComponentRegexp . ')*' .
+                '$#';
+
+            return 1 !== preg_match($pattern, $imageName);
+        };
+    }
+
+    /**
+     * Return a validator callback
+     *
+     * Docker image tag reference @link https://github.com/docker/distribution/blob/master/reference/regexp.go#L37.
+     *
+     * @return \Closure
+     */
+    private function getDockerImageTagValidator()
+    {
+        return function ($imageName) {
+            $tagRegexp = '[\w][\w.-]{0,127}';
+            $pattern =
+                '#^'.
+                $tagRegexp .
+                '$#';
+
+            return 1 !== preg_match($pattern, $imageName);
+        };
     }
 }
