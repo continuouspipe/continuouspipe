@@ -67,9 +67,9 @@ tasks:
 
 This YAML does the following:
 
-- it will configure the Docker image to be called `acme-anvils` and stored in an account at docker.io
-- it will configure the Docker image to be deployed to the `acme-products` cluster - this cluster identifier is defined when [configuring a cluster]({{< relref "configuring-a-cluster.md" >}})
-- it will configure the Kubernetes cluster to create a public load-balancer for the web service allowing public access
+- It will configure the Docker image to be called `acme-anvils` and stored in an account at docker.io
+- It will configure the Docker image to be deployed to the `acme-products` cluster - this cluster identifier is defined when [configuring a cluster]({{< relref "configuring-a-cluster.md" >}})
+- It will configure the Kubernetes cluster to create a public load-balancer for the web service allowing public access
 
 See [configuring deployments]({{< relref "configuration/deployments.md" >}}) for more documentation.
 
