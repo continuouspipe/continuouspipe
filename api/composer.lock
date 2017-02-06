@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8530890bae1559dd44536ba5cb739228",
-    "content-hash": "eb45761879692bb40b340fc408ed4540",
+    "hash": "202a1185a0c41e118fe0bf27bafb3817",
+    "content-hash": "389291686f78cf32f1dd87ca53cbf6e1",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -286,16 +286,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.3.0",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "7436749f68fc8ccea01a47f90ea12e8d7ce83ec6"
+                "reference": "74d0a669690cb583ed56a2bc049e40359fca32f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/7436749f68fc8ccea01a47f90ea12e8d7ce83ec6",
-                "reference": "7436749f68fc8ccea01a47f90ea12e8d7ce83ec6",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/74d0a669690cb583ed56a2bc049e40359fca32f8",
+                "reference": "74d0a669690cb583ed56a2bc049e40359fca32f8",
                 "shasum": ""
             },
             "require": {
@@ -315,10 +315,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.3.0",
+                "source": "https://github.com/continuouspipe/security/tree/2.3.1",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2016-12-26 21:10:53"
+            "time": "2017-02-06 18:10:23"
         },
         {
             "name": "continuous-pipe/worker-bundle",

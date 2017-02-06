@@ -5,6 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="security.authenticator.client" class="ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient" />
+        <service id="security.authenticator.client.in_memory" class="ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient" />
+        <service id="security.authenticator.client.http" alias="security.authenticator.client.in_memory" />
     </services>
 </container>
