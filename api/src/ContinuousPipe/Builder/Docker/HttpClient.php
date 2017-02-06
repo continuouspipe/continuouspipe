@@ -5,9 +5,9 @@ namespace ContinuousPipe\Builder\Docker;
 use Docker\API\Model\ContainerConfig;
 use Docker\API\Model\ContainerCreateResult;
 use Docker\Stream\TarStream;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Stream;
 use GuzzleHttp\Psr7\StreamWrapper;
+use Http\Client\Exception\RequestException;
 use LogStream\LoggerFactory;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use ContinuousPipe\Builder\Docker\HttpClient\OutputHandler;
@@ -252,7 +252,13 @@ class HttpClient implements DockerFacade, DockerImageReader
                 'path' => $path,
             ]);
         } catch (RequestException $e) {
-            throw new DockerException('Unable to get the archive', $e->getCode(), $e);
+            if ($e->getCode() == 404) {
+                $message = 'The path "%s" is not found in the Docker container';
+            } else {
+                $message = 'Unable to read the artifact from the container: '.$e->getMessage();
+            }
+
+            throw new DockerException($message, $e->getCode(), $e);
         }
 
         return Archive\FileSystemArchive::fromStream(
