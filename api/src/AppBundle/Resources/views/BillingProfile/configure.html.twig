@@ -44,7 +44,7 @@
 {% for subscription in subscriptions %}
 <h2>My subscription</h2>
 <form action="" method="POST">
-<input type="hidden" name="_subscription_uuid" value="{{ subscription.uuid }}" />
+<input type="hidden" name="_subscription_uuid" value="{{ subscription.uuid | escape('html_attr') }}" />
 <div class="row">
     <div class="col-md-6">
         <div class="panel panel-default">
@@ -52,15 +52,15 @@
                 <h3 class="panel-title">Current plan</h3>
             </div>
             <div class="panel-body">
-                <p>You subscribed to <strong data-current-plan-quantity="{{ subscription.quantity }}">{{ subscription.quantity }}</strong> <strong>{{ subscription.plan }}</strong> plan(s).</p>
+                <p>You subscribed to <strong data-current-plan-quantity="{{ subscription.quantity | escape('html_attr') }}">{{ subscription.quantity | escape('html') }}</strong> <strong>{{ subscription.plan | escape('html') }}</strong> plan(s).</p>
                 <p>
-                    Your subscription is <strong>{{ subscription.state }}</strong>
+                    Your subscription is <strong>{{ subscription.state | escape('html') }}</strong>
                     {% if subscription.expirationDate is not null %}and will expire on {{ subscription.expirationDate | date('d/m/Y H:i:s') }}.{% endif %}
                 </p>
                 <p>The current billing period started on {{ subscription.currentBillingPeriodStartedAt | date('d/m/Y H:i:s') }} and will end on {{ subscription.currentBillingPeriodEndsAt | date('d/m/Y H:i:s') }}</p>
             </div>
             <div class="panel-footer">
-                <a href="{{ subscription.hostedDetailsUrl }}" class="btn btn-primary" data-action="details">Manage & Details</a>
+                <a href="{{ subscription.hostedDetailsUrl | escape('html_attr') }}" class="btn btn-primary" data-action="details">Manage &amp; Details</a>
             </div>
         </div>
     </div>
@@ -71,7 +71,7 @@
             </div>
             <div class="panel-body">
                 <p>Select the number of users you would like to upgrade or downgrade to.</p>
-                <input id="subscription-{{ subscription.uuid }}-users-slider" name="quantity" type="text" style="width: 100%" value="{{ subscription.quantity }}" />
+                <input id="subscription-{{ subscription.uuid | escape('html_attr') }}-users-slider" name="quantity" type="text" style="width: 100%" value="{{ subscription.quantity | escape('html_attr') }}" />
             </div>
             <div class="panel-footer">
                 <button type="submit" name="_operation" value="update" class="btn btn-primary" data-action="update">Update</button>
@@ -85,7 +85,7 @@
             <div class="panel-body">
                 <form action="" method="POST">
                     <button type="submit" name="_operation" value="cancel" class="pull-right btn btn-danger" data-action="cancel">Cancel</button>
-                    <input type="hidden" name="_subscription_uuid" value="{{ subscription.uuid }}" />
+                    <input type="hidden" name="_subscription_uuid" value="{{ subscription.uuid | escape('html_attr') }}" />
                     <p>You can cancel your subscription by clicking on this button.</p>
                 </form>
             </div>
@@ -109,12 +109,12 @@ new Slider("#subscription-users-slider", {
 {% endif %}
 
 {% for subscription in subscriptions %}
-new Slider("#subscription-{{ subscription.uuid }}-users-slider", {
+new Slider("#subscription-{{ subscription.uuid | escape('js') }}-users-slider", {
     ticks:           [1, 2, 5,  10, 15, 20, 25, 30, 40, 50, 65, 80, 100, 125, 150, 200, 250, 300, 500],
     ticks_positions: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60,  67,   75, 82,  88,  95,  100],
     ticks_labels:    [1, 2, 5,  10, 15, 20, 25, 30, 40, 50, 65, 80, 100, 125, 150, 200, 250, 300, 500],
     ticks_snap_bounds: 500,
-    value: {{ subscription.quantity }}
+    value: {{ subscription.quantity | escape('js') }}
 });
 {% endfor %}
 </script>
