@@ -213,13 +213,19 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
         $step = (new BuildRequestStep())
             ->withContext(new Context($stepConfiguration['docker_file_path'], $stepConfiguration['build_directory']))
             ->withEnvironment($this->flattenEnvironmentVariables($stepConfiguration['environment'] ?: []))
-            ->withReadArtifacts(array_map(function (array $artifactConfiguration) use ($context) {
-                return $this->transformArtifact($context, $artifactConfiguration);
-            }, $stepConfiguration['read_artifacts']))
-            ->withWriteArtifacts(array_map(function (array $artifactConfiguration) use ($context) {
-                return $this->transformArtifact($context, $artifactConfiguration);
-            }, $stepConfiguration['write_artifacts']))
         ;
+
+        if (isset($stepConfiguration['read_artifacts'])) {
+            $step = $step->withReadArtifacts(array_map(function (array $artifactConfiguration) use ($context) {
+                return $this->transformArtifact($context, $artifactConfiguration);
+            }, $stepConfiguration['read_artifacts']));
+        }
+
+        if (isset($stepConfiguration['write_artifacts'])) {
+            $step = $step->withWriteArtifacts(array_map(function (array $artifactConfiguration) use ($context) {
+                return $this->transformArtifact($context, $artifactConfiguration);
+            }, $stepConfiguration['write_artifacts']));
+        }
 
         if (isset($stepConfiguration['image']) && isset($stepConfiguration['tag'])) {
             $step = $step->withImage(new Image($stepConfiguration['image'], $stepConfiguration['tag']));
