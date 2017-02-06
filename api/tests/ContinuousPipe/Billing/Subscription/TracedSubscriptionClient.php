@@ -14,7 +14,7 @@ class TracedSubscriptionClient implements SubscriptionClient
     /**
      * @var Subscription[]
      */
-    private $canceledSubscriptions = [];
+    private $cancelledSubscriptions = [];
 
     /**
      * @var Subscription[]
@@ -44,7 +44,7 @@ class TracedSubscriptionClient implements SubscriptionClient
     {
         $subscription = $this->decoratedClient->cancel($billingProfile, $subscription);
 
-        $this->canceledSubscriptions[] = $subscription;
+        $this->cancelledSubscriptions[] = $subscription;
 
         return $subscription;
     }
@@ -64,9 +64,9 @@ class TracedSubscriptionClient implements SubscriptionClient
     /**
      * @return Subscription[]
      */
-    public function getCanceledSubscriptions(): array
+    public function getCancelledSubscriptions(): array
     {
-        return $this->canceledSubscriptions;
+        return $this->cancelledSubscriptions;
     }
 
     /**

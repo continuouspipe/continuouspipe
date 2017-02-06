@@ -29,13 +29,19 @@ class BillingProfileController
      * @var SubscriptionClient
      */
     private $subscriptionClient;
+    /**
+     * @var string
+     */
+    private $recurlySubdomain;
 
     public function __construct(
         UserBillingProfileRepository $userBillingProfileRepository,
-        SubscriptionClient $subscriptionClient
+        SubscriptionClient $subscriptionClient,
+        string $recurlySubdomain
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
         $this->subscriptionClient = $subscriptionClient;
+        $this->recurlySubdomain = $recurlySubdomain;
     }
 
     /**
@@ -65,7 +71,8 @@ class BillingProfileController
             if ('subscribe' === $operation) {
                 // Redirect to the subscription page
                 return new RedirectResponse(sprintf(
-                    'https://continuouspipe.recurly.com/subscribe/%s/%s/%s?%s',
+                    'https://%s.recurly.com/subscribe/%s/%s/%s?%s',
+                    $this->recurlySubdomain,
                     'single-user', // Plan name
                     $billingProfile->getUuid()->toString(),
                     urlencode($user->getUsername()),
@@ -89,7 +96,7 @@ class BillingProfileController
                     try {
                         if ('cancel' == $operation) {
                             $this->subscriptionClient->cancel($billingProfile, $subscription);
-                            $request->getSession()->getFlashBag()->add('success', 'Subscription successfully canceled');
+                            $request->getSession()->getFlashBag()->add('success', 'Subscription successfully cancelled');
                         } elseif ('update' == $operation) {
                             $subscription = $subscription->withQuantity(
                                 $request->request->get('quantity', $subscription->getQuantity())

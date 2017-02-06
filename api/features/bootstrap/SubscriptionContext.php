@@ -157,7 +157,7 @@ class SubscriptionContext implements Context
      */
     public function theSubscriptionShouldHaveBeenCancelled($subscriptionUuid)
     {
-        foreach ($this->tracedSubscriptionClient->getCanceledSubscriptions() as $subscription) {
+        foreach ($this->tracedSubscriptionClient->getCancelledSubscriptions() as $subscription) {
             if ($subscription->getUuid() == $subscriptionUuid) {
                 return;
             }

@@ -32,7 +32,7 @@ Feature:
     When I configure my billing profile
     Then I should be able to cancel my subscription
 
-  Scenario: I do have a subscription, I cancel the it
+  Scenario: I do have a subscription, I cancel it
     Given the billing account "00000000-0000-0000-0000-000000000000" have the following subscriptions:
       | uuid                                 | plan        | quantity | state  |
       | 00000000-1111-1111-1111-000000000000 | single-user | 10       | active |
