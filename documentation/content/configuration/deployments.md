@@ -39,15 +39,17 @@ If you have a [`build` task]({{< relref "tasks.md" >}}) before the deployment ta
 If it's not the case, the first way is to explicitly mentioning the image name. Note that this value is automatically guessed if you have a service having the same name in your project's `docker-compose.yml` file.
 
 ``` yaml
-source:
-    image: mysql
-    tag: latest
+specification:
+    source:
+        image: mysql
+        tag: latest
 ```
 The last option, if for instance you are deploying the same image but with different runtime commands, you can use a source from a given service:
 
 ``` yaml
-source:
-    from_service: web
+specification:
+    source:
+        from_service: web
 ```
 
 ## Environment name
