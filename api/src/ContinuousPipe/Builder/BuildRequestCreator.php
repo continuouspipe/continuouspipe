@@ -3,8 +3,10 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
+use ContinuousPipe\Builder\Request\BuildRequestStep;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
+use ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration;
 use LogStream\Log;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
@@ -69,22 +71,17 @@ class BuildRequestCreator
             'tideUuid' => (string) $tideUuid,
         ], UrlGeneratorInterface::ABSOLUTE_PATH);
 
-        $buildRequests = [];
-        foreach ($configuration->getServices() as $serviceName => $service) {
-            $image = new Image($service->getImage(), $service->getTag());
-            $buildRequests[] = new BuildRequest(
-                $this->buildRequestSourceResolver->getSource($codeReference),
-                $image,
-                new Context(
-                    $service->getDockerFilePath(),
-                    $service->getBuildDirectory()
-                ),
+        $codeBaseSource = $this->buildRequestSourceResolver->getSource($codeReference);
+        $buildRequests = array_map(function (ServiceConfiguration $serviceConfiguration) use ($codeBaseSource, $address, $parentLog, $credentialsBucketUuid) {
+            return new BuildRequest(
+                array_map(function (BuildRequestStep $step) use ($codeBaseSource) {
+                    return $step->withSource($codeBaseSource);
+                }, $serviceConfiguration->getBuilderSteps()),
                 Notification::withHttp(HttpNotification::fromAddress($address)),
                 Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLog->getId())),
-                $service->getEnvironment(),
                 $credentialsBucketUuid
             );
-        }
+        }, $configuration->getServices());
 
         return $buildRequests;
     }

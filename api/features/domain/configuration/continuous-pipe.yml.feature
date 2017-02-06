@@ -109,3 +109,60 @@ Feature:
     """
     When a tide is started
     Then the tide should be failed
+
+  Scenario: Image name in the YAML file is not valid
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        image: ${invalid-image-name}
+                        tag: 1.0.0
+    """
+    When a tide is started
+    Then the tide should be failed
+    And a log containing 'The name "${invalid-image-name}" of the Docker image is invalid.' should be created
+
+  Scenario: Image name in the YAML file is not valid
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        image: registry.co/something-without-organisation
+    """
+    When a tide is started
+    Then the tide should be failed
+
+  Scenario: Image tag in the YAML file is not valid
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        image: foo/bar
+                        tag: .1.0.0
+    """
+    When a tide is started
+    Then the tide should be failed
+    And a log containing 'The tag ".1.0.0" of the Docker image is invalid.' should be created
+
+  Scenario: Image tag in the YAML file is not valid
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        image: foo/bar
+                        tag: 1.0/0
+    """
+    When a tide is started
+    Then the tide should be failed

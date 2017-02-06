@@ -8,23 +8,14 @@ use ContinuousPipe\Builder\Logging;
 use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Repository;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class BuildRequest
 {
     /**
-     * @var Repository
+     * @var BuildRequestStep[]
      */
-    private $repository;
-
-    /**
-     * @var Archive
-     */
-    private $archive;
-
-    /**
-     * @var Image
-     */
-    private $image;
+    private $steps;
 
     /**
      * @var Notification
@@ -37,69 +28,30 @@ class BuildRequest
     private $logging;
 
     /**
-     * @var Context
-     */
-    private $context;
-
-    /**
-     * @var array
-     */
-    private $environment;
-
-    /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $credentialsBucket;
 
     /**
-     * @param Repository|Archive $repositoryOrArchive
-     * @param Image              $image
-     * @param Context            $context
+     * @param BuildRequestStep[] $steps
      * @param Notification       $notification
      * @param Logging            $logging
-     * @param array              $environment
-     * @param Uuid               $credentialsBucket
+     * @param UuidInterface      $credentialsBucket
      */
-    public function __construct($repositoryOrArchive, Image $image, Context $context = null, Notification $notification = null, Logging $logging = null, array $environment = [], Uuid $credentialsBucket = null)
+    public function __construct(array $steps, Notification $notification, Logging $logging, UuidInterface $credentialsBucket)
     {
-        if ($repositoryOrArchive instanceof Repository) {
-            $this->repository = $repositoryOrArchive;
-        } elseif ($repositoryOrArchive instanceof Archive) {
-            $this->archive = $repositoryOrArchive;
-        } else {
-            throw new \InvalidArgumentException('The first argument needs to be a repository or an archive');
-        }
-
-        $this->image = $image;
+        $this->steps = $steps;
         $this->notification = $notification;
         $this->logging = $logging;
-        $this->context = $context;
-        $this->environment = $environment;
         $this->credentialsBucket = $credentialsBucket;
     }
 
     /**
-     * @return Repository|null
+     * @return BuildRequestStep[]
      */
-    public function getRepository()
+    public function getSteps(): array
     {
-        return $this->repository;
-    }
-
-    /**
-     * @return Archive|null
-     */
-    public function getArchive()
-    {
-        return $this->archive;
-    }
-
-    /**
-     * @return Image
-     */
-    public function getImage()
-    {
-        return $this->image;
+        return $this->steps ?: [];
     }
 
     /**
@@ -119,23 +71,7 @@ class BuildRequest
     }
 
     /**
-     * @return Context
-     */
-    public function getContext()
-    {
-        return $this->context;
-    }
-
-    /**
-     * @return array
-     */
-    public function getEnvironment()
-    {
-        return $this->environment ?: [];
-    }
-
-    /**
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getCredentialsBucket()
     {

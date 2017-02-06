@@ -297,3 +297,63 @@ Feature:
                                 image: docker.io/inviqasession/cp-website
                                 tag: 3b0110193e36b317207909163d0a582f6f568cf8
     """
+
+  Scenario: I can explicitly defines the source of a component from the built step, even with steps
+    Given I have a "docker-compose.yml" file in my repository that contains:
+    """
+    api:
+        build: .
+    worker:
+        build: .
+    """
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        steps:
+                            first:
+                                naming_strategy: branch
+                                image: foo/bar
+
+        deploy:
+            deploy:
+                cluster: foo
+                services:
+                    api: ~
+                    worker:
+                        specification:
+                            source:
+                                from_service: api
+                            environment_variables:
+                                - name: FOO
+                                  value: BAR
+    """
+    When the configuration of the tide is generated for the branch "my-feature"
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        steps:
+                            first:
+                                tag: my-feature
+        deploy:
+            deploy:
+                cluster: foo
+                services:
+                    api:
+                        specification:
+                            source:
+                                image: foo/bar
+                                tag: my-feature
+                    worker:
+                        specification:
+                            source:
+                                image: foo/bar
+                                tag: my-feature
+    """

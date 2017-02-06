@@ -81,42 +81,4 @@ class GetImageNameFromBuiltServices implements ConfigurationEnhancer
             }
         });
     }
-
-    /**
-     * @param array  $configs
-     * @param string $selector
-     *
-     * @return array
-     */
-    private function expandSelector(array $configs, $selector)
-    {
-        $wildcardedSelector = explode('[*]', $selector);
-        if (count($wildcardedSelector) == 1) {
-            return [$selector];
-        }
-
-        $firstSelector = array_shift($wildcardedSelector);
-        $selectorEnd = implode('[*]', $wildcardedSelector);
-
-        $propertyAccessor = PropertyAccess::createPropertyAccessor();
-        $paths = [];
-
-        foreach ($configs as $config) {
-            try {
-                $value = $propertyAccessor->getValue($config, $firstSelector);
-            } catch (UnexpectedTypeException $e) {
-                continue;
-            }
-
-            if (!is_array($value)) {
-                continue;
-            }
-
-            foreach ($value as $key => $v) {
-                $paths = array_merge($paths, $this->expandSelector($configs, $firstSelector.'['.$key.']'.$selectorEnd));
-            }
-        }
-
-        return array_unique($paths);
-    }
 }

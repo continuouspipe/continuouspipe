@@ -34,6 +34,7 @@ use LogStream\Node\Text;
 use LogStream\Tree\TreeLog;
 use phpseclib\Crypt\Random;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
 use ContinuousPipe\River\Event\TideFailed;
@@ -169,13 +170,13 @@ class TideContext implements Context
      * @When a tide is created for the branch :branch
      * @Given a tide is created for branch :branch and commit :sha
      */
-    public function aTideIsCreatedForBranchAndCommit($branch = null, $sha = null)
+    public function aTideIsCreatedForBranchAndCommit($branch = null, $sha = null, Uuid $uuid = null)
     {
         if (null === $this->flowContext->getCurrentFlow()) {
             $this->flowContext->iHaveAFlow();
         }
 
-        $this->createTide($branch ?: 'master', $sha);
+        $this->createTide($branch ?: 'master', $sha, $uuid);
     }
 
     /**
@@ -209,11 +210,12 @@ EOF;
 
     /**
      * @When a tide is started
+     * @When a tide is started with the UUID :uuid
      */
-    public function aTideIsStarted()
+    public function aTideIsStarted($uuid = null)
     {
-        if (null === $this->tideUuid) {
-            $this->aTideIsCreatedForBranchAndCommit();
+        if (null === $this->tideUuid || $uuid !== null) {
+            $this->aTideIsCreatedForBranchAndCommit(null, null, null !== $uuid ? Uuid::fromString($uuid) : null);
         }
 
         $this->startTide();
@@ -670,18 +672,17 @@ EOF;
      */
     public function theImageTagShouldBeBuilt($tag)
     {
-        $buildStartedEvents = $this->getEventsOfType(BuildStarted::class);
-        $matchingEvents = array_filter($buildStartedEvents, function (BuildStarted $event) use ($tag) {
+        $foundTags = [];
+
+        foreach ($this->getEventsOfType(BuildStarted::class) as $event) {
             $buildRequest = $event->getBuild()->getRequest();
 
-            return $buildRequest->getImage()->getTag() == $tag;
-        });
+            foreach ($buildRequest->getSteps() as $step) {
+                $foundTags[] = $step->getImage()->getTag();
+            }
+        }
 
-        if (count($matchingEvents) == 0) {
-            $foundTags = array_map(function (BuildStarted $event) {
-                return $event->getBuild()->getRequest()->getImage()->getTag();
-            }, $buildStartedEvents);
-
+        if (false === array_search($tag, $foundTags)) {
             throw new \RuntimeException(sprintf(
                 'No built request for tag "%s" found but found %s',
                 $tag,
@@ -1379,7 +1380,7 @@ EOF;
      */
     private function factoryTide($branch = 'master', $sha = null, Uuid $uuid = null)
     {
-        $generationRequest = $this->createGenerationRequest($branch, $sha);
+        $generationRequest = $this->createGenerationRequest($branch, $sha, $uuid);
 
         $this->commandBus->handle(new GenerateTides($generationRequest));
         $tides = $this->viewTideRepository->findByGenerationUuid(
@@ -1484,10 +1485,11 @@ EOF;
     /**
      * @param string $branch
      * @param string $sha
+     * @param UuidInterface $uuid
      *
      * @return TideGenerationRequest
      */
-    private function createGenerationRequest($branch, $sha): TideGenerationRequest
+    private function createGenerationRequest($branch, $sha, UuidInterface $uuid = null): TideGenerationRequest
     {
         if (null === ($flow = $this->flowContext->getCurrentFlow())) {
             $flow = $this->flowContext->iHaveAFlow();
@@ -1503,7 +1505,8 @@ EOF;
                 $sha,
                 $branch
             ),
-            TideGenerationTrigger::user($flow->getUser())
+            TideGenerationTrigger::user($flow->getUser()),
+            $uuid
         );
         return $generationRequest;
     }

@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="generate_documentation_command.default_name">app:config:documentation</parameter>
+    </parameters>
+    <services>
+        <service id="river.console.config.generate_documentation" class="AppBundle\Command\Config\GenerateDocumentationCommand">
+            <tag name="console.command" />
+            <argument>%generate_documentation_command.default_name%</argument>
+            <argument type="service" id="river.flow.configuration" />
+        </service>
+        <service id="river.flow.configuration" class="ContinuousPipe\River\Flow\Configuration">
+            <argument type="service" id="river.task_factory_registry" />
+        </service>
+    </services>
+</container>

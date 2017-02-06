@@ -72,3 +72,22 @@ Feature:
       | name | value |
       | FOO  | BAZ   |
       | BAR  | FOO   |
+
+  Scenario: Build with multiple steps
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    first:
+                        steps:
+                            - docker_file_path: ./Buildfile
+                            - docker_file_path: ./Dockerfile
+                              image: sroze/image
+    """
+    When a tide is started with the UUID "00000000-0000-0000-0000-000000000000"
+    Then the build should be started with 2 steps
+    And the step #0 of the build should be started with the Dockerfile path "./Buildfile"
+    And the step #1 of the build should be started with the Dockerfile path "./Dockerfile"
+    And the step #1 of the build should be started with the image name "sroze/image"

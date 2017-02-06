@@ -79,7 +79,7 @@ class TideFactory
         $trigger = $request->getGenerationTrigger();
 
         $events = new EventCollection();
-        $tideUuid = $tideUuid ?: Uuid::uuid4();
+        $tideUuid = $tideUuid ?: $request->getTargetTideUuid() ?: Uuid::uuid4();
         $tideContext = TideContext::createTide(
             $flow->getUuid(),
             $flow->getTeam(),

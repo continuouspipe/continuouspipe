@@ -34,22 +34,36 @@ class AddDefaultBuildTag implements ConfigurationEnhancer
         $builtServiceNames = $this->getServiceNames($configs, array_keys($buildPaths));
         foreach ($buildPaths as $path => $taskType) {
             foreach ($builtServiceNames as $serviceName) {
-                // Get the image name values
-                $imageNamePath = $path.'[services]['.$serviceName.'][image]';
-                $imageTagPath = $path.'[services]['.$serviceName.'][tag]';
-                $namingStrategyPath = $path.'[services]['.$serviceName.'][naming_strategy]';
+                $pathPrefixes = $this->expandSelector($configs, $path.'[services]['.$serviceName.'][steps][*]');
+                array_unshift($pathPrefixes, $path.'[services]['.$serviceName.']');
 
-                $values = $this->getValuesAtPath($configs, $imageNamePath);
+                foreach ($pathPrefixes as $pathPrefix) {
+                    // Get the image name values
+                    $values = $this->getValuesAtPath($configs, $pathPrefix.'[image]');
 
-                // If there's no value, we can't add the tag
-                if (count($values) == 0) {
-                    continue;
-                }
+                    // If there's no image name defined, we won't add the tag
+                    if (count($values) == 0) {
+                        // Add a placeholder value to ensure that the order of the steps is kept
+                        $propertyAccessor->setValue(
+                            $enhancedConfig,
+                            $pathPrefix,
+                            []
+                        );
 
-                // If there's no image name with tag name, then add one
-                $tags = $this->getValuesAtPath($configs, $imageTagPath);
-                if (count($tags) == 0) {
-                    $propertyAccessor->setValue($enhancedConfig, $imageTagPath, $this->getDefaultImageTag($codeReference, $this->getNamingStrategy($configs, $namingStrategyPath)));
+                        continue;
+                    }
+
+                    // If there's no image name with tag name, then add one
+                    $imageTagPath = $pathPrefix.'[tag]';
+                    $tags = $this->getValuesAtPath($configs, $imageTagPath);
+                    if (count($tags) == 0) {
+                        $tag = $this->getDefaultImageTag(
+                            $codeReference,
+                            $this->getNamingStrategy($configs, $pathPrefix.'[naming_strategy]')
+                        );
+
+                        $propertyAccessor->setValue($enhancedConfig, $imageTagPath, $tag);
+                    }
                 }
             }
         }
