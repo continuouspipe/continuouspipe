@@ -7,7 +7,7 @@ default:
             contexts:
                 - SecurityContext:
                     - @security.token_storage
-                    - @security.authenticator.client
+                    - @security.authenticator.client.in_memory
                     - @kernel
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
@@ -35,7 +35,7 @@ default:
                     - @kernel
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
-                    - @security.authenticator.client
+                    - @security.authenticator.client.in_memory
                     - @river.pipe_client.fake
                     - @river.pipe_client
                     - @authenticator.team_repository
@@ -112,7 +112,7 @@ default:
                 # Common contexts
                 - SecurityContext:
                     - @security.token_storage
-                    - @security.authenticator.client
+                    - @security.authenticator.client.in_memory
                     - @kernel
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
@@ -140,7 +140,7 @@ default:
                     - @kernel
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
-                    - @security.authenticator.client
+                    - @security.authenticator.client.in_memory
                     - @river.pipe_client.fake
                     - @river.pipe_client
                     - @authenticator.team_repository
@@ -203,7 +203,7 @@ default:
                 # Common contexts
                 - SecurityContext:
                     - @security.token_storage
-                    - @security.authenticator.client
+                    - @security.authenticator.client.in_memory
                     - @kernel
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
@@ -231,7 +231,7 @@ default:
                     - @kernel
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
-                    - @security.authenticator.client
+                    - @security.authenticator.client.in_memory
                     - @river.pipe_client.fake
                     - @river.pipe_client
                     - @authenticator.team_repository
@@ -282,7 +282,7 @@ default:
 
     gherkin:
         filters:
-            tags: "~@wip"
+            tags: "~@wip && ~@onlySmoke"
 
 smoke:
     suites:
@@ -290,13 +290,13 @@ smoke:
             contexts:
                 - SecurityContext:
                     - @security.token_storage
-                    - @security.authenticator.client
+                    - @security.authenticator.client.in_memory
                     - @kernel
                 - FlowContext:
                     - @kernel
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
-                    - @security.authenticator.client
+                    - @security.authenticator.client.in_memory
                     - @river.pipe_client.fake
                     - @river.pipe_client
                     - @authenticator.team_repository

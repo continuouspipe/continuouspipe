@@ -40,7 +40,7 @@ final class PortIdentifier
      */
     public function toString()
     {
-       return (string)$this;
+        return (string)$this;
     }
 
     /**
