@@ -3,8 +3,7 @@ Feature:
   As a user
   I want to be able to have a build in many different steps
 
-  @wip
-  Scenario:
+  Scenario: Uses read & write artifacts
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:

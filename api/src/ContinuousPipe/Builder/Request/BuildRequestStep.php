@@ -37,6 +37,16 @@ class BuildRequestStep
     private $environment;
 
     /**
+     * @var Artifact[]
+     */
+    private $readArtifacts = [];
+
+    /**
+     * @var Artifact[]
+     */
+    private $writeArtifacts = [];
+
+    /**
      * @return Repository|null
      */
     public function getRepository()
@@ -66,6 +76,22 @@ class BuildRequestStep
     public function getContext()
     {
         return $this->context;
+    }
+
+    /**
+     * @return Artifact[]
+     */
+    public function getReadArtifacts(): array
+    {
+        return $this->readArtifacts;
+    }
+
+    /**
+     * @return Artifact[]
+     */
+    public function getWriteArtifacts(): array
+    {
+        return $this->writeArtifacts;
     }
 
     /**
@@ -111,6 +137,22 @@ class BuildRequestStep
         } else {
             throw new \InvalidArgumentException('The argument should be an archive or a repository.');
         }
+
+        return $step;
+    }
+
+    public function withReadArtifacts(array $artifacts) : self
+    {
+        $step = clone $this;
+        $step->readArtifacts = $artifacts;
+
+        return $step;
+    }
+
+    public function withWriteArtifacts(array $artifacts) : self
+    {
+        $step = clone $this;
+        $step->writeArtifacts = $artifacts;
 
         return $step;
     }

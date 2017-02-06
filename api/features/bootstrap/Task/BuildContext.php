@@ -500,6 +500,31 @@ class BuildContext implements Context
         }
     }
 
+    /**
+     * @Then the step #:stepIndex of the build should be started with a :artifactType artifact identified :artifactIdentifier on path :path
+     */
+    public function theStepOfTheBuildShouldBeStartedWithAWriteArtifactIdentifiedOnPath($stepIndex, $artifactType, $artifactIdentifier, $path)
+    {
+        if ($artifactType === 'read') {
+            $artifacts = $this->getBuildRequestStep(null, $stepIndex)->getReadArtifacts();
+        } elseif ($artifactType == 'write') {
+            $artifacts = $this->getBuildRequestStep(null, $stepIndex)->getWriteArtifacts();
+        } else {
+            throw new \RuntimeException(sprintf(
+                'Artifact type %s not supported',
+                $artifactType
+            ));
+        }
+
+        foreach ($artifacts as $artifact) {
+            if ($artifact->getIdentifier() == $artifactIdentifier && $artifact->getPath() == $path) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('Artifact not found');
+    }
+
     private function assertBuildIsStartedWithTheFollowingEnvironmentVariables($index, TableNode $environs)
     {
         $step = $this->getBuildRequestStep($index);

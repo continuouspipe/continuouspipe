@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Task\Build;
 use ContinuousPipe\Builder\BuildRequestCreator;
 use ContinuousPipe\Builder\Context;
 use ContinuousPipe\Builder\Image;
+use ContinuousPipe\Builder\Request\Artifact;
 use ContinuousPipe\Builder\Request\BuildRequestStep;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration;
@@ -14,6 +15,7 @@ use ContinuousPipe\River\Task\TaskFactory;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Task\TaskRunnerException;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\TideContext;
 use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -59,7 +61,7 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
             $this->commandBus,
             $this->loggerFactory,
             BuildContext::createBuildContext($taskContext),
-            $this->createConfiguration($configuration)
+            $this->createConfiguration($taskContext, $configuration)
         );
     }
 
@@ -160,10 +162,10 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
 
 
 
-    private function createConfiguration(array $configuration)
+    private function createConfiguration(TideContext $context, array $configuration)
     {
         return new BuildTaskConfiguration(
-            $this->createServiceConfiguration($configuration['services'])
+            $this->createServiceConfiguration($context, $configuration['services'])
         );
     }
 
@@ -183,14 +185,14 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
     }
 
     /**
-     * @param array $services
+     * @param TideContext $context
+     * @param array       $services
      *
      * @return ServiceConfiguration[]
      */
-    private function createServiceConfiguration(array $services)
+    private function createServiceConfiguration(TideContext $context, array $services)
     {
-        return array_map(function (array $serviceConfiguration) {
-
+        return array_map(function (array $serviceConfiguration) use ($context) {
             // If no step defined, then we simply use the first one.
             if (!isset($serviceConfiguration['steps']) || empty($serviceConfiguration['steps'])) {
                 $serviceConfiguration = [
@@ -200,17 +202,23 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
                 ];
             }
 
-            return new ServiceConfiguration(array_map(function (array $stepConfiguration) {
-                return $this->transformStep($stepConfiguration);
+            return new ServiceConfiguration(array_map(function (array $stepConfiguration) use ($context) {
+                return $this->transformStep($context, $stepConfiguration);
             }, array_values($serviceConfiguration['steps'])));
         }, $services);
     }
 
-    private function transformStep(array $stepConfiguration) : BuildRequestStep
+    private function transformStep(TideContext $context, array $stepConfiguration) : BuildRequestStep
     {
         $step = (new BuildRequestStep())
             ->withContext(new Context($stepConfiguration['docker_file_path'], $stepConfiguration['build_directory']))
             ->withEnvironment($this->flattenEnvironmentVariables($stepConfiguration['environment'] ?: []))
+            ->withReadArtifacts(array_map(function (array $artifactConfiguration) use ($context) {
+                return $this->transformArtifact($context, $artifactConfiguration);
+            }, $stepConfiguration['read_artifacts']))
+            ->withWriteArtifacts(array_map(function (array $artifactConfiguration) use ($context) {
+                return $this->transformArtifact($context, $artifactConfiguration);
+            }, $stepConfiguration['write_artifacts']))
         ;
 
         if (isset($stepConfiguration['image']) && isset($stepConfiguration['tag'])) {
@@ -218,6 +226,14 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
         }
 
         return $step;
+    }
+
+    private function transformArtifact(TideContext $context, array $artifactConfiguration) : Artifact
+    {
+        return new Artifact(
+            $context->getTideUuid()->toString() . '-' . $artifactConfiguration['name'],
+            $artifactConfiguration['path']
+        );
     }
 
     /**
@@ -297,6 +313,26 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
                     ->end()
                 ->end()
             ->end()
+            ->append($this->artifactsNode('read_artifacts'))
+            ->append($this->artifactsNode('write_artifacts'))
         ;
+    }
+
+    public function artifactsNode(string $name)
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root($name);
+
+        $node
+            ->requiresAtLeastOneElement()
+            ->prototype('array')
+                ->children()
+                    ->scalarNode('name')->isRequired()->end()
+                    ->scalarNode('path')->isRequired()->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
     }
 }

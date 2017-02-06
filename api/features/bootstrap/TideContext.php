@@ -34,6 +34,7 @@ use LogStream\Node\Text;
 use LogStream\Tree\TreeLog;
 use phpseclib\Crypt\Random;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use SimpleBus\Message\Bus\MessageBus;
 use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
 use ContinuousPipe\River\Event\TideFailed;
@@ -213,7 +214,7 @@ EOF;
      */
     public function aTideIsStarted($uuid = null)
     {
-        if (null === $this->tideUuid) {
+        if (null === $this->tideUuid || $uuid !== null) {
             $this->aTideIsCreatedForBranchAndCommit(null, null, null !== $uuid ? Uuid::fromString($uuid) : null);
         }
 
@@ -1379,7 +1380,7 @@ EOF;
      */
     private function factoryTide($branch = 'master', $sha = null, Uuid $uuid = null)
     {
-        $generationRequest = $this->createGenerationRequest($branch, $sha);
+        $generationRequest = $this->createGenerationRequest($branch, $sha, $uuid);
 
         $this->commandBus->handle(new GenerateTides($generationRequest));
         $tides = $this->viewTideRepository->findByGenerationUuid(
@@ -1484,10 +1485,11 @@ EOF;
     /**
      * @param string $branch
      * @param string $sha
+     * @param UuidInterface $uuid
      *
      * @return TideGenerationRequest
      */
-    private function createGenerationRequest($branch, $sha): TideGenerationRequest
+    private function createGenerationRequest($branch, $sha, UuidInterface $uuid = null): TideGenerationRequest
     {
         if (null === ($flow = $this->flowContext->getCurrentFlow())) {
             $flow = $this->flowContext->iHaveAFlow();
@@ -1503,7 +1505,8 @@ EOF;
                 $sha,
                 $branch
             ),
-            TideGenerationTrigger::user($flow->getUser())
+            TideGenerationTrigger::user($flow->getUser()),
+            $uuid
         );
         return $generationRequest;
     }

@@ -10,3 +10,9 @@ ContinuousPipe\Builder\Request\BuildRequestStep:
             type: ContinuousPipe\Builder\Context
         environment:
             type: array<string, string>
+        readArtifacts:
+            type: array<ContinuousPipe\Builder\Request\Artifact>
+            serialized_name: read_artifacts
+        writeArtifacts:
+            type: array<ContinuousPipe\Builder\Request\Artifact>
+            serialized_name: write_artifacts
