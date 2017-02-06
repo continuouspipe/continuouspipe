@@ -147,7 +147,7 @@ Feature:
             build:
                 services:
                     api:
-                        image: registry.co/something-without-organisation
+                        image: registry.co/something-with..bad__separators
     """
     When a tide is started
     Then the tide should be failed
