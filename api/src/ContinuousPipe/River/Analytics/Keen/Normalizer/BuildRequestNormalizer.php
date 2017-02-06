@@ -10,15 +10,18 @@ class BuildRequestNormalizer
     {
         $request = [
             'environment' => $buildRequestStep->getEnvironment(),
-            'image' => [
-                'name' => $buildRequestStep->getImage()->getName(),
-                'tag' => $buildRequestStep->getImage()->getTag(),
-            ],
             'context' => [
                 'docker_file_path' => $buildRequestStep->getContext()->getDockerFilePath(),
                 'sub_directory' => $buildRequestStep->getContext()->getRepositorySubDirectory(),
             ],
         ];
+
+        if (null !== ($image = $buildRequestStep->getImage())) {
+            $request['image'] = [
+                'name' => $buildRequestStep->getImage()->getName(),
+                'tag' => $buildRequestStep->getImage()->getTag(),
+            ];
+        }
 
         if (null !== ($repository = $buildRequestStep->getRepository())) {
             $request['repository'] = [
