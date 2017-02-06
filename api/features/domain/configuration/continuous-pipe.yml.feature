@@ -110,6 +110,20 @@ Feature:
     When a tide is started
     Then the tide should be failed
 
+  Scenario: Image name in the YAML file is valid
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    api:
+                        image: registry.io/organisation/repository-for-something.1
+                        tag: 1.0.0
+    """
+    When a tide is started
+    Then the build task should be running
+
   Scenario: Image name in the YAML file is not valid
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
