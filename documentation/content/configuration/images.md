@@ -68,3 +68,50 @@ tasks:
             # ...
 ```
 Note: this assume that you have defined the `GITHUB_TOKEN` variable somewhere. You can refer to the [variable section]({{< relref "configuration-files.md#variables" >}}).
+
+If you want to build multiple services at the same time, you can also provide the build argument per service:
+
+``` yaml
+# continuous-pipe.yml
+tasks:
+    images:
+        build:
+            services:
+                api:
+                    environment:
+                        - name: GITHUB_TOKEN
+                          value: ${GITHUB_TOKEN}
+
+            # ...
+```
+
+## Artifacts
+
+In order to build small images and/or hide secret values requried during the build process, you can use artifacts. These artifacts will allow you to share files or folders between different build steps that use a combination of Dockerfiles, context and build arguments.
+
+![](/images/multi-step-building.png)
+
+``` yaml
+# continuous-pipe.yml
+tasks:
+    images:
+        build:
+            services:
+                ui:
+                    steps:
+                        - docker_file_path: ./Dockerfile-build
+                          environment:
+                            - name: GITHUB_TOKEN
+                              value: ${GITHUB_TOKEN}
+                          write_artifacts:
+                            - name: dist
+                              path: /dist
+                        - docker_file_path: ./Dockerfile
+                          read_artifacts:
+                            - name: dist
+                              path: /dist
+
+    # ...
+```
+
+
