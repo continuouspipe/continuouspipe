@@ -155,7 +155,9 @@ class BuildStep
 
     public function cleanUp()
     {
-        $this->codeArchive->delete();
+        if (null !== $this->codeArchive) {
+            $this->codeArchive->delete();
+        }
 
         foreach ($this->createdArchives as $archive) {
             $archive->delete();
