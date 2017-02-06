@@ -1,0 +1,18 @@
+ContinuousPipe\Builder\Request\BuildRequestStep:
+    properties:
+        repository:
+            type: ContinuousPipe\Builder\Repository
+        archive:
+            type: ContinuousPipe\Builder\Request\Archive
+        image:
+            type: ContinuousPipe\Builder\Image
+        context:
+            type: ContinuousPipe\Builder\Context
+        environment:
+            type: array<string, string>
+        readArtifacts:
+            type: array<ContinuousPipe\Builder\Request\Artifact>
+            serialized_name: read_artifacts
+        writeArtifacts:
+            type: array<ContinuousPipe\Builder\Request\Artifact>
+            serialized_name: write_artifacts
