@@ -3,7 +3,7 @@ title: (Temp) Tasks
 menu:
   main:
     parent: 'faq'
-    weight: 10
+    weight: 100
 ---
 ## TODO:
 - [ ] Replace first screenshot with one showing no teams, demonstrating "action prompt"
