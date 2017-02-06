@@ -6,6 +6,7 @@ use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
+use Psr\Log\LoggerInterface;
 
 class DisplayTheErrors
 {
@@ -13,13 +14,15 @@ class DisplayTheErrors
      * @var LoggerFactory
      */
     private $loggerFactory;
-
     /**
-     * @param LoggerFactory $loggerFactory
+     * @var LoggerInterface
      */
-    public function __construct(LoggerFactory $loggerFactory)
+    private $logger;
+
+    public function __construct(LoggerFactory $loggerFactory, LoggerInterface $logger)
     {
         $this->loggerFactory = $loggerFactory;
+        $this->logger = $logger;
     }
 
     public function notify(StepFailed $event)
@@ -28,6 +31,10 @@ class DisplayTheErrors
         $child = $logger->child(new Text(
             $event->getReason()->getMessage()
         ));
+
+        $this->logger->warning('A build failed with a exception', [
+            'exception' => $event->getReason(),
+        ]);
 
         $child->updateStatus(Log::FAILURE);
     }
