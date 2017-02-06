@@ -123,6 +123,7 @@ Feature:
     """
     When a tide is started
     Then the tide should be failed
+    And a log containing 'The name "${invalid-image-name}" of the Docker image is invalid.' should be created
 
   Scenario: Image name in the YAML file is not valid
     Given I have a "continuous-pipe.yml" file in my repository that contains:
@@ -150,6 +151,7 @@ Feature:
     """
     When a tide is started
     Then the tide should be failed
+    And a log containing 'The tag ".1.0.0" of the Docker image is invalid.' should be created
 
   Scenario: Image tag in the YAML file is not valid
     Given I have a "continuous-pipe.yml" file in my repository that contains:
