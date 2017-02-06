@@ -214,7 +214,7 @@ EOF;
     public function aTideIsStarted($uuid = null)
     {
         if (null === $this->tideUuid) {
-            $this->aTideIsCreatedForBranchAndCommit(null, null, Uuid::fromString($uuid));
+            $this->aTideIsCreatedForBranchAndCommit(null, null, null !== $uuid ? Uuid::fromString($uuid) : null);
         }
 
         $this->startTide();
@@ -671,18 +671,17 @@ EOF;
      */
     public function theImageTagShouldBeBuilt($tag)
     {
-        $buildStartedEvents = $this->getEventsOfType(BuildStarted::class);
-        $matchingEvents = array_filter($buildStartedEvents, function (BuildStarted $event) use ($tag) {
+        $foundTags = [];
+
+        foreach ($this->getEventsOfType(BuildStarted::class) as $event) {
             $buildRequest = $event->getBuild()->getRequest();
 
-            return $buildRequest->getImage()->getTag() == $tag;
-        });
+            foreach ($buildRequest->getSteps() as $step) {
+                $foundTags[] = $step->getImage()->getTag();
+            }
+        }
 
-        if (count($matchingEvents) == 0) {
-            $foundTags = array_map(function (BuildStarted $event) {
-                return $event->getBuild()->getRequest()->getImage()->getTag();
-            }, $buildStartedEvents);
-
+        if (false === array_search($tag, $foundTags)) {
             throw new \RuntimeException(sprintf(
                 'No built request for tag "%s" found but found %s',
                 $tag,

@@ -3,6 +3,9 @@
 namespace ContinuousPipe\River\Task\Build;
 
 use ContinuousPipe\Builder\BuildRequestCreator;
+use ContinuousPipe\Builder\Context;
+use ContinuousPipe\Builder\Image;
+use ContinuousPipe\Builder\Request\BuildRequestStep;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration;
 use ContinuousPipe\River\Task\Task;
@@ -13,6 +16,8 @@ use ContinuousPipe\River\Task\TaskRunnerException;
 use ContinuousPipe\River\Tide;
 use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 class BuildTaskFactory implements TaskFactory, TaskRunner
@@ -86,7 +91,7 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
         $builder = new TreeBuilder();
         $node = $builder->root('build');
 
-        $node
+        $node = $node
             ->beforeNormalization()
                 ->ifArray()
                 ->then(function (array $configuration) {
@@ -110,32 +115,37 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
                     ->isRequired()
                     ->useAttributeAsKey('name')
                     ->prototype('array')
-                        ->children()
-                            ->scalarNode('image')
-                                ->isRequired()
-                                ->validate()
-                                ->ifTrue($this->getDockerImageNameValidator())
-                                    ->thenInvalid('Invalid Docker image name.')
-                                ->end()
-                            ->end()
-                            ->scalarNode('tag')
-                                ->isRequired()
-                                ->validate()
-                                ->ifTrue($this->getDockerImageTagValidator())
-                                    ->thenInvalid('Invalid Docker image tag.')
-                                ->end()
-                            ->end()
-                            ->scalarNode('build_directory')->defaultNull()->end()
-                            ->scalarNode('docker_file_path')->defaultNull()->end()
-                            ->enumNode('naming_strategy')
-                                ->values(['branch', 'sha1'])
-                                ->defaultValue('branch')
-                            ->end()
-                            ->arrayNode(BuildContext::ENVIRONMENT_KEY)
+                        ->beforeNormalization()
+                            ->always()
+                            ->then(function ($configuration) {
+                                if (!is_array($configuration)) {
+                                    return $configuration;
+                                }
+
+                                // Stringify the steps identifiers so the Symfony Config Component
+                                // merges the defaults of other configs into the same step.
+                                if (array_key_exists('steps', $configuration)) {
+                                    foreach ($configuration['steps'] as $index => $step) {
+                                        if (is_int($index)) {
+                                            unset($configuration['steps'][$index]);
+                                            $configuration['steps']['0'.$index] = $step;
+                                        }
+                                    }
+                                }
+
+                                return $configuration;
+                            })
+                        ->end()
+                        ->children();
+        $this->addBuildImageChildren($node);
+        $node = $node
+                            ->arrayNode('steps')
+                                ->useAttributeAsKey('index')
+                                ->normalizeKeys(false)
                                 ->prototype('array')
-                                    ->children()
-                                        ->scalarNode('name')->isRequired()->end()
-                                        ->scalarNode('value')->isRequired()->end()
+                                    ->children();
+        $this->addBuildImageChildren($node);
+        $node = $node
                                     ->end()
                                 ->end()
                             ->end()
@@ -147,6 +157,8 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
 
         return $node;
     }
+
+
 
     private function createConfiguration(array $configuration)
     {
@@ -177,15 +189,35 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
      */
     private function createServiceConfiguration(array $services)
     {
-        return array_map(function (array $service) {
-            return new ServiceConfiguration(
-                $service['image'],
-                $service['tag'],
-                $service['build_directory'],
-                $service['docker_file_path'],
-                $this->flattenEnvironmentVariables($service['environment'] ?: [])
-            );
+        return array_map(function (array $serviceConfiguration) {
+
+            // If no step defined, then we simply use the first one.
+            if (!isset($serviceConfiguration['steps']) || empty($serviceConfiguration['steps'])) {
+                $serviceConfiguration = [
+                    'steps' => [
+                        $serviceConfiguration,
+                    ],
+                ];
+            }
+
+            return new ServiceConfiguration(array_map(function (array $stepConfiguration) {
+                return $this->transformStep($stepConfiguration);
+            }, array_values($serviceConfiguration['steps'])));
         }, $services);
+    }
+
+    private function transformStep(array $stepConfiguration) : BuildRequestStep
+    {
+        $step = (new BuildRequestStep())
+            ->withContext(new Context($stepConfiguration['docker_file_path'], $stepConfiguration['build_directory']))
+            ->withEnvironment($this->flattenEnvironmentVariables($stepConfiguration['environment'] ?: []))
+        ;
+
+        if (isset($stepConfiguration['image']) && isset($stepConfiguration['tag'])) {
+            $step = $step->withImage(new Image($stepConfiguration['image'], $stepConfiguration['tag']));
+        }
+
+        return $step;
     }
 
     /**
@@ -234,5 +266,37 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
 
             return 1 !== preg_match($pattern, $imageName);
         };
+    }
+
+    private function addBuildImageChildren(NodeBuilder $node)
+    {
+        $node
+            ->scalarNode('image')
+                ->validate()
+                    ->ifTrue($this->getDockerImageNameValidator())
+                    ->thenInvalid('Invalid Docker image name.')
+                ->end()
+            ->end()
+            ->scalarNode('tag')
+                ->validate()
+                    ->ifTrue($this->getDockerImageTagValidator())
+                    ->thenInvalid('Invalid Docker image tag.')
+                ->end()
+            ->end()
+            ->scalarNode('build_directory')->defaultNull()->end()
+            ->scalarNode('docker_file_path')->defaultNull()->end()
+            ->enumNode('naming_strategy')
+                ->values(['branch', 'sha1'])
+                ->defaultValue('branch')
+            ->end()
+            ->arrayNode(BuildContext::ENVIRONMENT_KEY)
+                ->prototype('array')
+                    ->children()
+                        ->scalarNode('name')->isRequired()->end()
+                        ->scalarNode('value')->isRequired()->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
     }
 }

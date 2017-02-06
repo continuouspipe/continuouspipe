@@ -152,7 +152,7 @@ class MarkdownReferenceDumper
     private function indentText($text, $indent = 0)
     {
         $lines = explode("\n", $text);
-        $formattedLines = array_map(function($line) use($indent) {
+        $formattedLines = array_map(function ($line) use ($indent) {
             $lineIndent = strlen($line) + $indent;
             return sprintf("%${lineIndent}s", $line);
         }, $lines);

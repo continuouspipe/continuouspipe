@@ -9,6 +9,8 @@ use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\Builder\Client\BuilderException;
 use ContinuousPipe\Builder\Client\HookableBuilderClient;
 use ContinuousPipe\Builder\Client\TraceableBuilderClient;
+use ContinuousPipe\Builder\Request\BuildRequest;
+use ContinuousPipe\Builder\Request\BuildRequestStep;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Task\Build\BuildTask;
@@ -351,12 +353,12 @@ class BuildContext implements Context
 
     /**
      * @Then the build should be started with Dockerfile path :path in the context
+     * @Then the step #:stepIndex of the build should be started with the Dockerfile path :path
      */
-    public function theBuildShouldBeStartedWithDockerfilePathInTheContext($path)
+    public function theBuildShouldBeStartedWithDockerfilePathInTheContext($path, $stepIndex = null)
     {
-        $buildStartedEvent = $this->getBuildStartedEvents()[0];
-        $request = $buildStartedEvent->getBuild()->getRequest();
-        $foundPath = $request->getContext()->getDockerFilePath();
+        $step = $this->getBuildRequestStep(null, $stepIndex);
+        $foundPath = $step->getContext()->getDockerFilePath();
 
         if ($path != $foundPath) {
             throw new \RuntimeException(sprintf(
@@ -369,12 +371,12 @@ class BuildContext implements Context
 
     /**
      * @Then the build should be started with the image name :imageName
+     * @Then the step #:stepIndex of the build should be started with the image name :imageName
      */
-    public function theBuildShouldBeStartedWithTheImageName($imageName)
+    public function theBuildShouldBeStartedWithTheImageName($imageName, $stepIndex = null)
     {
-        $buildStartedEvent = $this->getBuildStartedEvents()[0];
-        $request = $buildStartedEvent->getBuild()->getRequest();
-        $foundImageName = $request->getImage()->getName();
+        $step = $this->getBuildRequestStep(null, $stepIndex);
+        $foundImageName = $step->getImage()->getName();
 
         if ($imageName != $foundImageName) {
             throw new \RuntimeException(sprintf(
@@ -386,13 +388,28 @@ class BuildContext implements Context
     }
 
     /**
+     * @Then the build should be started with :numberOfSteps steps
+     */
+    public function theBuildShouldBeStartedWithSteps($numberOfSteps)
+    {
+        $steps = $this->getBuildRequest()->getSteps();
+
+        if (count($steps) != $numberOfSteps) {
+            throw new \RuntimeException(sprintf(
+                'Expected %d steps but found %d instead',
+                $numberOfSteps,
+                count($steps)
+            ));
+        }
+    }
+
+    /**
      * @Then the build should be started with the sub-directory :path
      */
     public function theBuildShouldBeStartedWithTheSubDirectory($path)
     {
-        $buildStartedEvent = $this->getBuildStartedEvents()[0];
-        $request = $buildStartedEvent->getBuild()->getRequest();
-        $foundPath = $request->getContext()->getRepositorySubDirectory();
+        $step = $this->getBuildRequestStep();
+        $foundPath = $step->getContext()->getRepositorySubDirectory();
 
         if ($path != $foundPath) {
             throw new \RuntimeException(sprintf(
@@ -408,9 +425,8 @@ class BuildContext implements Context
      */
     public function theBuildShouldBeStartedWithTheRepositoryToken($token)
     {
-        $buildStartedEvent = $this->getBuildStartedEvents()[0];
-        $request = $buildStartedEvent->getBuild()->getRequest();
-        $foundToken = $request->getRepository()->getToken();
+        $step = $this->getBuildRequestStep();
+        $foundToken = $step->getRepository()->getToken();
 
         if ($token != $foundToken) {
             throw new \RuntimeException(sprintf(
@@ -426,8 +442,7 @@ class BuildContext implements Context
      */
     public function theBuildShouldBeStartedWithABitbucketArchiveUrl()
     {
-        $buildStartedEvent = $this->getBuildStartedEvents()[0];
-        $archive = $buildStartedEvent->getBuild()->getRequest()->getArchive();
+        $archive = $this->getBuildRequestStep()->getArchive();
 
         if (null === $archive) {
             throw new \RuntimeException('The archive is not found in the build request');
@@ -446,8 +461,7 @@ class BuildContext implements Context
      */
     public function theBuildShouldBeStartedWithAnArchiveContainingTheHeader($header)
     {
-        $buildStartedEvent = $this->getBuildStartedEvents()[0];
-        $archive = $buildStartedEvent->getBuild()->getRequest()->getArchive();
+        $archive = $this->getBuildRequestStep()->getArchive();
 
         if (null === $archive) {
             throw new \RuntimeException('The archive is not found in the build request');
@@ -488,9 +502,8 @@ class BuildContext implements Context
 
     private function assertBuildIsStartedWithTheFollowingEnvironmentVariables($index, TableNode $environs)
     {
-        $buildStartedEvent = $this->getBuildStartedEvents()[$index];
-        $request = $buildStartedEvent->getBuild()->getRequest();
-        $environment = $request->getEnvironment();
+        $step = $this->getBuildRequestStep($index);
+        $environment = $step->getEnvironment();
 
         foreach ($environs->getHash() as $environ) {
             if (!array_key_exists($environ['name'], $environment)) {
@@ -600,5 +613,37 @@ class BuildContext implements Context
                 $response->getStatusCode()
             ));
         }
+    }
+
+    private function getBuildRequestStep($buildIndex = null, $stepIndex = null) : BuildRequestStep
+    {
+        $steps = $this->getBuildRequest($buildIndex)->getSteps();
+        if (0 === count($steps)) {
+            throw new \RuntimeException('No build step found');
+        }
+
+        if (null === $stepIndex) {
+            return reset($steps);
+        }
+
+        return $steps[$stepIndex];
+    }
+
+    private function getBuildRequest($index = null): BuildRequest
+    {
+        $buildStartedEvents = $this->getBuildStartedEvents();
+        if (count($buildStartedEvents) == 0) {
+            throw new \RuntimeException('No build start events found');
+        }
+
+        if (null === $index) {
+            $buildStartedEvent = current($buildStartedEvents);
+        } else {
+            $buildStartedEvent = $buildStartedEvents[$index];
+        }
+
+        $request = $buildStartedEvent->getBuild()->getRequest();
+
+        return $request;
     }
 }

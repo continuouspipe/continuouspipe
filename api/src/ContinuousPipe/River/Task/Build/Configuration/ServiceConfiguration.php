@@ -2,98 +2,31 @@
 
 namespace ContinuousPipe\River\Task\Build\Configuration;
 
+use ContinuousPipe\Builder\Request\BuildRequestStep;
 use JMS\Serializer\Annotation as JMS;
 
 class ServiceConfiguration
 {
     /**
-     * @JMS\Type("string")
+     * @JMS\Type("array<ContinuousPipe\Builder\Request\BuildRequestStep>")
      *
-     * @var string
+     * @var BuildRequestStep[]
      */
-    private $image;
+    private $builderSteps;
 
     /**
-     * @JMS\Type("string")
-     *
-     * @var string
+     * @param BuildRequestStep[] $builderSteps
      */
-    private $buildDirectory;
-
-    /**
-     * @JMS\Type("string")
-     *
-     * @var string
-     */
-    private $dockerFilePath;
-
-    /**
-     * @JMS\Type("string")
-     *
-     * @var string
-     */
-    private $tag;
-
-    /**
-     * @JMS\Type("array<string, string>")
-     *
-     * @var array
-     */
-    private $environment;
-
-    /**
-     * @param string $image
-     * @param string $tag
-     * @param string $buildDirectory
-     * @param string $dockerFilePath
-     * @param array  $environment
-     */
-    public function __construct($image, $tag, $buildDirectory, $dockerFilePath, array $environment)
+    public function __construct(array $builderSteps)
     {
-        $this->image = $image;
-        $this->buildDirectory = $buildDirectory;
-        $this->dockerFilePath = $dockerFilePath;
-        $this->tag = $tag;
-        $this->environment = $environment;
+        $this->builderSteps = $builderSteps;
     }
 
     /**
-     * @return string
+     * @return BuildRequestStep[]
      */
-    public function getImage()
+    public function getBuilderSteps(): array
     {
-        return $this->image;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTag()
-    {
-        return $this->tag;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBuildDirectory()
-    {
-        return $this->buildDirectory;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDockerFilePath()
-    {
-        return $this->dockerFilePath;
-    }
-
-    /**
-     * @return array
-     */
-    public function getEnvironment()
-    {
-        return $this->environment;
+        return $this->builderSteps ?: [];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Flow\ConfigurationEnhancer\Helper;
 
+use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 trait TaskLocator
@@ -129,10 +130,15 @@ trait TaskLocator
             return $type == 'build';
         }));
 
-        $values = [];
+        $paths = [];
         foreach ($buildPaths as $path) {
-            $serviceTagPath = $path.'[services]['.$serviceName.']['.$key.']';
-            $values = array_merge($values, $this->getValuesAtPath($configs, $serviceTagPath));
+            $paths[] = $path . '[services][' . $serviceName . '][' . $key . ']';
+            $paths = array_merge($paths, $this->expandSelector($configs, $path . '[services][' . $serviceName . '][steps][*][' . $key . ']'));
+        }
+
+        $values = [];
+        foreach ($paths as $path) {
+            $values = array_merge($values, $this->getValuesAtPath($configs, $path));
         }
 
         if (0 == count($values)) {
@@ -172,6 +178,45 @@ trait TaskLocator
         }
 
         return $paths;
+    }
+
+
+    /**
+     * @param array  $configs
+     * @param string $selector
+     *
+     * @return array
+     */
+    private function expandSelector(array $configs, $selector)
+    {
+        $wildcardedSelector = explode('[*]', $selector);
+        if (count($wildcardedSelector) == 1) {
+            return [$selector];
+        }
+
+        $firstSelector = array_shift($wildcardedSelector);
+        $selectorEnd = implode('[*]', $wildcardedSelector);
+
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        $paths = [];
+
+        foreach ($configs as $config) {
+            try {
+                $value = $propertyAccessor->getValue($config, $firstSelector);
+            } catch (UnexpectedTypeException $e) {
+                continue;
+            }
+
+            if (!is_array($value)) {
+                continue;
+            }
+
+            foreach ($value as $key => $v) {
+                $paths = array_merge($paths, $this->expandSelector($configs, $firstSelector.'['.$key.']'.$selectorEnd));
+            }
+        }
+
+        return array_unique($paths);
     }
 
     /**
