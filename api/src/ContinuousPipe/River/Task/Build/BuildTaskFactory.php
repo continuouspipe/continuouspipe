@@ -258,7 +258,7 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
             $domainRegexp = $domainComponentRegexp . $optionalDotRegexp . $optionalPortRegexp;
             $alphaNumericRegexp = '[a-z0-9]+';
             $optionalSeparatorRegexp = '(?:[._]|__|[-]*)';
-            $nameComponentRegexp = $alphaNumericRegexp . '(?:'. $optionalSeparatorRegexp . $alphaNumericRegexp .')';
+            $nameComponentRegexp = $alphaNumericRegexp . '(?:'. $optionalSeparatorRegexp . $alphaNumericRegexp .')*';
             $pattern =
                 '#^'.
                 '(?:' . $domainRegexp . '\/)?' .
