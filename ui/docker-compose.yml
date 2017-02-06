@@ -7,8 +7,6 @@ ui:
     - AUTHENTICATOR_API_URL=authenticator_app.docker/app_dev.php
     - PIPE_API_URL=pipe_api.docker/app_dev.php
     - LOG_STREAM_API_URL=logstream-api.docker
-  labels:
-    com.continuouspipe.image-name: inviqasession/cp-river-ui
   expose:
     - 80
     - 35729
