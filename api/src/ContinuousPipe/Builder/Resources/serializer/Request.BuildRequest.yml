@@ -8,4 +8,6 @@ ContinuousPipe\Builder\Request\BuildRequest:
             type: ContinuousPipe\Builder\Logging
         credentialsBucket:
             type: uuid
+            accessor:
+                getter: getCredentialsBucket
             serialized_name: credentialsBucket
