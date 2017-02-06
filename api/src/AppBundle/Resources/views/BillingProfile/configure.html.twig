@@ -52,9 +52,9 @@
                 <h3 class="panel-title">Current plan</h3>
             </div>
             <div class="panel-body">
-                <p>You subscribed to <strong data-current-plan-quantity="{{ subscription.quantity | escape('html_attr') }}">{{ subscription.quantity | escape('html') }}</strong> <strong>{{ subscription.plan | escape('html') }}</strong> plan(s).</p>
+                <p>You subscribed to <strong data-current-plan-quantity="{{ subscription.quantity | escape('html_attr') }}">{{ subscription.quantity }}</strong> <strong>{{ subscription.plan }}</strong> plan(s).</p>
                 <p>
-                    Your subscription is <strong>{{ subscription.state | escape('html') }}</strong>
+                    Your subscription is <strong>{{ subscription.state }}</strong>
                     {% if subscription.expirationDate is not null %}and will expire on {{ subscription.expirationDate | date('d/m/Y H:i:s') }}.{% endif %}
                 </p>
                 <p>The current billing period started on {{ subscription.currentBillingPeriodStartedAt | date('d/m/Y H:i:s') }} and will end on {{ subscription.currentBillingPeriodEndsAt | date('d/m/Y H:i:s') }}</p>
