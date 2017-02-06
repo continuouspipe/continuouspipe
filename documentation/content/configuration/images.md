@@ -87,8 +87,7 @@ tasks:
 
 ## Artifacts
 
-In order to build small images and/or hide secret values requried during the build process, you can use artifacts. These artifacts will allow you to share some file or folders
-between different build steps that will use different Dockerfiles, context and/or build arguments.
+In order to build small images and/or hide secret values requried during the build process, you can use artifacts. These artifacts will allow you to share files or folders between different build steps that use a combination of Dockerfiles, context and build arguments.
 
 ![](/images/multi-step-building.png)
 
