@@ -39,6 +39,10 @@
                 <h3 class="panel-title">Last activity per user per day in the last 30 days</h3>
             </div>
 
+            <div class="activity-chart-container">
+                <canvas id="activityChart"></canvas>
+            </div>
+
             <!-- List group -->
             <ul class="list-group">
                 {% for activity in userActivities %}
@@ -140,6 +144,7 @@
 {% endblock %}
 {% block javascripts %}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.0/bootstrap-slider.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 <script type="text/javascript">
 {% if subscriptions is empty %}
 new Slider("#subscription-users-slider", {
@@ -159,5 +164,43 @@ new Slider("#subscription-{{ subscription.uuid | escape('js') }}-users-slider", 
     value: {{ subscription.quantity | escape('js') }}
 });
 {% endfor %}
+
+new Chart(document.getElementById("activityChart"), {
+    type: 'bar',
+    data: {
+        labels: [
+            {% for activityDay in activityPerDay %}
+            "{{ activityDay.date | date('d/m') }}"
+            {% if not loop.last %},{% endif %}
+            {% endfor %}
+        ],
+        datasets: [
+            {
+                data: [
+                    {% for activityDay in activityPerDay %}
+                    {{ activityDay.count }}
+                    {% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            }
+        ]
+    },
+    options: {
+        layout: {
+            padding: {
+                top: 20
+            }
+        },
+        legend: {
+            display: false
+        },
+        elements: {
+            rectangle: {
+                borderWidth: 1,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)'
+            }
+        }
+    }
+});
 </script>
 {% endblock %}

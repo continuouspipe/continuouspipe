@@ -150,6 +150,26 @@ class BillingProfileController
             'trialExpiration' => $this->trialResolver->getTrialPeriodExpirationDate($billingProfile),
             'billingProfileTeams' => $billingProfileTeams,
             'userActivities' => $activities,
+            'activityPerDay' => $this->activityPerDay($activities, new \DateTime('-30 days'), new \DateTime()),
         ];
+    }
+
+    private function activityPerDay(array $activities, \DateTime $start, \DateTimeInterface $end) : array
+    {
+        $perDay = [];
+        $cursor = $start;
+
+        while ($cursor < $end) {
+            $perDay[] = [
+                'date' => clone $cursor,
+                'count' => count(array_filter($activities, function(UserActivity $activity) use ($cursor) {
+                    return $activity->getDateTime()->format('d/m/Y') == $cursor->format('d/m/Y');
+                }))
+            ];
+
+            $cursor = $cursor->add(new \DateInterval('P1D'));
+        }
+
+        return $perDay;
     }
 }
