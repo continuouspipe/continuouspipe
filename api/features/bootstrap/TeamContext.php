@@ -572,6 +572,63 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I request the alerts of the team :slug
+     */
+    public function iRequestTheAlertsOfTheTeam($slug)
+    {
+        $this->response = $this->kernel->handle(Request::create('/api/teams/'.$slug.'/alerts'));
+
+        $this->assertResponseCodeIs($this->response, 200);
+    }
+
+    /**
+     * @Then I should see the :type alert
+     */
+    public function iShouldSeeTheAlert($type)
+    {
+        $alerts = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingAlerts = array_filter($alerts, function($alert) use ($type) {
+            return $alert['type'] == $type;
+        });
+
+        if (count($matchingAlerts) == 0) {
+            throw new \RuntimeException('No matching alert found');
+        }
+
+        return reset($matchingAlerts);
+    }
+
+    /**
+     * @Then I should see the :type alert with the message :message
+     */
+    public function iShouldSeeTheAlertWithTheMessage($type, $message)
+    {
+        $alert = $this->iShouldSeeTheAlert($type);
+
+        if ($alert['message'] != $message) {
+            throw new \RuntimeException(sprintf(
+                'Found message "%s" instead',
+                $alert['message']
+            ));
+        }
+    }
+
+    /**
+     * @Then I should not see the :type alert
+     */
+    public function iShouldNotSeeTheAlert($type)
+    {
+        $alerts = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingAlerts = array_filter($alerts, function($alert) use ($type) {
+            return $alert['type'] == $type;
+        });
+
+        if (count($matchingAlerts) != 0) {
+            throw new \RuntimeException('Matching alert found');
+        }
+    }
+
+    /**
      * @param Response $response
      * @param int $statusCode
      */

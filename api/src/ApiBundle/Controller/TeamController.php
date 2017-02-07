@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Controller;
 
+use ContinuousPipe\Alerts\AlertFinder;
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use ContinuousPipe\Authenticator\Team\Request\TeamCreationRequest;
 use ContinuousPipe\Authenticator\Team\Request\TeamPartialUpdateRequest;
@@ -46,17 +47,23 @@ class TeamController
     private $validator;
 
     /**
-     * @param TeamRepository           $teamRepository
-     * @param TeamMembershipRepository $teamMembershipRepository
-     * @param TeamCreator              $teamCreator
-     * @param ValidatorInterface       $validator
+     * @var AlertFinder
      */
-    public function __construct(TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository, TeamCreator $teamCreator, ValidatorInterface $validator)
-    {
+    private $alertFinder;
+
+    public function __construct(
+        TeamRepository $teamRepository,
+        TeamMembershipRepository $teamMembershipRepository,
+        TeamCreator $teamCreator,
+        ValidatorInterface $validator,
+        AlertFinder $alertFinder
+    ) {
         $this->teamRepository = $teamRepository;
         $this->teamMembershipRepository = $teamMembershipRepository;
         $this->teamCreator = $teamCreator;
         $this->validator = $validator;
+
+        $this->alertFinder = $alertFinder;
     }
 
     /**
@@ -167,5 +174,16 @@ class TeamController
     public function deleteUserAction(Team $team, User $user)
     {
         $this->teamMembershipRepository->remove(new TeamMembership($team, $user));
+    }
+
+    /**
+     * @Route("/teams/{slug}/alerts", methods={"GET"})
+     * @ParamConverter("team", converter="team")
+     * @Security("is_granted('READ', team)")
+     * @View
+     */
+    public function alertsAction(Team $team)
+    {
+        return $this->alertFinder->findByTeam($team);
     }
 }

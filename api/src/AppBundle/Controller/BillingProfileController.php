@@ -2,12 +2,15 @@
 
 namespace AppBundle\Controller;
 
+use ContinuousPipe\Billing\ActivityTracker\ActivityTracker;
+use ContinuousPipe\Billing\BillingProfile\Trial\TrialResolver;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Billing\Subscription\Subscription;
 use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use ContinuousPipe\Billing\Subscription\SubscriptionException;
+use ContinuousPipe\Message\UserActivity;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -30,6 +33,14 @@ class BillingProfileController
      */
     private $subscriptionClient;
     /**
+     * @var TrialResolver
+     */
+    private $trialResolver;
+    /**
+     * @var ActivityTracker
+     */
+    private $activityTracker;
+    /**
      * @var string
      */
     private $recurlySubdomain;
@@ -37,11 +48,15 @@ class BillingProfileController
     public function __construct(
         UserBillingProfileRepository $userBillingProfileRepository,
         SubscriptionClient $subscriptionClient,
+        TrialResolver $trialResolver,
+        ActivityTracker $activityTracker,
         string $recurlySubdomain
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
         $this->subscriptionClient = $subscriptionClient;
         $this->recurlySubdomain = $recurlySubdomain;
+        $this->trialResolver = $trialResolver;
+        $this->activityTracker = $activityTracker;
     }
 
     /**
@@ -53,11 +68,26 @@ class BillingProfileController
     {
         try {
             $billingProfile = $this->userBillingProfileRepository->findByUser($user);
+            $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile);
+
+            $activities = [];
+            foreach ($billingProfileTeams as $team) {
+                $activities = array_merge($activities, $this->activityTracker->findBy($team, new \DateTime('-30 days'), new \DateTime()));
+            }
+
+            usort($activities, function (UserActivity $left, UserActivity $right) {
+                return $left->getDateTime() > $right->getDateTime() ? -1 : 1;
+            });
+
         } catch (UserBillingProfileNotFound $e) {
+            $billingProfileTeams = [];
+            $activities = [];
             $billingProfile = new UserBillingProfile(
                 Uuid::uuid4(),
                 $user,
-                sprintf('%s (%s)', $user->getUsername(), $user->getEmail())
+                sprintf('%s (%s)', $user->getUsername(), $user->getEmail()),
+                new \DateTime(),
+                true
             );
         }
 
@@ -117,6 +147,29 @@ class BillingProfileController
         return [
             'billingProfile' => $billingProfile,
             'subscriptions' => $subscriptions,
+            'trialExpiration' => $this->trialResolver->getTrialPeriodExpirationDate($billingProfile),
+            'billingProfileTeams' => $billingProfileTeams,
+            'userActivities' => $activities,
+            'activityPerDay' => $this->activityPerDay($activities, new \DateTime('-30 days'), new \DateTime()),
         ];
+    }
+
+    private function activityPerDay(array $activities, \DateTime $start, \DateTimeInterface $end) : array
+    {
+        $perDay = [];
+        $cursor = $start;
+
+        while ($cursor < $end) {
+            $perDay[] = [
+                'date' => clone $cursor,
+                'count' => count(array_filter($activities, function(UserActivity $activity) use ($cursor) {
+                    return $activity->getDateTime()->format('d/m/Y') == $cursor->format('d/m/Y');
+                }))
+            ];
+
+            $cursor = $cursor->add(new \DateInterval('P1D'));
+        }
+
+        return $perDay;
     }
 }

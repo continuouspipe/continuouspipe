@@ -131,11 +131,6 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
 
         $user = $this->fillUserEmail($response, $securityUser);
 
-        // Dispatch an event is the user was just created
-        if ($created) {
-            $this->eventDispatcher->dispatch(UserCreated::EVENT_NAME, new UserCreated($user));
-        }
-
         // Update its GitHub token if needed
         $bucket = $this->bucketRepository->find($user->getBucketUuid());
         $this->updateUserGitHubTokenInBucket($bucket, $user, $response);
@@ -147,6 +142,11 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         // Link account if not found
         if (!$this->userHasAlreadyLinkedGitHubAccount($user, $username)) {
             $this->accountConnector->connect($securityUser, $response);
+        }
+
+        // Dispatch an event is the user was just created
+        if ($created) {
+            $this->eventDispatcher->dispatch(UserCreated::EVENT_NAME, new UserCreated($user));
         }
 
         return $securityUser;
@@ -228,26 +228,6 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     }
 
     /**
-     * @param string $teamName
-     *
-     * @return string
-     */
-    private function createTeamName($teamName)
-    {
-        $tries = 0;
-
-        do {
-            $generatedTeamName = $teamName;
-
-            if ($tries > 0) {
-                $generatedTeamName .= '-'.($tries + 1);
-            }
-        } while ($this->teamRepository->exists($generatedTeamName) && (++$tries < 100));
-
-        return $generatedTeamName;
-    }
-
-    /**
      * @param UserResponseInterface $response
      * @param SecurityUser          $securityUser
      *
@@ -275,7 +255,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     private function userHasAlreadyLinkedGitHubAccount(User $user, string $username)
     {
-        $accounts = $this->accountRepository->findByUsername($username);
+        $accounts = $this->accountRepository->findByUsername($user->getUsername());
 
         foreach ($accounts as $account) {
             if (!$account instanceof GitHubAccount) {

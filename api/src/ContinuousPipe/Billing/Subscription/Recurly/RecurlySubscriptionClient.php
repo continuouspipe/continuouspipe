@@ -27,16 +27,15 @@ class RecurlySubscriptionClient implements SubscriptionClient
      */
     public function findSubscriptionsForBillingProfile(UserBillingProfile $billingProfile): array
     {
+        $subscriptions = [];
+
         try {
-            $recurlySubscriptions = \Recurly_SubscriptionList::getForAccount($billingProfile->getUuid()->toString());
+            foreach (\Recurly_SubscriptionList::getForAccount($billingProfile->getUuid()->toString()) as $recurlySubscription) {
+                /** @var \Recurly_Subscription $recurlySubscription */
+                $subscriptions[] = $this->transformRecurlySubscription($billingProfile, $recurlySubscription);
+            }
         } catch (\Recurly_NotFoundError $e) {
             return [];
-        }
-
-        $subscriptions = [];
-        foreach ($recurlySubscriptions as $recurlySubscription) {
-            /** @var \Recurly_Subscription $recurlySubscription */
-            $subscriptions[] = $this->transformRecurlySubscription($billingProfile, $recurlySubscription);
         }
 
         return $subscriptions;

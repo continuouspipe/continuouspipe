@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="authenticator.alerts.billing.team_billing_profile_alert_finder" class="ContinuousPipe\Alerts\Billing\TeamBillingProfileAlertFinder">
+            <argument type="service" id="app.repository.billing_profile" />
+            <argument type="service" id="builder.billing.subscription_client" />
+            <argument type="service" id="app.billing.trial_resolver" />
+        </service>
+        <service id="authenticator.alerts.finder" class="ContinuousPipe\Alerts\CollectionAlertFinder">
+            <argument type="collection">
+                <argument type="service" id="authenticator.alerts.billing.team_billing_profile_alert_finder" />
+            </argument>
+        </service>
+    </services>
+</container>

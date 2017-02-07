@@ -91,8 +91,35 @@ class AccountsContext implements Context
         $this->userBillingProfileRepository->save(new UserBillingProfile(
             Uuid::fromString($uuid),
             $this->securityContext->thereIsAUser($username)->getUser(),
-            'NAME'
+            'NAME',
+            new \DateTime(),
+            false
         ));
+    }
+
+    /**
+     * @Given the billing profile :uuid was created :createdDaysAgo days ago and has trial
+     */
+    public function theBillingProfileWasCreatedDaysAgoAndHasTrial($uuid, $createdDaysAgo)
+    {
+        $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
+        $this->userBillingProfileRepository->save(new UserBillingProfile(
+            $billingProfile->getUuid(),
+            $billingProfile->getUser(),
+            $billingProfile->getName(),
+            new \DateTime('-'.$createdDaysAgo.' days'),
+            true
+        ));
+    }
+
+    /**
+     * @Then the user :usernmae should have a billing account
+     */
+    public function theUserShouldHaveABillingAccount($username)
+    {
+        $this->userBillingProfileRepository->findByUser(
+            $this->securityContext->thereIsAUser($username)->getUser()
+        );
     }
 
     /**
