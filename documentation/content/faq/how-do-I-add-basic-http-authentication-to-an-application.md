@@ -6,7 +6,7 @@ menu:
     weight: 50
 ---
 
-The publicly exposed end points are accessible by anyone by default. If you are using one of the standard dockerfiles from https://github.com/continuouspipe/dockerfiles for Apache or Nginx then you can enable basic auth with environment variables:
+The publicly exposed end points are accessible by anyone by default. If you are using one of the [ContinuousPipe dockerfiles](https://github.com/continuouspipe/dockerfiles) for [Apache](https://github.com/continuouspipe/dockerfiles/tree/master/php-apache#basic-authentication) or [Nginx](https://github.com/continuouspipe/dockerfiles/tree/master/php-nginx#basic-authentication) then you can enable basic auth with environment variables:
 
 ```
 tasks:
