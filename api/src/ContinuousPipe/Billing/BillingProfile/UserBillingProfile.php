@@ -33,11 +33,27 @@ class UserBillingProfile
      */
     private $name;
 
-    public function __construct(UuidInterface $uuid, User $user, string $name)
+    /**
+     * @JMS\Type("DateTime")
+     *
+     * @var \DateTimeInterface
+     */
+    private $creationDate;
+
+    /**
+     * @JMS\Type("bool")
+     *
+     * @var bool
+     */
+    private $hasTrial;
+
+    public function __construct(UuidInterface $uuid, User $user, string $name, \DateTimeInterface $creationDate, bool $hasTrial)
     {
         $this->uuid = $uuid;
         $this->user = $user;
         $this->name = $name;
+        $this->creationDate = $creationDate;
+        $this->hasTrial = $hasTrial;
     }
 
     /**
@@ -62,5 +78,21 @@ class UserBillingProfile
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getCreationDate()
+    {
+        return $this->creationDate;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasTrial(): bool
+    {
+        return $this->hasTrial ?: false;
     }
 }

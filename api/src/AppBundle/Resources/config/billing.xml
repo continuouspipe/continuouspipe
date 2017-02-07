@@ -25,6 +25,7 @@
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Message\UserActivity" />
         </service>
+        <service id="app.billing.trial_resolver" class="ContinuousPipe\Billing\BillingProfile\Trial\CreationDateTrialResolver" />
 
         <!-- Billing profile -->
         <service id="app.billing.when_user_is_created.create_billing_profile" class="ContinuousPipe\Billing\BillingProfile\WhenUserIsCreated\CreateABillingProfile">

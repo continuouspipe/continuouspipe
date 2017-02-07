@@ -594,6 +594,23 @@ class TeamContext implements Context
         if (count($matchingAlerts) == 0) {
             throw new \RuntimeException('No matching alert found');
         }
+
+        return reset($matchingAlerts);
+    }
+
+    /**
+     * @Then I should see the :type alert with the message :message
+     */
+    public function iShouldSeeTheAlertWithTheMessage($type, $message)
+    {
+        $alert = $this->iShouldSeeTheAlert($type);
+
+        if ($alert['message'] != $message) {
+            throw new \RuntimeException(sprintf(
+                'Found message "%s" instead',
+                $alert['message']
+            ));
+        }
     }
 
     /**

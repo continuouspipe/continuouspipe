@@ -57,7 +57,9 @@ class BillingProfileController
             $billingProfile = new UserBillingProfile(
                 Uuid::uuid4(),
                 $user,
-                sprintf('%s (%s)', $user->getUsername(), $user->getEmail())
+                sprintf('%s (%s)', $user->getUsername(), $user->getEmail()),
+                new \DateTime(),
+                true
             );
         }
 

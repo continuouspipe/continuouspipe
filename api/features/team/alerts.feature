@@ -35,3 +35,11 @@ Feature:
     Then I should not see the "billing-profile-has-no-active-subscription" alert
     And I should not see the "billing-profile-has-no-subscription" alert
     And I should not see the "billing-profile-not-found" alert
+
+  Scenario: A billing profile under trial should see its own alert but not the order ones
+    Given the billing profile "00000000-0000-0000-0000-000000000000" was created 2 days ago and has trial
+    And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
+    When I request the alerts of the team "foo"
+    Then I should see the "billing-profile-trial" alert with the message "Your trial period is ending in 12 days."
+    Then I should not see the "billing-profile-has-no-active-subscription" alert
+    And I should not see the "billing-profile-has-no-subscription" alert
