@@ -89,11 +89,12 @@ class RedisCachedTokenResolver implements TokenResolver
         }
 
         $expirationDate = \DateTime::createFromFormat('U', $json['expiration_timestamp']);
+        $now = new \DateTime();
 
         return new Token(
             $json['access_token'],
             $json['token_type'],
-            $expirationDate,
+            $expirationDate->getTimestamp() - $now->getTimestamp();,
             $json['id_token']
         );
     }
