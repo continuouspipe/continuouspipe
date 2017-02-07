@@ -8,7 +8,7 @@ class CreationDateTrialResolver implements TrialResolver
 {
     public function getTrialPeriodExpirationDate(UserBillingProfile $billingProfile): \DateTimeInterface
     {
-        if (!$billingProfile->hasTrial()) {
+        if (!$billingProfile->hasTrial() || null === $billingProfile->getCreationDate()) {
             return new \DateTimeImmutable('yesterday');
         }
 
