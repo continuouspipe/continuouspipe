@@ -84,6 +84,10 @@ tasks:
                               value: 138xHEqgD93lk
                             - name: TIDEWAYS_API_KEY
                               value: ${TIDEWAYS_API_KEY}
+                            - name: BITBUCKET_OAUTH_KEY
+                              value: ${BITBUCKET_OAUTH_KEY}
+                            - name: BITBUCKET_OAUTH_SECRET
+                              value: ${BITBUCKET_OAUTH_SECRET}
                             - name: K8S_WATCHER_URL
                               value: http://api.k8s-watcher-master.svc.cluster.local
                             - name: K8S_HEALTH_CHECKER_URL
