@@ -38,16 +38,32 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
      */
     public function findUserRepositories(Account $account): array
     {
-        $response = $this->client->request('GET', 'https://api.bitbucket.org/2.0/repositories/'.$account->getUsername(), [
+        return $this->readRepositories('https://api.bitbucket.org/2.0/repositories/'.$account->getUsername(), [
             'headers' => [
                 'Authorization' => 'Bearer '.$this->getAuthenticationToken($account),
             ],
         ]);
+    }
 
+    /**
+     * @param string $url
+     * @param array $options
+     *
+     * @return BitBucketCodeRepository[]
+     */
+    private function readRepositories(string $url, array $options)
+    {
+        $response = $this->client->request('GET', $url, $options);
         $json = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
         $values = $json['values'];
 
-        return $this->parseRepositories($values);
+        $repositories = $this->parseRepositories($values);
+
+        if (isset($json['next'])) {
+            $repositories = array_merge($repositories, $this->readRepositories($json['next'], $options));
+        }
+
+        return $repositories;
     }
 
     /**
@@ -79,16 +95,11 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
      */
     public function findOrganisationRepositories(Account $account, string $organisationIdentifier): array
     {
-        $response = $this->client->request('GET', 'https://api.bitbucket.org/2.0/teams/'.$organisationIdentifier.'/repositories', [
+        return $this->readRepositories('https://api.bitbucket.org/2.0/teams/'.$organisationIdentifier.'/repositories', [
             'headers' => [
                 'Authorization' => 'Bearer '.$this->getAuthenticationToken($account),
             ],
         ]);
-
-        $json = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-        $values = $json['values'];
-
-        return $this->parseRepositories($values);
     }
 
     /**
