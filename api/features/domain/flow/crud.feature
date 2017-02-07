@@ -36,3 +36,15 @@ Feature:
     And I have a flow in the team "samuel"
     When I send an update request with a configuration
     Then the flow is not saved because of an authorization exception
+
+  Scenario: It understands an invalid YAML
+    Given the team "samuel" exists
+    And I am authenticated as "Alice"
+    And the user "Alice" is "ADMIN" of the team "samuel"
+    And I have a flow in the team "samuel"
+    When I send an update request with the following configuration:
+    """
+    []
+    filter: 'code_reference.branch == "feature/continuous-pipe-migration"'
+    """
+    Then the flow is not saved because of a bad request error
