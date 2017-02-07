@@ -28,6 +28,14 @@ angular.module('continuousPipeRiver')
             }).$promise;
         };
 
+        this.encrypt = function(flow, variable) {
+            return $resource(RIVER_API_URL+'/flows/:uuid/encrypt-variable').save({uuid: flow.uuid}, {
+                plain: variable.value
+            }).$promise.then(function(response) {
+                return response.encrypted;
+            });
+        };
+
         this.createFromRepositoryAndTeam = function(team, repository) {
             return $resource(RIVER_API_URL+'/teams/:team/flows').save(
                 {
