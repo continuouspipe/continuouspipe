@@ -5,6 +5,10 @@ namespace ContinuousPipe\River\Event;
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use Ramsey\Uuid\UuidInterface;
 
+/**
+ * @deprecated This event has been deprecated, in order to remove duplicates. The `TideCreated` event is used
+ *             instead.
+ */
 class TideGenerated implements TideEvent
 {
     private $tideUuid;

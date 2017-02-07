@@ -108,8 +108,7 @@ class Tide
         EventCollection $eventCollection
     ) {
         return self::createFromEvents($taskRunner, $tasks, $eventCollection, [
-            new TideCreated($context),
-            new TideGenerated($context->getTideUuid(), $context->getFlowUuid(), $generationRequest->getGenerationUuid(), $pipeline),
+            new TideCreated($context->getTideUuid(), $context->getFlowUuid(), $context, $generationRequest->getGenerationUuid(), $pipeline),
             new TideValidated($context->getTideUuid()),
         ]);
     }
@@ -163,9 +162,11 @@ class Tide
      */
     public function apply(TideEvent $event)
     {
-        if ($event instanceof TideCreated) {
-            $this->context = $event->getTideContext();
-        } elseif ($event instanceof TideGenerated) {
+        if ($event instanceof TideCreated || $event instanceof TideGenerated) {
+            if ($event instanceof TideCreated) {
+                $this->context = $event->getTideContext();
+            }
+
             $this->generationUuid = $event->getGenerationUuid();
             $this->pipeline = $event->getFlatPipeline();
         } elseif (!$event instanceof TideFailed) {
