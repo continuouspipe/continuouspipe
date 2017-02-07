@@ -107,7 +107,7 @@ class AccountsContext implements Context
             $billingProfile->getUuid(),
             $billingProfile->getUser(),
             $billingProfile->getName(),
-            new \DateTime('-'.$createdDaysAgo.' days'),
+            new \DateTime('-'.$createdDaysAgo.' days 2 hours'),
             true
         ));
     }
