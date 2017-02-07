@@ -13,8 +13,7 @@ class CreationDateTrialResolver implements TrialResolver
         }
 
         $date = \DateTime::createFromFormat('U', $billingProfile->getCreationDate()->getTimestamp());
-        $date->add(new \DateInterval('P14D'));
 
-        return $date;
+        return $date->add(new \DateInterval('P14D'));
     }
 }

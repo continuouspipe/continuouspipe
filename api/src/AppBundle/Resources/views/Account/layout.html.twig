@@ -3,7 +3,16 @@
     <div class="account-container">
         <div class="account-title">
             <div class="container">
-                {% block account_title %}{% endblock %}
+                {% block account_title %}
+                <h1>My Account</h1>
+                {% endblock %}
+            </div>
+            <div class="container account-nav">
+                <ul class="nav nav-tabs">
+                    <li role="presentation"{% block nav_personnal_information_class %}{% endblock %}><a href="{{ path('account') }}">Personnal information</a></li>
+                    <li role="presentation"{% block nav_connected_accounts_class %}{% endblock %}><a href="{{ path('account_connected_accounts') }}">Connected accounts</a></li>
+                    <li role="presentation"{% block nav_billing_profile_class %}{% endblock %}><a href="{{ path('account_billing_profile') }}">Billing</a></li>
+                </ul>
             </div>
         </div>
         <div class="account-content container">

@@ -41,7 +41,7 @@ class UserBillingProfile
     private $creationDate;
 
     /**
-     * @JMS\Type("bool")
+     * @JMS\Type("boolean")
      *
      * @var bool
      */

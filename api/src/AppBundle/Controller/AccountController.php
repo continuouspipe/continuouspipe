@@ -37,28 +37,14 @@ class AccountController
      */
     private $urlGenerator;
 
-    /**
-     * @var UserBillingProfileRepository
-     */
-    private $userBillingProfileRepository;
-
-    /**
-     * @var ActivityTracker
-     */
-    private $activityTracker;
-
     public function __construct(
         AccountRepository $accountRepository,
         FormFactoryInterface $formFactory,
-        UrlGeneratorInterface $urlGenerator,
-        UserBillingProfileRepository $userBillingProfileRepository,
-        ActivityTracker $activityTracker
+        UrlGeneratorInterface $urlGenerator
     ) {
         $this->accountRepository = $accountRepository;
         $this->formFactory = $formFactory;
         $this->urlGenerator = $urlGenerator;
-        $this->userBillingProfileRepository = $userBillingProfileRepository;
-        $this->activityTracker = $activityTracker;
     }
 
     /**
@@ -68,30 +54,21 @@ class AccountController
      */
     public function overviewAction(User $user)
     {
-        try {
-            $billingProfile = $this->userBillingProfileRepository->findByUser($user);
-            $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile);
+        return [
+            'user' => $user,
+        ];
+    }
 
-            $activities = [];
-            foreach ($billingProfileTeams as $team) {
-                $activities = array_merge($activities, $this->activityTracker->findBy($team, new \DateTime('-30 days'), new \DateTime()));
-            }
-
-            usort($activities, function (UserActivity $left, UserActivity $right) {
-                return $left->getDateTime() > $right->getDateTime() ? -1 : 1;
-            });
-        } catch (UserBillingProfileNotFound $e) {
-            $billingProfile = null;
-            $billingProfileTeams = [];
-            $activities = [];
-        }
-
+    /**
+     * @Route("/connected-accounts", name="account_connected_accounts")
+     * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @Template
+     */
+    public function accountsAction(User $user)
+    {
         return [
             'user' => $user,
             'accounts' => $this->accountRepository->findByUsername($user->getUsername()),
-            'billingProfile' => $billingProfile,
-            'billingProfileTeams' => $billingProfileTeams,
-            'userActivities' => $activities,
         ];
     }
 
