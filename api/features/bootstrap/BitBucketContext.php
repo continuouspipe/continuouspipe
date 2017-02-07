@@ -249,14 +249,40 @@ class BitBucketContext implements CodeRepositoryContext
 
     /**
      * @Given the BitBucket user :username have the following repositories:
+     * @Given the BitBucket user :username have the following repositories on the page :page of :pageCount:
      */
-    public function theBitbucketUserHaveTheFollowingRepositories($username, TableNode $table)
+    public function theBitbucketUserHaveTheFollowingRepositoriesOnThePageOf($username, TableNode $table, $page = 1, $pageCount = 1)
     {
         $this->bitBucketMatchingClientHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($username) {
-                return $request->getMethod() == 'GET' && $request->getUri() == 'https://api.bitbucket.org/2.0/repositories/'.$username;
+            'match' => function(RequestInterface $request) use ($username, $page) {
+                $uri = $request->getUri() == 'https://api.bitbucket.org/2.0/repositories/'.$username;
+
+                if ($page != 1) {
+                    $uri .= '?page='.$page;
+                }
+
+                return $request->getMethod() == 'GET' && $uri;
             },
-            'response' => $this->createRepositoriesResponse($username, $table),
+            'response' => $this->createRepositoriesResponse($username, $table, $page, $pageCount, 'https://api.bitbucket.org/2.0/repositories/'.$username),
+        ]);
+    }
+
+    /**
+     * @Given the BitBucket team :team have the following repositories:
+     * @Given the BitBucket team :team have the following repositories on the page :page of :pageCount:
+     */
+    public function theBitbucketTeamHaveTheFollowingRepositories($team, TableNode $table, $page = 1, $pageCount = 1)
+    {
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($team, $page) {
+                $uri = 'https://api.bitbucket.org/2.0/teams/'.$team.'/repositories';
+                if ($page != 1) {
+                    $uri .= '?page='.$page;
+                }
+
+                return $request->getMethod() == 'GET' && $request->getUri() == $uri;
+            },
+            'response' => $this->createRepositoriesResponse($team, $table, $page, $pageCount, 'https://api.bitbucket.org/2.0/teams/'.$team.'/repositories'),
         ]);
     }
 
@@ -301,19 +327,6 @@ class BitBucketContext implements CodeRepositoryContext
                     ];
                 }, $table->getHash()),
             ])),
-        ]);
-    }
-
-    /**
-     * @Given the BitBucket team :team have the following repositories:
-     */
-    public function theBitbucketTeamHaveTheFollowingRepositories($team, TableNode $table)
-    {
-        $this->bitBucketMatchingClientHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($team) {
-                return $request->getMethod() == 'GET' && $request->getUri() == 'https://api.bitbucket.org/2.0/teams/'.$team.'/repositories';
-            },
-            'response' => $this->createRepositoriesResponse($team, $table),
         ]);
     }
 
@@ -623,12 +636,12 @@ class BitBucketContext implements CodeRepositoryContext
         ));
     }
 
-    private function createRepositoriesResponse(string $username, TableNode $table): Response
+    private function createRepositoriesResponse(string $username, TableNode $table, int $currentPage, int $pageCount, string $pageUrl): Response
     {
-        return new Response(200, ['Content-Type' => 'application/json'], json_encode([
+        $body = [
             'pagelen' => 10,
-            'page' => 1,
-            'size' => 1,
+            'page' => $currentPage,
+            'size' => 10 * $pageCount,
             'values' => array_map(function (array $repository) use ($username) {
                 return [
                     'scm' => 'git',
@@ -648,7 +661,13 @@ class BitBucketContext implements CodeRepositoryContext
                     ],
                 ];
             }, $table->getHash()),
-        ]));
+        ];
+
+        if ($pageCount > 1 && $currentPage < $pageCount) {
+            $body['next'] = $pageUrl.'?page='.($currentPage + 1);
+        }
+
+        return new Response(200, ['Content-Type' => 'application/json'], json_encode($body));
     }
 
     private function createAddonArray(string $clientKey, string $principalUsername): array

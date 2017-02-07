@@ -729,7 +729,7 @@ EOF;
 
         foreach ($table->getHash() as $row) {
             if (!$this->responseHasRow($json, $row)) {
-                throw new \RuntimeException('The response do not contain the repository');
+                throw new \RuntimeException(sprintf('The response do not contain the "%s" repository', $row['name']));
             }
         }
     }
