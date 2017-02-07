@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\River\Flow\EncryptedVariable\PreviouslyKnownEncryptedVariableVault;
 use ContinuousPipe\Security\Account\BitBucketAccount;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
@@ -35,6 +36,10 @@ class SecurityContext implements Context
      * @var KernelInterface
      */
     private $kernel;
+    /**
+     * @var PreviouslyKnownEncryptedVariableVault
+     */
+    private $previouslyKnownEncryptedVariableVault;
 
     /**
      * @var Response|null
@@ -49,11 +54,13 @@ class SecurityContext implements Context
     public function __construct(
         TokenStorageInterface $tokenStorage,
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
-        KernelInterface $kernel
+        KernelInterface $kernel,
+        PreviouslyKnownEncryptedVariableVault $previouslyKnownEncryptedVariableVault
     ) {
         $this->tokenStorage = $tokenStorage;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->kernel = $kernel;
+        $this->previouslyKnownEncryptedVariableVault = $previouslyKnownEncryptedVariableVault;
     }
 
     /**
@@ -69,15 +76,25 @@ class SecurityContext implements Context
      */
     public function iAmAuthenticatedAs($username)
     {
-        $user = new User($username, Uuid::uuid1());
-
-        $this->inMemoryAuthenticatorClient->addUser($user);
+        $user = $this->thereIsAUser($username);
 
         $token = new JWTUserToken(['ROLE_USER']);
         $token->setUser(new SecurityUser($user));
         $this->tokenStorage->setToken($token);
 
         $this->currentUser = $user;
+    }
+
+    /**
+     * @Given there is a user :username
+     */
+    public function thereIsAUser($username)
+    {
+        $user = new User($username, Uuid::uuid1());
+
+        $this->inMemoryAuthenticatorClient->addUser($user);
+
+        return $user;
     }
 
     /**
@@ -211,5 +228,17 @@ class SecurityContext implements Context
                 sprintf('Authenticator cache is disabled. Undefined service "%s".', self::CACHE_SERVICE_ID)
             );
         }
+    }
+
+    /**
+     * @Given the encrypted version of the value :plainValue for the flow :flowUuid will be :encryptedValue
+     */
+    public function theEncryptedVersionOfTheValueForTheFlowWillBe($plainValue, $flowUuid, $encryptedValue)
+    {
+        $this->previouslyKnownEncryptedVariableVault->addEncryptionMapping(
+            Uuid::fromString($flowUuid),
+            $plainValue,
+            $encryptedValue
+        );
     }
 }

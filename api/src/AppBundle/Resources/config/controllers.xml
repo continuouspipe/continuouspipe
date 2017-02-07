@@ -17,11 +17,10 @@
         <service id="app.controller.flow" class="AppBundle\Controller\FlowController">
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="river.flow_factory" />
-            <argument type="service" id="simple_bus.event_bus" />
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="validator" />
-            <argument type="service" id="authenticator.team_repository" />
             <argument type="service" id="river.flow.configuration.missing_variables.configuration_resolver" />
+            <argument type="service" id="river.flow.encrypted_variable_vault" />
         </service>
         <service id="app.controller.github" class="AppBundle\Controller\GitHubController">
             <argument type="service" id="command_bus" />

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Request\EncryptVariableRequest;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Flow\Projections\FlatFlow as FlowView;
@@ -25,11 +26,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class FlowController
 {
     /**
-     * @var MessageBus
-     */
-    private $eventBus;
-
-    /**
      * @var Flow\Projections\FlatFlowRepository
      */
     private $flowRepository;
@@ -50,40 +46,28 @@ class FlowController
     private $validator;
 
     /**
-     * @var TeamRepository
-     */
-    private $teamRepository;
-
-    /**
      * @var Flow\MissingVariables\MissingVariableResolver
      */
     private $missingVariableResolver;
-
     /**
-     * @param Flow\Projections\FlatFlowRepository           $flowRepository
-     * @param FlowFactory                                   $flowFactory
-     * @param MessageBus                                    $eventBus
-     * @param TideRepository                                $tideRepository
-     * @param ValidatorInterface                            $validator
-     * @param TeamRepository                                $teamRepository
-     * @param Flow\MissingVariables\MissingVariableResolver $missingVariableResolver
+     * @var Flow\EncryptedVariable\EncryptedVariableVault
      */
+    private $encryptedVariableVault;
+
     public function __construct(
         Flow\Projections\FlatFlowRepository $flowRepository,
         FlowFactory $flowFactory,
-        MessageBus $eventBus,
         TideRepository $tideRepository,
         ValidatorInterface $validator,
-        TeamRepository $teamRepository,
-        Flow\MissingVariables\MissingVariableResolver $missingVariableResolver
+        Flow\MissingVariables\MissingVariableResolver $missingVariableResolver,
+        Flow\EncryptedVariable\EncryptedVariableVault $encryptedVariableVault
     ) {
         $this->flowRepository = $flowRepository;
-        $this->eventBus = $eventBus;
         $this->flowFactory = $flowFactory;
         $this->tideRepository = $tideRepository;
         $this->validator = $validator;
-        $this->teamRepository = $teamRepository;
         $this->missingVariableResolver = $missingVariableResolver;
+        $this->encryptedVariableVault = $encryptedVariableVault;
     }
 
     /**
@@ -182,5 +166,20 @@ class FlowController
     public function deleteAction(FlatFlow $flow)
     {
         $this->flowRepository->remove($flow->getUuid());
+    }
+
+
+    /**
+     * @Route("/flows/{uuid}/encrypt-variable", methods={"POST"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
+     * @ParamConverter("request", converter="fos_rest.request_body")
+     * @Security("is_granted('UPDATE', flow)")
+     * @View
+     */
+    public function encryptVariableAction(FlatFlow $flow, EncryptVariableRequest $request)
+    {
+        return new JsonResponse([
+            'encrypted' => $this->encryptedVariableVault->encrypt($flow->getUuid(), $request->getPlain()),
+        ]);
     }
 }

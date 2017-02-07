@@ -24,5 +24,8 @@
 
             <tag name="security.voter" />
         </service>
+
+        <!-- Encryption Vault -->
+
     </services>
 </container>
