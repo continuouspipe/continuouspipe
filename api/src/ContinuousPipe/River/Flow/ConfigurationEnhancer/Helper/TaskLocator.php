@@ -17,6 +17,10 @@ trait TaskLocator
         $paths = [];
 
         foreach ($configs as $config) {
+            if (!is_array($config)) {
+                continue;
+            }
+
             foreach ($this->findPathsInConfig($config) as $path => $taskName) {
                 $paths[$path] = $taskName;
             }
