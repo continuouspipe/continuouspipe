@@ -96,6 +96,16 @@ class AccountsContext implements Context
     }
 
     /**
+     * @Then the user :usernmae should have a billing account
+     */
+    public function theUserShouldHaveABillingAccount($username)
+    {
+        $this->userBillingProfileRepository->findByUser(
+            $this->securityContext->thereIsAUser($username)->getUser()
+        );
+    }
+
+    /**
      * @Given the team :team is linked to the billing profile :billingProfileUuid
      */
     public function theTeamIsLinkedToTheBillingProfile($team, $billingProfileUuid)

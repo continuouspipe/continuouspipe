@@ -26,6 +26,13 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Message\UserActivity" />
         </service>
 
+        <!-- Billing profile -->
+        <service id="app.billing.when_user_is_created.create_billing_profile" class="ContinuousPipe\Billing\BillingProfile\WhenUserIsCreated\CreateABillingProfile">
+            <argument type="service" id="app.repository.billing_profile" />
+
+            <tag name="kernel.event_listener" event="security.user_created" method="notify" />
+        </service>
+
         <!-- Subscription -->
         <service id="builder.billing.subscription_client" class="ContinuousPipe\Billing\Subscription\Recurly\RecurlySubscriptionClient">
             <argument>%recurly_subdomain%</argument>
