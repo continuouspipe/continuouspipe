@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Flow\EventListener\TideGenerated;
 
-use ContinuousPipe\River\Event\TideGenerated;
+use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Repository\FlowRepository;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -27,10 +27,10 @@ class CreatePipelineIfNotExists
         $this->eventBus = $eventBus;
     }
 
-    public function notify(TideGenerated $event)
+    public function notify(TideCreated $event)
     {
         $flow = $this->flowRepository->find($event->getFlowUuid());
-        $flow->tideWasGenerated($event);
+        $flow->tideWasCreated($event);
 
         foreach ($flow->raisedEvents() as $event) {
             $this->eventBus->handle($event);

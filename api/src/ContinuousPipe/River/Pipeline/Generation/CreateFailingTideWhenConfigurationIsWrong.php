@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Pipeline\Generation;
 
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideFailed;
-use ContinuousPipe\River\Event\TideGenerated;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\River\Pipeline\Pipeline;
@@ -55,28 +54,33 @@ class CreateFailingTideWhenConfigurationIsWrong implements PipelineTideGenerator
                 new TaskList([]),
                 new EventCollection(),
                 [
-                    new TideCreated(TideContext::createTide(
-                        $request->getFlow()->getUuid(),
-                        $request->getFlow()->getTeam(),
-                        $request->getFlow()->getUser(),
+                    new TideCreated(
                         $tideUuid,
-                        $request->getCodeReference(),
-                        $logger->getLog(),
-                        [
-                            'notifications' => [
-                                [
-                                    'commit' => true,
+                        $request->getFlow()->getUuid(),
+                        TideContext::createTide(
+                            $request->getFlow()->getUuid(),
+                            $request->getFlow()->getTeam(),
+                            $request->getFlow()->getUser(),
+                            $tideUuid,
+                            $request->getCodeReference(),
+                            $logger->getLog(),
+                            [
+                                'notifications' => [
+                                    [
+                                        'commit' => true,
+                                    ]
                                 ]
+                            ],
+                            $request->getGenerationTrigger()->getCodeRepositoryEvent()
+                        ),
+                        $request->getGenerationUuid(),
+                        FlatPipeline::fromPipeline(Pipeline::withConfiguration(
+                            $request->getFlow(),
+                            [
+                                'name' => 'Default pipeline',
                             ]
-                        ],
-                        $request->getGenerationTrigger()->getCodeRepositoryEvent()
-                    )),
-                    new TideGenerated($tideUuid, $request->getFlow()->getUuid(), $request->getGenerationUuid(), FlatPipeline::fromPipeline(Pipeline::withConfiguration(
-                        $request->getFlow(),
-                        [
-                            'name' => 'Default pipeline',
-                        ]
-                    ))),
+                        ))
+                    ),
                     new TideFailed($tideUuid, $e->getMessage()),
                 ]
             );

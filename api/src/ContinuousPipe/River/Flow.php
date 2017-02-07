@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River;
 
-use ContinuousPipe\River\Event\TideGenerated;
+use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\EventBased\RaiseEventCapability;
 use ContinuousPipe\River\EventBased\ApplyEventCapability;
 use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
@@ -108,9 +108,9 @@ final class Flow
     }
 
     /**
-     * @param TideGenerated $event
+     * @param TideCreated $event
      */
-    public function tideWasGenerated(TideGenerated $event)
+    public function tideWasCreated(TideCreated $event)
     {
         if ($event->getFlatPipeline() === null) {
             return;

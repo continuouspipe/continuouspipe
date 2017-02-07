@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "202a1185a0c41e118fe0bf27bafb3817",
-    "content-hash": "389291686f78cf32f1dd87ca53cbf6e1",
+    "hash": "82f3f21425c3e46d9a6f3d32d87e9a08",
+    "content-hash": "a382ec675f92a3af4db858e7ce49fa7e",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -4852,16 +4852,16 @@
         },
         {
             "name": "sroze/log-stream",
-            "version": "0.4.3",
+            "version": "0.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroze/logstream-client.git",
-                "reference": "ad5ac58a586c758614386c0b125a88bb0afccd60"
+                "reference": "770e28b64b364c4d98741be758e29597660b3a8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/logstream-client/zipball/ad5ac58a586c758614386c0b125a88bb0afccd60",
-                "reference": "ad5ac58a586c758614386c0b125a88bb0afccd60",
+                "url": "https://api.github.com/repos/sroze/logstream-client/zipball/770e28b64b364c4d98741be758e29597660b3a8a",
+                "reference": "770e28b64b364c4d98741be758e29597660b3a8a",
                 "shasum": ""
             },
             "require": {
@@ -4886,7 +4886,7 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "time": "2017-01-16 20:07:30"
+            "time": "2017-02-07 16:16:19"
         },
         {
             "name": "swiftmailer/swiftmailer",
