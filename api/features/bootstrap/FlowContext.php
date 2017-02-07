@@ -284,6 +284,19 @@ EOF;
     }
 
     /**
+     * @When I send an update request with the following configuration:
+     */
+    public function iSendAnUpdateRequestWithTheFollowingConfiguration(PyStringNode $string)
+    {
+        $url = sprintf('/flows/%s/configuration', $this->flowUuid);
+        $this->response = $this->kernel->handle(Request::create($url, 'POST', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], json_encode([
+            'yml_configuration' => $string->getRaw()
+        ])));
+    }
+
+    /**
      * @When I retrieve the list of the flows
      */
     public function iRetrieveTheListOfTheFlows()
@@ -387,6 +400,7 @@ EOF;
     /**
      * @Then the flow is not saved
      * @Then I should be told that my flow creation request is invalid
+     * @Then the flow is not saved because of a bad request error
      */
     public function theFlowIsNotSaved()
     {

@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\River\Flow\ConfigurationException;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Flow\Request\FlowCreationRequest;
@@ -10,6 +11,7 @@ use ContinuousPipe\Security\Authenticator\UserContext;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 class FlowFactory
@@ -72,6 +74,8 @@ class FlowFactory
      * @param Flow              $flow
      * @param FlowUpdateRequest $updateRequest
      *
+     * @throws ConfigurationException
+     *
      * @return FlatFlow
      */
     public function update(Flow $flow, FlowUpdateRequest $updateRequest)
@@ -90,6 +94,8 @@ class FlowFactory
     /**
      * @param FlowUpdateRequest $updateRequest
      *
+     * @throws ConfigurationException
+     *
      * @return array
      */
     private function parseConfiguration(FlowUpdateRequest $updateRequest)
@@ -99,6 +105,10 @@ class FlowFactory
             return [];
         }
 
-        return Yaml::parse($configuration);
+        try {
+            return Yaml::parse($configuration);
+        } catch (ParseException $e) {
+            throw new ConfigurationException('The configuration is not a valid YAML file: '.$e->getMessage(), $e->getCode(), $e);
+        }
     }
 }
