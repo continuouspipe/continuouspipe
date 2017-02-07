@@ -16,6 +16,7 @@
             <argument type="service" id="builder.billing.subscription_client" />
             <argument type="service" id="app.billing.trial_resolver" />
             <argument type="service" id="app.billing.activity_tracker" />
+            <argument type="service" id="router" />
             <argument>%recurly_subdomain%</argument>
         </service>
 

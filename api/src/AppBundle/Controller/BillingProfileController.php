@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * @Route(service="app.controller.billing_profile")
@@ -41,6 +42,10 @@ class BillingProfileController
      */
     private $activityTracker;
     /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGenerator;
+    /**
      * @var string
      */
     private $recurlySubdomain;
@@ -50,6 +55,7 @@ class BillingProfileController
         SubscriptionClient $subscriptionClient,
         TrialResolver $trialResolver,
         ActivityTracker $activityTracker,
+        UrlGeneratorInterface $urlGenerator,
         string $recurlySubdomain
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
@@ -57,6 +63,7 @@ class BillingProfileController
         $this->recurlySubdomain = $recurlySubdomain;
         $this->trialResolver = $trialResolver;
         $this->activityTracker = $activityTracker;
+        $this->urlGenerator = $urlGenerator;
     }
 
     /**
@@ -141,6 +148,8 @@ class BillingProfileController
                         $request->getSession()->getFlashBag()->add('danger', $e->getMessage());
                     }
                 }
+
+                return new RedirectResponse($this->urlGenerator->generate('account_billing_profile'));
             }
         }
 
