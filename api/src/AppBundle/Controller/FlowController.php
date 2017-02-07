@@ -16,6 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use SimpleBus\Message\Bus\MessageBus;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -161,7 +162,13 @@ class FlowController
      */
     public function updateAction(Flow $flow, Flow\Request\FlowUpdateRequest $updateRequest)
     {
-        return $this->flowFactory->update($flow, $updateRequest);
+        try {
+            return $this->flowFactory->update($flow, $updateRequest);
+        } catch (Flow\ConfigurationException $e) {
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+            ], 400);
+        }
     }
 
     /**
