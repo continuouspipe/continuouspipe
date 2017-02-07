@@ -6,16 +6,108 @@
 {% endblock %}
 {% block account_content %}
 <form action="" method="POST">
-<h2>Activity</h2>
+{% if subscriptions is empty %}
+<h2>Subscription</h2>
 {% if trialExpiration < date() %}
-<div class="alert alert-danger">
-    Your trial expired on {{ trialExpiration | date('d/m/Y') }}
-</div>
+    <div class="alert alert-danger">
+        Your trial expired on {{ trialExpiration | date('d/m/Y') }}
+    </div>
 {% else %}
-<div class="alert alert-warning">
-    Your trial will expire {{ trialExpiration|time_diff }}
+    <div class="alert alert-warning">
+        Your trial will expire {{ trialExpiration|time_diff }}
+    </div>
+{% endif %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Number of users</h3>
+            </div>
+            <div class="panel-body">
+                <p>Select the number of users you would like to subscribe for.</p>
+                <input id="subscription-users-slider" name="quantity" type="text" style="width: 100%" />
+            </div>
+            <div class="panel-footer">
+                <button type="submit" name="_operation" value="subscribe" class="btn btn-primary" data-action="subscribe">Subscribe</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">What is a user?</h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    A user is an individual interacting with the various environments. In practical terms, it will be anybody who
+                    is pushing some code to the code repositories or creating/removing environments from the UI.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+{% else %}
+{% for subscription in subscriptions %}
+<h2>My subscription</h2>
+{% if subscription.state != constant('STATE_ACTIVE', subscription) %}
+    <div class="alert alert-danger">Your subscription is not active.</div>
+{% endif %}
+<form action="" method="POST">
+<input type="hidden" name="_subscription_uuid" value="{{ subscription.uuid | escape('html_attr') }}" />
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Current plan</h3>
+            </div>
+            <div class="panel-body">
+                <p>You subscribed to <strong data-current-plan-quantity="{{ subscription.quantity | escape('html_attr') }}">{{ subscription.quantity }}</strong> <strong>{{ subscription.plan }}</strong> plan(s).</p>
+                <p>
+                    Your subscription is <strong>{{ subscription.state }}</strong>
+                    {% if subscription.expirationDate is not null %}and will expire on {{ subscription.expirationDate | date('d/m/Y H:i:s') }}.{% endif %}
+                </p>
+                <p>The current billing period started on {{ subscription.currentBillingPeriodStartedAt | date('d/m/Y H:i:s') }} and will end on {{ subscription.currentBillingPeriodEndsAt | date('d/m/Y H:i:s') }}</p>
+            </div>
+            <div class="panel-footer">
+                <a href="{{ subscription.hostedDetailsUrl | escape('html_attr') }}" class="btn btn-primary" data-action="details">Manage &amp; Details</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Upgrade/Downgrade</h3>
+            </div>
+            <div class="panel-body">
+                <p>Select the number of users you would like to upgrade or downgrade to.</p>
+                <input id="subscription-{{ subscription.uuid | escape('html_attr') }}-users-slider" name="quantity" type="text" style="width: 100%" value="{{ subscription.quantity | escape('html_attr') }}" />
+            </div>
+            <div class="panel-footer">
+                <button type="submit" name="_operation" value="update" class="btn btn-primary" data-action="update">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% if subscription.state == constant('STATE_ACTIVE', subscription) %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-danger">
+            <div class="panel-body">
+                <form action="" method="POST">
+                    <button type="submit" name="_operation" value="cancel" class="pull-right btn btn-danger" data-action="cancel">Cancel</button>
+                    <input type="hidden" name="_subscription_uuid" value="{{ subscription.uuid | escape('html_attr') }}" />
+                    <p>You can cancel your subscription by clicking on this button.</p>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endif %}
+</form>
+{% endfor %}
+{% endif %}
+<h2>Activity</h2>
 <div class="row">
     <div class="col-md-6">
         <div class="panel panel-default">
@@ -54,93 +146,6 @@
         </div>
     </div>
 </div>
-{% if subscriptions is empty %}
-<h2>Subscription</h2>
-<div class="row">
-    <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Number of users</h3>
-            </div>
-            <div class="panel-body">
-                <p>Select the number of users you would like to subscribe for.</p>
-                <input id="subscription-users-slider" name="quantity" type="text" style="width: 100%" />
-            </div>
-            <div class="panel-footer">
-                <button type="submit" name="_operation" value="subscribe" class="btn btn-primary" data-action="subscribe">Subscribe</button>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">What is a user?</h3>
-            </div>
-            <div class="panel-body">
-                <p>
-                    A user is an individual interacting with the various environments. In practical terms, it will be anybody who
-                    is pushing some code to the code repositories or creating/removing environments from the UI.
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-</form>
-{% else %}
-{% for subscription in subscriptions %}
-<h2>My subscription</h2>
-<form action="" method="POST">
-<input type="hidden" name="_subscription_uuid" value="{{ subscription.uuid | escape('html_attr') }}" />
-<div class="row">
-    <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Current plan</h3>
-            </div>
-            <div class="panel-body">
-                <p>You subscribed to <strong data-current-plan-quantity="{{ subscription.quantity | escape('html_attr') }}">{{ subscription.quantity }}</strong> <strong>{{ subscription.plan }}</strong> plan(s).</p>
-                <p>
-                    Your subscription is <strong>{{ subscription.state }}</strong>
-                    {% if subscription.expirationDate is not null %}and will expire on {{ subscription.expirationDate | date('d/m/Y H:i:s') }}.{% endif %}
-                </p>
-                <p>The current billing period started on {{ subscription.currentBillingPeriodStartedAt | date('d/m/Y H:i:s') }} and will end on {{ subscription.currentBillingPeriodEndsAt | date('d/m/Y H:i:s') }}</p>
-            </div>
-            <div class="panel-footer">
-                <a href="{{ subscription.hostedDetailsUrl | escape('html_attr') }}" class="btn btn-primary" data-action="details">Manage &amp; Details</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Upgrade/Downgrade</h3>
-            </div>
-            <div class="panel-body">
-                <p>Select the number of users you would like to upgrade or downgrade to.</p>
-                <input id="subscription-{{ subscription.uuid | escape('html_attr') }}-users-slider" name="quantity" type="text" style="width: 100%" value="{{ subscription.quantity | escape('html_attr') }}" />
-            </div>
-            <div class="panel-footer">
-                <button type="submit" name="_operation" value="update" class="btn btn-primary" data-action="update">Update</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-danger">
-            <div class="panel-body">
-                <form action="" method="POST">
-                    <button type="submit" name="_operation" value="cancel" class="pull-right btn btn-danger" data-action="cancel">Cancel</button>
-                    <input type="hidden" name="_subscription_uuid" value="{{ subscription.uuid | escape('html_attr') }}" />
-                    <p>You can cancel your subscription by clicking on this button.</p>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-</form>
-{% endfor %}
-{% endif %}
 {% endblock %}
 {% block javascripts %}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.0/bootstrap-slider.min.js"></script>
@@ -176,6 +181,7 @@ new Chart(document.getElementById("activityChart"), {
         ],
         datasets: [
             {
+                label: 'Active users',
                 data: [
                     {% for activityDay in activityPerDay %}
                     {{ activityDay.count }}
@@ -183,6 +189,19 @@ new Chart(document.getElementById("activityChart"), {
                     {% endfor %}
                 ]
             }
+            {% for subscription in subscriptions %}
+            , {
+                type: 'line',
+                label: 'Allowed users in subscription',
+                pointRadius: 1,
+                data: [
+                    {% for activityDay in activityPerDay %}
+                    {{ subscription.quantity }}
+                    {% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            }
+            {% endfor %}
         ]
     },
     options: {
@@ -198,6 +217,10 @@ new Chart(document.getElementById("activityChart"), {
             rectangle: {
                 borderWidth: 1,
                 backgroundColor: 'rgba(54, 162, 235, 0.2)'
+            },
+
+            line: {
+                fill: false
             }
         }
     }
