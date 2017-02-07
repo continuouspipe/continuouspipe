@@ -241,4 +241,16 @@ class SecurityContext implements Context
             $encryptedValue
         );
     }
+
+    /**
+     * @Given the decrypted version of the value :encryptedValue for the flow :flowUuid will be :plainValue
+     */
+    public function theDecryptedVersionOfTheValueForTheFlowWillBe($encryptedValue, $flowUuid, $plainValue)
+    {
+        $this->previouslyKnownEncryptedVariableVault->addDecryptionMapping(
+            Uuid::fromString($flowUuid),
+            $encryptedValue,
+            $plainValue
+        );
+    }
 }

@@ -113,6 +113,7 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('value')->end()
                     ->scalarNode('condition')->end()
                     ->scalarNode('expression')->end()
+                    ->scalarNode('encrypted_value')->end()
                 ->end()
             ->end()
         ;

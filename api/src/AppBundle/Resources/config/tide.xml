@@ -76,7 +76,9 @@
         </service>
 
         <service id="river.tide.configuration_finalizer.replace_environ_values"
-                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues" />
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues">
+            <argument type="service" id="river.flow.encrypted_variable_vault" />
+        </service>
 
         <service id="river.task_filter.context_factory" class="ContinuousPipe\River\Filter\ContextFactory">
             <argument type="service" id="river.github.client_factory" />

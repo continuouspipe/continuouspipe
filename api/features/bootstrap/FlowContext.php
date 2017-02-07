@@ -282,11 +282,12 @@ EOF;
     }
 
     /**
+     * @Given the flow :flowUuid have the following configuration:
      * @When I send an update request with the following configuration:
      */
-    public function iSendAnUpdateRequestWithTheFollowingConfiguration(PyStringNode $string)
+    public function iSendAnUpdateRequestWithTheFollowingConfiguration(PyStringNode $string, $flowUuid = null)
     {
-        $url = sprintf('/flows/%s/configuration', $this->flowUuid);
+        $url = sprintf('/flows/%s/configuration', $flowUuid ?: $this->flowUuid);
         $this->response = $this->kernel->handle(Request::create($url, 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
         ], json_encode([
@@ -501,11 +502,12 @@ EOF;
 
     /**
      * @Given I have a flow with the following configuration:
+     * @Given I have a flow with UUID :uuid and the following configuration:
      */
-    public function iHaveAFlowWithTheFollowingConfiguration(PyStringNode $string)
+    public function iHaveAFlowWithTheFollowingConfiguration(PyStringNode $string, $uuid = null)
     {
-        if (null === $this->currentFlow) {
-            $this->createFlow(null, Yaml::parse($string->getRaw()));
+        if (null === $this->currentFlow || $uuid !== null) {
+            $this->createFlow($uuid !== null ? Uuid::fromString($uuid) : null, Yaml::parse($string->getRaw()));
         }
     }
 
