@@ -20,5 +20,6 @@ class AppExtension extends Extension
         $loader->load('admin.xml');
         $loader->load('intercom.xml');
         $loader->load('billing.xml');
+        $loader->load('alerts.xml');
     }
 }
