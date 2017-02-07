@@ -83,7 +83,7 @@ class RedisCachedTokenResolver implements TokenResolver
      */
     private function loadTokenFromCachedValue(string $cachedValue)
     {
-        $json = \GuzzleHttp\json_decode($cachedValue);
+        $json = \GuzzleHttp\json_decode($cachedValue, true);
         if (!array_key_exists('access_token', $json)) {
             throw new \InvalidArgumentException('The key `access_token` is not found in the loaded JSON');
         }
