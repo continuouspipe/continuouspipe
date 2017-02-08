@@ -108,12 +108,18 @@ angular.module('continuousPipeRiver')
 
             parsed[target] = 
                 variables.filter(function(variable) {
-                    return variable.name && variable.value;
+                    return variable.name && (variable.value || variable.encrypted_value);
                 }).map(function(variable) {
                     var yamlVariable = {
-                        name: variable.name,
-                        value: variable.value
+                        name: variable.name
                     };
+
+                    if (variable.value) {
+                        yamlVariable.value = variable.value;
+                    }
+                    if (variable.encrypted_value) {
+                        yamlVariable.encrypted_value = variable.encrypted_value;
+                    }
 
                     if (variable.condition) {
                         yamlVariable.condition = variable.condition;
@@ -134,6 +140,29 @@ angular.module('continuousPipeRiver')
 
         $scope.removeVariableByKey = function(key) {
             $scope.variables.splice(key, 1);
+        };
+
+        $scope.encryptByKey = function(key) {
+            swal({
+                title: "Are you sure?",
+                text: "After encrypting the value, you won\'t be able to read the value again on this user interface.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, encrypt it!",
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
+            }, function() {
+                FlowRepository.encrypt(flow, $scope.variables[key]).then(function(encryptedValue) {
+                    $scope.variables[key].encrypted_value = encryptedValue;
+
+                    delete $scope.variables[key].value;
+
+                    swal("Variable encrypted!");
+                }, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while encrypting the variable", "error");
+                });
+            });
         };
 
         $scope.delete = function() {
