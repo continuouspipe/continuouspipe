@@ -13,7 +13,7 @@ pipelines:
     - name: Production
       condition: code_reference.branch == 'production'
       tasks: [ images, deployment, migrations ]
-    - name: Feature branches
+    - name: Pull-request CI
       condition: code_reference.branch not in ['master', 'production']
       tasks: [ images ]
 
@@ -186,9 +186,6 @@ tasks:
                             type: tcp
                             port: 2113
 
-        filter:
-            expression: 'code_reference.branch in ["master", "production"] or "cp:tide" in pull_request.labels'
-
     migrations:
         run:
             cluster: ${CLUSTER}
@@ -202,9 +199,6 @@ tasks:
 
             environment_variables:
                 <<: *ENV
-
-        filter:
-            expression: 'code_reference.branch in ["master", "production"] or "cp:tide" in pull_request.labels'
 
 notifications:
     inviqa_slack:
