@@ -109,12 +109,12 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
     /**
      * {@inheritdoc}
      */
-    public function findRelations(UserBillingProfile $billingProfile)
+    public function findRelations(UuidInterface $billingProfileUuid)
     {
         $teamSlugs = [];
 
         foreach ($this->links as $teamSlug => $profile) {
-            if ($profile->getUuid()->equals($billingProfile->getUuid())) {
+            if ($profile->getUuid()->equals($billingProfileUuid)) {
                 $teamSlugs[] = $teamSlug;
             }
         }

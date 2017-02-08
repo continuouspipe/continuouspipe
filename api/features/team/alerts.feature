@@ -43,3 +43,27 @@ Feature:
     Then I should see the "billing-profile-trial" alert with the message "Your trial period is ending in 12 days."
     Then I should not see the "billing-profile-has-no-active-subscription" alert
     And I should not see the "billing-profile-has-no-subscription" alert
+
+  Scenario: An activity over the subscription level will create an alert
+    Given the billing account "00000000-0000-0000-0000-000000000000" have the following subscriptions:
+      | plan        | quantity | state  |
+      | single-user | 1        | active |
+    And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
+    And the following usage is recorded for the team "foo":
+      | flow_uuid                            | type | user  | date       |
+      | 00000000-0000-0000-0000-000000000000 | push | sroze | -2 days    |
+      | 00000000-0000-0000-0000-000000000000 | push | tony  | -1 day     |
+    When I request the alerts of the team "foo"
+    Then I should see the "usage-over-subscription" alert
+
+  Scenario: An activity under or equals to the subscription do not trigger an alert
+    Given the billing account "00000000-0000-0000-0000-000000000000" have the following subscriptions:
+      | plan        | quantity | state  |
+      | single-user | 1        | active |
+    And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
+    And the following usage is recorded for the team "foo":
+      | flow_uuid                            | type | user  | date       |
+      | 00000000-0000-0000-0000-000000000000 | push | sroze | -1 day     |
+      | 00000000-0000-0000-0000-000000000000 | push | sroze | -2 days    |
+    When I request the alerts of the team "foo"
+    Then I should not see the "usage-over-subscription" alert
