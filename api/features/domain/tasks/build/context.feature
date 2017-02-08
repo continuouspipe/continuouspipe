@@ -91,3 +91,82 @@ Feature:
     And the step #0 of the build should be started with the Dockerfile path "./Buildfile"
     And the step #1 of the build should be started with the Dockerfile path "./Dockerfile"
     And the step #1 of the build should be started with the image name "sroze/image"
+
+  Scenario:
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+      ##################################
+      # Second level dependency images #
+      ##################################
+      second_level_dependency_images:
+        build:
+          services:
+            ubuntu:
+              image: quay.io/continuouspipe/ubuntu16.04
+              tag: latest
+
+      #################################
+      # First level dependency images #
+      #################################
+      first_level_dependency_images:
+        build:
+          services:
+            php71_apache:
+              image: quay.io/continuouspipe/php7.1-apache
+              tag: latest
+              environment:
+                - name: PHP_VERSION
+                  value: '7.1'
+            php70_apache:
+              image: quay.io/continuouspipe/php7-apache
+              tag: latest
+              environment:
+                - name: PHP_VERSION
+                  value: '7.0'
+
+    filter: code_reference.branch in ["master"]
+    """
+    Given I have a "docker-compose.yml" file in my repository that contains:
+    """
+    version: '2'
+    services:
+      ubuntu:
+        build:
+          context: ./ubuntu/16.04/
+        image: quay.io/continuouspipe/ubuntu16.04:latest
+        depends_on:
+          - external_ubuntu
+
+      php71_apache:
+        build:
+          context: ./php-apache/
+          args:
+            PHP_VERSION: 7.1
+        image: quay.io/continuouspipe/php7.1-apache:latest
+        depends_on:
+          - ubuntu
+
+      php70_apache:
+        build:
+          context: ./php-apache/
+          args:
+            PHP_VERSION: 7.0
+        image: quay.io/continuouspipe/php7-apache:latest
+        depends_on:
+          - ubuntu
+
+      external_ubuntu:
+        image: ubuntu:16.04
+    """
+    When a tide is started
+    And the first image build is successful
+    Then the build #0 should be started with the image name "quay.io/continuouspipe/ubuntu16.04"
+    And the build #0 should be started with the sub-directory "./ubuntu/16.04/"
+    And the build #0 should be started with the tag "latest"
+    And the build #1 should be started with the image name "quay.io/continuouspipe/php7.1-apache"
+    And the build #1 should be started with the sub-directory "./php-apache/"
+    And the build #1 should be started with the tag "latest"
+    And the build #2 should be started with the image name "quay.io/continuouspipe/php7-apache"
+    And the build #2 should be started with the sub-directory "./php-apache/"
+    And the build #2 should be started with the tag "latest"

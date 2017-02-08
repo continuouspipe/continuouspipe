@@ -371,18 +371,41 @@ class BuildContext implements Context
 
     /**
      * @Then the build should be started with the image name :imageName
+     * @Then the build #:buildIndex should be started with the image name :imageName
      * @Then the step #:stepIndex of the build should be started with the image name :imageName
      */
-    public function theBuildShouldBeStartedWithTheImageName($imageName, $stepIndex = null)
+    public function theBuildShouldBeStartedWithTheImageName($imageName, $stepIndex = null, $buildIndex = null)
     {
-        $step = $this->getBuildRequestStep(null, $stepIndex);
-        $foundImageName = $step->getImage()->getName();
+        $step = $this->getBuildRequestStep($buildIndex, $stepIndex);
+        if (null === $step->getImage()) {
+            throw new \RuntimeException('No image found for this build step');
+        }
 
+        $foundImageName = $step->getImage()->getName();
         if ($imageName != $foundImageName) {
             throw new \RuntimeException(sprintf(
                 'The image name found is "%s" while expecting "%s"',
                 $foundImageName,
                 $imageName
+            ));
+        }
+    }
+
+    /**
+     * @Then the build should be started with the tag :tag
+     * @Then the build #:buildIndex should be started with the tag :tag
+     * @Then the step #:stepIndex of the build should be started with the tag :tag
+     */
+    public function theBuildShouldBeStartedWithTheTag($tag, $stepIndex = null, $buildIndex = null)
+    {
+        $step = $this->getBuildRequestStep($buildIndex, $stepIndex);
+        $foundTag = $step->getImage()->getTag();
+
+        if ($tag != $foundTag) {
+            throw new \RuntimeException(sprintf(
+                'The tag found is "%s" while expecting "%s"',
+                $foundTag,
+                $tag
             ));
         }
     }
@@ -405,10 +428,11 @@ class BuildContext implements Context
 
     /**
      * @Then the build should be started with the sub-directory :path
+     * @Then the build #:buildIndex should be started with the sub-directory :path
      */
-    public function theBuildShouldBeStartedWithTheSubDirectory($path)
+    public function theBuildShouldBeStartedWithTheSubDirectory($path, $buildIndex = null)
     {
-        $step = $this->getBuildRequestStep();
+        $step = $this->getBuildRequestStep($buildIndex);
         $foundPath = $step->getContext()->getRepositorySubDirectory();
 
         if ($path != $foundPath) {
