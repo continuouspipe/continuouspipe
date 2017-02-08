@@ -94,7 +94,7 @@ class RedisCachedTokenResolver implements TokenResolver
         return new Token(
             $json['access_token'],
             $json['token_type'],
-            $expirationDate->getTimestamp() - $now->getTimestamp();,
+            $expirationDate->getTimestamp() - $now->getTimestamp(),
             $json['id_token']
         );
     }
