@@ -10,6 +10,7 @@ use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Billing\Subscription\Subscription;
 use ContinuousPipe\Billing\Subscription\SubscriptionClient;
+use ContinuousPipe\Billing\Usage\UsageTracker;
 use ContinuousPipe\Security\Team\Team;
 
 class TeamBillingProfileAlertFinder implements AlertFinder
@@ -26,15 +27,21 @@ class TeamBillingProfileAlertFinder implements AlertFinder
      * @var TrialResolver
      */
     private $trialResolver;
+    /**
+     * @var UsageTracker
+     */
+    private $usageTracker;
 
     public function __construct(
         UserBillingProfileRepository $userBillingProfileRepository,
         SubscriptionClient $subscriptionClient,
-        TrialResolver $trialResolver
+        TrialResolver $trialResolver,
+        UsageTracker $usageTracker
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
         $this->subscriptionClient = $subscriptionClient;
         $this->trialResolver = $trialResolver;
+        $this->usageTracker = $usageTracker;
     }
 
     /**
@@ -87,27 +94,61 @@ class TeamBillingProfileAlertFinder implements AlertFinder
                         'configuration'
                     )
                 );
-            } elseif (!$this->hasActiveSubscription($subscriptions)) {
-                $alerts[] = new Alert(
-                    'billing-profile-has-no-active-subscription',
-                    'The team billing profile subscription is not active. You\'ll have a very limited experience.',
-                    new \DateTime(),
-                    new AlertAction(
-                        'state',
-                        'Configure the team',
-                        'configuration'
-                    )
-                );
+            } else {
+                $activeSubscriptions = $this->getActiveSubscription($subscriptions);
+
+                if (count($activeSubscriptions) == 0) {
+                    $alerts[] = new Alert(
+                        'billing-profile-has-no-active-subscription',
+                        'The team billing profile subscription is not active. You\'ll have a very limited experience.',
+                        new \DateTime(),
+                        new AlertAction(
+                            'state',
+                            'Configure the team',
+                            'configuration'
+                        )
+                    );
+                } else {
+                    $allowedActiveUsers = array_reduce($activeSubscriptions, function(int $carry, Subscription $subscription) {
+                        return $carry + $subscription->getQuantity();
+                    }, 0);
+
+                    /** @var Subscription $principalSubscription */
+                    $principalSubscription = current($activeSubscriptions);
+                    $usage = $this->usageTracker->getUsage($billingProfile->getUuid(), $principalSubscription->getCurrentBillingPeriodStartedAt(), $principalSubscription->getCurrentBillingPeriodEndsAt());
+
+                    if ($usage->getNumberOfActiveUsers() > $allowedActiveUsers) {
+                        $alerts[] = new Alert(
+                            'usage-over-subscription',
+                            sprintf(
+                                'We\'ve identified %d active users in this billing period while your subscription is for %d users.',
+                                $usage->getNumberOfActiveUsers(),
+                                $allowedActiveUsers
+                            ),
+                            new \DateTime(),
+                            new AlertAction(
+                                'href',
+                                'Upgrade',
+                                'https://authenticator.continuouspipe.io/account/billing-profile'
+                            )
+                        );
+                    }
+                }
             }
         }
 
         return $alerts;
     }
 
-    private function hasActiveSubscription(array $subscriptions) : bool
+    /**
+     * @param Subscription[] $subscriptions
+     *
+     * @return Subscription[]
+     */
+    private function getActiveSubscription(array $subscriptions) : array
     {
-        return array_reduce($subscriptions, function (bool $carry, Subscription $subscription) {
-            return $carry || $subscription->getState() == Subscription::STATE_ACTIVE;
-        }, false);
+        return array_filter($subscriptions, function (Subscription $subscription) {
+            return $subscription->getState() == Subscription::STATE_ACTIVE;
+        });
     }
 }

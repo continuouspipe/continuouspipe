@@ -107,7 +107,7 @@ class SubscriptionContext implements Context
                     $row['state'],
                     (int) $row['quantity'],
                     0,
-                    new \DateTime(),
+                    new \DateTime('-1 month'),
                     new \DateTime()
                 )
             );

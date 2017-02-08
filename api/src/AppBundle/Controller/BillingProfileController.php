@@ -75,7 +75,7 @@ class BillingProfileController
     {
         try {
             $billingProfile = $this->userBillingProfileRepository->findByUser($user);
-            $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile);
+            $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
 
             $activities = [];
             foreach ($billingProfileTeams as $team) {

@@ -44,8 +44,9 @@ class UserActivity implements Message
      */
     private $dateTime;
 
-    public function __construct(UuidInterface $flowUuid, string $type, UserActivityUser $user, \DateTimeInterface $dateTime)
+    public function __construct(string $teamSlug, UuidInterface $flowUuid, string $type, UserActivityUser $user, \DateTimeInterface $dateTime)
     {
+        $this->teamSlug = $teamSlug;
         $this->flowUuid = $flowUuid;
         $this->type = $type;
         $this->user = $user;

@@ -125,14 +125,14 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
     /**
      * {@inheritdoc}
      */
-    public function findRelations(UserBillingProfile $billingProfile)
+    public function findRelations(UuidInterface $billingProfileUuid)
     {
         $query = $this->getUserBillingProfileTeamRelationRepository()
             ->createQueryBuilder('relation')
             ->addSelect('team')
             ->join('relation.team', 'team')
             ->where('relation.userBillingProfile = :billingProfile')
-            ->setParameter('billingProfile', $billingProfile)
+            ->setParameter('billingProfile', $billingProfileUuid)
             ->getQuery()
         ;
 

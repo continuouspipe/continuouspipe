@@ -2,8 +2,12 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Billing\ActivityTracker\TracedActivityTracker;
+use ContinuousPipe\Billing\Usage\Usage;
+use ContinuousPipe\Billing\Usage\UsageTracker;
 use ContinuousPipe\Message\UserActivity;
+use ContinuousPipe\Message\UserActivityUser;
 use ContinuousPipe\Security\Team\Team;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -18,11 +22,56 @@ class BillingContext implements Context
      * @var UserActivity[]
      */
     private $activities;
+    /**
+     * @var UsageTracker
+     */
+    private $usageTracker;
 
-    public function __construct(ConsumerInterface $messageConsumer, TracedActivityTracker $tracedActivityTracker)
-    {
+    /**
+     * @var Usage|null
+     */
+    private $usage;
+
+    public function __construct(
+        ConsumerInterface $messageConsumer,
+        TracedActivityTracker $tracedActivityTracker,
+        UsageTracker $usageTracker
+    ) {
         $this->messageConsumer = $messageConsumer;
         $this->tracedActivityTracker = $tracedActivityTracker;
+        $this->usageTracker = $usageTracker;
+    }
+
+    /**
+     * @When I calculate the usage of the billing profile :uuid
+     */
+    public function iCalculateTheUsageOfTheBillingProfile($uuid)
+    {
+        $this->usage = $this->usageTracker->getUsage(Uuid::fromString($uuid), new \DateTime('-1 month'), new \DateTime());
+    }
+
+    /**
+     * @Then I should see :activeUsers active users
+     */
+    public function iShouldSeeActiveUsers($activeUsers)
+    {
+
+    }
+
+    /**
+     * @Given the following usage is recorded for the team :teamSlug:
+     */
+    public function theFollowingUsageIsRecordedForTheTeam($teamSlug, TableNode $table)
+    {
+        foreach ($table->getHash() as $row) {
+            $this->tracedActivityTracker->track(new UserActivity(
+                $teamSlug,
+                Uuid::fromString($row['flow_uuid']),
+                $row['type'],
+                new UserActivityUser($row['user']),
+                new \DateTime($row['date'])
+            ));
+        }
     }
 
     /**
