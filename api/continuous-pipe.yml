@@ -33,7 +33,7 @@ tasks:
             cluster: ${CLUSTER}
             environment:
                 name: '"river-" ~ code_reference.branch'
-                
+
             services:
                 rabbitmq:
                     locked: true
@@ -187,7 +187,7 @@ tasks:
                             port: 2113
 
         filter:
-            expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'
+            expression: 'code_reference.branch in ["master", "production"] or "cp:tide" in pull_request.labels'
 
     migrations:
         run:
@@ -204,7 +204,7 @@ tasks:
                 <<: *ENV
 
         filter:
-            expression: 'code_reference.branch == "master" or "cp:tide" in pull_request.labels'
+            expression: 'code_reference.branch in ["master", "production"] or "cp:tide" in pull_request.labels'
 
 notifications:
     inviqa_slack:
