@@ -21,6 +21,4 @@ tasks:
             specification:
               environment_variables:
                 - name: HUGO_BASE_URL
-                  value: https://${SERVICE_HTTPS_PUBLIC_ENDPOINT}
-                - name: HUGO_PORT
-                  value: 443
+                  value: //${SERVICE_HTTPS_PUBLIC_ENDPOINT}
