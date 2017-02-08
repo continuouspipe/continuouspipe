@@ -38,9 +38,15 @@ class BitBucketPullRequestResolver implements PullRequestResolver
             $repository->getName()
         );
 
+        $codeReference = $tide->getCodeReference();
+        $matchingPullRequests = array_values(array_filter($pullRequests, function (BitBucketPullRequest $pullRequest) use ($codeReference) {
+            return $codeReference->getBranch() == $pullRequest->getSource()->getBranch()->getName()
+                || strpos($codeReference->getCommitSha(), $pullRequest->getSource()->getCommit()->getHash()) === 0;
+        }));
+
         return array_map(function (BitBucketPullRequest $pullRequest) {
             return new PullRequest($pullRequest->getId());
-        }, $pullRequests);
+        }, $matchingPullRequests);
     }
 
     /**
