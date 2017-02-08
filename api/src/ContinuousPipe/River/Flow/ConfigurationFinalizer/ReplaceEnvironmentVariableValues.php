@@ -65,7 +65,7 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
                 $item['value'] = $this->resolveExpression($item['expression'], $context);
             }
 
-            if (isset($item['encrypted_value'])) {
+            if (array_key_exists('encrypted_value', $item)) {
                 try {
                     $value = $this->encryptedVariableVault->decrypt($flow->getUuid(), $item['encrypted_value']);
                 } catch (EncryptionException $e) {
@@ -75,7 +75,7 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
                         $e->getMessage()
                     ));
                 }
-            } elseif (isset($item['value'])) {
+            } elseif (array_key_exists('value', $item)) {
                 $value = $item['value'];
             } else {
                 throw new TideConfigurationException(sprintf(
