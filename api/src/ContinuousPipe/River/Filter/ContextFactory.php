@@ -110,21 +110,7 @@ class ContextFactory
         if (null !== ($event = $context->getCodeRepositoryEvent()) && $event instanceof PullRequestEvent) {
             $pullRequest = $event->getPullRequest();
         } else {
-            $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference(
-                \ContinuousPipe\River\View\Tide::create(
-                    $tide->getUuid(),
-                    $tide->getFlowUuid(),
-                    $tide->getCodeReference(),
-                    $tide->getLog(),
-                    $tide->getTeam(),
-                    $tide->getUser(),
-                    $tide->getConfiguration(),
-                    new \DateTime(),
-                    $tide->getGenerationUuid(),
-                    $tide->getPipeline()
-                )
-            );
-
+            $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($tide->getFlowUuid(), $tide->getCodeReference());
             $pullRequest = count($matchingPullRequests) > 0 ? current($matchingPullRequests) : null;
         }
 

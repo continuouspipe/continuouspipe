@@ -81,7 +81,10 @@ class PullRequestCommentNotifier implements Notifier
         // Remove previous comments
         $this->removePreviousComments($tide);
 
-        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($tide);
+        $pullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference(
+            $tide->getFlowUuid(),
+            $tide->getCodeReference()
+        );
 
         foreach ($pullRequests as $pullRequest) {
             // Create the new comment

@@ -2,14 +2,15 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification;
 
+use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\View\Tide;
 use GitHub\WebHook\Model\PullRequest;
 use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\Serializer;
+use Ramsey\Uuid\UuidInterface;
 
 class GitHubPullRequestResolver implements PullRequestResolver
 {
@@ -36,11 +37,10 @@ class GitHubPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(Tide $tide) : array
+    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference) : array
     {
-        $client = $this->gitHubClientFactory->createClientForFlow($tide->getFlowUuid());
+        $client = $this->gitHubClientFactory->createClientForFlow($flowUuid);
 
-        $codeReference = $tide->getCodeReference();
         $repository = $codeReference->getRepository();
         if (!$repository instanceof GitHubCodeRepository) {
             throw new \RuntimeException(sprintf(
@@ -78,8 +78,8 @@ class GitHubPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function supports(Tide $tide): bool
+    public function supports(UuidInterface $flowUuid, CodeReference $codeReference): bool
     {
-        return $tide->getCodeReference()->getRepository() instanceof GitHubCodeRepository;
+        return $codeReference->getRepository() instanceof GitHubCodeRepository;
     }
 }

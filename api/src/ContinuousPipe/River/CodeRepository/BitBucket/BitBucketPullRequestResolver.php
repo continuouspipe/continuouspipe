@@ -2,11 +2,13 @@
 
 namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
+use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\AtlassianAddon\BitBucket\PullRequest as BitBucketPullRequest;
+use Ramsey\Uuid\UuidInterface;
 
 class BitBucketPullRequestResolver implements PullRequestResolver
 {
@@ -26,9 +28,9 @@ class BitBucketPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(Tide $tide): array
+    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference): array
     {
-        $repository = $tide->getCodeReference()->getRepository();
+        $repository = $codeReference->getRepository();
         if (!$repository instanceof BitBucketCodeRepository) {
             throw new CodeRepositoryException('This pull-request comment manipulator only supports BitBucket repositories');
         }
@@ -38,7 +40,6 @@ class BitBucketPullRequestResolver implements PullRequestResolver
             $repository->getName()
         );
 
-        $codeReference = $tide->getCodeReference();
         $matchingPullRequests = array_values(array_filter($pullRequests, function (BitBucketPullRequest $pullRequest) use ($codeReference) {
             return $codeReference->getBranch() == $pullRequest->getSource()->getBranch()->getName()
                 || strpos($codeReference->getCommitSha(), $pullRequest->getSource()->getCommit()->getHash()) === 0;
@@ -52,8 +53,8 @@ class BitBucketPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function supports(Tide $tide): bool
+    public function supports(UuidInterface $flowUuid, CodeReference $codeReference): bool
     {
-        return $tide->getCodeReference()->getRepository() instanceof BitBucketCodeRepository;
+        return $codeReference->getRepository() instanceof BitBucketCodeRepository;
     }
 }
