@@ -2,9 +2,11 @@
 
 namespace ContinuousPipe\River\CodeRepository\ImplementationDelegation;
 
+use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\View\Tide;
+use Ramsey\Uuid\UuidInterface;
 
 class DelegatesToPullRequestResolver implements PullRequestResolver
 {
@@ -24,11 +26,11 @@ class DelegatesToPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(Tide $tide): array
+    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference): array
     {
         foreach ($this->resolvers as $resolver) {
-            if ($resolver->supports($tide)) {
-                return $resolver->findPullRequestWithHeadReference($tide);
+            if ($resolver->supports($flowUuid, $codeReference)) {
+                return $resolver->findPullRequestWithHeadReference($flowUuid, $codeReference);
             }
         }
 
@@ -38,10 +40,10 @@ class DelegatesToPullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function supports(Tide $tide): bool
+    public function supports(UuidInterface $flowUuid, CodeReference $codeReference): bool
     {
         foreach ($this->resolvers as $resolver) {
-            if ($resolver->supports($tide)) {
+            if ($resolver->supports($flowUuid, $codeReference)) {
                 return true;
             }
         }

@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Filter;
 
+use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\Event\GitHub\PullRequestEvent;
@@ -12,7 +13,6 @@ use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\GitHub\ClientFactory;
-use ContinuousPipe\River\TideContext;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
 
@@ -55,28 +55,34 @@ class ContextFactory
     /**
      * Create the context available in tasks' filters.
      *
-     * @param Tide $tide
+     * @param UuidInterface $flowUuid
+     * @param CodeReference $codeReference
+     * @param Tide|null $tide
      *
      * @return ArrayObject
      */
-    public function create(Tide $tide)
+    public function create(UuidInterface $flowUuid, CodeReference $codeReference, Tide $tide = null)
     {
-        $tideContext = $tide->getContext();
-
-        return new ArrayObject([
+        $context = [
             'code_reference' => new ArrayObject([
-                'branch' => $tideContext->getCodeReference()->getBranch(),
-                'sha' => $tideContext->getCodeReference()->getCommitSha(),
-            ]),
-            'tide' => new ArrayObject([
-                'uuid' => (string) $tideContext->getTideUuid(),
+                'branch' => $codeReference->getBranch(),
+                'sha' => $codeReference->getCommitSha(),
             ]),
             'flow' => new ArrayObject([
-                'uuid' => (string) $tideContext->getFlowUuid(),
+                'uuid' => (string) $flowUuid,
             ]),
-            'tasks' => $this->createTasksView($tide->getTasks()->getTasks()),
-            'pull_request' => $this->getPullRequestContext($tide),
-        ]);
+            'pull_request' => $this->getPullRequestContext($flowUuid, $codeReference, $tide),
+        ];
+
+        if (null !== $tide) {
+            $context['tide'] = new ArrayObject([
+                'uuid' => (string) $tide->getUuid(),
+            ]);
+
+            $context['tasks'] = $this->createTasksView($tide->getTasks()->getTasks());
+        }
+
+        return new ArrayObject($context);
     }
 
     /**
@@ -102,29 +108,12 @@ class ContextFactory
      *
      * @return ArrayObject
      */
-    private function getPullRequestContext(Tide $tide)
+    private function getPullRequestContext(UuidInterface $flowUuid, CodeReference $codeReference, Tide $tide = null)
     {
-        $context = $tide->getContext();
-        $repository = $context->getCodeRepository();
-
-        if (null !== ($event = $context->getCodeRepositoryEvent()) && $event instanceof PullRequestEvent) {
+        if (null !== $tide && null !== ($event = $tide->getContext()->getCodeRepositoryEvent()) && $event instanceof PullRequestEvent) {
             $pullRequest = $event->getPullRequest();
         } else {
-            $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference(
-                \ContinuousPipe\River\View\Tide::create(
-                    $tide->getUuid(),
-                    $tide->getFlowUuid(),
-                    $tide->getCodeReference(),
-                    $tide->getLog(),
-                    $tide->getTeam(),
-                    $tide->getUser(),
-                    $tide->getConfiguration(),
-                    new \DateTime(),
-                    $tide->getGenerationUuid(),
-                    $tide->getPipeline()
-                )
-            );
-
+            $matchingPullRequests = $this->pullRequestResolver->findPullRequestWithHeadReference($flowUuid, $codeReference);
             $pullRequest = count($matchingPullRequests) > 0 ? current($matchingPullRequests) : null;
         }
 
@@ -138,19 +127,18 @@ class ContextFactory
 
         return new ArrayObject([
             'number' => $pullRequest->getIdentifier(),
-            'labels' => $this->getPullRequestLabelNames($context->getFlowUuid(), $context, $repository, $pullRequest),
+            'labels' => $this->getPullRequestLabelNames($flowUuid, $codeReference->getRepository(), $pullRequest),
         ]);
     }
 
     /**
-     * @param UuidInterface              $flowUuid
-     * @param TideContext                $context
-     * @param CodeRepository             $codeRepository
+     * @param UuidInterface $flowUuid
+     * @param CodeRepository $codeRepository
      * @param CodeRepository\PullRequest $pullRequest
      *
-     * @return array
+     * @return string[]
      */
-    private function getPullRequestLabelNames(UuidInterface $flowUuid, TideContext $context, CodeRepository $codeRepository, CodeRepository\PullRequest $pullRequest)
+    private function getPullRequestLabelNames(UuidInterface $flowUuid, CodeRepository $codeRepository, CodeRepository\PullRequest $pullRequest)
     {
         if (!$codeRepository instanceof CodeRepository\GitHub\GitHubCodeRepository) {
             return [];
@@ -161,7 +149,6 @@ class ContextFactory
         } catch (UserCredentialsNotFound $e) {
             $this->logger->warning('Unable to get pull-request labels, credentials not found', [
                 'exception' => $e,
-                'user' => $context->getUser(),
             ]);
 
             return [];

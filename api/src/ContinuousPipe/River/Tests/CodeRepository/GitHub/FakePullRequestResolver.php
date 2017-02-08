@@ -2,8 +2,10 @@
 
 namespace ContinuousPipe\River\Tests\CodeRepository\GitHub;
 
+use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\View\Tide;
+use Ramsey\Uuid\UuidInterface;
 
 class FakePullRequestResolver implements PullRequestResolver
 {
@@ -12,7 +14,7 @@ class FakePullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function findPullRequestWithHeadReference(Tide $tide) : array
+    public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference) : array
     {
         return $this->resolution;
     }
@@ -20,7 +22,7 @@ class FakePullRequestResolver implements PullRequestResolver
     /**
      * {@inheritdoc}
      */
-    public function supports(Tide $tide): bool
+    public function supports(UuidInterface $flowUuid, CodeReference $codeReference): bool
     {
         return true;
     }

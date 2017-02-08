@@ -2,11 +2,11 @@
 
 namespace ContinuousPipe\River\Pipeline\Generation;
 
+use ContinuousPipe\River\Filter\ContextFactory;
 use ContinuousPipe\River\Filter\FilterException;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Pipeline\PipelineTideGenerator;
-use ContinuousPipe\River\Pipeline\TideGenerationException;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
@@ -28,17 +28,21 @@ class TideForEachPipelineGenerator implements PipelineTideGenerator
      * @var LoggerInterface
      */
     private $logger;
-
     /**
-     * @param TideConfigurationFactory $tideConfigurationFactory
-     * @param TideFactory              $tideFactory
-     * @param LoggerInterface          $logger
+     * @var ContextFactory
      */
-    public function __construct(TideConfigurationFactory $tideConfigurationFactory, TideFactory $tideFactory, LoggerInterface $logger)
-    {
+    private $contextFactory;
+
+    public function __construct(
+        TideConfigurationFactory $tideConfigurationFactory,
+        TideFactory $tideFactory,
+        LoggerInterface $logger,
+        ContextFactory $contextFactory
+    ) {
         $this->tideConfigurationFactory = $tideConfigurationFactory;
         $this->tideFactory = $tideFactory;
         $this->logger = $logger;
+        $this->contextFactory = $contextFactory;
     }
 
     /**
@@ -61,7 +65,11 @@ class TideForEachPipelineGenerator implements PipelineTideGenerator
 
         foreach ($pipelines as $pipeline) {
             try {
-                $matchesCondition = $pipeline->matchesCondition($request->getCodeReference());
+                $matchesCondition = $pipeline->matchesCondition(
+                    $this->contextFactory,
+                    $request->getFlow()->getUuid(),
+                    $request->getCodeReference()
+                );
             } catch (FilterException $e) {
                 throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
             }

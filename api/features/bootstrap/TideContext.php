@@ -354,6 +354,21 @@ EOF;
     }
 
     /**
+     * @Then the tide should not be failed
+     */
+    public function theTideShouldNotBeFailed()
+    {
+        $numberOfTideFailedEvents = count($this->getEventsOfType(TideFailed::class));
+
+        if (0 !== $numberOfTideFailedEvents) {
+            throw new \Exception(sprintf(
+                'Found %d tide failed event, expected 0',
+                $numberOfTideFailedEvents
+            ));
+        }
+    }
+
+    /**
      * @Then the tide should be cancelled
      */
     public function theTideShouldBeCancelled()
