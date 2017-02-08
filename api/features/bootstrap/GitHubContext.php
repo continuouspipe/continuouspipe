@@ -519,6 +519,14 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @Given the pull-request #:number do not contains the tide-related commit
+     */
+    public function thePullRequestDoNotContainsTheTideRelatedCommit()
+    {
+        $this->fakePullRequestResolver->willResolve([]);
+    }
+
+    /**
      * @Then the addresses of the environment should be commented on the pull-request
      */
     public function theAddressesOfTheEnvironmentShouldBeCommentedOnThePullRequest()
@@ -530,6 +538,21 @@ class GitHubContext implements CodeRepositoryContext
 
         if (count($matchingRequests) == 0) {
             throw new \RuntimeException('Expected at least 1 notification, found 0');
+        }
+    }
+
+    /**
+     * @Then the addresses of the environment should not be commented on the pull-request
+     */
+    public function theAddressesOfTheEnvironmentShouldNotBeCommentedOnThePullRequest()
+    {
+        $requests = $this->gitHubHttpClient->getRequests();
+        $matchingRequests = array_filter($requests, function(array $request) {
+            return $request['method'] == 'POST' && preg_match('#repos/([a-z0-9-]+)/([a-z0-9-]+)/issues/\d+/comments#i', $request['path']);
+        });
+
+        if (count($matchingRequests) != 0) {
+            throw new \RuntimeException(sprintf('Expected 0 notification, found %d', count($matchingRequests)));
         }
     }
 
@@ -551,24 +574,6 @@ class GitHubContext implements CodeRepositoryContext
 
         if (count($matchingComments) == 0) {
             throw new \RuntimeException('No comment containing this address found');
-        }
-    }
-
-    /**
-     * @Then the addresses of the environment should not be commented on the pull-request
-     */
-    public function theAddressesOfTheEnvironmentShouldNotBeCommentedOnThePullRequest()
-    {
-        $requests = $this->gitHubHttpClient->getRequests();
-        $matchingRequests = array_filter($requests, function(array $request) {
-            return $request['method'] == 'POST' && preg_match('#repos/([a-z0-9-]+)/([a-z0-9-]+)/issues/\d+/comments#i', $request['path']);
-        });
-
-        if (count($matchingRequests) != 0) {
-            throw new \RuntimeException(sprintf(
-                'Expected at 0 comment, found %d',
-                count($matchingRequests)
-            ));
         }
     }
 

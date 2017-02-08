@@ -172,6 +172,25 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
+     * @Given the pull-request #:identifier do not contains the tide-related commit
+     */
+    public function thePullRequestDoNotContainsTheTideRelatedCommit($identifier)
+    {
+        $pullRequests = \GuzzleHttp\json_decode($this->readFixture('list-of-opened-pull-requests.json'), true);
+        $pullRequests['values'][0]['id'] = (int) $identifier;
+        $pullRequests['values'][0]['source']['commit']['hash'] = md5(Uuid::uuid4()->toString());
+        $pullRequests['values'][0]['source']['branch']['name'] = Uuid::uuid4()->toString();
+
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) {
+                return $request->getMethod() == 'GET' &&
+                    preg_match('#^https\:\/\/api\.bitbucket\.org\/2\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/pullrequests\?state\=OPEN$#i', (string) $request->getUri());
+            },
+            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode($pullRequests)),
+        ]);
+    }
+
+    /**
      * @Then the addresses of the environment should be commented on the pull-request
      */
     public function theAddressesOfTheEnvironmentShouldBeCommentedOnThePullRequest()
@@ -187,6 +206,20 @@ class BitBucketContext implements CodeRepositoryContext
         }
 
         throw new \RuntimeException('No matching request found');
+    }
+
+    /**
+     * @Then the addresses of the environment should not be commented on the pull-request
+     */
+    public function theAddressesOfTheEnvironmentShouldNotBeCommentedOnThePullRequest()
+    {
+        foreach ($this->guzzleHistory as $request) {
+            /** @var \GuzzleHttp\Psr7\Request $request */
+            if ($request->getMethod() == 'POST' &&
+                preg_match('#^https\:\/\/api\.bitbucket\.org\/1\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/pullrequests\/([a-z0-9_-]+)\/comments$#i', (string) $request->getUri())) {
+                throw new \RuntimeException('A comment have been created');
+            }
+        }
     }
 
     /**

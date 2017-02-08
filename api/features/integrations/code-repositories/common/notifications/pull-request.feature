@@ -44,3 +44,10 @@ Feature:
     And the address "https://1.2.3.4" should be commented on the pull-request
     And the address "ftp://1.2.3.6" should be commented on the pull-request
     And the address "a.b.com:8983" should be commented on the pull-request
+
+  Scenario: It do not comment the address of the environment on a non-related pull-request
+    Given there is 1 application images in the repository
+    And a tide is started with a deploy task
+    And the pull-request #1 do not contains the tide-related commit
+    When the deployment succeed
+    Then the addresses of the environment should not be commented on the pull-request
