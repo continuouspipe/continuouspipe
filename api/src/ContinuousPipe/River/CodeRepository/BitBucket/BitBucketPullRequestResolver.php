@@ -46,7 +46,7 @@ class BitBucketPullRequestResolver implements PullRequestResolver
         }));
 
         return array_map(function (BitBucketPullRequest $pullRequest) {
-            return new PullRequest($pullRequest->getId());
+            return new PullRequest($pullRequest->getId(), $pullRequest->getTitle());
         }, $matchingPullRequests);
     }
 

@@ -510,11 +510,12 @@ class GitHubContext implements CodeRepositoryContext
     /**
      * @Given the pull-request #:number contains the tide-related commit
      * @Given the GitHub pull-request #:number contains the tide-related commit
+     * @Given the GitHub pull-request #:number titled :title contains the tide-related commit
      */
-    public function aPullRequestContainsTheTideRelatedCommit($number)
+    public function aPullRequestContainsTheTideRelatedCommit($number, $title = null)
     {
         $this->fakePullRequestResolver->willResolve([
-            new CodeRepository\PullRequest($number),
+            new CodeRepository\PullRequest($number, $title),
         ]);
     }
 

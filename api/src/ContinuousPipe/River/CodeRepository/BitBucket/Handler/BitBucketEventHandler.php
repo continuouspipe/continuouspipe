@@ -45,7 +45,8 @@ class BitBucketEventHandler
                 $command->getFlowUuid(),
                 $this->createPullRequestCodeReference($event, $pullRequest),
                 new PullRequest(
-                    $pullRequest->getId()
+                    $pullRequest->getId(),
+                    $pullRequest->getTitle()
                 )
             ));
         } else {
