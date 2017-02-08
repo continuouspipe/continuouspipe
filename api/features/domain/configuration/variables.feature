@@ -133,3 +133,27 @@ Feature:
             deploy:
                 cluster: bar
     """
+
+  Scenario: It allows empty variables
+    Given I have a flow with the following configuration:
+    """
+    variables:
+        - name: FOO
+          value: ~
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: BAR${FOO}
+                services: []
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: BAR
+    """
