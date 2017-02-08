@@ -4,6 +4,8 @@ menu:
   main:
     parent: 'Basics'
     weight: 30
+
+weight: 98
 ---
 
 Every time you need to deploy and/or run tests on your codebase, ContinuousPipe will build and push a Docker image from your code base to any Docker Registry.

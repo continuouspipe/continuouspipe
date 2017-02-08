@@ -4,6 +4,8 @@ menu:
   main:
     parent: 'configuration'
     weight: 60
+
+weight: 64
 ---
 Sometimes, as part of your deployment pipeline, you'll wait to wait for other GitHub status. For example if you use the static code analyser tool Scrutinizer, you may want to deployment your application only if the static analysis passes.
 

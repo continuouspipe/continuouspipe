@@ -5,6 +5,8 @@ menu:
   main:
     parent: 'quick-start'
     weight: 20
+
+weight: 79
 ---
 Once you have created a Team you'll be prompted to create a Flow.
 

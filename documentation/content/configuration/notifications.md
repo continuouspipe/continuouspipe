@@ -4,6 +4,8 @@ menu:
   main:
     parent: 'configuration'
     weight: 70
+
+weight: 63
 ---
 ContinuousPipe can send notifications about the tide statuses. This will help the development, QA or product team to have informations about the deployments and the available feature branches.
 

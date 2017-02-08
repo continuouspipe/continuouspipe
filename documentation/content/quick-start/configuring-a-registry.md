@@ -5,6 +5,8 @@ menu:
   main:
     parent: 'quick-start'
     weight: 40
+
+weight: 77
 ---
 Before a Flow can be used it needs to know where to store Docker images. This is done in the "Registries" tab of the Team. You'll be prompted to add a new registry configuration.
 
