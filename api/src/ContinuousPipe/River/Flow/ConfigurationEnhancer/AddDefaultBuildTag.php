@@ -43,12 +43,14 @@ class AddDefaultBuildTag implements ConfigurationEnhancer
 
                     // If there's no image name defined, we won't add the tag
                     if (count($values) == 0) {
-                        // Add a placeholder value to ensure that the order of the steps is kept
-                        $propertyAccessor->setValue(
-                            $enhancedConfig,
-                            $pathPrefix,
-                            []
-                        );
+                        if (strpos($pathPrefix, '][steps][') !== false) {
+                            // Add a placeholder value to ensure that the order of the steps is kept
+                            $propertyAccessor->setValue(
+                                $enhancedConfig,
+                                $pathPrefix,
+                                []
+                            );
+                        }
 
                         continue;
                     }
