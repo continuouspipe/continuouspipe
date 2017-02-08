@@ -18,7 +18,3 @@ tasks:
                   - name: continuouspipeio
                     cert: ${WILDCARD_SSL_CERT}
                     key: ${WILDCARD_SSL_KEY}
-            specification:
-              environment_variables:
-                - name: HUGO_BASE_URL
-                  value: //${SERVICE_HTTPS_PUBLIC_ENDPOINT}
