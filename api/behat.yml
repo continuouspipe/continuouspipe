@@ -9,6 +9,7 @@ default:
                     - @security.token_storage
                     - @security.authenticator.client.in_memory
                     - @kernel
+                    - @river.flow.encrypted_variable_vault
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -114,6 +115,7 @@ default:
                     - @security.token_storage
                     - @security.authenticator.client.in_memory
                     - @kernel
+                    - @river.flow.encrypted_variable_vault
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -205,6 +207,7 @@ default:
                     - @security.token_storage
                     - @security.authenticator.client.in_memory
                     - @kernel
+                    - @river.flow.encrypted_variable_vault
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -292,6 +295,7 @@ smoke:
                     - @security.token_storage
                     - @security.authenticator.client.in_memory
                     - @kernel
+                    - @river.flow.encrypted_variable_vault
                 - FlowContext:
                     - @kernel
                     - @river.repository.flow

@@ -114,18 +114,16 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      */
     private $output;
 
-    /**
-     * @param Kernel $kernel
-     * @param FlowRepository $flowRepository
-     * @param InMemoryCodeRepositoryRepository $codeRepositoryRepository
-     * @param InMemoryAuthenticatorClient $authenticatorClient
-     * @param FakeClient $pipeClient
-     * @param TraceableClient $traceablePipeClient
-     * @param TeamRepository $teamRepository
-     * @param MessageBus $eventBus
-     */
-    public function __construct(Kernel $kernel, FlowRepository $flowRepository, InMemoryCodeRepositoryRepository $codeRepositoryRepository, InMemoryAuthenticatorClient $authenticatorClient, FakeClient $pipeClient, TraceableClient $traceablePipeClient, TeamRepository $teamRepository, MessageBus $eventBus)
-    {
+    public function __construct(
+        Kernel $kernel,
+        FlowRepository $flowRepository,
+        InMemoryCodeRepositoryRepository $codeRepositoryRepository,
+        InMemoryAuthenticatorClient $authenticatorClient,
+        FakeClient $pipeClient,
+        TraceableClient $traceablePipeClient,
+        TeamRepository $teamRepository,
+        MessageBus $eventBus
+    ) {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
@@ -284,11 +282,12 @@ EOF;
     }
 
     /**
+     * @Given the flow :flowUuid have the following configuration:
      * @When I send an update request with the following configuration:
      */
-    public function iSendAnUpdateRequestWithTheFollowingConfiguration(PyStringNode $string)
+    public function iSendAnUpdateRequestWithTheFollowingConfiguration(PyStringNode $string, $flowUuid = null)
     {
-        $url = sprintf('/flows/%s/configuration', $this->flowUuid);
+        $url = sprintf('/flows/%s/configuration', $flowUuid ?: $this->flowUuid);
         $this->response = $this->kernel->handle(Request::create($url, 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
         ], json_encode([
@@ -503,11 +502,12 @@ EOF;
 
     /**
      * @Given I have a flow with the following configuration:
+     * @Given I have a flow with UUID :uuid and the following configuration:
      */
-    public function iHaveAFlowWithTheFollowingConfiguration(PyStringNode $string)
+    public function iHaveAFlowWithTheFollowingConfiguration(PyStringNode $string, $uuid = null)
     {
-        if (null === $this->currentFlow) {
-            $this->createFlow(null, Yaml::parse($string->getRaw()));
+        if (null === $this->currentFlow || $uuid !== null) {
+            $this->createFlow($uuid !== null ? Uuid::fromString($uuid) : null, Yaml::parse($string->getRaw()));
         }
     }
 
@@ -732,6 +732,48 @@ EOF;
                 throw new \RuntimeException(sprintf('The response do not contain the "%s" repository', $row['name']));
             }
         }
+    }
+
+    /**
+     * @When I request the encrypted value of :plainValue for the flow :flowUuid
+     */
+    public function iRequestTheEncryptedValueOfForTheFlow($plainValue, $flowUuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$flowUuid.'/encrypt-variable',
+            'POST',
+            [],
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'plain' => $plainValue
+            ])
+        ));
+    }
+
+    /**
+     * @Then I should receive the encrypted value :encryptedValue
+     */
+    public function iShouldReceiveTheEncryptedValue($encryptedValue)
+    {
+        $this->assertResponseCode(200);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        if ($json['encrypted'] != $encryptedValue) {
+            throw new \RuntimeException(sprintf(
+                'Got the encrypted value "%s" instead',
+                $json['encrypted']
+            ));
+        }
+    }
+
+    /**
+     * @Then the encryption should be forbidden
+     */
+    public function theEncryptionShouldBeForbidden()
+    {
+        $this->assertResponseCode(403);
     }
 
     /**

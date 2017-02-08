@@ -24,5 +24,13 @@
 
             <tag name="security.voter" />
         </service>
+
+        <!-- Encryption Vault -->
+        <service id="river.flow.encrypted_variable_vault" class="ContinuousPipe\River\Flow\EncryptedVariable\GoogleKms\GoogleKmsEncryptedVariableVault">
+            <argument>%google_kms_project_id%</argument>
+            <argument>%google_kms_location%</argument>
+            <argument>%google_kms_key_ring%</argument>
+            <argument>%google_kms_service_account_path%</argument>
+        </service>
     </services>
 </container>

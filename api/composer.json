@@ -51,7 +51,8 @@
         "kreait/firebase-php": "^2.0",
         "adlogix/guzzle-atlassian-connect-middleware": "~1.1.2",
         "twig/twig": "^1.12",
-        "continuous-pipe/worker-bundle": "dev-master"
+        "continuous-pipe/worker-bundle": "dev-master",
+        "google/apiclient": "^2.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
