@@ -36,7 +36,11 @@ class ExpressionResolverNamingStrategy implements EnvironmentNamingStrategy
             throw new UnresolvedEnvironmentNameException('The environment name expression should be a string');
         }
 
-        $context = $this->contextFactory->create($tide);
+        $context = $this->contextFactory->create(
+            $tide->getFlowUuid(),
+            $tide->getCodeReference(),
+            $tide
+        );
 
         return $this->resolveExpression($expression, $context);
     }

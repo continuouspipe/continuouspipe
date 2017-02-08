@@ -25,7 +25,11 @@ class ExpressionLanguageFilterEvaluator implements FilterEvaluator
      */
     public function evaluates(Tide $tide, array $filter)
     {
-        $context = $this->contextFactory->create($tide);
+        $context = $this->contextFactory->create(
+            $tide->getFlowUuid(),
+            $tide->getCodeReference(),
+            $tide
+        );
 
         try {
             return (new Filter($filter['expression']))->evaluates($context->asArray());

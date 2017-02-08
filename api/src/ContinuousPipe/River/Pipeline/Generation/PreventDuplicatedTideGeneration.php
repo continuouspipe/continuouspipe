@@ -47,7 +47,11 @@ class PreventDuplicatedTideGeneration implements PipelineTideGenerator
     {
         return $this->tideStartVoter->vote(
             $tide,
-            $this->contextFactory->create($tide)
+            $this->contextFactory->create(
+                $tide->getFlowUuid(),
+                $tide->getCodeReference(),
+                $tide
+            )
         );
     }
 }

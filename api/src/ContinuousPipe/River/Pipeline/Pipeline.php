@@ -3,8 +3,10 @@
 namespace ContinuousPipe\River\Pipeline;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Filter\ContextFactory;
 use ContinuousPipe\River\Filter\Filter;
 use ContinuousPipe\River\Filter\FilterException;
+use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use Ramsey\Uuid\Uuid;
@@ -40,24 +42,23 @@ final class Pipeline
     }
 
     /**
+     * @param ContextFactory $contextFactory
+     * @param UuidInterface $flowUuid
      * @param CodeReference $codeReference
      *
      * @throws FilterException
      *
      * @return bool
      */
-    public function matchesCondition(CodeReference $codeReference) : bool
+    public function matchesCondition(ContextFactory $contextFactory, UuidInterface $flowUuid, CodeReference $codeReference) : bool
     {
         if (!isset($this->configuration['condition'])) {
             return true;
         }
 
-        return (new Filter($this->configuration['condition']))->evaluates([
-            'code_reference' => new ArrayObject([
-                'branch' => $codeReference->getBranch(),
-                'sha1' => $codeReference->getCommitSha(),
-            ]),
-        ]);
+        return (new Filter($this->configuration['condition']))->evaluates(
+            $contextFactory->create($flowUuid, $codeReference)->asArray()
+        );
     }
 
     public function getUuid(): UuidInterface

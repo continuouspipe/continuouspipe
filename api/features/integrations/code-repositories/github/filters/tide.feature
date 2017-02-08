@@ -59,3 +59,20 @@ Feature:
     And the pull request #1 have the label "Ready for QA"
     When the pull request #1 is labeled
     Then the tide should be created
+
+  Scenario: Uses a pull-request filter on pipelines
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        images: {build: {services: []}}
+
+    pipelines:
+      - name: My pipeline
+        tasks: [ images ]
+        condition: '"Ready for QA" in pull_request.labels'
+    """
+    And the GitHub pull-request #1 contains the tide-related commit
+    And the pull request #1 have the label "Ready for QA"
+    When the pull request #1 is labeled
+    Then the tide should be created
+    And the tide should not be failed
