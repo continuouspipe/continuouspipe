@@ -14,7 +14,7 @@ pipelines:
       condition: code_reference.branch == 'production'
       tasks: [ images, deployment, migrations ]
     - name: Feature branches
-      condition: code_reference.branch != 'master'
+      condition: code_reference.branch not in ['master', 'production']
       tasks: [ images ]
 
 tasks:
