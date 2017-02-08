@@ -112,7 +112,9 @@
                 "stack_rabbitmq_host": "STACK_RABBITMQ_HOST",
                 "tideways_api_key": "TIDEWAYS_API_KEY",
                 "bitbucket_oauth_key": "BITBUCKET_OAUTH_KEY",
-                "bitbucket_oauth_secret": "BITBUCKET_OAUTH_SECRET"
+                "bitbucket_oauth_secret": "BITBUCKET_OAUTH_SECRET",
+                "authenticator_api_key": "AUTHENTICATOR_API_KEY",
+                "admin_password": "ADMIN_PASSWORD"
             }
         }]
     },
