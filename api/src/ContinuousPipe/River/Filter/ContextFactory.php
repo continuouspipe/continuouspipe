@@ -120,13 +120,14 @@ class ContextFactory
         if (null === $pullRequest) {
             return new ArrayObject([
                 'number' => 0,
-                'state' => '',
+                'title' => '',
                 'labels' => [],
             ]);
         }
 
         return new ArrayObject([
             'number' => $pullRequest->getIdentifier(),
+            'title' => $pullRequest->getTitle(),
             'labels' => $this->getPullRequestLabelNames($flowUuid, $codeReference->getRepository(), $pullRequest),
         ]);
     }

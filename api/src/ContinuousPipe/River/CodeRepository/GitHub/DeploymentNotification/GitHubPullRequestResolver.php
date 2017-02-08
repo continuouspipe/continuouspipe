@@ -70,7 +70,8 @@ class GitHubPullRequestResolver implements PullRequestResolver
 
         return array_map(function (PullRequest $pullRequest) {
             return new \ContinuousPipe\River\CodeRepository\PullRequest(
-                $pullRequest->getNumber()
+                $pullRequest->getNumber(),
+                $pullRequest->getTitle()
             );
         }, $matchingPullRequests);
     }

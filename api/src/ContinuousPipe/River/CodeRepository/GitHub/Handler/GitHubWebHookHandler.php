@@ -103,7 +103,8 @@ class GitHubWebHookHandler
     {
         $codeReference = $this->codeReferenceResolver->fromPullRequestEvent($event);
         $pullRequest = new PullRequest(
-            $event->getNumber()
+            $event->getNumber(),
+            $event->getPullRequest()->getTitle()
         );
 
         if ($event->getAction() == PullRequestEvent::ACTION_OPENED) {

@@ -76,3 +76,19 @@ Feature:
     When the pull request #1 is labeled
     Then the tide should be created
     And the tide should not be failed
+
+  Scenario: Uses a pull-request titles in filters
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        images: {build: {services: []}}
+
+    pipelines:
+      - name: My pipeline
+        tasks: [ images ]
+        condition: 'pull_request.title matches "#^something#"'
+    """
+    And the GitHub pull-request #1 titled "something-is-good" contains the tide-related commit
+    When the pull request #1 is synchronized
+    Then the tide should be created
+    And the tide should not be failed
