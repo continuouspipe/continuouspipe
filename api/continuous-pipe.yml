@@ -7,9 +7,12 @@ environment_variables:
       value: http://eu--west1--b-builder-continuouspipe-io-arbp8o5f7a1t.runscope.net
 
 pipelines:
-    - name: Production
+    - name: Staging
       condition: code_reference.branch == 'master'
-      tasks: [ images, production, migrations ]
+      tasks: [ images, deployment, migrations ]
+    - name: Production
+      condition: code_reference.branch == 'production'
+      tasks: [ images, deployment, migrations ]
     - name: Feature branches
       condition: code_reference.branch != 'master'
       tasks: [ images ]
@@ -25,7 +28,7 @@ tasks:
                 api:
                     image: docker.io/inviqasession/cp-river
 
-    production:
+    deployment:
         deploy:
             cluster: ${CLUSTER}
             environment:
