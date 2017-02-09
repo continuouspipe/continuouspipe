@@ -39,15 +39,19 @@ class CachedAuthTokenFetcher implements FetchAuthTokenInterface
         if (false === ($cachedData = $this->cache->fetch($cacheKey))) {
             $token = $this->decoratedFetcher->fetchAuthToken($httpHandler);
             if (isset($token['expires_at'])) {
-                // Remove 30 seconds as a cache buffer
-                $cacheLifeTime = $token['expires_at'] - time() - 30;
+                $cacheLifeTime = $token['expires_at'] - time();
+            } elseif (isset($token['expires_in'])) {
+                $cacheLifeTime = $token['expires_in'];
             } else {
                 $this->logger->warning('No expiration in Google token', [
                     'token' => $token,
                 ]);
 
-                $cacheLifeTime = 60;
+                $cacheLifeTime = 90;
             }
+
+            // Remove 30 seconds as a cache buffer
+            $cacheLifeTime -= 30;
 
             $cachedData = \GuzzleHttp\json_encode($token);
             if ($cacheLifeTime > 0) {
