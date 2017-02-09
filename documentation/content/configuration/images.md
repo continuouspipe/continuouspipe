@@ -4,6 +4,8 @@ menu:
   main:
     parent: 'configuration'
     weight: 35
+
+weight: 67
 ---
 ## The YAML bit
 

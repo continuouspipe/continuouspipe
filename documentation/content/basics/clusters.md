@@ -4,6 +4,8 @@ menu:
   main:
     parent: 'Basics'
     weight: 40
+
+weight: 97
 ---
 ContinuousPipe's deploys effectively on any Kubernetes cluster. That means that you can deploy any application that can run in a Docker container on your bare metal infrastructure or any cloud such as AWS, GCE or even Azure.
 

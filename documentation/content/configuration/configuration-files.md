@@ -4,6 +4,8 @@ menu:
   main:
     parent: 'configuration'
     weight: 20
+
+weight: 69
 ---
 The entire configuration is represented as a YAML file. The final configuration is the result of a merger of these different optional configuration sources:
 

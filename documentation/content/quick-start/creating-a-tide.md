@@ -4,6 +4,8 @@ menu:
   main:
     parent: 'quick-start'
     weight: 70
+
+weight: 74
 ---
 The Flow is now ready to run. An execution of a Flow is called a Tide.
 

@@ -6,6 +6,8 @@ menu:
   main:
     parent: 'configuration'
     weight: 40
+
+weight: 66
 ---
 Once your images are built (if you have to build some), you can deploy them. The `deploy` task is configurable in many ways.
 

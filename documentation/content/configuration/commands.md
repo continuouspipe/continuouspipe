@@ -5,6 +5,8 @@ menu:
   main:
     parent: 'configuration'
     weight: 50
+
+weight: 65
 ---
 
 The `run` task allows to run commands in containers, in the deployed environment context if any. That way, you can run your *integration tests* or your *application migrations* for example.

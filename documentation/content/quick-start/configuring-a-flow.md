@@ -4,6 +4,8 @@ menu:
   main:
     parent: 'quick-start'
     weight: 60
+
+weight: 75
 ---
 The final step before executing the Flow is to configure it. You can do this by clicking on the Flow, then selecting the "Configuration" tab. This will present you with an interface that allows you to define YAML variables.
  
