@@ -11,9 +11,10 @@ tasks:
           name: '"documentation-" ~ code_reference.branch'
         services:
           web:
-            specification:
-              accessibility:
-                from_external: true
-              environment_variables:
-                - name: HUGO_BASE_URL
-                  value: http://${SERVICE_WEB_PUBLIC_ENDPOINT}
+            endpoints:
+              - name: https
+                type: NodePort
+                ssl_certificates:
+                  - name: continuouspipeio
+                    cert: ${WILDCARD_SSL_CERT}
+                    key: ${WILDCARD_SSL_KEY}
