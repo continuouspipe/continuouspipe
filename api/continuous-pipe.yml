@@ -191,11 +191,15 @@ tasks:
                             from_service: api
 
                         environment_variables:
-                            - name: START_NGINX
+                            <<: *ENV
+                            1000:
+                              name: START_NGINX
                               value: 'false'
-                            - name: START_PHP_FPM
+                            1001:
+                              name: START_PHP_FPM
                               value: 'false'
-                            - name: START_CRON
+                            1002:
+                              name: START_CRON
                               value: 'true'
 
                         accessibility:
