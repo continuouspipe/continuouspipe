@@ -296,6 +296,12 @@ tolerance:
                 namespace: river.outgoing.firebase
                 runner: tolerance.operation_runners.null_placeholdered
 
+        keen:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.keen
+                runner: tolerance.operation_runners.buffered
+
     metrics:
         collectors:
             -
