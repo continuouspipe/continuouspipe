@@ -338,18 +338,6 @@ tolerance:
             namespace: river.api.http.request
             publisher: tolerance.metrics.publisher.statsd
 
-    tracer:
-        service_name: River
-        operation_runner: tolerance.operation_runners.buffered
-
-        zipkin:
-            http:
-                base_url: %zipkin_base_url%
-
-        rabbitmq:
-            consumers:
-                - simple_bus.rabbit_mq_bundle_bridge.commands_consumer
-
 worker:
     service: simple_bus.rabbit_mq_bundle_bridge.commands_consumer
     tideways:
