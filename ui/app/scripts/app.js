@@ -8,7 +8,7 @@
  *
  * Main module of the application.
  */
-var app = angular
+angular
     .module('continuousPipeRiver', [
         'config',
         'ngAnimate',
@@ -63,6 +63,23 @@ var app = angular
     })
     // We need to inject it at least once to have automatic tracking
     .run(function(Analytics, $rootScope, $http) {
+        function capitalizeFirstLetter(word) {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }
+
+        function titleCase(text) {
+            return text.replace(/\./, ' ').split(' ').map(capitalizeFirstLetter).join(' ');
+        }
+
+        function formatTitle(text) {
+            var titleCasedText = titleCase(text);
+            return titleCasedText ? titleCasedText  + ' - ' : '';
+        }
+
+        $rootScope.$on('$stateChangeStart', function (event, current, previous) {
+            $rootScope.title = formatTitle(current.name);
+        });
+
         $rootScope.$on('user_context.user_updated', function(event, user) {
             window.Intercom("boot", {
                 app_id: "i0yqsxbt",
@@ -91,22 +108,3 @@ var app = angular
         };
     })
 ;
-
-app.run(function ($rootScope) {
-    function capitalizeFirstLetter(word) {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-    }
-
-    function titleCase(text) {
-        return text.replace(/\./, ' ').split(' ').map(capitalizeFirstLetter).join(' ');
-    }
-
-    function formatTitle(text) {
-        var titleCasedText = titleCase(text);
-        return titleCasedText ? titleCasedText  + ' - ' : '';
-    }
-
-    $rootScope.$on('$stateChangeStart', function (event, current, previous) {
-        $rootScope.title = formatTitle(current.name);
-    });
-});
