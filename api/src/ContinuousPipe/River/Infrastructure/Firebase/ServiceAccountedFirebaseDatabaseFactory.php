@@ -7,6 +7,7 @@ use Firebase\Http\Middleware as FirebaseMiddleware;
 use Firebase\ServiceAccount;
 use Firebase\V3\Auth\CustomToken;
 use Google\Auth\Credentials\ServiceAccountCredentials;
+use Google\Auth\FetchAuthTokenInterface;
 use Google\Auth\Middleware\AuthTokenMiddleware;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
@@ -14,22 +15,18 @@ use GuzzleHttp\HandlerStack;
 final class ServiceAccountedFirebaseDatabaseFactory implements DatabaseFactory
 {
     /**
+     * @var FetchAuthTokenInterface
+     */
+    private $authTokenFetcher;
+
+    /**
      * @var callable
      */
     private $historyMiddleware;
 
-    /**
-     * @var string
-     */
-    private $serviceAccountPath;
-
-    /**
-     * @param string   $serviceAccountPath
-     * @param callable $historyMiddleware
-     */
-    public function __construct(string $serviceAccountPath, callable $historyMiddleware = null)
+    public function __construct(FetchAuthTokenInterface $authTokenFetcher, callable $historyMiddleware = null)
     {
-        $this->serviceAccountPath = $serviceAccountPath;
+        $this->authTokenFetcher = $authTokenFetcher;
         $this->historyMiddleware = $historyMiddleware;
     }
 
@@ -38,11 +35,9 @@ final class ServiceAccountedFirebaseDatabaseFactory implements DatabaseFactory
      */
     public function create(string $uri): Database
     {
-        $googleAuthTokenMiddleware = $this->createGoogleAuthTokenMiddleware(ServiceAccount::fromValue($this->serviceAccountPath));
-
         $stack = HandlerStack::create();
         $stack->push(FirebaseMiddleware::ensureJson(), 'ensure_json');
-        $stack->push($googleAuthTokenMiddleware, 'auth_service_account');
+        $stack->push(new AuthTokenMiddleware($this->authTokenFetcher), 'auth_service_account');
 
         if (null !== $this->historyMiddleware) {
             $stack->push($this->historyMiddleware);
@@ -60,26 +55,5 @@ final class ServiceAccountedFirebaseDatabaseFactory implements DatabaseFactory
         ]));
 
         return $database;
-    }
-
-    /**
-     * @param ServiceAccount $serviceAccount
-     *
-     * @return AuthTokenMiddleware
-     */
-    private function createGoogleAuthTokenMiddleware(ServiceAccount $serviceAccount)
-    {
-        $scopes = [
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/firebase.database',
-        ];
-
-        $credentials = [
-            'client_email' => $serviceAccount->getClientEmail(),
-            'client_id' => $serviceAccount->getClientId(),
-            'private_key' => $serviceAccount->getPrivateKey(),
-        ];
-
-        return new AuthTokenMiddleware(new ServiceAccountCredentials($scopes, $credentials));
     }
 }
