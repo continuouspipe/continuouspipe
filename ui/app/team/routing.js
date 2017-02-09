@@ -120,27 +120,6 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
-            .state('github-tokens', {
-                parent: 'team',
-                url: '/github-tokens',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/github-tokens/views/list.html',
-                        controller: 'TeamGitHubTokensController'
-                    }
-                },
-                aside: true
-            })
-            .state('github-tokens.create', {
-                url: '/create',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/github-tokens/views/create.html',
-                        controller: 'TeamCreateGitHubTokenController'
-                    }
-                },
-                aside: true
-            })
             .state('configuration', {
                 parent: 'team',
                 url: '/configuration',
