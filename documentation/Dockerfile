@@ -19,12 +19,7 @@ WORKDIR /app
 
 COPY . /app
 
-
-# Automatically build site
+# Build the documentation
 RUN rm -rf themes/hugo-material-docs \
   && git clone https://github.com/digitalcraftsman/hugo-material-docs themes/hugo-material-docs \
   && hugo -d /usr/share/nginx/html/
-
-# By default, serve site
-ENV HUGO_PORT 80
-CMD hugo server -p ${HUGO_PORT} --bind=0.0.0.0
