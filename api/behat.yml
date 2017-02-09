@@ -41,7 +41,6 @@ default:
                     - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
-                    - @river.pipeline.view.storage
                 - Task\BuildContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -92,6 +91,10 @@ default:
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory
                     - @repository_river.code_repository_repository
+
+                - StorageContext:
+                    - @river.pipeline.view.storage
+                    - @river.repository.flow
 
         github:
             paths:
@@ -148,7 +151,6 @@ default:
                     - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
-                    - @river.pipeline.view.storage
                 - Task\BuildContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -241,7 +243,6 @@ default:
                     - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
-                    - @river.pipeline.view.storage
                 - Task\BuildContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -308,7 +309,6 @@ smoke:
                     - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
-                    - @river.pipeline.view.storage
                 - TideContext:
                     - @command_bus
                     - @event_bus

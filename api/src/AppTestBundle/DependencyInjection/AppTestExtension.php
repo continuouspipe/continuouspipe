@@ -34,6 +34,7 @@ class AppTestExtension extends Extension
         $loader->load('integration/notifications.xml');
         $loader->load('integration/web-hook.xml');
         $loader->load('integration/security.xml');
+        $loader->load('integration/storage.xml');
 
         $loader->load('queue.xml');
     }
