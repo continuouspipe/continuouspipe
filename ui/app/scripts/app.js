@@ -39,7 +39,7 @@ angular
             .setAccount('UA-71216332-2')
             .setPageEvent('$stateChangeSuccess')
         ;
-        
+
         $mdThemingProvider.theme('blue');
 
         firebase.initializeApp({
@@ -63,6 +63,23 @@ angular
     })
     // We need to inject it at least once to have automatic tracking
     .run(function(Analytics, $rootScope, $http) {
+        function capitalizeFirstLetter(word) {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }
+
+        function titleCase(text) {
+            return text.replace(/[\.\-\_]/g, ' ').split(' ').map(capitalizeFirstLetter).join(' ');
+        }
+
+        function formatTitle(text) {
+            var titleCasedText = titleCase(text);
+            return titleCasedText ? titleCasedText  + ' - ' : '';
+        }
+
+        $rootScope.$on('$stateChangeStart', function (event, current, previous) {
+            $rootScope.title = formatTitle(current.name);
+        });
+
         $rootScope.$on('user_context.user_updated', function(event, user) {
             window.Intercom("boot", {
                 app_id: "i0yqsxbt",
@@ -79,7 +96,7 @@ angular
             var message = body.message || body.error;
 
             if (!message && response.status == 400) {
-                // We are seeing a constraint violation list here, let's return the first one 
+                // We are seeing a constraint violation list here, let's return the first one
                 message = body[0] && body[0].message;
             }
 
