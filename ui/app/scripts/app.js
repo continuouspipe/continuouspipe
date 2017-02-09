@@ -102,11 +102,11 @@ app.run(function ($rootScope) {
     }
 
     function formatTitle(text) {
-        var titleCasedText = titleCase(text)
+        var titleCasedText = titleCase(text);
         return titleCasedText ? titleCasedText  + ' - ' : '';
     }
 
     $rootScope.$on('$stateChangeStart', function (event, current, previous) {
-        $rootScope.title = formatTitle(current.name)
+        $rootScope.title = formatTitle(current.name);
     });
 });
