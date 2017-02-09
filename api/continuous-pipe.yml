@@ -11,16 +11,41 @@ pipelines:
 
 variables:
     - name: BUILDER_URL
+      condition: code_reference.branch == 'production'
       value: http://eu--west1--b-builder-continuouspipe-io-arbp8o5f7a1t.runscope.net
     - name: AUTHENTICATOR_URL
+      condition: code_reference.branch == 'production'
       value: https://authenticator.continuouspipe.io
     - name: PIPE_URL
-      value: http://pipe-continuouspipe-io-12bhda8pihd6.runscope.net
+      condition: code_reference.branch == 'production'
+      value: http://api.pipe-production.svc.cluster.local
     - name: RIVER_UI_URL
+      condition: code_reference.branch == 'production'
       value: https://ui.continuouspipe.io
     - name: RIVER_HOST
+      condition: code_reference.branch == 'production'
       value: river-continuouspipe-io-8h5eecqzu4bp.runscope.net
     - name: STACK_RABBITMQ_HOST
+      condition: code_reference.branch == 'production'
+      value: rabbitmq.stack-production.svc.cluster.local
+
+    - name: BUILDER_URL
+      condition: code_reference.branch == 'master'
+      value: http://eu--west1--b-builder--staging-continuouspipe-io-arbp8o5f7a1t.runscope.net
+    - name: AUTHENTICATOR_URL
+      condition: code_reference.branch == 'master'
+      value: https://authenticator-staging.continuouspipe.io
+    - name: PIPE_URL
+      condition: code_reference.branch == 'master'
+      value: http://api.pipe-master.svc.cluster.local
+    - name: RIVER_UI_URL
+      condition: code_reference.branch == 'master'
+      value: https://ui-staging.continuouspipe.io
+    - name: RIVER_HOST
+      condition: code_reference.branch == 'master'
+      value: river--staging-continuouspipe-io-8h5eecqzu4bp.runscope.net
+    - name: STACK_RABBITMQ_HOST
+      condition: code_reference.branch == 'master'
       value: rabbitmq.stack-master.svc.cluster.local
 
 tasks:
