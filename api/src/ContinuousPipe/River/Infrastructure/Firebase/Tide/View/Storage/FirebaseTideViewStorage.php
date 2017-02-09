@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage;
 
 use ContinuousPipe\River\Infrastructure\Firebase\DatabaseFactory;
+use ContinuousPipe\River\Infrastructure\Firebase\FirebaseClient;
 use ContinuousPipe\River\View\Storage\TideViewStorage;
 use ContinuousPipe\River\View\Tide;
 use Firebase\Exception\ApiException;
@@ -12,11 +13,6 @@ use Psr\Log\LoggerInterface;
 
 class FirebaseTideViewStorage implements TideViewStorage
 {
-    /**
-     * @var DatabaseFactory
-     */
-    private $databaseFactory;
-
     /**
      * @var SerializerInterface
      */
@@ -33,17 +29,16 @@ class FirebaseTideViewStorage implements TideViewStorage
     private $databaseUri;
 
     /**
-     * @param DatabaseFactory     $databaseFactory
-     * @param SerializerInterface $serializer
-     * @param LoggerInterface     $logger
-     * @param string              $databaseUri
+     * @var FirebaseClient
      */
-    public function __construct(DatabaseFactory $databaseFactory, SerializerInterface $serializer, LoggerInterface $logger, string $databaseUri)
+    private $firebaseClient;
+
+    public function __construct(FirebaseClient $firebaseClient, SerializerInterface $serializer, LoggerInterface $logger, string $databaseUri)
     {
-        $this->databaseFactory = $databaseFactory;
         $this->databaseUri = $databaseUri;
         $this->serializer = $serializer;
         $this->logger = $logger;
+        $this->firebaseClient = $firebaseClient;
     }
 
     /**
@@ -60,26 +55,30 @@ class FirebaseTideViewStorage implements TideViewStorage
             return;
         }
 
-        $database = $this->databaseFactory->create($this->databaseUri);
-
         try {
-            // Update the tides by pipelines view
-            $database->getReference(sprintf(
-                'flows/%s/tides/by-pipelines/%s/%s',
-                (string) $tide->getFlowUuid(),
-                (string) $pipeline->getUuid(),
-                (string) $tide->getUuid()
-            ))->set($this->normalizeTide($tide));
+            $this->firebaseClient->set(
+                $this->databaseUri,
+                sprintf(
+                    'flows/%s/tides/by-pipelines/%s/%s',
+                    (string) $tide->getFlowUuid(),
+                    (string) $pipeline->getUuid(),
+                    (string) $tide->getUuid()
+                ),
+                $this->normalizeTide($tide)
+            );
 
             // Updates the pipelines' view
-            $database->getReference(sprintf(
-                'flows/%s/pipelines/%s',
-                (string) $tide->getFlowUuid(),
-                (string) $pipeline->getUuid()
-            ))->update([
-                'uuid' => (string) $pipeline->getUuid(),
-                'name' => $pipeline->getName(),
-            ]);
+            $this->firebaseClient->update(
+                $this->databaseUri,
+                    sprintf(
+                    'flows/%s/pipelines/%s',
+                    (string) $tide->getFlowUuid(),
+                    (string) $pipeline->getUuid()
+                ), [
+                    'uuid' => (string) $pipeline->getUuid(),
+                    'name' => $pipeline->getName(),
+                ]
+            );
         } catch (ApiException $e) {
             $this->logger->warning('Unable to save the tide view into Firebase', [
                 'exception' => $e,

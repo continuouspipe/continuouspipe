@@ -9,6 +9,17 @@ parameters:
     default_environment_expression: 'flow.uuid ~ "-" ~ code_reference.branch'
     firebase_service_account_path: '%kernel.root_dir%/var/firebase/continuous-pipe-firebase-adminsdk-57uln-abf9ce37fe.json'
 
+services:
+    river.predis_cache:
+        class: Doctrine\Common\Cache\PredisCache
+        arguments:
+            - "@predis_client"
+
+    river.apcu_cache:
+        class: Doctrine\Common\Cache\ApcuCache
+        arguments:
+            - "river"
+
 framework:
     #esi:             ~
     #translator:      { fallbacks: ["%locale%"] }
@@ -284,6 +295,12 @@ tolerance:
                 publisher: tolerance.metrics.publisher.statsd
                 namespace: river.outgoing.firebase
                 runner: tolerance.operation_runners.null_placeholdered
+
+        keen:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.keen
+                runner: tolerance.operation_runners.buffered
 
     metrics:
         collectors:

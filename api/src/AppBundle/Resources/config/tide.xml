@@ -136,13 +136,51 @@
             <argument type="service" id="river.tide_event_store" />
         </service>
 
-        <service id="river.view.storage.firebase.database_factory" class="ContinuousPipe\River\Infrastructure\Firebase\ServiceAccountedFirebaseDatabaseFactory">
+        <!-- Firebase projections -->
+        <service id="river.view.storage.firebase.credentials.service_account_fetcher_factory" class="ContinuousPipe\River\Infrastructure\Firebase\Credentials\ServiceAccountAuthTokenFetcherFactory">
             <argument>%firebase_service_account_path%</argument>
+        </service>
+
+        <service id="river.view.storage.firebase.database_factory.auth_token_fetcher" class="Google\Auth\FetchAuthTokenCache">
+            <factory service="river.view.storage.firebase.credentials.service_account_fetcher_factory" method="create" />
+        </service>
+
+        <service id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedAuthTokenFetcher"
+                 decorates="river.view.storage.firebase.database_factory.auth_token_fetcher"
+                 decoration-priority="5">
+            <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached.inner" />
+            <argument type="service" id="river.predis_cache" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.view.storage.firebase.database_factory.auth_token_fetcher.apcu_cached"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedAuthTokenFetcher"
+                 decorates="river.view.storage.firebase.database_factory.auth_token_fetcher"
+                 decoration-priority="4">
+            <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher.apcu_cached.inner" />
+            <argument type="service" id="river.apcu_cache" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.view.storage.firebase.database_factory" class="ContinuousPipe\River\Infrastructure\Firebase\ServiceAccountedFirebaseDatabaseFactory">
+            <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher" />
             <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
         </service>
 
-        <service id="river.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage\FirebaseTideViewStorage">
+        <service id="river.view.storage.firebase_client" class="ContinuousPipe\River\Infrastructure\Firebase\DatabaseFirebaseClient">
             <argument type="service" id="river.view.storage.firebase.database_factory" />
+        </service>
+
+        <service id="river.view.storage.firebase_client.apcu_cached"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedFirebaseClient"
+                 decorates="river.view.storage.firebase_client">
+            <argument type="service" id="river.view.storage.firebase_client.apcu_cached.inner" />
+            <argument type="service" id="river.apcu_cache" />
+        </service>
+
+        <service id="river.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage\FirebaseTideViewStorage">
+            <argument type="service" id="river.view.storage.firebase_client" />
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="logger" />
             <argument>%firebase_database_uri%</argument>

@@ -11,8 +11,12 @@
             <argument>%keen_write_key%</argument>
         </service>
 
-        <service id="river.keen.client" class="ContinuousPipe\River\Analytics\Keen\Client\KeenClient">
+        <service id="river.keen.client" class="ContinuousPipe\River\Analytics\Keen\Client\HttpClient">
             <factory service="river.keen.client_factory" method="create" />
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="addEvent"
+                 runner="tolerance.operation_runners.keen" />
         </service>
 
         <service id="river.analytics.keen.listener.tide_report" class="ContinuousPipe\River\Analytics\Keen\TideReportListener">

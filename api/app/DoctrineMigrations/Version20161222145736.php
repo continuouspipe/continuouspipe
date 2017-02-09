@@ -29,9 +29,6 @@ class Version20161222145736 extends AbstractMigration
 
         $this->addSql('ALTER TABLE flat_flow ADD CONSTRAINT FK_3A810084792D71D5 FOREIGN KEY (repository_identifier) REFERENCES abstract_code_repository (identifier)');
         $this->addSql('CREATE INDEX IDX_3A810084792D71D5 ON flat_flow (repository_identifier)');
-
-        // TODO later
-        // $this->addSql('ALTER TABLE flat_flow DROP repository_address, DROP repository_organisation, DROP repository_name');
     }
 
     /**
@@ -46,7 +43,5 @@ class Version20161222145736 extends AbstractMigration
         $this->addSql('DROP TABLE abstract_code_repository');
         $this->addSql('DROP INDEX IDX_3A810084792D71D5 ON flat_flow');
         $this->addSql('ALTER TABLE flat_flow ADD repository_address VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, ADD repository_organisation VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, ADD repository_name VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci');
-        // TODO later
-        // $this->addSql('ALTER TABLE flat_flow CHANGE repository_identifier repository_identifier VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci');
     }
 }
