@@ -13,5 +13,6 @@
         <service id="river.view.storage.firebase.database_factory" class="ContinuousPipe\River\Infrastructure\Firebase\InMemoryDatabaseFactory">
             <argument type="service" id="csa_guzzle.middleware.history" />
         </service>
+        <service id="river.pipeline.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage" />
     </services>
 </container>

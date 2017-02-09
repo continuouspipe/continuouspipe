@@ -68,11 +68,12 @@
         </service>
 
         <service id="river.pipeline.listener.pipeline_deleted" class="ContinuousPipe\River\Pipeline\EventListener\PipelineDeletedListener">
-            <argument type="service" id="river.pipeline.view.storage.firebase" />
+            <argument type="service" id="river.pipeline.view.storage" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\PipelineDeleted" />
         </service>
 
+        <service id="river.pipeline.view.storage" alias="river.pipeline.view.storage.firebase" />
         <service id="river.pipeline.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\FirebasePipelineViewStorage">
             <argument type="service" id="river.view.storage.firebase.database_factory" />
             <argument>%firebase_database_uri%</argument>

@@ -34,9 +34,11 @@ Feature:
     Given the user "samuel" is "ADMIN" of the team "samuel"
     And I send a tide creation request for branch "master" and commit "1234"
     When I send a pipeline deletion request for flow "00000000-0000-0000-0000-000000000000" and pipeline "First pipeline"
+    And the pipeline is successfully removed
     And I request the flow
     Then I should not see the pipeline "First pipeline" in the flow
     And I should see the pipeline "Second pipeline" in the flow
+    And the pipeline "First pipeline" in flow "00000000-0000-0000-0000-000000000000" should be deleted from the permanent storage of views
 
   Scenario: Cannot delete the selected pipeline without administrator permission
     Given the user "samuel" is "USER" of the team "samuel"

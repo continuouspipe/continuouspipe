@@ -41,6 +41,7 @@ default:
                     - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
+                    - @river.pipeline.view.storage
                 - Task\BuildContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -147,6 +148,7 @@ default:
                     - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
+                    - @river.pipeline.view.storage
                 - Task\BuildContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -239,6 +241,7 @@ default:
                     - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
+                    - @river.pipeline.view.storage
                 - Task\BuildContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -305,6 +308,7 @@ smoke:
                     - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
+                    - @river.pipeline.view.storage
                 - TideContext:
                     - @command_bus
                     - @event_bus

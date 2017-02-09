@@ -9,6 +9,7 @@ use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\EventStore\EventStore;
+use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
@@ -115,6 +116,11 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      */
     private $output;
 
+    /**
+     * @var InMemoryPipelineViewStorage
+     */
+    private $pipelineViewStorage;
+
     public function __construct(
         Kernel $kernel,
         FlowRepository $flowRepository,
@@ -123,7 +129,8 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         FakeClient $pipeClient,
         TraceableClient $traceablePipeClient,
         TeamRepository $teamRepository,
-        MessageBus $eventBus
+        MessageBus $eventBus,
+        InMemoryPipelineViewStorage $pipelineViewStorage
     ) {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
@@ -133,6 +140,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         $this->teamRepository = $teamRepository;
         $this->traceablePipeClient = $traceablePipeClient;
         $this->eventBus = $eventBus;
+        $this->pipelineViewStorage = $pipelineViewStorage;
     }
 
     /**
@@ -451,6 +459,7 @@ EOF;
 
     /**
      * @Then the flow is successfully saved
+     * @Then the pipeline is successfully removed
      */
     public function theFlowIsSuccessfullySaved()
     {
@@ -914,6 +923,23 @@ EOF;
             $diff = new Diff($string->getStrings(), explode("\n", $this->output));
             $renderer = new Diff_Renderer_Text_Unified();
             throw new \UnexpectedValueException($diff->render($renderer));
+        }
+    }
+
+    /**
+     * @Given the pipeline :pipelineName in flow :flowUuid should be deleted from the permanent storage of views
+     */
+    public function thePipelineShouldBeDeletedFromThePermanentStorageOfViews($pipelineName, $flowUuid)
+    {
+        $flow = $this->flowRepository->find(Uuid::fromString($flowUuid));
+        $flatFlow = Flow\Projections\FlatFlow::fromFlow($flow);
+        $pipeline = Pipeline::withConfiguration($flatFlow, ['name' => $pipelineName]);
+
+        if (!$this->pipelineViewStorage->isPipelineDeleted($pipeline->getUuid())) {
+            throw new \RuntimeException(sprintf(
+                'The pipeline named "%s" does not get deleted from view storage.',
+                $pipelineName
+            ));
         }
     }
 
