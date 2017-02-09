@@ -81,6 +81,7 @@ class TideStatusListener
                     'message' => $e->getMessage(),
                     'notification' => $notification,
                     'flow' => (string) $tide->getFlowUuid(),
+                    'exception' => $e,
                 ]);
             }
         }
