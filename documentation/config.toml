@@ -44,22 +44,22 @@ PygmentsCodeFences = true
 	name   = "Basics"
 	url    = "basics/"
 	identifier = "basics"
-	weight = "-10"
+	weight = "5"
 
 [[menu.main]]
 	name   = "Quick Start"
 	url    = "quick-start/"
 	identifier = "quick-start"
-	weight = "-5"
+	weight = "10"
 
 [[menu.main]]
 	name   = "Configuration"
 	url    = "configuration/"
 	identifier = "configuration"
-	weight = "0"
+	weight = "15"
 
 [[menu.main]]
 	name   = "FAQ"
 	url    = "faq/"
 	identifier = "faq"
-	weight = "10"
+	weight = "20"
