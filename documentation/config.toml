@@ -1,4 +1,4 @@
-baseurl = ""
+baseurl = "/"
 relativeurls = true
 languageCode = "en-gb"
 title = "ContinuousPipe Docs"
@@ -41,15 +41,15 @@ PygmentsCodeFences = true
 	email   = "support@continuouspipe.io"
 
 [[menu.main]]
-	name   = "Quick Start"
-	url    = "quick-start/"
-	identifier = "quick-start"
-	weight = "-10"
-
-[[menu.main]]
 	name   = "Basics"
 	url    = "basics/"
 	identifier = "basics"
+	weight = "-10"
+
+[[menu.main]]
+	name   = "Quick Start"
+	url    = "quick-start/"
+	identifier = "quick-start"
 	weight = "-5"
 
 [[menu.main]]
