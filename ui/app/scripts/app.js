@@ -68,7 +68,7 @@ angular
         }
 
         function titleCase(text) {
-            return text.replace(/\./, ' ').split(' ').map(capitalizeFirstLetter).join(' ');
+            return text.replace(/[\.\-\_]/g, ' ').split(' ').map(capitalizeFirstLetter).join(' ');
         }
 
         function formatTitle(text) {
