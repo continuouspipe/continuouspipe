@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River\Infrastructure\Firebase\Credentials;
+namespace ContinuousPipe\River\Infrastructure\Firebase\Cache;
 
 use Doctrine\Common\Cache\Cache;
 use Google\Auth\FetchAuthTokenInterface;

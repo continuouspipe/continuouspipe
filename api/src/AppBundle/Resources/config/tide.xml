@@ -146,7 +146,7 @@
         </service>
 
         <service id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached"
-                 class="ContinuousPipe\River\Infrastructure\Firebase\Credentials\CachedAuthTokenFetcher"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedAuthTokenFetcher"
                  decorates="river.view.storage.firebase.database_factory.auth_token_fetcher"
                  decoration-priority="5">
             <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached.inner" />
@@ -155,7 +155,7 @@
         </service>
 
         <service id="river.view.storage.firebase.database_factory.auth_token_fetcher.apcu_cached"
-                 class="ContinuousPipe\River\Infrastructure\Firebase\Credentials\CachedAuthTokenFetcher"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedAuthTokenFetcher"
                  decorates="river.view.storage.firebase.database_factory.auth_token_fetcher"
                  decoration-priority="4">
             <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher.apcu_cached.inner" />
@@ -168,8 +168,19 @@
             <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
         </service>
 
-        <service id="river.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage\FirebaseTideViewStorage">
+        <service id="river.view.storage.firebase_client" class="ContinuousPipe\River\Infrastructure\Firebase\DatabaseFirebaseClient">
             <argument type="service" id="river.view.storage.firebase.database_factory" />
+        </service>
+
+        <service id="river.view.storage.firebase_client.apcu_cached"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedFirebaseClient"
+                 decorates="river.view.storage.firebase_client">
+            <argument type="service" id="river.view.storage.firebase_client.apcu_cached.inner" />
+            <argument type="service" id="river.apcu_cache" />
+        </service>
+
+        <service id="river.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage\FirebaseTideViewStorage">
+            <argument type="service" id="river.view.storage.firebase_client" />
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="logger" />
             <argument>%firebase_database_uri%</argument>
