@@ -11,9 +11,18 @@ pipelines:
 
 variables:
     - name: AUTHENTICATOR_API_URL
+      condition: code_reference.branch == 'production'
       value: authenticator.continuouspipe.io
     - name: RIVER_API_URL
+      condition: code_reference.branch == 'production'
       value: river.continuouspipe.io
+
+    - name: AUTHENTICATOR_API_URL
+      condition: code_reference.branch != 'production'
+      value: authenticator-staging.continuouspipe.io
+    - name: RIVER_API_URL
+      condition: code_reference.branch != 'production'
+      value: river-staging.continuouspipe.io
 
 tasks:
     images:
