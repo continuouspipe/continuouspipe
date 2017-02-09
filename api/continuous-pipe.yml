@@ -138,6 +138,8 @@ tasks:
                               value: false
                             - name: STACK_RABBITMQ_HOST
                               value: ${STACK_RABBITMQ_HOST}
+                            - name: HOSTED_GRAPHITE_API_KEY
+                              value: ${HOSTED_GRAPHITE_API_KEY}
 
                     deployment_strategy:
                         readiness_probe:
