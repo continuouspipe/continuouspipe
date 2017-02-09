@@ -8,7 +8,7 @@
  *
  * Main module of the application.
  */
-angular
+var app = angular
     .module('continuousPipeRiver', [
         'config',
         'ngAnimate',
@@ -39,7 +39,7 @@ angular
             .setAccount('UA-71216332-2')
             .setPageEvent('$stateChangeSuccess')
         ;
-        
+
         $mdThemingProvider.theme('blue');
 
         firebase.initializeApp({
@@ -79,7 +79,7 @@ angular
             var message = body.message || body.error;
 
             if (!message && response.status == 400) {
-                // We are seeing a constraint violation list here, let's return the first one 
+                // We are seeing a constraint violation list here, let's return the first one
                 message = body[0] && body[0].message;
             }
 
@@ -91,3 +91,22 @@ angular
         };
     })
 ;
+
+app.run(function ($rootScope) {
+    function capitalizeFirstLetter(word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+
+    function titleCase(text) {
+        return text.replace(/\./, ' ').split(' ').map(capitalizeFirstLetter).join(' ');
+    }
+
+    function formatTitle(text) {
+        var titleCasedText = titleCase(text)
+        return titleCasedText ? titleCasedText  + ' - ' : '';
+    }
+
+    $rootScope.$on('$stateChangeStart', function (event, current, previous) {
+        $rootScope.title = formatTitle(current.name)
+    });
+});
