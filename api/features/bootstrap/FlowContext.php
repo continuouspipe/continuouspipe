@@ -9,6 +9,7 @@ use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\EventStore\EventStore;
+use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use ContinuousPipe\Security\Team\Team;
@@ -296,6 +297,21 @@ EOF;
     }
 
     /**
+     * @When I send a pipeline deletion request for flow :uuid and pipeline :pipelineName
+     */
+    public function iSendAPipelineDeletionRequestForFlowAndPipeline($uuid, $pipelineName)
+    {
+        $flow = $this->flowRepository->find(Uuid::fromString($uuid));
+        $flatFlow = Flow\Projections\FlatFlow::fromFlow($flow);
+        $pipeline = Pipeline::withConfiguration($flatFlow, ['name' => $pipelineName]);
+
+        $url = sprintf('/flows/%s/pipeline/%s', $uuid, $pipeline->getUuid());
+        $this->response = $this->kernel->handle(Request::create($url, 'DELETE', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]));
+    }
+
+    /**
      * @When I retrieve the list of the flows
      */
     public function iRetrieveTheListOfTheFlows()
@@ -372,6 +388,25 @@ EOF;
 
         if (count($matchingPipelines) == 0) {
             throw new \RuntimeException('No matching pipeline found');
+        }
+    }
+
+    /**
+     * @Then I should not see the pipeline :name in the flow
+     */
+    public function iShouldNotSeeThePipelineInTheFlow($name)
+    {
+        $flow = json_decode($this->response->getContent(), true);
+        if (!is_array($flow)) {
+            throw new \RuntimeException('Expected to receive an array');
+        }
+
+        $matchingPipelines = array_filter($flow['pipelines'], function(array $pipeline) use ($name) {
+            return $pipeline['name'] == $name;
+        });
+
+        if (count($matchingPipelines) > 0) {
+            throw new \UnexpectedValueException('Found a matching pipeline, but not expected.');
         }
     }
 
