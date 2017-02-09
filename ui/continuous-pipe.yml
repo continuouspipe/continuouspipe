@@ -1,3 +1,20 @@
+pipelines:
+    - name: Staging
+      condition: code_reference.branch == 'master'
+      tasks: [ images, deployment ]
+    - name: Production
+      condition: code_reference.branch == 'production'
+      tasks: [ images, deployment ]
+    - name: Pull-requests
+      condition: code_reference.branch not in ['master', 'production']
+      tasks: [ images, deployment ]
+
+variables:
+    - name: AUTHENTICATOR_API_URL
+      value: authenticator.continuouspipe.io
+    - name: RIVER_API_URL
+      value: river.continuouspipe.io
+
 tasks:
     images:
         build:
@@ -14,7 +31,7 @@ tasks:
                               - name: dist
                                 path: /dist
 
-    production:
+    deployment:
         deploy:
             cluster: ${CLUSTER}
             environment:
@@ -35,12 +52,12 @@ tasks:
                     specification:
                         environment_variables:
                             - name: AUTHENTICATOR_API_URL
-                              value: authenticator.continuouspipe.io
+                              value: ${AUTHENTICATOR_API_URL}
                             - name: LOG_STREAM_URL
                               value: logstream.continuouspipe.io
                             - name: PIPE_API_URL
                               value: pipe.continuouspipe.io
                             - name: RIVER_API_URL
-                              value: river.continuouspipe.io
+                              value: ${RIVER_API_URL}
                             - name: SENTRY_DSN
-                              value: http://cca81e898c654780baac3dfae5c67cc3@sentry.tools.sroze.io/16
+                              value: ${SENTRY_DSN}
