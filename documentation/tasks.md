@@ -1,10 +1,3 @@
----
-title: (Temp) Tasks
-menu:
-  main:
-    parent: 'faq'
-    weight: 100
----
 ## TODO:
 - [ ] Replace first screenshot with one showing no teams, demonstrating "action prompt"
 - [x] What are the pipelines? (@richard.miller knows + https://github.com/continuouspipe/river/blob/master/features/domain/pipelines/creation.feature)
