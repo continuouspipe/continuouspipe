@@ -28,14 +28,14 @@ class Comment
     private $content;
 
     /**
-     * @JMS\Type("DateTime")
+     * @JMS\Type("DateTime<'Y-m-d\TH:i:s.uO'>")
      *
      * @var \DateTimeInterface
      */
     private $createdOn;
 
     /**
-     * @JMS\Type("DateTime")
+     * @JMS\Type("DateTime<'Y-m-d\TH:i:s.uO'>")
      *
      * @var \DateTimeInterface
      */

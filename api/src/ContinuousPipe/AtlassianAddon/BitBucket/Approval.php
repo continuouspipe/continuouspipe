@@ -7,7 +7,7 @@ use JMS\Serializer\Annotation as JMS;
 class Approval
 {
     /**
-     * @JMS\Type("DateTime")
+     * @JMS\Type("DateTime<'Y-m-d\TH:i:s.uO'>")
      *
      * @var \DateTimeInterface
      */

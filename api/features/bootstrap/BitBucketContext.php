@@ -381,6 +381,29 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
+     * @When I push the anonymous commit :sha1 to the branch :branch of the BitBucket repository :repositoryName owned by :ownerType :ownerUsername
+     */
+    public function iPushTheAnonymousCommitToTheBranchOfTheBitbucketRepositoryOwnedByUser($sha1, $branch, $repositoryName, $ownerType, $ownerUsername)
+    {
+        $body = \GuzzleHttp\json_decode($this->readFixture('webhook/pushed-in-branch.json'), true);
+        $body['data']['repository']['uuid'] = Uuid::uuid5(Uuid::NIL, $repositoryName)->toString();
+        $body['data']['repository']['name'] = $repositoryName;
+        $body['data']['repository']['owner']['type'] = strtolower($ownerType);
+        $body['data']['repository']['owner']['username'] = $ownerUsername;
+        $body['data']['push']['changes'][0]['new']['type'] = 'branch';
+        $body['data']['push']['changes'][0]['new']['name'] = $branch;
+        $body['data']['push']['changes'][0]['new']['target']['hash'] = $sha1;
+        $body['data']['push']['changes'][0]['new']['target']['author']['user'] = null;
+        $body['data']['push']['changes'][0]['commits'] = array_map(function(array $commit) {
+            unset($commit['author']['user']);
+
+            return $commit;
+        }, $body['data']['push']['changes'][0]['commits']);
+
+        $this->sendWebhook($body);
+    }
+
+    /**
      * @When the commit :sha is pushed to the branch :branch by the user :username with an email :email
      */
     public function theCommitIsPushedToTheBranchByTheUserWithAnEmail($sha, $branch, $username, $email)
