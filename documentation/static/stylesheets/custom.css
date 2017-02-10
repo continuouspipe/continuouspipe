@@ -28,7 +28,7 @@ header.header nav {
 }
 
 main.main article.article div.wrapper {
-    padding-top: 80px;
+    padding: 80px 16px 132px
 }
 main.main article.article div.wrapper h1 {
     padding-bottom: 10px;
