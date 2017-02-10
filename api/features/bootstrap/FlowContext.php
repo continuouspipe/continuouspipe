@@ -452,11 +452,18 @@ EOF;
 
     /**
      * @Then the flow is successfully saved
-     * @Then the pipeline is successfully removed
      */
     public function theFlowIsSuccessfullySaved()
     {
         $this->assertResponseCode(200);
+    }
+
+    /**
+     * @Then the pipeline is successfully removed
+     */
+    public function successfullyRemoved()
+    {
+        $this->assertResponseCode(204);
     }
 
     /**
