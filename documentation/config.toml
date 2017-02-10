@@ -21,8 +21,8 @@ PygmentsCodeFences = true
 	permalink = "#"
 
 	# Custom assets
-	custom_css = [ "stylesheets/custom.css" ]
-	custom_js  = [ "javascripts/jquery-3.1.1.min.js" , "javascripts/menu.js" ]
+	custom_css = [ "https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css","stylesheets/custom.css" ]
+	custom_js  = [ "https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js", "javascripts/jquery-3.1.1.min.js" , "javascripts/menu.js" ]
 
 	# Syntax highlighting theme
 	highlight_css  = ""
