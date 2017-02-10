@@ -11,3 +11,11 @@
     /* increase algolia font-size */
     font-size: 1.5em;
 }
+
+@media only screen and (max-width: 768px) {
+    .ds-dropdown-menu {
+        position: fixed !important;
+        max-width: initial !important;
+        min-width: 100% !important;
+    }
+}
