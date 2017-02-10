@@ -20,3 +20,9 @@ Feature:
     When I send a tide creation request for branch "master" and commit "123456"
     Then the tide should be created
     And the tide should have the task "images"
+
+  Scenario: The first status is stopped when I just push something
+    Given I have a flow with a BitBucket repository "example" owned by user "foo"
+    And there is the add-on installed for the BitBucket repository "example" owned by user "foo"
+    When I push the anonymous commit "12345" to the branch "master" of the BitBucket repository "example" owned by user "foo"
+    Then the tide should be created

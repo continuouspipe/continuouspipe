@@ -111,9 +111,11 @@ class BitBucketEventHandler
         $users = [];
 
         foreach ($change->getCommits() as $commit) {
-            $commitUser = $commit->getAuthor()->getUser();
-            $user = new CodeRepositoryUser($commitUser->getUsername(), null, $commitUser->getDisplayName());
+            if (null === ($commitUser = $commit->getAuthor()->getUser())) {
+                continue;
+            }
 
+            $user = new CodeRepositoryUser($commitUser->getUsername(), null, $commitUser->getDisplayName());
             if (!in_array($user, $users)) {
                 $users[] = $user;
             }
