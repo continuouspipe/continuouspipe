@@ -20,6 +20,13 @@
     }
 }
 
+header.header nav {
+    height: 56px;
+}
+.bar.search {
+    transform: translate3d(0,-112px,0);
+}
+
 main.main article.article div.wrapper {
     padding-top: 80px;
 }
