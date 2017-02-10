@@ -1,3 +1,8 @@
 .article .data {
     text-align: left;
 }
+
+.header {
+    /* overwrites inherited style */
+    overflow: initial !important;
+}

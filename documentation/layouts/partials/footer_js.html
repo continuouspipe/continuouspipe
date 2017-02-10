@@ -14,6 +14,19 @@
     {{ end }}
 
     <script>
+    {{ "/* Removes redundant event listener from material theme */" | safeJS }}
+    window.addEventListener('load', function () {
+        function elementReset(elem) {
+            var old_element = document.querySelector(elem);
+            var new_element = old_element.cloneNode(true);
+            old_element.parentNode.replaceChild(new_element, old_element);
+        }
+
+        elementReset("#toggle-search")
+    }, false);
+    </script>
+
+    <script>
       {{ "/* Add headers to scrollspy */" | safeJS }}
       var headers   = document.getElementsByTagName("h2");
       var scrollspy = document.getElementById('scrollspy');
@@ -50,11 +63,12 @@
         }
       }
     </script>
-    <script type="text/javascript"> docsearch({
+    <script type="text/javascript"> 
+    docsearch({
         apiKey: '608036855612fb9a0dd2e9a2c09955bc',
         indexName: 'continuouspipe',
         inputSelector: '#algolia-query',
-        debug: false // Set debug to true if you want to inspect the dropdown
+        debug: true // Set debug to true if you want to inspect the dropdown
     });
     </script>
 
