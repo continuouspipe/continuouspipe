@@ -3,11 +3,12 @@
 {{ range .Site.Menus.main.ByWeight }}
 
 {{ $.Scratch.Set "currentMenuEntry" . }}
+{{ $isCurrentParent := hasPrefix $currentNode.URL .URL }}
 <li>
-  {{ if .HasChildren }}
     {{ partial "nav_link" $currentNode }}
 
-    <ul>
+    {{ if .HasChildren }}
+    <ul {{ if $isCurrentParent }}class="current"{{ end }}>
       {{ range .Children }}
         {{ $.Scratch.Set "currentMenuEntry" . }}
         {{ partial "nav_link" $currentNode }}

@@ -26,3 +26,11 @@ main.main article.article div.wrapper {
 main.main article.article div.wrapper h1 {
     padding-bottom: 10px;
 }
+
+main.main nav div.wrapper div.toc ul > a {
+    color: rgba(0, 0, 0, 0.870588);    
+}
+
+main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
+    display: none;
+}

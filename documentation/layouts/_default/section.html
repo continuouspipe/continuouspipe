@@ -1,4 +1,11 @@
 {{ define "main" }}
+
+    {{ if .Content }}
+        <h1>{{ .Title }}</h1>
+
+        {{ .Content }}
+    {{ end }}
+
     <!-- The part of the page that begins to differ between templates -->
     <h1>Pages in {{ .Title | singularize }}</h1>
 

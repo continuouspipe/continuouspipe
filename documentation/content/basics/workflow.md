@@ -3,7 +3,7 @@ title: A workflow that suits you
 LinkTitle: Workflow
 menu:
   main:
-    parent: 'Basics'
+    parent: 'basics'
     weight: 20
 
 weight: 99

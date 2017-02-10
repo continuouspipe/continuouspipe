@@ -2,7 +2,7 @@
 title: Docker Images
 menu:
   main:
-    parent: 'Basics'
+    parent: 'basics'
     weight: 30
 
 weight: 98

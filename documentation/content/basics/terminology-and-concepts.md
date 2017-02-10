@@ -3,7 +3,7 @@ LinkTitle: Terminology & Concepts
 title: Terminology & Concepts
 menu:
   main:
-    parent: 'Basics'
+    parent: 'basics'
     weight: 11
 
 weight: 99

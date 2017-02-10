@@ -2,7 +2,7 @@
 title: Clusters
 menu:
   main:
-    parent: 'Basics'
+    parent: 'basics'
     weight: 40
 
 weight: 97

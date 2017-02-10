@@ -3,8 +3,7 @@ LinkTitle: Introduction # notice how this overrides what's shown in the menu
 title: Introduction to ContinuousPipe
 menu:
   main:
-    identifier: basics-introduction
-    parent: 'Basics'
+    parent: 'basics'
     weight: 10
 
 weight: 100
