@@ -12,6 +12,7 @@ use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Pipe\Promise\PromiseBuilder;
 use ContinuousPipe\Pipe\View\ComponentStatus;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
+use Kubernetes\Client\Exception\DeploymentNotFound;
 use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\Deployment;
@@ -26,6 +27,7 @@ use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Complex;
 use LogStream\Node\Text;
+use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 use React;
 
@@ -64,21 +66,25 @@ class WaitComponentsHandler implements DeploymentHandler
      * @var LoggerFactory
      */
     private $loggerFactory;
-
     /**
-     * @param DeploymentClientFactory $clientFactory
-     * @param MessageBus              $eventBus
-     * @param LoggerFactory           $loggerFactory
-     * @param float                   $checkInternal
-     * @param int                     $timeout
+     * @var LoggerInterface
      */
-    public function __construct(DeploymentClientFactory $clientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, $checkInternal = self::DEFAULT_COMPONENT_CHECK_INTERVAL, $timeout = self::DEFAULT_COMPONENT_TIMEOUT)
-    {
+    private $logger;
+
+    public function __construct(
+        DeploymentClientFactory $clientFactory,
+        MessageBus $eventBus,
+        LoggerFactory $loggerFactory,
+        LoggerInterface $logger,
+        $checkInternal = self::DEFAULT_COMPONENT_CHECK_INTERVAL,
+        $timeout = self::DEFAULT_COMPONENT_TIMEOUT
+    ) {
         $this->clientFactory = $clientFactory;
         $this->eventBus = $eventBus;
+        $this->loggerFactory = $loggerFactory;
+        $this->logger = $logger;
         $this->checkInternal = $checkInternal;
         $this->timeout = $timeout;
-        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -110,14 +116,24 @@ class WaitComponentsHandler implements DeploymentHandler
             $this->eventBus->handle(new DeploymentFailed($deploymentContext));
         });
 
-        $loop->run();
+        try {
+            $loop->run();
+        } catch (DeploymentNotFound $e) {
+            $this->eventBus->handle(new DeploymentFailed($deploymentContext));
+
+            $this->logger->warning('The deployment was not found', [
+                'exception' => $e,
+                'environment' => $deploymentContext->getEnvironment()->getName(),
+                'cluster' => $deploymentContext->getCluster()->getIdentifier(),
+            ]);
+        }
     }
 
     /**
      * @param NamespaceClient       $client
      * @param ReplicationController $replicationController
      *
-     * @return React\Promise\Promise
+     * @return React\Promise\PromiseInterface
      */
     private function waitOneReplicationControllerPodRunning(React\EventLoop\LoopInterface $loop, NamespaceClient $client, Logger $logger, ReplicationController $replicationController)
     {
@@ -164,7 +180,7 @@ class WaitComponentsHandler implements DeploymentHandler
      * @param Logger                        $logger
      * @param Deployment                    $deployment
      *
-     * @return React\Promise\Promise
+     * @return React\Promise\PromiseInterface
      */
     private function waitDeploymentFinished(React\EventLoop\LoopInterface $loop, DeploymentContext $deploymentContext, NamespaceClient $client, Logger $logger, Deployment $deployment)
     {
