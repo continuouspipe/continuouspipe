@@ -5,7 +5,8 @@
 {{ $.Scratch.Set "currentMenuEntry" . }}
 <li>
   {{ if .HasChildren }}
-    <span class="section">{{ .Name | title }}</span>
+    {{ partial "nav_link" $currentNode }}
+
     <ul>
       {{ range .Children }}
         {{ $.Scratch.Set "currentMenuEntry" . }}

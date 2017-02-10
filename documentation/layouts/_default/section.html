@@ -1,0 +1,16 @@
+{{ define "main" }}
+    <!-- The part of the page that begins to differ between templates -->
+    <h1>Pages in {{ .Title | singularize }}</h1>
+
+    {{ range .Data.Pages }}
+    <a href="{{ .Permalink }}" title="{{ .Title }}">
+    <h2>{{ .Title }}</h2>
+    </a>
+
+    <br>
+    {{ printf "%s" .Summary | markdownify }}
+
+    <hr>
+    {{ end }}
+
+{{ end }}
