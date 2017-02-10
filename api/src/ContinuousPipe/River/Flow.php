@@ -9,7 +9,9 @@ use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
 use ContinuousPipe\River\Flow\Event\FlowCreated;
 use ContinuousPipe\River\Flow\Event\FlowRecovered;
 use ContinuousPipe\River\Flow\Event\PipelineCreated;
+use ContinuousPipe\River\Flow\Event\PipelineDeleted;
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
+use ContinuousPipe\River\Pipeline\PipelineNotFound;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
@@ -192,5 +194,32 @@ final class Flow
     public function getPipelines(): array
     {
         return $this->pipelines;
+    }
+
+    public function deletePipelineByUuid(UuidInterface $uuid)
+    {
+        foreach ($this->pipelines as $pipeline) {
+            if ($uuid->equals($pipeline->getUuid())) {
+                $this->raise(new PipelineDeleted(
+                    $this->getUuid(),
+                    $uuid
+                ));
+
+                return;
+            }
+        }
+
+        throw new PipelineNotFound(
+            sprintf('Pipeline with UUID "%s" does not exist in flow "%s".', $uuid->toString(), $this->getUuid())
+        );
+    }
+
+    public function applyPipelineDeleted(PipelineDeleted $event)
+    {
+        foreach ($this->pipelines as $key => $pipeline) {
+            if ($event->getPipelineUuid() == $pipeline->getUuid()) {
+                unset($this->pipelines[$key]);
+            }
+        }
     }
 }

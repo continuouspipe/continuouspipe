@@ -22,6 +22,9 @@
             <argument type="service" id="river.flow.configuration.missing_variables.configuration_resolver" />
             <argument type="service" id="river.flow.encrypted_variable_vault" />
         </service>
+        <service id="app.controller.pipeline_deletion" class="AppBundle\Controller\PipelineDeletionController">
+            <argument type="service" id="event_bus"/>
+        </service>
         <service id="app.controller.github" class="AppBundle\Controller\GitHubController">
             <argument type="service" id="command_bus" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />

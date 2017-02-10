@@ -92,6 +92,10 @@ default:
                     - @github.integration.installation_token_resolver.in_memory
                     - @repository_river.code_repository_repository
 
+                - StorageContext:
+                    - @river.pipeline.view.storage
+                    - @river.repository.flow
+
         github:
             paths:
                 - %paths.base%/features/integrations/code-repositories/common/
