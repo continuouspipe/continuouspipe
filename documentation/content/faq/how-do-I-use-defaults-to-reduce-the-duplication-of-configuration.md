@@ -4,6 +4,7 @@ menu:
   main:
     parent: 'faq'
     weight: 30
+weight: 30
 ---
 In the following example the definition of the "cluster" and environment "name" variables are duplicated across tasks:
 

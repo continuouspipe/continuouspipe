@@ -1,23 +1,14 @@
 {{ define "main" }}
+    <h1>{{ .Title }}</h1>
 
     {{ if .Content }}
-        <h1>{{ .Title }}</h1>
-
         {{ .Content }}
     {{ end }}
 
-    <!-- The part of the page that begins to differ between templates -->
-    <h1>Pages in {{ .Title | singularize }}</h1>
-
-    {{ range .Data.Pages }}
-    <a href="{{ .Permalink }}" title="{{ .Title }}">
-    <h2>{{ .Title }}</h2>
-    </a>
-
-    <br>
-    {{ printf "%s" .Summary | markdownify }}
-
-    <hr>
+    <ul>
+    {{ range .Data.Pages.ByWeight }}
+        <li><a href="{{ .Permalink }}" title="{{ .Title }}">{{ .Title }}</a></li>
     {{ end }}
+    </ul>
 
 {{ end }}

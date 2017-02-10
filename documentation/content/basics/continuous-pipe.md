@@ -6,7 +6,7 @@ menu:
     parent: 'basics'
     weight: 10
 
-weight: 100
+weight: 10
 ---
 ContinuousPipe is a system for continuous automated deployment of multiple environments with simple configuration. Utilising Docker and Kubernetes to automatically deploy new environments, it dramatically speeds up your feedback loop and cuts lead time.
 

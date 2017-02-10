@@ -5,7 +5,7 @@ menu:
     parent: 'quick-start'
     weight: 50
 
-weight: 76
+weight: 50
 ---
 At this stage you should have a fully configured Team, so it's time to configure your code repository by adding the configuration files that are needed to build a Docker image and set up ContinuousPipe deployments.
 

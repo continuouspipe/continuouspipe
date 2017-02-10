@@ -6,7 +6,7 @@ menu:
     parent: 'quick-start'
     weight: 10
 
-weight: 80
+weight: 10
 ---
 When you log in for the first time you will see the Team overview screen, which will be empty. You'll be prompted to create a new Team.
 

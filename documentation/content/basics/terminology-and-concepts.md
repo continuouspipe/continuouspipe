@@ -6,7 +6,7 @@ menu:
     parent: 'basics'
     weight: 11
 
-weight: 99
+weight: 11
 ---
 
 ## Technology

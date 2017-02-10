@@ -6,7 +6,7 @@ menu:
     parent: 'configuration'
     weight: 30
 
-weight: 68
+weight: 30
 ---
 As you've seen in the configuration files section, most of ContinuousPipe's configuration is about tasks. These tasks achieve a specific behaviour and can be picked up independently. As of now, here are the 4 official tasks:
 

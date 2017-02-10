@@ -9,7 +9,7 @@
 
         {{ if .HasChildren }}
         <ul {{ if $isCurrentParent }}class="current"{{ end }}>
-          {{ range .Children }}
+          {{ range .Children.ByWeight }} 
             {{ $.Scratch.Set "currentMenuEntry" . }}
             {{ partial "nav_link" $currentNode }}
           {{ end }}
