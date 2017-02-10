@@ -16,13 +16,18 @@
     <script>
     {{ "/* Removes redundant event listener from material theme */" | safeJS }}
     window.addEventListener('load', function () {
+        var searchToggle = document.querySelector("#toggle-search");
+        var searchLabel = document.querySelector("[for=\"toggle-search\"]");
+        var algoliaInput = document.querySelector("#algolia-query");
+
         function elementReset(elem) {
-            var old_element = document.querySelector(elem);
-            var new_element = old_element.cloneNode(true);
-            old_element.parentNode.replaceChild(new_element, old_element);
+            elem.parentNode.replaceChild(elem.cloneNode(true), elem);
         }
 
-        elementReset("#toggle-search");
+        elementReset(searchToggle);
+        searchLabel.addEventListener('click', function() {
+            algoliaInput.focus();
+        }, false);
     }, false);
     </script>
 
