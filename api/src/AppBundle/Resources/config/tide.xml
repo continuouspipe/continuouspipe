@@ -154,15 +154,6 @@
             <argument type="service" id="logger" />
         </service>
 
-        <service id="river.view.storage.firebase.database_factory.auth_token_fetcher.apcu_cached"
-                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedAuthTokenFetcher"
-                 decorates="river.view.storage.firebase.database_factory.auth_token_fetcher"
-                 decoration-priority="4">
-            <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher.apcu_cached.inner" />
-            <argument type="service" id="river.apcu_cache" />
-            <argument type="service" id="logger" />
-        </service>
-
         <service id="river.view.storage.firebase.database_factory" class="ContinuousPipe\River\Infrastructure\Firebase\ServiceAccountedFirebaseDatabaseFactory">
             <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher" />
             <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
@@ -172,11 +163,11 @@
             <argument type="service" id="river.view.storage.firebase.database_factory" />
         </service>
 
-        <service id="river.view.storage.firebase_client.apcu_cached"
+        <service id="river.view.storage.firebase_client.predis_cached"
                  class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedFirebaseClient"
                  decorates="river.view.storage.firebase_client">
-            <argument type="service" id="river.view.storage.firebase_client.apcu_cached.inner" />
-            <argument type="service" id="river.apcu_cache" />
+            <argument type="service" id="river.view.storage.firebase_client.predis_cached.inner" />
+            <argument type="service" id="river.predis_cache" />
         </service>
 
         <service id="river.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage\FirebaseTideViewStorage">
