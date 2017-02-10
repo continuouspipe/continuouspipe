@@ -1,9 +1,9 @@
 ---
-LinkTitle: Introduction # notice how this overrides what's shown in the menu
-title: Introduction to ContinuousPipe
+LinkTitle: ContinuousPipe
+title: ContinuousPipe
 menu:
   main:
-    parent: 'Basics'
+    parent: 'basics'
     weight: 10
 
 weight: 100
