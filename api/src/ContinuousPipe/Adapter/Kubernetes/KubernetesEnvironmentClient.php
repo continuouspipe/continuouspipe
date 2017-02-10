@@ -80,7 +80,10 @@ class KubernetesEnvironmentClient implements EnvironmentClient
         try {
             $namespace = $this->getNamespaceRepository()->findOneByName($identifier);
         } catch (NamespaceNotFound $e) {
-            throw new EnvironmentNotFound();
+            throw new EnvironmentNotFound(sprintf(
+                'The environment "%s" is not found',
+                $identifier
+            ), 400, $e);
         }
 
         return $this->namespaceToEnvironment($namespace);

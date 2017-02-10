@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
+use ContinuousPipe\Adapter\EnvironmentNotFound;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
@@ -11,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -65,7 +67,14 @@ class EnvironmentController extends Controller
     {
         $client = $this->environmentClientFactory->getByCluster($this->getCluster($team, $clusterIdentifier));
 
-        $environment = $client->find($environmentIdentifier);
+        try {
+            $environment = $client->find($environmentIdentifier);
+        } catch (EnvironmentNotFound $e) {
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+            ], 404);
+        }
+
         $client->delete($environment);
     }
 
