@@ -19,3 +19,10 @@
         min-width: 100% !important;
     }
 }
+
+main.main article.article div.wrapper {
+    padding-top: 80px;
+}
+main.main article.article div.wrapper h1 {
+    padding-bottom: 10px;
+}
