@@ -42,24 +42,24 @@ PygmentsCodeFences = true
 
 [[menu.main]]
 	name   = "Basics"
-	url    = "basics/"
+	url    = "/basics/"
 	identifier = "basics"
 	weight = "5"
 
 [[menu.main]]
 	name   = "Quick Start"
-	url    = "quick-start/"
+	url    = "/quick-start/"
 	identifier = "quick-start"
 	weight = "10"
 
 [[menu.main]]
 	name   = "Configuration"
-	url    = "configuration/"
+	url    = "/configuration/"
 	identifier = "configuration"
 	weight = "15"
 
 [[menu.main]]
 	name   = "FAQ"
-	url    = "faq/"
+	url    = "/faq/"
 	identifier = "faq"
 	weight = "20"

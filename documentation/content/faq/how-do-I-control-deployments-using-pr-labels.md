@@ -4,6 +4,7 @@ menu:
   main:
     parent: 'faq'
     weight: 20
+weight: 20
 ---
 You may not want to deploy an environment every time a commit is pushed to a branch. One way of limiting this is to only deploy environments for branches with open pull requests with a particular label. You can do this by putting a condition on tasks in `continuous-pipe.yml using a filter expression.
 

@@ -19,3 +19,25 @@
         min-width: 100% !important;
     }
 }
+
+header.header nav {
+    height: 56px;
+}
+.bar.search {
+    transform: translate3d(0,-112px,0);
+}
+
+main.main article.article div.wrapper {
+    padding: 80px 16px 132px
+}
+main.main article.article div.wrapper h1 {
+    padding-bottom: 10px;
+}
+
+main.main nav div.wrapper div.toc ul > a {
+    color: rgba(0, 0, 0, 0.870588);    
+}
+
+main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
+    display: none;
+}

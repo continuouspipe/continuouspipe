@@ -2,16 +2,19 @@
 
 {{ range .Site.Menus.main.ByWeight }}
 
-{{ $.Scratch.Set "currentMenuEntry" . }}
-<li>
-  {{ if .HasChildren }}
-    <span class="section">{{ .Name | title }}</span>
-    <ul>
-      {{ range .Children }}
-        {{ $.Scratch.Set "currentMenuEntry" . }}
+    {{ $.Scratch.Set "currentMenuEntry" . }}
+    {{ $isCurrentParent := hasPrefix $currentNode.URL .URL }}
+    <li>
         {{ partial "nav_link" $currentNode }}
+
+        {{ if .HasChildren }}
+        <ul {{ if $isCurrentParent }}class="current"{{ end }}>
+          {{ range .Children.ByWeight }} 
+            {{ $.Scratch.Set "currentMenuEntry" . }}
+            {{ partial "nav_link" $currentNode }}
+          {{ end }}
+        </ul>
       {{ end }}
-    </ul>
-  {{ end }}
-</li>
+    </li>
+
 {{ end }}

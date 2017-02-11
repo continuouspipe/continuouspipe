@@ -6,7 +6,7 @@ menu:
     parent: 'quick-start'
     weight: 30
 
-weight: 78
+weight: 30
 ---
 Before a Flow can be used it needs to know where to deploy to. This is done in the "Clusters" tab of the Team. You'll be prompted to add a new cluster configuration.
 
