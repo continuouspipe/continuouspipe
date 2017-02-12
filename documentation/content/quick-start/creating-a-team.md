@@ -10,7 +10,7 @@ weight: 10
 ---
 When you log in for the first time you will see the Team overview screen, which will be empty. You'll be prompted to create a new Team.
 
-![](/images/quick-start/team-overview-new-team.png)
+![](/images/quick-start/team-overview-no-team.png)
 
 To create a Team, just click the "CREATE A TEAM" button in the top right of the interface.
 
@@ -24,6 +24,3 @@ The Team will not be created until a unique identifier is found. You will be tol
 The new Team will now be visible in the Team overview screen.
 
 ![](/images/quick-start/team-overview-new-team.png)
-
-## TODO:
-- [ ] Replace first screenshot with one showing no teams, demonstrating "action prompt"
