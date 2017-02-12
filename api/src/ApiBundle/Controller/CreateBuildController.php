@@ -81,8 +81,10 @@ class CreateBuildController
             $request = $this->buildRequestTransformer->transform($request);
         } catch (BuildRequestException $e) {
             return new JsonResponse([
-                'error' => $e->getMessage(),
-                'code' => $e->getCode(),
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => $e->getCode(),
+                ],
             ], 400);
         }
 

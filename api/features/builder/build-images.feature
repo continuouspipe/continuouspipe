@@ -98,6 +98,8 @@ Feature:
     And the response should contain the following JSON:
     """
     {
-      "error": "Docker Registry credentials for the image \"sroze/php-example\" not found"
+      "error": {
+         "message": "Docker Registry credentials for the image \"sroze/php-example\" not found"
+       }
     }
     """

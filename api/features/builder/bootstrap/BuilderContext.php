@@ -425,7 +425,7 @@ function array_intersect_recursive($array1, $array2)
         {
             if (is_array($array1[$key]))
             {
-                $array1[$key] = $this->array_intersect_recursive($array1[$key], $array2[$key]);
+                $array1[$key] = array_intersect_recursive($array1[$key], $array2[$key]);
             }
             elseif ($array2[$key] !== $value)
             {
