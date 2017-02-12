@@ -5,16 +5,15 @@ namespace ContinuousPipe\Builder\Client;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\SerializerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 
 class HttpBuilderClient implements BuilderClient
 {
     /**
-     * @var Client
+     * @var ClientInterface
      */
     private $httpClient;
 
@@ -33,12 +32,12 @@ class HttpBuilderClient implements BuilderClient
     private $jwtManager;
 
     /**
-     * @param Client              $httpClient
+     * @param ClientInterface     $httpClient
      * @param SerializerInterface $serializer
      * @param JWTManagerInterface $jwtManager
      * @param string              $baseUrl
      */
-    public function __construct(Client $httpClient, SerializerInterface $serializer, JWTManagerInterface $jwtManager, $baseUrl)
+    public function __construct(ClientInterface $httpClient, SerializerInterface $serializer, JWTManagerInterface $jwtManager, $baseUrl)
     {
         $this->httpClient = $httpClient;
         $this->baseUrl = $baseUrl;
@@ -54,14 +53,30 @@ class HttpBuilderClient implements BuilderClient
         $token = $this->jwtManager->create(new SecurityUser($user));
 
         try {
-            $response = $this->httpClient->post($this->baseUrl . '/build', [
+            $response = $this->httpClient->request('POST', $this->baseUrl . '/build', [
                 'body' => $this->serializer->serialize($buildRequest, 'json'),
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Bearer ' . $token,
                 ],
             ]);
-        } catch (GuzzleException $e) {
+        } catch (RequestException $e) {
+            if (null !== ($response = $e->getResponse())) {
+                try {
+                    $contents = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+
+                    if (isset($contents['error']['message'])) {
+                        throw new BuilderException(
+                            $contents['error']['message'],
+                            isset($contents['error']['code']) ? $contents['error']['code'] : $e->getCode(),
+                            $e
+                        );
+                    }
+                } catch (\InvalidArgumentException $e) {
+                    // Handle the exception as if it wasn't supported
+                }
+            }
+
             throw new BuilderException($e->getMessage(), $e->getCode(), $e);
         }
 
