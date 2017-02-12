@@ -97,6 +97,32 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     }
 
     /**
+     * @Then the request should be refused with a :statusCode status code
+     */
+    public function theRequestShouldBeRefusedWithAStatusCode($statusCode)
+    {
+        $this->assertResponseCode((int) $statusCode);
+    }
+
+    /**
+     * @Then the response should contain the following JSON:
+     */
+    public function theResponseShouldContainTheFollowingJson(PyStringNode $string)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $expectedConfiguration = \GuzzleHttp\json_decode($string->getRaw(), true);
+
+        $intersection = array_intersect_recursive($expectedConfiguration, $json);
+
+        if ($intersection != $expectedConfiguration) {
+            throw new \RuntimeException(sprintf(
+                'Expected to have at least this JSON but found: %s',
+                PHP_EOL.$this->response->getContent()
+            ));
+        }
+    }
+
+    /**
      * @Then the image :name should be built
      */
     public function theImageShouldBeBuilt($name)
@@ -385,4 +411,27 @@ EOF;
             $stepPosition
         );
     }
+}
+
+function array_intersect_recursive($array1, $array2)
+{
+    foreach($array1 as $key => $value)
+    {
+        if (!isset($array2[$key]))
+        {
+            unset($array1[$key]);
+        }
+        else
+        {
+            if (is_array($array1[$key]))
+            {
+                $array1[$key] = $this->array_intersect_recursive($array1[$key], $array2[$key]);
+            }
+            elseif ($array2[$key] !== $value)
+            {
+                unset($array1[$key]);
+            }
+        }
+    }
+    return $array1;
 }
