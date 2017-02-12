@@ -4,6 +4,7 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
+use ContinuousPipe\Builder\Request\BuildRequestException;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\View\BuildViewRepository;
 use ContinuousPipe\Builder\Request\BuildRequest;
@@ -12,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -75,7 +77,17 @@ class CreateBuildController
             return \FOS\RestBundle\View\View::create($violations->get(0), 400);
         }
 
-        $request = $this->buildRequestTransformer->transform($request);
+        try {
+            $request = $this->buildRequestTransformer->transform($request);
+        } catch (BuildRequestException $e) {
+            return new JsonResponse([
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => $e->getCode(),
+                ],
+            ], 400);
+        }
+
         $build = $this->buildFactory->fromRequest($request);
 
         $this->commandBus->handle(new StartBuild($build->getIdentifier()));
