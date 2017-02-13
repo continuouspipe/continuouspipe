@@ -22,6 +22,30 @@ Feature:
       | my-kube    | kubernetes | https://2.3.4.5 | username | password | v1.4.3  |
     Then the new cluster should not have been saved successfully
 
+  Scenario: Creating a new Kubernetes cluster is allowed with path in the address
+    When I create a cluster with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | identifier | type       | address             | username | password | version |
+      | my-kube    | kubernetes | https://1.2.3.4/foo | username | password | v1.4    |
+    Then the new cluster should have been saved successfully
+
+  Scenario: Cannot create Kubernetes cluster when address is invalid
+    When I create a cluster with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | identifier | type       | address         | username | password | version |
+      | my-kube    | kubernetes | https://        | username | password | v1.4    |
+    Then the new cluster should not have been saved successfully
+
+  Scenario: Cannot create Kubernetes cluster when address is invalid
+    When I create a cluster with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | identifier | type       | address | username | password | version |
+      | my-kube    | kubernetes | foo.com | username | password | v1.4    |
+    Then the new cluster should not have been saved successfully
+
+  Scenario: Cannot create Kubernetes cluster when address URL scheme is not HTTP or HTTPS
+    When I create a cluster with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | identifier | type       | address           | username | password | version |
+      | my-kube    | kubernetes | ftp://invalid.com | username | password | v1.4    |
+    Then the new cluster should not have been saved successfully
+
   @smoke
   Scenario: List clusters of bucket
     Given I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
