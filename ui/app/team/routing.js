@@ -5,131 +5,49 @@ angular.module('continuousPipeRiver')
         $stateProvider
             .state('team', {
                 url: '/team/:team',
-                parent: 'layout',
-                abstract: true,
-                resolve: {
-                    team: function($stateParams, $teamContext, $q, TeamRepository) {
-                        return TeamRepository.find($stateParams.team).then(function(team) {
-                            $teamContext.setCurrentTeam(team);
-
-                            return team;
-                        }, function(error) {
-                            return $q.reject(error);
-                        });
-                    }
-                },
-                views: {
-                    'aside@': {
-                        templateUrl: 'team/layout/views/aside.html'
-                    },
-                    'title@layout': {
-                        controller: function($scope, team) {
-                            $scope.team = team;
-                        },
-                        template: '{{ team.name || team.slug }}'
-                    }
-                }
+                redirectTo: 'project'
             })
-            .state('flows', {
+            .state('team.flows', {
                 parent: 'team',
                 url: '/flows',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/flows/views/list.html',
-                        controller: 'FlowListController'
-                    }
-                },
-                aside: true
+                redirectTo: 'flows'
             })
-            .state('flows.create', {
+            .state('team.flows.create', {
                 url: '/create',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/flows/views/create.html',
-                        controller: 'CreateFlowController'
-                    },
-                    'title@layout': {
-                        controller: function($scope, team) {
-                            $scope.team = team;
-                        },
-                        template: '<a ui-sref="flows({team: team.slug})">{{ team.name || team.slug }}</a> / Create a flow'
-                    }
-                }
+                redirectTo: 'flows.create'
             })
-            .state('users', {
+            .state('team.users', {
                 parent: 'team',
                 url: '/users',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/users/views/list.html',
-                        controller: 'TeamUsersController'
-                    }
-                },
-                aside: true
+                redirectTo: 'users'
             })
-            .state('users.add', {
+            .state('team.users.add', {
                 parent: 'team',
                 url: '/add',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/users/views/add.html',
-                        controller: 'TeamAddUserController'
-                    }
-                },
-                aside: true
+                redirectTo: 'users.add'
             })
-            .state('clusters', {
+            .state('team.clusters', {
                 parent: 'team',
                 url: '/clusters',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/clusters/views/list.html',
-                        controller: 'TeamClustersController'
-                    }
-                },
-                aside: true
+                redirectTo: 'clusters'
             })
-            .state('clusters.add', {
+            .state('team.clusters.add', {
                 url: '/add',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/clusters/views/add.html',
-                        controller: 'TeamAddClusterController'
-                    }
-                },
-                aside: true
+                redirectTo: 'clusters.add'
             })
-            .state('registry-credentials', {
+            .state('team.registry-credentials', {
                 parent: 'team',
                 url: '/registry-credentials',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/registry-credentials/views/list.html',
-                        controller: 'TeamRegistryCredentialsController'
-                    }
-                },
-                aside: true
+                redirectTo: 'registry-credentials'
             })
-            .state('registry-credentials.create', {
+            .state('team.registry-credentials.create', {
                 url: '/create',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/registry-credentials/views/create.html',
-                        controller: 'TeamCreateRegistryCredentialsController'
-                    }
-                },
-                aside: true
+                redirectTo: 'registry-credentials.create'
             })
-            .state('configuration', {
+            .state('team.configuration', {
                 parent: 'team',
                 url: '/configuration',
-                views: {
-                    'content@': {
-                        templateUrl: 'team/configuration/views/edit.html',
-                        controller: 'TeamConfigurationController'
-                    }
-                },
-                aside: true
+                redirectTo: 'configuration'
             })
         ;
     });
