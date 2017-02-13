@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River\Task\Run;
 
+use ContinuousPipe\Model\Component\Volume;
+use ContinuousPipe\Model\Component\VolumeMount;
 use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
 use JMS\Serializer\Annotation as JMS;
 
@@ -41,21 +43,33 @@ class RunTaskConfiguration implements EnvironmentAwareConfiguration
      * @var string
      */
     private $environmentName;
+    /**
+     * @var Volume[]
+     */
+    private $volumes;
+    /**
+     * @var VolumeMount[]
+     */
+    private $volumeMounts;
 
     /**
      * @param string $clusterIdentifier
      * @param string $image
-     * @param array  $commands
-     * @param array  $environmentVariables
+     * @param array $commands
+     * @param array $environmentVariables
      * @param string $environmentName
+     * @param Volume[] $volumes
+     * @param VolumeMount[] $volumeMounts
      */
-    public function __construct($clusterIdentifier, $image, array $commands, array $environmentVariables, $environmentName)
+    public function __construct($clusterIdentifier, $image, array $commands, array $environmentVariables, $environmentName, array $volumes = [], array $volumeMounts = [])
     {
         $this->clusterIdentifier = $clusterIdentifier;
         $this->image = $image;
         $this->commands = $commands;
         $this->environmentVariables = $environmentVariables;
         $this->environmentName = $environmentName;
+        $this->volumes = $volumes;
+        $this->volumeMounts = $volumeMounts;
     }
 
     /**
@@ -113,5 +127,21 @@ class RunTaskConfiguration implements EnvironmentAwareConfiguration
     public function getEnvironmentName()
     {
         return $this->environmentName;
+    }
+
+    /**
+     * @return Volume[]
+     */
+    public function getVolumes(): array
+    {
+        return $this->volumes ?: [];
+    }
+
+    /**
+     * @return VolumeMount[]
+     */
+    public function getVolumeMounts(): array
+    {
+        return $this->volumeMounts ?: [];
     }
 }

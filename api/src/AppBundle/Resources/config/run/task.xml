@@ -8,6 +8,7 @@
         <service id="river.task.run_factory" class="ContinuousPipe\River\Task\Run\RunTaskFactory">
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="command_bus" />
+            <argument type="service" id="jms_serializer" />
 
             <tag name="river.task_factory" task="run" />
         </service>

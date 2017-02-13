@@ -168,6 +168,7 @@
                  decorates="river.view.storage.firebase_client">
             <argument type="service" id="river.view.storage.firebase_client.predis_cached.inner" />
             <argument type="service" id="river.predis_cache" />
+            <argument type="service" id="logger" />
         </service>
 
         <service id="river.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage\FirebaseTideViewStorage">

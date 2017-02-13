@@ -2,9 +2,12 @@
 
 namespace ContinuousPipe\River\Task\Run;
 
+use ContinuousPipe\Model\Component\Volume;
+use ContinuousPipe\Model\Component\VolumeMount;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
+use JMS\Serializer\SerializerInterface;
 use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -22,13 +25,18 @@ class RunTaskFactory implements TaskFactory
     private $commandBus;
 
     /**
-     * @param LoggerFactory $loggerFactory
-     * @param MessageBus    $commandBus
+     * @var SerializerInterface
      */
-    public function __construct(LoggerFactory $loggerFactory, MessageBus $commandBus)
-    {
+    private $serializer;
+
+    public function __construct(
+        LoggerFactory $loggerFactory,
+        MessageBus $commandBus,
+        SerializerInterface $serializer
+    ) {
         $this->loggerFactory = $loggerFactory;
         $this->commandBus = $commandBus;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -86,6 +94,26 @@ class RunTaskFactory implements TaskFactory
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('volumes')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('type')->isRequired()->end()
+                            ->scalarNode('name')->isRequired()->end()
+                            ->scalarNode('path')->end()
+                            ->scalarNode('capacity')->end()
+                            ->scalarNode('storage_class')->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('volume_mounts')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('name')->isRequired()->end()
+                            ->scalarNode('mount_path')->isRequired()->end()
+                            ->booleanNode('read_only')->defaultFalse()->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 
@@ -104,7 +132,17 @@ class RunTaskFactory implements TaskFactory
             $configuration['image']['name'],
             $configuration['commands'],
             $this->resolveEnvironment($configuration),
-            $configuration['environment']['name']
+            $configuration['environment']['name'],
+            $this->serializer->deserialize(
+                \GuzzleHttp\json_encode(isset($configuration['volumes']) ? $configuration['volumes'] : []),
+                'array<'.Volume::class.'>',
+                'json'
+            ),
+            $this->serializer->deserialize(
+                \GuzzleHttp\json_encode(isset($configuration['volume_mounts']) ? $configuration['volume_mounts'] : []),
+                'array<'.VolumeMount::class.'>',
+                'json'
+            )
         );
     }
 
