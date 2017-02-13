@@ -4,9 +4,14 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Builder\Aggregate\Build;
+use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\BuildRepository;
 use ContinuousPipe\Builder\Aggregate\BuildStep\BuildStep;
 use ContinuousPipe\Builder\Aggregate\BuildStep\BuildStepRepository;
+use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
+use ContinuousPipe\Builder\Aggregate\Event\BuildStarted;
+use ContinuousPipe\Builder\Aggregate\Event\BuildStepStarted;
+use ContinuousPipe\Builder\Aggregate\FromEvents\BuildEventStreamResolver;
 use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Article\TraceableArchiveBuilder;
 use ContinuousPipe\Builder\BuildStepConfiguration;
@@ -14,9 +19,14 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Notifier\HookableNotifier;
 use ContinuousPipe\Builder\Notifier\NotificationException;
 use ContinuousPipe\Builder\Notifier\TraceableNotifier;
+use ContinuousPipe\Builder\Request\BuildRequest;
+use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
 use ContinuousPipe\Events\AggregateNotFound;
+use ContinuousPipe\Events\EventStore\EventStore;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
+use JMS\Serializer\SerializerInterface;
+use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,6 +73,26 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var BuildStepRepository
      */
     private $buildStepRepository;
+    /**
+     * @var BuildFactory
+     */
+    private $buildFactory;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+    /**
+     * @var MessageBus
+     */
+    private $commandBus;
+    /**
+     * @var EventStore
+     */
+    private $eventStore;
+    /**
+     * @var BuildRequestTransformer
+     */
+    private $buildRequestTransformer;
 
     public function __construct(
         Kernel $kernel,
@@ -72,7 +102,12 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         HookableNotifier $hookableNotifier,
         TraceableArchiveBuilder $traceableArchiveBuilder,
         BuildRepository $buildRepository,
-        BuildStepRepository $buildStepRepository
+        BuildStepRepository $buildStepRepository,
+        BuildFactory $buildFactory,
+        SerializerInterface $serializer,
+        MessageBus $commandBus,
+        EventStore $eventStore,
+        BuildRequestTransformer $buildRequestTransformer
     ) {
         $this->kernel = $kernel;
         $this->traceableDockerClient = $traceableDockerClient;
@@ -82,6 +117,60 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         $this->traceableArchiveBuilder = $traceableArchiveBuilder;
         $this->buildRepository = $buildRepository;
         $this->buildStepRepository = $buildStepRepository;
+        $this->buildFactory = $buildFactory;
+        $this->serializer = $serializer;
+        $this->commandBus = $commandBus;
+        $this->eventStore = $eventStore;
+        $this->buildRequestTransformer = $buildRequestTransformer;
+    }
+
+    /**
+     * @Given there is a build :identifier with the following request:
+     */
+    public function thereIsABuildWithTheFollowingRequest($identifier, PyStringNode $string)
+    {
+        $this->buildFactory->fromRequest(
+            $this->buildRequestTransformer->transform(
+                $this->serializer->deserialize($string->getRaw(), BuildRequest::class, 'json')
+            ),
+            $identifier
+        );
+    }
+
+    /**
+     * @Given the build :identifier was started
+     */
+    public function theBuildWasStarted($identifier)
+    {
+        $event = new BuildStarted($identifier);
+
+        $this->eventStore->store(
+            (new BuildEventStreamResolver())->streamByEvent($event),
+            $event
+        );
+    }
+
+    /**
+     * @Given the build :identifier step #:stepIndex was started
+     */
+    public function theBuildStepWasStarted($identifier, $stepIndex)
+    {
+        $event = new BuildStepStarted($identifier, (int) $stepIndex, new BuildStepConfiguration());
+
+        $this->eventStore->store(
+            (new BuildEventStreamResolver())->streamByEvent($event),
+            $event
+        );
+    }
+
+    /**
+     * @When I start the build :identifier
+     */
+    public function iStartTheBuild($identifier)
+    {
+        $this->commandBus->handle(new StartBuild(
+            $identifier
+        ));
     }
 
     /**

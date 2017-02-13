@@ -3,11 +3,13 @@
 namespace ContinuousPipe\Builder\Aggregate;
 
 use ContinuousPipe\Builder\Aggregate\BuildStep\BuildStep;
+use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFinished;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepStarted;
 use ContinuousPipe\Builder\Aggregate\Event\BuildCreated;
 use ContinuousPipe\Builder\Aggregate\Event\BuildFailed;
 use ContinuousPipe\Builder\Aggregate\Event\BuildFinished;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStarted;
+use ContinuousPipe\Builder\Aggregate\Event\BuildStepFinished;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStepStarted;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Request\BuildRequest;
@@ -47,18 +49,18 @@ class Build implements Aggregate
      */
     private $writtenArtifacts = [];
 
-    private $currentStepCursor = -1;
+    private $currentStepCursor = 0;
     private $status = self::STATUS_PENDING;
 
     private function __construct()
     {
     }
 
-    public static function createFromRequest(BuildRequest $request, User $user) : Build
+    public static function createFromRequest(BuildRequest $request, User $user, string $identifier = null) : Build
     {
         $build = new self();
         $build->raiseAndApply(new BuildCreated(
-            Uuid::uuid4()->toString(),
+            $identifier ?: Uuid::uuid4()->toString(),
             $request,
             $user
         ));
@@ -73,16 +75,15 @@ class Build implements Aggregate
 
     public function nextStep()
     {
-        $nextStepIndex = $this->currentStepCursor + 1;
         $steps = $this->request->getSteps();
 
-        if (!isset($steps[$nextStepIndex])) {
+        if (!isset($steps[$this->currentStepCursor])) {
             $this->raiseAndApply(new BuildFinished($this->identifier));
             return;
         }
 
-        $stepConfiguration = $steps[$nextStepIndex];
-        $this->raiseAndApply(new BuildStepStarted($this->identifier, $nextStepIndex, $stepConfiguration));
+        $stepConfiguration = $steps[$this->currentStepCursor];
+        $this->raiseAndApply(new BuildStepStarted($this->identifier, $this->currentStepCursor, $stepConfiguration));
     }
 
     public function fail()
@@ -103,6 +104,16 @@ class Build implements Aggregate
         }
     }
 
+    public function stepFinished(StepFinished $event)
+    {
+        $this->raiseAndApply(new BuildStepFinished(
+            $event->getBuildIdentifier(),
+            $event->getStepPosition()
+        ));
+
+        $this->nextStep();
+    }
+
     private function applyBuildStepStarted(BuildStepStarted $started)
     {
         $this->currentStepCursor = $started->getStepPosition();
@@ -110,6 +121,11 @@ class Build implements Aggregate
         foreach ($started->getStepConfiguration()->getWriteArtifacts() as $artifact) {
             $this->writtenArtifacts[] = $artifact;
         }
+    }
+
+    private function applyBuildStepFinished(BuildStepFinished $finished)
+    {
+        $this->currentStepCursor = $finished->getStepPosition() + 1;
     }
 
     private function applyBuildCreated(BuildCreated $event)
