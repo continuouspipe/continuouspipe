@@ -62,7 +62,7 @@ angular
         };
     })
     // We need to inject it at least once to have automatic tracking
-    .run(function(Analytics, $rootScope, $http) {
+    .run(['$rootScope', '$state', '$http', function($rootScope, $state, $http) {
         function capitalizeFirstLetter(word) {
             return word.charAt(0).toUpperCase() + word.slice(1);
         }
@@ -76,8 +76,13 @@ angular
             return titleCasedText ? titleCasedText  + ' - ' : '';
         }
 
-        $rootScope.$on('$stateChangeStart', function (event, current, previous) {
+        $rootScope.$on('$stateChangeStart', function (event, current, params) {
             $rootScope.title = formatTitle(current.name);
+
+            if (current.redirectTo) {
+                event.preventDefault();
+                $state.go(current.redirectTo, params, {location: 'replace'});
+            }
         });
 
         $rootScope.$on('user_context.user_updated', function(event, user) {
@@ -106,5 +111,5 @@ angular
 
             return message;
         };
-    })
+    }])
 ;
