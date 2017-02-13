@@ -5,6 +5,7 @@ menu:
     parent: 'faq'
     weight: 40
 weight: 40
+linkTitle: Using Pipelines
 ---
 You can use variable conditions and task filters to change behaviour based on which branch/environment is being deployed. This can lead to the conditions/filters being repeated in lots of places within the continuous-pipe.yml file. This can be cleaned up using pipelines.
 

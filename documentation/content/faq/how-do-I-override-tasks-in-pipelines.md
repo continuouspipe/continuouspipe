@@ -5,6 +5,7 @@ menu:
     parent: 'faq'
     weight: 60
 weight: 60
+linkTitle: Overriding Tasks
 ---
 You may want to change the way certain tasks are run according to the environment. You could achieve this by defining separate tasks per pipeline, however this runs the risk of introducing a lot of duplication. To avoid excessive duplication ContinuousPipe allows you to override some or all of a task definition.
 
