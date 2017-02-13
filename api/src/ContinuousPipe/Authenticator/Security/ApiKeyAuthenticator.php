@@ -44,6 +44,10 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
         }
 
         $apiKey = $token->getCredentials();
+        if (empty($apiKey)) {
+            throw new \InvalidArgumentException('The API key needs to contain a value');
+        }
+
         $user = $userProvider->getUserForApiKey($apiKey);
 
         return new PreAuthenticatedToken(

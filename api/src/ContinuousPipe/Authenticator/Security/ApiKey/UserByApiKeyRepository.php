@@ -12,4 +12,9 @@ interface UserByApiKeyRepository
      * @return UserInterface|null
      */
     public function findUserByApiKey(string $key);
+
+    /**
+     * @param UserApiKey $key
+     */
+    public function save(UserApiKey $key);
 }

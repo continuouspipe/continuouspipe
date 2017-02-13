@@ -155,6 +155,8 @@ class UserContext implements Context
     public function iShouldBeToldThatIDonTHaveTheAuthorizationToAccessThisUser()
     {
         if ($this->response->getStatusCode() != 403) {
+            echo $this->response->getContent();
+
             throw new \RuntimeException(sprintf(
                 'Expected status code 403, got %d',
                 $this->response->getStatusCode()

@@ -3,7 +3,6 @@
 namespace ContinuousPipe\Authenticator\Security\Authentication;
 
 use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
-use ContinuousPipe\Authenticator\Security\ApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;

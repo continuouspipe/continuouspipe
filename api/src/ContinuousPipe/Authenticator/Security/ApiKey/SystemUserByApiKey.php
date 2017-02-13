@@ -12,6 +12,9 @@ class SystemUserByApiKey implements UserByApiKeyRepository
      */
     private $keys;
 
+    /**
+     * @param array $keys
+     */
     public function __construct(array $keys = [])
     {
         $this->keys = $keys;
@@ -27,6 +30,14 @@ class SystemUserByApiKey implements UserByApiKeyRepository
         }
 
         return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function save(UserApiKey $key)
+    {
+        throw new \RuntimeException('Unable to save keys for system users');
     }
 
     /**
