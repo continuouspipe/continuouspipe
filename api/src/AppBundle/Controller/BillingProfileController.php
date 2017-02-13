@@ -85,7 +85,6 @@ class BillingProfileController
             usort($activities, function (UserActivity $left, UserActivity $right) {
                 return $left->getDateTime() > $right->getDateTime() ? -1 : 1;
             });
-
         } catch (UserBillingProfileNotFound $e) {
             $billingProfileTeams = [];
             $activities = [];
@@ -171,7 +170,7 @@ class BillingProfileController
         while ($cursor < $end) {
             $perDay[] = [
                 'date' => clone $cursor,
-                'count' => count(array_filter($activities, function(UserActivity $activity) use ($cursor) {
+                'count' => count(array_filter($activities, function (UserActivity $activity) use ($cursor) {
                     return $activity->getDateTime()->format('d/m/Y') == $cursor->format('d/m/Y');
                 }))
             ];

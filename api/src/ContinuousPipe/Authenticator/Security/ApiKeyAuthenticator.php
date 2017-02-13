@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Security;
 
+use ContinuousPipe\Authenticator\Security\Authentication\ApiKeyUserProvider;
 use ContinuousPipe\Authenticator\Security\Authentication\SystemUserProvider;
 use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -35,9 +36,9 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
      */
     public function authenticateToken(TokenInterface $token, UserProviderInterface $userProvider, $providerKey)
     {
-        if (!$userProvider instanceof SystemUserProvider) {
+        if (!$userProvider instanceof ApiKeyUserProvider) {
             throw new \InvalidArgumentException(sprintf(
-                'The user provider must be an instance of SystemUserProvider (%s was given).',
+                'The user provider must be an instance of ApiKetUserProvider (%s was given).',
                 get_class($userProvider)
             ));
         }

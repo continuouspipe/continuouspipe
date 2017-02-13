@@ -2,13 +2,14 @@
 
 namespace ContinuousPipe\Authenticator\Security\Authentication;
 
+use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\ApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class SystemUserProvider implements UserProviderInterface
+class ApiKeyUserProvider implements UserProviderInterface
 {
     /**
      * @var UserProviderInterface
@@ -16,18 +17,18 @@ class SystemUserProvider implements UserProviderInterface
     private $decorated;
 
     /**
-     * @var ApiKeyRepository
+     * @var UserByApiKeyRepository
      */
-    private $apiKeyRepository;
+    private $apiKeyUserRepository;
 
     /**
-     * @param UserProviderInterface $decorated
-     * @param ApiKeyRepository      $apiKeyRepository
+     * @param UserProviderInterface  $decorated
+     * @param UserByApiKeyRepository $apiKeyUserRepository
      */
-    public function __construct(UserProviderInterface $decorated, ApiKeyRepository $apiKeyRepository)
+    public function __construct(UserProviderInterface $decorated, UserByApiKeyRepository $apiKeyUserRepository)
     {
         $this->decorated = $decorated;
-        $this->apiKeyRepository = $apiKeyRepository;
+        $this->apiKeyUserRepository = $apiKeyUserRepository;
     }
 
     /**
@@ -35,18 +36,18 @@ class SystemUserProvider implements UserProviderInterface
      *
      * @throws AuthenticationException
      *
-     * @return SystemUser
+     * @return UserInterface
      */
     public function getUserForApiKey($apiKey)
     {
-        if (!$this->apiKeyRepository->exists($apiKey)) {
+        if (null === ($user = $this->apiKeyUserRepository->findUserByApiKey($apiKey))) {
             throw new AuthenticationException(sprintf(
                 'API key "%s" do not exists',
                 $apiKey
             ));
         }
 
-        return new SystemUser($apiKey);
+        return $user;
     }
 
     /**

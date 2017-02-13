@@ -43,13 +43,14 @@
         </service>
 
         <!-- Authentication -->
-        <service id="api.api_key_repository" class="ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository">
+        <service id="api.security.api_key.system_user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\SystemUserByApiKey">
             <argument>%api_keys%</argument>
         </service>
-        <service id="api.system_user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\SystemUserProvider">
+        <service id="api.api_key_user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\ApiKeyUserProvider">
             <argument type="service" id="app.security.user_provider" />
-            <argument type="service" id="api.api_key_repository" />
+            <argument type="service" id="api.security.api_key.system_user_by_api_key" />
         </service>
+
         <service id="api.api_key_authenticator"
                  class="ContinuousPipe\Authenticator\Security\ApiKeyAuthenticator"
                  public="false" />
