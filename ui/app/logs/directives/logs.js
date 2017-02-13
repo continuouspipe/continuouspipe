@@ -33,7 +33,7 @@ angular.module('continuousPipeRiver')
                         $scope.parent = response.data;
                     }, function (error) {
                         $scope.parent.children = [
-                            {type: 'text', status: 'error', contents: 'Unable to log the children from archive'}
+                            {type: 'text', status: 'error', contents: 'Unable to load the logs from the archive'}
                         ];
                     });
                 };
