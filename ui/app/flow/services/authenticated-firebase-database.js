@@ -10,22 +10,23 @@ angular.module('continuousPipeRiver')
         };
 
         this.setFireBaseCredentials = function (credentials) {
-            localStorage.setItem('firebaseCredentials', {
+            localStorage.setItem('firebaseCredentials', JSON.stringify({
                 'token': credentials.token,
                 'expiration_date': credentials.expiration_date
-            });
+            }));
         };
 
         this.checkTokenExpiration = function () {
-            var sessionStart = localStorage.getItem('firebaseCredentials').expiration_date;
-            var sessionLength = ((new Date(sessionStart).getTime() - new Date().getTime()) / 1000) / 60;
+            var sessionStart = JSON.parse(localStorage.getItem('firebaseCredentials')).expiration_date;
+            var timeDiff = new Date(sessionStart).getTime() - new Date().getTime();
+            var sessionExpired = Math.round(((timeDiff % 86400000) % 3600000) / 60000) <= 1;
 
-            if (59 > Math.abs(sessionLength)) {
+            if (sessionExpired) {
+                self.get(self.flow);
+            } else {
                 setTimeout(function () {
                     self.checkTokenExpiration();
                 }, 10000);
-            } else {
-                self.get(self.flow);
             }
         };
 
