@@ -34,3 +34,23 @@ Feature:
     Then the authentication should be successful
     And the user "sroze" should exists
     And the user "sroze" should have a billing account
+
+  @smoke
+  Scenario: A user can authenticate himself using an API key
+    Given there is a user "samuel"
+    And the user "samuel" have the API key "123456"
+    When I request the details of user "samuel" with the api key "123456"
+    Then I should receive the details
+
+  Scenario: I can't access other resources
+    Given there is a user "samuel"
+    And there is a user "tony"
+    And the user "samuel" have the API key "123456"
+    When I request the details of user "tony" with the api key "123456"
+    Then I should be told that I don't have the authorization to access this user
+
+  Scenario: Can't authenticate with wrong API keys
+    Given there is a user "samuel"
+    And the user "samuel" have the API key "123456"
+    When I request the details of user "samuel" with the api key "0987654"
+    Then I should be told that I am not identified

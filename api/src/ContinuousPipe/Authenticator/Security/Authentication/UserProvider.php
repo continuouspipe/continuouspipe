@@ -178,7 +178,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $this->bucketRepository->save(new Bucket($bucketUuid));
 
         // Create the user
-        $securityUser = new SecurityUser(new User($username, $bucketUuid));
+        $securityUser = new SecurityUser(new User($username, $bucketUuid, ['ROLE_USER']));
         $this->securityUserRepository->save($securityUser);
 
         return $securityUser;

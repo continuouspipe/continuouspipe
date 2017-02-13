@@ -2,6 +2,9 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
+use ContinuousPipe\Authenticator\Security\ApiKey\SystemUserByApiKey;
+use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
 use ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
@@ -48,9 +51,9 @@ class SecurityContext implements Context, SnippetAcceptingContext
      */
     private $securityUserRepository;
     /**
-     * @var InMemoryApiKeyRepository
+     * @var SystemUserByApiKey
      */
-    private $apiKeyRepository;
+    private $systemUserByApiKey;
     /**
      * @var EventDispatcherInterface
      */
@@ -63,26 +66,44 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @var KernelInterface
      */
     private $kernel;
-
     /**
-     * @param UserProvider $userProvider
-     * @param WhiteList $whiteList
-     * @param TokenStorageInterface $tokenStorage
-     * @param SecurityUserRepository $securityUserRepository
-     * @param InMemoryApiKeyRepository $apiKeyRepository
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param GitHubResourceOwner $gitHubResourceOwner
+     * @var UserByApiKeyRepository
      */
-    public function __construct(UserProvider $userProvider, WhiteList $whiteList, TokenStorageInterface $tokenStorage, SecurityUserRepository $securityUserRepository, InMemoryApiKeyRepository $apiKeyRepository, EventDispatcherInterface $eventDispatcher, GitHubResourceOwner $gitHubResourceOwner, KernelInterface $kernel)
-    {
+    private $userByApiKeyRepository;
+
+    public function __construct(
+        UserProvider $userProvider,
+        WhiteList $whiteList,
+        TokenStorageInterface $tokenStorage,
+        SecurityUserRepository $securityUserRepository,
+        SystemUserByApiKey $systemUserByApiKey,
+        EventDispatcherInterface $eventDispatcher,
+        GitHubResourceOwner $gitHubResourceOwner,
+        KernelInterface $kernel,
+        UserByApiKeyRepository $userByApiKeyRepository
+    ) {
         $this->userProvider = $userProvider;
         $this->whiteList = $whiteList;
         $this->tokenStorage = $tokenStorage;
         $this->securityUserRepository = $securityUserRepository;
-        $this->apiKeyRepository = $apiKeyRepository;
+        $this->systemUserByApiKey = $systemUserByApiKey;
         $this->eventDispatcher = $eventDispatcher;
         $this->gitHubResourceOwner = $gitHubResourceOwner;
         $this->kernel = $kernel;
+        $this->userByApiKeyRepository = $userByApiKeyRepository;
+    }
+
+    /**
+     * @Given the user :username have the API key :apiKey
+     */
+    public function theUserHaveTheApiKey($username, $apiKey)
+    {
+        $this->userByApiKeyRepository->save(new UserApiKey(
+            Uuid::uuid4(),
+            $this->userProvider->loadUserByUsername($username)->getUser(),
+            $apiKey,
+            new \DateTime()
+        ));
     }
 
     /**
@@ -137,7 +158,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
      */
     public function thereIsTheApiKey($key)
     {
-        $this->apiKeyRepository->add($key);
+        $this->systemUserByApiKey->addKey($key);
     }
 
     /**

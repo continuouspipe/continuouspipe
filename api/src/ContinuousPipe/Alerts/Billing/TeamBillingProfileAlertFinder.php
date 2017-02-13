@@ -109,7 +109,7 @@ class TeamBillingProfileAlertFinder implements AlertFinder
                         )
                     );
                 } else {
-                    $allowedActiveUsers = array_reduce($activeSubscriptions, function(int $carry, Subscription $subscription) {
+                    $allowedActiveUsers = array_reduce($activeSubscriptions, function (int $carry, Subscription $subscription) {
                         return $carry + $subscription->getQuantity();
                     }, 0);
 

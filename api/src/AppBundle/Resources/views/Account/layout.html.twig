@@ -12,6 +12,7 @@
                     <li role="presentation"{% block nav_personnal_information_class %}{% endblock %}><a href="{{ path('account') }}">Personal information</a></li>
                     <li role="presentation"{% block nav_connected_accounts_class %}{% endblock %}><a href="{{ path('account_connected_accounts') }}">Connected accounts</a></li>
                     <li role="presentation"{% block nav_billing_profile_class %}{% endblock %}><a href="{{ path('account_billing_profile') }}">Billing</a></li>
+                    <li role="presentation"{% block nav_api_class %}{% endblock %}><a href="{{ path('account_api_keys') }}">API keys</a></li>
                 </ul>
             </div>
         </div>
@@ -20,4 +21,3 @@
         </div>
     </div>
 {% endblock %}
-
