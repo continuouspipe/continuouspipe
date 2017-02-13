@@ -28,12 +28,18 @@ class UserApiKey
      */
     private $user;
 
-    public function __construct(UuidInterface $uuid, User $user, string $apiKey, \DateTimeInterface $creationDate)
+    /**
+     * @var string
+     */
+    private $description;
+
+    public function __construct(UuidInterface $uuid, User $user, string $apiKey, \DateTimeInterface $creationDate, string $description = null)
     {
         $this->uuid = $uuid;
         $this->creationDate = $creationDate;
         $this->apiKey = $apiKey;
         $this->user = $user;
+        $this->description = $description;
     }
 
     /**
@@ -66,5 +72,13 @@ class UserApiKey
     public function getCreationDate(): \DateTimeInterface
     {
         return $this->creationDate;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

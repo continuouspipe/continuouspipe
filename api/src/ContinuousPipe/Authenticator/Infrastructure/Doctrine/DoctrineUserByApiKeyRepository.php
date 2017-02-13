@@ -4,7 +4,9 @@ namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine;
 
 use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
+use ContinuousPipe\Security\User\SecurityUser;
 use Doctrine\ORM\EntityManager;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class DoctrineUserByApiKeyRepository implements UserByApiKeyRepository
@@ -23,20 +25,58 @@ class DoctrineUserByApiKeyRepository implements UserByApiKeyRepository
     }
 
     /**
-     * @param string $key
-     *
-     * @return UserInterface|null
+     * {@inheritdoc}
      */
     public function findUserByApiKey(string $key)
     {
-        // TODO: Implement findUserByApiKey() method.
+        $key = $this->entityManager->getRepository(UserApiKey::class)->findOneBy([
+            'apiKey' => $key
+        ]);
+
+        if (null === $key) {
+            return null;
+        }
+
+        return new SecurityUser($key->getUser());
     }
 
     /**
-     * @param UserApiKey $key
+     * {@inheritdoc}
      */
     public function save(UserApiKey $key)
     {
-        // TODO: Implement save() method.
+        $this->entityManager->persist($key);
+        $this->entityManager->flush($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByUser(string $username)
+    {
+        return $this->entityManager->getRepository(UserApiKey::class)->findBy([
+            'user' => $username,
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(string $username, UuidInterface $keyUuid)
+    {
+        $keys = $this->entityManager->getRepository(UserApiKey::class)->findBy([
+            'uuid' => $keyUuid,
+            'user' => $username
+        ]);
+
+        if (count($keys) !== 1) {
+            throw new \InvalidArgumentException(sprintf(
+                'Found %d api keys matching this user and UUUD',
+                count($keys)
+            ));
+        }
+
+        $this->entityManager->remove($keys[0]);
+        $this->entityManager->flush($keys[0]);
     }
 }

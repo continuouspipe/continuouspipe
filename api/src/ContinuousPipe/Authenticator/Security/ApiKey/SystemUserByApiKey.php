@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Authenticator\Security\ApiKey;
 
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class SystemUserByApiKey implements UserByApiKeyRepository
@@ -46,5 +47,21 @@ class SystemUserByApiKey implements UserByApiKeyRepository
     public function addKey(string $key)
     {
         $this->keys[] = $key;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByUser(string $username)
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(string $username, UuidInterface $keyUuid)
+    {
+        throw new \RuntimeException('Unable to delete a system user key');
     }
 }

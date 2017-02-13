@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
 use ContinuousPipe\Billing\ActivityTracker\ActivityTracker;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
