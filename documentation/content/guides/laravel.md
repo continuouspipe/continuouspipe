@@ -40,13 +40,14 @@ During our deployments, Laravel needs this key after the composer install runs d
 
 from - 
 
-```
+
+```php
 'key' => env('APP_KEY'),
 ```
 
 to - 
 
-```
+```php
 'key' => env('APP_KEY', 'base64:OQ8H9vjocvQh284ojDBrODQ2HkrgWGDvdLCaQniHz0M='),
 ```
 
@@ -70,7 +71,7 @@ Lets start by configuring our `Dockerfile`. We are going to use ContinuousPipe's
 
 Dockerfile - 
 
-```
+```dockerfile
 FROM quay.io/continuouspipe/php7-nginx:latest
 
 COPY ./tools/docker/usr/ /usr/
@@ -98,7 +99,7 @@ You will notice from the second line of our Dockerfile that it will copy `tools/
 
 Lets create a new file in `tools/docker/usr/local/bin/supervisor_custom_start-laravel` with the following - 
 
-```
+```bash
 #!/bin/bash
 
 # Bring in the as_code_owner function, to run commands as the user who owns the code.
@@ -123,7 +124,7 @@ Lets add these files into `tools/docker/setup` -
 
 `install.sh`
 
-```
+```bash
 #!/bin/bash
 
 set -xe
@@ -151,7 +152,7 @@ chmod +x storage
 
 `setup-dotenv.sh`
 
-```
+```bash
 #!/bin/sh
 
 set -xe
@@ -199,7 +200,7 @@ chmod 640 "${ENV_FILE}"
 
 Included from the `install.sh` file is `tools/docker/setup/setup-directories.sh` - 
 
-``` 
+```bash
 #!/bin/sh
 
 set -xe
@@ -224,7 +225,7 @@ mkdir -p "${SESSIONS_DIR}";
 ```
 Lets now create our custom environment variables file in `tools/docker/usr/local/share/env/20-project`
 
-```
+```bash
 #!/bin/bash
 
 export PHP_TIMEZONE=${PHP_TIMEZONE:-Europe/London}
@@ -277,7 +278,7 @@ The only thing left to do for our Docker configuration is to setup our `docker-c
 
 `docker-compose.yml`
 
-```
+```yaml
 version: "2"
 services:
     web:
@@ -346,7 +347,7 @@ We configure ContinuousPipe with a `continuous-pipe.yml` file in the root of our
 
 First thing we define is some environment variables - 
 
-```
+```yaml
 environment_variables:
     - name: APP_ENV
       value: "production"
@@ -357,7 +358,7 @@ We are simply setting a the `APP_ENV` for use within our build and `REMOTE_ENV` 
 
 Next we define our tasks, our first task is building our image - 
 
-```
+```yaml
 tasks:
     images:
         build:
@@ -373,7 +374,7 @@ Here we simply inject the `APP_ENV` build argument, the same as we did for our `
 
 The next task to run is the `infrastructure` task - 
 
-```
+```yaml
 infrastructure:
    deploy:
        cluster: ${CLUSTER}
@@ -433,31 +434,31 @@ This is where we build our redis and database containers. We define a persistent
 
 Our next task in the list is `initialization` - 
 
-```
-    initialization:
-        run:
-            cluster: ${CLUSTER}
-            environment:
-                name: '"laravel-demo-" ~ code_reference.branch'
+```yaml
+initialization:
+    run:
+        cluster: ${CLUSTER}
+        environment:
+            name: '"laravel-demo-" ~ code_reference.branch'
 
-            image:
-                from_service: web
+        image:
+            from_service: web
 
-            commands:
-                - tools/docker/setup/setup.sh
+        commands:
+            - tools/docker/setup/setup.sh
 
-            environment_variables: &WEB_ENV_VARS
-                - name: APP_ENV
-                  value: ${APP_ENV}
-                - name: REMOTE_ENV
-                  value: ${REMOTE_ENV}
-                - name: APP_URL
-                  value: ${APP_URL}
-                - name: APP_USER_LOCAL
-                  value: false
+        environment_variables: &WEB_ENV_VARS
+            - name: APP_ENV
+              value: ${APP_ENV}
+            - name: REMOTE_ENV
+              value: ${REMOTE_ENV}
+            - name: APP_URL
+              value: ${APP_URL}
+            - name: APP_USER_LOCAL
+              value: false
 
-        filter:
-            expression: 'tasks.infrastructure.services.database.created'
+    filter:
+        expression: 'tasks.infrastructure.services.database.created'
 ```
 
 The purpose of this task is to allow us to run any database specific tasks for our application. This might be the combination of a `php artisan migrate` and `php artisan db:seed`. Notice we are using the `filter` `expression: 'tasks.infrastructure.services.database.created'`, this ensures we only run this when we know the database is finished building. We run these commands by executing a script `tools/docker/setup/setup.sh` inside the container that has had some specific environment variables set.
@@ -466,7 +467,7 @@ The purpose of this task is to allow us to run any database specific tasks for o
 
 The last task in this configuration is `application` - 
 
-```
+```yaml
 application:
    deploy:
        cluster: ${CLUSTER}
@@ -510,7 +511,7 @@ The last section of this task is the `deployment_strategy` which configures how 
 
 Now that we have defined our `continuous-pipe.yml` file lets configure that one last script we set to use in the `initialization` task. Create a new file `tools/docker/setup/setup.sh` with the following - 
 
-``` 
+```bash
 #!/bin/bash
 
 set -xe
@@ -519,12 +520,6 @@ set -xe
 # Usually the "build" user.
 source /usr/local/share/bootstrap/setup.sh
 source /usr/local/share/bootstrap/common_functions.sh
-
-if [ -L "$0" ] ; then
-    DIR="$(dirname "$(readlink -f "$0")")" ;
-else
-    DIR="$(dirname "$0")" ;
-fi
 
 WORK_DIRECTORY="/app";
 
@@ -545,7 +540,7 @@ OK, we are finally ready to push all our code to GitHub and utilise ContinuousPi
 
 Lets now push our code to GitHub to trigger ContinuousPipe - 
 
-```
+```shell
 $ git init
 $ git add -A
 $ git commit -m "Initial Commit"
@@ -609,12 +604,12 @@ You will now be asked a series of questions that relate to how you have configur
 
 Run the following - 
 
-``` 
+```shell
 $ cp-remote build
 ```
 This is now going to create a new git branch from the current branch with the name you defined in the setup. Its going to push this branch to GitHub which will then trigger ContinuousPipe to create you a new developer environment. You should now see the something like - 
 
-``` 
+```shell
 Pushing to remote
 Total 0 (delta 0), reused 0 (delta 0)
 To github.com:continuouspipe/demo-laravel.git
@@ -628,13 +623,13 @@ Please wait until the build is complete to use any of this tool's other commands
 
 You can check that the environment is ready either from the ContinuousPipe UI or by running the following - 
 
-```
+```shell
 $ cp-remote ck
 ```
 
 Which should display something like this  - 
 
-```
+```shell
 checking connection for environment laravel-demo-dev-richdynamix
 Connected successfully and found 3 pods for the environment
 ```
@@ -647,7 +642,7 @@ Now that we know all three containers (pods) have been setup we need to obtain t
 
 From within your project root, lets start watching for file changes - 
 
-```
+```shell
 $ cp-remote watch
 Watching for changes. Quit anytime with Ctrl-C.
 
@@ -663,7 +658,7 @@ Lets edit some code and see our changes reflected in the browser. Open `resource
 
 When you save this file from within your editor, the `cp-remote watch` command will pick up these changes and `RSYNC` them to the web container. Your terminal should look something like the following - 
 
-```
+```shell
 $ cp-remote watch
 Watching for changes. Quit anytime with Ctrl-C.
 
@@ -689,4 +684,4 @@ ContinuousPipe is a fantastic tool for simplifying container orchestration and d
 
 There is far more we can do with ContinuousPipe to increase productivity, for example, we can use filters to determine when tasks are run. Perhaps we only want certain branches to build environments, or a certain GitHub label on a Pull-Request to trigger the build. We can also go one step further and separate our builds into pipelines. Perhaps we want to have a separate pipeline for production compared to development or testing. This is useful if there are certain environment variables and tasks that should only be used in development but not production.
 
-This getting started guide should be treated as a first step, please refer to the [http://docs.continuouspipe.io](http://docs.continuouspipe.io) as a great resource.
+This getting started guide should be treated as a first step, please refer to the [http://docs.continuouspipe.io](http://docs.continuouspipe.io) for more advanced tutorials.

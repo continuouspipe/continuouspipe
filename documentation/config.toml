@@ -7,6 +7,7 @@ metadataformat = "yaml"
 canonifyURLs = false
 googleAnalytics = ""
 PygmentsCodeFences = true
+PygmentsOptions = "startinline=true"
 
 [params]
 	# General information
