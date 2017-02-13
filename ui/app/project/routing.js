@@ -3,8 +3,8 @@
 angular.module('continuousPipeRiver')
     .config(function($stateProvider) {
         $stateProvider
-            .state('team', {
-                url: '/team/:team',
+            .state('project', {
+                url: '/project/:team',
                 parent: 'layout',
                 abstract: true,
                 resolve: {
@@ -20,7 +20,7 @@ angular.module('continuousPipeRiver')
                 },
                 views: {
                     'aside@': {
-                        templateUrl: 'team/layout/views/aside.html'
+                        templateUrl: 'project/layout/views/aside.html'
                     },
                     'title@layout': {
                         controller: function($scope, team) {
@@ -31,11 +31,11 @@ angular.module('continuousPipeRiver')
                 }
             })
             .state('flows', {
-                parent: 'team',
+                parent: 'project',
                 url: '/flows',
                 views: {
                     'content@': {
-                        templateUrl: 'team/flows/views/list.html',
+                        templateUrl: 'project/flows/views/list.html',
                         controller: 'FlowListController'
                     }
                 },
@@ -45,7 +45,7 @@ angular.module('continuousPipeRiver')
                 url: '/create',
                 views: {
                     'content@': {
-                        templateUrl: 'team/flows/views/create.html',
+                        templateUrl: 'project/flows/views/create.html',
                         controller: 'CreateFlowController'
                     },
                     'title@layout': {
@@ -57,33 +57,33 @@ angular.module('continuousPipeRiver')
                 }
             })
             .state('users', {
-                parent: 'team',
+                parent: 'project',
                 url: '/users',
                 views: {
                     'content@': {
-                        templateUrl: 'team/users/views/list.html',
+                        templateUrl: 'project/users/views/list.html',
                         controller: 'TeamUsersController'
                     }
                 },
                 aside: true
             })
             .state('users.add', {
-                parent: 'team',
+                parent: 'project',
                 url: '/add',
                 views: {
                     'content@': {
-                        templateUrl: 'team/users/views/add.html',
+                        templateUrl: 'project/users/views/add.html',
                         controller: 'TeamAddUserController'
                     }
                 },
                 aside: true
             })
             .state('clusters', {
-                parent: 'team',
+                parent: 'project',
                 url: '/clusters',
                 views: {
                     'content@': {
-                        templateUrl: 'team/clusters/views/list.html',
+                        templateUrl: 'project/clusters/views/list.html',
                         controller: 'TeamClustersController'
                     }
                 },
@@ -93,18 +93,18 @@ angular.module('continuousPipeRiver')
                 url: '/add',
                 views: {
                     'content@': {
-                        templateUrl: 'team/clusters/views/add.html',
+                        templateUrl: 'project/clusters/views/add.html',
                         controller: 'TeamAddClusterController'
                     }
                 },
                 aside: true
             })
             .state('registry-credentials', {
-                parent: 'team',
+                parent: 'project',
                 url: '/registry-credentials',
                 views: {
                     'content@': {
-                        templateUrl: 'team/registry-credentials/views/list.html',
+                        templateUrl: 'project/registry-credentials/views/list.html',
                         controller: 'TeamRegistryCredentialsController'
                     }
                 },
@@ -114,18 +114,18 @@ angular.module('continuousPipeRiver')
                 url: '/create',
                 views: {
                     'content@': {
-                        templateUrl: 'team/registry-credentials/views/create.html',
+                        templateUrl: 'project/registry-credentials/views/create.html',
                         controller: 'TeamCreateRegistryCredentialsController'
                     }
                 },
                 aside: true
             })
             .state('configuration', {
-                parent: 'team',
+                parent: 'project',
                 url: '/configuration',
                 views: {
                     'content@': {
-                        templateUrl: 'team/configuration/views/edit.html',
+                        templateUrl: 'project/configuration/views/edit.html',
                         controller: 'TeamConfigurationController'
                     }
                 },

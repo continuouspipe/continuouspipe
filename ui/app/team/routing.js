@@ -4,50 +4,50 @@ angular.module('continuousPipeRiver')
     .config(function($stateProvider) {
         $stateProvider
             .state('team', {
-                url: '/team/:project',
+                url: '/team/:team',
                 redirectTo: 'project'
             })
-            .state('flows', {
+            .state('team.flows', {
                 parent: 'team',
                 url: '/flows',
-                redirectTo: 'project.flows'
+                redirectTo: 'flows'
             })
-            .state('flows.create', {
+            .state('team.flows.create', {
                 url: '/create',
-                redirectTo: 'project.flows.create'
+                redirectTo: 'flows.create'
             })
-            .state('users', {
+            .state('team.users', {
                 parent: 'team',
                 url: '/users',
-                redirectTo: 'project.users'
+                redirectTo: 'users'
             })
-            .state('users.add', {
+            .state('team.users.add', {
                 parent: 'team',
                 url: '/add',
-                redirectTo: 'project.users.add'
+                redirectTo: 'users.add'
             })
-            .state('clusters', {
+            .state('team.clusters', {
                 parent: 'team',
                 url: '/clusters',
-                redirectTo: 'project.clusters'
+                redirectTo: 'clusters'
             })
-            .state('clusters.add', {
+            .state('team.clusters.add', {
                 url: '/add',
-                redirectTo: 'project.clusters.add'
+                redirectTo: 'clusters.add'
             })
-            .state('registry-credentials', {
+            .state('team.registry-credentials', {
                 parent: 'team',
                 url: '/registry-credentials',
-                redirectTo: 'project.registry-credentials'
+                redirectTo: 'registry-credentials'
             })
-            .state('registry-credentials.create', {
+            .state('team.registry-credentials.create', {
                 url: '/create',
-                redirectTo: 'project.registry-credentials.create'
+                redirectTo: 'registry-credentials.create'
             })
-            .state('configuration', {
+            .state('team.configuration', {
                 parent: 'team',
                 url: '/configuration',
-                redirectTo: 'project.configuration'
+                redirectTo: 'configuration'
             })
         ;
     });
