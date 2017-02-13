@@ -24,11 +24,11 @@ class BuildFactory
         $this->userContext = $userContext;
     }
 
-    public function fromRequest(BuildRequest $request) : Build
+    public function fromRequest(BuildRequest $request, string $identifier = null) : Build
     {
         $user = $this->userContext->getCurrent();
 
-        $build = Build::createFromRequest($request, $user);
+        $build = Build::createFromRequest($request, $user, $identifier);
 
         foreach ($build->raisedEvents() as $event) {
             $this->eventBus->handle($event);
