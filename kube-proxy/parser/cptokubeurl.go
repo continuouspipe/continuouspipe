@@ -5,9 +5,9 @@ import (
 )
 
 type CpToKubeUrlParser interface {
-	ExtractTeamName(urlPath string) string
-	ExtractClusterId(urlPath string) string
-	RemoveCpDataFromUri(url string) string
+	ExtractTeamName(string) string
+	ExtractClusterId(string) string
+	RemoveCpDataFromUri(string) string
 }
 
 type CpToKubeUrl struct{}

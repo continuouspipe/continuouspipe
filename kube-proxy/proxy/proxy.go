@@ -39,11 +39,10 @@ func (m *HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // connections and those that require upgrading (e.g. web sockets). It implements
 // the http.RoundTripper and http.Handler interfaces.
 type UpgradeAwareSingleHostReverseProxy struct {
-	backendAddr  *url.URL
 	transport    http.RoundTripper
 	reverseProxy *httputil.ReverseProxy
-	cinfo        cpapi.ClusterInfoProvider
-	cptokube     parser.CpToKubeUrlParser
+	apiCluster   *cpapi.ApiCluster
+	cpToKube     parser.CpToKubeUrlParser
 }
 
 // NewUpgradeAwareSingleHostReverseProxy creates a new UpgradeAwareSingleHostReverseProxy.
@@ -59,21 +58,25 @@ func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingle
 	}
 
 	cinfo := cpapi.NewClusterInfo()
-	cptokube := parser.NewCpToKubeUrl()
+	cpToKube := parser.NewCpToKubeUrl()
 
-	backendAddr, err := cinfo.GetClusterUrl(user, password, cptokube.ExtractTeamName(r.URL.Path), cptokube.ExtractClusterId(r.URL.Path))
+	apiCluster, err := cinfo.GetCluster(user, password, cpToKube.ExtractTeamName(r.URL.Path), cpToKube.ExtractClusterId(r.URL.Path))
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get the cluster url")
+	}
+
+	backendAddr, err := url.Parse(apiCluster.Address)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to parse the cluster url")
 	}
 
 	reverseProxy := httputil.NewSingleHostReverseProxy(backendAddr)
 	reverseProxy.FlushInterval = 200 * time.Millisecond
 	p := &UpgradeAwareSingleHostReverseProxy{
-		backendAddr:  backendAddr,
+		apiCluster:   apiCluster,
 		transport:    transport,
 		reverseProxy: reverseProxy,
-		cinfo:        cinfo,
-		cptokube:     cptokube,
+		cpToKube:     cpToKube,
 	}
 	p.reverseProxy.Transport = p
 	return p, nil
@@ -104,10 +107,14 @@ func (p *UpgradeAwareSingleHostReverseProxy) RoundTrip(req *http.Request) (*http
 
 func (p *UpgradeAwareSingleHostReverseProxy) newProxyRequest(req *http.Request) (*http.Request, error) {
 
-	backendURL := *p.backendAddr
+	backendURL, err := url.Parse(p.apiCluster.Address)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to parse the cluster url")
+	}
+
 	// if backendAddr is http://host/base and req is for /foo, the resulting path
 	// for backendURL should be /base/foo
-	backendURL.Path = p.cptokube.RemoveCpDataFromUri(singleJoiningSlash(backendURL.Path, req.URL.Path))
+	backendURL.Path = p.cpToKube.RemoveCpDataFromUri(singleJoiningSlash(backendURL.Path, req.URL.Path))
 	backendURL.RawQuery = req.URL.RawQuery
 
 	newReq, err := http.NewRequest(req.Method, backendURL.String(), req.Body)
@@ -131,23 +138,6 @@ func (p *UpgradeAwareSingleHostReverseProxy) isUpgradeRequest(req *http.Request)
 // ServeHTTP inspects the request and either proxies an upgraded connection directly,
 // or uses httputil.ReverseProxy to proxy the normal request.
 func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-
-	//take username and is api key from the basic auth
-	cpUsername, userApiKey, ok := req.BasicAuth()
-	if ok != true {
-		cplogs.V(5).Infof("Error creating backend request: failed to parse basic auth")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	//get the cluster basic auth and replace it in the request
-	clusterUser, clusterPassword, err := p.cinfo.GetClusterBasicAuthInfo(cpUsername, userApiKey, p.cptokube.ExtractTeamName(req.URL.Path), p.cptokube.ExtractClusterId(req.URL.Path))
-	if err != nil {
-		cplogs.V(5).Infof("Error getting cluster basic auth: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
 	newReq, err := p.newProxyRequest(req)
 	if err != nil {
 		cplogs.V(5).Infof("Error creating backend request: %s", err)
@@ -155,7 +145,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, re
 		return
 	}
 
-	req.SetBasicAuth(clusterUser, clusterPassword)
+	req.SetBasicAuth(p.apiCluster.Username, p.apiCluster.Password)
 
 	if !p.isUpgradeRequest(req) {
 		p.reverseProxy.ServeHTTP(w, newReq)
@@ -168,7 +158,12 @@ func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, re
 func (p *UpgradeAwareSingleHostReverseProxy) dialBackend(req *http.Request) (net.Conn, error) {
 	dialAddr := canonicalAddr(req.URL)
 
-	switch p.backendAddr.Scheme {
+	backendURL, err := url.Parse(p.apiCluster.Address)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to parse the cluster url")
+	}
+
+	switch backendURL.Scheme {
 	case "http":
 		return net.Dial("tcp", dialAddr)
 	case "https":
@@ -188,7 +183,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) dialBackend(req *http.Request) (net
 		// err = tlsConn.VerifyHostname(hostToVerify)
 		return tlsConn, err
 	default:
-		return nil, fmt.Errorf("unknown scheme: %s", p.backendAddr.Scheme)
+		return nil, fmt.Errorf("unknown scheme: %s", backendURL.Scheme)
 	}
 }
 

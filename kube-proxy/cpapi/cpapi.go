@@ -10,8 +10,7 @@ import (
 )
 
 type ClusterInfoProvider interface {
-	GetClusterUrl(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (*url.URL, error)
-	GetClusterBasicAuthInfo(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (clusterUser string, clusterPassword string, err error)
+	GetCluster(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (*ApiCluster, error)
 }
 
 type ClusterInfo struct {
@@ -56,8 +55,7 @@ type ApiCluster struct {
 	Type       string    `json:"type"`
 }
 
-//return the url of the cluster e.g. https://100.200.300.400/
-func (c ClusterInfo) GetClusterUrl(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (*url.URL, error) {
+func (c ClusterInfo) GetCluster(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (*ApiCluster, error) {
 	apiTeam, err := c.GetApiTeam(cpUsername, cpApiKey, teamName)
 	if err != nil {
 		return nil, err
@@ -68,44 +66,15 @@ func (c ClusterInfo) GetClusterUrl(cpUsername string, cpApiKey string, teamName 
 		return nil, err
 	}
 
-	var clusterAddress string
+	var targetCluster ApiCluster
 	for _, cluster := range clustersInfo {
 		if cluster.Identifier != clusterIdentifier {
 			continue
 		}
-		clusterAddress = cluster.Address
+		targetCluster = cluster
 	}
 
-	clusterUrl, err := url.Parse(clusterAddress)
-	if err != nil {
-		return nil, err
-	}
-
-	return clusterUrl, nil
-}
-
-func (c ClusterInfo) GetClusterBasicAuthInfo(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (clusterUser string, clusterPassword string, err error) {
-	apiTeam, err := c.GetApiTeam(cpUsername, cpApiKey, teamName)
-	if err != nil {
-		return "", "", err
-	}
-
-	clustersInfo, err := c.GetApiBucketClusters(apiTeam.BucketUuid)
-	if err != nil {
-		return "", "", err
-	}
-
-	clusterUser = ""
-	clusterPassword = ""
-	for _, cluster := range clustersInfo {
-		if cluster.Identifier != clusterIdentifier {
-			continue
-		}
-		clusterUser = cluster.Username
-		clusterPassword = cluster.Password
-	}
-
-	return clusterUser, clusterPassword, nil
+	return &targetCluster, nil
 }
 
 func (c ClusterInfo) GetApiTeam(user string, apiKey string, teamName string) (*ApiTeam, error) {
