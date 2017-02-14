@@ -19,3 +19,6 @@ beberlei_metrics:
     collectors:
         statsd:
             type: 'null'
+
+parameters:
+    github_secret: '3216994be6ee462571feb2e0bfeedc5ab82152b4'
