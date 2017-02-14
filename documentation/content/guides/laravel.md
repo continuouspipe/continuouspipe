@@ -10,7 +10,7 @@ weight: 70
 
 ## Introduction
 
-In this tutorial we are going to setup a new laravel project, run it within Docker using one of ContinuousPipe’s base Dockerfiles, then finally push our project to our GitHub repo where ContinuousPipe will build our project and deploy on Google Container Engine. Once we are happy our project is building successfully we will then use ContinuousPipe to manage our cloud based development environment with the `cp-remote` CLI tool.
+In this tutorial we are going to setup a new Laravel project, run it within Docker using one of ContinuousPipe’s base Dockerfiles, then finally push our project to our GitHub repo where ContinuousPipe will build our project and deploy on Google Container Engine. Once we are happy our project is building successfully we will then use ContinuousPipe to manage our cloud based development environment with the `cp-remote` CLI tool.
 
 ## Prerequisites
 
@@ -32,7 +32,7 @@ $ laravel new demo-laravel
 
 Since we used the Laravel installer, a `.env` file has been created for us and an application key has been set i.e. 
 
-```
+```bash
 APP_KEY=base64:OQ8H9vjocvQh284ojDBrODQ2HkrgWGDvdLCaQniHz0M=
 ```
 
@@ -61,7 +61,7 @@ One last thing we need to do before we can begin using ContinuousPipe is configu
 
 For now we have only got one cluster configured in ContinuousPipe. Lets assign that cluster name “main-cluster” to an environment variable which can be used with our build and deployment tasks.
 
-From within our Flow, click on configuration in the sidebar, create a new environment variable named `CLUSTER` with a value of `main-cluster` and then save the configuration.
+From within our Flow, click on configuration in the sidebar, create a new environment variable named `CLUSTER` with a value to match what you set as your cluster name/identifier. I have set my cluster name as `main-cluster`. Finally save the configuration.
 
 ![Flow Configuration](/images/guides/laravel/flow-variables-configuration.png)
 
@@ -95,7 +95,7 @@ RUN chown -R build:build /app && \
 
 You will notice from the second line of our Dockerfile that it will copy `tools/docker/usr/` to `/usr/` This is put in place by the inheritance of the configuration from our base image. Its parent image, [Ubuntu Base](https://github.com/continuouspipe/dockerfiles/tree/master/ubuntu/16.04#default-environment-variables) allows us to inject custom environment variables into our container at build time. This allows us to easily manipulate how the build is configured. For example, we can use these to define our web directory which is used to set the nginx vhost `root` configuration.
 
-#### Setting additional Docker required files
+### Setting additional Docker required files
 
 Lets create a new file in `tools/docker/usr/local/bin/supervisor_custom_start-laravel` with the following - 
 
@@ -116,7 +116,7 @@ if [ "$REMOTE_ENV" = "1" ]; then
 fi
 ```
 
-The comments should make it clear what each line does however, there are few additional files included in this script we need to create. First is our install script, this will do our initial folder setup, run composer install and then set the correct file and folder permissions across our project.
+The comments should make it clear what each line does however, there are few additional files included in this script we need to create. First is our `install.sh` script, this will do our initial folder setup, run composer install and then set the correct file and folder permissions across our project.
 
 The second included script is used to create our `.env` file from our environment variables. Even though technically Laravel can read our environment variables directly, the file needs to exist to generate a new key as Laravel will save the generated key to this file.
 
@@ -228,13 +228,6 @@ Lets now create our custom environment variables file in `tools/docker/usr/local
 ```bash
 #!/bin/bash
 
-export PHP_TIMEZONE=${PHP_TIMEZONE:-Europe/London}
-export PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT:-256M}
-export APP_USER=${APP_USER:-www-data}
-export APP_GROUP=${APP_GROUP:-www-data}
-export START_NGINX=${START_NGINX:-true}
-export START_PHP_FPM=${START_PHP_FPM:-true}
-
 export WORK_DIRECTORY=${WORK_DIRECTORY:-/app}
 export WEB_DIRECTORY=${WEB_DIRECTORY:-${WORK_DIRECTORY}/public}
 export STORAGE_DIR=${STORAGE_DIR:-${WORK_DIRECTORY}/storage}
@@ -269,10 +262,13 @@ export QUEUE_DRIVER=${QUEUE_DRIVER:-database}
 
 export REDIS_HOST=${REDIS_HOST:-redis}
 export REDIS_PASSWORD=${REDIS_PASSWORD:-null}
-export REDIS_PORT=${REDIS_PORT:-6379}
+export REDIS_PORT=${REDIS_HOST_PORT:-6379}
 ```
 
+For the majority of this file we are setting environment variables using the default Laravel variables found in the `.env` file, with a few extras and one exception. The `REDIS_PORT` being set is looking for an injected variable `REDIS_HOST_PORT`. This is to mitigate the issue where `SERVICENAME_PORT` is a reserved keyword in `docker-compose` which ultimately sets the `redis` connection to `tcp://ip.ad.dr.ress:port`
+
 For more information on how the custom environment variables are loaded please refer to the main base image [readme](https://github.com/continuouspipe/dockerfiles/tree/master/ubuntu/16.04#default-environment-variables)
+
 
 The only thing left to do for our Docker configuration is to setup our `docker-compose.yml` file.
 
@@ -298,11 +294,10 @@ services:
         volumes:
             - .:/app
         environment:
-          REDIS_PORT: 6379
           APP_USER_LOCAL: "true"
 
     database:
-        image: mariadb:latest
+        image: quay.io/continuouspipe/mysql5.7:stable
         environment:
             MYSQL_ROOT_PASSWORD: laravel
             MYSQL_DATABASE: laravel
@@ -314,20 +309,20 @@ services:
             - "3360:3360"
 
     redis:
-        image: redis:3.0
+        image: quay.io/continuouspipe/redis3:stable
         expose:
             - 6379
         ports:
             - "6379:6379"
 ```
 
-Here we have three services, `web`, `database` and `redis`. Our `web` service is our main service that builds from our Dockerfile previously mentioned. This will link to our `database` and `redis` services which are just standard `redis:3.0` and `mariadb:latest` official images.
+Here we have three services, `web`, `database` and `redis`. Our `web` service is our main service that builds from our Dockerfile previously mentioned. This will link to our `database` and `redis` services which use `quay.io/continuouspipe/mysql5.7:stable` and `quay.io/continuouspipe/redis3:stable` respectivly. These are just standard `redis:3.0` and `mysql:5.7` official images in a simple wrapper that allows a faster patching mechanism.
 
 We are injecting `APP_ENV` into our web container as a build argument. This will allow `composer install` to run on `docker-compose up`. Essentially, this means a developer can simply clone the project repo and start the Docker container and all the setup is handled for them. No more manual steps should be required.
 
 Additionally our web container is exposing both port `80` and `443`, this is because our base [php7-nginx](https://github.com/continuouspipe/dockerfiles/tree/master/php-nginx) image is creating a self signed SSL certificate and forcing our app to use `https://` as default.
 
-There are a few environment variables being set for our `web` container, one is `REDIS_PORT` and the other is `APP_USER_LOCAL`. I have encountered issues where the `REDIS` connection fails when running our Laravel app inside Docker, to elevate the connection issues we inject the `REDIS_PORT` into the container with our `docker-compose.yml`. The `APP_USER_LOCAL` is used to fix volume permission issues.
+There is an additional environment variable being set for our `web` container, `APP_USER_LOCAL`, which is used to fix volume permission issues.
 
 **Please note: `APP_USER_LOCAL` should only be used in development as using this could cause a security risk. Please see [Volume Permission Fixes](https://github.com/continuouspipe/dockerfiles/tree/master/ubuntu/16.04#volume-permission-fixes) for more information**
 
@@ -354,7 +349,7 @@ environment_variables:
     - name: REMOTE_ENV
       value: "1"
 ```
-We are simply setting a the `APP_ENV` for use within our build and `REMOTE_ENV` which can be used to distinguish the difference between a local docker build and a ContinuousPipe build. This can be useful when you need to to pull additional assets from 3rd part services or perhaps build the frontend assets in your deployments. For this tutorial, we are using this to allow us to generate a new `APP_KEY` during the deployment stage.
+We are simply setting a the `APP_ENV` for use within our build and `REMOTE_ENV` which can be used to distinguish the difference between a local docker build and a ContinuousPipe build. This can be useful when you need to to pull additional assets from 3rd party services or perhaps build the frontend assets in your deployments. For this tutorial, we are using this to allow us to generate a new `APP_KEY` during the deployment stage.
 
 Next we define our tasks, our first task is building our image - 
 
@@ -368,9 +363,9 @@ tasks:
 
             services:
                 web:
-                    image: quay.io/richdynamix/laravel-demo
+                    image: quay.io/continuouspipe/laravel-demo
 ```
-Here we simply inject the `APP_ENV` build argument, the same as we did for our `docker-compose.yml` file. We also define the registry repository address where we want to push our freshly built images to.
+Here we injecting the `APP_ENV` build argument, the same as we did for our `docker-compose.yml` file. We also define the registry repository address where we want to push our freshly built images to.
 
 The next task to run is the `infrastructure` task - 
 
@@ -463,7 +458,7 @@ initialization:
 
 The purpose of this task is to allow us to run any database specific tasks for our application. This might be the combination of a `php artisan migrate` and `php artisan db:seed`. Notice we are using the `filter` `expression: 'tasks.infrastructure.services.database.created'`, this ensures we only run this when we know the database is finished building. We run these commands by executing a script `tools/docker/setup/setup.sh` inside the container that has had some specific environment variables set.
 
-** Note: We have explicitly set `APP_USER_LOCAL` to `false` to elevate any security concerns previously mentioned with this setting**
+**Note: We have explicitly set `APP_USER_LOCAL` to `false` to elevate any security concerns previously mentioned with this setting**
 
 The last task in this configuration is `application` - 
 
@@ -505,7 +500,7 @@ application:
                        failure_threshold: 120
 ```
 
-Here we simply create a new web container, make it accessible to the public which instructs ContinuousPipe to get an IP address from the load balancer. We inject the environment variables previously defined in the `initalization` task, we configure the resources required from the cluster and open up the required ports, `80` and `443`
+Here we are creating a new web container, making it accessible to the public which instructs ContinuousPipe to get an IP address from the load balancer. We inject the environment variables previously defined in the `initalization` task, and finally we configure the resources required from the cluster and open up the required ports, `80` and `443`
 
 The last section of this task is the `deployment_strategy` which configures how ContinuousPipe will determine when the container is finished building and if it was successful or not. For more information on health checks please refer to [http://docs.continuouspipe.io/](http://docs.continuouspipe.io/configuration/deployments/#health-checks)
 
@@ -581,7 +576,7 @@ We are going to instruct ContinuousPipe to build us a new environment by creatin
 
 For simplicity, here is the OSX installation instructions
 
-```
+```shell
 sudo curl https://raw.githubusercontent.com/continuouspipe/remote-environment-client/gh-pages/0.0.1/darwin-amd64.gz > cp-remote.gz
 gzip -d cp-remote.gz;
 mv cp-remote /usr/local/bin/cp-remote
@@ -594,7 +589,7 @@ chmod +x /usr/local/bin/cp-remote
 
 Now that we have `cp-remote` installed, we are ready to setup our remote environment. From the root of your project run the following - 
 
-```
+```shell
 $ cp-remote setup
 ```
 
@@ -680,7 +675,7 @@ For full instructions on other commands in the `cp-remote` CLI tool, such as por
 
 ## Conclusion
 
-ContinuousPipe is a fantastic tool for simplifying container orchestration and deployment. Its makes the CI/CD workflow much more productive that similar tools available. One of the best and unique features of ContinuousPipe is the remote developer environments. This not only reduces the resource requirements of the developer's laptop, but it also ensures compatibility across platforms. 
+ContinuousPipe is a fantastic tool for simplifying container orchestration and deployment. Its makes the CI/CD workflow much more productive than similar tools available. One of the best and unique features of ContinuousPipe is the remote developer environments. This not only reduces the resource requirements of the developer's laptop, but it also ensures compatibility across platforms. 
 
 There is far more we can do with ContinuousPipe to increase productivity, for example, we can use filters to determine when tasks are run. Perhaps we only want certain branches to build environments, or a certain GitHub label on a Pull-Request to trigger the build. We can also go one step further and separate our builds into pipelines. Perhaps we want to have a separate pipeline for production compared to development or testing. This is useful if there are certain environment variables and tasks that should only be used in development but not production.
 
