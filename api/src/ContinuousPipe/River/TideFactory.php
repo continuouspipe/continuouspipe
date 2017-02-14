@@ -69,6 +69,7 @@ class TideFactory
      * @param UuidInterface         $tideUuid
      *
      * @throws TideGenerationException
+     * @throws TideConfigurationException
      *
      * @return Tide
      */
@@ -92,7 +93,6 @@ class TideFactory
         );
 
         $taskList = $this->createTideTaskList($events, $tideContext);
-
         $tide = Tide::create($this->taskRunner, $taskList, $tideContext, $request, FlatPipeline::fromPipeline($pipeline), $events);
 
         return $tide;

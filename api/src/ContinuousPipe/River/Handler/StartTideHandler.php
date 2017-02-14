@@ -6,7 +6,11 @@ use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\View\TideRepository as ViewTideRepository;
+use LogStream\Log;
+use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 
@@ -31,23 +35,23 @@ class StartTideHandler
      * @var Tide\Transaction\TransactionManager
      */
     private $transactionManager;
-
     /**
-     * @param ViewTideRepository $viewTideRepository
-     * @param Tide\Concurrency\TideConcurrencyManager $concurrencyManager
-     * @param LoggerInterface $logger
-     * @param Tide\Transaction\TransactionManager $transactionManager
+     * @var LoggerFactory
      */
+    private $loggerFactory;
+
     public function __construct(
         ViewTideRepository $viewTideRepository,
         Tide\Concurrency\TideConcurrencyManager $concurrencyManager,
         LoggerInterface $logger,
-        Tide\Transaction\TransactionManager $transactionManager
+        Tide\Transaction\TransactionManager $transactionManager,
+        LoggerFactory $loggerFactory
     ) {
         $this->viewTideRepository = $viewTideRepository;
         $this->concurrencyManager = $concurrencyManager;
         $this->logger = $logger;
         $this->transactionManager = $transactionManager;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -75,7 +79,14 @@ class StartTideHandler
     private function startTide(StartTideCommand $command)
     {
         $this->transactionManager->apply($command->getTideUuid(), function (Tide $tide) {
-            $tide->start();
+            try {
+                $tide->start();
+            } catch (TideConfigurationException $e) {
+                $logger = $this->loggerFactory->from($tide->getLog());
+                $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
+
+                $tide->hasFailed($e);
+            }
         });
     }
 }
