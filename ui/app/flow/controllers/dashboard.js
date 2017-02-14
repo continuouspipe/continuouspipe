@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowDashboardController', function ($scope, $remoteResource, $q, flow, $firebaseArray, $authenticatedFirebaseDatabase, $http) {
+    .controller('FlowDashboardController', function ($scope, $remoteResource, $q, flow, $firebaseArray, $authenticatedFirebaseDatabase, $http, RIVER_API_URL) {
         $scope.flow = flow;
         $scope.tidesPerPipeline = [];
         $scope.isLoading = true;
@@ -58,11 +58,16 @@ angular.module('continuousPipeRiver')
 
             $http({
                 method: 'DELETE',
-                url: '/flows/' + $scope.flow.uuid + '/pipeline/' + id
-            }).then(function success(reponse) {
-                return result[response.status.toString()];
+                url: RIVER_API_URL + '/flows/' + $scope.flow.uuid + '/pipeline/' + id
+            }).then(function success(response) {
+                $scope.tides.map(function (tide, index) {
+                    if (tide.uuid === id) {
+                        $scope.tides.splice(index, 1);
+                    }
+                });
+                return results[response.status.toString()];
             }, function error(response) {
-                return result[response.status.toString()];
+                console.error(response.status, results[response.status.toString()]);
             });
         };
 
