@@ -5,12 +5,16 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <!-- Time resolver -->
+        <service id="builder.time_resolver" class="ContinuousPipe\Events\TimeResolver\NativeTimeResolver" />
+
         <!-- Events storage -->
-        <service id="builder.event_store.http" class="ContinuousPipe\Events\EventStore\HttpEventStoreAdapter">
+        <service id="builder.event_store.doctrine" class="ContinuousPipe\Events\EventStore\Doctrine\DoctrineEventStore">
+            <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="jms_serializer.serializer" />
-            <argument>%event_store_host%</argument>
+            <argument type="service" id="builder.time_resolver"/>
         </service>
-        <service id="builder.event_store" alias="builder.event_store.http" />
+        <service id="builder.event_store" alias="builder.event_store.doctrine" />
         <service id="builder.build.event_stream_resolver" class="ContinuousPipe\Builder\Aggregate\FromEvents\BuildEventStreamResolver" />
 
         <!-- Event bus -->
