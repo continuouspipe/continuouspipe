@@ -60,11 +60,6 @@ angular.module('continuousPipeRiver')
                 method: 'DELETE',
                 url: RIVER_API_URL + '/flows/' + $scope.flow.uuid + '/pipeline/' + id
             }).then(function success(response) {
-                $scope.tides.map(function (tide, index) {
-                    if (tide.uuid === id) {
-                        $scope.tides.splice(index, 1);
-                    }
-                });
                 return results[response.status.toString()];
             }, function error(response) {
                 console.error(response.status, results[response.status.toString()]);
