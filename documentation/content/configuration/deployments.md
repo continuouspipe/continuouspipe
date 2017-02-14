@@ -154,7 +154,7 @@ specification:
 ```
 
 ## Resources
-You can define the amount of requested resources, as well as the resource limits for your services. These values will be applied to each replica of container individually.
+You can define the amount of requested resources, as well as the resource limits for your services. These values will be applied to each replicated container individually.
 
 ``` yaml
 specification:
