@@ -43,5 +43,11 @@
             <argument type="service" id="logger" />
             <argument type="service" id="log_stream.logger_factory"/>
         </service>
+
+        <service id="builder.docker.client.validation.ensure_docker_file_exists"
+                 class="ContinuousPipe\Builder\Docker\Validation\EnsureDockerfileExistsClientDecorator"
+                 decorates="builder.docker.client">
+            <argument type="service" id="builder.docker.client.validation.ensure_docker_file_exists.inner" />
+        </service>
     </services>
 </container>

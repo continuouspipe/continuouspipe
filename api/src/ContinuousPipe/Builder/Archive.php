@@ -21,4 +21,13 @@ interface Archive extends ContextInterface
      * @throws ArchiveException
      */
     public function write(string $path, Archive $archive);
+
+    /**
+     * Returns true if the given file or folder exists.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
+    public function contains(string $path) : bool;
 }
