@@ -157,13 +157,14 @@ class SecurityContext implements Context
 
     /**
      * @Given the team :team have the credentials of a Docker registry :registry
+     * @Given the team :team have the credentials of a Docker registry :registry with the username :username
      */
-    public function theTeamHaveTheCredentialsOfADockerRegistry($team, $registry)
+    public function theTeamHaveTheCredentialsOfADockerRegistry($team, $registry, $username = null)
     {
         $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
         $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
 
-        $bucket->getDockerRegistries()->add(new DockerRegistry('username', 'password', 'email@example.com', $registry));
+        $bucket->getDockerRegistries()->add(new DockerRegistry($username ?: 'username', 'password', 'email@example.com', $registry));
 
         $this->inMemoryAuthenticatorClient->addBucket($bucket);
     }

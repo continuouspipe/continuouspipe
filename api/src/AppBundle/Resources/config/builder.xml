@@ -27,12 +27,20 @@
             </argument>
         </service>
 
-        <service id="builder.build_request_creator" class="ContinuousPipe\Builder\BuildRequestCreator">
+        <service id="builder.build_request_creator" class="ContinuousPipe\Builder\WithSourceAndNotificationsBuildRequestCreator">
             <argument type="service" id="logger" />
             <argument type="service" id="builder.build_request_source_resolver" />
             <argument type="service" id="router" />
             <argument>%river_host%</argument>
             <argument>%use_ssl%%</argument>
+        </service>
+
+        <service id="builder.build_request_creator.guess_registry_details"
+                 class="ContinuousPipe\Builder\GuessUserRegistryAndUsername"
+                 decorates="builder.build_request_creator">
+            <argument type="service" id="builder.build_request_creator.guess_registry_details.inner" />
+            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="logger" />
         </service>
     </services>
 </container>
