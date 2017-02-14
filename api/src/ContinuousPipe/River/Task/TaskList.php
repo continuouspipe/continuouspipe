@@ -126,4 +126,9 @@ class TaskList
 
         return $matchingTasks;
     }
+
+    public function count() : int
+    {
+        return count($this->tasks);
+    }
 }

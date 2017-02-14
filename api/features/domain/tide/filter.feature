@@ -28,3 +28,11 @@ Feature:
     """
     When the commit "3b0110193e36b317207909163d0a582f6f568qwe" is pushed to the branch "feature"
     Then the tide should not be created
+
+  Scenario: Do not start even without any task
+    Given I have a flow with the following configuration:
+    """
+    filter: 'code_reference.branch == "master"'
+    """
+    When the commit "3b0110193e36b317207909163d0a582f6f568qwe" is pushed to the branch "feature"
+    Then the tide should not be created

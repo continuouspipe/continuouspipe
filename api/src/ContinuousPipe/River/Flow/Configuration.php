@@ -65,7 +65,6 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('tasks');
 
         $tasksPrototype = $node
-            ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
             ->prototype('array')
                 ->validate()

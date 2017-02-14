@@ -190,8 +190,24 @@ class Tide
 
     public function start()
     {
-        $this->events->raiseAndApply(new TideStarted(
-            $this->getUuid()
+        if ($this->status != self::STATUS_PENDING) {
+            return;
+        }
+
+        if (0 === $this->tasks->count()) {
+            throw new TideConfigurationException('You need to configure tasks to be run for the tide.');
+        } else {
+            $this->events->raiseAndApply(new TideStarted(
+                $this->getUuid()
+            ));
+        }
+    }
+
+    public function hasFailed(\Throwable $reason)
+    {
+        $this->events->raiseAndApply(new TideFailed(
+            $this->getUuid(),
+            $reason->getMessage()
         ));
     }
 
