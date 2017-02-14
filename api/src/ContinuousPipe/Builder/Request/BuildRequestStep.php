@@ -22,7 +22,7 @@ class BuildRequestStep
     private $archive;
 
     /**
-     * @var Image
+     * @var Image|null
      */
     private $image;
 
@@ -63,7 +63,7 @@ class BuildRequestStep
     }
 
     /**
-     * @return Image
+     * @return Image|null
      */
     public function getImage()
     {
