@@ -1,0 +1,4 @@
+.kubeproxy.yml
+server.crt
+server.key
+vendor/
