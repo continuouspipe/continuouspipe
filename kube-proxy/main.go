@@ -3,27 +3,42 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
+	"os"
 	kproxy "github.com/continuouspipe/kube-proxy/proxy"
+	"github.com/spf13/viper"
+	"github.com/continuouspipe/kube-proxy/cplogs"
 )
 
 const listenUrl = "https://127.0.0.1:8080"
 
 func main() {
 	flag.Parse()
-
 	listenURL, err := url.Parse(listenUrl)
 	if err != nil {
-		log.Fatalf("Cannot parse URL: %v", err)
+		cplogs.V(5).Infof("Cannot parse URL: %v", err.Error())
 	}
-
-	if err != nil {
-		fmt.Errorf("Unable to initialize the Kubernetes proxy: %v", err)
-	}
-
+	initConfigFile()
 	h := kproxy.NewHttpHandler()
 
-	log.Fatal(http.ListenAndServeTLS(listenURL.Host, "server.crt", "server.key", h))
+	err = http.ListenAndServeTLS(listenURL.Host, "server.crt", "server.key", h)
+	if err != nil {
+		cplogs.V(5).Infof("Error when listening: %v", err.Error())
+	}
+}
+
+func initConfigFile() {
+	viper.SetConfigFile(".kubeproxy.yml")
+	viper.SetConfigType("yml")
+	pwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	viper.AddConfigPath(pwd)
+	err = viper.ReadInConfig()
+	if err != nil {
+		cplogs.V(5).Infof("Cannot load config file: %v", err.Error())
+	}
 }

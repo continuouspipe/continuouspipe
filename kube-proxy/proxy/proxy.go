@@ -107,8 +107,8 @@ func (p *UpgradeAwareSingleHostReverseProxy) newProxyRequest(req *http.Request) 
 	backendURL := *p.backendAddr
 	// if backendAddr is http://host/base and req is for /foo, the resulting path
 	// for backendURL should be /base/foo
-	backendURL.Path = p.cptokube.RemoveCpDataFromRawUrl(singleJoiningSlash(backendURL.Path, req.URL.Path))
-	backendURL.RawQuery = p.cptokube.RemoveCpDataFromRawUrl(req.URL.RawQuery)
+	backendURL.Path = p.cptokube.RemoveCpDataFromUri(singleJoiningSlash(backendURL.Path, req.URL.Path))
+	backendURL.RawQuery = req.URL.RawQuery
 
 	newReq, err := http.NewRequest(req.Method, backendURL.String(), req.Body)
 	if err != nil {
@@ -131,12 +131,6 @@ func (p *UpgradeAwareSingleHostReverseProxy) isUpgradeRequest(req *http.Request)
 // ServeHTTP inspects the request and either proxies an upgraded connection directly,
 // or uses httputil.ReverseProxy to proxy the normal request.
 func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	newReq, err := p.newProxyRequest(req)
-	if err != nil {
-		cplogs.V(5).Infof("Error creating backend request: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
 
 	//take username and is api key from the basic auth
 	cpUsername, userApiKey, ok := req.BasicAuth()
@@ -147,7 +141,20 @@ func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, re
 	}
 
 	//get the cluster basic auth and replace it in the request
-	clusterUser, clusterPassword := p.cinfo.GetClusterBasicAuthInfo(cpUsername, userApiKey, p.cptokube.ExtractTeamName(req.URL.Path), p.cptokube.ExtractClusterId(req.URL.Path))
+	clusterUser, clusterPassword, err := p.cinfo.GetClusterBasicAuthInfo(cpUsername, userApiKey, p.cptokube.ExtractTeamName(req.URL.Path), p.cptokube.ExtractClusterId(req.URL.Path))
+	if err != nil {
+		cplogs.V(5).Infof("Error getting cluster basic auth: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	newReq, err := p.newProxyRequest(req)
+	if err != nil {
+		cplogs.V(5).Infof("Error creating backend request: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	req.SetBasicAuth(clusterUser, clusterPassword)
 
 	if !p.isUpgradeRequest(req) {

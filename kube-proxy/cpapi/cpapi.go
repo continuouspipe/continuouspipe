@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"encoding/json"
 	"io/ioutil"
+	"github.com/spf13/viper"
 )
 
 type ClusterInfoProvider interface {
-	GetClusterUrl(user string, apiKey string, teamName string, clusterIdentifier string) (*url.URL, error)
-	GetClusterBasicAuthInfo(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (clusterUser string, clusterPassword string)
+	GetClusterUrl(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (*url.URL, error)
+	GetClusterBasicAuthInfo(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (clusterUser string, clusterPassword string, err error)
 }
 
 type ClusterInfo struct {
@@ -24,15 +25,19 @@ func NewClusterInfo() *ClusterInfo {
 }
 
 type ApiTeam struct {
-	Slug        string `json:"slug"`
-	Name        string `json:"name"`
-	BucketUuid  string      `json:"bucket_uuid"`
-	Memberships []ApiMembership `json:"memberships"`
+	Slug       string `json:"slug"`
+	Name       string `json:"name"`
+	BucketUuid string      `json:"bucket_uuid"`
+
+	//Should be []ApiMembership although there is a bug on the api where a list of object with keys "1", "2" is returned
+	//instead of being a json array
+	Memberships []interface{} `json:"memberships"`
 }
 
 type ApiMembership struct {
-	User       ApiUser `json:"user"`
-	Permission ApiPermission `json:"permissions"`
+	Team        ApiTeam `json:"team"`
+	User        ApiUser `json:"user"`
+	Permissions []string `json:"permissions"`
 }
 
 type ApiUser struct {
@@ -40,14 +45,6 @@ type ApiUser struct {
 	Email      string      `json:"email"`
 	BucketUuid string      `json:"bucket_uuid"`
 	Roles      []string      `json:"roles"`
-}
-
-type ApiPermission struct {
-	Permission string `json:"permission"`
-}
-
-type ApiBucketClusters struct {
-	Clusters []ApiCluster `json:"clusters"`
 }
 
 type ApiCluster struct {
@@ -60,46 +57,90 @@ type ApiCluster struct {
 }
 
 //return the url of the cluster e.g. https://100.200.300.400/
-func (c ClusterInfo) GetClusterUrl(user string, apiKey string, teamName string, clusterIdentifier string) (*url.URL, error) {
-	//bucketUuid, err := c.getBucketUuid(user, apiKey, teamName, clusterIdentifier)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//if len(bucketUuid) == 0 {
-	//	return nil, fmt.Errorf("user bucket id not found")
-	//}
+func (c ClusterInfo) GetClusterUrl(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (*url.URL, error) {
+	apiTeam, err := c.GetApiTeam(cpUsername, cpApiKey, teamName)
+	if err != nil {
+		return nil, err
+	}
 
-	//clusterAddress, err := c.getClusterAddress(bucketUuid, apiKey)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//url, err := url.Parse(clusterAddress)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//
-	//return url, nil
+	clustersInfo, err := c.GetApiBucketClusters(apiTeam.BucketUuid)
+	if err != nil {
+		return nil, err
+	}
+
+	var clusterAddress string
+	for _, cluster := range clustersInfo {
+		if cluster.Identifier != clusterIdentifier {
+			continue
+		}
+		clusterAddress = cluster.Address
+	}
+
+	clusterUrl, err := url.Parse(clusterAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	return clusterUrl, nil
 }
 
-func (c ClusterInfo) GetClusterBasicAuthInfo(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (clusterUser string, clusterPassword string) {
-	return "", ""
+func (c ClusterInfo) GetClusterBasicAuthInfo(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (clusterUser string, clusterPassword string, err error) {
+	apiTeam, err := c.GetApiTeam(cpUsername, cpApiKey, teamName)
+	if err != nil {
+		return "", "", err
+	}
+
+	clustersInfo, err := c.GetApiBucketClusters(apiTeam.BucketUuid)
+	if err != nil {
+		return "", "", err
+	}
+
+	clusterUser = ""
+	clusterPassword = ""
+	for _, cluster := range clustersInfo {
+		if cluster.Identifier != clusterIdentifier {
+			continue
+		}
+		clusterUser = cluster.Username
+		clusterPassword = cluster.Password
+	}
+
+	return clusterUser, clusterPassword, nil
 }
 
-func (c ClusterInfo) GetApiTeams() {
+func (c ClusterInfo) GetApiTeam(user string, apiKey string, teamName string) (*ApiTeam, error) {
 	url := c.getAuthenticatorUrl()
-	url.Path = "/api/teams/"
+	url.Path = "/api/teams/" + teamName
+
+	req, err := http.NewRequest("GET", url.String(), nil)
+	req.Header.Add("X-Api-Key", apiKey)
+	if err != nil {
+		return nil, err
+	}
+
+	respBody, err := c.getResponseBody(c.client, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	apiTeamsResponse := &ApiTeam{}
+	err = json.Unmarshal(respBody, apiTeamsResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return apiTeamsResponse, nil
 }
 
-func (c ClusterInfo) GetApiBucketClusters(bucketUuid string, apiKey string) (*ApiBucketClusters, error) {
+//Use the master api key to get the details of the cluster, including the auth password for kubernetes in cleartext
+func (c ClusterInfo) GetApiBucketClusters(bucketUuid string) ([]ApiCluster, error) {
 	url := c.getAuthenticatorUrl()
 	url.Path = "/api/bucket/" + bucketUuid + "/clusters"
 
 	req, err := http.NewRequest("GET", url.String(), nil)
 
-	//TODO: Master key to be taken from config
-	req.Header.Add("X-Api-Key", "")
+	req.Header.Add("X-Api-Key", viper.GetString("master-api-key"))
 	if err != nil {
 		return nil, err
 	}
@@ -109,13 +150,13 @@ func (c ClusterInfo) GetApiBucketClusters(bucketUuid string, apiKey string) (*Ap
 		return nil, err
 	}
 
-	bucketInfoResponse := &ApiBucketClusters{}
-	err = json.Unmarshal(respBody, bucketInfoResponse)
+	clusters := make([]ApiCluster, 0)
+	err = json.Unmarshal(respBody, &clusters)
 	if err != nil {
 		return nil, err
 	}
 
-	return bucketInfoResponse, nil
+	return clusters, nil
 }
 
 func (c ClusterInfo) GetApiUser(user string, apiKey string) (*ApiUser, error) {

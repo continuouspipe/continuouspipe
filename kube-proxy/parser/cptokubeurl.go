@@ -7,7 +7,7 @@ import (
 type CpToKubeUrlParser interface {
 	ExtractTeamName(urlPath string) string
 	ExtractClusterId(urlPath string) string
-	RemoveCpDataFromRawUrl(url string) string
+	RemoveCpDataFromUri(url string) string
 }
 
 type CpToKubeUrl struct{}
@@ -26,7 +26,8 @@ func (p CpToKubeUrl) ExtractClusterId(urlPath string) string {
 	return pathSections[2]
 }
 
-func (p CpToKubeUrl) RemoveCpDataFromRawUrl(url string) string {
-	toRemove := p.ExtractTeamName(url) + "/" + p.ExtractClusterId(url) + "/"
-	return strings.Replace(url, toRemove, "", 1)
+func (p CpToKubeUrl) RemoveCpDataFromUri(urlPath string) string {
+	pathSections := strings.Split(urlPath, "/")
+	kubeUrl := pathSections[3:]
+	return strings.Join(kubeUrl, "/")
 }
