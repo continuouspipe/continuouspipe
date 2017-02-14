@@ -5,7 +5,7 @@ angular.module('continuousPipeRiver')
         $stateProvider
             .state('flow', {
                 abstract: true,
-                parent: 'team',
+                parent: 'project',
                 url: '/:uuid',
                 resolve: {
                     flow: function($stateParams, FlowRepository, $flowContext, $q) {
