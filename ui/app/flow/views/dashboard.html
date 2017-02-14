@@ -23,9 +23,13 @@
         <md-card-content layout="column">
             <div layout="row">
                 <span class="md-headline">{{ pipeline.name }}</span>
+                <span>
+                    <md-button class="md-icon-button delete-pipeline-btn" ng-click="deletePipeline(pipeline.uuid)">
+                        <md-icon>clear</md-icon>
+                    </md-button>
+                </span>
                 <span flex></span>
                 <span>
-                    <button ng-click="deletePipeline(pipeline.uuid)">Delete Pipeline</button>
                     <i class="cp-icon-git-branch"></i> {{ pipeline.lastTides[0].code_reference.branch }}
                     <md-icon>code</md-icon> {{ pipeline.lastTides[0].code_reference.sha1 | limitTo:7 }}
                     <span>
@@ -33,6 +37,7 @@
                         <md-icon>schedule</md-icon> {{ pipeline.lastTides[0].creation_date | timeAgo }}
                     </span>
                 </span>
+
             </div>
             <div layout="row">
                 <span class="status-text" ng-class="['status-'+pipeline.lastTides[0].status]">{{ pipeline.lastTides[0].status }}</span>

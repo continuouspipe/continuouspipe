@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowDashboardController', function ($scope, $remoteResource, $q, flow, $firebaseArray, $authenticatedFirebaseDatabase, $http, RIVER_API_URL) {
+    .controller('FlowDashboardController', function ($scope, $remoteResource, $q, flow, $firebaseArray, $authenticatedFirebaseDatabase, PipelineRepository) {
         $scope.flow = flow;
         $scope.tidesPerPipeline = [];
         $scope.isLoading = true;
@@ -49,21 +49,8 @@ angular.module('continuousPipeRiver')
             return $q.all(promises);
         };
 
-        $scope.deletePipeline = function (id) {
-            var results = {
-                '204': 'Pipeline Successfully deleted',
-                '404': 'Could not find specified pipeline',
-                '400': 'Pipeline could not be deleted'
-            };
-
-            $http({
-                method: 'DELETE',
-                url: RIVER_API_URL + '/flows/' + $scope.flow.uuid + '/pipeline/' + id
-            }).then(function success(response) {
-                return results[response.status.toString()];
-            }, function error(response) {
-                console.error(response.status, results[response.status.toString()]);
-            });
+        $scope.deletePipeline = function (pipelineId) {
+            PipelineRepository.delete($scope.flow.uuid, pipelineId);
         };
 
         $remoteResource.load('tides', $authenticatedFirebaseDatabase.get(flow).then(function (database) {
