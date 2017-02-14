@@ -14,7 +14,7 @@ $border-grey: #a1a1a1;
 $inactive-grey: #a5a5a5;
 $active-grey: #676767;
 
-$logo-size: 40px;
+$logo-size: 30px;
 $header-height: 64px;
 $sidebar-selected-background: rgba(255, 255, 255, 0.1);
 $content-background: #F2F4F6;
@@ -116,10 +116,10 @@ body {
             height: $header-height;
 
             md-icon {
-                padding-top: 5px;
+                padding-top: 10px;
                 font-size: $logo-size;
                 width: $logo-size;
-                height: $logo-size;
+                height: $logo-size + 10;
             }
         }
 
