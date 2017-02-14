@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'cp';
-  src:  url('fonts/cp.eot?dgn57a');
-  src:  url('fonts/cp.eot?dgn57a#iefix') format('embedded-opentype'),
-    url('fonts/cp.ttf?dgn57a') format('truetype'),
-    url('fonts/cp.woff?dgn57a') format('woff'),
-    url('fonts/cp.svg?dgn57a#cp') format('svg');
+  src:  url('fonts/cp.eot?x6hk92');
+  src:  url('fonts/cp.eot?x6hk92#iefix') format('embedded-opentype'),
+    url('fonts/cp.ttf?x6hk92') format('truetype'),
+    url('fonts/cp.woff?x6hk92') format('woff'),
+    url('fonts/cp.svg?x6hk92#cp') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -25,17 +25,27 @@
 }
 
 .cp-icon-logo:before {
-  content: "\e900";
+  content: "\e906";
 }
-.cp-icon-github:before {
+.cp-icon-old-logo:before {
   content: "\e901";
 }
-.cp-icon-git-branch:before {
+.cp-icon-github:before {
   content: "\e902";
 }
-.cp-icon-commit:before {
-  content: "\e904";
-}
-.cp-icon-arrow-right-up:before {
+.cp-icon-git-branch:before {
   content: "\e903";
 }
+.cp-icon-arrow-right-up:before {
+  content: "\e904";
+}
+.cp-icon-commit:before {
+  content: "\e905";
+}
+.cp-icon-bitbucket:before {
+  content: "\e900";
+}
+.cp-icon-google:before {
+  content: "\ea8a";
+}
+
