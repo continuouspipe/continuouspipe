@@ -122,8 +122,8 @@ class DeploymentRequestFactory
                 new Component\Scalability(false, 1),
                 [],
                 $this->createEnvironmentVariables($configuration),
-                [],
-                [],
+                $configuration->getVolumes(),
+                $configuration->getVolumeMounts(),
                 $this->getCommand($configuration)
             ),
             [],

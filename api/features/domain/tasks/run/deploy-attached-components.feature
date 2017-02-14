@@ -35,3 +35,27 @@ Feature:
     """
     When a tide is started
     Then the component "testing-command" should be deployed
+
+  Scenario: I can use persistent volumes
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        testing_command:
+            run:
+                cluster: foo
+                commands:
+                    - echo testing
+                    - sleep 10
+                    - echo done
+                image: busybox
+                volumes:
+                    - type: persistent
+                      name: api-volume
+                      capacity: 5Gi
+                volume_mounts:
+                    - name: api-volume
+                      mount_path: /var/lib/app
+    """
+    When a tide is started
+    Then the component "testing-command" should be deployed
+    And the component "testing-command" should have a persistent volume mounted at "/var/lib/app"
