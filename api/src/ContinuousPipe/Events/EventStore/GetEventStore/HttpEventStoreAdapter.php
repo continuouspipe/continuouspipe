@@ -1,7 +1,8 @@
 <?php
 
-namespace ContinuousPipe\Events\EventStore;
+namespace ContinuousPipe\Events\GetEventStore\EventStore;
 
+use ContinuousPipe\Events\EventStore\EventStore;
 use EventStore\EventStore as EventStoreClient;
 use EventStore\WritableEvent;
 use JMS\Serializer\SerializerInterface;
