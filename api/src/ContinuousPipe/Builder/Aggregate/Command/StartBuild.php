@@ -2,9 +2,10 @@
 
 namespace ContinuousPipe\Builder\Aggregate\Command;
 
+use ContinuousPipe\Message\Message;
 use JMS\Serializer\Annotation as JMS;
 
-class StartBuild
+class StartBuild implements Message
 {
     /**
      * @JMS\Type("string")
