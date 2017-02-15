@@ -44,7 +44,29 @@ class HttpArchivePacker implements ArchivePacker
                 'headers' => $archive->getHeaders(),
             ]);
         } catch (RequestException $e) {
-            throw new ArchiveCreationException('Unable to download the code archive: '.$e->getMessage(), $e->getCode(), $e);
+            if (null !== ($response = $e->getResponse())) {
+                try {
+                    $contents = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+
+                    if (isset($contents['error']['message'])) {
+                        $message = $contents['error']['message'];
+                    }
+                    if (isset($contents['error']['code'])) {
+                        $code = $contents['error']['code'];
+                    }
+                } catch (\InvalidArgumentException $errorException) {
+                    // Handle the exception as if it wasn't supported
+                }
+            }
+
+            if (!isset($message)) {
+                $message = $e->getMessage();
+            }
+            if (!isset($code)) {
+                $code = $e->getCode();
+            }
+
+            throw new ArchiveCreationException('Unable to download the code archive: '.$message, $code, $e);
         }
 
         // Extract the archive in a directory
