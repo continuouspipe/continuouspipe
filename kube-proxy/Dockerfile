@@ -4,26 +4,22 @@ FROM golang:1.7
 ADD . /go/src/github.com/continuouspipe/kube-proxy
 WORKDIR /go/src/github.com/continuouspipe/kube-proxy
 
-# Env variables
-ENV KEY_NAME server
-ENV COMMON_NAME server
-
 # Install glide
 RUN curl https://glide.sh/get | sh
 
 # Install dependencies
-RUN make install-dep
+RUN glide install --strip-vendor
 
 # Run build
-RUN make build
+RUN go install
 
-# Switch to the bin folder
-WORKDIR /go/src/github.com/continuouspipe/kube-proxy/bin
+WORKDIR /go/bin/
 
 # Generate self signed certificate
-CMD /usr/bin/openssl genrsa -out ${KEY_NAME}.key 1024 && \
-    /usr/bin/openssl req  -new -newkey rsa:4096 -days 365 -nodes -subj "/C=/ST=/L=/O=/CN=${COMMON_NAME}" -keyout ${KEY_NAME}.key -out ${KEY_NAME}.csr  && \
-    /usr/bin/openssl x509 -req -days 365 -in ${KEY_NAME}.csr -signkey ${KEY_NAME}.key -out ${KEY_NAME}.crt
+RUN openssl genrsa -out /go/bin/server.key 1024
+RUN openssl req  -new -newkey rsa:4096 -days 365 -nodes -subj "/C=/ST=/L=/O=/CN=server" -keyout /go/bin/server.key -out /go/bin/server.csr
+RUN openssl x509 -req -days 365 -in /go/bin/server.csr -signkey /go/bin/server.key -out /go/bin/server.crt
 
-RUN chmod +x /go/src/github.com/continuouspipe/kube-proxy/docker/run.sh
-CMD ["/go/src/github.com/continuouspipe/kube-proxy/docker/run.sh"]
+# Run the outyet command by default when the container starts.
+ENTRYPOINT ["/go/bin/kube-proxy", "--insecure"]
+EXPOSE 8080
