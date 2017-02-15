@@ -3,7 +3,7 @@ tasks:
         build:
             services:
                 web:
-                    image: golang:1.7
+                    image: quay.io/continuouspipe/kube-proxy
                     naming_strategy: sha1
     deployment:
             deploy:
