@@ -15,26 +15,9 @@ tasks:
                         specification:
                             accessibility:
                                 from_external: true
-
-                        endpoints:
-                            -
-                                name: https
-                                type: NodePort
-                                ssl_certificates:
-                                    -
-                                        name: kube-proxy-cert
-                                        cert: ${WILDCARD_SSL_CERT}
-                                        key: ${WILDCARD_SSL_KEY}
-
+                            ports:
+                              - 6379
                         deployment_strategy:
                             readiness_probe:
                                 type: tcp
                                 port: 6379
-
-                            liveness_probe:
-                                initial_delay_seconds: 5
-                                timeout_seconds: 5
-                                period_seconds: 5
-                                type: https
-                                port: 8080
-                                path: /healthz
