@@ -54,7 +54,7 @@ to -
 We will overwrite the default key during deployments.
 
 
-Since we are going to configure our application to use redis for our cache and session storage we need to add the package `predis/predis` to our porject.
+Since we are going to configure our application to use redis for our cache and session storage we need to add the package `predis/predis` to our project.
 
 ```shell
 $ composer require predis/predis
