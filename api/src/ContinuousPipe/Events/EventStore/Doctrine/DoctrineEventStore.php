@@ -72,7 +72,7 @@ class DoctrineEventStore implements EventStore
             'creationDate' => 'ASC'
         ]);
 
-        return array_map(function(EventDto $dataTransferObject) {
+        return array_map(function (EventDto $dataTransferObject) {
             return $this->serializer->deserialize(
                 $dataTransferObject->getJsonSerialized(),
                 $dataTransferObject->getClass(),
