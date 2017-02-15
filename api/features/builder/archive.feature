@@ -61,3 +61,32 @@ Feature:
       | name          | value         |
       | Authorization | token FOO-BAR |
       | X-SpanId      | 1234          |
+
+  Scenario: It displays the error message properly in case of error
+    Given the URL "https://river-proxy/archive-path" will return a 404 response code with the following body:
+    """
+    {
+      "error": {
+        "message": "The GitHub integration does not have access to this repository"
+      }
+    }
+    """
+    When I send the following build request:
+    """
+    {
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "master"
+          },
+          "archive": {
+            "url": "https://river-proxy/archive-path"
+          }
+        }
+      ],
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+    }
+    """
+    Then the build should be failed
+    And a log containing "Unable to download the code archive: The GitHub integration does not have access to this repository" should be created

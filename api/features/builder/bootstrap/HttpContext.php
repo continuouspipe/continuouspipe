@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Guzzle\MatchingHandler;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
@@ -39,6 +40,19 @@ class HttpContext implements Context
                 return $request->getUri() == $url;
             },
             'response' => new Response(200, [], file_get_contents(__DIR__.'/../fixtures/'.$fixture)),
+        ]);
+    }
+
+    /**
+     * @Given the URL :url will return a :statusCode response code with the following body:
+     */
+    public function theUrlWillReturnAResponseCodeWithTheFollowingBody($url, $statusCode, PyStringNode $string)
+    {
+        $this->builderArchiveFactoryHttpMatchingHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url) {
+                return $request->getUri() == $url;
+            },
+            'response' => new Response($statusCode, [], $string->getRaw()),
         ]);
     }
 
