@@ -15,12 +15,12 @@ angular.module('continuousPipeRiver')
                 views: {
                     'title@layout': {
                         template:
-                            '<a ui-sref="flows({team: team.slug})">{{ team.name || team.slug }}</a> / '+
+                            '<a ui-sref="flows({project: project.slug})">{{ project.name || project.slug }}</a> / '+
                             '<a ui-sref="flow.dashboard({uuid: flow.uuid})">{{ flow.repository.name }}</a> / '+
                             '{{ tide.uuid }} <span class="branch"><md-icon class="cp-icon-git-branch"></md-icon> {{ tide.code_reference.branch }}</span>'
                         ,
-                        controller: function($scope, team, flow, tide) {
-                            $scope.team = team;
+                        controller: function($scope, project, flow, tide) {
+                            $scope.project = project;
                             $scope.flow = flow;
                             $scope.tide = tide;
                         }
@@ -56,7 +56,7 @@ angular.module('continuousPipeRiver')
                     'content@': {
                         controller: function($state, tide) {
                             $state.go('tide.logs', {
-                                team: tide.team.slug,
+                                project: tide.project.slug,
                                 uuid: tide.flow.uuid,
                                 tideUuid: tide.uuid
                             });

@@ -1,29 +1,29 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamUsersController', function($scope, $remoteResource, $http, TeamMembershipRepository, TeamRepository, InvitationRepository, team) {
+    .controller('ProjectUsersController', function($scope, $remoteResource, $http, ProjectMembershipRepository, ProjectRepository, InvitationRepository, project) {
         var load = function() {
             $scope.membersStatus = null;
-            $remoteResource.load('membersStatus', TeamRepository.getMembersStatus(team.slug)).then(function (membersStatus) {
+            $remoteResource.load('membersStatus', ProjectRepository.getMembersStatus(project.slug)).then(function (membersStatus) {
                 $scope.membersStatus = membersStatus;
             });
         };
 
         var handleError = function(error) {
-            swal("Error !", $http.getError(error) || "An unknown error occured while create the team", "error");
+            swal("Error !", $http.getError(error) || "An unknown error occured while create the project", "error");
         };
 
         $scope.removeMembership = function(membership) {
             swal({
                 title: "Are you sure?",
-                text: "The user "+membership.user.username+" will be removed from the team.",
+                text: "The user "+membership.user.username+" will be removed from the project.",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, remove it!",
                 closeOnConfirm: true
             }, function() {
-                TeamMembershipRepository.remove(team, membership.user).then(load, handleError);
+                ProjectMembershipRepository.remove(project, membership.user).then(load, handleError);
             });
         };
 
@@ -37,7 +37,7 @@ angular.module('continuousPipeRiver')
                 confirmButtonText: "Yes, cancel it!",
                 closeOnConfirm: true
             }, function() {
-                InvitationRepository.remove(team, invitation).then(load, handleError);
+                InvitationRepository.remove(project, invitation).then(load, handleError);
             });
         };
 

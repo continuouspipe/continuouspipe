@@ -1,14 +1,14 @@
 <md-content flex>
-    <form name="teamForm">
+    <form name="projectForm">
         <div class="form-container">
             <p>You need to select a name and a unique identifier for your project.</p>
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Name</label>
-                <input ng-model="team.name" required />
+                <input ng-model="project.name" required />
             </md-input-container>
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Unique identifier</label>
-                <input ng-model="team.slug" required />
+                <input ng-model="project.slug" required />
             </md-input-container>
         </div>
     </form>
@@ -16,7 +16,7 @@
 <md-toolbar>
     <div class="md-toolbar-tools">
         <span flex></span>
-        <md-button class="md-raised" aria-label="Create" ng-disabled="teamForm.$invalid || isLoading" ng-click="create(team)">
+        <md-button class="md-raised" aria-label="Create" ng-disabled="projectForm.$invalid || isLoading" ng-click="create(project)">
             <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
             Create
         </md-button>
