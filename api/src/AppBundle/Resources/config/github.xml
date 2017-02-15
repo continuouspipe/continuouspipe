@@ -115,7 +115,7 @@
         <service id="river.code_repository.github.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\Builder\GitHubBuildRequestSourceResolver">
             <argument type="service" id="logger" />
             <argument type="service" id="router" />
-            <argument>%river_host%</argument>
+            <argument>%river_private_url%</argument>
         </service>
     </services>
 </container>
