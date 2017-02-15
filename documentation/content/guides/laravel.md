@@ -382,7 +382,7 @@ infrastructure:
    deploy:
        cluster: ${CLUSTER}
        environment:
-           name: '"laravel-demo-" ~ code_reference.branch'
+           name: '"project-key-" ~ code_reference.branch'
 
        services:
            database:
@@ -435,6 +435,8 @@ infrastructure:
 
 This is where we build our redis and database containers. We define a persistent volume to store our database so we don't need to build again on subsequent deployments. We are also setting the required cluster resources for these containers. Notice we set `cluster: ${CLUSTER}`. This is pulling the cluster name we previously set in the ContinuousPipe UI under Clusters.
 
+**An important change for each of our tasks is to define the project key. Where I have set an environment name as `"project-key-" ~ code_reference.branch`, you should replace the `project-key` with your project name you defined earlier in the ContinuousPipe setup step.**
+
 Our next task in the list is `initialization` - 
 
 ```yaml
@@ -442,7 +444,7 @@ initialization:
     run:
         cluster: ${CLUSTER}
         environment:
-            name: '"laravel-demo-" ~ code_reference.branch'
+            name: '"project-key-" ~ code_reference.branch'
 
         image:
             from_service: web
@@ -475,7 +477,7 @@ application:
    deploy:
        cluster: ${CLUSTER}
        environment:
-           name: '"laravel-demo-" ~ code_reference.branch'
+           name: '"project-key-" ~ code_reference.branch'
 
        services:
            web:
