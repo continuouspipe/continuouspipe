@@ -5,7 +5,7 @@ title = "ContinuousPipe Docs"
 theme = "hugo-material-docs"
 metadataformat = "yaml"
 canonifyURLs = false
-googleAnalytics = ""
+googleAnalytics = "UA-71216332-1"
 PygmentsCodeFences = true
 PygmentsOptions = "startinline=true"
 
