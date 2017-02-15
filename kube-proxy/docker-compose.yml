@@ -1,0 +1,6 @@
+web:
+    build: .
+    expose:
+        - 8080
+    volumes:
+        - .:/go/src/github.com/continuouspipe/kube-proxy/bin

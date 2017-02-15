@@ -1,0 +1,15 @@
+tasks:
+    images:
+        build:
+            services:
+                web:
+                    image: golang:1.7
+                    naming_strategy: sha1
+    deployment:
+            deploy:
+                cluster: ${CLUSTER}
+                services:
+                    web:
+                        specification:
+                            accessibility:
+                                from_external: true
