@@ -36,7 +36,7 @@ Since we used the Laravel installer, a `.env` file has been created for us and a
 APP_KEY=base64:OQ8H9vjocvQh284ojDBrODQ2HkrgWGDvdLCaQniHz0M=
 ```
 
-During our deployments, Laravel needs this key after the composer install runs due to the post-install composer hook. Unfortunately we will not have a `.env` file set at this point so the easiest way to by pass this would be to set a default `APP_KEY.` Within `config/app.php` change line 166
+During our deployments, Laravel needs this key after the composer install runs due to the post-install composer hook. Unfortunately we will not have a `.env` file set at this point so the easiest way to by pass this would be to set a default `APP_KEY.` Within `config/app.php` change line 106
 
 from - 
 
@@ -77,8 +77,7 @@ From within our Flow, click on configuration in the sidebar, create a new enviro
 
 Lets start by configuring our `Dockerfile`. We are going to use ContinuousPipe's [php7-nginx](https://github.com/continuouspipe/dockerfiles/tree/master/php-nginx) image as our base. In reality, you would want to create a new base image that would extend this image to give you the ability to add other services, such as your NodeJS dependencies often used for the frontend build tools i.e. webpack
 
-Dockerfile - 
-
+> **Dockerfile**
 ```dockerfile
 FROM quay.io/continuouspipe/php7-nginx:stable
 
@@ -107,6 +106,7 @@ You will notice from the second line of our Dockerfile that it will copy `tools/
 
 Lets create a new file in `tools/docker/usr/local/bin/supervisor_custom_start-laravel` with the following - 
 
+>**tools/docker/usr/local/bin/supervisor_custom_start-laravel**
 ```bash
 #!/bin/bash
 
@@ -130,8 +130,7 @@ The second included script is used to create our `.env` file from our environmen
 
 Lets add these files into `tools/docker/setup` - 
 
-`install.sh`
-
+>**tools/docker/setup/install.sh**
 ```bash
 #!/bin/bash
 
@@ -158,8 +157,7 @@ chmod -R ug+rw,o-w bootstrap/cache/ storage/
 chmod +x storage
 ```
 
-`setup-dotenv.sh`
-
+>**tools/docker/setup/setup-dotenv.sh**
 ```bash
 #!/bin/sh
 
@@ -206,8 +204,9 @@ chown "${CODE_OWNER}":"${APP_GROUP}" "${ENV_FILE}"
 chmod 640 "${ENV_FILE}"
 ```
 
-Included from the `install.sh` file is `tools/docker/setup/setup-directories.sh` - 
+Included from the `install.sh` file is - 
 
+>**tools/docker/setup/setup-directories.sh**
 ```bash
 #!/bin/sh
 
@@ -231,8 +230,10 @@ mkdir -p "${CACHE_DIR}";
 mkdir -p "${VIEWS_DIR}";
 mkdir -p "${SESSIONS_DIR}";
 ```
-Lets now create our custom environment variables file in `tools/docker/usr/local/share/env/20-project`
 
+Lets now create our custom environment variables file - 
+
+>**tools/docker/usr/local/share/env/20-project**
 ```bash
 #!/bin/bash
 
@@ -280,8 +281,7 @@ For more information on how the custom environment variables are loaded please r
 
 The only thing left to do for our Docker configuration is to setup our `docker-compose.yml` file.
 
-`docker-compose.yml`
-
+> **docker-compose.yml**
 ```yaml
 version: "2"
 services:
@@ -332,7 +332,11 @@ Additionally our web container is exposing both port `80` and `443`, this is bec
 
 There is an additional environment variable being set for our `web` container, `APP_USER_LOCAL`, which is used to fix volume permission issues.
 
-**Please note: `APP_USER_LOCAL` should only be used in development as using this could cause a security risk. Please see [Volume Permission Fixes](https://github.com/continuouspipe/dockerfiles/tree/master/ubuntu/16.04#volume-permission-fixes) for more information**
+
+{{< warning title="Warning" >}}
+`APP_USER_LOCAL` should only be used in development as using this could cause a security risk. Please see [Volume Permission Fixes](https://github.com/continuouspipe/dockerfiles/tree/master/ubuntu/16.04#volume-permission-fixes) for more information 
+{{< /warning >}}
+
 
 Docker needs to be able to execute the files we have in `tools/docker/setup`. Lets make sure that all files have execute permissions - 
 
@@ -356,6 +360,7 @@ We configure ContinuousPipe with a `continuous-pipe.yml` file in the root of our
 
 First thing we define is some environment variables - 
 
+>**continuous-pipe.yaml (partial)**
 ```yaml
 environment_variables:
     - name: APP_ENV
@@ -363,10 +368,12 @@ environment_variables:
     - name: REMOTE_ENV
       value: "1"
 ```
+
 We are simply setting a the `APP_ENV` for use within our build and `REMOTE_ENV` which can be used to distinguish the difference between a local docker build and a ContinuousPipe build. This can be useful when you need to to pull additional assets from 3rd party services or perhaps build the frontend assets in your deployments. For this tutorial, we are using this to allow us to generate a new `APP_KEY` during the deployment stage.
 
 Next we define our tasks, our first task is building our image - 
 
+>**continuous-pipe.yaml (partial)**
 ```yaml
 tasks:
     images:
@@ -379,10 +386,12 @@ tasks:
                 web:
                     image: quay.io/continuouspipe/laravel-demo
 ```
+
 Here we injecting the `APP_ENV` build argument, the same as we did for our `docker-compose.yml` file. We also define the registry repository address where we want to push our freshly built images to.
 
 The next task to run is the `infrastructure` task - 
 
+>**continuous-pipe.yaml (partial)**
 ```yaml
 infrastructure:
    deploy:
@@ -441,10 +450,13 @@ infrastructure:
 
 This is where we build our redis and database containers. We define a persistent volume to store our database so we don't need to build again on subsequent deployments. We are also setting the required cluster resources for these containers. Notice we set `cluster: ${CLUSTER}`. This is pulling the cluster name we previously set in the ContinuousPipe UI under Clusters.
 
-**An important change for each of our tasks is to define the project key. Where I have set an environment name as `"project-key-" ~ code_reference.branch`, you should replace the `project-key` with your project name you defined earlier in the ContinuousPipe setup step.**
+{{< note title="Note" >}}
+An important change for each of our tasks is to define the project key. Where I have set an environment name as `"project-key-" ~ code_reference.branch`, you should replace the `project-key` with your project name you defined earlier in the ContinuousPipe setup step.
+{{< /note >}}
 
 Our next task in the list is `initialization` - 
 
+>**continuous-pipe.yaml (partial)**
 ```yaml
 initialization:
     run:
@@ -478,6 +490,7 @@ The purpose of this task is to allow us to run any database specific tasks for o
 
 The last task in this configuration is `application` - 
 
+>**continuous-pipe.yaml (partial)**
 ```yaml
 application:
    deploy:
@@ -522,6 +535,7 @@ The last section of this task is the `deployment_strategy` which configures how 
 
 Now that we have defined our `continuous-pipe.yml` file lets configure that one last script we set to use in the `initialization` task. Create a new file `tools/docker/setup/setup.sh` with the following - 
 
+>**tools/docker/setup/setup.sh**
 ```bash
 #!/bin/bash
 
@@ -545,6 +559,7 @@ export DB_ROOT_PASSWORD=${DB_PASSWORD:-laravel}
 cd "${WORK_DIRECTORY}" || exit 1;
 as_code_owner "php artisan migrate"
 ```
+
 We are simply running a `php artisan migrate` here to setup all our defined database tables.
 
 OK, we are finally ready to push all our code to GitHub and utilise ContinuousPipe to build and deploy our application on the cluster.
@@ -599,7 +614,10 @@ mv cp-remote /usr/local/bin/cp-remote
 chmod +x /usr/local/bin/cp-remote
 ```
 
-**Please Note: `rsync` & `git` are required for `cp-remote` to work**
+{{< note title="Note" >}}
+`rsync` & `git` are required for `cp-remote` to work
+{{< /note >}}
+
 
 ### Setup
 
