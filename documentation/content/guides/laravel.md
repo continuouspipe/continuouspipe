@@ -334,9 +334,15 @@ There is an additional environment variable being set for our `web` container, `
 
 **Please note: `APP_USER_LOCAL` should only be used in development as using this could cause a security risk. Please see [Volume Permission Fixes](https://github.com/continuouspipe/dockerfiles/tree/master/ubuntu/16.04#volume-permission-fixes) for more information**
 
+Docker needs to be able to execute the files we have in `tools/docker/setup`. Lets make sure that all files have execute permissions - 
+
+```shell
+$ chmod -R +x tools/docker/setup
+```
+
 We can now start our Docker containers - 
 
-```
+```shell
 $ docker-compose up
 ```
 
