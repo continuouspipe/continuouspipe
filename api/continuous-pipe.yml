@@ -28,9 +28,6 @@ variables:
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch == 'production'
       value: rabbitmq.stack-production.svc.cluster.local
-    - name: RIVER_PRIVATE_URL
-      condition: code_reference.branch == 'production'
-      value: http://api.river-production.svc.cluster.local
 
     - name: BUILDER_URL
       condition: code_reference.branch == 'master'
@@ -50,9 +47,6 @@ variables:
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch == 'master'
       value: rabbitmq.stack-master.svc.cluster.local
-    - name: RIVER_PRIVATE_URL
-      condition: code_reference.branch == 'master'
-      value: http://api.river-master.svc.cluster.local
 
 tasks:
     images:
@@ -146,8 +140,6 @@ tasks:
                               value: ${STACK_RABBITMQ_HOST}
                             - name: HOSTED_GRAPHITE_API_KEY
                               value: ${HOSTED_GRAPHITE_API_KEY}
-                            - name: RIVER_PRIVATE_URL
-                              value: ${RIVER_PRIVATE_URL}
 
                     deployment_strategy:
                         readiness_probe:

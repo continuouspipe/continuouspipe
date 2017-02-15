@@ -45,7 +45,7 @@ class GitHubBuildRequestSourceResolver implements CodeRepository\ImplementationD
     public function getSource(UuidInterface $flowUuid, CodeReference $codeReference)
     {
         return new Archive(
-            $this->riverUrl.$this->urlGenerator->generate('flow_source_code_archive', [
+            'https://'.$this->riverUrl.$this->urlGenerator->generate('flow_source_code_archive', [
                 'flowUuid' => $flowUuid->toString(),
                 'reference' => $codeReference->getCommitSha() ?: $codeReference->getBranch(),
             ])
