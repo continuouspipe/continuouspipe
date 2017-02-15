@@ -22,7 +22,7 @@ Before getting started you will need the following -
 - A Docker Registry account e.g. [docker.io](https://docker.io) or [quay.io](https://quay.io)
 
 
-### Setting up Laravel
+## Setting up Laravel
 
 The easiest way to install Laravel is with the Laravel installer, if you don’t have this you can simply follow the instructions to use composer instead. For simplicity we will use the Laravel installer.
 
@@ -61,7 +61,7 @@ $ composer require predis/predis
 ```
 
 
-### Configuring ContinuousPipe
+## Configuring ContinuousPipe
 
 Before we can push any code to our repository, we need to ensure ContinuousPipe is properly configured. Please refer to the ContinuousPipe Quick Start guides in the documentations to setup your [team](https://docs.continuouspipe.io/quick-start/creating-a-team/), [cluster](https://docs.continuouspipe.io/quick-start/configuring-a-cluster/), [registry](https://docs.continuouspipe.io/quick-start/configuring-a-registry/) and create your first [flow](https://docs.continuouspipe.io/quick-start/configuring-a-flow/)
 
