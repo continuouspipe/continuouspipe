@@ -182,7 +182,7 @@ body {
         }
     }
 
-    md-content {            
+    md-content {
         .error-content {
             padding: 40px;
         }
@@ -237,7 +237,7 @@ body {
                     }
                 }
 
-                
+
                 .md-toolbar-tools {
                     .md-icon-button {
                         padding: 0;
@@ -412,7 +412,7 @@ body {
                 color: #fff;
 
                 md-icon {
-                    color: #fff;                    
+                    color: #fff;
                 }
             }
         }
@@ -565,6 +565,17 @@ body {
     .pipeline-card {
         border: 1px solid $pending-dark-color;
         border-left-width: 5px;
+
+        &:hover {
+            .delete-pipeline-btn {
+                visibility: visible;
+            }
+        }
+
+        .delete-pipeline-btn {
+            visibility: hidden;
+            padding: 0 8px 10px;
+        }
     }
 
     ul.tide-list li, .pipeline-card {
@@ -619,7 +630,7 @@ body {
                 }
 
                 .tide-status {
-                    flex: 0 0 5em;                   
+                    flex: 0 0 5em;
                 }
                 .tide-source {
                     flex: 1 1 20%;
@@ -631,15 +642,15 @@ body {
                     flex: 1 1 20%;
                 }
                 .tide-creation-date {
-                    flex: 0 0 10em;                   
+                    flex: 0 0 10em;
                 }
             }
-            
+
             code {
                 font-size: 12px;
             }
         }
-    } 
+    }
 
     .task-list {
         padding: 0px;
@@ -763,4 +774,3 @@ pre.deployment-logs {
     text-align: center;
     padding: 10px;
 }
-
