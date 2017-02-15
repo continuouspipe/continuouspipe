@@ -69,7 +69,7 @@ git remote add origin git@github.com:continuouspipe/demo-symfony.git
 Add a `Dockerfile` to the project root with the following content:
 
 > **Dockerfile** 
-```yaml
+```
 FROM quay.io/continuouspipe/symfony-php7.1-nginx:v1.0
 ARG GITHUB_TOKEN=
 ARG SYMFONY_ENV=prod
@@ -154,7 +154,7 @@ The `CLUSTER` value you need can be found in the "Clusters" tab of the team. If 
 The `IMAGE_NAME` value is the path where the Docker image should be pushed to. This needs to be the full name, including the Docker repo and account e.g. `docker.io/continuouspipe/demo-symfony`.
 
 {{< note title="Note" >}}
-The variables can also have their values provided in the continuous-pipe.yml file as is done below for the symfony environment. Keeping them out of the file and in the ContinuousPipe console allows you to keep them out of your code repository. 
+The variables can also have their values provided in the `continuous-pipe.yml` file as is done below for the symfony environment. Keeping them out of the file and in the ContinuousPipe console allows you to keep them out of your code repository. 
 {{< /note >}}
 
 ### Initiating a Tide
@@ -201,7 +201,7 @@ This will force push the current commit you have checked out as the remote envir
 ContinuousPipe environments are different from [Symfony environments](https://symfony.com/doc/current/configuration/environments.html). The former refers to a  ContinuousPipe deployment target associated with a cluster and a branch, whereas the latter refer to a Symfony application state. To avoid confusion Symfony "environments" are referred to here as "modes".
 {{< /note >}}
 
-Currently, the application is using the Symfony production mode, which is not suitable for development purposes. To enable Symfony development mode for the ContinuousPipe remote environment you can use ContinuousPipe pipelines. Edit the continuous-pipe.yml file to be as follows:
+Currently, the application is using the Symfony production mode, which is not suitable for development purposes. To enable Symfony development mode for the ContinuousPipe remote environment you can use ContinuousPipe pipelines. Edit the `continuous-pipe.yml` file to be as follows:
 
 > **continuous-pipe.yml**
 ```yaml
