@@ -1,23 +1,23 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamAddUserController', function($scope, $state, $http, TeamMembershipRepository, InvitationRepository, team) {
-        $scope.team = team;
+    .controller('ProjectAddUserController', function($scope, $state, $http, ProjectMembershipRepository, InvitationRepository, project) {
+        $scope.project = project;
 
         var handleError = function(error) {
-            return swal("Error !", $http.getError(error) || "An unknown error occured while create the team", "error");
+            return swal("Error !", $http.getError(error) || "An unknown error occured while create the project", "error");
         };
 
         $scope.addMembership = function(membership) {
             $scope.isLoading = true;
-            TeamMembershipRepository.add(team, membership.user, membership.permissions).then(function() {
-                $scope.team.$get({slug: team.slug});
+            ProjectMembershipRepository.add(project, membership.user, membership.permissions).then(function() {
+                $scope.project.$get({slug: project.slug});
 
-                $state.go('users', {team: team.slug});
+                $state.go('users', {project: project.slug});
 
-                Intercom('trackEvent', 'added-user-to-team', {
+                Intercom('trackEvent', 'added-user-to-project', {
                     user: membership.user.username,
-                    team: team.slug
+                    project: project.slug
                 });
             }, function(error) {
                 if (error.status != 404) {
@@ -26,20 +26,20 @@ angular.module('continuousPipeRiver')
 
                 swal({
                     title: "Do you want to invite this user?",
-                    text: "The user '"+membership.user.username+"' is not found. Do you want us to send him an invitation email for your team?",
+                    text: "The user '"+membership.user.username+"' is not found. Do you want us to send him an invitation email for your project?",
                     type: "info",
                     showCancelButton: true,
                     confirmButtonText: "Yes, invite!",
                     closeOnConfirm: false
                 }, function() {
-                    InvitationRepository.create(team, membership.user.username, membership.permissions).then(function() {
+                    InvitationRepository.create(project, membership.user.username, membership.permissions).then(function() {
                         swal("Invited!", "User successfully invited.", "success");
 
-                        $state.go('users', {team: team.slug});
+                        $state.go('users', {project: project.slug});
 
-                        Intercom('trackEvent', 'invited-user-to-team', {
+                        Intercom('trackEvent', 'invited-user-to-project', {
                             email: membership.user.username,
-                            team: team.slug
+                            project: project.slug
                         });
                     }, function(error) {
                         handleError(error);

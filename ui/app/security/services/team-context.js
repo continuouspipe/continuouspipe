@@ -1,14 +1,14 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('$teamContext', function() {
-        this.team = null;
+    .service('$projectContext', function() {
+        this.project = null;
 
-        this.setCurrentTeam = function(team) {
-            this.team = team;
+        this.setCurrentProject = function(project) {
+            this.project = project;
         };
 
-        this.getCurrentTeam = function() {
-            return this.team;
+        this.getCurrentProject = function() {
+            return this.project;
         };
     });

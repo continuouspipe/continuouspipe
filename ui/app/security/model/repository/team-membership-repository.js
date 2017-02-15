@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('TeamMembershipRepository', function($resource, AUTHENTICATOR_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/teams/:team/users/:username', {}, {
+    .service('ProjectMembershipRepository', function($resource, AUTHENTICATOR_API_URL) {
+        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/teams/:project/users/:username', {}, {
             add: {
                 method: 'PUT'
             },
@@ -11,11 +11,11 @@ angular.module('continuousPipeRiver')
             }
         });
 
-        this.add = function(team, user, permissions) {
-            return this.resource.add({team: team.slug, username: user.username}, {permissions: permissions}).$promise;
+        this.add = function(project, user, permissions) {
+            return this.resource.add({project: project.slug, username: user.username}, {permissions: permissions}).$promise;
         };
 
-        this.remove = function(team, user) {
-            return this.resource.remove({team: team.slug, username: user.username}).$promise;
+        this.remove = function(project, user) {
+            return this.resource.remove({project: project.slug, username: user.username}).$promise;
         };
     });
