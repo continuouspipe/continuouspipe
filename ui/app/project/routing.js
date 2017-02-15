@@ -27,6 +27,10 @@ angular.module('continuousPipeRiver')
                             $scope.team = team;
                         },
                         template: '{{ team.name || team.slug }}'
+                    },
+                    'alerts@': {
+                        templateUrl: 'project/views/alerts.html',
+                        controller: 'ProjectAlertsController'
                     }
                 }
             })
