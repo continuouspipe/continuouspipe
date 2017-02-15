@@ -677,7 +677,7 @@ Now when you check the site in the browser you should see the following -
 
 ![Awesome Laravel](/images/guides/laravel/awesome-laravel.png)
 
-Here is a quick screencase of that syncing in action - 
+Here is a quick screencast of that syncing in action - 
 
 [![Laravel Screencast](/images/guides/laravel/awesome-laravel-screencast.gif)](/images/guides/laravel/awesome-laravel-screencast.gif)
 
