@@ -115,7 +115,8 @@
                 "bitbucket_oauth_secret": "BITBUCKET_OAUTH_SECRET",
                 "authenticator_api_key": "AUTHENTICATOR_API_KEY",
                 "admin_password": "ADMIN_PASSWORD",
-                "hosted_graphite_api_key": "HOSTED_GRAPHITE_API_KEY"
+                "hosted_graphite_api_key": "HOSTED_GRAPHITE_API_KEY",
+                "river_private_url": "RIVER_PRIVATE_URL"
             }
         }]
     },
