@@ -3,7 +3,6 @@ package proxy
 import (
 	"bufio"
 	"crypto/tls"
-	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -18,20 +17,25 @@ import (
 	"github.com/continuouspipe/kube-proxy/cplogs"
 )
 
-var insecure = flag.Bool("insecure", false, "insecure")
-
-type HttpHandler struct{}
+type HttpHandler struct {
+	InsecureSkipVerify bool
+}
 
 func NewHttpHandler() *HttpHandler {
 	return &HttpHandler{}
 }
 
 func (m *HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	proxy, err := NewUpgradeAwareSingleHostReverseProxy(r)
+	cplogs.V(5).Infof("Start serving request %s", r.URL.String())
+
+	proxy, err := NewUpgradeAwareSingleHostReverseProxy(r, m.InsecureSkipVerify)
 	if err != nil {
+		cplogs.Errorf("Error when creating the single host reverse proxy. Error: %s", err.Error())
+		cplogs.Flush()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	cplogs.Flush()
 	proxy.ServeHTTP(w, r)
 }
 
@@ -39,16 +43,17 @@ func (m *HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // connections and those that require upgrading (e.g. web sockets). It implements
 // the http.RoundTripper and http.Handler interfaces.
 type UpgradeAwareSingleHostReverseProxy struct {
-	transport    http.RoundTripper
-	reverseProxy *httputil.ReverseProxy
-	apiCluster   *cpapi.ApiCluster
-	cpToKube     parser.CpToKubeUrlParser
+	transport          http.RoundTripper
+	reverseProxy       *httputil.ReverseProxy
+	apiCluster         *cpapi.ApiCluster
+	cpToKube           parser.CpToKubeUrlParser
+	insecureSkipVerify bool
 }
 
 // NewUpgradeAwareSingleHostReverseProxy creates a new UpgradeAwareSingleHostReverseProxy.
-func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingleHostReverseProxy, error) {
+func NewUpgradeAwareSingleHostReverseProxy(r *http.Request, insecureSkipVerify bool) (*UpgradeAwareSingleHostReverseProxy, error) {
 	transport := http.DefaultTransport.(*http.Transport)
-	if *insecure {
+	if insecureSkipVerify == true {
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
 
@@ -73,10 +78,11 @@ func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingle
 	reverseProxy := httputil.NewSingleHostReverseProxy(backendAddr)
 	reverseProxy.FlushInterval = 200 * time.Millisecond
 	p := &UpgradeAwareSingleHostReverseProxy{
-		apiCluster:   apiCluster,
-		transport:    transport,
-		reverseProxy: reverseProxy,
-		cpToKube:     cpToKube,
+		apiCluster:         apiCluster,
+		transport:          transport,
+		reverseProxy:       reverseProxy,
+		cpToKube:           cpToKube,
+		insecureSkipVerify: insecureSkipVerify,
 	}
 	p.reverseProxy.Transport = p
 	return p, nil
@@ -141,7 +147,8 @@ func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, re
 	newReq, err := p.newProxyRequest(req)
 	if err != nil {
 		cplogs.V(5).Infof("Error creating backend request: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		cplogs.Flush()
 		return
 	}
 
@@ -149,10 +156,12 @@ func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, re
 
 	if !p.isUpgradeRequest(req) {
 		p.reverseProxy.ServeHTTP(w, newReq)
+		cplogs.Flush()
 		return
 	}
 
 	p.serveUpgrade(w, newReq)
+	cplogs.Flush()
 }
 
 func (p *UpgradeAwareSingleHostReverseProxy) dialBackend(req *http.Request) (net.Conn, error) {
@@ -168,7 +177,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) dialBackend(req *http.Request) (net
 		return net.Dial("tcp", dialAddr)
 	case "https":
 		tlsConfig := new(tls.Config)
-		if *insecure {
+		if p.insecureSkipVerify {
 			tlsConfig.InsecureSkipVerify = true
 		}
 		tlsConn, err := tls.Dial("tcp", dialAddr, tlsConfig)

@@ -13,6 +13,8 @@ import (
 
 const listenUrl = "https://127.0.0.1:8080"
 
+var insecure = flag.Bool("insecure", false, "insecure")
+
 func main() {
 	flag.Parse()
 	listenURL, err := url.Parse(listenUrl)
@@ -21,11 +23,13 @@ func main() {
 	}
 	initConfigFile()
 	h := kproxy.NewHttpHandler()
+	h.InsecureSkipVerify = *insecure
 
 	err = http.ListenAndServeTLS(listenURL.Host, "server.crt", "server.key", h)
 	if err != nil {
 		cplogs.V(5).Infof("Error when listening: %v", err.Error())
 	}
+	cplogs.Flush()
 }
 
 func initConfigFile() {
@@ -34,6 +38,7 @@ func initConfigFile() {
 	pwd, err := os.Getwd()
 	if err != nil {
 		fmt.Println(err)
+		cplogs.Flush()
 		os.Exit(1)
 	}
 	viper.AddConfigPath(pwd)
@@ -41,4 +46,5 @@ func initConfigFile() {
 	if err != nil {
 		cplogs.V(5).Infof("Cannot load config file: %v", err.Error())
 	}
+	cplogs.Flush()
 }
