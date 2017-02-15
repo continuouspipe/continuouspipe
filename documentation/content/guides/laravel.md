@@ -3,9 +3,9 @@ title: Getting Started with Laravel
 menu:
   main:
     parent: 'guides'
-    weight: 70
+    weight: 10
 
-weight: 70
+weight: 10
 ---
 
 ## Introduction
