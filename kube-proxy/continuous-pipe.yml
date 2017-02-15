@@ -8,6 +8,8 @@ tasks:
     deployment:
             deploy:
                 cluster: ${CLUSTER}
+                environment:
+                    name: '"kube-proxy-" ~ code_reference.branch'
                 services:
                     web:
                         specification:
