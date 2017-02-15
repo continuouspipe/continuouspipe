@@ -72,7 +72,7 @@ class HttpBuilderClient implements BuilderClient
                             $e
                         );
                     }
-                } catch (\InvalidArgumentException $e) {
+                } catch (\InvalidArgumentException $errorException) {
                     // Handle the exception as if it wasn't supported
                 }
             }

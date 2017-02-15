@@ -35,10 +35,11 @@ security:
         - { path: ^/web-hook/github/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/github/integration/webhook$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
-        # TODO: Secure with local IPs
+        # TODO: Secure with local IPs or API keys
         - { path: ^/builder/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/pipe/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/runner/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/github/flows, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
         # TODO: Secure with Atlassian's IPs
         - { path: ^/connect/service/bitbucket/addon/, roles: IS_AUTHENTICATED_ANONYMOUSLY }

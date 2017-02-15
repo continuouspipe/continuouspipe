@@ -4,6 +4,7 @@ namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Request\Archive;
 use ContinuousPipe\River\CodeReference;
+use Ramsey\Uuid\UuidInterface;
 
 interface BuildRequestSourceResolver
 {
@@ -14,5 +15,5 @@ interface BuildRequestSourceResolver
      *
      * @return Archive|Repository
      */
-    public function getSource(CodeReference $codeReference);
+    public function getSource(UuidInterface $flowUuid, CodeReference $codeReference);
 }

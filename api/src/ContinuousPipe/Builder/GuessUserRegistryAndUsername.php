@@ -44,18 +44,19 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
      * {@inheritdoc}
      */
     public function createBuildRequests(
+        UuidInterface $flowUuid,
         UuidInterface $tideUuid,
         CodeReference $codeReference,
         BuildTaskConfiguration $configuration,
         UuidInterface $credentialsBucketUuid,
         Log $parentLog
-    ): array
-    {
+    ): array {
         return $this->decoratedCreator->createBuildRequests(
+            $flowUuid,
             $tideUuid,
             $codeReference,
-            new BuildTaskConfiguration(array_map(function(ServiceConfiguration $serviceConfiguration) use ($tideUuid, $credentialsBucketUuid) {
-                return new ServiceConfiguration(array_map(function(BuildRequestStep $buildRequestStep) use ($tideUuid, $credentialsBucketUuid) {
+            new BuildTaskConfiguration(array_map(function (ServiceConfiguration $serviceConfiguration) use ($tideUuid, $credentialsBucketUuid) {
+                return new ServiceConfiguration(array_map(function (BuildRequestStep $buildRequestStep) use ($tideUuid, $credentialsBucketUuid) {
                     if ($buildRequestStep->getImage() !== null) {
                         $buildRequestStep = $buildRequestStep->withImage(
                             $this->guessImageNameIfNeeded($buildRequestStep, $credentialsBucketUuid, $tideUuid)

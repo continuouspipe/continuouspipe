@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\CodeRepository\ImplementationDelegation;
 
 use ContinuousPipe\Builder\BuilderException;
 use ContinuousPipe\River\CodeReference;
+use Ramsey\Uuid\UuidInterface;
 
 class DelegatesToBuildRequestSourceResolverAdapater implements BuildRequestSourceResolverAdapter
 {
@@ -23,11 +24,11 @@ class DelegatesToBuildRequestSourceResolverAdapater implements BuildRequestSourc
     /**
      * {@inheritdoc}
      */
-    public function getSource(CodeReference $codeReference)
+    public function getSource(UuidInterface $flowUuid, CodeReference $codeReference)
     {
         foreach ($this->adapters as $adapter) {
-            if ($adapter->supports($codeReference)) {
-                return $adapter->getSource($codeReference);
+            if ($adapter->supports($flowUuid, $codeReference)) {
+                return $adapter->getSource($flowUuid, $codeReference);
             }
         }
 
@@ -37,10 +38,10 @@ class DelegatesToBuildRequestSourceResolverAdapater implements BuildRequestSourc
     /**
      * {@inheritdoc}
      */
-    public function supports(CodeReference $codeReference): bool
+    public function supports(UuidInterface $flowUuid, CodeReference $codeReference): bool
     {
         foreach ($this->adapters as $adapter) {
-            if ($adapter->supports($codeReference)) {
+            if ($adapter->supports($flowUuid, $codeReference)) {
                 return true;
             }
         }

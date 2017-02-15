@@ -3,12 +3,15 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub\Builder;
 
 use ContinuousPipe\Builder\Repository;
+use ContinuousPipe\Builder\Request\Archive;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use GitHub\Integration\InstallationNotFound;
 use GitHub\Integration\InstallationRepository;
 use GitHub\Integration\InstallationTokenResolver;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class GitHubBuildRequestSourceResolver implements CodeRepository\ImplementationDelegation\BuildRequestSourceResolverAdapter
 {
@@ -18,66 +21,38 @@ class GitHubBuildRequestSourceResolver implements CodeRepository\ImplementationD
     private $logger;
 
     /**
-     * @var InstallationRepository
+     * @var UrlGeneratorInterface
      */
-    private $installationRepository;
-
+    private $urlGenerator;
     /**
-     * @var InstallationTokenResolver
+     * @var string
      */
-    private $installationTokenResolver;
+    private $riverUrl;
 
-    /**
-     * @param LoggerInterface           $logger
-     * @param InstallationRepository    $installationRepository
-     * @param InstallationTokenResolver $installationTokenResolver
-     */
-    public function __construct(LoggerInterface $logger, InstallationRepository $installationRepository, InstallationTokenResolver $installationTokenResolver)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        UrlGeneratorInterface $urlGenerator,
+        string $riverUrl
+    ) {
         $this->logger = $logger;
-        $this->installationRepository = $installationRepository;
-        $this->installationTokenResolver = $installationTokenResolver;
+        $this->urlGenerator = $urlGenerator;
+        $this->riverUrl = $riverUrl;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSource(CodeReference $codeReference)
+    public function getSource(UuidInterface $flowUuid, CodeReference $codeReference)
     {
-        return new Repository(
-            $codeReference->getRepository()->getAddress(),
-            $codeReference->getCommitSha(),
-            $this->getTokenFromRepository($codeReference->getRepository())
+        return new Archive(
+            'https://'.$this->riverUrl.$this->urlGenerator->generate('flow_source_code_archive', [
+                'flowUuid' => $flowUuid->toString(),
+                'reference' => $codeReference->getCommitSha() ?: $codeReference->getBranch(),
+            ])
         );
     }
 
-    /**
-     * @param CodeRepository $codeRepository
-     *
-     * @return string|null
-     */
-    private function getTokenFromRepository(CodeRepository $codeRepository)
-    {
-        if (!$codeRepository instanceof CodeRepository\GitHub\GitHubCodeRepository) {
-            return null;
-        }
-
-        try {
-            $installation = $this->installationRepository->findByRepository($codeRepository);
-        } catch (InstallationNotFound $e) {
-            $this->logger->warning('GitHub installation not found while creating a build: {message}', [
-                'repository_identifier' => $codeRepository->getIdentifier(),
-                'repository_type' => $codeRepository->getType(),
-                'message' => $e->getMessage(),
-            ]);
-
-            return null;
-        }
-
-        return $this->installationTokenResolver->get($installation)->getToken();
-    }
-
-    public function supports(CodeReference $codeReference): bool
+    public function supports(UuidInterface $flowUuid, CodeReference $codeReference): bool
     {
         return $codeReference->getRepository() instanceof CodeRepository\GitHub\GitHubCodeRepository;
     }

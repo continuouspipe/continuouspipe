@@ -44,7 +44,16 @@
             <argument type="service" id="jms_serializer" />
         </service>
 
+        <service id="river.github.guzzle_http_client.handler"
+                 class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+        </service>
+
         <service id="river.github.guzzle_http_client" class="GitHub\WebHook\Guzzle\DefaultGuzzleClient">
+            <argument type="collection">
+                <argument key="handler" type="service" id="river.github.guzzle_http_client.handler" />
+            </argument>
+
             <tag name="csa_guzzle.client" />
         </service>
         <service id="river.github.http_client" class="GitHub\WebHook\Guzzle\Guzzle4HttpClient">
@@ -105,8 +114,8 @@
 
         <service id="river.code_repository.github.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\Builder\GitHubBuildRequestSourceResolver">
             <argument type="service" id="logger" />
-            <argument type="service" id="github.integration.installation_repository" />
-            <argument type="service" id="github.integration.installation_token_resolver" />
+            <argument type="service" id="router" />
+            <argument>%river_host%</argument>
         </service>
     </services>
 </container>

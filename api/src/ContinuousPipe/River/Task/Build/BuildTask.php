@@ -87,6 +87,7 @@ class BuildTask extends EventDrivenTask
 
         try {
             $buildRequests = $buildRequestCreator->createBuildRequests(
+                $this->context->getFlowUuid(),
                 $this->context->getTideUuid(),
                 $this->context->getCodeReference(),
                 $this->configuration,
