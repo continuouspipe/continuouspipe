@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
+use ContinuousPipe\River\Guzzle\MatchingHandler;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
@@ -22,6 +23,8 @@ use GitHub\Integration\Installation;
 use GitHub\Integration\InstallationAccount;
 use GitHub\Integration\InstallationToken;
 use GitHub\WebHook\Model\Repository;
+use Psr\Http\Message\RequestInterface;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -87,20 +90,23 @@ class GitHubContext implements CodeRepositoryContext
      * @var array
      */
     private $commitBuilder = [];
-
     /**
-     * @param Kernel $kernel
-     * @param TraceableNotifier $gitHubTraceableNotifier
-     * @param FakePullRequestResolver $fakePullRequestResolver
-     * @param TraceableClient $traceableClient
-     * @param EventStore $eventStore
-     * @param TestHttpClient $gitHubHttpClient
-     * @param InMemoryInstallationRepository $inMemoryInstallationRepository
-     * @param InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver
-     * @param InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository
+     * @var MatchingHandler
      */
-    public function __construct(Kernel $kernel, TraceableNotifier $gitHubTraceableNotifier, FakePullRequestResolver $fakePullRequestResolver, TraceableClient $traceableClient, EventStore $eventStore, TestHttpClient $gitHubHttpClient, InMemoryInstallationRepository $inMemoryInstallationRepository, InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver, InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository)
-    {
+    private $matchingHandler;
+
+    public function __construct(
+        Kernel $kernel,
+        TraceableNotifier $gitHubTraceableNotifier,
+        FakePullRequestResolver $fakePullRequestResolver,
+        TraceableClient $traceableClient,
+        EventStore $eventStore,
+        TestHttpClient $gitHubHttpClient,
+        InMemoryInstallationRepository $inMemoryInstallationRepository,
+        InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver,
+        InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository,
+        MatchingHandler $matchingHandler
+    ) {
         $this->kernel = $kernel;
         $this->fakePullRequestResolver = $fakePullRequestResolver;
         $this->traceableClient = $traceableClient;
@@ -110,6 +116,7 @@ class GitHubContext implements CodeRepositoryContext
         $this->inMemoryInstallationRepository = $inMemoryInstallationRepository;
         $this->inMemoryInstallationTokenResolver = $inMemoryInstallationTokenResolver;
         $this->inMemoryCodeRepositoryRepository = $inMemoryCodeRepositoryRepository;
+        $this->matchingHandler = $matchingHandler;
     }
 
     /**
@@ -119,6 +126,45 @@ class GitHubContext implements CodeRepositoryContext
     {
         $this->tideContext = $scope->getEnvironment()->getContext('TideContext');
         $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
+    }
+
+    /**
+     * @Given the URL :url will return :response with the header :headerName valued :headerValue
+     */
+    public function theUrlWillReturnWithTheHeader($url, $response, $headerName, $headerValue)
+    {
+        $this->matchingHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url, $headerName, $headerValue) {
+                return $request->getUri() == $url && $request->getHeaderLine($headerName) == $headerValue;
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], $response),
+        ]);
+    }
+
+    /**
+     * @When I request the archive of the repository for the flow :flowUuid and reference :reference
+     */
+    public function iRequestTheArchiveOfTheRepositoryForTheFlow($flowUuid, $reference)
+    {
+        ob_start();
+        $this->response = $this->kernel->handle(Request::create('/github/flows/'.$flowUuid.'/source-code/archive/'.$reference));
+        $content = ob_get_contents();
+        $this->response = new Response($content, $this->response->getStatusCode(), $this->response->headers->all());
+        ob_end_clean();
+    }
+
+    /**
+     * @Then I should receive the archive value :response
+     */
+    public function iShouldReceiveTheArchiveValue($response)
+    {
+        $content = $this->response->getContent();
+
+        if ($content != $response) {
+            var_dump($content);
+
+            throw new \RuntimeException('Got unexpected response');
+        }
     }
 
     /**

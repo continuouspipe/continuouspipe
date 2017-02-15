@@ -20,5 +20,15 @@
         <service id="github.integration.installation_token_resolver" alias="github.integration.installation_token_resolver.in_memory" />
         <service id="river.github.file_system_resolver.fake" class="ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver" />
         <service id="river.github.file_system_resolver" alias="river.github.file_system_resolver.fake" />
+
+        <service id="river.github.guzzle_http_client.handler.matching" class="ContinuousPipe\River\Guzzle\MatchingHandler">
+            <argument type="service" id="logger" />
+        </service>
+        <service id="river.github.guzzle_http_client.handler"
+                 class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+
+            <argument type="service" id="river.github.guzzle_http_client.handler.matching" />
+        </service>
     </services>
 </container>

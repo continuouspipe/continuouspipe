@@ -30,6 +30,12 @@
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="logger" />
         </service>
+        <service id="app.controller.github_code_archive" class="AppBundle\Controller\GitHubCodeCodeArchiveController">
+            <argument type="service" id="river.github.guzzle_http_client" />
+            <argument type="service" id="github.integration.installation_repository" />
+            <argument type="service" id="github.integration.installation_token_resolver" />
+            <argument type="service" id="logger" />
+        </service>
         <service id="app.controller.firebase" class="AppBundle\Controller\FirebaseController">
             <argument>%firebase_service_account_path%</argument>
             <argument>%firebase_database_uri%</argument>

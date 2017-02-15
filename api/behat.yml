@@ -91,6 +91,7 @@ default:
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory
                     - @repository_river.code_repository_repository
+                    - @river.github.guzzle_http_client.handler.matching
 
                 - StorageContext:
                     - @river.pipeline.view.storage
@@ -113,6 +114,7 @@ default:
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory
                     - @repository_river.code_repository_repository
+                    - @river.github.guzzle_http_client.handler.matching
 
                 # Common contexts
                 - SecurityContext:
@@ -330,6 +332,7 @@ smoke:
                     - @github.integration.in_memory_installation_repository
                     - @github.integration.installation_token_resolver.in_memory
                     - @repository_river.code_repository_repository
+                    - @river.github.guzzle_http_client.handler.matching
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus

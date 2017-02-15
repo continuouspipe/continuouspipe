@@ -481,15 +481,24 @@ class BuildContext implements Context
     }
 
     /**
+     * @Then the build should be started with an archive
+     */
+    public function theBuildShouldBeStartedWithAnArchive()
+    {
+        $archive = $this->getBuildRequestStep()->getArchive();
+        if (null === $archive) {
+            throw new \RuntimeException('The archive is not found in the build request');
+        }
+
+        return $archive;
+    }
+
+    /**
      * @Then the build should be started with an archive containing the :header header
      */
     public function theBuildShouldBeStartedWithAnArchiveContainingTheHeader($header)
     {
-        $archive = $this->getBuildRequestStep()->getArchive();
-
-        if (null === $archive) {
-            throw new \RuntimeException('The archive is not found in the build request');
-        }
+        $archive = $this->theBuildShouldBeStartedWithAnArchive();
 
         if (!array_key_exists($header, $archive->getHeaders())) {
             throw new \RuntimeException('Header not found');

@@ -12,6 +12,7 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
 use ContinuousPipe\River\CodeRepository\ImplementationDelegation\BuildRequestSourceResolverAdapter;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\UuidInterface;
 
 class BitBucketBuildRequestSourceResolver implements BuildRequestSourceResolverAdapter
 {
@@ -39,7 +40,7 @@ class BitBucketBuildRequestSourceResolver implements BuildRequestSourceResolverA
     /**
      * {@inheritdoc}
      */
-    public function getSource(CodeReference $codeReference)
+    public function getSource(UuidInterface $flowUuid, CodeReference $codeReference)
     {
         $repository = $codeReference->getRepository();
         if (!$repository instanceof BitBucketCodeRepository) {
@@ -64,7 +65,7 @@ class BitBucketBuildRequestSourceResolver implements BuildRequestSourceResolverA
         );
     }
 
-    public function supports(CodeReference $codeReference): bool
+    public function supports(UuidInterface $flowUuid, CodeReference $codeReference): bool
     {
         return $codeReference->getRepository() instanceof BitBucketCodeRepository;
     }

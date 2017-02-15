@@ -55,7 +55,7 @@ class WithSourceAndNotificationsBuildRequestCreator implements BuildRequestCreat
     /**
      * {@inheritdoc}
      */
-    public function createBuildRequests(UuidInterface $tideUuid, CodeReference $codeReference, BuildTaskConfiguration $configuration, UuidInterface $credentialsBucketUuid, Log $parentLog) : array
+    public function createBuildRequests(UuidInterface $flowUuid, UuidInterface $tideUuid, CodeReference $codeReference, BuildTaskConfiguration $configuration, UuidInterface $credentialsBucketUuid, Log $parentLog) : array
     {
         $this->logger->info('Creating build requests', [
             'codeReference' => $codeReference,
@@ -66,7 +66,7 @@ class WithSourceAndNotificationsBuildRequestCreator implements BuildRequestCreat
             'tideUuid' => (string) $tideUuid,
         ], UrlGeneratorInterface::ABSOLUTE_PATH);
 
-        $codeBaseSource = $this->buildRequestSourceResolver->getSource($codeReference);
+        $codeBaseSource = $this->buildRequestSourceResolver->getSource($flowUuid, $codeReference);
         $buildRequests = array_map(function (ServiceConfiguration $serviceConfiguration) use ($codeBaseSource, $address, $parentLog, $credentialsBucketUuid) {
             return new BuildRequest(
                 array_map(function (BuildRequestStep $step) use ($codeBaseSource) {

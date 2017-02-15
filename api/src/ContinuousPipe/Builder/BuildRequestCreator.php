@@ -11,15 +11,17 @@ use Ramsey\Uuid\UuidInterface;
 interface BuildRequestCreator
 {
     /**
+     * @param UuidInterface $flowUuid
      * @param UuidInterface $tideUuid
      * @param CodeReference $codeReference
      * @param BuildTaskConfiguration $configuration
      * @param UuidInterface $credentialsBucketUuid
      * @param Log $parentLog
      *
-     * @return BuildRequest[]
+     * @return array|BuildRequest[]
      */
     public function createBuildRequests(
+        UuidInterface $flowUuid,
         UuidInterface $tideUuid,
         CodeReference $codeReference,
         BuildTaskConfiguration $configuration,

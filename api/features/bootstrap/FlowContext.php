@@ -514,6 +514,23 @@ EOF;
     }
 
     /**
+     * @Given I have a flow :uuid with a GitHub repository :repository owned by :owner
+     */
+    public function iHaveAFlowWithAGithubRepositoryOwnedBy($uuid, $repository, $owner)
+    {
+        $this->createFlow(
+            $uuid !== null ? Uuid::fromString($uuid) : null,
+            [], null, new CodeRepository\GitHub\GitHubCodeRepository(
+            Uuid::uuid5(Uuid::NIL, $repository)->toString(),
+            'https://api.github.com/repos/'.$owner.'/'.$repository,
+            $owner,
+            $repository,
+            true,
+            'master'
+        ));
+    }
+
+    /**
      * @Given I have a flow with UUID :uuid
      * @Given there is a flow with UUID :uuid
      */
