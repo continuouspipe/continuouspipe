@@ -53,6 +53,14 @@ to -
 
 We will overwrite the default key during deployments.
 
+
+Since we are going to configure our application to use redis for our cache and session storage we need to add the package `predis/predis` to our porject.
+
+```shell
+$ composer require predis/predis
+```
+
+
 ### Configuring ContinuousPipe
 
 Before we can push any code to our repository, we need to ensure ContinuousPipe is properly configured. Please refer to the ContinuousPipe Quick Start guides in the documentations to setup your [team](https://docs.continuouspipe.io/quick-start/creating-a-team/), [cluster](https://docs.continuouspipe.io/quick-start/configuring-a-cluster/), [registry](https://docs.continuouspipe.io/quick-start/configuring-a-registry/) and create your first [flow](https://docs.continuouspipe.io/quick-start/configuring-a-flow/)
@@ -72,7 +80,7 @@ Lets start by configuring our `Dockerfile`. We are going to use ContinuousPipe's
 Dockerfile - 
 
 ```dockerfile
-FROM quay.io/continuouspipe/php7-nginx:latest
+FROM quay.io/continuouspipe/php7-nginx:stable
 
 COPY ./tools/docker/usr/ /usr/
 
@@ -338,7 +346,7 @@ If everything has gone to plan, we should now see the famous "Laravel" splash pa
 
 ### Prepare to build on ContinuousPipe
 
-We configure ContinuousPipe with a `continuous-pipe.yml` file in the root of our project. This is the main configuration file that defines each of our tasks to be executed.
+We configure ContinuousPipe with a `continuous-pipe.yml` file in the root of our project. This is the main configuration file that defines each of our tasks to be executed. As this configuration file is YAML, please ensure proper indentation is set, otherwise ContinuousPipe will fail to load the configuration file correctly.
 
 First thing we define is some environment variables - 
 
@@ -668,6 +676,11 @@ Done.
 Now when you check the site in the browser you should see the following - 
 
 ![Awesome Laravel](/images/guides/laravel/awesome-laravel.png)
+
+Here is a quick screencase of that syncing in action - 
+
+[![Laravel Screencast](/images/guides/laravel/awesome-laravel-screencast.gif)](/images/guides/laravel/awesome-laravel-screencast.gif)
+
 
 The syncing speeds are pretty fast, so fast in fact, I can run this from a train wifi while retaining the performance of the cloud hosting.
 
