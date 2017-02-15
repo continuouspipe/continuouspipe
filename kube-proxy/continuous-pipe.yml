@@ -3,7 +3,7 @@ tasks:
         build:
             services:
                 web:
-                    image: quay.io/continuouspipe/kube-proxy
+                    image: docker.io/continuouspipe/kube-proxy
                     naming_strategy: sha1
     deployment:
             deploy:
