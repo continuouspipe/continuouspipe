@@ -18,10 +18,14 @@ use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestUnapproved;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\PullRequestUpdated;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\Push;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\RepositoryUpdated;
+use ContinuousPipe\AtlassianAddonBundle\Request\WebHook\Security\InvalidRequest;
+use ContinuousPipe\AtlassianAddonBundle\Request\WebHook\Security\Jwt\InvalidJwt;
+use ContinuousPipe\AtlassianAddonBundle\Request\WebHook\Security\RequestValidator;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class WebHookParamConverter implements ParamConverterInterface
@@ -37,9 +41,14 @@ class WebHookParamConverter implements ParamConverterInterface
     private $eventMapping;
 
     /**
+     * @var RequestValidator
+     */
+    private $requestValidator;
+
+    /**
      * @param SerializerInterface $serializer
      */
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(SerializerInterface $serializer, RequestValidator $requestValidator)
     {
         $this->serializer = $serializer;
         $this->eventMapping = [
@@ -60,6 +69,7 @@ class WebHookParamConverter implements ParamConverterInterface
             'repo:branch_deleted' => BranchDeleted::class,
             'repo:updated' => RepositoryUpdated::class,
         ];
+        $this->requestValidator = $requestValidator;
     }
 
     /**
@@ -80,6 +90,12 @@ class WebHookParamConverter implements ParamConverterInterface
                 'The event "%s" is not understood by the add-on',
                 $decoded['event']
             ));
+        }
+
+        try {
+            $this->requestValidator->validate($request);
+        } catch (InvalidRequest $e) {
+            throw new AccessDeniedHttpException($e->getMessage(), $e);
         }
 
         $request->attributes->set(

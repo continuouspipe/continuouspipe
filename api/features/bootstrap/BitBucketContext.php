@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\AtlassianAddon\Account;
 use ContinuousPipe\AtlassianAddon\Installation;
 use ContinuousPipe\AtlassianAddon\TraceableInstallationRepository;
 use ContinuousPipe\River\CodeRepository;
@@ -15,9 +16,10 @@ use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
 use ContinuousPipe\River\Guzzle\MatchingHandler;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
-use Firebase\JWT\JWT;
+use Lcobucci\JWT\Builder;
 use GuzzleHttp\Psr7\Response;
 use JMS\Serializer\SerializerInterface;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Psr\Http\Message\RequestInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
@@ -260,6 +262,57 @@ class BitBucketContext implements CodeRepositoryContext
             'No matching request found in: %s',
             implode(', ', $uris)
         ));
+    }
+
+    /**
+     * @When a pull-request is created with good signature
+     */
+    public function aPullRequestIsCreatedWithGoodSignature()
+    {
+        try {
+            $body = $this->webhookBoilerplate('webhook/pull-request-created.json');
+            $this->sendWebhook($body);
+        } catch (\RuntimeException $e) {
+        }
+    }
+
+    /**
+     * @When a pull-request is created with invalid signature
+     */
+    public function aPullRequestIsCreatedWithInvalidSignature()
+    {
+        try {
+            $webTokenOptions = ['valid_signature' => false];
+            $body = $this->webhookBoilerplate('webhook/pull-request-created.json');
+            $this->sendWebhook($body, $webTokenOptions);
+        } catch (\RuntimeException $e) {
+        }
+    }
+
+    /**
+     * @When a pull-request is created without JSON Web Token
+     */
+    public function aPullRequestIsCreatedWithoutJsonWebToken()
+    {
+        try {
+            $webTokenOptions = ['enabled' => false];
+            $body = $this->webhookBoilerplate('webhook/pull-request-created.json');
+            $this->sendWebhook($body, $webTokenOptions);
+        } catch (\RuntimeException $e) {
+        }
+    }
+
+    /**
+     * @When a pull-request is created with good signature using the :algorithm algorithm
+     */
+    public function aPullRequestIsCreatedWithGoodSignatureAndAlgorithm()
+    {
+        try {
+            $webTokenOptions = ['algorithm' => new \BitBucket\Integration\Signer\None()];
+            $body = $this->webhookBoilerplate('webhook/pull-request-created.json');
+            $this->sendWebhook($body, $webTokenOptions);
+        } catch (\RuntimeException $e) {
+        }
     }
 
     /**
@@ -692,6 +745,22 @@ class BitBucketContext implements CodeRepositoryContext
         ));
     }
 
+    /**
+     * @Then processing the webhook should be accepted
+     */
+    public function processingTheWebhookShouldBeSuccessfullyCompleted()
+    {
+        $this->assertResponseStatus(202);
+    }
+
+    /**
+     * @Then processing the webhook should be denied
+     */
+    public function processingTheWebhookShouldBeDenied()
+    {
+        $this->assertResponseStatus(403);
+    }
+
     private function createRepositoriesResponse(string $username, TableNode $table, int $currentPage, int $pageCount, string $pageUrl): Response
     {
         $body = [
@@ -764,10 +833,18 @@ class BitBucketContext implements CodeRepositoryContext
 
     /**
      * @param $body
+     * @param array $webTokenOptions
      */
-    private function sendWebhook($body)
+    private function sendWebhook($body, $webTokenOptions = [])
     {
-        $this->response = $this->kernel->handle(Request::create(
+        $defaultWebTokenOptions = [
+            'enabled' => true,
+            'valid_signature' => true,
+            'algorithm' => new Sha256(),
+        ];
+        $webTokenOptions = array_merge($defaultWebTokenOptions, $webTokenOptions);
+
+        $request = Request::create(
             '/connect/service/bitbucket/addon/webhook',
             'POST',
             [],
@@ -777,7 +854,11 @@ class BitBucketContext implements CodeRepositoryContext
                 'CONTENT_TYPE' => 'application/json',
             ],
             json_encode($body)
-        ));
+        );
+        if ($webTokenOptions['enabled']) {
+            $this->addJsonWebTokenToRequest($body, $webTokenOptions, $request);
+        }
+        $this->response = $this->kernel->handle($request);
 
         $this->assertResponseStatus(202);
     }
@@ -802,5 +883,46 @@ class BitBucketContext implements CodeRepositoryContext
         $body['data']['repository']['owner']['type'] = $repository->getOwner()->getType();
         $body['data']['repository']['owner']['username'] = $repository->getOwner()->getUsername();
         return $body;
+    }
+
+    private function createJsonWebToken(Account $account, array $webTokenOptions): \Lcobucci\JWT\Token
+    {
+        $jwtBuilder = new Builder();
+        $signer = $webTokenOptions['algorithm'];
+        $installationRepository = $this->traceableInstallationRepository;
+        $installation = current($installationRepository->findByPrincipal($account->getType(), $account->getUsername()));
+
+        if (!$installation instanceof Installation) {
+            $currentType = gettype($installation) === 'object' ? get_class($installation) : gettype($installation);
+            throw new \UnexpectedValueException(
+                sprintf('Expected to get type %s, but got "%s".', Installation::class, $currentType)
+            );
+        }
+
+        $secretKey = $webTokenOptions['valid_signature']
+            ? $installation->getSharedSecret()
+            : $installation->getSharedSecret() . '_invalid';
+        return $jwtBuilder
+            ->setIssuer('com.atlassian.bitbucket')
+            ->setIssuedAt(time())
+            ->setExpiration(time() + 3600)
+            ->set('qsh', '88396352255a6c933def07620a3281c9e27d8c668e0f4d01a8ecdbb74ca52c97')
+            ->setSubject($installation->getClientKey())
+            ->sign($signer, $secretKey)
+            ->getToken();
+    }
+
+    private function addJsonWebTokenToRequest(array $body, array $webTokenOptions, Request $request)
+    {
+        $accountData = json_encode(
+            [
+                'uuid'     => $body['data']['repository']['owner']['uuid'],
+                'username' => $body['data']['repository']['owner']['username'],
+                'type'     => $body['data']['repository']['owner']['type'],
+            ]
+        );
+        $account = $this->serializer->deserialize($accountData, Account::class, 'json');
+        $jwt = $this->createJsonWebToken($account, $webTokenOptions);
+        $request->headers->set('Authorization', 'JWT ' . $jwt);
     }
 }
