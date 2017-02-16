@@ -4,3 +4,5 @@ web:
         - 8080
     volumes:
         - .:/go/src/github.com/continuouspipe/kube-proxy/bin
+    environment:
+        MASTER_API_KEY:
