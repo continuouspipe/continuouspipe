@@ -7,9 +7,9 @@ menu:
 weight: 10
 linkTitle: Setting Environment Variables
 ---
-You may want to change the behaviour of an application based on what environment it is deployed to. This can be done by changing the value of an environment variable passed to a container. For example you may want to set the "SYMFONY_ENV" environment variable to "prod" for production, UAT and feature branch environments. We can do this by creating a variable within `continuous-pipe.yml` and then using it as the value of the environment variable passed to the service.
+You may want to change the behaviour of an application based on what environment it is deployed to. This can be done by changing the value of an environment variable passed to a container. For example you may want to set the `SYMFONY_ENV` environment variable to "prod" for production, UAT and feature branch environments. We can do this by creating a variable within `continuous-pipe.yml` and then using it as the value of the environment variable passed to the service.
 
-```
+```yaml
 variables:
     - name: SYMFONY_ENVIRONMENT
       value: prod
@@ -27,11 +27,11 @@ tasks:
                               value: ${SYMFONY_ENVIRONMENT}
 ```
 
-In the "variables" section a "SYMFONY_ENVIRONMENT" variable is created and assigned a value of "prod". This variable then becomes available in the "tasks" section where it is passed to the web service as the environment variable "SYMFONY_ENV" (the local variable could also be called "SYMFONY_ENV" but is different in this example to distinguish between the variable types).
+In the `variables` section a `SYMFONY_ENVIRONMENT` variable is created and assigned a value of "prod". This variable then becomes available in the `tasks` section where it is passed to the web service as the environment variable `SYMFONY_ENV` (the local variable could also be called "SYMFONY_ENV" instead of "SYMFONY_ENVIRONMENT" but is different in this example to distinguish between the variable types).
 
 You can use conditions to set different values for the variable:
 
-```
+```yaml
 variables:
     - name: SYMFONY_ENVIRONMENT
       value: prod
@@ -52,4 +52,4 @@ tasks:
                             - name: SYMFONY_ENV
                               value: ${SYMFONY_ENVIRONMENT}
 ```
-Here "SYMFONY_ENVIRONMENT" is set to "prod" for the uat and production branches only and "dev" for all others.
+Here `SYMFONY_ENVIRONMENT` is set to "prod" for the "uat" and "production" branches only and "dev" for all others.
