@@ -7,9 +7,9 @@ menu:
 weight: 30
 linkTitle: Using Defaults
 ---
-In the following example the definition of the "cluster" and environment "name" variables are duplicated across tasks:
+In the following example the definition of the `cluster` and environment `name` variables are duplicated across tasks:
 
-```
+```yaml
 tasks:
     initialise:
         run:
@@ -25,15 +25,14 @@ tasks:
             # ...
 ```
 
-You can avoid this duplication by defining them outside the "tasks" section in a separate "defaults" section:
+You can avoid this duplication by defining them outside the `tasks` section in a separate `defaults` section:
 
-```
+```yaml
 defaults:
      cluster: ${CLUSTER}
      environment:
         name:  '"sfdemo-" ~ code_reference.branch'
-  
-  
+
 tasks:
     initialise:
         run:
@@ -43,4 +42,4 @@ tasks:
             # ...
 ```
 
-The cluster and environment name will now be set for both the initialise and deployments tasks within the "tasks" section.
+The `cluster` and environment `name` values will now be set for both the `initialise` and `deployments` tasks within the `tasks` section.
