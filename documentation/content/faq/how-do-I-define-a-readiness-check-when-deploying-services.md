@@ -6,7 +6,7 @@ menu:
     weight: 80
 linkTitle: Readiness Checks on Services
 ---
-Sometimes a service is not immediately available - it may need to load configuration or import data taking several minutes before it is ready. In this situation you can define a `readiness_probe` to ensure that the availability of the service is deferred until any setup routines are finished.
+Sometimes a service is not immediately available - it may need to load configuration or import data, taking several minutes before it is ready. In this situation you can define a `readiness_probe` to ensure that the availability of the service is deferred until any setup routines are finished.
 
 ```yaml
 tasks:
