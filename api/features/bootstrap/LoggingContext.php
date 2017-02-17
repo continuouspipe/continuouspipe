@@ -6,6 +6,7 @@ use LogStream\Log;
 use LogStream\Tests\InMemory\InMemoryLogStore;
 use LogStream\Tests\InMemoryLogClient;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
@@ -166,15 +167,15 @@ class LoggingContext implements Context
      */
     public function iShouldSeeANotFoundExceptionInTheLogsWithLevel($logLevel)
     {
-        $matchingLogEntries = array_filter($this->logger->getLogs(), function(array $log) use($logLevel) {
-            return strtoupper($logLevel) === $log['priorityName']
-                && isset($log['context']['exception'])
-                && $log['context']['exception'] instanceof NotFoundHttpException;
-        });
+        $this->assertLogLevel(NotFoundHttpException::class, $logLevel);
+    }
 
-        if (0 === count($matchingLogEntries)) {
-            throw new \UnexpectedValueException('No matching log entry found.');
-        }
+    /**
+     * @Then I should see an access denied exception in the logs with :logLevel level
+     */
+    public function iShouldSeeAnAccessDeniedExceptionInTheLogsWithLevel($logLevel)
+    {
+        $this->assertLogLevel(AccessDeniedHttpException::class, $logLevel);
     }
 
     /**
@@ -182,15 +183,25 @@ class LoggingContext implements Context
      */
     public function theNumberOfNotFoundExceptionsInTheLogShouldBe($count)
     {
-        $matchingLogEntries = array_filter($this->logger->getLogs(), function(array $log) {
-            return isset($log['context']['exception'])
-                && $log['context']['exception'] instanceof NotFoundHttpException;
-        });
+        $this->assertLogEntriesCount(NotFoundHttpException::class, $count);
+    }
 
-        if ($count != count($matchingLogEntries)) {
-            throw new \UnexpectedValueException(
-                sprintf('Expected to have %d messages, but found %d.', $count, count($matchingLogEntries))
-            );
+    /**
+     * @Given the number of access denied exceptions in the log should be :count
+     */
+    public function theNumberOfAccessDeniedExceptionsInTheLogShouldBe($count)
+    {
+        $this->assertLogEntriesCount(AccessDeniedHttpException::class, $count);
+    }
+
+    /**
+     * @When I try to access an URL that I am not allowed to open
+     */
+    public function iTryToAccessAnURLThatIAmNotAllowedToOpen()
+    {
+        try {
+            $this->kernel->handle(Request::create('/test/access-denied-page', 'GET'));
+        } catch (AccessDeniedHttpException $e) {
         }
     }
 
@@ -264,5 +275,36 @@ class LoggingContext implements Context
         return array_values(array_filter($this->findAllLogs(), function(array $log) use ($parent) {
             return array_key_exists('parent', $log) && $log['parent'] == $parent['_id'];
         }));
+    }
+
+    private function assertLogLevel(string $exceptionClass, string $logLevel)
+    {
+        $matchingLogEntries = array_filter(
+            $this->logger->getLogs(), function (array $log) use ($exceptionClass, $logLevel) {
+            return strtoupper($logLevel) === $log['priorityName']
+                && isset($log['context']['exception'])
+                && $log['context']['exception'] instanceof $exceptionClass;
+        }
+        );
+
+        if (0 === count($matchingLogEntries)) {
+            throw new \UnexpectedValueException('No matching log entry found.');
+        }
+    }
+
+    private function assertLogEntriesCount(string $exceptionClass, int $count)
+    {
+        $matchingLogEntries = array_filter(
+            $this->logger->getLogs(), function (array $log) use($exceptionClass) {
+            return isset($log['context']['exception'])
+                && $log['context']['exception'] instanceof $exceptionClass;
+        }
+        );
+
+        if ($count != count($matchingLogEntries)) {
+            throw new \UnexpectedValueException(
+                sprintf('Expected to have %d messages, but found %d.', $count, count($matchingLogEntries))
+            );
+        }
     }
 }
