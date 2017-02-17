@@ -4,6 +4,7 @@ menu:
   main:
     parent: 'faq'
     weight: 70
+weight: 70
 linkTitle: Manual Approval
 ---
 You may want to introduce a manual approval step into your deployment process as an added precaution against unintentional or unauthorised deployments. This can be done by adding a `manual_approval` task.

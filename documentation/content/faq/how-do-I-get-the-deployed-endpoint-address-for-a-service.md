@@ -4,6 +4,7 @@ menu:
   main:
     parent: 'faq'
     weight: 90
+weight: 90
 linkTitle: Get Endpoint Address for a Service
 ---
 You may have a complex script that contains several `deploy` tasks, each creating their own endpoint. To inform subsequent services about a previous endpoint address ContinuousPipe creates a dynamic variable using the service name. So, for example, if a service called `api` was created by a `deploy` task, then the endpoint address would become available to subsequent tasks as `${SERVICE_API_PUBLIC_ENDPOINT}`.
