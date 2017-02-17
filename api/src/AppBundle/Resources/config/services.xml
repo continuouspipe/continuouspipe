@@ -95,6 +95,7 @@
         <service id="app.repository.billing_profile" alias="app.billing_profile.doctrine_repository" />
         
         <service id="app.event_listener.exception_listener" class="AppBundle\EventListener\ExceptionListener">
+            <argument>%fos_rest.exception_listener.controller%</argument>
             <argument type="service" id="logger" />
             
             <tag name="kernel.event_subscriber" />
