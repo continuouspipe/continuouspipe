@@ -2,3 +2,5 @@
 server.crt
 server.key
 vendor/
+kube-proxy-logs/
+bin/

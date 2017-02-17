@@ -6,8 +6,11 @@ import (
 	"net/http"
 	"encoding/json"
 	"io/ioutil"
-	"github.com/spf13/viper"
+	"os"
 )
+
+var envCpAuthenticatorHost, _ = os.LookupEnv("KUBE_PROXY_AUTHENTICATOR_HOST") //e.g.: authenticator-staging.continuouspipe.io
+var envCpMasterApiKey, _ = os.LookupEnv("KUBE_PROXY_MASTER_API_KEY")          // master api key for cp api
 
 type ClusterInfoProvider interface {
 	GetCluster(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (*ApiCluster, error)
@@ -109,7 +112,7 @@ func (c ClusterInfo) GetApiBucketClusters(bucketUuid string) ([]ApiCluster, erro
 
 	req, err := http.NewRequest("GET", url.String(), nil)
 
-	req.Header.Add("X-Api-Key", viper.GetString("master-api-key"))
+	req.Header.Add("X-Api-Key", envCpMasterApiKey)
 	if err != nil {
 		return nil, err
 	}
@@ -171,6 +174,6 @@ func (c ClusterInfo) getResponseBody(client *http.Client, req *http.Request) ([]
 func (c ClusterInfo) getAuthenticatorUrl() *url.URL {
 	return &url.URL{
 		Scheme: "https",
-		Host:   "authenticator-staging.continuouspipe.io",
+		Host:   envCpAuthenticatorHost,
 	}
 }

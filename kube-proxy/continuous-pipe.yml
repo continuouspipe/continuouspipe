@@ -2,8 +2,16 @@ tasks:
     images:
         build:
             environment:
-                - name: MASTER_API_KEY
-                  value: ${MASTER_API_KEY}
+                - name: KUBE_PROXY_LISTEN_HTTPS
+                  value: ${KUBE_PROXY_LISTEN_HTTPS}
+                - name: KUBE_PROXY_LISTEN_ADDRESS
+                  value: ${KUBE_PROXY_LISTEN_ADDRESS}
+                - name: KUBE_PROXY_INSECURE_SKIP_VERIFY
+                  value: ${KUBE_PROXY_INSECURE_SKIP_VERIFY}
+                - name: KUBE_PROXY_AUTHENTICATOR_HOST
+                  value: ${KUBE_PROXY_AUTHENTICATOR_HOST}
+                - name: KUBE_PROXY_MASTER_API_KEY
+                  value: ${KUBE_PROXY_MASTER_API_KEY}
             services:
                 web:
                     image: docker.io/continuouspipe/kube-proxy
@@ -12,14 +20,14 @@ tasks:
             deploy:
                 cluster: ${CLUSTER}
                 environment:
-                    name: '"cpr-kube-proxy-" ~ code_reference.branch'
+                    name: '"kube-proxy-" ~ code_reference.branch'
                 services:
                     web:
                         specification:
                             accessibility:
                                 from_external: true
                             ports:
-                              - 8080
+                              - 80
                         deployment_strategy:
                             readiness_probe:
                                 type: tcp
@@ -28,8 +36,8 @@ tasks:
                                 initial_delay_seconds: 5
                                 timeout_seconds: 5
                                 period_seconds: 5
-                                type: https
-                                port: 8080
+                                type: http
+                                port: 80
                                 path: /healthz
                         specification:
                             ports:

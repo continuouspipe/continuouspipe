@@ -15,11 +15,12 @@ import (
 	"github.com/continuouspipe/kube-proxy/cpapi"
 	"github.com/continuouspipe/kube-proxy/parser"
 	"github.com/continuouspipe/kube-proxy/cplogs"
+	"os"
 )
 
-type HttpHandler struct {
-	InsecureSkipVerify bool
-}
+var envInsecureSkipVerify, _ = os.LookupEnv("KUBE_PROXY_INSECURE_SKIP_VERIFY")
+
+type HttpHandler struct{}
 
 func NewHttpHandler() *HttpHandler {
 	return &HttpHandler{}
@@ -28,7 +29,7 @@ func NewHttpHandler() *HttpHandler {
 func (m *HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cplogs.V(5).Infof("Start serving request %s", r.URL.String())
 
-	proxy, err := NewUpgradeAwareSingleHostReverseProxy(r, m.InsecureSkipVerify)
+	proxy, err := NewUpgradeAwareSingleHostReverseProxy(r)
 	if err != nil {
 		cplogs.Errorf("Error when creating the single host reverse proxy. Error: %s", err.Error())
 		cplogs.Flush()
@@ -51,9 +52,9 @@ type UpgradeAwareSingleHostReverseProxy struct {
 }
 
 // NewUpgradeAwareSingleHostReverseProxy creates a new UpgradeAwareSingleHostReverseProxy.
-func NewUpgradeAwareSingleHostReverseProxy(r *http.Request, insecureSkipVerify bool) (*UpgradeAwareSingleHostReverseProxy, error) {
+func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingleHostReverseProxy, error) {
 	transport := http.DefaultTransport.(*http.Transport)
-	if insecureSkipVerify == true {
+	if envInsecureSkipVerify == "true" {
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
 
@@ -82,7 +83,7 @@ func NewUpgradeAwareSingleHostReverseProxy(r *http.Request, insecureSkipVerify b
 		transport:          transport,
 		reverseProxy:       reverseProxy,
 		cpToKube:           cpToKube,
-		insecureSkipVerify: insecureSkipVerify,
+		insecureSkipVerify: envInsecureSkipVerify == "true",
 	}
 	p.reverseProxy.Transport = p
 	return p, nil
