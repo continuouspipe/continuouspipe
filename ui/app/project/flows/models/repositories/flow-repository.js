@@ -10,8 +10,8 @@ angular.module('continuousPipeRiver')
         });
 
 
-        this.findByTeam = function(team) {
-            return $resource(RIVER_API_URL+'/teams/:team/flows').query({team: team.slug}).$promise;
+        this.findByProject = function(project) {
+            return $resource(RIVER_API_URL+'/teams/:project/flows').query({project: project.slug}).$promise;
         };
 
         this.find = function(uuid) {
@@ -36,10 +36,10 @@ angular.module('continuousPipeRiver')
             });
         };
 
-        this.createFromRepositoryAndTeam = function(team, repository) {
-            return $resource(RIVER_API_URL+'/teams/:team/flows').save(
+        this.createFromRepositoryAndProject = function(project, repository) {
+            return $resource(RIVER_API_URL+'/teams/:project/flows').save(
                 {
-                    team: team.slug
+                    project: project.slug
                 },
                 {
                     repository: repository

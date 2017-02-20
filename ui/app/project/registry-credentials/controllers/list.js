@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamRegistryCredentialsController', function($scope, $remoteResource, RegistryCredentialsRepository) {
+    .controller('ProjectRegistryCredentialsController', function($scope, $remoteResource, RegistryCredentialsRepository) {
         var controller = this;
 
         this.loadCredentials = function() {

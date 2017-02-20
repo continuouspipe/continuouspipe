@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectAlertsController', function ($scope, $state, ProjectAlertsRepository, team) {
-        ProjectAlertsRepository.findByProject(team).then(function (alerts) {
+    .controller('ProjectAlertsController', function ($scope, $state, ProjectAlertsRepository, project) {
+        ProjectAlertsRepository.findByProject(project).then(function (alerts) {
             $scope.alerts = alerts;
         });
 

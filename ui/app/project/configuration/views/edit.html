@@ -4,15 +4,15 @@
     </div>
 </md-toolbar>
 <md-content flex class="configuration-content">
-    <form name="teamForm">
+    <form name="projectForm">
         <div class="form-container">
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Unique identifier (you can't change it anymore)</label>
-                <input ng-model="team.slug" required disabled="disabled" />
+                <input ng-model="project.slug" required disabled="disabled" />
             </md-input-container>
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Name</label>
-                <input ng-model="patch.team.name" required />
+                <input ng-model="patch.project.name" required />
             </md-input-container>
 
             <md-input-container class="md-block" flex-gt-xs>
@@ -28,7 +28,7 @@
 <md-toolbar>
     <div class="md-toolbar-tools">
         <span flex></span>
-        <md-button class="md-raised" aria-label="Update" ng-disabled="teamForm.$invalid || isLoading" ng-click="update(team)">
+        <md-button class="md-raised" aria-label="Update" ng-disabled="projectForm.$invalid || isLoading" ng-click="update(project)">
             <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
             Update
         </md-button>

@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamCreateRegistryCredentialsController', function($scope, $state, RegistryCredentialsRepository) {
+    .controller('ProjectCreateRegistryCredentialsController', function($scope, $state, RegistryCredentialsRepository) {
         $scope.credentials = {
             serverAddress: 'docker.io'
         };
-        
+
         $scope.create = function(credentials) {
             $scope.isLoading = true;
             RegistryCredentialsRepository.create(credentials).then(function() {

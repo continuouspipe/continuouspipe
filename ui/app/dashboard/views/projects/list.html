@@ -1,28 +1,28 @@
 <md-toolbar>
     <div class="md-toolbar-tools">
         <h2>
-            <span ng-show="teams">{{ teams.length }} project(s)</span>
-            <span ng-hide="teams">Loading...</span>
+            <span ng-show="projects">{{ projects.length }} project(s)</span>
+            <span ng-hide="projects">Loading...</span>
         </h2>
         <span flex></span>
-        <md-button class="md-raised" aria-label="Create a team" ui-sref="create-project"><md-icon>add</md-icon> Create a project</md-button>
+        <md-button class="md-raised" aria-label="Create a project" ui-sref="create-project"><md-icon>add</md-icon> Create a project</md-button>
     </div>
 </md-toolbar>
 <md-content flex id="content" class="card-grid">
-    <div class="zero-content-help" ng-if="teams.length == 0">
+    <div class="zero-content-help" ng-if="projects.length == 0">
         <i class="cp-icon-arrow-right-up top-right-arrow"></i>
         <h3>No project yet, you should create one!</h3>
         <p>A project is a logical group of different <em>flows</em>. It will help you to organise your different flows.</p>
     </div>
-    <remote-resource resource-name="teams">
-        <md-card ng-repeat="team in teams">
-            <md-card-header ui-sref="flows({team: team.slug})">
+    <remote-resource resource-name="projects">
+        <md-card ng-repeat="project in projects">
+            <md-card-header ui-sref="flows({project: project.slug})">
                 <md-card-avatar>
                     <md-icon class="md-avatar-icon"><i class="material-icons">group</i></md-icon>
                 </md-card-avatar>
                 <md-card-header-text>
-                    <span class="md-title">{{ team.name || team.slug }}</span>
-                    <span class="md-subhead">{{ team.memberships.length }} user(s)</span>
+                    <span class="md-title">{{ project.name || project.slug }}</span>
+                    <span class="md-subhead">{{ project.memberships.length }} user(s)</span>
                 </md-card-header-text>
             </md-card-header>
         </md-card>

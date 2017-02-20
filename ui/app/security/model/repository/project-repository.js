@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('TeamRepository', function($resource, AUTHENTICATOR_API_URL) {
+    .service('ProjectRepository', function($resource, AUTHENTICATOR_API_URL) {
         this.resource = $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug', {}, {
             patch: {
                 method: 'PATCH'
@@ -16,16 +16,16 @@ angular.module('continuousPipeRiver')
             return this.resource.get({slug: slug}).$promise;
         };
 
-        this.create = function(team) {
-            return this.resource.save({team: team}).$promise;
+        this.create = function(project) {
+            return this.resource.save({project: project}).$promise;
         };
 
-        this.update = function(team, patch) {
+        this.update = function(project, patch) {
             if (patch.billing_profile) {
                 patch.billing_profile = {uuid: patch.billing_profile.uuid};
             }
-            
-            return this.resource.patch({slug: team.slug}, patch).$promise;
+
+            return this.resource.patch({slug: project.slug}, patch).$promise;
         }
 
         this.getMembersStatus = function(slug) {
