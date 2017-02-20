@@ -15,6 +15,10 @@ As you've seen in the configuration files section, most of ContinuousPipe's conf
 * `run`: Will run some [commands]({{< relref "commands.md" >}}) inside a deployed context
 * `wait`: Will [wait]({{< relref "wait-statuses.md" >}}) for some other GitHub statuses
 
+{{< note title="Note" >}}
+Tasks are run in sequential order, which can be useful if a task should depend on a previous task before execution. For example, ensuring your integration tests are run successfully before deployment. 
+{{< /note >}}
+
 ## Conditional tasks {#filters}
 You can filter the execution of each task by using the `filter` configuration in the YML file. This can be done with an expression, as you can see in the following sample configuration:
 
