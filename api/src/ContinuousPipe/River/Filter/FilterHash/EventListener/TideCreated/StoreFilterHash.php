@@ -7,6 +7,9 @@ use ContinuousPipe\River\Filter\FilterHash\FilterHashEvaluator;
 use ContinuousPipe\River\Filter\FilterHash\FilterHashRepository;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\TideConfigurationException;
+use LogStream\Log;
+use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 
 class StoreFilterHash
 {
@@ -24,15 +27,26 @@ class StoreFilterHash
     private $filterHashEvaluator;
 
     /**
-     * @param TideRepository       $tideRepository
-     * @param FilterHashRepository $filterHashRepository
-     * @param FilterHashEvaluator  $filterHashEvaluator
+     * @var LoggerFactory
      */
-    public function __construct(TideRepository $tideRepository, FilterHashRepository $filterHashRepository, FilterHashEvaluator $filterHashEvaluator)
-    {
+    private $loggerFactory;
+
+    /**
+     * @param TideRepository $tideRepository
+     * @param FilterHashRepository $filterHashRepository
+     * @param FilterHashEvaluator $filterHashEvaluator
+     * @param LoggerFactory $loggerFactory
+     */
+    public function __construct(
+        TideRepository $tideRepository,
+        FilterHashRepository $filterHashRepository,
+        FilterHashEvaluator $filterHashEvaluator,
+        LoggerFactory $loggerFactory
+    ) {
         $this->tideRepository = $tideRepository;
         $this->filterHashRepository = $filterHashRepository;
         $this->filterHashEvaluator = $filterHashEvaluator;
+        $this->loggerFactory = $loggerFactory;
     }
 
     /**
@@ -48,6 +62,8 @@ class StoreFilterHash
         } catch (TideConfigurationException $e) {
             // If the configuration is not correct, then we shouldn't even store
             // the hash anyway...
+            $logger = $this->loggerFactory->from($tide->getLog());
+            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
         }
     }
 }

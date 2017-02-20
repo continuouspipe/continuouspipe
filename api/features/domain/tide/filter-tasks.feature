@@ -144,6 +144,7 @@ Feature:
     """
     When a tide is started
     Then the tide should be failed
+    And a log containing 'Task "deployment" does not exist' should be created
 
   Scenario: I can refer to a skipped deployed task and it resolves to false
     Given I have a flow with the following configuration:
