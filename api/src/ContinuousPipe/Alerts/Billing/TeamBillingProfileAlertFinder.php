@@ -76,9 +76,9 @@ class TeamBillingProfileAlertFinder implements AlertFinder
                 sprintf('Your trial period is ending in %d days.', $now->diff($trialExpiration)->format('%a')),
                 new \DateTime(),
                 new AlertAction(
-                    'href',
+                    'link',
                     'Manage by billing',
-                    'https://authenticator.continuouspipe.io/account/billing/'
+                    'https://authenticator.continuouspipe.io/account/billing-profile'
                 )
             );
         } else {
@@ -127,7 +127,7 @@ class TeamBillingProfileAlertFinder implements AlertFinder
                             ),
                             new \DateTime(),
                             new AlertAction(
-                                'href',
+                                'link',
                                 'Upgrade',
                                 'https://authenticator.continuouspipe.io/account/billing-profile'
                             )
