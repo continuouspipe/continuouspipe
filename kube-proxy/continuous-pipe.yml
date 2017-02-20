@@ -21,16 +21,6 @@ tasks:
                 cluster: ${CLUSTER}
                 environment:
                     name: '"kube-proxy-" ~ code_reference.branch'
-                    - name: KUBE_PROXY_LISTEN_HTTPS
-                      value: ${KUBE_PROXY_LISTEN_HTTPS}
-                    - name: KUBE_PROXY_LISTEN_ADDRESS
-                      value: ${KUBE_PROXY_LISTEN_ADDRESS}
-                    - name: KUBE_PROXY_INSECURE_SKIP_VERIFY
-                      value: ${KUBE_PROXY_INSECURE_SKIP_VERIFY}
-                    - name: KUBE_PROXY_AUTHENTICATOR_HOST
-                      value: ${KUBE_PROXY_AUTHENTICATOR_HOST}
-                    - name: KUBE_PROXY_MASTER_API_KEY
-                      value: ${KUBE_PROXY_MASTER_API_KEY}
                 services:
                     web:
                         endpoints:
@@ -45,7 +35,18 @@ tasks:
                                         
                         specification:
                             ports:
-                              - 80
+                                - 80
+                            environment_variables:
+                                - name: KUBE_PROXY_LISTEN_HTTPS
+                                  value: ${KUBE_PROXY_LISTEN_HTTPS}
+                                - name: KUBE_PROXY_LISTEN_ADDRESS
+                                  value: ${KUBE_PROXY_LISTEN_ADDRESS}
+                                - name: KUBE_PROXY_INSECURE_SKIP_VERIFY
+                                  value: ${KUBE_PROXY_INSECURE_SKIP_VERIFY}
+                                - name: KUBE_PROXY_AUTHENTICATOR_HOST
+                                  value: ${KUBE_PROXY_AUTHENTICATOR_HOST}
+                                - name: KUBE_PROXY_MASTER_API_KEY
+                                  value: ${KUBE_PROXY_MASTER_API_KEY}
 
                         deployment_strategy:
                             readiness_probe:
