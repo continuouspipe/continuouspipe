@@ -115,7 +115,7 @@ class ApplyPublicEndpointsTransformations
                 )
             );
 
-            $logger->child(new Text('Created zone: '.$recordName));
+            $logger->child(new Text('Created zone record: '.$recordName));
             $logger->updateStatus(Log::SUCCESS);
 
             $publicEndpoint = new PublicEndpoint(
