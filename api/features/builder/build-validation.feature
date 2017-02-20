@@ -194,3 +194,29 @@ Feature:
     """
     Then the build should be successful
     And the image "sroze/php-example:continuous" should be built
+
+  Scenario: The custom Dockerfile exists in a sub-directory
+    When I send the following build request:
+    """
+    {
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "continuous"
+          },
+          "context": {
+            "docker_file_path": "",
+            "repository_sub_directory": "./some/thing/"
+          },
+          "repository": {
+            "address": "fixtures://dockerfile-in-sub-directory",
+            "branch": "747850e8c821a443a7b5cee28a48581069049739"
+          }
+        }
+      ],
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+    }
+    """
+    Then the build should be successful
+    And the image "sroze/php-example:continuous" should be built
