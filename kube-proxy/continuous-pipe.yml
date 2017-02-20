@@ -23,8 +23,21 @@ tasks:
                     name: '"kube-proxy-" ~ code_reference.branch'
                 services:
                     web:
+                        endpoints:
+                            -
+                                name: https
+                                type: NodePort
+                                ssl_certificates:
+                                    -
+                                        name: continuouspipeio
+                                        cert: ${WILDCARD_SSL_CERT}
+                                        key: ${WILDCARD_SSL_KEY}
+                                        
                         specification:
-                            accessibility:
-                                from_external: true
                             ports:
                               - 80
+
+                        deployment_strategy:
+                            readiness_probe:
+                                type: tcp
+                                port: 80
