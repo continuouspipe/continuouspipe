@@ -89,7 +89,7 @@ Feature:
     }
     """
     Then the build should be failed
-    And a log containing "The build configuration file `./Somefile` was not found" should be created
+    And a log containing "The build configuration file `Somefile` was not found" should be created
 
   Scenario: The Dockerfile do not exists
     When I send the following build request:
@@ -115,7 +115,7 @@ Feature:
     }
     """
     Then the build should be failed
-    And a log containing "The build configuration file `./sub-directory/Dockerfile` was not found" should be created
+    And a log containing "The build configuration file `Dockerfile` was not found (in `./sub-directory`)" should be created
 
   Scenario: The Dockerfile do not exists
     When I send the following build request:
@@ -141,7 +141,7 @@ Feature:
     }
     """
     Then the build should be failed
-    And a log containing "The build configuration file `./sub-directory/Dockerfile` was not found" should be created
+    And a log containing "The build configuration file `Dockerfile` was not found (in `./sub-directory`)" should be created
 
   Scenario: The default Dockerfile do not exists
     When I send the following build request:
@@ -167,7 +167,7 @@ Feature:
     }
     """
     Then the build should be failed
-    And a log containing "The build configuration file `./Dockerfile` was not found" should be created
+    And a log containing "The build configuration file `Dockerfile` was not found" should be created
 
   Scenario: The custom Dockerfile exists
     When I send the following build request:
@@ -185,6 +185,32 @@ Feature:
           },
           "repository": {
             "address": "fixtures://another-name",
+            "branch": "747850e8c821a443a7b5cee28a48581069049739"
+          }
+        }
+      ],
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+    }
+    """
+    Then the build should be successful
+    And the image "sroze/php-example:continuous" should be built
+
+  Scenario: The custom Dockerfile exists in a sub-directory
+    When I send the following build request:
+    """
+    {
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "continuous"
+          },
+          "context": {
+            "docker_file_path": "",
+            "repository_sub_directory": "./some/thing/"
+          },
+          "repository": {
+            "address": "fixtures://dockerfile-in-sub-directory",
             "branch": "747850e8c821a443a7b5cee28a48581069049739"
           }
         }
