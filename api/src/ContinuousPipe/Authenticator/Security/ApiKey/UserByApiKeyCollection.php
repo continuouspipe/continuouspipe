@@ -39,7 +39,7 @@ class UserByApiKeyCollection implements UserByApiKeyRepository
      */
     public function findByUser(string $username)
     {
-        return array_reduce($this->repositories, function(array $carry, UserByApiKeyRepository $repository) use ($username) {
+        return array_reduce($this->repositories, function (array $carry, UserByApiKeyRepository $repository) use ($username) {
             return array_merge($carry, $repository->findByUser($username));
         }, []);
     }

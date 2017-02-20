@@ -118,6 +118,14 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Given I am authenticated
+     */
+    public function iAmAuthenticated()
+    {
+        $this->iAmAuthenticatedAsUser('Geza');
+    }
+
+    /**
      * @Given I am not authenticated
      */
     public function iAmNotAuthenticated()
