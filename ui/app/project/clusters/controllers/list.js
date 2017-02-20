@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamClustersController', function($scope, $remoteResource, $http, $mdDialog, ClusterRepository, team) {
+    .controller('ProjectClustersController', function($scope, $remoteResource, $http, $mdDialog, ClusterRepository, project) {
         var controller = this;
 
         this.loadClusters = function() {
@@ -34,19 +34,19 @@ angular.module('continuousPipeRiver')
 
         $scope.inspectCluster = function(cluster) {
             var dialogScope = $scope.$new();
-            dialogScope.team = team;
+            dialogScope.project = project;
             dialogScope.cluster = cluster;
 
             $mdDialog.show({
-                controller: 'TeamClusterHealthController',
-                templateUrl: 'team/clusters/views/dialogs/health.html',
+                controller: 'ProjectClusterHealthController',
+                templateUrl: 'project/clusters/views/dialogs/health.html',
                 parent: angular.element(document.body),
                 clickOutsideToClose: true,
                 scope: dialogScope
             });
 
             Intercom('trackEvent', 'opened-cluster-health', {
-                team: team,
+                project: project,
                 cluster: cluster
             });
         };

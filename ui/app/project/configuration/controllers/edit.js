@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TeamConfigurationController', function($scope, $remoteResource, $http, $mdToast, TeamRepository, UserRepository, team) {
-        $scope.team = team;
+    .controller('ProjectConfigurationController', function($scope, $remoteResource, $http, $mdToast, ProjectRepository, UserRepository, project) {
+        $scope.project = project;
         $scope.patch = {
-            team: {
-                name: team.name
+            project: {
+                name: project.name
             }
         };
 
@@ -13,7 +13,7 @@ angular.module('continuousPipeRiver')
             if ($scope.patch.billing_profile) {
                 swal({
                     title: "Are you sure?",
-                    text: "You will change the billing profile of the team and will therefore be billed for its usage.",
+                    text: "You will change the billing profile of the project and will therefore be billed for its usage.",
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",
@@ -29,7 +29,7 @@ angular.module('continuousPipeRiver')
 
         var doUpdate = function() {
             $scope.isLoading = true;
-            TeamRepository.update(team, $scope.patch).then(function() {
+            ProjectRepository.update(project, $scope.patch).then(function() {
                 $mdToast.show($mdToast.simple()
                     .textContent('Configuration successfully saved!')
                     .position('top')
@@ -37,11 +37,11 @@ angular.module('continuousPipeRiver')
                     .parent($('md-content.configuration-content'))
                 );
 
-                Intercom('trackEvent', 'updated-team', {
-                    team: team
+                Intercom('trackEvent', 'updated-project', {
+                    project: project
                 });
             }, function(error) {
-                swal("Error !", $http.getError(error) || "An unknown error occured while create the team", "error");
+                swal("Error !", $http.getError(error) || "An unknown error occured while create the project", "error");
             })['finally'](function() {
                 $scope.isLoading = false;
             });

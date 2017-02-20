@@ -8,8 +8,8 @@ angular.module('continuousPipeRiver')
                 parent: 'layout',
                 views: {
                     'content@': {
-                        templateUrl: 'dashboard/views/teams/list.html',
-                        controller: 'TeamsController'
+                        templateUrl: 'dashboard/views/projects/list.html',
+                        controller: 'ProjectsController'
                     },
                     'title@layout': {
                         template: 'Projects'
@@ -21,8 +21,8 @@ angular.module('continuousPipeRiver')
                 parent: 'layout',
                 views: {
                     'content@': {
-                        templateUrl: 'dashboard/views/teams/create.html',
-                        controller: 'CreateTeamController'
+                        templateUrl: 'dashboard/views/projects/create.html',
+                        controller: 'CreateProjectController'
                     },
                     'title@layout': {
                         template: 'Create a project'

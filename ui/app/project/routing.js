@@ -4,15 +4,15 @@ angular.module('continuousPipeRiver')
     .config(function($stateProvider) {
         $stateProvider
             .state('project', {
-                url: '/project/:team',
+                url: '/project/:project',
                 parent: 'layout',
                 abstract: true,
                 resolve: {
-                    team: function($stateParams, $teamContext, $q, TeamRepository) {
-                        return TeamRepository.find($stateParams.team).then(function(team) {
-                            $teamContext.setCurrentTeam(team);
+                    project: function($stateParams, $projectContext, $q, ProjectRepository) {
+                        return ProjectRepository.find($stateParams.project).then(function(project) {
+                            $projectContext.setCurrentProject(project);
 
-                            return team;
+                            return project;
                         }, function(error) {
                             return $q.reject(error);
                         });
@@ -23,10 +23,10 @@ angular.module('continuousPipeRiver')
                         templateUrl: 'project/layout/views/aside.html'
                     },
                     'title@layout': {
-                        controller: function($scope, team) {
-                            $scope.team = team;
+                        controller: function($scope, project) {
+                            $scope.project = project;
                         },
-                        template: '{{ team.name || team.slug }}'
+                        template: '{{ project.name || project.slug }}'
                     }
                 }
             })
@@ -49,10 +49,10 @@ angular.module('continuousPipeRiver')
                         controller: 'CreateFlowController'
                     },
                     'title@layout': {
-                        controller: function($scope, team) {
-                            $scope.team = team;
+                        controller: function($scope, project) {
+                            $scope.project = project;
                         },
-                        template: '<a ui-sref="flows({team: team.slug})">{{ team.name || team.slug }}</a> / Create a flow'
+                        template: '<a ui-sref="flows({project: project.slug})">{{ project.name || project.slug }}</a> / Create a flow'
                     }
                 }
             })
@@ -62,7 +62,7 @@ angular.module('continuousPipeRiver')
                 views: {
                     'content@': {
                         templateUrl: 'project/users/views/list.html',
-                        controller: 'TeamUsersController'
+                        controller: 'ProjectUsersController'
                     }
                 },
                 aside: true
@@ -73,7 +73,7 @@ angular.module('continuousPipeRiver')
                 views: {
                     'content@': {
                         templateUrl: 'project/users/views/add.html',
-                        controller: 'TeamAddUserController'
+                        controller: 'ProjectAddUserController'
                     }
                 },
                 aside: true
@@ -84,7 +84,7 @@ angular.module('continuousPipeRiver')
                 views: {
                     'content@': {
                         templateUrl: 'project/clusters/views/list.html',
-                        controller: 'TeamClustersController'
+                        controller: 'ProjectClustersController'
                     }
                 },
                 aside: true
@@ -94,7 +94,7 @@ angular.module('continuousPipeRiver')
                 views: {
                     'content@': {
                         templateUrl: 'project/clusters/views/add.html',
-                        controller: 'TeamAddClusterController'
+                        controller: 'ProjectAddClusterController'
                     }
                 },
                 aside: true
@@ -105,7 +105,7 @@ angular.module('continuousPipeRiver')
                 views: {
                     'content@': {
                         templateUrl: 'project/registry-credentials/views/list.html',
-                        controller: 'TeamRegistryCredentialsController'
+                        controller: 'ProjectRegistryCredentialsController'
                     }
                 },
                 aside: true
@@ -115,7 +115,7 @@ angular.module('continuousPipeRiver')
                 views: {
                     'content@': {
                         templateUrl: 'project/registry-credentials/views/create.html',
-                        controller: 'TeamCreateRegistryCredentialsController'
+                        controller: 'ProjectCreateRegistryCredentialsController'
                     }
                 },
                 aside: true
@@ -126,7 +126,7 @@ angular.module('continuousPipeRiver')
                 views: {
                     'content@': {
                         templateUrl: 'project/configuration/views/edit.html',
-                        controller: 'TeamConfigurationController'
+                        controller: 'ProjectConfigurationController'
                     }
                 },
                 aside: true

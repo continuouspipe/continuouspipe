@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('CreateFlowController', function($scope, $state, $remoteResource, $http, AUTHENTICATOR_API_URL, WizardRepository, AccountRepository, RegistryCredentialsRepository, ClusterRepository, FlowRepository, team, user) {
+    .controller('CreateFlowController', function($scope, $state, $remoteResource, $http, AUTHENTICATOR_API_URL, WizardRepository, AccountRepository, RegistryCredentialsRepository, ClusterRepository, FlowRepository, project, user) {
         $scope.linkAccountUrl = AUTHENTICATOR_API_URL + '/account/';
         $scope.user = user;
 
@@ -58,7 +58,7 @@ angular.module('continuousPipeRiver')
         $scope.create = function() {
             $scope.isLoading = true;
 
-            FlowRepository.createFromRepositoryAndTeam(team, $scope.wizard.repository).then(function(flow) {
+            FlowRepository.createFromRepositoryAndProject(project, $scope.wizard.repository).then(function(flow) {
                 $state.go('flow.dashboard', {uuid: flow.uuid});
 
                 Intercom('trackEvent', 'created-flow', {
