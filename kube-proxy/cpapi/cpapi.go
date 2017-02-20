@@ -170,11 +170,14 @@ func (c ClusterInfo) GetApiUser(user string, apiKey string) (*ApiUser, error) {
 
 func (c ClusterInfo) getResponseBody(client *http.Client, req *http.Request) ([]byte, error) {
 	res, err := client.Do(req)
-	defer res.Body.Close()
 	if err != nil {
 		cplogs.V(4).Infoln("Error when creating client for request")
 		return nil, err
 	}
+	if res.Body == nil {
+		return nil, fmt.Errorf("Error requesting user information, response body empty, request status: %d", res.StatusCode)
+	}
+	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("Error requesting user information, request status: %d", res.StatusCode)
 	}
