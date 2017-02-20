@@ -26,16 +26,19 @@ class EnsureDockerfileExistsClientDecorator implements DockerFacade
      */
     public function build(BuildContext $context, Archive $archive): Image
     {
-        $dockerFilePath =
-            ($context->getContext()->getRepositorySubDirectory() ?: '.').
-            DIRECTORY_SEPARATOR.
-            ($context->getContext()->getDockerFilePath() ?: 'Dockerfile')
-        ;
+        $dockerFilePath = $context->getContext()->getDockerFilePath() ?: 'Dockerfile';
 
         if (!$archive->contains($dockerFilePath)) {
+            $message = 'The build configuration file `%s` was not found';
+
+            if ($explorationFolder = $context->getContext()->getRepositorySubDirectory()) {
+                $message .= ' (in `%s`)';
+            }
+
             throw new DockerException(sprintf(
-                'The build configuration file `%s` was not found',
-                $dockerFilePath
+                $message,
+                $dockerFilePath,
+                $explorationFolder
             ));
         }
 

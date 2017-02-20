@@ -89,7 +89,7 @@ Feature:
     }
     """
     Then the build should be failed
-    And a log containing "The build configuration file `./Somefile` was not found" should be created
+    And a log containing "The build configuration file `Somefile` was not found" should be created
 
   Scenario: The Dockerfile do not exists
     When I send the following build request:
@@ -115,7 +115,7 @@ Feature:
     }
     """
     Then the build should be failed
-    And a log containing "The build configuration file `./sub-directory/Dockerfile` was not found" should be created
+    And a log containing "The build configuration file `Dockerfile` was not found (in `./sub-directory`)" should be created
 
   Scenario: The Dockerfile do not exists
     When I send the following build request:
@@ -141,7 +141,7 @@ Feature:
     }
     """
     Then the build should be failed
-    And a log containing "The build configuration file `./sub-directory/Dockerfile` was not found" should be created
+    And a log containing "The build configuration file `Dockerfile` was not found (in `./sub-directory`)" should be created
 
   Scenario: The default Dockerfile do not exists
     When I send the following build request:
@@ -167,7 +167,7 @@ Feature:
     }
     """
     Then the build should be failed
-    And a log containing "The build configuration file `./Dockerfile` was not found" should be created
+    And a log containing "The build configuration file `Dockerfile` was not found" should be created
 
   Scenario: The custom Dockerfile exists
     When I send the following build request:

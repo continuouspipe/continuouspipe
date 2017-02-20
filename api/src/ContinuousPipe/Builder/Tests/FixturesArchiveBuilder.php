@@ -44,6 +44,10 @@ class FixturesArchiveBuilder implements ArchiveBuilder
         $fixturesDirectory = substr($repositoryAddress, strlen(self::ADDRESS_PREFIX));
         $fixturesDirectoryPath = realpath($this->fixturesRootPath.DIRECTORY_SEPARATOR.$fixturesDirectory);
 
+        if (null !== ($context = $buildStepConfiguration->getContext())) {
+            $fixturesDirectoryPath = $fixturesDirectoryPath.DIRECTORY_SEPARATOR.($context->getRepositorySubDirectory() ?: '.');
+        }
+
         if (!file_exists($fixturesDirectoryPath) || !is_dir($fixturesDirectoryPath)) {
             throw new ArchiveCreationException(sprintf(
                 'The directory "%s" do not exists',
