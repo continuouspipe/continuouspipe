@@ -44,7 +44,7 @@ class RequestValidator
         $payload = $request->getContent();
         $payloadHash = hash_hmac($method, $payload, $this->secret);
 
-        if ($payloadHash != $gitHubSignature) {
+        if (!hash_equals($payloadHash, $gitHubSignature)) {
             throw new InvalidRequest('Signature is invalid for the given payload');
         }
     }

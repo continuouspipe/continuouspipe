@@ -95,6 +95,11 @@ class GitHubContext implements CodeRepositoryContext
      */
     private $matchingHandler;
 
+    /**
+     * @var string
+     */
+    private $secret;
+
     public function __construct(
         Kernel $kernel,
         TraceableNotifier $gitHubTraceableNotifier,
@@ -117,6 +122,7 @@ class GitHubContext implements CodeRepositoryContext
         $this->inMemoryInstallationTokenResolver = $inMemoryInstallationTokenResolver;
         $this->inMemoryCodeRepositoryRepository = $inMemoryCodeRepositoryRepository;
         $this->matchingHandler = $matchingHandler;
+        $this->secret = $kernel->getContainer()->getParameter('github_secret');
     }
 
     /**
@@ -640,6 +646,38 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @When a pull-request is created with good signature
+     */
+    public function aPullRequestIsCreatedWithGoodSignature($validSignature = true)
+    {
+        $contents = $this->readFixture('pull_request-closed.json');
+        $decoded = json_decode($contents, true);
+        $contents = json_encode($decoded);
+        $hashAlgorithm = 'sha1';
+        $secret = $validSignature ? $this->secret : $this->secret . '_invalid';
+
+        $flowUuid = $this->flowContext->getCurrentUuid();
+        $request = Request::create(
+                '/web-hook/github/' . $flowUuid, 'POST', [], [], [], [
+                    'CONTENT_TYPE'           => 'application/json',
+                    'HTTP_X_GITHUB_EVENT'    => 'pull_request',
+                    'HTTP_X_GITHUB_DELIVERY' => '1234',
+                ], $contents
+            );
+        $hash = hash_hmac($hashAlgorithm, $contents, $secret);
+        $request->headers->set('X-Hub-Signature', sprintf('%s=%s', $hashAlgorithm, $hash));
+        $this->response = $this->kernel->handle($request);
+    }
+
+    /**
+     * @When a pull-request is created with invalid signature
+     */
+    public function aPullRequestIsCreatedWithInvalidSignature()
+    {
+        $this->aPullRequestIsCreatedWithGoodSignature(false);
+    }
+
+    /**
      * @When a pull-request is created from branch :branch with head commit :sha
      */
     public function aPullRequestIsCreatedWithHeadCommit($branch, $sha)
@@ -653,13 +691,17 @@ class GitHubContext implements CodeRepositoryContext
         $decoded['pull_request']['head']['sha'] = $sha;
         $decoded['pull_request']['head']['ref'] = $branch;
         $contents = json_encode($decoded);
+        $hashAlgorithm = 'sha1';
 
         $flowUuid = $this->flowContext->getCurrentUuid();
-        $response = $this->kernel->handle(Request::create('/web-hook/github/'.$flowUuid, 'POST', [], [], [], [
+        $request = Request::create('/web-hook/github/'.$flowUuid, 'POST', [], [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_X_GITHUB_EVENT' => 'pull_request',
             'HTTP_X_GITHUB_DELIVERY' => '1234',
-        ], $contents));
+        ], $contents);
+        $hash = hash_hmac($hashAlgorithm, $contents, $this->secret);
+        $request->headers->set('X-Hub-Signature', sprintf('%s=%s', $hashAlgorithm, $hash));
+        $response = $this->kernel->handle($request);
 
         if ($response->getStatusCode() >= 300) {
             throw new \RuntimeException(sprintf(
@@ -696,16 +738,67 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @Then processing the webhook should be denied
+     */
+    public function iShouldDenyTheAccessToTheWebhook()
+    {
+        $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @Then processing the webhook should be successfully completed
+     */
+    public function processingTheWebhookShouldBeSuccessfullyCompleted()
+    {
+        $this->assertResponseStatus(204);
+    }
+
+    /**
+     * @Then processing the webhook should be accepted
+     */
+    public function processingTheWebhookShouldBeAccepted()
+    {
+        $this->assertResponseStatus(202);
+    }
+
+    /**
+     * @When a push webhook is received with good signature
+     */
+    public function aPushWebhookIsReceivedWithGoodSignature()
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('push-master.json'), true);
+
+        $this->sendWebHook('push', json_encode($contents));
+    }
+
+    /**
+     * @When a push webhook is received with invalid signature
+     */
+    public function aPushWebhookIsReceivedWithInvalidSignature()
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('push-master.json'), true);
+
+        $this->sendWebHookWithInvalidSignature('push', json_encode($contents));
+    }
+
+    /**
      * @param string $type
      * @param string $contents
      */
     private function sendWebHook($type, $contents)
     {
-        $this->response = $this->kernel->handle(Request::create('/github/integration/webhook', 'POST', [], [], [], [
-            'CONTENT_TYPE' => 'application/json',
-            'HTTP_X_GITHUB_EVENT' => $type,
-            'HTTP_X_GITHUB_DELIVERY' => '1234',
-        ], $contents));
+        $hashAlgorithm = 'sha1';
+        $hash = hash_hmac($hashAlgorithm, $contents, $this->secret);
+
+        $request = Request::create(
+                '/github/integration/webhook', 'POST', [], [], [], [
+                'CONTENT_TYPE'           => 'application/json',
+                'HTTP_X_GITHUB_EVENT'    => $type,
+                'HTTP_X_GITHUB_DELIVERY' => '1234',
+            ], $contents
+        );
+        $request->headers->set('X-Hub-Signature', sprintf('%s=%s', $hashAlgorithm, $hash));
+        $this->response = $this->kernel->handle($request);
 
         if (!in_array($this->response->getStatusCode(), [200, 202, 204, 201])) {
             echo $this->response->getContent();
@@ -724,6 +817,27 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @param $type
+     * @param $contents
+     */
+    private function sendWebHookWithInvalidSignature($type, $contents)
+    {
+        $hashAlgorithm = 'sha1';
+        $secret = $this->secret . '_invalid';
+        $hash = hash_hmac($hashAlgorithm, $contents, $secret);
+
+        $request = Request::create(
+            '/github/integration/webhook', 'POST', [], [], [], [
+            'CONTENT_TYPE'           => 'application/json',
+            'HTTP_X_GITHUB_EVENT'    => $type,
+            'HTTP_X_GITHUB_DELIVERY' => '1234',
+        ], $contents
+        );
+        $request->headers->set('X-Hub-Signature', sprintf('%s=%s', $hashAlgorithm, $hash));
+        $this->response = $this->kernel->handle($request);
+    }
+
+    /**
      * @return mixed
      */
     private function getLastGitHubNotification()
@@ -739,5 +853,21 @@ class GitHubContext implements CodeRepositoryContext
     private function readFixture(string $fixture) : string
     {
         return file_get_contents(__DIR__.'/../integrations/code-repositories/github/fixtures/'.$fixture);
+    }
+
+    /**
+     * @param int $expectedStatus
+     */
+    private function assertResponseStatus(int $expectedStatus)
+    {
+        if ($this->response->getStatusCode() != $expectedStatus) {
+            echo $this->response->getContent();
+
+            throw new \RuntimeException(sprintf(
+                'Expected status code %d, found %d',
+                $expectedStatus,
+                $this->response->getStatusCode()
+            ));
+        }
     }
 }
