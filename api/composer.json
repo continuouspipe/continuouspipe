@@ -114,6 +114,7 @@
                 "tideways_api_key": "TIDEWAYS_API_KEY",
                 "bitbucket_oauth_key": "BITBUCKET_OAUTH_KEY",
                 "bitbucket_oauth_secret": "BITBUCKET_OAUTH_SECRET",
+                "github_secret": "GITHUB_SECRET",
                 "authenticator_api_key": "AUTHENTICATOR_API_KEY",
                 "admin_password": "ADMIN_PASSWORD",
                 "hosted_graphite_api_key": "HOSTED_GRAPHITE_API_KEY"
