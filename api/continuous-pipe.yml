@@ -140,6 +140,8 @@ tasks:
                               value: ${STACK_RABBITMQ_HOST}
                             - name: HOSTED_GRAPHITE_API_KEY
                               value: ${HOSTED_GRAPHITE_API_KEY}
+                            - name: GITHUB_SECRET
+                              value: ${GITHUB_SECRET}
 
                     deployment_strategy:
                         readiness_probe:
