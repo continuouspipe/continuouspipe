@@ -1,19 +1,19 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .config(function($stateProvider) {
+    .config(function ($stateProvider) {
         $stateProvider
             .state('project', {
                 url: '/project/:project',
                 parent: 'layout',
                 abstract: true,
                 resolve: {
-                    project: function($stateParams, $projectContext, $q, ProjectRepository) {
-                        return ProjectRepository.find($stateParams.project).then(function(project) {
+                    project: function ($stateParams, $projectContext, $q, ProjectRepository) {
+                        return ProjectRepository.find($stateParams.project).then(function (project) {
                             $projectContext.setCurrentProject(project);
 
                             return project;
-                        }, function(error) {
+                        }, function (error) {
                             return $q.reject(error);
                         });
                     }
@@ -23,10 +23,14 @@ angular.module('continuousPipeRiver')
                         templateUrl: 'project/layout/views/aside.html'
                     },
                     'title@layout': {
-                        controller: function($scope, project) {
+                        controller: function ($scope, project) {
                             $scope.project = project;
                         },
                         template: '{{ project.name || project.slug }}'
+                    },
+                    'alerts@': {
+                        templateUrl: 'project/views/alerts.html',
+                        controller: 'ProjectAlertsController'
                     }
                 }
             })
@@ -49,7 +53,7 @@ angular.module('continuousPipeRiver')
                         controller: 'CreateFlowController'
                     },
                     'title@layout': {
-                        controller: function($scope, project) {
+                        controller: function ($scope, project) {
                             $scope.project = project;
                         },
                         template: '<a ui-sref="flows({project: project.slug})">{{ project.name || project.slug }}</a> / Create a flow'
