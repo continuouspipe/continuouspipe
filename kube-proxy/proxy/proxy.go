@@ -61,6 +61,7 @@ type UpgradeAwareSingleHostReverseProxy struct {
 func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingleHostReverseProxy, error) {
 	transport := http.DefaultTransport.(*http.Transport)
 	if envInsecureSkipVerify == "true" {
+		cplogs.V(5).Infoln("InsecureSkipVerify enabled")
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
 
@@ -74,12 +75,12 @@ func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingle
 
 	apiCluster, err := cinfo.GetCluster(user, password, cpToKube.ExtractTeamName(r.URL.Path), cpToKube.ExtractClusterId(r.URL.Path))
 	if err != nil {
-		return nil, fmt.Errorf("Failed to get the cluster url")
+		return nil, fmt.Errorf("Failed to get the cluster url, error: %#v", err.Error())
 	}
 
 	backendAddr, err := url.Parse(apiCluster.Address)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to parse the cluster url")
+		return nil, fmt.Errorf("Failed to parse the cluster url, error: %#v", err.Error())
 	}
 
 	reverseProxy := httputil.NewSingleHostReverseProxy(backendAddr)

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"github.com/continuouspipe/kube-proxy/cplogs"
 )
 
 var envCpAuthenticatorHost, _ = os.LookupEnv("KUBE_PROXY_AUTHENTICATOR_HOST") //e.g.: authenticator-staging.continuouspipe.io
@@ -93,12 +94,16 @@ func (c ClusterInfo) GetApiTeam(user string, apiKey string, teamName string) (*A
 	respBody, err := c.getResponseBody(c.client, req)
 
 	if err != nil {
+		cplogs.V(4).Infof("Error during request %s response %s, error %s\n", url.String(), respBody, err.Error())
+		cplogs.Flush()
 		return nil, err
 	}
 
 	apiTeamsResponse := &ApiTeam{}
 	err = json.Unmarshal(respBody, apiTeamsResponse)
 	if err != nil {
+		cplogs.V(4).Infof("Error unmarshalling request %s response %s, error %s\n", url.String(), respBody, err.Error())
+		cplogs.Flush()
 		return nil, err
 	}
 
@@ -119,12 +124,16 @@ func (c ClusterInfo) GetApiBucketClusters(bucketUuid string) ([]ApiCluster, erro
 
 	respBody, err := c.getResponseBody(c.client, req)
 	if err != nil {
+		cplogs.V(4).Infof("Error during request %s response %s, error %s\n", url.String(), respBody, err.Error())
+		cplogs.Flush()
 		return nil, err
 	}
 
 	clusters := make([]ApiCluster, 0)
 	err = json.Unmarshal(respBody, &clusters)
 	if err != nil {
+		cplogs.V(4).Infof("Error unmarshalling request %s response %s, error %s\n", url.String(), respBody, err.Error())
+		cplogs.Flush()
 		return nil, err
 	}
 
@@ -143,12 +152,16 @@ func (c ClusterInfo) GetApiUser(user string, apiKey string) (*ApiUser, error) {
 
 	respBody, err := c.getResponseBody(c.client, req)
 	if err != nil {
+		cplogs.V(4).Infof("Error during request %s response %s, error %s\n", url.String(), respBody, err.Error())
+		cplogs.Flush()
 		return nil, err
 	}
 
 	apiUserResponse := &ApiUser{}
 	err = json.Unmarshal(respBody, apiUserResponse)
 	if err != nil {
+		cplogs.V(4).Infof("Error unmarshalling request %s response %s, error %s\n", url.String(), respBody, err.Error())
+		cplogs.Flush()
 		return nil, err
 	}
 
@@ -159,10 +172,11 @@ func (c ClusterInfo) getResponseBody(client *http.Client, req *http.Request) ([]
 	res, err := client.Do(req)
 	defer res.Body.Close()
 	if err != nil {
+		cplogs.V(4).Infoln("Error when creating client for request")
 		return nil, err
 	}
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Error requesting user information, request status: %s", res.StatusCode)
+		return nil, fmt.Errorf("Error requesting user information, request status: %d", res.StatusCode)
 	}
 	resBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
