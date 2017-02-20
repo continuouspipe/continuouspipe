@@ -33,7 +33,6 @@ class AppExtension extends Extension
         $loader->load('alerts.xml');
         $loader->load('security.xml');
         $loader->load('logstream.xml');
-        $loader->load('logging.xml');
         $loader->load('web-hook.xml');
         $loader->load('k8s-watcher.xml');
         $loader->load('k8s-health-checker.xml');

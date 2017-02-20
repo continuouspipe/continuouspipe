@@ -28,6 +28,7 @@ class AppKernel extends Kernel
             new Tolerance\Bridge\Symfony\Bundle\ToleranceBundle\ToleranceBundle(),
             new ContinuousPipe\AtlassianAddonBundle\AtlassianAddonBundle(),
             new ContinuousPipe\WorkerBundle\WorkerBundle(),
+            new ContinuousPipe\PlatformBundle\ContinuousPipePlatformBundle(),
             new LogStream\LogStreamBundle(),
             new AdminBundle\AdminBundle(),
             new AppBundle\AppBundle(),
