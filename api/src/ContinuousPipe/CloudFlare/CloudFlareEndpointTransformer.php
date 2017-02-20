@@ -97,7 +97,7 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
                     'record_identifier' => $identifier,
                 ];
 
-                $logger->child(new Text('Created zone: ' . $recordName));
+                $logger->child(new Text('Created zone record: ' . $recordName));
                 $logger->updateStatus(Log::SUCCESS);
 
                 $this->deploymentClientFactory->get($deploymentContext)->getServiceRepository()->annotate(
