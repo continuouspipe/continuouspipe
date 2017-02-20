@@ -22,8 +22,14 @@
 
         <service id="atlassian_addon.request.param_converter.web_hook" class="ContinuousPipe\AtlassianAddonBundle\Request\ParamConverter\WebHookParamConverter">
             <argument type="service" id="jms_serializer" />
+            <argument type="service" id="atlassian_addon.request.webhook.request_validator" />
 
             <tag name="request.param_converter" converter="bitbucket_webhook" />
         </service>
+        <service id="atlassian_addon.request.webhook.request_validator" class="ContinuousPipe\AtlassianAddonBundle\Request\WebHook\Security\RequestValidator">
+            <argument type="service" id="atlassian_addon.request.webhook.jwt.signer_factory" />
+            <argument type="service" id="atlassian_addon.installation_repository" />
+        </service>
+        <service id="atlassian_addon.request.webhook.jwt.signer_factory" class="ContinuousPipe\AtlassianAddonBundle\Request\WebHook\Security\Jwt\SignerFactory"/>
     </services>
 </container>

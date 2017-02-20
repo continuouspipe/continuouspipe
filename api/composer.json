@@ -52,7 +52,8 @@
         "adlogix/guzzle-atlassian-connect-middleware": "~1.1.2",
         "twig/twig": "^1.12",
         "continuous-pipe/worker-bundle": "dev-master",
-        "google/apiclient": "^2.1"
+        "google/apiclient": "^2.1",
+        "lcobucci/jwt": "^3.2"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
