@@ -13,11 +13,11 @@ package main
 //
 
 import (
+	"github.com/continuouspipe/kube-proxy/cplogs"
+	kproxy "github.com/continuouspipe/kube-proxy/proxy"
 	"net/http"
 	"net/url"
 	"os"
-	kproxy "github.com/continuouspipe/kube-proxy/proxy"
-	"github.com/continuouspipe/kube-proxy/cplogs"
 )
 
 func main() {

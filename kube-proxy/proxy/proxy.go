@@ -4,18 +4,18 @@ import (
 	"bufio"
 	"crypto/tls"
 	"fmt"
+	"github.com/continuouspipe/kube-proxy/cpapi"
+	"github.com/continuouspipe/kube-proxy/cplogs"
+	"github.com/continuouspipe/kube-proxy/parser"
 	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"strings"
 	"time"
-	"github.com/continuouspipe/kube-proxy/cpapi"
-	"github.com/continuouspipe/kube-proxy/parser"
-	"github.com/continuouspipe/kube-proxy/cplogs"
-	"os"
 )
 
 var envInsecureSkipVerify, _ = os.LookupEnv("KUBE_PROXY_INSECURE_SKIP_VERIFY")

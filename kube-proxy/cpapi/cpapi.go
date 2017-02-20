@@ -1,13 +1,13 @@
 package cpapi
 
 import (
-	"net/url"
-	"fmt"
-	"net/http"
 	"encoding/json"
-	"io/ioutil"
-	"os"
+	"fmt"
 	"github.com/continuouspipe/kube-proxy/cplogs"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"os"
 )
 
 var envCpAuthenticatorHost, _ = os.LookupEnv("KUBE_PROXY_AUTHENTICATOR_HOST") //e.g.: authenticator-staging.continuouspipe.io
@@ -30,7 +30,7 @@ func NewClusterInfo() *ClusterInfo {
 type ApiTeam struct {
 	Slug       string `json:"slug"`
 	Name       string `json:"name"`
-	BucketUuid string      `json:"bucket_uuid"`
+	BucketUuid string `json:"bucket_uuid"`
 
 	//Should be []ApiMembership although there is a bug on the api where a list of object with keys "1", "2" is returned
 	//instead of being a json array
@@ -38,25 +38,25 @@ type ApiTeam struct {
 }
 
 type ApiMembership struct {
-	Team        ApiTeam `json:"team"`
-	User        ApiUser `json:"user"`
+	Team        ApiTeam  `json:"team"`
+	User        ApiUser  `json:"user"`
 	Permissions []string `json:"permissions"`
 }
 
 type ApiUser struct {
-	Username   string      `json:"username"`
-	Email      string      `json:"email"`
-	BucketUuid string      `json:"bucket_uuid"`
-	Roles      []string      `json:"roles"`
+	Username   string   `json:"username"`
+	Email      string   `json:"email"`
+	BucketUuid string   `json:"bucket_uuid"`
+	Roles      []string `json:"roles"`
 }
 
 type ApiCluster struct {
-	Identifier string    `json:"identifier"`
-	Address    string    `json:"address"`
-	Version    string    `json:"version"`
-	Username   string    `json:"username"`
-	Password   string    `json:"password"`
-	Type       string    `json:"type"`
+	Identifier string `json:"identifier"`
+	Address    string `json:"address"`
+	Version    string `json:"version"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	Type       string `json:"type"`
 }
 
 func (c ClusterInfo) GetCluster(cpUsername string, cpApiKey string, teamName string, clusterIdentifier string) (*ApiCluster, error) {
