@@ -54,6 +54,9 @@ Feature:
     When I send the built deployment request
     Then the service "http" should be created
     And the CloudFlare zone "master.example.com" should have been created with the type A and the address "1.2.3.4"
+    And the service "http" should contain the following annotations:
+      | name                                  | value                                                           |
+      | com.continuouspipe.io.cloudflare.zone | {"record_name":"master.example.com","record_identifier":"1234"} |
 
   Scenario: It creates a DNS zone in CloudFlare
     Given the service "http" will be created with the public DNS address "112345.elb.aws.com"
@@ -94,6 +97,9 @@ Feature:
     When I send the built deployment request
     Then the service "http" should be created
     And the CloudFlare zone "master-myapp.example.com" should have been created with the type CNAME and the address "112345.elb.aws.com"
+    And the service "http" should contain the following annotations:
+      | name                                  | value                                                                 |
+      | com.continuouspipe.io.cloudflare.zone | {"record_name":"master-myapp.example.com","record_identifier":"1234"} |
 
   Scenario: It still returns the port in the endpoints
     Given the service "http" will be created with the public DNS address "112345.elb.aws.com"
@@ -134,4 +140,47 @@ Feature:
     When I send the built deployment request
     Then the service "http" should be created
     And the CloudFlare zone "master-myapp.example.com" should have been created with the type CNAME and the address "112345.elb.aws.com"
+    And the deployment endpoint "master-myapp.example.com" should have the port "80"
+
+  Scenario: It returns the CloudFlare endpoint even if the endpoint was already created
+    Given there is a service "http" for the component "app"
+    And the service "http" have the public IP "1.2.3.4"
+    And the service "http" have the following annotations:
+      | name                                  | value                                                                 |
+      | com.continuouspipe.io.cloudflare.zone | {"record_name":"master-myapp.example.com","record_identifier":"1234"} |
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "cloud_flare_zone": {
+              "zone_identifier": "1234531235qwerty",
+              "record_suffix": "-myapp.example.com",
+              "authentication": {
+                "email": "samuel@example.com",
+                "api_key": "foobar"
+              }
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
     And the deployment endpoint "master-myapp.example.com" should have the port "80"

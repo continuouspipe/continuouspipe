@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace;
 
+use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Repository\ServiceRepository;
 
@@ -99,6 +100,18 @@ class TraceableServiceRepository implements ServiceRepository
         $this->updated[] = $updated;
 
         return $updated;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function annotate(string $name, KeyValueObjectList $annotations)
+    {
+        $annotated = $this->repository->annotate($name, $annotations);
+
+        $this->updated[] = $annotated;
+
+        return $annotated;
     }
 
     /**

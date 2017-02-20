@@ -96,15 +96,25 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated" />
         </service>
 
-        <service id="pipe.cloud_flare.client.api" class="ContinuousPipe\CloudFlare\CloudFlareApiClient" />
-        <service id="pipe.cloud_flare.client" alias="pipe.cloud_flare.client.api" />
-        <service id="pipe.adapter.kubernetes.listener.public_endpoint_created.apply_transformations" class="ContinuousPipe\Adapter\Kubernetes\Listener\PublicEndpointsCreated\ApplyPublicEndpointsTransformations">
-            <argument type="service" id="event_bus" />
+        <!-- Endpoint integrations -->
+        <service id="pipe.adapter.kubernetes.service_waiter.transform_endpoints"
+                 class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\ApplyEndpointTransformationAfterWaiting"
+                 decorates="pipe.adapter.kubernetes.service_waiter">
+            <argument type="service" id="pipe.adapter.kubernetes.service_waiter.transform_endpoints.inner" />
+            <argument type="collection">
+                <argument type="service" id="pipe.cloud_flare.endpoint_transformer" />
+            </argument>
+        </service>
+
+        <!-- CloudFlare integration -->
+        <service id="pipe.cloud_flare.endpoint_transformer" class="ContinuousPipe\CloudFlare\CloudFlareEndpointTransformer">
             <argument type="service" id="pipe.cloud_flare.client" />
             <argument type="service" id="log_stream.logger_factory" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsCreated" />
+            <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
+            <argument type="service" id="logger" />
         </service>
+        <service id="pipe.cloud_flare.client.api" class="ContinuousPipe\CloudFlare\CloudFlareApiClient" />
+        <service id="pipe.cloud_flare.client" alias="pipe.cloud_flare.client.api" />
 
         <!-- Synchronous event listeners -->
         <service id="pipe.adapter.kubernetes.listener.before_creating_component.create_persistent_volume_claim" class="ContinuousPipe\Adapter\Kubernetes\Listener\BeforeCreatingComponent\CreatePersistentVolumeClaim">
