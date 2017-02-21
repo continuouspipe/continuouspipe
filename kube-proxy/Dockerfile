@@ -1,6 +1,7 @@
 FROM golang:1.7
 
-ARG KUBE_PROXY_LISTEN_HTTPS=
+ARG WILDCARD_SSL_CERT=
+ARG WILDCARD_SSL_KEY=
 ARG KUBE_PROXY_LISTEN_ADDRESS=
 ARG KUBE_PROXY_INSECURE_SKIP_VERIFY=
 ARG KUBE_PROXY_AUTHENTICATOR_HOST=
@@ -15,4 +16,3 @@ RUN go install
 
 # Run the outyet command by default when the container starts.
 ENTRYPOINT ["/go/bin/kube-proxy"]
-EXPOSE 80

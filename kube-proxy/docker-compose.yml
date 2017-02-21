@@ -1,11 +1,12 @@
 web:
     build: .
     expose:
-        - 80
+        - 443
     volumes:
         - .:/go/src/github.com/continuouspipe/kube-proxy/bin
     environment:
-        KUBE_PROXY_LISTEN_HTTPS:
+        WILDCARD_SSL_CERT:
+        WILDCARD_SSL_KEY:
         KUBE_PROXY_LISTEN_ADDRESS:
         KUBE_PROXY_INSECURE_SKIP_VERIFY:
         KUBE_PROXY_AUTHENTICATOR_HOST:
