@@ -66,9 +66,8 @@ Dependencies: You need to have 'git', and 'cwRsync' installed and available in y
 cp-remote setup
 ```
 
-To start using this tool for a project, run the `setup` command from the project root.
- This will install kubectl if you do not have it installed already. It will then
- ask a series of questions to get the details for the project set up. [Please read the further
+To start using this tool for a project, run the `setup` command from the project root. It will ask a series of
+ questions to get the details for the project set up. [Please read the further
  information about these questions](#configuration) in the Configuration section below before
  running this command for the first time.
 
@@ -330,25 +329,3 @@ cluster IP address and username can be found on the cluster page for the team in
 * What is the cluster password?
 
 The password can be provided by your ContinuousPipe administrator.
-
-## Migrate to CP-Remote Go
-If you have been using the bash version of cp-remote, you can follow these steps to migrate to the go version.
-
-- Install the latest version, see instructions in the Installation section above
-- In your project directory, run `cp-remote setup` (see Setup section below)
-
-**Changes in command arguments**
-
-In the Go version, the commands arguments needs to be passed as flags.
-To find out information about the available flags for each command run `cp-remote [command] --help` or `cp-remote [command] -h`
-
-**Examples:**
-
-Previously to open a bash remote shell overriding the default service,
-the command using the bash script would have been `cp-remote bash web`.
-This has been updated to `cp-remote bash -s web`, alternatively you may use the full flag name `cp-remote bash --service web`
-
-To execute a command onan environment which differs from the default one.
-The previous command would have been `cp-remote exec --namespace=project-key-feature-my-shiny-new-work -- ls -l`.
-This has been updated to `cp-remote exec --project-key example --remote-branch feature-my-shiny-new-work -- ls -l`.
-Alternatively a more concise version is `cp-remote exec -p example -r feature-my-shiny-new-work -- ls -l`.
