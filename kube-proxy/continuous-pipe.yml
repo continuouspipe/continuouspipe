@@ -30,8 +30,3 @@ tasks:
                               value: ${KUBE_PROXY_AUTHENTICATOR_HOST}
                             - name: KUBE_PROXY_MASTER_API_KEY
                               value: ${KUBE_PROXY_MASTER_API_KEY}
-
-                    deployment_strategy:
-                        readiness_probe:
-                            type: tcp
-                            port: 443
