@@ -1,7 +1,7 @@
 <div ng-show="alerts.length > 0" flex layout="row" class="alerts-container">
     <span ng-show="alerts.length > 1">
         <md-tooltip md-direction="bottom">{{ alerts.length }} alerts</md-tooltip>
-        ({{ alerts.length }})
+        <md-button ng-click="showAlerts()" class="md-icon-button">({{ alerts.length }})</md-button>
     </span>
     <h2 class="title">{{ alerts[0].message }}</h2>
     <span flex></span>
