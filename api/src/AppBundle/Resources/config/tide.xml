@@ -56,6 +56,7 @@
                 <argument type="service" id="river.pipeline.tide_configuration_finalizer.import_pipeline_configuration" />
                 <argument type="service" id="river.tide.configuration_finalizer.merge_environment_variables_of_pipelines" />
                 <argument type="service" id="river.tide.configuration_finalizer.replace_environ_values" />
+                <argument type="service" id="river.tide.configuration_finalizer.order_tasks_by_key" />
             </argument>
         </service>
 
@@ -66,6 +67,9 @@
                 <argument>[tasks][*][deploy][services][*][specification][environment_variables]</argument>
             </argument>
         </service>
+
+        <service id="river.tide.configuration_finalizer.order_tasks_by_key"
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\OrderTasksByKey" />
 
         <service id="river.tide.configuration_finalizer.merge_environment_variables_of_pipelines"
                  class="ContinuousPipe\River\Flow\ConfigurationFinalizer\MergeEnvironmentVariables">

@@ -240,3 +240,47 @@ Feature:
     When I send a tide creation request for branch "master" and commit "1234"
     Then a tide should be created
     And the tide should be failed
+
+  Scenario: It still reads the tasks in the correct order
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+      images:
+        build:
+          environment:
+            - name: GITHUB_TOKEN
+              value: ${GITHUB_TOKEN}
+          services:
+            web:
+              image: quay.io/inviqa_images/inviqa-teamup
+              naming_strategy: sha1
+
+      unit_test:
+        run:
+          cluster: ${CLUSTER}
+          environment:
+            name: '"${CP_ENVIRONMENT}"'
+          image:
+            from_service: web
+          commands:
+            - container composer
+            - container unit_test
+
+    pipelines:
+      - name: Mainline
+        condition: 'code_reference.branch in ["develop"]'
+        tasks:
+          - images
+          - imports: unit_test
+            run:
+              environment:
+                name: '"teamup-ci"'
+              environment_variables:
+                - name: DEVELOPMENT_MODE
+                  value: 0
+    """
+    When I send a tide creation request for branch "develop" and commit "1234"
+    And the tide for the branch "develop" and commit "1234" is tentatively started
+    Then a tide should be created
+    And the run task should be pending
+    And the build task should be running
