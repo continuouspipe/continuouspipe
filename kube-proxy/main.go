@@ -20,6 +20,8 @@ import (
 	"net/url"
 	"os"
 	"io/ioutil"
+	"encoding/base64"
+	"fmt"
 )
 
 var envListenAddress, _ = os.LookupEnv("KUBE_PROXY_LISTEN_ADDRESS") //e.g.: https://localhost:80
@@ -36,20 +38,42 @@ func main() {
 
 	listenURL, err := url.Parse(envListenAddress)
 	if err != nil {
-		cplogs.V(5).Infof("Cannot parse URL: %v", err.Error())
+		cplogs.V(5).Infof("Cannot parse URL: %v\n", err.Error())
+		cplogs.Flush()
+		fmt.Printf("Cannot parse URL: %v\n", err.Error())
+		os.Exit(1)
 	}
 	h := kproxy.NewHttpHandler()
 
 	err = http.ListenAndServeTLS(listenURL.Host, sslCertFileName, sslKeyFileName, h)
 
 	if err != nil {
-		cplogs.V(5).Infof("Error when listening: %v", err.Error())
+		cplogs.V(5).Infof("Error when listening: %v\n", err.Error())
+		cplogs.Flush()
+		fmt.Printf("Error when listening: %v\n", err.Error())
+		os.Exit(1)
 	}
 	cplogs.Flush()
 }
 
 func writeSSLCertAndKey() {
 	cplogs.V(5).Infoln("Writing provided SSL Cert")
-	ioutil.WriteFile(sslCertFileName, []byte(envWildcardSSLCert), 0644)
-	ioutil.WriteFile(sslKeyFileName, []byte(envWildcardSSLKey), 0644)
+
+	wildcardSSLCert, err := base64.StdEncoding.DecodeString(envWildcardSSLCert)
+	if err != nil {
+		cplogs.V(5).Infof("Error decoding wildcardSSLCert: %v\n", err.Error())
+		cplogs.Flush()
+		fmt.Printf("Error decoding wildcardSSLCert: %v\n", err.Error())
+		os.Exit(1)
+	}
+	wildcardSSLKey, err := base64.StdEncoding.DecodeString(envWildcardSSLKey)
+	if err != nil {
+		cplogs.V(5).Infof("Error decoding wildcardSSLKey: %v\n", err.Error())
+		cplogs.Flush()
+		fmt.Printf("Error decoding wildcardSSLKey: %v\n", err.Error())
+		os.Exit(1)
+	}
+
+	ioutil.WriteFile(sslCertFileName, []byte(wildcardSSLCert), 0644)
+	ioutil.WriteFile(sslKeyFileName, []byte(wildcardSSLKey), 0644)
 }
