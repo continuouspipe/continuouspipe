@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
 use Kubernetes\Client\Exception\ServiceNotFound;
+use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServiceList;
 use Kubernetes\Client\Repository\ServiceRepository;
@@ -91,6 +92,21 @@ class InMemoryServiceRepository implements ServiceRepository
     public function update(Service $service)
     {
         $this->services[$service->getMetadata()->getName()] = $service;
+
+        return $service;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function annotate(string $name, KeyValueObjectList $annotations)
+    {
+        $service = $this->findOneByName($name);
+        $existingAnnotations = $service->getMetadata()->getAnnotationList();
+
+        foreach ($annotations as $annotation) {
+            $existingAnnotations->add($annotation);
+        }
 
         return $service;
     }

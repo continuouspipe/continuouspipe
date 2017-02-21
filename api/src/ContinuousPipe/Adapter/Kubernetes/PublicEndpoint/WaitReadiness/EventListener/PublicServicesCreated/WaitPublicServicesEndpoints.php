@@ -4,15 +4,14 @@ namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\WaitReadiness\EventLi
 
 use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
 use ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated;
+use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointException;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointNotFound;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointObjectVoter;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointWaiter;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
-use ContinuousPipe\Pipe\Event\PublicEndpointsCreated;
 use ContinuousPipe\Pipe\Event\PublicEndpointsReady;
 use Kubernetes\Client\Model\KubernetesObject;
-use LogStream\Log;
 use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
 use React;
@@ -39,14 +38,12 @@ class WaitPublicServicesEndpoints
      */
     private $publicEndpointObjectVoter;
 
-    /**
-     * @param MessageBus                $eventBus
-     * @param PublicEndpointWaiter      $waiter
-     * @param LoggerFactory             $loggerFactory
-     * @param PublicEndpointObjectVoter $publicEndpointObjectVoter
-     */
-    public function __construct(MessageBus $eventBus, PublicEndpointWaiter $waiter, LoggerFactory $loggerFactory, PublicEndpointObjectVoter $publicEndpointObjectVoter)
-    {
+    public function __construct(
+        MessageBus $eventBus,
+        PublicEndpointWaiter $waiter,
+        LoggerFactory $loggerFactory,
+        PublicEndpointObjectVoter $publicEndpointObjectVoter
+    ) {
         $this->eventBus = $eventBus;
         $this->waiter = $waiter;
         $this->loggerFactory = $loggerFactory;
@@ -69,13 +66,9 @@ class WaitPublicServicesEndpoints
         }
 
         try {
-            $endpoints = $this->waitEndpoints($context, $objects, $context->getLog());
+            $endpoints = $this->waitEndpoints($context, $objects);
 
-            if (count($status->getCreated()) > 0) {
-                $this->eventBus->handle(new PublicEndpointsCreated($context, $endpoints));
-            } else {
-                $this->eventBus->handle(new PublicEndpointsReady($context, $endpoints));
-            }
+            $this->eventBus->handle(new PublicEndpointsReady($context, $endpoints));
         } catch (EndpointNotFound $e) {
             $this->eventBus->handle(new DeploymentFailed($context));
         }
@@ -84,18 +77,17 @@ class WaitPublicServicesEndpoints
     /**
      * @param DeploymentContext  $context
      * @param KubernetesObject[] $objects
-     * @param Log                $log
      *
      * @return \ContinuousPipe\Pipe\Environment\PublicEndpoint[]
      *
      * @throws \Exception
      */
-    private function waitEndpoints(DeploymentContext $context, array $objects, Log $log)
+    private function waitEndpoints(DeploymentContext $context, array $objects)
     {
         $loop = React\EventLoop\Factory::create();
 
-        $waitPromises = array_map(function (KubernetesObject $object) use ($loop, $context, $log) {
-            return $this->waiter->waitEndpoint($loop, $context, $object, $log);
+        $waitPromises = array_map(function (KubernetesObject $object) use ($loop, $context) {
+            return $this->waiter->waitEndpoint($loop, $context, $object);
         }, $objects);
 
         $endpoints = [];
@@ -103,7 +95,7 @@ class WaitPublicServicesEndpoints
 
         React\Promise\all($waitPromises)->then(function (array $foundEndpoints) use (&$endpoints) {
             $endpoints = $foundEndpoints;
-        }, function (EndpointNotFound $e) use (&$exception) {
+        }, function (EndpointException $e) use (&$exception) {
             $exception = $e;
         });
 

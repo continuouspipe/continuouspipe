@@ -54,4 +54,12 @@ class PublicEndpoint
     {
         return $this->ports;
     }
+
+    public function withAddress(string $address) : self
+    {
+        $endpoint = clone $this;
+        $endpoint->address = $address;
+
+        return $endpoint;
+    }
 }

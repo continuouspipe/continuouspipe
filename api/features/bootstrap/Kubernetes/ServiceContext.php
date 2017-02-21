@@ -9,6 +9,7 @@ use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceRepository
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceRepository;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use Kubernetes\Client\Exception\ServiceNotFound;
+use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\LoadBalancerStatus;
 use Kubernetes\Client\Model\ObjectMetadata;
@@ -96,13 +97,19 @@ class ServiceContext implements Context
 
     /**
      * @Given I have an existing service :name
+     * @Given there is a service :name for the component :componentName
      */
-    public function iHaveAnExistingService($name)
+    public function iHaveAnExistingService($name, $componentName = null)
     {
         try {
             $this->serviceRepository->findOneByName($name);
         } catch (ServiceNotFound $e) {
-            $this->serviceRepository->create(new Service(new ObjectMetadata($name)));
+            $this->serviceRepository->create(new Service(
+                new ObjectMetadata($name),
+                new ServiceSpecification(
+                    ['component-identifier' => $componentName ?: $name]
+                )
+            ));
         }
     }
 
@@ -183,6 +190,28 @@ class ServiceContext implements Context
             new ServiceStatus(new LoadBalancerStatus([
                 new LoadBalancerIngress($address)
             ]))
+        ));
+    }
+
+    /**
+     * @Given the service :name have the following annotations:
+     */
+    public function theServiceHaveTheFollowingAnnotations($name, TableNode $table)
+    {
+        $service = $this->serviceRepository->findOneByName($name);
+        $metadata = $service->getMetadata();
+
+        foreach ($table->getHash() as $row) {
+            $metadata->getAnnotationList()->add(new Annotation(
+                $row['name'],
+                $row['value']
+            ));
+        }
+
+        $this->serviceRepository->update(new Service(
+            $metadata,
+            $service->getSpecification(),
+            $service->getStatus()
         ));
     }
 

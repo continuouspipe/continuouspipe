@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServiceList;
 use Kubernetes\Client\Repository\ServiceRepository;
@@ -100,5 +101,13 @@ class HookableServiceRepository implements ServiceRepository
     public function addFindOneByNameHooks(callable $hook)
     {
         $this->findOneByNameHooks[] = $hook;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function annotate(string $name, KeyValueObjectList $annotations)
+    {
+        return $this->repository->annotate($name, $annotations);
     }
 }

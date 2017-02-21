@@ -3,9 +3,7 @@
 namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint;
 
 use ContinuousPipe\Pipe\DeploymentContext;
-use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use Kubernetes\Client\Model\KubernetesObject;
-use LogStream\Log;
 use React;
 
 interface PublicEndpointWaiter
@@ -14,11 +12,10 @@ interface PublicEndpointWaiter
      * @param React\EventLoop\LoopInterface $loop
      * @param DeploymentContext             $context
      * @param KubernetesObject              $object
-     * @param Log                           $log
      *
      * @throws EndpointNotFound
      *
-     * @return PublicEndpoint
+     * @return React\Promise\PromiseInterface
      */
-    public function waitEndpoint(React\EventLoop\LoopInterface $loop, DeploymentContext $context, KubernetesObject $object, Log $log);
+    public function waitEndpoint(React\EventLoop\LoopInterface $loop, DeploymentContext $context, KubernetesObject $object);
 }

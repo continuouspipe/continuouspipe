@@ -65,16 +65,15 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
     /**
      * @param DeploymentContext $context
      * @param KubernetesObject  $object
-     * @param Log               $log
      *
      * @return React\Promise\PromiseInterface
      *
      * @throws EndpointNotFound
      */
-    public function waitEndpoint(React\EventLoop\LoopInterface $loop, DeploymentContext $context, KubernetesObject $object, Log $log)
+    public function waitEndpoint(React\EventLoop\LoopInterface $loop, DeploymentContext $context, KubernetesObject $object)
     {
         $objectName = $object->getMetadata()->getName();
-        $logger = $this->loggerFactory->from($log)->child(new Text('Waiting public endpoint of service '.$objectName));
+        $logger = $this->loggerFactory->from($context->getLog())->child(new Text('Waiting public endpoint of service '.$objectName));
         $client = $this->clientFactory->get($context);
 
         $logger->updateStatus(Log::RUNNING);
