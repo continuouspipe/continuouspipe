@@ -29,12 +29,6 @@ func NewHttpHandler() *HttpHandler {
 func (m *HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cplogs.V(5).Infof("Start serving request %s", r.URL.String())
 
-	if strings.Contains(r.URL.String(), "api") == false {
-		cplogs.V(5).Infof("Skipping, the request url does't has the 'api' keyword")
-		fmt.Fprint(w, "Skipping forwarding the request url does't has the 'api' keyword")
-		return
-	}
-
 	proxy, err := NewUpgradeAwareSingleHostReverseProxy(r)
 	if err != nil {
 		cplogs.Errorf("Error when creating the single host reverse proxy. Error: %s", err.Error())
