@@ -60,27 +60,6 @@ if your architecture is 32bit use windows-386.gz rather than windows-amd64.gz
 
 Dependencies: You need to have 'git', and 'cwRsync' installed and available in your environment PATHS variable
 
-### Migrate to CP-Remote Go
-
-- Install the latest version, see instructions in the Installation section above
-- In your project directory, run `cp-remote setup` (see Setup section below)
-
-**Changes in command arguments**
-
-In the Go version, the commands arguments needs to be passed as flags.
-To find out information about the available flags for each command run `cp-remote [command] --help` or `cp-remote [command] -h`
-
-**Examples:**
-
-Previously to open a bash remote shell overriding the default service,
-the command using the bash script would have been `cp-remote bash web`.
-This has been updated to `cp-remote bash -s web`, alternatively you may use the full flag name `cp-remote bash --service web`
-
-To execute a command onan environment which differs from the default one.
-The previous command would have been `cp-remote exec --namespace=project-key-feature-my-shiny-new-work -- ls -l`.
-This has been updated to `cp-remote exec --project-key example --remote-branch feature-my-shiny-new-work -- ls -l`.
-Alternatively a more concise version is `cp-remote exec -p example -r feature-my-shiny-new-work -- ls -l`.
-
 ## Setup
 
 ```
@@ -97,7 +76,7 @@ To start using this tool for a project, run the `setup` command from the project
  project specific README and to securely share sensitive details, such as the cluster password with
  team members rather than them rely on the general information provided here.
 
-Your answers will be stored in a `.cp-remote-env-settings` file in the project root. You
+Your answers will be stored in a `.cp-remote-env-settings.yml` file in the project root. You
  will probably want to add this to your .gitignore file.
 
 ## Creating and building remote environment
@@ -351,3 +330,25 @@ cluster IP address and username can be found on the cluster page for the team in
 * What is the cluster password?
 
 The password can be provided by your ContinuousPipe administrator.
+
+## Migrate to CP-Remote Go
+If you have been using the bash version of cp-remote, you can follow these steps to migrate to the go version.
+
+- Install the latest version, see instructions in the Installation section above
+- In your project directory, run `cp-remote setup` (see Setup section below)
+
+**Changes in command arguments**
+
+In the Go version, the commands arguments needs to be passed as flags.
+To find out information about the available flags for each command run `cp-remote [command] --help` or `cp-remote [command] -h`
+
+**Examples:**
+
+Previously to open a bash remote shell overriding the default service,
+the command using the bash script would have been `cp-remote bash web`.
+This has been updated to `cp-remote bash -s web`, alternatively you may use the full flag name `cp-remote bash --service web`
+
+To execute a command onan environment which differs from the default one.
+The previous command would have been `cp-remote exec --namespace=project-key-feature-my-shiny-new-work -- ls -l`.
+This has been updated to `cp-remote exec --project-key example --remote-branch feature-my-shiny-new-work -- ls -l`.
+Alternatively a more concise version is `cp-remote exec -p example -r feature-my-shiny-new-work -- ls -l`.
