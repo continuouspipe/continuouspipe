@@ -47,3 +47,15 @@ Feature:
     And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
     When I update my subscription "00000000-1111-1111-1111-000000000000" with a quantity of 4
     Then the subscription "00000000-1111-1111-1111-000000000000" should have been updated with a quantity of 4
+
+  Scenario: Subscription usage is displayed on the admin
+    Given there is a team "foo"
+    And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    And the following usage is recorded for the team "foo":
+      | flow_uuid                            | type | user  | date       |
+      | 00000000-0000-0000-0000-000000000000 | push | user1 | -1 day     |
+      | 00000000-0000-0000-0000-000000000000 | push | user1 | -2 days    |
+      | 00000000-0000-0000-0000-000000000000 | push | user2 | -3 days    |
+    And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
+    When I configure my billing profile
+    Then I should see that my current usage is of 2 active users

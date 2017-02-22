@@ -128,6 +128,19 @@ class SubscriptionContext implements Context
     }
 
     /**
+     * @Then I should see that my current usage is of :users active users
+     */
+    public function iShouldSeeThatMyCurrentUsageIsOfActiveUsers($numberOfUsers)
+    {
+        $this->assertStatusCode(200);
+
+        $expectedMarkup = 'data-current-usage="'.$numberOfUsers.'"';
+        if (false === strpos($this->response->getContent(), $expectedMarkup)) {
+            throw new \RuntimeException('Did not found \''.$expectedMarkup.'\' in the page');
+        }
+    }
+
+    /**
      * @Then I should be able to cancel my subscription
      */
     public function iShouldBeAbleToCancelMySubscription()

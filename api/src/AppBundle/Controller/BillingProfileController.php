@@ -10,6 +10,7 @@ use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Billing\Subscription\Subscription;
 use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use ContinuousPipe\Billing\Subscription\SubscriptionException;
+use ContinuousPipe\Billing\Usage\UsageTracker;
 use ContinuousPipe\Message\UserActivity;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
@@ -46,6 +47,10 @@ class BillingProfileController
      */
     private $urlGenerator;
     /**
+     * @var UsageTracker
+     */
+    private $usageTracker;
+    /**
      * @var string
      */
     private $recurlySubdomain;
@@ -56,6 +61,7 @@ class BillingProfileController
         TrialResolver $trialResolver,
         ActivityTracker $activityTracker,
         UrlGeneratorInterface $urlGenerator,
+        UsageTracker $usageTracker,
         string $recurlySubdomain
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
@@ -64,6 +70,7 @@ class BillingProfileController
         $this->trialResolver = $trialResolver;
         $this->activityTracker = $activityTracker;
         $this->urlGenerator = $urlGenerator;
+        $this->usageTracker = $usageTracker;
     }
 
     /**
@@ -155,6 +162,7 @@ class BillingProfileController
         return [
             'billingProfile' => $billingProfile,
             'subscriptions' => $subscriptions,
+            'usage' => $this->usageTracker->getUsage($billingProfile->getUuid(), new \DateTime('-30 days'), new \DateTime()),
             'trialExpiration' => $this->trialResolver->getTrialPeriodExpirationDate($billingProfile),
             'billingProfileTeams' => $billingProfileTeams,
             'userActivities' => $activities,
