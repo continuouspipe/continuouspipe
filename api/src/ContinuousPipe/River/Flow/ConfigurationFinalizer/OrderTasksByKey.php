@@ -18,16 +18,24 @@ class OrderTasksByKey implements ConfigurationFinalizer
             $pipeline = $this->sortTasks($pipeline);
         }
 
-        if (array_key_exists('tasks', $configuration)) {
-            $configuration = $this->sortTasks($configuration);
-        }
+        $configuration = $this->sortTasks($configuration);
 
         return $configuration;
     }
 
     private function sortTasks(array $configuration)
     {
-        ksort($configuration['tasks']);
+        if (!array_key_exists('tasks', $configuration)) {
+            return $configuration;
+        }
+
+        $allNumericKey = array_reduce(array_keys($configuration['tasks']), function(bool $allNumericKey, $key) {
+            return $allNumericKey && is_numeric($key);
+        }, true);
+
+        if ($allNumericKey) {
+            ksort($configuration['tasks']);
+        }
 
         return $configuration;
     }
