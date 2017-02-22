@@ -8,6 +8,17 @@
         <service id="app.white_list" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineWhiteList">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
+        <service id="app_white_list.early_access" class="ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessWhiteList" decorates="app.white_list">
+            <argument type="service" id="app_white_list.early_access.inner" />
+            <argument type="service" id="app.authenticator.early_access_toggle" />
+        </service>
+        <service id="app.authenticator.early_access_toggle" class="ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggle">
+            <factory class="ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggleFactory" method="createWithSessionStorage" />
+            <argument type="service" id="session" />
+        </service>
+        <service id="app.repository.early_access_code" class="ContinuousPipe\Authenticator\EarlyAccess\InMemoryEarlyAccessCodeRepository">
+            <argument>%app.authenticator.early_access.codes%</argument>
+        </service>
         <service id="app.repository.security_user" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineSecurityUserRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
