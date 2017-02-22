@@ -159,15 +159,6 @@ class BillingProfileController
             }
         }
 
-        $usagePerSubscription = [];
-        foreach ($subscriptions as $subscription) {
-            $usagePerSubscription[$subscription->getUuid()] = $this->usageTracker->getUsage(
-                $billingProfile->getUuid(),
-                $subscription->getCurrentBillingPeriodStartedAt(),
-                $subscription->getCurrentBillingPeriodEndsAt()
-            );
-        }
-
         return [
             'billingProfile' => $billingProfile,
             'subscriptions' => $subscriptions,
