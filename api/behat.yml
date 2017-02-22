@@ -27,7 +27,9 @@ default:
                     - @event_bus
                     - @river.repository.tide
                 - LoggingContext:
+                    - @kernel
                     - @log_stream.client
+                    - @logger
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus
@@ -139,7 +141,9 @@ default:
                     - @event_bus
                     - @river.repository.tide
                 - LoggingContext:
+                    - @kernel
                     - @log_stream.client
+                    - @logger
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus
@@ -231,7 +235,9 @@ default:
                     - @event_bus
                     - @river.repository.tide
                 - LoggingContext:
+                    - @kernel
                     - @log_stream.client
+                    - @logger
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus

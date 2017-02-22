@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "eb5c4c975dd99d3e37d2e82107abcadf",
-    "content-hash": "bfac122b760066876cceec377ced57eb",
+    "hash": "d5c2e383f263066ade67c20ba23d8be1",
+    "content-hash": "669f4f736aa3a9cddab66990618955b4",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -283,6 +283,40 @@
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
             "time": "2016-11-14 18:36:28"
+        },
+        {
+            "name": "continuous-pipe/platform-bundle",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/PlatformBundle.git",
+                "reference": "3585106dffbd3ca1f0d57ae490c83c777962deb2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/PlatformBundle/zipball/3585106dffbd3ca1f0d57ae490c83c777962deb2",
+                "reference": "3585106dffbd3ca1f0d57ae490c83c777962deb2",
+                "shasum": ""
+            },
+            "require": {
+                "friendsofsymfony/rest-bundle": "*",
+                "symfony/symfony": "^2.8"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "^3.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ContinuousPipe\\": "src/"
+                }
+            },
+            "description": "This Bundle provides common configuration and methods used across many components.",
+            "support": {
+                "source": "https://github.com/continuouspipe/PlatformBundle/tree/1.0.0",
+                "issues": "https://github.com/continuouspipe/PlatformBundle/issues"
+            },
+            "time": "2017-02-20 17:34:02"
         },
         {
             "name": "continuous-pipe/security",
