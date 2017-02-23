@@ -53,7 +53,7 @@ class ConfigurationFactory implements TideConfigurationFactory
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference)
+    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference, bool $validated = true)
     {
         try {
             $fileSystem = $this->fileSystemResolver->getFileSystem($flow, $codeReference);
@@ -89,7 +89,9 @@ class ConfigurationFactory implements TideConfigurationFactory
                 $configuration = $finalizer->finalize($flow, $codeReference, $configuration);
             }
 
-            $configuration = $configTree->finalize($configuration);
+            if ($validated) {
+                $configuration = $configTree->finalize($configuration);
+            }
         } catch (InvalidConfigurationException $e) {
             throw new TideConfigurationException($e->getMessage(), 0, $e);
         }

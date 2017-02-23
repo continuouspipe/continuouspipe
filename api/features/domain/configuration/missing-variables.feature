@@ -101,3 +101,78 @@ Feature:
     When I request the flow configuration
     Then the variable "SERVICE_FOO_PUBLIC_ENDPOINT" should not be missing
     And the variable "ENDPOINT_HTTPS_API_PUBLIC_ENDPOINT" should not be missing
+
+  Scenario: The configuration do not need to be 100% valid
+    Given I have a flow
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    web:
+                        image: docker.io/sroze/php-example-manual
+                        naming_strategy: sha1
+
+        deployment:
+            deploy:
+                cluster: ${CLUSTER}
+                services:
+                    mysql:
+                        deployment_strategy:
+                            locked: true
+
+                    web:
+                        specification:
+                            environment_variables:
+                                - name: FOO
+                                  value: bar
+
+                            accessibility:
+                                from_external: true
+    """
+    When I request the flow configuration
+    Then the variable "CLUSTER" should be missing
+
+  Scenario: The configuration do not need to be 100% valid
+    Given I have a flow
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    variables:
+        - name: SYMFONY_ENV
+          value: prod
+
+    tasks:
+        images:
+            build:
+                services:
+                    web:
+                        image: ${IMAGE_NAME}
+                        naming_strategy: sha1
+        deployment:
+            deploy:
+                cluster: ${CLUSTER}
+                environment:
+                    name: '"sfdemo-" ~ code_reference.branch'
+                services:
+                    web:
+                        specification:
+                            accessibility:
+                                from_external: true
+                            environment_variables:
+                                - name: SYMFONY_ENV
+                                  value: ${SYMFONY_ENV}
+    """
+    When I request the flow configuration
+    Then the variable "CLUSTER" should be missing
+    And the variable "IMAGE_NAME" should be missing
+    And the variable "SYMFONY_ENV" should not be missing
+
+  Scenario: No missing variable when configuration is invalid
+    Given I have a flow
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    that_key_do_not_exists: ${CLUSTER}
+    """
+    When I request the flow configuration
+    Then the variable "CLUSTER" should not be missing

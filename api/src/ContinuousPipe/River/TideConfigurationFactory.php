@@ -11,12 +11,15 @@ interface TideConfigurationFactory
     /**
      * Get the configuration of the given tide.
      *
+     * If you don't want the configuration to be validated, pass false to the `$validated` argument.
+     *
      * @param FlatFlow      $flow
      * @param CodeReference $codeReference
+     * @param bool          $validated
      *
      * @return array
      *
      * @throws TideConfigurationException
      */
-    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference);
+    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference, bool $validated = true);
 }
