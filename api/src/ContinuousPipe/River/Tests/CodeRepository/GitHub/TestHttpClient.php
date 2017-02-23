@@ -74,7 +74,7 @@ class TestHttpClient implements HttpClientInterface
         }
 
         return new \Guzzle\Http\Message\Response(
-            200,
+            $httpMethod == 'HEAD' ? 404 : 200,
             [],
             ''
         );

@@ -8,6 +8,7 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\GitHub\GitHubClientException;
+use ContinuousPipe\River\GitHub\UserCredentialsNotFound;
 
 class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
 {
@@ -42,6 +43,8 @@ class GitHubFileSystemResolver implements CodeRepository\FileSystemResolver
                 $this->repositoryAddressDescriptor->getDescription($codeReference->getRepository()->getAddress()),
                 $codeReference->getCommitSha() ?: $codeReference->getBranch()
             );
+        } catch (UserCredentialsNotFound $e) {
+            throw new CodeRepository\CodeRepositoryException($e->getMessage(), $e->getCode(), $e);
         } catch (GitHubClientException $e) {
             throw new CodeRepository\CodeRepositoryException($e->getMessage(), $e->getCode(), $e);
         }

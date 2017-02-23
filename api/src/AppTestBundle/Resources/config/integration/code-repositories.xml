@@ -10,11 +10,5 @@
                  decorates="river.commit_resolver">
             <argument type="service" id="river.commit_resolver.predictable.inner" />
         </service>
-
-        <service id="river.file_system_resolver.fake"
-                 class="ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver"
-                 decorates="river.file_system_resolver">
-            <argument type="service" id="river.file_system_resolver.fake.inner" />
-        </service>
     </services>
 </container>
