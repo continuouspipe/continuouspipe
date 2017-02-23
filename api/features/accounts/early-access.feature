@@ -11,4 +11,4 @@ Feature:
 
   Scenario: Invalid early access code is rejected
     When I open the link of the early access program and enter the code "INVALID-CODE"
-    Then I should see a not found page
+    Then I should see an error on the page

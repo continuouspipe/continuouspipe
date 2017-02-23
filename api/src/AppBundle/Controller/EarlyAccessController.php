@@ -2,13 +2,16 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\EarlyAccessCode;
+use AppBundle\Form\Type\EarlyAccessCodeType;
 use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggle;
-use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessCodeNotFoundException;
 use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessCodeRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/", service="app.controller.early_access")
@@ -30,28 +33,40 @@ class EarlyAccessController
      */
     private $router;
 
+    /**
+     * @var FormFactoryInterface
+     */
+    private $formFactory;
+
     public function __construct(
         EarlyAccessCodeRepository $earlyAccessCodeRepository,
         EarlyAccessToggle $earlyAccessToggle,
-        Router $router
+        Router $router,
+        FormFactoryInterface $formFactory
     ) {
         $this->earlyAccessCodeRepository = $earlyAccessCodeRepository;
         $this->earlyAccessToggle = $earlyAccessToggle;
         $this->router = $router;
+        $this->formFactory = $formFactory;
     }
 
     /**
-     * @Route("/early-access/{code}/enter", name="enter_early_access_code", methods={"POST"})
+     * @Route("/early-access/", name="show_early_access_page")
+     * @Template
      */
-    public function enterAction($code)
+    public function showFormAction(Request $request)
     {
-        try {
-            $this->earlyAccessCodeRepository->findByCode($code);
+        $code = new EarlyAccessCode;
+        $form = $this->formFactory->create(EarlyAccessCodeType::class, $code);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->earlyAccessToggle->activate();
-        } catch (EarlyAccessCodeNotFoundException $e) {
-            throw new NotFoundHttpException($e->getMessage(), $e);
+            return new RedirectResponse($this->router->generate('hwi_oauth_connect'));
         }
 
-        return new RedirectResponse($this->router->generate('hwi_oauth_connect'));
+        return [
+            'form' => $form->createView(),
+        ];
     }
 }

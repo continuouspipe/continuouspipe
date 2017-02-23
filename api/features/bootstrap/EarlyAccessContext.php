@@ -2,9 +2,11 @@
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Authenticator\EarlyAccess\InMemoryEarlyAccessCodeRepository;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class EarlyAccessContext implements Context
 {
@@ -24,10 +26,19 @@ class EarlyAccessContext implements Context
      */
     private $activationCodeRepository;
 
-    public function __construct(KernelInterface $kernel, InMemoryEarlyAccessCodeRepository $activationCodeRepository)
-    {
+    /**
+     * @var CsrfTokenManagerInterface
+     */
+    private $csrfTokenManager;
+
+    public function __construct(
+        KernelInterface $kernel,
+        InMemoryEarlyAccessCodeRepository $activationCodeRepository,
+        CsrfTokenManagerInterface $csrfTokenManager
+    ) {
         $this->kernel = $kernel;
         $this->activationCodeRepository = $activationCodeRepository;
+        $this->csrfTokenManager = $csrfTokenManager;
     }
 
     /**
@@ -35,7 +46,14 @@ class EarlyAccessContext implements Context
      */
     public function iOpenTheLinkOfTheEarlyAccessProgramAndEnterTheCode($code)
     {
-        $this->response = $this->kernel->handle(Request::create('/early-access/'.$code.'/enter', 'POST'));
+        $token = $this->csrfTokenManager->getToken('early_access_code');
+        $this->response = $this->kernel->handle(Request::create('/early-access/', 'POST', [
+                'early_access_code' => [
+                    'code' => $code,
+                    '_token' => $token->getValue(),
+                ]
+            ]
+        ));
     }
 
     /**
@@ -57,11 +75,13 @@ class EarlyAccessContext implements Context
     }
 
     /**
-     * @Then I should see a not found page
+     * @Then I should see an error on the page
      */
-    public function iShouldSeeANotFoundPage()
+    public function iShouldSeeAnErrorOnThePage()
     {
-        $this->assertResponseStatusCode(Response::HTTP_NOT_FOUND);
+        $this->assertResponseStatusCode(Response::HTTP_OK);
+
+        $this->assertResponseHtmlContainsError();
     }
 
     private function assertResponseStatusCode(int $expectedStatusCode)
@@ -74,6 +94,15 @@ class EarlyAccessContext implements Context
                 $expectedStatusCode,
                 $this->response->getStatusCode()
             ));
+        }
+    }
+
+    private function assertResponseHtmlContainsError()
+    {
+        $crawler = new Crawler($this->response->getContent());
+
+        if ($crawler->filter('div.alert')->count() == 0) {
+            throw new \RuntimeException('Page expected to contain an error, but not found.');
         }
     }
 }

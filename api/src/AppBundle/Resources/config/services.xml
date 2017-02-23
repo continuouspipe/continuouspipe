@@ -104,5 +104,11 @@
             <argument type="service" id="app.repository.team" />
         </service>
         <service id="app.repository.billing_profile" alias="app.billing_profile.doctrine_repository" />
+
+        <service id="app.constraints.early_access_code" class="AppBundle\Validator\Constraints\EarlyAccessCodeValidator">
+            <argument type="service" id="app.repository.early_access_code" />
+
+            <tag name="validator.constraint_validator" />
+        </service>
     </services>
 </container>
