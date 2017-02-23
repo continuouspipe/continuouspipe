@@ -17,10 +17,15 @@ angular.module('continuousPipeRiver')
         };
 
         this.create = function(project) {
-            return this.resource.save({project: project}).$promise;
+            return this.resource.save({team: project}).$promise;
         };
 
         this.update = function(project, patch) {
+            // Rewrite the "project" key to "team"
+            if (patch.project) {
+                patch.team = patch.project;
+            }
+
             if (patch.billing_profile) {
                 patch.billing_profile = {uuid: patch.billing_profile.uuid};
             }
