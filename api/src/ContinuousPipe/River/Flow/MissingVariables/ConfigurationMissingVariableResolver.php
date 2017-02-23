@@ -36,7 +36,6 @@ class ConfigurationMissingVariableResolver implements MissingVariableResolver
         try {
             $configuration = $this->tideConfigurationFactory->getConfiguration($flow, $codeReference, false);
         } catch (TideConfigurationException $e) {
-            throw $e;
             $this->logger->warning('Unable to find missing variables because of the tide configuration', [
                 'exception' => $e,
             ]);

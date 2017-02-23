@@ -167,3 +167,12 @@ Feature:
     Then the variable "CLUSTER" should be missing
     And the variable "IMAGE_NAME" should be missing
     And the variable "SYMFONY_ENV" should not be missing
+
+  Scenario: No missing variable when configuration is invalid
+    Given I have a flow
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    that_key_do_not_exists: ${CLUSTER}
+    """
+    When I request the flow configuration
+    Then the variable "CLUSTER" should not be missing
