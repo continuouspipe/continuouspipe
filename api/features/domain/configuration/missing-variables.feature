@@ -101,3 +101,35 @@ Feature:
     When I request the flow configuration
     Then the variable "SERVICE_FOO_PUBLIC_ENDPOINT" should not be missing
     And the variable "ENDPOINT_HTTPS_API_PUBLIC_ENDPOINT" should not be missing
+
+  Scenario: It allows a null Docker tag
+    Given I have a flow
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    web:
+                        image: docker.io/sroze/php-example-manual
+                        naming_strategy: sha1
+
+        deployment:
+            deploy:
+                cluster: ${CLUSTER}
+                services:
+                    mysql:
+                        deployment_strategy:
+                            locked: true
+
+                    web:
+                        specification:
+                            environment_variables:
+                                - name: FOO
+                                  value: bar
+
+                            accessibility:
+                                from_external: true
+    """
+    When I request the flow configuration
+    Then the variable "CLUSTER" should be missing
