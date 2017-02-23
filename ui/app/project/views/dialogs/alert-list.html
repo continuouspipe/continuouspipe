@@ -13,22 +13,24 @@
         <md-dialog-content>
             <remote-resource resource-name="problems">
                 <div class="zero-content-help" ng-if="alerts.length == 0">
-                    <h3>No problem found!</h3>
-                    <p>It looks like your cluster is healthy.</p>
+                    <h3>No alert found!</h3>
+                    <p>It looks like everything is properly configured.</p>
                 </div>
                 <table class="table hover" ng-show="alerts.length > 0">
                     <thead>
                     <tr>
-                        <th>Alert</th>
                         <th>Message</th>
                         <th>Date</th>
+                        <th>Suggested action</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td><a href="{{ alerts[0].action.href }}">{{ alerts[0].action.title }}</a></td>
-                        <td>{{ alerts[0].message }}</td>
-                        <td>{{ alerts[0].date }}</td>
+                    <tr ng-repeat="alert in alerts">
+                        <td>{{ alert.message }}</td>
+                        <td>{{ alert.date | timeAgo }}</td>
+                        <td>
+                            <md-button ng-click="actionAlert(alert)" class="md-raised md-warn">{{ alert.action.title }}</md-button>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

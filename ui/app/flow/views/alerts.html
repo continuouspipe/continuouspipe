@@ -1,9 +1,0 @@
-<div ng-show="alerts.length > 0" flex layout="row" class="alerts-container">
-    <span ng-show="alerts.length > 1">
-        <md-tooltip md-direction="bottom">{{ alerts.length }} alerts</md-tooltip>
-        <md-button ng-click="showAlerts()" class="md-icon-button">({{ alerts.length }})<i class="material-icons">lightbulb_outline</i></md-button>
-    </span>
-    <h2 class="title">{{ alerts[0].message }}</h2>
-    <span flex></span>
-    <md-button ng-click="actionAlert(alerts[0].action)">{{ alerts[0].action.title }}</md-button>
-</div>
