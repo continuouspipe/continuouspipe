@@ -4,8 +4,8 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\EarlyAccessCode;
 use AppBundle\Form\Type\EarlyAccessCodeType;
-use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggle;
 use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessCodeRepository;
+use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggleFactory;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -24,9 +24,9 @@ class EarlyAccessController
     private $earlyAccessCodeRepository;
 
     /**
-     * @var EarlyAccessToggle
+     * @var EarlyAccessToggleFactory
      */
-    private $earlyAccessToggle;
+    private $earlyAccessToggleFactory;
 
     /**
      * @var Router
@@ -40,12 +40,12 @@ class EarlyAccessController
 
     public function __construct(
         EarlyAccessCodeRepository $earlyAccessCodeRepository,
-        EarlyAccessToggle $earlyAccessToggle,
+        EarlyAccessToggleFactory $earlyAccessToggleFactory,
         Router $router,
         FormFactoryInterface $formFactory
     ) {
         $this->earlyAccessCodeRepository = $earlyAccessCodeRepository;
-        $this->earlyAccessToggle = $earlyAccessToggle;
+        $this->earlyAccessToggleFactory = $earlyAccessToggleFactory;
         $this->router = $router;
         $this->formFactory = $formFactory;
     }
@@ -61,7 +61,8 @@ class EarlyAccessController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->earlyAccessToggle->activate();
+            $earlyAccessToggle = $this->earlyAccessToggleFactory->createFromSession();
+            $earlyAccessToggle->activate();
             return new RedirectResponse($this->router->generate('hwi_oauth_connect'));
         }
 

@@ -15,13 +15,13 @@ class EarlyAccessWhiteList implements WhiteList
     private $decoratedWhiteList;
 
     /**
-     * @var \ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggle
+     * @var \ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggleFactory
      */
-    private $earlyAccessToggle;
+    private $earlyAccessToggleFactory;
 
-    public function __construct(WhiteList $decoratedWhiteList, EarlyAccessToggle $earlyAccessToggle)
+    public function __construct(WhiteList $decoratedWhiteList, EarlyAccessToggleFactory $earlyAccessToggleFactory)
     {
-        $this->earlyAccessToggle = $earlyAccessToggle;
+        $this->earlyAccessToggleFactory = $earlyAccessToggleFactory;
         $this->decoratedWhiteList = $decoratedWhiteList;
     }
 
@@ -30,7 +30,8 @@ class EarlyAccessWhiteList implements WhiteList
      */
     public function contains($username)
     {
-        if ($this->earlyAccessToggle->isActive()) {
+        $earlyAccessToggle = $this->earlyAccessToggleFactory->createFromSession();
+        if ($earlyAccessToggle->isActive()) {
             return true;
         }
 

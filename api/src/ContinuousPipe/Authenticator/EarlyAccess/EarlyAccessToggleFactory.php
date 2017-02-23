@@ -2,13 +2,22 @@
 
 namespace ContinuousPipe\Authenticator\EarlyAccess;
 
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class EarlyAccessToggleFactory
 {
-    public static function createWithSessionStorage(Session $session)
+    private $session;
+
+    public function __construct(SessionInterface $session)
     {
-        $attributeBag = $session->getBag('attributes');
+        $this->session = $session;
+    }
+
+    public function createFromSession()
+    {
+        /** @var AttributeBagInterface $attributeBag */
+        $attributeBag = $this->session->getBag('attributes');
         return new EarlyAccessToggle($attributeBag);
     }
 }

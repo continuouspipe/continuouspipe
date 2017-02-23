@@ -33,7 +33,7 @@
 
         <service id="app.controller.early_access" class="AppBundle\Controller\EarlyAccessController">
             <argument type="service" id="app.repository.early_access_code" />
-            <argument type="service" id="app.authenticator.early_access_toggle" />
+            <argument type="service" id="app.authenticator.early_access_toggle_factory" />
             <argument type="service" id="router" />
             <argument type="service" id="form.factory" />
         </service>
