@@ -1,0 +1,6 @@
+test:
+    resource: "@AppTestBundle/Controller/"
+    type:     annotation
+
+_main:
+    resource: routing.yml
