@@ -1,0 +1,40 @@
+<md-dialog aria-label="Cluster health" class="logs-dialog">
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Alerts</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="close()">
+                    <md-icon class="material-icons" aria-label="Close dialog">clear</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <remote-resource resource-name="problems">
+                <div class="zero-content-help" ng-if="alerts.length == 0">
+                    <h3>No alert found!</h3>
+                    <p>It looks like everything is properly configured.</p>
+                </div>
+                <table class="table hover" ng-show="alerts.length > 0">
+                    <thead>
+                    <tr>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Suggested action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="alert in alerts">
+                        <td>{{ alert.message }}</td>
+                        <td>{{ alert.date | timeAgo }}</td>
+                        <td>
+                            <md-button ng-click="actionAlert(alert)" class="md-raised md-warn">{{ alert.action.title }}</md-button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </remote-resource>
+        </md-dialog-content>
+    </form>
+</md-dialog>

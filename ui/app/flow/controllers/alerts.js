@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowAlertsController', function ($scope, $state, ProjectAlertsRepository, AlertsRepository, flow, project) {
+    .controller('FlowAlertsController', function ($scope, $state, ProjectAlertsRepository, AlertsRepository, AlertManager, flow, project) {
         $scope.alerts = [];
 
         ProjectAlertsRepository.findByProject(project).then(function (alerts) {
@@ -16,11 +16,11 @@ angular.module('continuousPipeRiver')
             });
         });
 
-        $scope.actionAlert = function (action) {
-            if (action.type == 'link') {
-                window.open(action.href, '_blank');
-            } else if (action.type == 'state') {
-                $state.go(action.href);
-            }
+        $scope.actionAlert = function (alert) {
+            AlertManager.open(alert);
+        };
+
+        $scope.showAlerts = function () {
+            AlertManager.showAll($scope.alerts);
         };
     });

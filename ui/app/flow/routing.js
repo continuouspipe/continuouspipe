@@ -33,7 +33,7 @@ angular.module('continuousPipeRiver')
                         }
                     },
                     'alerts@': {
-                        templateUrl: 'flow/views/alerts.html',
+                        templateUrl: 'project/views/alerts.html',
                         controller: 'FlowAlertsController'
                     }
                 },
