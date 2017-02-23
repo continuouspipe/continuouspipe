@@ -16,7 +16,6 @@ default:
                     - @command_bus
                     - @event_bus
                     - @river.tide_event_store
-                    - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
@@ -130,7 +129,6 @@ default:
                     - @command_bus
                     - @event_bus
                     - @river.tide_event_store
-                    - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
@@ -224,7 +222,6 @@ default:
                     - @command_bus
                     - @event_bus
                     - @river.tide_event_store
-                    - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
@@ -321,7 +318,6 @@ smoke:
                     - @command_bus
                     - @event_bus
                     - @river.tide_event_store
-                    - @river.file_system_resolver.fake
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel

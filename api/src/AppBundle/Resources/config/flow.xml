@@ -82,6 +82,7 @@
 
         <service id="river.flow.configuration.missing_variables.configuration_resolver" class="ContinuousPipe\River\Flow\MissingVariables\ConfigurationMissingVariableResolver">
             <argument type="service" id="river.tide_configuration_factory" />
+            <argument type="service" id="logger" />
         </service>
     </services>
 </container>

@@ -68,6 +68,10 @@ class GitHubRelativeFileSystem implements RelativeFileSystem
             throw new FileNotFound($e->getMessage(), $e->getCode(), $e);
         }
 
+        if (!isset($contentsResult['content'])) {
+            throw new FileNotFound('The answer from GitHub was not understandable for the file '.$filePath);
+        }
+
         if (false === ($contents = base64_decode($contentsResult['content']))) {
             throw new FileNotFound(sprintf(
                 'Unable to decode base64 content of file "%s"',

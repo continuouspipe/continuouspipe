@@ -8,6 +8,7 @@ use ContinuousPipe\River\Pipe\DeploymentRequest\DynamicVariable\EndpointVariable
 use ContinuousPipe\River\Pipe\DeploymentRequest\DynamicVariable\ServiceVariable;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\TideConfigurationFactory;
+use Psr\Log\LoggerInterface;
 
 class ConfigurationMissingVariableResolver implements MissingVariableResolver
 {
@@ -17,11 +18,14 @@ class ConfigurationMissingVariableResolver implements MissingVariableResolver
     private $tideConfigurationFactory;
 
     /**
-     * @param TideConfigurationFactory $tideConfigurationFactory
+     * @var LoggerInterface
      */
-    public function __construct(TideConfigurationFactory $tideConfigurationFactory)
+    private $logger;
+
+    public function __construct(TideConfigurationFactory $tideConfigurationFactory, LoggerInterface $logger)
     {
         $this->tideConfigurationFactory = $tideConfigurationFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -32,6 +36,10 @@ class ConfigurationMissingVariableResolver implements MissingVariableResolver
         try {
             $configuration = $this->tideConfigurationFactory->getConfiguration($flow, $codeReference);
         } catch (TideConfigurationException $e) {
+            $this->logger->warning('Unable to find missing variables because of the tide configuration', [
+                'exception' => $e,
+            ]);
+
             return [];
         }
 

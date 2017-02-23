@@ -978,6 +978,11 @@ EOF;
 
     private function generateRepository()
     {
+        return $this->getCodeRepositoryContext()->thereIsARepositoryIdentified();
+    }
+
+    public function getCodeRepositoryContext() : CodeRepositoryContext
+    {
         if ($this->environment->hasContextClass(GitHubContext::class)) {
             $context = $this->environment->getContext(GitHubContext::class);
         } elseif ($this->environment->hasContextClass(BitBucketContext::class)) {
@@ -990,6 +995,6 @@ EOF;
             throw new \RuntimeException('The code repository context must implement the '.CodeRepositoryContext::class.' interface');
         }
 
-        return $context->thereIsARepositoryIdentified();
+        return $context;
     }
 }

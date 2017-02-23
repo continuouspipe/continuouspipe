@@ -237,6 +237,27 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @Given I have a :filePath file in my repository that contains:
+     */
+    public function iHaveAFileInMyRepositoryThatContains($filePath, PyStringNode $string)
+    {
+        $this->thereIsAFileContaining($filePath, $string->getRaw());
+    }
+
+    public function thereIsAFileContaining(string $filePath, string $contents)
+    {
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod) use ($filePath, $contents) {
+            if (in_array($httpMethod, ['HEAD', 'GET']) && preg_match('#repos/([^/]+)/([^/]+)/contents/'.$filePath.'$#', $path)) {
+                return new \Guzzle\Http\Message\Response(
+                    200,
+                    ['Content-Type' => 'application/json'],
+                    json_encode(['content' => base64_encode($contents)])
+                );
+            }
+        });
+    }
+
+    /**
      * @Then the GitHub commit status should be :status
      */
     public function theGitHubCommitStatusShouldBe($status)

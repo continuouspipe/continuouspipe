@@ -29,7 +29,7 @@ class OrderTasksByKey implements ConfigurationFinalizer
             return $configuration;
         }
 
-        $allNumericKey = array_reduce(array_keys($configuration['tasks']), function(bool $allNumericKey, $key) {
+        $allNumericKey = array_reduce(array_keys($configuration['tasks']), function (bool $allNumericKey, $key) {
             return $allNumericKey && is_numeric($key);
         }, true);
 

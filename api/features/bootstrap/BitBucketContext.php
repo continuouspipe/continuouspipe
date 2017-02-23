@@ -153,6 +153,27 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
+     * @Given I have a :filePath file in my repository that contains:
+     */
+    public function iHaveAFileInMyRepositoryThatContains($filePath, PyStringNode $string)
+    {
+        $this->thereIsAFileContaining($filePath, $string->getRaw());
+    }
+
+    public function thereIsAFileContaining(string $filePath, string $contents)
+    {
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($filePath) {
+                return $request->getMethod() == 'GET' &&
+                    preg_match('#^https\:\/\/api\.bitbucket\.org\/1\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/src\/([a-z0-9_-]+)\/'.$filePath.'$#i', (string) $request->getUri());
+            },
+            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
+                'data' => $contents,
+            ])),
+        ]);
+    }
+
+    /**
      * @Given the pull-request #:identifier contains the tide-related commit
      */
     public function thePullRequestContainsTheTideRelatedCommit($identifier)

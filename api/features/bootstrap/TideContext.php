@@ -36,7 +36,6 @@ use phpseclib\Crypt\Random;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use SimpleBus\Message\Bus\MessageBus;
-use ContinuousPipe\River\Tests\CodeRepository\FakeFileSystemResolver;
 use ContinuousPipe\River\Event\TideFailed;
 use ContinuousPipe\River\TideFactory;
 use ContinuousPipe\River\View\TideRepository;
@@ -71,11 +70,6 @@ class TideContext implements Context
      * @var EventStore
      */
     private $eventStore;
-
-    /**
-     * @var FakeFileSystemResolver
-     */
-    private $fakeFileSystemResolver;
 
     /**
      * @var MessageBus
@@ -128,7 +122,6 @@ class TideContext implements Context
         MessageBus $commandBus,
         MessageBus $eventBus,
         EventStore $eventStore,
-        FakeFileSystemResolver $fakeFileSystemResolver,
         TideFactory $tideFactory,
         TideRepository $viewTideRepository,
         Kernel $kernel,
@@ -138,7 +131,6 @@ class TideContext implements Context
     ) {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
-        $this->fakeFileSystemResolver = $fakeFileSystemResolver;
         $this->eventBus = $eventBus;
         $this->tideFactory = $tideFactory;
         $this->viewTideRepository = $viewTideRepository;
@@ -184,7 +176,6 @@ class TideContext implements Context
      */
     public function aTideIsCreatedForBranchAndCommitWithADeployTask($branch, $sha)
     {
-        $this->flowContext->iHaveAFlow();
         $continuousPipeFile = <<<EOF
 tasks:
     - deploy:
@@ -192,9 +183,11 @@ tasks:
           services: []
 EOF;
 
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'continuous-pipe.yml' => $continuousPipeFile
-        ]);
+        $this->flowContext->iHaveAFlow();
+        $this->flowContext->getCodeRepositoryContext()->thereIsAFileContaining(
+            'continuous-pipe.yml',
+            $continuousPipeFile
+        );
 
         $this->createTide($branch, $sha);
     }
@@ -319,9 +312,10 @@ EOF;
                 '        com.continuouspipe.image-name: image'.$i.PHP_EOL;
         }
 
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'docker-compose.yml' => $dockerComposeFile,
-        ]);
+        $this->flowContext->getCodeRepositoryContext()->thereIsAFileContaining(
+            'docker-compose.yml',
+            $dockerComposeFile
+        );
     }
 
     /**
@@ -329,13 +323,14 @@ EOF;
      */
     public function thereIsAnApplicationImageInTheRepositoryWithDockerfilePath($path)
     {
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'docker-compose.yml' => 'image:'.PHP_EOL.
-                '    build: .'.PHP_EOL.
-                '    dockerfile: '.$path.PHP_EOL.
-                '    labels:'.PHP_EOL.
-                '        com.continuouspipe.image-name: image'.PHP_EOL,
-        ]);
+        $this->flowContext->getCodeRepositoryContext()->thereIsAFileContaining(
+            'docker-compose.yml',
+            'image:'.PHP_EOL.
+            '    build: .'.PHP_EOL.
+            '    dockerfile: '.$path.PHP_EOL.
+            '    labels:'.PHP_EOL.
+            '        com.continuouspipe.image-name: image'.PHP_EOL
+        );
     }
 
     /**
@@ -760,16 +755,13 @@ EOF;
         }
     }
 
-    /**
-     * @param array $tasks
-     */
-    public function aTideIsStartedWithTasks(array $tasks)
+    public function aTideIsStartedWithTasks(array $tasks, string $branch = 'master')
     {
         $configuration = [
             'tasks' => $tasks
         ];
 
-        $this->aTideIsStartedWithConfiguration($configuration);
+        $this->aTideIsStartedWithConfiguration($configuration, $branch);
     }
 
     /**
@@ -821,26 +813,16 @@ EOF;
      */
     public function aTideIsStartedForTheBranchWithABuildAndDeployTask($branch)
     {
-        $this->flowContext->iHaveAFlow();
-        $continuousPipeFile = Yaml::dump([
-            'tasks' => [
-                [
-                    'build' => []
-                ],
-                [
-                    'deploy' => [
-                        'cluster' => 'fake/foo'
-                    ]
+        $this->aTideIsStartedWithTasks([
+            [
+                'build' => []
+            ],
+            [
+                'deploy' => [
+                    'cluster' => 'fake/foo'
                 ]
             ]
-        ]);
-
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'continuous-pipe.yml' => $continuousPipeFile
-        ]);
-
-        $this->createTide($branch);
-        $this->startTide();
+        ], $branch);
     }
 
     /**
@@ -848,24 +830,14 @@ EOF;
      */
     public function aTideIsStartedForTheBranchWithADeployTask($branch)
     {
-        $this->flowContext->iHaveAFlow();
-        $continuousPipeFile = Yaml::dump([
-            'tasks' => [
-                [
-                    'deploy' => [
-                        'cluster' => 'fake/foo',
-                        'services' => []
-                    ]
+        $this->aTideIsStartedWithTasks([
+            [
+                'deploy' => [
+                    'cluster' => 'fake/foo',
+                    'services' => []
                 ]
             ]
-        ]);
-
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'continuous-pipe.yml' => $continuousPipeFile
-        ]);
-
-        $this->createTide($branch);
-        $this->startTide();
+        ], $branch);
     }
 
     /**
@@ -873,21 +845,11 @@ EOF;
      */
     public function aTideIsStartedForTheBranchWithABuildTask($branch)
     {
-        $this->flowContext->iHaveAFlow();
-        $continuousPipeFile = Yaml::dump([
-            'tasks' => [
-                [
-                    'build' => []
-                ],
+        $this->aTideIsStartedWithTasks([
+            [
+                'build' => []
             ]
-        ]);
-
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'continuous-pipe.yml' => $continuousPipeFile
-        ]);
-
-        $this->createTide($branch);
-        $this->startTide();
+        ], $branch);
     }
 
     /**
@@ -895,20 +857,13 @@ EOF;
      */
     public function aTideIsCreatedWithJustABuildTask()
     {
-        $this->flowContext->iHaveAFlow();
-        $continuousPipeFile = Yaml::dump([
+        $this->aTideIsCreatedWithConfiguration([
             'tasks' => [
                 [
                     'build' => []
                 ]
             ]
         ]);
-
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'continuous-pipe.yml' => $continuousPipeFile
-        ]);
-
-        $this->createTide();
     }
 
     /**
@@ -916,8 +871,7 @@ EOF;
      */
     public function aTideIsCreatedWithADeployTask()
     {
-        $this->flowContext->iHaveAFlow();
-        $continuousPipeFile = Yaml::dump([
+        $this->aTideIsCreatedWithConfiguration([
             'tasks' => [
                 [
                     'deploy' => [
@@ -927,12 +881,6 @@ EOF;
                 ]
             ]
         ]);
-
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'continuous-pipe.yml' => $continuousPipeFile
-        ]);
-
-        $this->createTide();
     }
 
     /**
@@ -989,16 +937,6 @@ EOF;
         }
 
         $this->aTideIsStartedWithTasks($tasks);
-    }
-
-    /**
-     * @Given I have a :filePath file in my repository that contains:
-     */
-    public function iHaveAFileInMyRepositoryThatContains($filePath, PyStringNode $string)
-    {
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            $filePath => $string->getRaw()
-        ]);
     }
 
     /**
@@ -1433,19 +1371,29 @@ EOF;
     }
 
     /**
-     * @param $configuration
+     * @param array $configuration
+     * @param string $branch
      */
-    private function aTideIsStartedWithConfiguration($configuration)
+    private function aTideIsStartedWithConfiguration(array $configuration, $branch = 'master')
     {
-        $this->flowContext->iHaveAFlow();
-        $continuousPipeFile = Yaml::dump($configuration);
-
-        $this->fakeFileSystemResolver->prepareFileSystem([
-            'continuous-pipe.yml' => $continuousPipeFile
-        ]);
-
-        $this->createTide();
+        $this->aTideIsCreatedWithConfiguration($configuration, $branch);
         $this->startTide();
+    }
+
+    /**
+     * @param array $configuration
+     * @param string $branch
+     */
+    private function aTideIsCreatedWithConfiguration(array $configuration, $branch = 'master')
+    {
+        $continuousPipeFile = Yaml::dump($configuration);
+        $this->flowContext->iHaveAFlow();
+        $this->flowContext->getCodeRepositoryContext()->thereIsAFileContaining(
+            'continuous-pipe.yml',
+            $continuousPipeFile
+        );
+
+        $this->createTide($branch);
     }
 
     /**
