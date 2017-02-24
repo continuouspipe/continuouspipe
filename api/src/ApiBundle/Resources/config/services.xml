@@ -14,7 +14,10 @@
         </service>
 
         <!-- Controllers -->
-        <service id="api.controller.user" class="ApiBundle\Controller\UserController" />
+        <service id="api.controller.user" class="ApiBundle\Controller\UserController">
+            <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
+            <argument type="service" id="validator" />
+        </service>
         <service id="api.controller.credentials_bucket" class="ApiBundle\Controller\CredentialsBucketController">
             <argument type="service" id="app.repository.credentials_bucket" />
             <argument type="service" id="validator" />
@@ -46,13 +49,13 @@
         <service id="api.security.api_key.system_user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\SystemUserByApiKey">
             <argument>%api_keys%</argument>
         </service>
-        <service id="api.security.api_key.doctrine_user_by_api_key_repository" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineUserByApiKeyRepository">
+        <service id="api.security.api_key.user_by_api_key_repository" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineUserByApiKeyRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
         <service id="api.security.api_key.user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyCollection">
             <argument type="collection">
                 <argument type="service" id="api.security.api_key.system_user_by_api_key" />
-                <argument type="service" id="api.security.api_key.doctrine_user_by_api_key_repository" />
+                <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
             </argument>
         </service>
         <service id="api.api_key_user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\ApiKeyUserProvider">

@@ -5,10 +5,10 @@ Feature:
 
   Scenario: I can request my own user details
     And I am authenticated as user "samuel"
-    And the user "samuel" have the role "ROLE_GHOST"
+    And the user "samuel" have the role "ROLE_USER"
     When I request the details of user "samuel"
     Then I should receive the details
-    And I should see that the user have the role "ROLE_GHOST"
+    And I should see that the user have the role "ROLE_USER"
 
   Scenario: I cannot request details of other users
     Given I am authenticated as user "samuel"

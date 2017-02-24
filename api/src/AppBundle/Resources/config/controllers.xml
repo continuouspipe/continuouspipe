@@ -12,7 +12,7 @@
         </service>
 
         <service id="app.controller.api_keys" class="AppBundle\Controller\ApiKeysController">
-            <argument type="service" id="api.security.api_key.doctrine_user_by_api_key_repository" />
+            <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
             <argument type="service" id="router" />
         </service>
 
