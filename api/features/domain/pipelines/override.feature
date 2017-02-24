@@ -99,6 +99,7 @@ Feature:
     When I send a tide creation request for branch "develop" and commit "1234"
     And the tide for the branch "develop" and commit "1234" is tentatively started
     Then a tide should be created
+    And the component "database" should be deployed
     And the component "mailcatcher" should not be deployed
 
   Scenario: It can add some environment variables
