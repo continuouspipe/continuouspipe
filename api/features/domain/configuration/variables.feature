@@ -157,3 +157,41 @@ Feature:
             deploy:
                 cluster: BAR
     """
+
+  Scenario: It converts key-value pairs to array of variables
+    Given I have a flow with the following configuration:
+    """
+    variables:
+        FOO : BAR
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    container:
+        image: helloworld
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: ${FOO}
+                services:
+                    container:
+                        specification:
+                            environment_variables:
+                                BAR: BAZ
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: BAR
+                services:
+                    container:
+                        specification:
+                            environment_variables:
+                                - name: BAR
+                                  value: BAZ
+    """

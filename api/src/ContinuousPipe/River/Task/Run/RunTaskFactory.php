@@ -87,6 +87,20 @@ class RunTaskFactory implements TaskFactory
                     ->end()
                 ->end()
                 ->arrayNode('environment_variables')
+                    ->beforeNormalization()
+                        ->ifArray()
+                        ->then(function ($array) {
+                            foreach ($array as $key => $value) {
+                                if (is_string($key) && !is_array($value)) {
+                                    $array[$key] = [
+                                        'name' => $key,
+                                        'value' => $value,
+                                    ];
+                                }
+                            }
+                            return $array;
+                        })
+                    ->end()
                     ->prototype('array')
                         ->children()
                             ->scalarNode('name')->isRequired()->end()
