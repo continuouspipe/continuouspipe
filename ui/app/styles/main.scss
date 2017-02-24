@@ -34,7 +34,7 @@ $cancelled-dark-color: #966600;
 $pending-color: #e5e5e5;
 $pending-dark-color: #bcbcbc;
 
-$large-screen-size: 1024px;
+$large-screen-size: 900px;
 
 @mixin smallScreen {
     @media (max-width: #{$large-screen-size - 1px}) {
@@ -45,6 +45,12 @@ $large-screen-size: 1024px;
 @mixin largeScreen {
     @media (min-width: #{$large-screen-size}) {
         @content;
+    }
+}
+
+.mobile-only {
+    @include largeScreen {
+        display: none;
     }
 }
 
@@ -121,6 +127,16 @@ body {
         z-index: 500;
     }
 
+    md-sidenav.md-locked-open + md-content {
+        @include smallScreen {
+            background: #F2F4F6;
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            transition: 0s all;
+        }
+    }
+
     > md-toolbar {
         background: $header-background !important;
         height: 40px;
@@ -146,11 +162,29 @@ body {
             }
         }
 
+        .sidebar-toggle {
+            outline: none;
+
+            @include largeScreen {
+                display: none;
+            }
+
+            md-icon {
+                outline: none;
+            }
+        }
+
         h2 {
             font-size: 19px;
             padding: 5px;
 
             &.title {
+                display: none;
+
+                @include largeScreen {
+                    display: initial;
+                }
+
                 a {
                     color: #fff;
                     text-decoration: none;
@@ -172,7 +206,11 @@ body {
 
     md-sidenav.sidebar {
         background: $sidebar-background;
-        max-width: 250px;
+        max-width: 100%;
+
+        @include largeScreen {
+            max-width: 250px;
+        }
 
         md-menu-content {
             background: none;
@@ -251,7 +289,6 @@ body {
                     }
                 }
 
-
                 .md-toolbar-tools {
                     .md-icon-button {
                         padding: 0;
@@ -319,7 +356,7 @@ body {
             }
 
             &:hover {
-                box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.25);
+                box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
             }
 
             md-card-title {
@@ -789,6 +826,7 @@ pre.deployment-logs {
     min-height: 400px;
     z-index: 1;
 }
+
 .yaml-editor-buttons {
     text-align: center;
     padding: 10px;
