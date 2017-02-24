@@ -108,6 +108,23 @@ class IntercomContext implements Context
     }
 
     /**
+     * @Then an intercom tag :tagName should be created for the user :username
+     */
+    public function anIntercomTagShouldBeCreated($tagName, $username)
+    {
+        $matchingTags = array_filter(
+            $this->traceableIntercomClient->getCreatedTags(),
+            function(array $tag) use ($tagName, $username) {
+                return $tag['name'] == $tagName && in_array(['id' => $username], $tag['users']);
+            }
+        );
+
+        if (count($matchingTags) != 1) {
+            throw new \RuntimeException('No such tag with name found');
+        }
+    }
+
+    /**
      * @param string $name
      *
      * @return array|null

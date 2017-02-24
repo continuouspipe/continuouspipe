@@ -21,8 +21,22 @@ class EarlyAccessToggle
         return true === $this->storage->get('authenticator.early_access', false);
     }
 
-    public function activate()
+    public function activate(EarlyAccessCode $earlyAccessCode)
     {
         $this->storage->set('authenticator.early_access', true);
+        $this->storage->set('authenticator.early_access_code', $earlyAccessCode);
+    }
+
+    public function getUsedEarlyAccessCode(): EarlyAccessCode
+    {
+        if (!$this->isActive()) {
+            throw new \LogicException('Early access has to be activated first.');
+        }
+
+        if (null === ($earlyAccessCode = $this->storage->get('authenticator.early_access_code'))) {
+            throw new \RuntimeException('Early access code can not be found.');
+        }
+
+        return $earlyAccessCode;
     }
 }
