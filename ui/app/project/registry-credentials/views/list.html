@@ -9,8 +9,13 @@
     </div>
 </md-toolbar>
 <md-content flex id="content">
+    <div class="zero-content-help" ng-if="credentials.length == 0">
+        <i class="cp-icon-arrow-right-up top-right-arrow"></i>
+        <h3>You need to deploy somewhere!</h3>
+        <p>Add your existing cluster or let us create one on your behalf on an partner hosting platform provider.</p>
+    </div>
     <remote-resource resource-name="credentials">
-        <table class="table hover">
+        <table class="table hover" ng-show="credentials.length > 0">
             <thead>
             <tr>
                 <th>Server</th>
