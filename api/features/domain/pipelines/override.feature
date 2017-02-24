@@ -9,7 +9,15 @@ Feature:
     And the user "samuel" is "USER" of the team "samuel"
     And the head commit of branch "master" is "1234"
     And I have a flow
-    And there is 1 application images in the repository
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    app:
+        image: docker.io/continuouspipe/landing-page
+    database:
+        image: mysql
+    mailcatcher:
+        image: mailcatcher
+    """
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
     variables:
@@ -30,8 +38,6 @@ Feature:
                 services:
                     app:
                         specification:
-                            source:
-                                image: docker.io/continuouspipe/landing-page
                             environment_variables:
                                 - name: FOO
                                   value: foo
@@ -39,10 +45,7 @@ Feature:
                                   value: ${BAR_VALUE}
                                 - name: RICHARD
                                   value: ${RICHARD}
-                    database:
-                        specification:
-                            source:
-                                image: mysql
+                    database: ~
 
     pipelines:
         - name: To master
@@ -56,9 +59,15 @@ Feature:
                                 environment_variables:
                                     - name: FOO
                                       value: ${BAR_VALUE}
-
+        - name: To develop
+          condition: code_reference.branch == 'develop'
+          tasks:
+              - imports: deployment
+                deploy:
+                    environment:
+                        name: '"ui-ci"'
         - name: Only the branches
-          condition: code_reference.branch != 'master'
+          condition: code_reference.branch not in ['develop', 'master']
           variables:
               - name: RICHARD
                 value: JONES
@@ -85,6 +94,13 @@ Feature:
      | name | value |
      | FOO  | bar   |
      | BAR  | bar   |
+
+  Scenario: It doesn't deploy services that aren't defined in the pipeline when task services not overriden
+    When I send a tide creation request for branch "develop" and commit "1234"
+    And the tide for the branch "develop" and commit "1234" is tentatively started
+    Then a tide should be created
+    And the component "database" should be deployed
+    And the component "mailcatcher" should not be deployed
 
   Scenario: It can add some environment variables
     When I send a tide creation request for branch "feature/my-branch" and commit "5678"

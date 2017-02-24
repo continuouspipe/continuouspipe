@@ -32,7 +32,16 @@ trait TaskLocator
                     }
 
                     foreach ($this->findPathsInConfig($pipeline) as $path => $taskName) {
-                        $paths['[pipelines]['.$key.']'.$path] = $taskName;
+                        $taskPath = '[pipelines]['.$key.']'.$path;
+
+                        // We ignore tasks definition that `imports` others
+                        $importsPath = substr($taskPath, 0, -(strlen($taskName) + 2)).'[imports]';
+                        $hasImports = !empty($this->getValuesAtPath($configs, $importsPath));
+                        if ($hasImports) {
+                            continue;
+                        }
+
+                        $paths[$taskPath] = $taskName;
                     }
                 }
             }
