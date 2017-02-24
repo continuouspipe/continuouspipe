@@ -10,6 +10,11 @@
                  decorates="app.intercom.client">
             <argument type="service" id="app.intercom.traceable_client.inner" />
         </service>
+        <service id="app.intercom.hookable_client"
+                 class="ContinuousPipe\Authenticator\Intercom\HookableIntercomClient"
+                 decorates="app.intercom.client">
+            <argument type="service" id="app.intercom.hookable_client.inner" />
+        </service>
 
         <service id="app.billing.activity_tracker.traced"
                  class="ContinuousPipe\Billing\ActivityTracker\TracedActivityTracker"

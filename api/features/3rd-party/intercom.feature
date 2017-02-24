@@ -54,3 +54,9 @@ Feature:
     Given the user opens the link of the early access program and enter the code "CODE-001"
     When the user "geza" try to authenticate himself with GitHub
     Then an intercom tag "CODE-001" should be created for the user "geza"
+
+  Scenario: It successfully login a user even if intercom is not working
+    Given the user opens the link of the early access program and enter the code "CODE-001"
+    And the intercom API will throw an exception
+    When the user "geza" try to authenticate himself with GitHub
+    Then the authentication should be successful
