@@ -55,6 +55,8 @@ interface IntercomClient
      * @param array $users
      * @param int $id
      *
+     * @throws IntercomException
+     *
      * @return array
      */
     public function tagUsers(string $name, array $users, int $id = null);
