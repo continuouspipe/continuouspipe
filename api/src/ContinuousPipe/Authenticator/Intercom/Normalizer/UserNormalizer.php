@@ -40,7 +40,7 @@ class UserNormalizer
                     'company_id' => $teamMembership->getTeam()->getSlug(),
                     'name' => $teamMembership->getTeam()->getName(),
                 ];
-            }),
+            })->toArray(),
         ];
     }
 }

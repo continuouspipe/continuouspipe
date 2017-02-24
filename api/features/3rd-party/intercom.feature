@@ -49,3 +49,8 @@ Feature:
     When I create a team "new-team"
     Then an intercom event "created-team" should be created
     And an intercom event "added-to-team" should not be created
+
+  Scenario: Add early access code as a tag to the user after login
+    Given the user opens the link of the early access program and enter the code "CODE-001"
+    When the user "geza" try to authenticate himself with GitHub
+    Then an intercom tag "CODE-001" should be created for the user "geza"

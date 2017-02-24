@@ -49,4 +49,13 @@ interface IntercomClient
      * @return array
      */
     public function mergeLeadIfExists(array $lead, array $user);
+
+    /**
+     * @param string $name
+     * @param array $users
+     * @param int $id
+     *
+     * @return array
+     */
+    public function tagUsers(string $name, array $users, int $id = null);
 }

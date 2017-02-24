@@ -49,4 +49,16 @@ class InMemoryIntercomClient implements IntercomClient
     {
         return array_merge($lead, $user);
     }
+
+    /**
+     * @param string $name
+     * @param array $users
+     * @param int $id
+     *
+     * @return array
+     */
+    public function tagUsers(string $name, array $users, int $id = null)
+    {
+        return ['name' => $name, 'users' => $users, 'id' => $id];
+    }
 }

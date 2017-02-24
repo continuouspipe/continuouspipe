@@ -67,6 +67,10 @@ class IntercomContext implements Context
         if (!array_key_exists('companies', $user)) {
             throw new \RuntimeException('No companies found in user');
         }
+
+        if (!is_array($user['companies'])) {
+            throw new \RuntimeException('Companies data must be an array');
+        }
     }
 
     /**
@@ -100,6 +104,23 @@ class IntercomContext implements Context
     {
         if (null !== $this->findCreatedEventByName($name)) {
             throw new \RuntimeException('Created event found');
+        }
+    }
+
+    /**
+     * @Then an intercom tag :tagName should be created for the user :username
+     */
+    public function anIntercomTagShouldBeCreated($tagName, $username)
+    {
+        $matchingTags = array_filter(
+            $this->traceableIntercomClient->getCreatedTags(),
+            function(array $tag) use ($tagName, $username) {
+                return $tag['name'] == $tagName && in_array(['id' => $username], $tag['users']);
+            }
+        );
+
+        if (count($matchingTags) != 1) {
+            throw new \RuntimeException('No such tag with name found');
         }
     }
 

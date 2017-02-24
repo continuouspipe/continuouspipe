@@ -2,8 +2,8 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\EarlyAccessCode;
 use AppBundle\Form\Type\EarlyAccessCodeType;
+use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessCode;
 use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessCodeRepository;
 use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggleFactory;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -56,13 +56,13 @@ class EarlyAccessController
      */
     public function showFormAction(Request $request)
     {
-        $code = new EarlyAccessCode;
+        $code = new \AppBundle\Entity\EarlyAccessCode;
         $form = $this->formFactory->create(EarlyAccessCodeType::class, $code);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $earlyAccessToggle = $this->earlyAccessToggleFactory->createFromSession();
-            $earlyAccessToggle->activate();
+            $earlyAccessToggle->activate(EarlyAccessCode::fromString($code->code));
             return new RedirectResponse($this->router->generate('hwi_oauth_connect'));
         }
 

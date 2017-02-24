@@ -37,6 +37,11 @@ class TraceableIntercomClient implements IntercomClient
     private $mergedLeads = [];
 
     /**
+     * @var array[]
+     */
+    private $createdTags = [];
+
+    /**
      * @param IntercomClient $decoratedClient
      */
     public function __construct(IntercomClient $decoratedClient)
@@ -105,6 +110,18 @@ class TraceableIntercomClient implements IntercomClient
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function tagUsers(string $name, array $users, int $id = null)
+    {
+        $tag = $this->decoratedClient->tagUsers($name, $users, $id);
+
+        $this->createdTags[] = ['name' => $name, 'users' => $users, 'id' => $id];
+
+        return $tag;
+    }
+
+    /**
      * @return array[]
      */
     public function getCreatedLeads()
@@ -142,5 +159,13 @@ class TraceableIntercomClient implements IntercomClient
     public function getMergedLeads()
     {
         return $this->mergedLeads;
+    }
+
+    /**
+     * @return \array[]
+     */
+    public function getCreatedTags()
+    {
+        return $this->createdTags;
     }
 }

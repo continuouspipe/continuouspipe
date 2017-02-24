@@ -111,6 +111,27 @@ class IntercomLibraryClientAdapter implements IntercomClient
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function tagUsers(string $name, array $users, int $id = null)
+    {
+        try {
+            $options = [
+                'name'  => $name,
+                'users' => $users,
+            ];
+
+            if (!is_null($id)) {
+                $options['id'] = $id;
+            }
+
+            return $this->stdClassToArray($this->client->tags->tag($options));
+        } catch (RequestException $e) {
+            throw new IntercomException('Unable to add tag', $e->getCode(), $e);
+        }
+    }
+
+    /**
      * @param \stdClass $object
      *
      * @return array

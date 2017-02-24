@@ -49,6 +49,12 @@
             <argument type="service" id="app.invitation.event_producer.user_invitation_repository.inner" />
             <argument type="service" id="event_dispatcher" />
         </service>
+        <service id="app.invitation.event_producer.early_access_code_entered_event_producer" class="ContinuousPipe\Authenticator\Invitation\EventProducer\EarlyAccessCodeEnteredEventProducer">
+            <argument type="service" id="app.authenticator.early_access_toggle_factory" />
+            <argument type="service" id="event_dispatcher" />
+
+            <tag name="kernel.event_subscriber" />
+        </service>
         <service id="app.security.user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\UserProvider">
             <argument type="service" id="app.repository.security_user" />
             <argument type="service" id="app.user_details.github" />

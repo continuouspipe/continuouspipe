@@ -43,6 +43,7 @@ class EarlyAccessContext implements Context
 
     /**
      * @When I open the link of the early access program and enter the code :code
+     * @Given the user opens the link of the early access program and enter the code :code
      */
     public function iOpenTheLinkOfTheEarlyAccessProgramAndEnterTheCode($code)
     {

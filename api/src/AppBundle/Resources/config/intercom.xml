@@ -56,5 +56,11 @@
 
             <tag name="kernel.event_subscriber" />
         </service>
+
+        <service id="app.intercom.invitation.early_access_code_entered.add_tag_to_user" class="ContinuousPipe\Authenticator\Intercom\EventListener\EarlyAccessCodeEntered\AddTagToUser">
+            <argument type="service" id="app.intercom.client" />
+
+            <tag name="kernel.event_subscriber" />
+        </service>
     </services>
 </container>
