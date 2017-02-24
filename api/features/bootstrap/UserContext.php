@@ -2,7 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
+use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -32,7 +32,7 @@ class UserContext implements Context
      */
     private $response;
     /**
-     * @var UserByApiKeyRepository
+     * @var UserApiKeyRepository
      */
     private $userByApiKeyRepository;
 
@@ -40,7 +40,7 @@ class UserContext implements Context
         SecurityUserRepository $securityUserRepository,
         BucketRepository $bucketRepository,
         KernelInterface $kernel,
-        UserByApiKeyRepository $userByApiKeyRepository
+        UserApiKeyRepository $userByApiKeyRepository
     ) {
         $this->securityUserRepository = $securityUserRepository;
         $this->bucketRepository = $bucketRepository;

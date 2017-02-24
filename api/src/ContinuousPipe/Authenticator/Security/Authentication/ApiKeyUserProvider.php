@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Security\Authentication;
 
-use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
+use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -16,15 +16,15 @@ class ApiKeyUserProvider implements UserProviderInterface
     private $decorated;
 
     /**
-     * @var UserByApiKeyRepository
+     * @var UserApiKeyRepository
      */
     private $apiKeyUserRepository;
 
     /**
      * @param UserProviderInterface  $decorated
-     * @param UserByApiKeyRepository $apiKeyUserRepository
+     * @param UserApiKeyRepository $apiKeyUserRepository
      */
-    public function __construct(UserProviderInterface $decorated, UserByApiKeyRepository $apiKeyUserRepository)
+    public function __construct(UserProviderInterface $decorated, UserApiKeyRepository $apiKeyUserRepository)
     {
         $this->decorated = $decorated;
         $this->apiKeyUserRepository = $apiKeyUserRepository;

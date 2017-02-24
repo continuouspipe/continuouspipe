@@ -3,12 +3,12 @@
 namespace ContinuousPipe\Security\ApiKey;
 
 use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
+use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
 
-class InMemoryUserApiKeyRepository implements UserByApiKeyRepository
+class InMemoryUserApiKeyRepository implements UserApiKeyRepository
 {
     private $userByKey = [];
 

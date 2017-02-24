@@ -5,15 +5,15 @@ namespace ContinuousPipe\Authenticator\Security\ApiKey;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class UserByApiKeyCollection implements UserByApiKeyRepository
+class UserApiKeyCollection implements UserApiKeyRepository
 {
     /**
-     * @var array|UserByApiKeyRepository[]
+     * @var array|UserApiKeyRepository[]
      */
     private $repositories;
 
     /**
-     * @param UserByApiKeyRepository[] $repositories
+     * @param UserApiKeyRepository[] $repositories
      */
     public function __construct(array $repositories)
     {
@@ -39,7 +39,7 @@ class UserByApiKeyCollection implements UserByApiKeyRepository
      */
     public function findByUser(string $username)
     {
-        return array_reduce($this->repositories, function (array $carry, UserByApiKeyRepository $repository) use ($username) {
+        return array_reduce($this->repositories, function (array $carry, UserApiKeyRepository $repository) use ($username) {
             return array_merge($carry, $repository->findByUser($username));
         }, []);
     }

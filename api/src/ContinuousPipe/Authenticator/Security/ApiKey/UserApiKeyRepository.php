@@ -6,7 +6,7 @@ use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-interface UserByApiKeyRepository
+interface UserApiKeyRepository
 {
     /**
      * @param string $key

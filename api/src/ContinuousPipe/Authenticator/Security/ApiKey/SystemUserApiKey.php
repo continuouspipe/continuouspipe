@@ -6,7 +6,7 @@ use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class SystemUserByApiKey implements UserByApiKeyRepository
+class SystemUserApiKey implements UserApiKeyRepository
 {
     /**
      * @var string[]
