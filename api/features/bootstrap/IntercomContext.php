@@ -67,6 +67,10 @@ class IntercomContext implements Context
         if (!array_key_exists('companies', $user)) {
             throw new \RuntimeException('No companies found in user');
         }
+
+        if (!is_array($user['companies'])) {
+            throw new \RuntimeException('Companies data must be an array');
+        }
     }
 
     /**
