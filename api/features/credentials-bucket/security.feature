@@ -40,7 +40,7 @@ Feature:
     Then the "accessToken" should be obfuscated in the list items
 
   Scenario: The secrets are not obfuscated for system users
-    Given there is the api key "1234567890"
+    Given there is the system api key "1234567890"
     And the user "samuel" is in the team "foo"
     And the bucket of the team "foo" is the "00000000-0000-0000-0000-000000000000"
     And there is a bucket "00000000-0000-0000-0000-000000000000"

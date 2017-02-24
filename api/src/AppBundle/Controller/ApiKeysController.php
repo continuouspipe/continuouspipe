@@ -3,7 +3,7 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Security\ApiKey\UserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

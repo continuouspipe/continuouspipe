@@ -4,7 +4,7 @@ namespace ApiBundle\Controller;
 
 use ApiBundle\Request\CreateApiKeyRequest;
 use ContinuousPipe\Security\ApiKey\UserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class UserController
 {
     /**
-     * @var UserApiKeyRepository
+     * @var \ContinuousPipe\Security\ApiKey\UserApiKeyRepository
      */
     private $userByApiKeyRepository;
     /**

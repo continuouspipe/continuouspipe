@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine;
 
 use ContinuousPipe\Security\ApiKey\UserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\UuidInterface;

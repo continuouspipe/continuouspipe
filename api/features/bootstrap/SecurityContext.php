@@ -4,7 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use ContinuousPipe\Authenticator\Security\ApiKey\SystemUserApiKey;
 use ContinuousPipe\Security\ApiKey\UserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
 use ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
@@ -67,7 +67,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
      */
     private $kernel;
     /**
-     * @var UserApiKeyRepository
+     * @var \ContinuousPipe\Security\ApiKey\UserApiKeyRepository
      */
     private $userByApiKeyRepository;
 
@@ -162,9 +162,9 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Given there is the api key :key
+     * @Given there is the system api key :key
      */
-    public function thereIsTheApiKey($key)
+    public function thereIsTheSystemApiKey($key)
     {
         $this->systemUserByApiKey->addKey($key);
     }
