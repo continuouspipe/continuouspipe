@@ -1,6 +1,8 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Authenticator\Intercom\Client\IntercomException;
+use ContinuousPipe\Authenticator\Intercom\HookableIntercomClient;
 use ContinuousPipe\Authenticator\Tests\Intercom\TraceableIntercomClient;
 
 class IntercomContext implements Context
@@ -9,13 +11,25 @@ class IntercomContext implements Context
      * @var TraceableIntercomClient
      */
     private $traceableIntercomClient;
-
     /**
-     * @param TraceableIntercomClient $traceableIntercomClient
+     * @var HookableIntercomClient
      */
-    public function __construct(TraceableIntercomClient $traceableIntercomClient)
+    private $hookableIntercomClient;
+
+    public function __construct(TraceableIntercomClient $traceableIntercomClient, HookableIntercomClient $hookableIntercomClient)
     {
         $this->traceableIntercomClient = $traceableIntercomClient;
+        $this->hookableIntercomClient = $hookableIntercomClient;
+    }
+
+    /**
+     * @Given the intercom API will throw an exception
+     */
+    public function theIntercomApiWillThrowAnException()
+    {
+        $this->hookableIntercomClient->addHook(function() {
+            throw new IntercomException('This is an expected exception');
+        });
     }
 
     /**

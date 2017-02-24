@@ -3,9 +3,12 @@
 namespace ContinuousPipe\Authenticator\Tests\Intercom;
 
 use ContinuousPipe\Authenticator\Intercom\Client\IntercomClient;
+use ContinuousPipe\Authenticator\Intercom\Client\IntercomException;
 
 class InMemoryIntercomClient implements IntercomClient
 {
+    private $users = [];
+
     /**
      * {@inheritdoc}
      */
@@ -31,6 +34,8 @@ class InMemoryIntercomClient implements IntercomClient
      */
     public function createOrUpdateUser(array $user)
     {
+        $this->users[$user['user_id']] = $user;
+
         return $user;
     }
 
@@ -51,14 +56,16 @@ class InMemoryIntercomClient implements IntercomClient
     }
 
     /**
-     * @param string $name
-     * @param array $users
-     * @param int $id
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function tagUsers(string $name, array $users, int $id = null)
     {
+        foreach ($users as $user) {
+            if (!array_key_exists($user['id'], $this->users)) {
+                throw new IntercomException('User not found');
+            }
+        }
+
         return ['name' => $name, 'users' => $users, 'id' => $id];
     }
 }
