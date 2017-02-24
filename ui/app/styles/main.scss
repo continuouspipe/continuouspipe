@@ -34,6 +34,20 @@ $cancelled-dark-color: #966600;
 $pending-color: #e5e5e5;
 $pending-dark-color: #bcbcbc;
 
+$large-screen-size: 1024px;
+
+@mixin smallScreen {
+    @media (max-width: #{$large-screen-size - 1px}) {
+        @content;
+    }
+}
+
+@mixin largeScreen {
+    @media (min-width: #{$large-screen-size}) {
+        @content;
+    }
+}
+
 .title-text {
     text-transform: uppercase;
     font-weight: bold;
@@ -290,10 +304,15 @@ body {
         }
 
         md-card {
-            width: 365px;
+            max-width: 100%;
             box-shadow: none;
             border: 1px solid #efefef;
-            float: left;
+
+            @include largeScreen {
+                display: inline-block;
+                margin: 8px;
+                width: 365px;
+            }
 
             md-card-header {
                 cursor: pointer;
