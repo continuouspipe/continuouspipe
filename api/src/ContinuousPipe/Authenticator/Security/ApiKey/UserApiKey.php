@@ -5,25 +5,34 @@ namespace ContinuousPipe\Authenticator\Security\ApiKey;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class UserApiKey
 {
     /**
+     * @JMS\Type("uuid")
+     *
      * @var UuidInterface
      */
     private $uuid;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $apiKey;
 
     /**
+     * @JMS\Type("DateTime")
+     *
      * @var \DateTimeInterface
      */
     private $creationDate;
 
     /**
+     * @JMS\Type("ContinuousPipe\Security\User\User")
+     *
      * @var User
      */
     private $user;

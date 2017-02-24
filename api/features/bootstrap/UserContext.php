@@ -1,6 +1,8 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -29,17 +31,21 @@ class UserContext implements Context
      * @var Response|null
      */
     private $response;
-
     /**
-     * @param SecurityUserRepository $securityUserRepository
-     * @param BucketRepository $bucketRepository
-     * @param KernelInterface $kernel
+     * @var UserByApiKeyRepository
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, BucketRepository $bucketRepository, KernelInterface $kernel)
-    {
+    private $userByApiKeyRepository;
+
+    public function __construct(
+        SecurityUserRepository $securityUserRepository,
+        BucketRepository $bucketRepository,
+        KernelInterface $kernel,
+        UserByApiKeyRepository $userByApiKeyRepository
+    ) {
         $this->securityUserRepository = $securityUserRepository;
         $this->bucketRepository = $bucketRepository;
         $this->kernel = $kernel;
+        $this->userByApiKeyRepository = $userByApiKeyRepository;
     }
 
     /**
@@ -106,6 +112,37 @@ class UserContext implements Context
     }
 
     /**
+     * @When I create an API key described :description for the user :username
+     */
+    public function iCreateAnApiKeyDescribedForTheUser($description, $username)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/user/%s/api-keys', $username),
+            'POST',
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json'
+            ],
+            json_encode([
+                'description' => $description,
+            ])
+        ));
+    }
+
+    /**
+     * @When I request the list of API keys of the user :username
+     */
+    public function iRequestTheListOfApiKeysOfTheUser($username)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/user/%s/api-keys', $username),
+            'GET'
+        ));
+    }
+
+    /**
      * @Then the bucket of the user :username should contain the GitHub token :token
      */
     public function theBucketOfTheUserShouldContainTheGithubToken($username, $token)
@@ -118,20 +155,6 @@ class UserContext implements Context
 
         if (0 == count($matchingTokens)) {
             throw new \RuntimeException('No matching token found');
-        }
-    }
-
-    /**
-     * @Then I should receive the details
-     */
-    public function iShouldReceiveTheDetails()
-    {
-        if ($this->response->getStatusCode() != 200) {
-            echo $this->response->getContent();
-            throw new \RuntimeException(sprintf(
-                'Expected status code 200, got %d',
-                $this->response->getStatusCode()
-            ));
         }
     }
 
@@ -150,18 +173,44 @@ class UserContext implements Context
     }
 
     /**
+     * @Then I should see the API key :apiKey
+     */
+    public function iShouldSeeTheApiKey($apiKey)
+    {
+        $this->assertResponseCode(200);
+
+        $keys = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        foreach ($keys as $key) {
+            if ($key['api_key'] == $apiKey) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('API key not found');
+    }
+
+    /**
+     * @Then the API key should have been created
+     */
+    public function theApiKeyShouldHaveBeenCreated()
+    {
+        $this->assertResponseCode(201);
+    }
+
+    /**
+     * @Then I should receive the details
+     */
+    public function iShouldReceiveTheDetails()
+    {
+        $this->assertResponseCode(200);
+    }
+
+    /**
      * @Then I should be told that I don't have the authorization to access this user
      */
     public function iShouldBeToldThatIDonTHaveTheAuthorizationToAccessThisUser()
     {
-        if ($this->response->getStatusCode() != 403) {
-            echo $this->response->getContent();
-
-            throw new \RuntimeException(sprintf(
-                'Expected status code 403, got %d',
-                $this->response->getStatusCode()
-            ));
-        }
+        $this->assertResponseCode(403);
     }
 
     /**
@@ -169,9 +218,17 @@ class UserContext implements Context
      */
     public function iShouldBeToldThatIAmNotIdentified()
     {
-        if ($this->response->getStatusCode() != 401) {
+        $this->assertResponseCode(401);
+    }
+
+    private function assertResponseCode(int $code)
+    {
+        if ($this->response->getStatusCode() != $code) {
+            echo $this->response->getContent();
+
             throw new \RuntimeException(sprintf(
-                'Expected status code 401, got %d',
+                'Expected status code %d, got %d',
+                $code,
                 $this->response->getStatusCode()
             ));
         }
