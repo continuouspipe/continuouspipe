@@ -109,7 +109,15 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
         $gitHubResponse = $response->getResponse();
-        $username = $gitHubResponse['login'];
+        $username = $gitHubResponse['login'] ?: $response->getNickname();
+        if (empty($username)) {
+            $this->logger->warning('Unable to get the user username from the response', [
+                'response' => $response,
+            ]);
+
+            throw new InsufficientAuthenticationException('Unable to find your username from GitHub');
+        }
+
         if (!$this->whiteList->contains($username)) {
             $this->logger->warning('User is not in whitelist', [
                 'username' => $username,
