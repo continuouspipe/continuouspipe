@@ -1,7 +1,7 @@
-<md-button class="sidebar-toggle" ng-click="toggleSideBar()">
+<md-button class="sidebar-toggle" ng-click="toggleSideBar()" ng-if="showToggle">
     <md-icon ng-bind="'menu'"></md-icon>
 </md-button>
-<span class="mobile-only" flex></span>
+<span class="mobile-only" ng-if="showToggle" flex></span>
 <md-button class="md-icon-button logo" aria-label="Dashboard" ui-sref="projects">
     <md-icon class="cp-icon-logo"></md-icon>
 </md-button>

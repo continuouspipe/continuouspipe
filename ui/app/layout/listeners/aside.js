@@ -25,11 +25,17 @@ angular.module('continuousPipeRiver')
         };
     })
     .run(function ($rootScope, $aside) {
-        $(window).resize(function () {
-            $aside.screenSizeDefault();
-        });
-
         $rootScope.$on('$stateChangeSuccess', function (event, toState) {
-            $aside.screenSizeDefault();
+            $rootScope.showToggle = toState.aside;
+
+            if (toState.aside) {
+                $aside.screenSizeDefault();
+
+                $(window).resize(function () {
+                    $aside.screenSizeDefault();
+                });
+            } else {
+                $aside.hideSideBar();
+            }
         });
     });
