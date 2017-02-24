@@ -1,7 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Security\Credentials\Bucket;

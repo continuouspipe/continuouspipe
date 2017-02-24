@@ -3,7 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use ContinuousPipe\Authenticator\Security\ApiKey\SystemUserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
 use ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository;

@@ -3,7 +3,7 @@
 namespace ApiBundle\Controller;
 
 use ApiBundle\Request\CreateApiKeyRequest;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;

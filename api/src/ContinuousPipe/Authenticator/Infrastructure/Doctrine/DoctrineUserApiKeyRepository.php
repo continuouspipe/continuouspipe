@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine;
 
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use Doctrine\ORM\EntityManager;

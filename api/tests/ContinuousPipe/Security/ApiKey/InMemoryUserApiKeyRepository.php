@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Security\ApiKey;
 
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
