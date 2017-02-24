@@ -11,8 +11,8 @@
 <md-content flex id="content">
     <div class="zero-content-help" ng-if="credentials.length == 0">
         <i class="cp-icon-arrow-right-up top-right-arrow"></i>
-        <h3>You need to deploy somewhere!</h3>
-        <p>Add your existing cluster or let us create one on your behalf on an partner hosting platform provider.</p>
+        <h3>These Docker images need to be pushed somewhere!</h3>
+        <p>Enter the credentials of your prefered Docker Registries and ContinuousPipe will be able to push your built Docker images to them.</p>
     </div>
     <remote-resource resource-name="credentials">
         <table class="table hover" ng-show="credentials.length > 0">
