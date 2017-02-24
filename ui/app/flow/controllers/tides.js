@@ -28,7 +28,7 @@ angular.module('continuousPipeRiver')
             $scope.error = null;
 
             TideRepository.create(flow, tide).then(function() {
-                $state.go('flow.tides', {
+                $state.go('flow.dashboard', {
                     uuid: flow.uuid
                 });
 
