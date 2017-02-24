@@ -59,6 +59,10 @@ class RepositoryComponentsResolver implements ComponentsResolver
 
         try {
             foreach ($this->projectParser->parse($fileSystem, $codeReference->getBranch()) as $name => $raw) {
+                if (!is_array($raw)) {
+                    continue;
+                }
+                
                 $dockerComposeComponents[] = DockerComposeComponent::fromParsed($name, $raw);
             }
         } catch (DockerComposeException $e) {
