@@ -13,7 +13,7 @@ Feature:
     And I should not see the team "bar" in the team list
 
   Scenario: As a system user, I can see all the teams
-    Given there is the api key "1234"
+    Given there is the system api key "1234"
     And there is a team "bar"
     And there is a team "foo"
     When I request the list of teams with the API key "1234"

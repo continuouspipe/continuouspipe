@@ -1,8 +1,8 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -32,7 +32,7 @@ class UserContext implements Context
      */
     private $response;
     /**
-     * @var UserByApiKeyRepository
+     * @var UserApiKeyRepository
      */
     private $userByApiKeyRepository;
 
@@ -40,7 +40,7 @@ class UserContext implements Context
         SecurityUserRepository $securityUserRepository,
         BucketRepository $bucketRepository,
         KernelInterface $kernel,
-        UserByApiKeyRepository $userByApiKeyRepository
+        UserApiKeyRepository $userByApiKeyRepository
     ) {
         $this->securityUserRepository = $securityUserRepository;
         $this->bucketRepository = $bucketRepository;
@@ -107,6 +107,23 @@ class UserContext implements Context
             [],
             [
                 'HTTP_X_API_KEY' => $key
+            ]
+        ));
+    }
+
+    /**
+     * @When I request the user behind the API key :key with the API key :systemKey
+     */
+    public function iRequestTheUserBehindTheApiKey($key, $systemKey)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/api-key/%s/user', $key),
+            'GET',
+            [],
+            [],
+            [],
+            [
+                'HTTP_X_API_KEY' => $systemKey
             ]
         ));
     }
@@ -190,6 +207,22 @@ class UserContext implements Context
     }
 
     /**
+     * @Then I should see the user :username for this API key
+     */
+    public function iShouldSeeTheUserForThisApiKey($username)
+    {
+        $this->assertResponseCode(200);
+        $response = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if ($response['username'] != $username) {
+            throw new \RuntimeException(sprintf(
+                'Found "%s" instead',
+                $response['username']
+            ));
+        }
+    }
+
+    /**
      * @Then the API key should have been created
      */
     public function theApiKeyShouldHaveBeenCreated()
@@ -206,7 +239,16 @@ class UserContext implements Context
     }
 
     /**
+     * @Then I should be told that the API key is not found
+     */
+    public function iShouldBeToldThatTheApiKeyIsNotFound()
+    {
+        $this->assertResponseCode(404);
+    }
+
+    /**
      * @Then I should be told that I don't have the authorization to access this user
+     * @Then I should be told that I don't have the authorization to access this API key
      */
     public function iShouldBeToldThatIDonTHaveTheAuthorizationToAccessThisUser()
     {

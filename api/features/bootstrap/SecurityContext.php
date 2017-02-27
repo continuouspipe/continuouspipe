@@ -2,9 +2,9 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
-use ContinuousPipe\Authenticator\Security\ApiKey\SystemUserByApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
+use ContinuousPipe\Authenticator\Security\ApiKey\SystemUserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
 use ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
@@ -51,7 +51,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
      */
     private $securityUserRepository;
     /**
-     * @var SystemUserByApiKey
+     * @var SystemUserApiKey
      */
     private $systemUserByApiKey;
     /**
@@ -67,7 +67,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
      */
     private $kernel;
     /**
-     * @var UserByApiKeyRepository
+     * @var \ContinuousPipe\Security\ApiKey\UserApiKeyRepository
      */
     private $userByApiKeyRepository;
 
@@ -76,11 +76,11 @@ class SecurityContext implements Context, SnippetAcceptingContext
         WhiteList $whiteList,
         TokenStorageInterface $tokenStorage,
         SecurityUserRepository $securityUserRepository,
-        SystemUserByApiKey $systemUserByApiKey,
+        SystemUserApiKey $systemUserByApiKey,
         EventDispatcherInterface $eventDispatcher,
         GitHubResourceOwner $gitHubResourceOwner,
         KernelInterface $kernel,
-        UserByApiKeyRepository $userByApiKeyRepository
+        UserApiKeyRepository $userByApiKeyRepository
     ) {
         $this->userProvider = $userProvider;
         $this->whiteList = $whiteList;
@@ -162,9 +162,9 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Given there is the api key :key
+     * @Given there is the system api key :key
      */
-    public function thereIsTheApiKey($key)
+    public function thereIsTheSystemApiKey($key)
     {
         $this->systemUserByApiKey->addKey($key);
     }

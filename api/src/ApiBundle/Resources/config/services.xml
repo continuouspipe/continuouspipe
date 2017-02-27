@@ -44,27 +44,32 @@
         <service id="api.controller.billing_profile" class="ApiBundle\Controller\BillingProfileController">
             <argument type="service" id="app.repository.billing_profile" />
         </service>
+        <service id="api.controller.api_key" class="ApiBundle\Controller\ApiKeyController">
+            <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
+        </service>
 
         <!-- Authentication -->
-        <service id="api.security.api_key.system_user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\SystemUserByApiKey">
+        <service id="api.security.api_key.system_user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\SystemUserApiKey">
             <argument>%api_keys%</argument>
         </service>
-        <service id="api.security.api_key.user_by_api_key_repository" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineUserByApiKeyRepository">
+        <service id="api.security.api_key.user_by_api_key_repository" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineUserApiKeyRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
-        <service id="api.security.api_key.user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyCollection">
+        <service id="api.security.api_key.user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyCollection">
             <argument type="collection">
                 <argument type="service" id="api.security.api_key.system_user_by_api_key" />
                 <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
             </argument>
         </service>
-        <service id="api.api_key_user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\ApiKeyUserProvider">
+        <service id="api.security.user_by_api_key" alias="api.security.api_key.user_by_api_key" />
+
+        <service id="api.api_key_user_provider" class="ContinuousPipe\Security\Authentication\ApiKeyUserFromRepositoryProvider">
             <argument type="service" id="app.security.user_provider" />
             <argument type="service" id="api.security.api_key.user_by_api_key" />
         </service>
 
         <service id="api.api_key_authenticator"
-                 class="ContinuousPipe\Authenticator\Security\ApiKeyAuthenticator"
+                 class="ContinuousPipe\Security\Authentication\ApiKeyAuthenticator"
                  public="false" />
 
         <!-- Param Converter -->

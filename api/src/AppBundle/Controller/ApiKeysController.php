@@ -2,8 +2,8 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class ApiKeysController
 {
     /**
-     * @var UserByApiKeyRepository
+     * @var UserApiKeyRepository
      */
     private $userByApiKeyRepository;
     /**
@@ -28,7 +28,7 @@ class ApiKeysController
     private $urlGenerator;
 
     public function __construct(
-        UserByApiKeyRepository $userByApiKeyRepository,
+        UserApiKeyRepository $userByApiKeyRepository,
         UrlGeneratorInterface $urlGenerator
     ) {
         $this->userByApiKeyRepository = $userByApiKeyRepository;

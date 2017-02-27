@@ -2,14 +2,14 @@
 
 namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine;
 
-use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKey;
-use ContinuousPipe\Authenticator\Security\ApiKey\UserByApiKeyRepository;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class DoctrineUserByApiKeyRepository implements UserByApiKeyRepository
+class DoctrineUserApiKeyRepository implements UserApiKeyRepository
 {
     /**
      * @var EntityManager

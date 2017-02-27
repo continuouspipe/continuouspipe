@@ -3,10 +3,12 @@
 namespace ContinuousPipe\Authenticator\Security\ApiKey;
 
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class SystemUserByApiKey implements UserByApiKeyRepository
+class SystemUserApiKey implements UserApiKeyRepository
 {
     /**
      * @var string[]
