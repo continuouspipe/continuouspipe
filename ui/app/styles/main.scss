@@ -336,7 +336,9 @@ body {
 
         &.half {
             md-card {
-                width: 48%;
+                @include largeScreen {
+                    width: 48%;
+                }
             }
         }
 
