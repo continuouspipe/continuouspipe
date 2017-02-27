@@ -462,6 +462,10 @@ body {
                 }
             }
 
+            md-card {
+                display: flex;
+            }
+
             md-card.collapsed {
                 > * {
                     display: none;
