@@ -29,6 +29,8 @@ security:
             lexik_jwt: ~
             anonymous: ~
             provider: authenticator
+            simple_preauth:
+                authenticator: api.api_key_authenticator
 
     access_control:
         # TODO: Secure with GitHub IPs

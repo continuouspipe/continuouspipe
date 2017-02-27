@@ -329,6 +329,23 @@ EOF;
     }
 
     /**
+     * @When I retrieve the list of the flows of the team :teamSlug with the API key :apiKey
+     */
+    public function iRetrieveTheListOfTheFlowsOfTheTeamWithTheApiKey($teamSlug, $apiKey)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/teams/%s/flows', $teamSlug),
+            'GET',
+            [],
+            [],
+            [],
+            [
+                'HTTP_X_API_KEY' => $apiKey
+            ]
+        ));
+    }
+
+    /**
      * @Then the variable :variable should be missing
      */
     public function theVariableShouldBeMissing($variable)
@@ -621,6 +638,14 @@ EOF;
     public function iShouldBeToldThatIDonTHaveThePermissions()
     {
         $this->assertResponseCode(403);
+    }
+
+    /**
+     * @Then I should be told that I am not authenticated
+     */
+    public function iShouldBeToldThatIamNotAuthenticated()
+    {
+        $this->assertResponseCode(401);
     }
 
     /**

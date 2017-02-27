@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use ContinuousPipe\River\Flow\EncryptedVariable\PreviouslyKnownEncryptedVariableVault;
 use ContinuousPipe\Security\Account\BitBucketAccount;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
@@ -69,6 +70,22 @@ class SecurityContext implements Context
     public function iAmAuthenticated()
     {
         $this->iAmAuthenticatedAs('samuel.roze@gmail.com');
+    }
+
+    /**
+     * @Given the user :username have the API key :apiKey
+     */
+    public function theUserHaveTheApiKey($username, $apiKey)
+    {
+        $this->inMemoryAuthenticatorClient->addApiKey(
+            new UserApiKey(
+                Uuid::uuid4(),
+                $this->inMemoryAuthenticatorClient->getUserByUsername($username),
+                $apiKey,
+                new \DateTime(),
+                $apiKey
+            )
+        );
     }
 
     /**
