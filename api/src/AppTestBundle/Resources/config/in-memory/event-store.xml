@@ -13,5 +13,7 @@
         <service id="river.event_store.http_adapter" class="ContinuousPipe\River\EventStore\InMemoryEventStore">
             <argument type="service" id="jms_serializer" />
         </service>
+
+        <service id="app.event_store" class="ContinuousPipe\Events\EventStore\InMemoryEventStore" />
     </services>
 </container>

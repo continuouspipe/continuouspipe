@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\River\Task\Build\BuildTask;
-use ContinuousPipe\River\Task\Build\Command\ReceiveBuildNotification;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Transaction\TransactionManager;
 use Ramsey\Uuid\Uuid;

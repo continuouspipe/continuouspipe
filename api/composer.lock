@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2276b75559a30a3f3cb0af5291243802",
-    "content-hash": "3824ac2f337c420e85e83bfecfd2e7b5",
+    "hash": "8ca075245f0976b7dbaef28b166f66ac",
+    "content-hash": "9be41e206feab02a92f16546159cc51a",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -253,6 +253,32 @@
                 "slugify"
             ],
             "time": "2016-02-11 09:53:46"
+        },
+        {
+            "name": "continuous-pipe/events",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/events.git",
+                "reference": "3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/events/zipball/3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9",
+                "reference": "3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ContinuousPipe\\": "src/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/continuouspipe/events/tree/master",
+                "issues": "https://github.com/continuouspipe/events/issues"
+            },
+            "time": "2017-02-27 13:57:10"
         },
         {
             "name": "continuous-pipe/model",
@@ -8017,7 +8043,8 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
-        "continuous-pipe/worker-bundle": 20
+        "continuous-pipe/worker-bundle": 20,
+        "continuous-pipe/events": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

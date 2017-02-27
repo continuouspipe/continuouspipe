@@ -29,6 +29,7 @@ class AppKernel extends Kernel
             new ContinuousPipe\AtlassianAddonBundle\AtlassianAddonBundle(),
             new ContinuousPipe\WorkerBundle\WorkerBundle(),
             new ContinuousPipe\PlatformBundle\ContinuousPipePlatformBundle(),
+            new ContinuousPipe\DevelopmentEnvironmentBundle\DevelopmentEnvironmentBundle(),
             new LogStream\LogStreamBundle(),
             new AdminBundle\AdminBundle(),
             new AppBundle\AppBundle(),

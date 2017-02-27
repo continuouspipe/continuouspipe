@@ -80,6 +80,8 @@ default:
                 - UserActivityContext:
                     - @river.user_activity.traceable_dispatcher
                     - @river.user_activity.middleware_supporting_dispatcher
+                - DevelopmentEnvironmentContext:
+                    - @kernel
 
                 # TBR:
                 - GitHubContext:
@@ -353,6 +355,8 @@ smoke:
                     - @builder.client.hookable
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
+                - DevelopmentEnvironmentContext:
+                    - @kernel
 
     extensions:
         Behat\Symfony2Extension:

@@ -14,5 +14,6 @@
             <argument type="service" id="csa_guzzle.middleware.history" />
         </service>
         <service id="river.pipeline.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage" />
+        <service id="development_environment.read_model.repository" class="ContinuousPipe\DevelopmentEnvironment\ReadModel\InMemoryEnvironmentRepository" />
     </services>
 </container>

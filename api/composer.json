@@ -54,7 +54,8 @@
         "continuous-pipe/worker-bundle": "dev-master",
         "google/apiclient": "^2.1",
         "lcobucci/jwt": "^3.2",
-        "continuous-pipe/platform-bundle": "~1.0.0"
+        "continuous-pipe/platform-bundle": "~1.0.0",
+        "continuous-pipe/events": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -138,6 +139,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/continuouspipe/PlatformBundle"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/continuouspipe/events"
         }
     ]
 }

@@ -11,3 +11,8 @@ atlassian:
     resource: "@AtlassianAddonBundle/Controller/"
     type: annotation
     prefix: /connect/service/bitbucket/addon
+
+development_environment:
+    resource: "@DevelopmentEnvironmentBundle/Controller/"
+    type: annotation
+    prefix: /
