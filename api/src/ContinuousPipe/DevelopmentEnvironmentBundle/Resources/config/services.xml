@@ -52,6 +52,7 @@
         <service id="development_environment.controller.environment" class="ContinuousPipe\DevelopmentEnvironmentBundle\Controller\EnvironmentController">
             <argument type="service" id="event_bus" />
             <argument type="service" id="development_environment.read_model.repository" />
+            <argument type="service" id="app.time_resolver" />
         </service>
 
         <service id="development_environment.controller.initialization_token" class="ContinuousPipe\DevelopmentEnvironmentBundle\Controller\InitializationTokenController">

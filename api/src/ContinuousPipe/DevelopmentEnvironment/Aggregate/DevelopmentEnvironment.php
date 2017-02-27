@@ -25,7 +25,7 @@ final class DevelopmentEnvironment
     private $modificationDate;
     private $initializationToken;
 
-    public static function create(UuidInterface $flowUuid, User $user, string $name) : DevelopmentEnvironment
+    public static function create(UuidInterface $flowUuid, User $user, string $name, \DateTimeInterface $dateTime) : DevelopmentEnvironment
     {
         $developmentEnvironment = new self();
         $developmentEnvironment->raiseAndApply(
@@ -34,7 +34,7 @@ final class DevelopmentEnvironment
                 $flowUuid,
                 $user->getUsername(),
                 $name,
-                new \DateTime()
+                $dateTime
             )
         );
 

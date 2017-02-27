@@ -5,6 +5,7 @@ namespace ContinuousPipe\DevelopmentEnvironmentBundle\Controller;
 use ContinuousPipe\DevelopmentEnvironment\Aggregate\DevelopmentEnvironment;
 use ContinuousPipe\DevelopmentEnvironment\ReadModel\DevelopmentEnvironmentRepository;
 use ContinuousPipe\DevelopmentEnvironmentBundle\Request\EnvironmentCreationRequest;
+use ContinuousPipe\Events\TimeResolver\TimeResolver;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\User\User;
 use SimpleBus\Message\Bus\MessageBus;
@@ -27,11 +28,16 @@ class EnvironmentController
      * @var DevelopmentEnvironmentRepository
      */
     private $developmentEnvironmentRepository;
+    /**
+     * @var TimeResolver
+     */
+    private $timeResolver;
 
-    public function __construct(MessageBus $eventBus, DevelopmentEnvironmentRepository $developmentEnvironmentRepository)
+    public function __construct(MessageBus $eventBus, DevelopmentEnvironmentRepository $developmentEnvironmentRepository, TimeResolver $timeResolver)
     {
         $this->eventBus = $eventBus;
         $this->developmentEnvironmentRepository = $developmentEnvironmentRepository;
+        $this->timeResolver = $timeResolver;
     }
 
     /**
@@ -44,7 +50,7 @@ class EnvironmentController
      */
     public function createAction(FlatFlow $flow, User $user, EnvironmentCreationRequest $creationRequest)
     {
-        $developmentEnvironment = DevelopmentEnvironment::create($flow->getUuid(), $user, $creationRequest->getName());
+        $developmentEnvironment = DevelopmentEnvironment::create($flow->getUuid(), $user, $creationRequest->getName(), $this->timeResolver->resolve());
 
         foreach ($developmentEnvironment->raisedEvents() as $event) {
             $this->eventBus->handle($event);
