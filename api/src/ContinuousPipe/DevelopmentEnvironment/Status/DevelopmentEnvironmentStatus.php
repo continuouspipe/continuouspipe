@@ -17,19 +17,57 @@ class DevelopmentEnvironmentStatus
     private $clusterIdentifier;
 
     /**
-     * @var array|PublicEndpoint[]
+     * @var string
      */
-    private $publicEndpoints;
+    private $environmentName;
 
     /**
-     * @param string $status
-     * @param string $clusterIdentifier
-     * @param PublicEndpoint[] $publicEndpoints
+     * @var array|PublicEndpoint[]
      */
-    public function __construct(string $status, string $clusterIdentifier = null, array $publicEndpoints = [])
+    private $publicEndpoints = [];
+
+    public function __construct($status = null)
     {
         $this->status = $status;
-        $this->clusterIdentifier = $clusterIdentifier;
-        $this->publicEndpoints = $publicEndpoints;
+    }
+
+    /**
+     * @return array|PublicEndpoint[]
+     */
+    public function getPublicEndpoints()
+    {
+        return $this->publicEndpoints;
+    }
+
+    public function withCluster(string $cluster) : self
+    {
+        $status = clone $this;
+        $status->clusterIdentifier = $cluster;
+
+        return $status;
+    }
+
+    public function withPublicEndpoints(array $endpoints) : self
+    {
+        $status = clone $this;
+        $status->publicEndpoints = $endpoints;
+
+        return $status;
+    }
+
+    public function withEnvironmentName(string $environmentName) : self
+    {
+        $status = clone $this;
+        $status->environmentName = $environmentName;
+
+        return $status;
+    }
+
+    public function withStatus(string $environmentStatus) : self
+    {
+        $status = clone $this;
+        $status->status = $environmentStatus;
+
+        return $status;
     }
 }

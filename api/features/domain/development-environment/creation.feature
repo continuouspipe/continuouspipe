@@ -66,3 +66,4 @@ Feature:
     Then I should see that the status of the development environment is "Running"
     And I should see that the cluster identifier of the development environment is "fake/bar"
     And I should see that the public endpoint of the service "app" of my development environment is "1.2.3.4"
+    And I should see the environment name of my development environment

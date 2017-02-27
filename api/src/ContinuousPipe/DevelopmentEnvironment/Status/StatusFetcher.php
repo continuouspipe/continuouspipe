@@ -37,23 +37,24 @@ class StatusFetcher
     public function fetch(UuidInterface $environmentUuid) : DevelopmentEnvironmentStatus
     {
         $environment = $this->developmentEnvironmentRepository->find($environmentUuid);
+        $status = new DevelopmentEnvironmentStatus();
         if (null === ($token = $environment->getInitializationToken())) {
-            return new DevelopmentEnvironmentStatus('TokenNotCreated');
+            return $status->withStatus('TokenNotCreated');
         }
 
         $tides = $this->tideViewRepository->findByBranch($environment->getFlowUuid(), $token->getGitBranch());
         if (count($tides) == 0) {
-            return new DevelopmentEnvironmentStatus('NotStarted');
+            return $status->withStatus('NotStarted');
         }
 
         /** @var Tide $lastTide */
         $lastTide = current($tides);
         if ($lastTide->getStatus() == Tide::STATUS_RUNNING) {
-            return new DevelopmentEnvironmentStatus('TideRunning');
+            return $status->withStatus('TideRunning');
         } elseif ($lastTide->getStatus() == Tide::STATUS_PENDING) {
-            return new DevelopmentEnvironmentStatus('TidePending');
+            return $status->withStatus('TidePending');
         } elseif ($lastTide->getStatus() == Tide::STATUS_FAILURE || $lastTide->getStatus() == Tide::STATUS_CANCELLED) {
-            return new DevelopmentEnvironmentStatus('TideFailed');
+            return $status->withStatus('TideFailed');
         }
 
         $tide = $this->tideAggregateRepository->find($lastTide->getUuid());
@@ -61,17 +62,23 @@ class StatusFetcher
         /** @var DeployTask[] $deployTasks */
         $deployTasks = $tide->getTasks()->ofType(DeployTask::class);
         if (count($deployTasks) == 0) {
-            return new DevelopmentEnvironmentStatus('NoDeploymentFound');
+            return $status->withStatus('TideFailed');
         }
-
-        $cluster = null;
-        $publicEndpoints = [];
 
         foreach ($deployTasks as $deployTask) {
-            $cluster = $deployTask->getConfiguration()->getClusterIdentifier();
-            $publicEndpoints = array_merge($publicEndpoints, $deployTask->getPublicEndpoints());
+            if (null === ($deployment = $deployTask->getStartedDeployment())) {
+                continue;
+            }
+
+            $status = $status
+                ->withCluster($deployment->getRequest()->getTarget()->getClusterIdentifier())
+                ->withEnvironmentName($deployment->getRequest()->getTarget()->getEnvironmentName())
+                ->withPublicEndpoints(
+                    array_merge($status->getPublicEndpoints(), $deployTask->getPublicEndpoints())
+                )
+            ;
         }
 
-        return new DevelopmentEnvironmentStatus('Running', $cluster, $publicEndpoints);
+        return $status->withStatus('Running');
     }
 }

@@ -178,6 +178,16 @@ class DevelopmentEnvironmentContext implements Context
     }
 
     /**
+     * @Then I should see the environment name of my development environment
+     */
+    public function iShouldSeeTheEnvironmentNameOfMyDevelopmentEnvironment()
+    {
+        if (!isset($this->jsonResponse()['environment_name'])) {
+            throw new \RuntimeException('Environment name not found');
+        }
+    }
+
+    /**
      * @Then I should see the development environment :name
      */
     public function iShouldSeeTheDevelopmentEnvironment($name)

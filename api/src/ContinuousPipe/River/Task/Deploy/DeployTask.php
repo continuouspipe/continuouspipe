@@ -231,4 +231,12 @@ class DeployTask extends EventDrivenTask
     {
         return $this->publicEndpoints;
     }
+
+    /**
+     * @return Deployment|null
+     */
+    public function getStartedDeployment()
+    {
+        return $this->startedDeployment;
+    }
 }
