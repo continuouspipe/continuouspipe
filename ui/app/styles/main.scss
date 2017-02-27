@@ -146,10 +146,14 @@ body {
             height: $header-height;
 
             md-icon {
-                padding-top: 10px;
+                padding-top: 5px;
                 font-size: $logo-size;
                 width: $logo-size;
                 height: $logo-size + 10;
+
+                @include largeScreen {
+                    padding-top: 10px;
+                }
             }
         }
 
@@ -332,7 +336,11 @@ body {
     }
 
     .card-grid {
-        padding: 20px;
+        padding: 20px 0;
+
+        @include largeScreen {
+            padding: 20px;
+        }
 
         &.half {
             md-card {
@@ -631,8 +639,11 @@ body {
         }
 
         .delete-pipeline-btn {
-            visibility: hidden;
             padding: 0 8px 10px;
+
+            @include largeScreen {
+                visibility: hidden;
+            }
         }
     }
 
@@ -813,6 +824,18 @@ $loader-color: rgb(66, 133, 244);
             cursor: pointer;
             font-size: 12px;
             margin: 20px 5px;
+        }
+    }
+}
+
+.pipeline-details-row {
+    @include smallScreen {
+        flex-flow: row wrap;
+    }
+
+    &__details {
+        @include smallScreen {
+            flex: 1 100%;
         }
     }
 }
