@@ -85,6 +85,14 @@ final class DevelopmentEnvironment
         return $this->initializationToken;
     }
 
+    /**
+     * @return UuidInterface
+     */
+    public function getFlowUuid() : UuidInterface
+    {
+        return $this->flowUuid;
+    }
+
     private function raiseAndApply($event)
     {
         $this->raise($event);

@@ -40,6 +40,14 @@ class InitializationToken
         $this->gitBranch = $gitBranch;
     }
 
+    /**
+     * @return string
+     */
+    public function getGitBranch(): string
+    {
+        return $this->gitBranch;
+    }
+
     public function toString() : string
     {
         return base64_encode(implode(',', [

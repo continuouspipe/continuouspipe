@@ -58,5 +58,16 @@
         <service id="development_environment.controller.initialization_token" class="ContinuousPipe\DevelopmentEnvironmentBundle\Controller\InitializationTokenController">
             <argument type="service" id="development_environment.initialization_token_factory" />
         </service>
+
+        <service id="development_environment.controller.status" class="ContinuousPipe\DevelopmentEnvironmentBundle\Controller\StatusController">
+            <argument type="service" id="development_environment.status_fetcher" />
+        </service>
+
+        <!-- Status -->
+        <service id="development_environment.status_fetcher" class="ContinuousPipe\DevelopmentEnvironment\Status\StatusFetcher">
+            <argument type="service" id="development_environment.aggregate.repository" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.repository.tide" />
+        </service>
     </services>
 </container>

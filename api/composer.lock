@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8ca075245f0976b7dbaef28b166f66ac",
-    "content-hash": "9be41e206feab02a92f16546159cc51a",
+    "hash": "206d2a1d5fbad3fad4bfcb491a49a6d0",
+    "content-hash": "c349ea5429066ee86a03b80cca74096b",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -346,16 +346,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.4.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "25c13faf9c7043323086977df802359367c27e52"
+                "reference": "dcd7d0544db2917d363428009d84a4761d505b47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/25c13faf9c7043323086977df802359367c27e52",
-                "reference": "25c13faf9c7043323086977df802359367c27e52",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/dcd7d0544db2917d363428009d84a4761d505b47",
+                "reference": "dcd7d0544db2917d363428009d84a4761d505b47",
                 "shasum": ""
             },
             "require": {
@@ -375,10 +375,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.4.0",
+                "source": "https://github.com/continuouspipe/security/tree/master",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-02-27 12:44:31"
+            "time": "2017-02-27 18:29:35"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -8043,6 +8043,7 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
+        "continuous-pipe/security": 20,
         "continuous-pipe/worker-bundle": 20,
         "continuous-pipe/events": 20
     },

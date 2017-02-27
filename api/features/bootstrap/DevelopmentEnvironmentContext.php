@@ -48,6 +48,18 @@ class DevelopmentEnvironmentContext implements Context
     }
 
     /**
+     * @Given an initialization token have been created for the development environment :uuid of the flow :flowUuid and the branch :branch
+     */
+    public function anInitializationTokenHaveBeenCreatedForTheDevelopmentEnvironmentAndTheBranch($uuid, $flowUuid, $branch)
+    {
+        $this->iCreateAnInitializationTokenForTheDevelopmentEnvironmentOfTheFlow(
+            $uuid,
+            $flowUuid,
+            json_encode(['git_branch' => $branch])
+        );
+    }
+
+    /**
      * @When I create a development environment named :name for the flow :flowUuid
      */
     public function iCreateADevelopmentEnvironmentNamedForTheFlow($name, $flowUuid)
@@ -85,6 +97,11 @@ class DevelopmentEnvironmentContext implements Context
      */
     public function iCreateAnInitializationTokenForTheDevelopmentEnvironmentOfTheFlowWithTheFollowingParameters($uuid, $flowUuid, PyStringNode $string)
     {
+        $this->iCreateAnInitializationTokenForTheDevelopmentEnvironmentOfTheFlow($uuid, $flowUuid, $string->getRaw());
+    }
+
+    private function iCreateAnInitializationTokenForTheDevelopmentEnvironmentOfTheFlow($uuid, $flowUuid, string $body)
+    {
         $this->request(Request::create(
             '/flows/'.$flowUuid.'/development-environments/'.$uuid.'/initialization-token',
             'POST',
@@ -94,10 +111,70 @@ class DevelopmentEnvironmentContext implements Context
             [
                 'CONTENT_TYPE' => 'application/json'
             ],
-            $string->getRaw()
+            $body
         ));
 
         $this->assertResponseCode(201);
+    }
+
+    /**
+     * @When I request the status of the development environment :uuid of the flow :flowUuid
+     */
+    public function iRequestTheStatusOfTheDevelopmentEnvironmentOfTheFlow($uuid, $flowUuid)
+    {
+        $this->request(Request::create(
+            '/flows/'.$flowUuid.'/development-environments/'.$uuid.'/status',
+            'GET'
+        ));
+
+        $this->assertResponseCode(200);
+    }
+
+    /**
+     * @Then I should see that the status of the development environment is :status
+     */
+    public function iShouldSeeThatTheStatusOfTheDevelopmentEnvironmentIs($status)
+    {
+        $foundStatus = $this->jsonResponse()['status'];
+
+        if ($foundStatus != $status) {
+            throw new \RuntimeException(sprintf(
+                'Expected status "%s" but found "%s"',
+                $status,
+                $foundStatus
+            ));
+        }
+    }
+
+    /**
+     * @Then I should see that the cluster identifier of the development environment is :clusterIdentifier
+     */
+    public function iShouldSeeThatTheClusterIdentifierOfTheDevelopmentEnvironmentIs($clusterIdentifier)
+    {
+        $foundClusterIdentifier = $this->jsonResponse()['cluster_identifier'];
+
+        if ($foundClusterIdentifier != $clusterIdentifier) {
+            throw new \RuntimeException(sprintf(
+                'Expected cluster identifier "%s" but found "%s"',
+                $clusterIdentifier,
+                $foundClusterIdentifier
+            ));
+        }
+    }
+
+    /**
+     * @Then I should see that the public endpoint of the service :service of my development environment is :address
+     */
+    public function iShouldSeeThatThePublicEndpointOfTheServiceOfMyDevelopmentEnvironmentIs($service, $address)
+    {
+        $foundEndpoints = $this->jsonResponse()['public_endpoints'];
+        foreach ($foundEndpoints as $endpoint) {
+            if ($endpoint['name'] == $service && $endpoint['address'] == $address) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('The service endpoint was not found');
     }
 
     /**

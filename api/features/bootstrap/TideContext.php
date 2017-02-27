@@ -827,13 +827,14 @@ EOF;
 
     /**
      * @When a tide is started for the branch :branch with a deploy task
+     * @When a tide is started for the branch :branch with a deploy task for the cluster :cluster
      */
-    public function aTideIsStartedForTheBranchWithADeployTask($branch)
+    public function aTideIsStartedForTheBranchWithADeployTask($branch, $cluster = null)
     {
         $this->aTideIsStartedWithTasks([
             [
                 'deploy' => [
-                    'cluster' => 'fake/foo',
+                    'cluster' => $cluster ?: 'fake/foo',
                     'services' => []
                 ]
             ]
