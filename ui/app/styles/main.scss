@@ -440,6 +440,28 @@ body {
         }
 
         &.environment-grid {
+            @include smallScreen {
+                md-card-header {
+                    padding: 15px 10px;
+                }
+
+                .environment-card-btn {
+                    display: block;
+                    flex: 100%;
+                    margin: 20px 0 0 0;
+                    position: relative;
+                }
+
+                md-card-header-text {
+                    flex: 1;
+                    padding: 0 0 0 10px;
+                }
+
+                md-card-header {
+                    flex-flow: row wrap;
+                }
+            }
+
             md-card.collapsed {
                 > * {
                     display: none;
