@@ -1,15 +1,31 @@
 ---
-title: How do I configure the remote development CLI tool?
+title: Setup Command
 menu:
   main:
-    parent: 'faq'
-    weight: 110
-weight: 110
-linkTitle: Remote Development Setup
----
-If you are setting up a remote development environment using the `cp-remote` CLI tool, running the `setup` command asks for enviroment information - here is a fuller description of what you need to enter.
+    parent: 'remote-development'
+    weight: 20
 
-## ContinuousPipe Settings
+weight: 20
+---
+## Using the Setup Command
+
+To start using the tool for a project, run the `setup` command from the project root.
+
+```
+cp-remote setup
+```
+
+It will ask a series of questions to get the details for the project set up. The sections below give more detailed information about the questions.
+
+Your answers will be stored in a `.cp-remote-env-settings.yml` file in the project root. You will probably want to add this to your `.gitignore` file.
+
+{{< note title="Note" >}}
+Many of the answers are project specific, so it is advisable to provide details of the answers in your project specific README and to securely share sensitive details (such as the cluster password) with team members rather than them rely on the general information provided here.
+{{< /note >}}
+
+## Setup Questions
+
+### ContinuousPipe Questions
 
 * **What is your ContinuousPipe project key? (PROJECT_KEY)**
 
@@ -33,7 +49,7 @@ This is an optional setting, if provided this will be used by the `bash`, `watch
 
 If you do not provide a default container it will need to be specified every time you use the `bash`, `watch`, `fetch` and `resync` commands.
 
-## AnyBar Settings
+### AnyBar Questions
 
 * **If you want to use AnyBar, please provide a port number e.g 1738 ? (ANYBAR_PORT)**
 
@@ -41,7 +57,7 @@ This is only needed if you want to get [AnyBar](https://github.com/tonsky/AnyBar
 
 A value needs to be provided in answer to the question, even if you want to use the default port of 1738, as the notifications are not sent unless a port number is provided.
 
-## Keen.io Settings
+### Keen.io Questions
 
 * **What is your keen.io write key? (KEEN_WRITE_KEY)**
 * **What is your keen.io project id? (KEEN_PROJECT_ID)**
@@ -49,7 +65,7 @@ A value needs to be provided in answer to the question, even if you want to use 
 
 These are only needed if you want to log usage stats using https://keen.io/.
 
-## Kubernetes Settings
+### Kubernetes Questions
 
 * **What is the IP of the cluster?**
 * **What is the cluster username?**

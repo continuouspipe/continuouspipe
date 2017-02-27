@@ -603,7 +603,7 @@ We are going to instruct ContinuousPipe to build us a new environment by creatin
 
 ### Install `cp-remote`
 
-`cp-remote` is available on OSX, Linux and Windows. Please refer to the [remote development tool installation instructions]({{< relref "guides/remote-development.md#installation" >}}) for each of the platforms.
+`cp-remote` is available on OSX, Linux and Windows. Please refer to the [remote development installation instructions]({{< relref "remote-development/getting-started.md#installation" >}}) for each of the platforms.
 
 For simplicity, here is the OSX installation instructions
 
@@ -627,7 +627,7 @@ Now that we have `cp-remote` installed, we are ready to setup our remote environ
 $ cp-remote setup
 ```
 
-You will now be asked a series of questions that relate to how you have configured ContinuousPipe and your cluster details. Please refer to the [remote development tool setup instructions]({{< relref "guides/remote-development.md#setup" >}}) for more information.
+You will now be asked a series of questions that relate to how you have configured ContinuousPipe and your cluster details. Please refer to the [remote development setup instructions]({{< relref "remote-development/setup-command.md" >}}) for more information.
 
 ### Build the environment
 

@@ -175,7 +175,7 @@ The default Symfony installation page should be served up (you may need to accep
 
 ### Install the Client
  
-To use ContinuousPipe as a remote development environment you will need the `cp-remote` client, which is available on OSX, Linux and Windows. Please refer to the [remote development tool installation instructions]({{< relref "guides/remote-development.md#installation" >}}) for each of the platforms.
+To use ContinuousPipe as a remote development environment you will need the `cp-remote` client, which is available on OSX, Linux and Windows. Please refer to the [remote development installation instructions]({{< relref "remote-development/getting-started.md#installation" >}}) for each of the platforms.
  
 ### Run Setup
 
@@ -183,7 +183,7 @@ To use ContinuousPipe as a remote development environment you will need the `cp-
  cp-remote setup
 ```
 
-You will now be asked a series of questions that relate to how you have configured ContinuousPipe and your cluster details. Please refer to the [remote development tool setup instructions]({{< relref "guides/remote-development.md#setup" >}}) for more information.
+You will now be asked a series of questions that relate to how you have configured ContinuousPipe and your cluster details. Please refer to the [remote development setup instructions]({{< relref "remote-development/setup-command.md" >}}) for more information.
 
 ### Build the Remote Environment
 
