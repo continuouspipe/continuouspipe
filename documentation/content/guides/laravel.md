@@ -63,7 +63,7 @@ $ composer require predis/predis
 
 ## Configuring ContinuousPipe
 
-Before we can push any code to our repository, we need to ensure ContinuousPipe is properly configured. Please refer to the ContinuousPipe Quick Start guides in the documentations to setup your [team](https://docs.continuouspipe.io/quick-start/creating-a-team/), [cluster](https://docs.continuouspipe.io/quick-start/configuring-a-cluster/), [registry](https://docs.continuouspipe.io/quick-start/configuring-a-registry/) and create your first [flow](https://docs.continuouspipe.io/quick-start/configuring-a-flow/)
+Before we can push any code to our repository, we need to ensure ContinuousPipe console is properly configured. Please refer to the ContinuousPipe Quick Start guide to setup your [team]({{< relref "quick-start/creating-a-team.md" >}}), [cluster]({{< relref "quick-start/configuring-a-cluster.md" >}}), [registry]({{< relref "quick-start/configuring-a-registry.md" >}}) and create your first [flow]({{< relref "quick-start/creating-a-flow.md" >}}).
 
 One last thing we need to do before we can begin using ContinuousPipe is configure which cluster we will use. You are free to configure as many clusters as you wish, in fact, its a good idea to have a separate cluster from production as you would for development and testing. 
 
@@ -603,7 +603,7 @@ We are going to instruct ContinuousPipe to build us a new environment by creatin
 
 ### Install `cp-remote`
 
-`cp-remote` is available on OSX, Linux and Windows. Please refer to the [installation instructions](https://github.com/continuouspipe/remote-environment-client#remote-environment-client) for each of the platforms.
+`cp-remote` is available on OSX, Linux and Windows. Please refer to the [remote development tool installation instructions]({{< relref "guides/remote-development.md#installation" >}}) for each of the platforms.
 
 For simplicity, here is the OSX installation instructions
 
@@ -627,7 +627,7 @@ Now that we have `cp-remote` installed, we are ready to setup our remote environ
 $ cp-remote setup
 ```
 
-You will now be asked a series of questions that relate to how you have configured ContinuousPipe and your cluster details. Please refer to the [README](https://github.com/continuouspipe/remote-environment-client#configuration) for more information.
+You will now be asked a series of questions that relate to how you have configured ContinuousPipe and your cluster details. Please refer to the [remote development tool setup instructions]({{< relref "guides/remote-development.md#setup" >}}) for more information.
 
 ### Build the environment
 

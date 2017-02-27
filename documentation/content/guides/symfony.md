@@ -139,15 +139,15 @@ The first task, called `images`, builds a Docker image for the web service based
 
 The second task, called `deployment`, deploys the service to a cluster set with the `CLUSTER` variable (setting this variable is explained later). The environment name used to refer to the deployment is made consistent by combining "sfdemo-" with the name of the branch that triggered the process. Then the web service is deployed - it needs to be accessible directly from a browser so `from_external` has been set to "true".
 
-The ContinousPipe documentation has more information about [tasks](https://continuouspipe.io/docs/configure/tasks/).
+The ContinousPipe documentation has more information about [tasks]({{< relref "configuration/tasks.md" >}}).
 
 ### Configuring the ContinuousPipe Console
 
-Before we can push any code to our repository, we need to ensure ContinuousPipe console is properly configured. Please refer to the ContinuousPipe Quick Start guide to setup your [team]({{< relref "creating-a-team.md" >}}), [cluster]({{< relref "configuring-a-cluster.md" >}}), [registry]({{< relref "configuring-a-registry.md" >}}) and create your first [flow]({{< relref "creating-a-flow.md" >}}).
+Before we can push any code to our repository, we need to ensure ContinuousPipe console is properly configured. Please refer to the ContinuousPipe Quick Start guide to setup your [team]({{< relref "quick-start/creating-a-team.md" >}}), [cluster]({{< relref "quick-start/configuring-a-cluster.md" >}}), [registry]({{< relref "quick-start/configuring-a-registry.md" >}}) and create your first [flow]({{< relref "quick-start/creating-a-flow.md" >}}).
 
 ### Adding Variables to the ContinuousPipe Console 
 
-When creating the `continuous-pipe.yml` above an `IMAGE_NAME` and `CLUSTER` variable were used. These can now be added in the configuration section of the new flow within the ContinuousPipe console. This is explained in [configuring a flow]({{< relref "configuring-a-flow.md" >}}).
+When creating the `continuous-pipe.yml` above an `IMAGE_NAME` and `CLUSTER` variable were used. These can now be added in the configuration section of the new flow within the ContinuousPipe console. This is explained in [configuring a flow]({{< relref "quick-start/configuring-a-flow.md" >}}).
 
 The `CLUSTER` value you need can be found in the "Clusters" tab of the team. If you manually entered the Kubernetes cluster details you will have set the value yourself. If you used a Google linked account the value will have been set when setting up the Google Container Engine.
 
@@ -175,7 +175,7 @@ The default Symfony installation page should be served up (you may need to accep
 
 ### Install the Client
  
-To use ContinuousPipe as a remote development environment you will need the `cp-remote` client, which is available on OSX, Linux and Windows. Please refer to the [installation instructions](https://github.com/continuouspipe/remote-environment-client#remote-environment-client) for each of the platforms.
+To use ContinuousPipe as a remote development environment you will need the `cp-remote` client, which is available on OSX, Linux and Windows. Please refer to the [remote development tool installation instructions]({{< relref "guides/remote-development.md#installation" >}}) for each of the platforms.
  
 ### Run Setup
 
@@ -183,7 +183,7 @@ To use ContinuousPipe as a remote development environment you will need the `cp-
  cp-remote setup
 ```
 
-You will now be asked a series of questions that relate to how you have configured ContinuousPipe and your cluster details. Please refer to the [README](https://github.com/continuouspipe/remote-environment-client#configuration) for more information.
+You will now be asked a series of questions that relate to how you have configured ContinuousPipe and your cluster details. Please refer to the [remote development tool setup instructions]({{< relref "guides/remote-development.md#setup" >}}) for more information.
 
 ### Build the Remote Environment
 
@@ -305,7 +305,7 @@ To rebuild the remote environment with these changes, commit them to master and 
 
 ![](/images/guides/symfony/cp-pipelines.png)
 
-If you know load the Remote pipeline endpoint in the browser you should see the Symfony toolbar at the bottom of the page indicating that it is in development mode.
+If you now load the Remote pipeline endpoint in the browser you should see the Symfony toolbar at the bottom of the page indicating that it is in development mode.
 
 ![](/images/guides/symfony/endpoint-view-toolbar.png)
 
