@@ -61,13 +61,15 @@
                 <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
             </argument>
         </service>
-        <service id="api.api_key_user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\ApiKeyUserProvider">
+        <service id="api.security.user_by_api_key" alias="api.security.api_key.user_by_api_key" />
+
+        <service id="api.api_key_user_provider" class="ContinuousPipe\Security\Authentication\ApiKeyUserFromRepositoryProvider">
             <argument type="service" id="app.security.user_provider" />
             <argument type="service" id="api.security.api_key.user_by_api_key" />
         </service>
 
         <service id="api.api_key_authenticator"
-                 class="ContinuousPipe\Authenticator\Security\ApiKeyAuthenticator"
+                 class="ContinuousPipe\Security\Authentication\ApiKeyAuthenticator"
                  public="false" />
 
         <!-- Param Converter -->
