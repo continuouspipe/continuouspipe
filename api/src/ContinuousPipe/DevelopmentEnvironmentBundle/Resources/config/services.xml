@@ -41,10 +41,21 @@
             <argument type="service" id="doctrine.orm.default_entity_manager" />
         </service>
 
+        <!-- Initialization token -->
+        <service id="development_environment.initialization_token_factory" class="ContinuousPipe\DevelopmentEnvironment\InitializationToken\InitializationTokenFactory">
+            <argument type="service" id="development_environment.aggregate.repository" />
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="security.authenticator.client" />
+        </service>
+
         <!-- Controller -->
         <service id="development_environment.controller.environment" class="ContinuousPipe\DevelopmentEnvironmentBundle\Controller\EnvironmentController">
             <argument type="service" id="event_bus" />
             <argument type="service" id="development_environment.read_model.repository" />
+        </service>
+
+        <service id="development_environment.controller.initialization_token" class="ContinuousPipe\DevelopmentEnvironmentBundle\Controller\InitializationTokenController">
+            <argument type="service" id="development_environment.initialization_token_factory" />
         </service>
     </services>
 </container>

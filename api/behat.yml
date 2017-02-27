@@ -82,6 +82,7 @@ default:
                     - @river.user_activity.middleware_supporting_dispatcher
                 - DevelopmentEnvironmentContext:
                     - @kernel
+                    - @event_bus
 
                 # TBR:
                 - GitHubContext:
@@ -357,6 +358,7 @@ smoke:
                     - @river.notifications.notifier.slack.traceable
                 - DevelopmentEnvironmentContext:
                     - @kernel
+                    - @event_bus
 
     extensions:
         Behat\Symfony2Extension:

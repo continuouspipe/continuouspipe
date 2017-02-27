@@ -65,6 +65,22 @@ class SecurityContext implements Context
     }
 
     /**
+     * @Given the created API key for the user :username will have the key :apiKey
+     */
+    public function theCreatedApiKeyForTheUserWillHaveTheKey($username, $apiKey)
+    {
+        $this->inMemoryAuthenticatorClient->setApiKeyCreationHook(function(User $user, string $description) use ($username, $apiKey) {
+            return new UserApiKey(
+                Uuid::uuid4(),
+                $user,
+                $apiKey,
+                new \DateTime(),
+                $description
+            );
+        });
+    }
+
+    /**
      * @Given I am authenticated
      */
     public function iAmAuthenticated()
