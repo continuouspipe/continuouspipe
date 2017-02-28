@@ -9,6 +9,8 @@ linkTitle: Readiness Checks on Services
 ---
 Sometimes a service is not immediately available - it may need to load configuration or import data, taking several minutes before it is ready. In this situation you can define a `readiness_probe` to ensure that the availability of the service is deferred until any setup routines are finished.
 
+Sometimes your container won't be listening on the relevant port by the time the readiness probe runs but you will still want to check that it is functioning. A good idea would be to check that a file can be created in a directory such as /tmp (see varnish example).
+
 ```yaml
 tasks:
     images:
