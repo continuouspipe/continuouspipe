@@ -86,7 +86,7 @@ class TeamBillingProfileAlertFinder implements AlertFinder
             if (0 === count($subscriptions)) {
                 $alerts[] = new Alert(
                     'billing-profile-has-no-subscription',
-                    'The team billing profile do not have any subcription. You\'ll have a very limited experience.',
+                    'Your team billing profile does not have any subscriptions. This will limit your experience.',
                     new \DateTime(),
                     new AlertAction(
                         'state',
@@ -100,7 +100,7 @@ class TeamBillingProfileAlertFinder implements AlertFinder
                 if (count($activeSubscriptions) == 0) {
                     $alerts[] = new Alert(
                         'billing-profile-has-no-active-subscription',
-                        'The team billing profile subscription is not active. You\'ll have a very limited experience.',
+                        'Your team billing profile does not have any active subscriptions. This will limit your experience.',
                         new \DateTime(),
                         new AlertAction(
                             'state',
