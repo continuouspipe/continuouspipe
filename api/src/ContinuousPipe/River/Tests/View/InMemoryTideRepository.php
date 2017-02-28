@@ -110,22 +110,23 @@ class InMemoryTideRepository implements TideRepository
             return new InMemoryTideList();
         }
 
-        $tides = array_values($this->tideByFlow[$uuid]);
-        usort($tides, function (Tide $left, Tide $right) {
-            return $left->getCreationDate() > $right->getCreationDate() ? -1 : 1;
-        });
-
-        return new InMemoryTideList($tides);
+        return new InMemoryTideList(
+            $this->sortByCreationDateDesc(
+                array_values($this->tideByFlow[$uuid])
+            )
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findByBranch(Uuid $flowUuid, CodeReference $codeReference)
+    public function findByBranch(Uuid $flowUuid, $branch)
     {
-        return array_values(array_filter($this->tides, function (Tide $tide) use ($flowUuid, $codeReference) {
-            return $tide->getFlowUuid() == $flowUuid && $tide->getCodeReference()->getBranch() == $codeReference->getBranch();
+        $tides = array_values(array_filter($this->tides, function (Tide $tide) use ($flowUuid, $branch) {
+            return $tide->getFlowUuid() == $flowUuid && $tide->getCodeReference()->getBranch() == $branch;
         }));
+
+        return $this->sortByCreationDateDesc($tides);
     }
 
     /**
@@ -168,5 +169,19 @@ class InMemoryTideRepository implements TideRepository
             $codeReference->getBranch(),
             $codeReference->getCommitSha()
         );
+    }
+
+    /**
+     * @param Tide[] $tides
+     *
+     * @return Tide[]
+     */
+    private function sortByCreationDateDesc(array $tides)
+    {
+        usort($tides, function (Tide $left, Tide $right) {
+            return $left->getCreationDate() > $right->getCreationDate() ? -1 : 1;
+        });
+
+        return $tides;
     }
 }

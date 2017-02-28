@@ -41,12 +41,12 @@ interface TideRepository extends TideViewStorage
     /**
      * Find all the tides of a given flow for the given branch. So we can record the comments.
      *
-     * @param Uuid          $flowUuid
-     * @param CodeReference $codeReference
+     * @param Uuid   $flowUuid
+     * @param string $branch
      *
      * @return Tide[]
      */
-    public function findByBranch(Uuid $flowUuid, CodeReference $codeReference);
+    public function findByBranch(Uuid $flowUuid, $branch);
 
     /**
      * @param Uuid   $flowUuid

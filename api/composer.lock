@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2276b75559a30a3f3cb0af5291243802",
-    "content-hash": "3824ac2f337c420e85e83bfecfd2e7b5",
+    "hash": "92d3fbfc1cb574248780238c07330907",
+    "content-hash": "db159364b1459e736f340969a2d0c1ee",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -255,6 +255,32 @@
             "time": "2016-02-11 09:53:46"
         },
         {
+            "name": "continuous-pipe/events",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/events.git",
+                "reference": "3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/events/zipball/3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9",
+                "reference": "3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ContinuousPipe\\": "src/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/continuouspipe/events/tree/master",
+                "issues": "https://github.com/continuouspipe/events/issues"
+            },
+            "time": "2017-02-27 13:57:10"
+        },
+        {
             "name": "continuous-pipe/model",
             "version": "2.2.8",
             "source": {
@@ -320,16 +346,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.4.0",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "25c13faf9c7043323086977df802359367c27e52"
+                "reference": "dcd7d0544db2917d363428009d84a4761d505b47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/25c13faf9c7043323086977df802359367c27e52",
-                "reference": "25c13faf9c7043323086977df802359367c27e52",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/dcd7d0544db2917d363428009d84a4761d505b47",
+                "reference": "dcd7d0544db2917d363428009d84a4761d505b47",
                 "shasum": ""
             },
             "require": {
@@ -349,10 +375,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.4.0",
+                "source": "https://github.com/continuouspipe/security/tree/master",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-02-27 12:44:31"
+            "time": "2017-02-27 18:29:35"
         },
         {
             "name": "continuous-pipe/worker-bundle",

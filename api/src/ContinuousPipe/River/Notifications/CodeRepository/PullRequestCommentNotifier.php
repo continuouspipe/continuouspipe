@@ -127,7 +127,7 @@ class PullRequestCommentNotifier implements Notifier
      */
     private function removePreviousComments(Tide $tide)
     {
-        $tides = $this->tideRepository->findByBranch($tide->getFlowUuid(), $tide->getCodeReference());
+        $tides = $this->tideRepository->findByBranch($tide->getFlowUuid(), $tide->getCodeReference()->getBranch());
 
         foreach ($tides as $tide) {
             $commentEvents = $this->eventStore->findByTideUuidAndType($tide->getUuid(), CommentedPullRequest::class);

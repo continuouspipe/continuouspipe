@@ -123,11 +123,13 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByBranch(Uuid $flowUuid, CodeReference $codeReference)
+    public function findByBranch(Uuid $flowUuid, $branch)
     {
         $dtos = $this->getEntityRepository()->findBy([
             'flowUuid' => (string) $flowUuid,
-            'tide.codeReference.branch' => $codeReference->getBranch(),
+            'tide.codeReference.branch' => $branch,
+        ], [
+            'tide.creationDate' => 'DESC',
         ]);
 
         return array_map(function (TideDto $dto) {
