@@ -60,13 +60,19 @@ PygmentsOptions = "startinline=true"
 	weight = "15"
 
 [[menu.main]]
+	name   = "Remote Development"
+	url    = "/remote-development/"
+	identifier = "remote-development"
+	weight = "20"
+
+[[menu.main]]
 	name   = "FAQ"
 	url    = "/faq/"
 	identifier = "faq"
-	weight = "20"
+	weight = "25"
 
 [[menu.main]]
 	name   = "Guides"
 	url    = "/guides/"
 	identifier = "guides"
-	weight = "25"
+	weight = "30"
