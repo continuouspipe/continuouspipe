@@ -16,6 +16,7 @@ Feature:
     And I request the list of the development environments of the flow "00000000-0000-0000-0000-000000000000"
     Then I should see the development environment "sroze's environment"
 
+  @smoke
   Scenario: I can create an initialization token that will be used by the client
     Given the user "samuel" have a development environment "00000000-0000-0000-0000-000000000000" for the flow "00000000-0000-0000-0000-000000000000"
     And the created API key for the user "samuel" will have the key "API-KEY-1234"
