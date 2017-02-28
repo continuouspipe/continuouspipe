@@ -29,17 +29,18 @@ func NewClusterInfo() *ClusterInfo {
 }
 
 type ApiFlow struct {
-	Configuration []interface{} `json:"configuration"`
+	Configuration interface{}   `json:"configuration"`
 	Pipelines     []interface{} `json:"pipelines"`
-	Repository    []interface{} `json:"repository"`
+	Repository    interface{}   `json:"repository"`
 	Team          ApiFlowTeam   `json:"team"`
-	User          []interface{} `json:"user"`
+	User          interface{}   `json:"user"`
 	Uuid          string        `json:"uuid"`
 }
 
 type ApiFlowTeam struct {
 	BucketUuid string `json:"bucket_uuid"`
 	Slug       string `json:"slug"`
+	Name       string `json:"name"`
 }
 
 type ApiCluster struct {
