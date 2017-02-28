@@ -28,5 +28,7 @@ tasks:
                               value: ${KUBE_PROXY_INSECURE_SKIP_VERIFY}
                             - name: KUBE_PROXY_AUTHENTICATOR_HOST
                               value: ${KUBE_PROXY_AUTHENTICATOR_HOST}
+                            - name: KUBE_PROXY_RIVER_HOST
+                              value: ${KUBE_PROXY_RIVER_HOST}
                             - name: KUBE_PROXY_MASTER_API_KEY
                               value: ${KUBE_PROXY_MASTER_API_KEY}
