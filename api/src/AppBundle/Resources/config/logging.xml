@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.data_collector.user_activity_context_data_collector" class="AppBundle\Model\DataCollector\UserActivityContextDataCollector">
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="river.logging.processors.trace_context_processor" class="AppBundle\Monolog\Processor\UserActivityContextProcessor">
+            <argument type="service" id="river.data_collector.user_activity_context_data_collector" />
+
+            <tag name="monolog.processor" method="appendContext" />
+        </service>
+    </services>
+</container>
