@@ -117,7 +117,7 @@ class UserContext implements Context
     public function iRequestTheUserBehindTheApiKey($key, $systemKey)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/api-key/%s/user', $key),
+            sprintf('/api/api-keys/%s/user', $key),
             'GET',
             [],
             [],

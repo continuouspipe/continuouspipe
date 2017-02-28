@@ -25,7 +25,7 @@ class ApiKeyController
     }
 
     /**
-     * @Route("/api-key/{key}/user", methods={"GET"})
+     * @Route("/api-keys/{key}/user", methods={"GET"})
      * @Security("is_granted('ROLE_SYSTEM')")
      * @View
      */
