@@ -10,18 +10,19 @@ package main
 // KUBE_PROXY_LISTEN_ADDRESS			https://localhost:443
 // KUBE_PROXY_INSECURE_SKIP_VERIFY		true, unless we have valid certificates on the kubernetes side
 // KUBE_PROXY_AUTHENTICATOR_HOST		for testing authenticator-staging.continuouspipe.io, on live authenticator.continuouspipe.io
+// KUBE_PROXY_RIVER_HOST				for testing river-staging.continuouspipe.io, on live authenticator.continuouspipe.io
 // KUBE_PROXY_MASTER_API_KEY			cp master api key
 //
 
 import (
+	"encoding/base64"
+	"fmt"
 	"github.com/continuouspipe/kube-proxy/cplogs"
 	kproxy "github.com/continuouspipe/kube-proxy/proxy"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
-	"io/ioutil"
-	"encoding/base64"
-	"fmt"
 )
 
 var envListenAddress, _ = os.LookupEnv("KUBE_PROXY_LISTEN_ADDRESS") //e.g.: https://localhost:80

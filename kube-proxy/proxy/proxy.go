@@ -31,7 +31,7 @@ func (m *HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	proxy, err := NewUpgradeAwareSingleHostReverseProxy(r)
 	if err != nil {
-		cplogs.Errorf("Error when creating the single host reverse proxy. Error: %s", err.Error())
+		cplogs.Errorf("Error when creating the single host reverse proxy. " + err.Error())
 		cplogs.Flush()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -67,14 +67,23 @@ func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingle
 	cinfo := cpapi.NewClusterInfo()
 	cpToKube := parser.NewCpToKubeUrl()
 
-	apiCluster, err := cinfo.GetCluster(user, password, cpToKube.ExtractTeamName(r.URL.Path), cpToKube.ExtractClusterId(r.URL.Path))
+	flowId, err := cpToKube.ExtractFlowId(r.URL.Path)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to get the cluster url, error: %#v", err.Error())
+		return nil, err
+	}
+	clusterId, err := cpToKube.ExtractClusterId(r.URL.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	apiCluster, err := cinfo.GetCluster(user, password, flowId, clusterId)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get the cluster url, " + err.Error())
 	}
 
 	backendAddr, err := url.Parse(apiCluster.Address)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to parse the cluster url, error: %#v", err.Error())
+		return nil, fmt.Errorf("Failed to parse the cluster url, " + err.Error())
 	}
 
 	reverseProxy := httputil.NewSingleHostReverseProxy(backendAddr)
@@ -122,7 +131,11 @@ func (p *UpgradeAwareSingleHostReverseProxy) newProxyRequest(req *http.Request) 
 
 	// if backendAddr is http://host/base and req is for /foo, the resulting path
 	// for backendURL should be /base/foo
-	backendURL.Path = p.cpToKube.RemoveCpDataFromUri(singleJoiningSlash(backendURL.Path, req.URL.Path))
+	pathWithoutCpData, err := p.cpToKube.RemoveCpDataFromUri(singleJoiningSlash(backendURL.Path, req.URL.Path))
+	if err != nil {
+		return nil, err
+	}
+	backendURL.Path = pathWithoutCpData
 	backendURL.RawQuery = req.URL.RawQuery
 
 	newReq, err := http.NewRequest(req.Method, backendURL.String(), req.Body)
