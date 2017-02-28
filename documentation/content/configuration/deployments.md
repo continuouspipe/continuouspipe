@@ -185,7 +185,7 @@ deployment_strategy:
         path: /healthz
 ```
 
-Sometimes your container won't be listening on the relevant port by the time the readiness probe runs but you will still want to check that it in functioning. A good idea would be to check that a file can be created in a directory such as /tmp.
+Sometimes your container won't be listening on the relevant port by the time the readiness probe runs but you will still want to check that it is functioning. A good idea would be to check that a file can be created in a directory such as /tmp.
 
 ``` yaml
 deployment_strategy:
