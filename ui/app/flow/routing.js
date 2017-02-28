@@ -89,5 +89,15 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+            .state('flow.remote', {
+                url: '/remote',
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/remote/list.html',
+                        controller: 'FlowRemoteController'
+                    }
+                },
+                aside: true
+            })
         ;
     });
