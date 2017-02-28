@@ -3,30 +3,41 @@
 namespace ContinuousPipe\DevelopmentEnvironment\InitializationToken;
 
 use Ramsey\Uuid\UuidInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class InitializationToken
 {
     /**
+     * @JMS\Type("uuid")
+     *
      * @var UuidInterface
      */
     private $flowUuid;
 
     /**
+     * @JMS\Type("uuid")
+     *
      * @var UuidInterface
      */
     private $developmentEnvironmentUuid;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $apiKey;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $username;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $gitBranch;
