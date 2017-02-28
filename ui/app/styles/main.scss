@@ -320,11 +320,26 @@ body {
         h3 {
             color: #aaa;
         }
+
         p {
             color: #ccc;
 
             a {
                 color: #999;
+            }
+        }
+
+        &--remote {
+            form {
+                padding: 2em 0 0;
+            }
+
+            h3 {
+                color: #666;
+            }
+
+            p {
+                color: #888;
             }
         }
     }

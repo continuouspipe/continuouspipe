@@ -1,1 +1,36 @@
-<h1>Hello World</h1>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="environments">{{ environments.length }} environments</span>
+            <span ng-hide="environments">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Start manually" ui-sref="flow.create-remote">
+            <md-icon>play_arrow</md-icon>
+            Start manually
+        </md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content" class="card-grid half environment-grid">
+    <div class="zero-content-help zero-content-help--remote" ng-if="environments.length == 0">
+        <i class="cp-icon-commit" style="font-size: 60px;"></i>
+        <h3>To use your development environment, you’ll have to install the cp-remote command line tool on your machine.</h3>
+        <p>You’ll find all the help you need in the documentation.</p>
+        <p>Generate an initialization token to get started and use it with the `cp-remote init` command.</p>
+        <form name="remoteEnvForm">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Remote Branch Name</label>
+                <input type="text" value="cpdev/sroze"/>
+            </md-input-container>
+        </form>
+        <md-button class="md-raised" ng-click="getToken()">
+            Generate an initialization token
+        </md-button>
+    </div>
+
+    <remote-resource resource-name="environments">
+        <md-card ng-repeat="environment in environments" ng-class="{'collapsed': !environment.expanded}">
+            {{ environment }}
+        </md-card>
+    </remote-resource>
+</md-content>
