@@ -17,6 +17,12 @@
             <tag name="event_bus_middleware" priority="10" />
         </service>
 
+        <service id="river.event_bus.middleware.user_activity_context_data_collector" class="ContinuousPipe\River\EventBus\UserActivityContextDataCollectorMiddleware" public="false">
+            <argument type="service" id="river.repository.flow.event_based" />
+
+            <tag name="command_bus_middleware" priority="1000" />
+        </service>
+
         <service id="river.event_bus.finishes_message_before_handling_next_middleware" class="ContinuousPipe\River\EventBus\FinishesHandlingMessageBeforeHandlingNext">
             <tag name="event_bus_middleware" priority="1000" />
             <tag name="command_bus_middleware" priority="1000" />

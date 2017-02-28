@@ -27,3 +27,23 @@ Feature:
       | team     | projectY                             |
       | flow     | 00000000-0000-0000-0000-000000000001 |
       | tide     | 00000000-0000-0000-0000-000000000002 |
+
+  Scenario: Able to see the context of an exception in the logs
+    Given I am authenticated as "geza"
+    And the team "projectX" exists
+    And I have a flow with UUID "00000000-0000-0000-0000-000000000000" in the team "projectX"
+    When a webhook is received from GitHub for the flow "00000000-0000-0000-0000-000000000000" that fails
+    Then I should see a runtime exception in the logs tagged with
+      | Tag name | Tag value                            |
+      | team     | projectX                             |
+      | flow     | 00000000-0000-0000-0000-000000000000 |
+
+  Scenario: Able to see the context of an exception in the logs
+    Given I am authenticated as "geza"
+    And the team "projectX" exists
+    And I have a flow with UUID "00000000-0000-0000-0000-000000000000" in the team "projectX"
+    When a webhook is received from BitBucket for the flow "00000000-0000-0000-0000-000000000000" that fails
+    Then I should see a runtime exception in the logs tagged with
+      | Tag name | Tag value                            |
+      | team     | projectX                             |
+      | flow     | 00000000-0000-0000-0000-000000000000 |

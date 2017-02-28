@@ -2,23 +2,23 @@
 
 namespace AppBundle\Monolog\Processor;
 
-use AppBundle\Model\DataCollector\UserActivityContextDataCollector;
+use AppBundle\Model\DataCollector\UserActivityContextProvider;
 
 class UserActivityContextProcessor
 {
     /**
-     * @var UserActivityContextDataCollector
+     * @var UserActivityContextProvider
      */
-    private $contextDataCollector;
+    private $userActivityContextProvider;
 
-    public function __construct(UserActivityContextDataCollector $contextDataCollector)
+    public function __construct(UserActivityContextProvider $userActivityContextProvider)
     {
-        $this->contextDataCollector = $contextDataCollector;
+        $this->userActivityContextProvider = $userActivityContextProvider;
     }
 
     public function appendContext(array $record)
     {
-        $context = $this->contextDataCollector->getContext();
+        $context = $this->userActivityContextProvider->getContext();
 
         if (null !== ($teamSlug = $context->getTeamSlug())) {
             $record['context']['tags']['team'] = $teamSlug;

@@ -30,4 +30,14 @@ class PingEvent extends AbstractEvent
     {
         return 'ping';
     }
+
+    /**
+     * Returns the repository related to this event.
+     *
+     * @return Repository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
 }

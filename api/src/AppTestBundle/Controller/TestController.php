@@ -2,8 +2,14 @@
 
 namespace AppTestBundle\Controller;
 
+use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\CommentEvent;
+use ContinuousPipe\River\CodeRepository\BitBucket\Command\HandleBitBucketEvent;
+use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
+use GitHub\WebHook\Event\PingEvent;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -11,6 +17,16 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 class TestController
 {
+    /**
+     * @var MessageBus
+     */
+    private $commandBus;
+
+    public function __construct(MessageBus $commandBus)
+    {
+        $this->commandBus = $commandBus;
+    }
+
     /**
      * @Route("/access-denied-page")
      */
@@ -26,5 +42,31 @@ class TestController
     public function tideOperationFailedAction()
     {
         throw new \RuntimeException('Tide operation failed exception.');
+    }
+
+    /**
+     * @Route("/github/webhook/flow/{uuid}/operation-failed")
+     */
+    public function gitHubWebhookOperationFailedAction($uuid)
+    {
+        $this->commandBus->handle(new HandleGitHubEvent(
+            Uuid::fromString($uuid),
+            new PingEvent()
+        ));
+
+        throw new \RuntimeException('GitHub webhook processing failed exception.');
+    }
+
+    /**
+     * @Route("/bitbucket/webhook/flow/{uuid}/operation-failed")
+     */
+    public function bitBucketWebhookOperationFailedAction($uuid)
+    {
+        $this->commandBus->handle(new HandleBitBucketEvent(
+            Uuid::fromString($uuid),
+            new CommentEvent()
+        ));
+
+        throw new \RuntimeException('BitBucket webhook processing failed exception.');
     }
 }

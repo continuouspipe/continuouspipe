@@ -232,6 +232,26 @@ class LoggingContext implements Context
     }
 
     /**
+     * @When a webhook is received from GitHub for the flow :uuid that fails
+     */
+    public function aWebhookIsReceivedFromGitHubForTheFlowThatFails($uuid)
+    {
+        $this->request(Request::create("/test/github/webhook/flow/$uuid/operation-failed", 'GET'));
+
+        $this->assertResponseCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * @When a webhook is received from BitBucket for the flow :uuid that fails
+     */
+    public function aWebhookIsReceivedFromBitBucketForTheFlowThatFails($uuid)
+    {
+        $this->request(Request::create("/test/bitbucket/webhook/flow/$uuid/operation-failed", 'GET'));
+
+        $this->assertResponseCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
      * @param string           $contents
      * @param array $logCollection
      *

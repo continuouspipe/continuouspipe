@@ -11,7 +11,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class UserActivityContextDataCollector implements EventSubscriberInterface
+class UserActivityContextDataCollector implements EventSubscriberInterface, UserActivityContextProvider
 {
     /**
      * @var UserActivityContext
