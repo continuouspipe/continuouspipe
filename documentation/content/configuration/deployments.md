@@ -184,3 +184,18 @@ deployment_strategy:
         port: 80
         path: /healthz
 ```
+
+Sometimes your container won't be listening on the relevant port by the time the readiness probe runs but you will still want to check that it in functioning. A good idea would be to check that a file can be created in a directory such as /tmp.
+
+``` yaml
+deployment_strategy:
+    readiness_probe:
+        type: exec
+        command:
+            - touch
+            - /tmp/healthy
+        initial_delay_seconds: 5
+        period_seconds: 5
+        success_threshold: 1
+        failure_threshold: 10
+```

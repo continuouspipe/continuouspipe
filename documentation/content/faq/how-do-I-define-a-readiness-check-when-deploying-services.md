@@ -27,6 +27,17 @@ tasks:
                         readiness_probe:
                             type: tcp
                             port: 3306
+                varnish:
+                    deployment_strategy:
+                        readiness_probe:
+                            type: exec
+                            command:
+                                - touch
+                                - /tmp/healthy
+                            initial_delay_seconds: 5
+                            period_seconds: 5
+                            success_threshold: 1
+                            failure_threshold: 10
 ```
 
 This configuration defines a readiness check on each of the `web` and `mysql` services. The `web` readiness check probes using HTTP on port 80 and the `mysql` readiness check probes using TCP on port 3306. Until both of these readiness checks receive a 200 status the pod will not receive any traffic through Kubernetes.
