@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "206d2a1d5fbad3fad4bfcb491a49a6d0",
-    "content-hash": "c349ea5429066ee86a03b80cca74096b",
+    "hash": "92d3fbfc1cb574248780238c07330907",
+    "content-hash": "db159364b1459e736f340969a2d0c1ee",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -256,7 +256,7 @@
         },
         {
             "name": "continuous-pipe/events",
-            "version": "dev-master",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/events.git",
@@ -346,7 +346,7 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "dev-master",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
@@ -8043,9 +8043,7 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
-        "continuous-pipe/security": 20,
-        "continuous-pipe/worker-bundle": 20,
-        "continuous-pipe/events": 20
+        "continuous-pipe/worker-bundle": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
