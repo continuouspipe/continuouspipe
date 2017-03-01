@@ -151,7 +151,7 @@ When creating the `continuous-pipe.yml` above an `IMAGE_NAME` and `CLUSTER` vari
 
 The `CLUSTER` value you need can be found in the "Clusters" tab of the team. If you manually entered the Kubernetes cluster details you will have set the value yourself. If you used a Google linked account the value will have been set when setting up the Google Container Engine.
 
-The `IMAGE_NAME` value is the path where the Docker image should be pushed to. This needs to be the full name, including the Docker repo and account e.g. `docker.io/continuouspipe/demo-symfony`. If you don't yet have a Docker repo nor do you know how to create one, please refer to the [Docker Hub Repositories documentation](https://docs.docker.com/docker-hub/repos/).
+The `IMAGE_NAME` value is the path where the Docker image should be pushed to. This needs to be the full name, including the Docker repo and account e.g. `docker.io/continuouspipe/demo-symfony`. If you don't yet have a Docker repo nor do you know how to create one, please refer to the [Docker Hub repositories documentation](https://docs.docker.com/docker-hub/repos/).
 
 {{< note title="Note" >}}
 The variables can also have their values provided in the `continuous-pipe.yml` file as is done below for the symfony environment. Keeping them out of the file and in the ContinuousPipe console allows you to keep them out of your code repository. 
