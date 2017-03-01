@@ -110,7 +110,7 @@ func (m HttpHandler) NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*Up
 			r.URL.String(),
 			s.Format(time.RFC3339Nano),
 			e.Format(time.RFC3339Nano),
-			duration.String(),
+			duration.Nanoseconds() / 1e6,
 			"reverse proxy init"})
 	}(start, end)
 	return p, nil
