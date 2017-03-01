@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/continuouspipe/kube-proxy/cpapi"
 	"github.com/continuouspipe/kube-proxy/cplogs"
+	"github.com/continuouspipe/kube-proxy/keenapi"
 	"github.com/continuouspipe/kube-proxy/parser"
 	"io"
 	"io/ioutil"
@@ -20,16 +21,20 @@ import (
 
 var envInsecureSkipVerify, _ = os.LookupEnv("KUBE_PROXY_INSECURE_SKIP_VERIFY")
 
-type HttpHandler struct{}
+type HttpHandler struct {
+	keenapi *keenapi.Sender
+}
 
 func NewHttpHandler() *HttpHandler {
-	return &HttpHandler{}
+	h := &HttpHandler{}
+	h.keenapi = keenapi.NewSender()
+	return h
 }
 
 func (m *HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cplogs.V(5).Infof("Start serving request %s", r.URL.String())
 
-	proxy, err := NewUpgradeAwareSingleHostReverseProxy(r)
+	proxy, err := m.NewUpgradeAwareSingleHostReverseProxy(r)
 	if err != nil {
 		cplogs.Errorf("Error when creating the single host reverse proxy. " + err.Error())
 		cplogs.Flush()
@@ -52,7 +57,8 @@ type UpgradeAwareSingleHostReverseProxy struct {
 }
 
 // NewUpgradeAwareSingleHostReverseProxy creates a new UpgradeAwareSingleHostReverseProxy.
-func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingleHostReverseProxy, error) {
+func (m HttpHandler) NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingleHostReverseProxy, error) {
+	start := time.Now()
 	transport := http.DefaultTransport.(*http.Transport)
 	if envInsecureSkipVerify == "true" {
 		cplogs.V(5).Infoln("InsecureSkipVerify enabled")
@@ -96,6 +102,11 @@ func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingle
 		insecureSkipVerify: envInsecureSkipVerify == "true",
 	}
 	p.reverseProxy.Transport = p
+
+	end := time.Now()
+	go func(s time.Time, e time.Time) {
+		m.keenapi.Send(&keenapi.KeenApiPayload{r.URL.String(), s.Format(time.RFC3339Nano), e.Format(time.RFC3339Nano), "reverse proxy init"})
+	}(start, end)
 	return p, nil
 }
 

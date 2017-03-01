@@ -12,6 +12,9 @@ package main
 // KUBE_PROXY_AUTHENTICATOR_HOST		for testing authenticator-staging.continuouspipe.io, on live authenticator.continuouspipe.io
 // KUBE_PROXY_RIVER_HOST				for testing river-staging.continuouspipe.io, on live authenticator.continuouspipe.io
 // KUBE_PROXY_MASTER_API_KEY			cp master api key
+// KEEN_IO_PROJECT_ID                   the keen.io project id
+// KEEN_IO_EVENT_COLLECTION             master
+// KEEN_IO_WRITE_KEY                    the keen.io write key
 //
 
 import (

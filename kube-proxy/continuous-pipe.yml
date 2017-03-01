@@ -32,3 +32,9 @@ tasks:
                               value: ${KUBE_PROXY_RIVER_HOST}
                             - name: KUBE_PROXY_MASTER_API_KEY
                               value: ${KUBE_PROXY_MASTER_API_KEY}
+                            - name: ${KEEN_IO_PROJECT_ID}
+                              value: KEEN_IO_PROJECT_ID
+                            - name: ${KEEN_IO_EVENT_COLLECTION}
+                              value: KEEN_IO_EVENT_COLLECTION
+                            - name: ${KEEN_IO_WRITE_KEY}
+                              value: KEEN_IO_WRITE_KEY
