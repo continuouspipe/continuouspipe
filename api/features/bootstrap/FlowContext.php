@@ -346,6 +346,22 @@ EOF;
     }
 
     /**
+     * @Then the missing variables should be a sequential array
+     */
+    public function theMissingVariablesShouldBeASequentialArray()
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $missingVariables = $json['missing_variables'];
+
+        if (array_keys($missingVariables) !== range(0, count($missingVariables) - 1)) {
+            throw new \RuntimeException(sprintf(
+                'Found the following keys for the array: %s',
+                implode(',', array_keys($missingVariables))
+            ));
+        }
+    }
+
+    /**
      * @Then the variable :variable should be missing
      */
     public function theVariableShouldBeMissing($variable)
