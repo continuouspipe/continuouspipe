@@ -9,6 +9,14 @@
                 <span>{{ summary.current_task.log }}</span>
             </h2>
         </div>
+        <div ng-show="summary.deployed_services" class="relations">
+          <md-button ng-repeat="(serviceName, service) in summary.deployed_services"
+                     class="md-raised md-primary"
+                     ng-if="service.public_endpoint"
+                     ng-click="openEndpoint(service.public_endpoint)">
+              Open <code>{{ serviceName }}</code>
+          </md-button>
+        </div>
         <div ng-show="relations.length" class="relations">
             <a ng-repeat="relation in relations" ng-href="{{ relation.link }}" class="relation">
                 <md-icon class="cp-icon-github"></md-icon>
