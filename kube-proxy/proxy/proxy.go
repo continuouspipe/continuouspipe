@@ -19,6 +19,8 @@ import (
 	"time"
 )
 
+const ISO8601 = "2006-01-02T15:04:05.999-0700"
+
 var envInsecureSkipVerify, _ = os.LookupEnv("KUBE_PROXY_INSECURE_SKIP_VERIFY")
 
 type HttpHandler struct {
@@ -108,8 +110,8 @@ func (m HttpHandler) NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*Up
 		duration := e.Sub(s)
 		m.keenapi.Send(&keenapi.KeenApiPayload{
 			r.URL.String(),
-			s.Format(time.RFC3339Nano),
-			e.Format(time.RFC3339Nano),
+			s.Format(ISO8601),
+			e.Format(ISO8601),
 			duration.Nanoseconds() / 1e6,
 			"reverse proxy init"})
 	}(start, end)
