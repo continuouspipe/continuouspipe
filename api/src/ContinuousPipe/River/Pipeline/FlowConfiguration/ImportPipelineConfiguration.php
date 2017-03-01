@@ -47,7 +47,7 @@ class ImportPipelineConfiguration implements ConfigurationFinalizer
                 $taskName = $task['imports'];
                 if (!array_key_exists($taskName, $configuration['tasks'])) {
                     throw new TideConfigurationException(sprintf(
-                        'Unable to import task "%s": The task do not exists',
+                        'Unable to import task "%s": The task does not exist',
                         $task['imports']
                     ));
                 }
