@@ -2,10 +2,11 @@
 
 namespace ContinuousPipe\River\Task\ManualApproval\Command;
 
+use ContinuousPipe\River\Command\TideCommand;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
 
-abstract class ManualApprovalCommand
+abstract class ManualApprovalCommand implements TideCommand
 {
     private $tideUuid;
     private $taskIdentifier;

@@ -2,10 +2,12 @@
 
 namespace ContinuousPipe\River\Recover\CancelTides\Command;
 
+use ContinuousPipe\River\Command\TideCommand;
 use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\UuidInterface;
 
-class CancelTideCommand
+class CancelTideCommand implements TideCommand
 {
     /**
      * @JMS\Type("Ramsey\Uuid\Uuid")
@@ -22,10 +24,7 @@ class CancelTideCommand
         $this->tideUuid = $tideUuid;
     }
 
-    /**
-     * @return Uuid
-     */
-    public function getTideUuid()
+    public function getTideUuid(): UuidInterface
     {
         return $this->tideUuid;
     }

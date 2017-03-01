@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\UserActivity;
 
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class UserActivityContext
 {
@@ -12,12 +12,12 @@ class UserActivityContext
     private $teamSlug;
 
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $flowUuid;
 
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $tideUuid;
 
@@ -35,27 +35,27 @@ class UserActivityContext
     }
 
     /**
-     * @return Uuid|null
+     * @return UuidInterface|null
      */
     public function getFlowUuid()
     {
         return $this->flowUuid;
     }
 
-    public function setFlowUuid(Uuid $flowUuid)
+    public function setFlowUuid(UuidInterface $flowUuid)
     {
         $this->flowUuid = $flowUuid;
     }
 
     /**
-     * @return Uuid|null
+     * @return UuidInterface|null
      */
     public function getTideUuid()
     {
         return $this->tideUuid;
     }
 
-    public function setTideUuid(Uuid $tideUuid)
+    public function setTideUuid(UuidInterface $tideUuid)
     {
         $this->tideUuid = $tideUuid;
     }

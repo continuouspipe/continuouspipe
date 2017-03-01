@@ -47,3 +47,15 @@ Feature:
       | Tag name | Tag value                            |
       | team     | projectX                             |
       | flow     | 00000000-0000-0000-0000-000000000000 |
+
+  Scenario: Able to see the context of an exception in the logs
+    Given I am authenticated as "geza"
+    And the team "projectX" exists
+    And I have a flow with UUID "00000000-0000-0000-0000-000000000001" in the team "projectX"
+    And a tide is started with the UUID "00000000-0000-0000-0000-000000000002"
+    When a worker receives a tide command with UUID "00000000-0000-0000-0000-000000000002" that fails
+    Then I should see a runtime exception in the logs tagged with
+      | Tag name | Tag value                            |
+      | team     | projectX                             |
+      | flow     | 00000000-0000-0000-0000-000000000001 |
+      | tide     | 00000000-0000-0000-0000-000000000002 |

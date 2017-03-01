@@ -5,6 +5,7 @@ namespace AppTestBundle\Controller;
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\CommentEvent;
 use ContinuousPipe\River\CodeRepository\BitBucket\Command\HandleBitBucketEvent;
 use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
+use ContinuousPipe\River\Command\StartTideCommand;
 use GitHub\WebHook\Event\PingEvent;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -68,5 +69,15 @@ class TestController
         ));
 
         throw new \RuntimeException('BitBucket webhook processing failed exception.');
+    }
+
+    /**
+     * @Route("/worker/tide-command/{uuid}/operation-failed")
+     */
+    public function tideCommandOperationFailedAction($uuid)
+    {
+        $this->commandBus->handle(new StartTideCommand(Uuid::fromString($uuid)));
+
+        throw new \RuntimeException('Worker operation failed exception.');
     }
 }

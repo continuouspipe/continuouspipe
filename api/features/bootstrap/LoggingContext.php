@@ -252,6 +252,16 @@ class LoggingContext implements Context
     }
 
     /**
+     * @When a worker receives a tide command with UUID :uuid that fails
+     */
+    public function aWorkerReceivesAStartTideCommandWithUUIDThatFails($uuid)
+    {
+        $this->request(Request::create("/test/worker/tide-command/$uuid/operation-failed", 'GET'));
+
+        $this->assertResponseCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
      * @param string           $contents
      * @param array $logCollection
      *

@@ -3,9 +3,10 @@
 namespace ContinuousPipe\River\CodeRepository\BitBucket\Command;
 
 use ContinuousPipe\AtlassianAddon\BitBucket\WebHook\WebHookEvent;
+use ContinuousPipe\River\Flow\Event\FlowEvent;
 use Ramsey\Uuid\UuidInterface;
 
-class HandleBitBucketEvent
+class HandleBitBucketEvent implements FlowEvent
 {
     private $flowUuid;
     private $event;
