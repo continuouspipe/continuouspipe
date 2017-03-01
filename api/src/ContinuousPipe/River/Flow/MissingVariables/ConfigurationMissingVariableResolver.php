@@ -61,7 +61,7 @@ class ConfigurationMissingVariableResolver implements MissingVariableResolver
                 && !EndpointVariable::isValidVariableName($variable);
         });
 
-        return array_unique($missingVariables);
+        return array_values(array_unique($missingVariables));
     }
 
     /**

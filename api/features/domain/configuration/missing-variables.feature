@@ -164,7 +164,8 @@ Feature:
                                   value: ${SYMFONY_ENV}
     """
     When I request the flow configuration
-    Then the variable "CLUSTER" should be missing
+    Then the missing variables should be a sequential array
+    And the variable "CLUSTER" should be missing
     And the variable "IMAGE_NAME" should be missing
     And the variable "SYMFONY_ENV" should not be missing
 
