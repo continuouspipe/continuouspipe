@@ -71,8 +71,8 @@ angular.module('continuousPipeRiver')
                 return variable.name;
             });
 
-            for (var i = 0; i < $scope.missing_variables.length; i++) {
-                var variable = $scope.missing_variables[i];
+            for (var key in $scope.missing_variables) {
+                var variable = $scope.missing_variables[key];
 
                 if (foundVariables.indexOf(variable) !== -1) {
                     continue;
