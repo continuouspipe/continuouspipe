@@ -19,6 +19,7 @@ type KeenApiPayload struct {
 	Url         string `json:"url"`
 	StartTime   string `json:"start_time"`
 	EndTime     string `json:"end_time"`
+	Duration    string `json:"duration"`
 	Description string `json:"description"`
 }
 

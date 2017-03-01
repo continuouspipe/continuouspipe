@@ -105,7 +105,13 @@ func (m HttpHandler) NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*Up
 
 	end := time.Now()
 	go func(s time.Time, e time.Time) {
-		m.keenapi.Send(&keenapi.KeenApiPayload{r.URL.String(), s.Format(time.RFC3339Nano), e.Format(time.RFC3339Nano), "reverse proxy init"})
+		duration := e.Sub(s)
+		m.keenapi.Send(&keenapi.KeenApiPayload{
+			r.URL.String(),
+			s.Format(time.RFC3339Nano),
+			e.Format(time.RFC3339Nano),
+			duration.String(),
+			"reverse proxy init"})
 	}(start, end)
 	return p, nil
 }
