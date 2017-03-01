@@ -1257,6 +1257,7 @@ EOF;
 
     /**
      * @Then I should be told that I don't have the permissions the list the tides
+     * @Then I should be told that I don't have the permissions to cancel the tide
      */
     public function iShouldBeToldThatIDonTHaveThePermissionsTheListTheTides()
     {

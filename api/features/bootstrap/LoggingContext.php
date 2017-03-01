@@ -2,10 +2,12 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
+use Helpers\KernelClientHelper;
 use LogStream\Log;
 use LogStream\Tests\InMemory\InMemoryLogStore;
 use LogStream\Tests\InMemoryLogClient;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -13,15 +15,12 @@ use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 
 class LoggingContext implements Context
 {
+    use KernelClientHelper;
+
     /**
      * @var InMemoryLogClient
      */
     private $inMemoryLogClient;
-
-    /**
-     * @var KernelInterface
-     */
-    private $kernel;
 
     /**
      * @var DebugLoggerInterface
@@ -206,6 +205,63 @@ class LoggingContext implements Context
     }
 
     /**
+     * @Then I should see a runtime exception in the logs tagged with
+     */
+    public function iShouldSeeARuntimeExceptionInTheLogsTaggedWith(TableNode $table)
+    {
+        $tagNames = array_map(function($row) {
+            return $row['Tag name'];
+        }, $table->getColumnsHash());
+        $tagValues = array_map(function($row) {
+            return $row['Tag value'];
+        }, $table->getColumnsHash());
+        $tags = array_combine($tagNames, $tagValues);
+
+        $position = $this->findPositionByExceptionType(\RuntimeException::class);
+        $this->assertLogHasTagsAtPosition($position, $tags);
+    }
+
+    /**
+     * @When I start an operation with the tide :uuid that fails
+     */
+    public function iStartAnOperationWithTheTideThatFails($uuid)
+    {
+        $this->request(Request::create("/test/tide/$uuid/operation-failed", 'GET'));
+
+        $this->assertResponseCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * @When a webhook is received from GitHub for the flow :uuid that fails
+     */
+    public function aWebhookIsReceivedFromGitHubForTheFlowThatFails($uuid)
+    {
+        $this->request(Request::create("/test/github/webhook/flow/$uuid/operation-failed", 'GET'));
+
+        $this->assertResponseCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * @When a webhook is received from BitBucket for the flow :uuid that fails
+     */
+    public function aWebhookIsReceivedFromBitBucketForTheFlowThatFails($uuid)
+    {
+        $this->request(Request::create("/test/bitbucket/webhook/flow/$uuid/operation-failed", 'GET'));
+
+        $this->assertResponseCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * @When a worker receives a tide command with UUID :uuid that fails
+     */
+    public function aWorkerReceivesAStartTideCommandWithUUIDThatFails($uuid)
+    {
+        $this->request(Request::create("/test/worker/tide-command/$uuid/operation-failed", 'GET'));
+
+        $this->assertResponseCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
      * @param string           $contents
      * @param array $logCollection
      *
@@ -305,6 +361,42 @@ class LoggingContext implements Context
             throw new \UnexpectedValueException(
                 sprintf('Expected to have %d messages, but found %d.', $count, count($matchingLogEntries))
             );
+        }
+    }
+
+    private function findPositionByExceptionType(string $exceptionClass)
+    {
+        foreach ($this->logger->getLogs() as $index => $log) {
+            if (isset($log['context']['exception'])
+                && get_class($log['context']['exception']) === $exceptionClass) {
+                return $index;
+            }
+        }
+
+        throw new \RuntimeException(sprintf('No log entries for exception type %s has found.', $exceptionClass));
+    }
+
+    private function assertLogHasTagsAtPosition(int $index, array $tags)
+    {
+        $logs = $this->logger->getLogs();
+
+        if (!isset($logs[$index])) {
+            throw new \OutOfBoundsException(sprintf('Log index %d out of bounds [0, %d]', $index, count($logs) - 1));
+        }
+
+        foreach ($tags as $name => $value) {
+            if (!isset($logs[$index]['context']['tags'][$name])) {
+                throw new \UnexpectedValueException(sprintf('No tag with name %s found.', $name));
+            }
+            if ($logs[$index]['context']['tags'][$name] != $value) {
+                throw new \UnexpectedValueException(
+                    sprintf(
+                        'Tag %s has value "%s", but expected to get "%s".',
+                        $name,
+                        $logs[$index]['context']['tags'][$name], $value
+                    )
+                );
+            }
         }
     }
 }

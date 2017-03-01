@@ -5,8 +5,9 @@ namespace ContinuousPipe\River\Command;
 use ContinuousPipe\River\CodeReference;
 use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\UuidInterface;
 
-class DeleteEnvironments
+class DeleteEnvironments implements FlowCommand
 {
     /**
      * @JMS\Type("Ramsey\Uuid\Uuid")
@@ -32,10 +33,7 @@ class DeleteEnvironments
         $this->codeReference = $codeReference;
     }
 
-    /**
-     * @return Uuid
-     */
-    public function getFlowUuid(): Uuid
+    public function getFlowUuid(): UuidInterface
     {
         return $this->flowUuid;
     }

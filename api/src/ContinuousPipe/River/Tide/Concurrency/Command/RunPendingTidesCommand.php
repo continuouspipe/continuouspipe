@@ -2,10 +2,12 @@
 
 namespace ContinuousPipe\River\Tide\Concurrency\Command;
 
+use ContinuousPipe\River\Command\FlowCommand;
 use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\UuidInterface;
 
-class RunPendingTidesCommand
+class RunPendingTidesCommand implements FlowCommand
 {
     /**
      * @JMS\Type("Ramsey\Uuid\Uuid")
@@ -31,10 +33,7 @@ class RunPendingTidesCommand
         $this->branch = $branch;
     }
 
-    /**
-     * @return Uuid
-     */
-    public function getFlowUuid()
+    public function getFlowUuid(): UuidInterface
     {
         return $this->flowUuid;
     }
