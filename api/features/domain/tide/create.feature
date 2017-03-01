@@ -25,7 +25,7 @@ Feature:
     When I send a tide creation request for branch "foo"
     Then a tide should be created
 
-  Scenario: An error should be send back if the branch do not exists
+  Scenario: An error should be send back if the branch does not exist
     Given I have a flow with the following configuration:
     """
     tasks: [ { build: { services: [] } } ]
@@ -33,7 +33,7 @@ Feature:
     When I send a tide creation request for branch "foo"
     Then a bad request error should be returned
 
-  Scenario: An error should be sent back if the request do not contain the branch name
+  Scenario: An error should be sent back if the request does not contain the branch name
     Given I have a flow with the following configuration:
     """
     tasks: [ { build: { services: [] } } ]

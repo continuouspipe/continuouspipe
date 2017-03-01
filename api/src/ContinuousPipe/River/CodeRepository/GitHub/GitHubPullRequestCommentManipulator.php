@@ -56,7 +56,7 @@ class GitHubPullRequestCommentManipulator implements PullRequestCommentManipulat
         } catch (RequestException $e) {
             if (null !== ($response = $e->getResponse())) {
                 if ($response->getStatusCode() == 404) {
-                    // Ignore 404 errors, that probably means that the comment do not exists anymore.
+                    // Ignore 404 errors, that probably means that the comment does not exist anymore.
                     return;
                 }
             }
