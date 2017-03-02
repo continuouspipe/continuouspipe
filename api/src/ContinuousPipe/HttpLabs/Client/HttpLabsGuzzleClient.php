@@ -39,6 +39,7 @@ class HttpLabsGuzzleClient implements HttpLabsClient
         ]);
 
         try {
+            // Create the stack
             $response = $httpClient->request(
                 'post',
                 sprintf('https://api.httplabs.io/projects/%s/stacks', $projectIdentifier),
@@ -49,6 +50,7 @@ class HttpLabsGuzzleClient implements HttpLabsClient
                 ]
             );
 
+            // Update the stack backend
             $stackUri = $response->getHeaderLine('Location');
             $httpClient->request('put', $stackUri, [
                 'json' => [
@@ -56,6 +58,10 @@ class HttpLabsGuzzleClient implements HttpLabsClient
                 ]
             ]);
 
+            // Deploy the stack
+            $httpClient->request('post', $stackUri.'/deployments');
+
+            // Get the stack information
             $stackResponseContents = $httpClient->request('get', $stackUri)->getBody()->getContents();
         } catch (RequestException $e) {
             throw new HttpLabsException('Unable to create the HttpLabs stack', $e->getCode(), $e);

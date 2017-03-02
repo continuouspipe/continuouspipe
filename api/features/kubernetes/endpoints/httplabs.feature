@@ -58,6 +58,7 @@ Feature:
       | stack_address    | foo-bar.httplabs.io                  |
     And the deployment should contain the endpoint "foo-bar.httplabs.io"
     And the deployment endpoint "foo-bar.httplabs.io" should have the port "80"
+    And the HttpLabs stack "00000000-0000-0000-0000-000000000000" should have been deployed
 
   Scenario: It reuses the created HttpLabs stack
     Given there is a service "http" for the component "app"
