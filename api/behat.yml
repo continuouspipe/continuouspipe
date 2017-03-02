@@ -63,6 +63,9 @@ default:
                 - Task\WaitContext: ~
                 - Task\ManualApprovalContext:
                     - @kernel
+                - TeamContext:
+                    - @kernel
+                    - @authenticator.team_repository
                 - TideSummaryContext:
                     - @kernel
                 - AnalyticsContext:
