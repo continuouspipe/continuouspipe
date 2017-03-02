@@ -5,6 +5,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\ObjectDeployer;
 use ContinuousPipe\Model\Component\DeploymentStrategy;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Service;
+use Kubernetes\Client\Model\ServicePort;
 use Kubernetes\Client\NamespaceClient;
 
 class ServiceObjectDeployer extends AbstractObjectDeployer
@@ -45,6 +46,22 @@ class ServiceObjectDeployer extends AbstractObjectDeployer
             ||
             // Update it the type changed
             $existingService->getSpecification()->getType() != $object->getSpecification()->getType()
+
+            ||
+            // Update if the ports changed
+            $this->portHash($existingService) != $this->portHash($object)
         ;
+    }
+
+    private function portHash(Service $service) : array
+    {
+        return array_map(function(ServicePort $port) {
+            return [
+                'name' => strtolower($port->getName()),
+                'protocol' => strtolower($port->getProtocol()),
+                'port' => (int) $port->getPort(),
+                'target' => (int) $port->getTargetPort(),
+            ];
+        }, $service->getSpecification()->getPorts());
     }
 }

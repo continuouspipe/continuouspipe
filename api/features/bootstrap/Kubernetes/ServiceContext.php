@@ -3,6 +3,7 @@
 namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWaiter;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceRepository;
@@ -14,6 +15,7 @@ use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\LoadBalancerStatus;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Service;
+use Kubernetes\Client\Model\ServicePort;
 use Kubernetes\Client\Model\ServiceSpecification;
 use Kubernetes\Client\Model\ServiceStatus;
 use Kubernetes\Client\Repository\ServiceRepository;
@@ -83,14 +85,23 @@ class ServiceContext implements Context
     /**
      * @Given I have a service :name with the selector :selector
      * @Given I have a service :name with the selector :selector and type :type
+     * @Given I have a service :name with the selector :selector and type :type with the ports:
      */
-    public function iHaveAServiceWithTheSelector($name, $selector, $type = null)
+    public function iHaveAServiceWithTheSelector($name, $selector, $type = null, TableNode $portsTable = null)
     {
         $selector = $this->selectorFromString($selector);
+        $ports = $portsTable === null ? [] : array_map(function(array $row) {
+            return new ServicePort(
+                $row['name'],
+                $row['port'],
+                $row['protocol'],
+                isset($row['targetPort']) ? $row['targetPort'] : null
+            );
+        }, $portsTable->getHash());
 
         $this->serviceRepository->create(new Service(
             new ObjectMetadata($name),
-            new ServiceSpecification($selector, [], $type ?: ServiceSpecification::TYPE_CLUSTER_IP)
+            new ServiceSpecification($selector, $ports, $type ?: ServiceSpecification::TYPE_CLUSTER_IP)
         ));
 
         $this->serviceRepository->clear();
