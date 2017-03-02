@@ -71,7 +71,7 @@ class HttpLabsGuzzleClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares): void
+    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares)
     {
         try {
             $stackUri = 'https://api.httplabs.io/stacks/'.$stackIdentifier;

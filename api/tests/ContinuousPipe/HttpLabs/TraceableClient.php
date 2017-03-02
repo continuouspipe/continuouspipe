@@ -46,7 +46,7 @@ class TraceableClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares): void
+    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares)
     {
         $this->decoratedClient->updateStack($apiKey, $stackIdentifier, $backendUrl, $middlewares);
 

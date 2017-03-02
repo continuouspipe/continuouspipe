@@ -29,5 +29,5 @@ interface HttpLabsClient
      *
      * @throws HttpLabsException
      */
-    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares) : void;
+    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares);
 }
