@@ -30,3 +30,8 @@ Feature:
     When the current datetime is "2017-03-02T12:01:00Z"
     And I start the build "00000000-0000-0000-0000-000000000000"
     Then the published report should contain "60" for the key "duration.pending"
+
+  Scenario: It adds details about the machine on which build is done
+    When I create a build "00000000-0000-0000-0000-000000000000"
+    And I start the build "00000000-0000-0000-0000-000000000000"
+    Then the published report should contain the key "host.hostname"

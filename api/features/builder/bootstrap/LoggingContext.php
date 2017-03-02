@@ -84,6 +84,18 @@ class LoggingContext implements Context
     }
 
     /**
+     * @Then the published report should contain the key :key
+     */
+    public function thePublishedReportShouldContainTheKey($key)
+    {
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+
+        foreach ($this->tracedPublisher->getPublishedReports() as $report) {
+            $propertyAccessor->getValue($report, '['.str_replace('.', '][', $key).']');
+        }
+    }
+
+    /**
      * @Then a log containing :text should be created
      */
     public function aLogContainingShouldBeCreated($text)
