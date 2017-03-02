@@ -30,10 +30,43 @@ class ElasticSearchReportPublisher implements ReportPublisher
             return;
         }
 
+
         try {
+            $indexName = 'build-'.date('d.m.Y');
+            $documentType = 'build';
+
+            // Ensure that the `@timestamp` field type is properly
+            $indexExists = $this->client->indices()->exists([
+                'index' => $indexName
+            ]);
+
+            if (false === $indexExists) {
+                $this->client->indices()->create([
+                    'index' => $indexName,
+                    'body' => [
+                        'mappings' => [
+                            $documentType => [
+                                '_source' => [
+                                    'enabled' => true
+                                ],
+                                'properties' => [
+                                    '@timestamp' => [
+                                        'type' => 'date',
+                                        'format' => 'epoch_second'
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ]);
+            }
+
+            $report['@timestamp'] = time();
+
             $this->client->index([
-                'type' => 'build',
-                'index' => 'build-'.date('d.m.Y'),
+                'type' => $documentType,
+                'index' => $indexName,
+                'timestamp' => $report['@timestamp'],
                 'id' => $buildIdentifier,
                 'body' => $report,
             ]);
@@ -46,6 +79,11 @@ class ElasticSearchReportPublisher implements ReportPublisher
     {
         $apiKeyHandler = function(callable $next, string $apiKey) {
             return function (array $request) use ($next, $apiKey) {
+                if (($questionMarkIndex = strpos($request['uri'], '?')) !== false) {
+                    $request['query_string'] = substr($request['uri'], $questionMarkIndex + 1);
+                    $request['uri'] = substr($request['uri'], 0, $questionMarkIndex);
+                }
+
                 if (isset($request['query_string'])) {
                     $request['query_string'] .= '&apikey='.$apiKey;
                 } else {
