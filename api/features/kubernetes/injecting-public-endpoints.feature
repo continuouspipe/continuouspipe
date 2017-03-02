@@ -38,22 +38,6 @@ Feature:
       | SERVICE_API_PUBLIC_ENDPOINT | api.my-custom-dns  |
       | SERVICE_UI_PUBLIC_ENDPOINT  | 1234.foo.ui.docker |
 
-  Scenario: The public services should not be updated if the selector are the same
-    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app"
-    And the service "app" will be created with the public IP "1.2.3.4"
-    When the specification come from the template "simple-app-public"
-    And I send the built deployment request
-    Then the service "app" should not be updated
-    And the service "app" should not be deleted
-    And the service "app" should not be created
-
-  Scenario: The public services should be updated if selectors are different
-    Given I have a service "app" with the selector "component-identifier=app"
-    And the service "app" will be created with the public IP "1.2.3.4"
-    When the specification come from the template "simple-app-public"
-    And I send the built deployment request
-    Then the service "app" should be updated
-
   Scenario: The public endpoint is populated also with ingresses
     Given the ingress "http" will be created with the public DNS address "app.my.dns"
     And the components specification are:
