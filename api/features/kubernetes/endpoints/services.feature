@@ -112,3 +112,26 @@ Feature:
     When I send the built deployment request
     Then the service "http" should be created
     And the deployment should be failed
+
+  Scenario: The public services should not be updated if the selector are the same
+    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app" and type "LoadBalancer"
+    And the service "app" will be created with the public IP "1.2.3.4"
+    When the specification come from the template "simple-app-public"
+    And I send the built deployment request
+    Then the service "app" should not be updated
+    And the service "app" should not be deleted
+    And the service "app" should not be created
+
+  Scenario: The public services should be updated if selectors are different
+    Given I have a service "app" with the selector "component-identifier=app" and type "LoadBalancer"
+    And the service "app" will be created with the public IP "1.2.3.4"
+    When the specification come from the template "simple-app-public"
+    And I send the built deployment request
+    Then the service "app" should be updated
+
+  Scenario: The public services should be updated if type is different
+    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app" and type "ClusterIP"
+    And the service "app" will be created with the public IP "1.2.3.4"
+    When the specification come from the template "simple-app-public"
+    And I send the built deployment request
+    Then the service "app" should be updated

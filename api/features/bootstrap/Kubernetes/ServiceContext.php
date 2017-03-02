@@ -82,14 +82,15 @@ class ServiceContext implements Context
 
     /**
      * @Given I have a service :name with the selector :selector
+     * @Given I have a service :name with the selector :selector and type :type
      */
-    public function iHaveAServiceWithTheSelector($name, $selector)
+    public function iHaveAServiceWithTheSelector($name, $selector, $type = null)
     {
         $selector = $this->selectorFromString($selector);
 
         $this->serviceRepository->create(new Service(
             new ObjectMetadata($name),
-            new ServiceSpecification($selector)
+            new ServiceSpecification($selector, [], $type ?: ServiceSpecification::TYPE_CLUSTER_IP)
         ));
 
         $this->serviceRepository->clear();

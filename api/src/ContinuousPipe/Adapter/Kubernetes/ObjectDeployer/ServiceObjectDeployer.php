@@ -35,10 +35,16 @@ class ServiceObjectDeployer extends AbstractObjectDeployer
         }
 
         /* @var Service $object  */
+        /* @var Service $existingService  */
         $existingService = $this->getRepository($namespaceClient, $object)->findOneByName($object->getMetadata()->getName());
-        $existingSelector = $existingService->getSpecification()->getSelector();
-        $newSelector = $object->getSpecification()->getSelector();
 
-        return $existingSelector != $newSelector;
+        return
+            // Updates if the selector changed
+            $existingService->getSpecification()->getSelector() != $object->getSpecification()->getSelector()
+
+            ||
+            // Update it the type changed
+            $existingService->getSpecification()->getType() != $object->getSpecification()->getType()
+        ;
     }
 }
