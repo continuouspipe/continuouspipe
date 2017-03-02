@@ -4,40 +4,41 @@ import (
 	"bufio"
 	"crypto/tls"
 	"fmt"
+	"github.com/continuouspipe/kube-proxy/cpapi"
+	"github.com/continuouspipe/kube-proxy/cplogs"
+	"github.com/continuouspipe/kube-proxy/keenapi"
+	"github.com/continuouspipe/kube-proxy/parser"
 	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"strings"
 	"time"
-	"github.com/continuouspipe/kube-proxy/cpapi"
-	"github.com/continuouspipe/kube-proxy/parser"
-	"github.com/continuouspipe/kube-proxy/cplogs"
-	"os"
 )
+
+const ISO8601 = "2006-01-02T15:04:05.999-0700"
 
 var envInsecureSkipVerify, _ = os.LookupEnv("KUBE_PROXY_INSECURE_SKIP_VERIFY")
 
-type HttpHandler struct{}
+type HttpHandler struct {
+	keenapi *keenapi.Sender
+}
 
 func NewHttpHandler() *HttpHandler {
-	return &HttpHandler{}
+	h := &HttpHandler{}
+	h.keenapi = keenapi.NewSender()
+	return h
 }
 
 func (m *HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cplogs.V(5).Infof("Start serving request %s", r.URL.String())
 
-	if strings.Contains(r.URL.String(), "api") == false {
-		cplogs.V(5).Infof("Skipping, the request url does't has the 'api' keyword")
-		fmt.Fprint(w, "Skipping forwarding the request url does't has the 'api' keyword")
-		return
-	}
-
-	proxy, err := NewUpgradeAwareSingleHostReverseProxy(r)
+	proxy, err := m.NewUpgradeAwareSingleHostReverseProxy(r)
 	if err != nil {
-		cplogs.Errorf("Error when creating the single host reverse proxy. Error: %s", err.Error())
+		cplogs.Errorf("Error when creating the single host reverse proxy. " + err.Error())
 		cplogs.Flush()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -58,9 +59,11 @@ type UpgradeAwareSingleHostReverseProxy struct {
 }
 
 // NewUpgradeAwareSingleHostReverseProxy creates a new UpgradeAwareSingleHostReverseProxy.
-func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingleHostReverseProxy, error) {
+func (m HttpHandler) NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingleHostReverseProxy, error) {
+	start := time.Now()
 	transport := http.DefaultTransport.(*http.Transport)
 	if envInsecureSkipVerify == "true" {
+		cplogs.V(5).Infoln("InsecureSkipVerify enabled")
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
 
@@ -72,14 +75,23 @@ func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingle
 	cinfo := cpapi.NewClusterInfo()
 	cpToKube := parser.NewCpToKubeUrl()
 
-	apiCluster, err := cinfo.GetCluster(user, password, cpToKube.ExtractTeamName(r.URL.Path), cpToKube.ExtractClusterId(r.URL.Path))
+	flowId, err := cpToKube.ExtractFlowId(r.URL.Path)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to get the cluster url")
+		return nil, err
+	}
+	clusterId, err := cpToKube.ExtractClusterId(r.URL.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	apiCluster, err := cinfo.GetCluster(user, password, flowId, clusterId)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get the cluster url, " + err.Error())
 	}
 
 	backendAddr, err := url.Parse(apiCluster.Address)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to parse the cluster url")
+		return nil, fmt.Errorf("Failed to parse the cluster url, " + err.Error())
 	}
 
 	reverseProxy := httputil.NewSingleHostReverseProxy(backendAddr)
@@ -92,6 +104,17 @@ func NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*UpgradeAwareSingle
 		insecureSkipVerify: envInsecureSkipVerify == "true",
 	}
 	p.reverseProxy.Transport = p
+
+	end := time.Now()
+	go func(s time.Time, e time.Time) {
+		duration := e.Sub(s)
+		m.keenapi.Send(&keenapi.KeenApiPayload{
+			r.URL.String(),
+			s.Format(ISO8601),
+			e.Format(ISO8601),
+			duration.Nanoseconds() / 1e6,
+			"reverse proxy init"})
+	}(start, end)
 	return p, nil
 }
 
@@ -127,7 +150,11 @@ func (p *UpgradeAwareSingleHostReverseProxy) newProxyRequest(req *http.Request) 
 
 	// if backendAddr is http://host/base and req is for /foo, the resulting path
 	// for backendURL should be /base/foo
-	backendURL.Path = p.cpToKube.RemoveCpDataFromUri(singleJoiningSlash(backendURL.Path, req.URL.Path))
+	pathWithoutCpData, err := p.cpToKube.RemoveCpDataFromUri(singleJoiningSlash(backendURL.Path, req.URL.Path))
+	if err != nil {
+		return nil, err
+	}
+	backendURL.Path = pathWithoutCpData
 	backendURL.RawQuery = req.URL.RawQuery
 
 	newReq, err := http.NewRequest(req.Method, backendURL.String(), req.Body)
