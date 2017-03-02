@@ -131,6 +131,17 @@ class TeamController
     }
 
     /**
+     * @Route("/teams/{slug}", methods={"DELETE"})
+     * @ParamConverter("team", converter="team")
+     * @Security("is_granted('ADMIN', team)")
+     * @View
+     */
+    public function deleteAction(Team $team)
+    {
+        $this->teamCreator->delete($team);
+    }
+
+    /**
      * @Route("/teams/{slug}", methods={"GET"})
      * @ParamConverter("team", converter="team")
      * @Security("is_granted('READ', team)")

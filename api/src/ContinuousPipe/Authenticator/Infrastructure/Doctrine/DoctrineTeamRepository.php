@@ -79,4 +79,15 @@ class DoctrineTeamRepository implements TeamRepository
     {
         return $this->getRepository()->findAll();
     }
+
+    /**
+     * Delete the given team.
+     *
+     * @param Team $team
+     */
+    public function delete(Team $team)
+    {
+        $this->entityManager->remove($team);
+        $this->entityManager->flush();
+    }
 }
