@@ -1,9 +1,11 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\Guzzle\MatchingHandler;
 use ContinuousPipe\HttpLabs\TraceableClient;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 
@@ -80,6 +82,14 @@ class HttpLabsContext implements Context
             },
             'response' => new Response(201, ['Content-Type' => 'text/html; charset=UTF-8']),
         ]);
+
+        $this->httpLabsHttpHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($uuid) {
+                return $request->getMethod() == 'POST' &&
+                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'\/middlewares#i', (string) $request->getUri());
+            },
+            'response' => new Response(201, ['Content-Type' => 'text/html; charset=UTF-8']),
+        ]);
     }
 
     /**
@@ -120,6 +130,32 @@ class HttpLabsContext implements Context
         }
 
         throw new \RuntimeException('The stack was not deployed');
+    }
+
+    /**
+     * @Then a middleware from the template :template should have been created on the stack :stackIdentifier with the following configuration:
+     */
+    public function aMiddlewareFromTheTemplateShouldHaveBeenCreatedOnTheStackWithTheFollowingConfiguration($template, $stackIdentifier, PyStringNode $string)
+    {
+        $expectedConfiguration = \GuzzleHttp\json_decode($string->getRaw(), true);
+
+        foreach ($this->httpLabsHttpHistory as $request) {
+            /** @var Request $request */
+            if  ($request->getMethod() != 'POST' || !preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$stackIdentifier.'/middlewares#i', (string) $request->getUri())) {
+                continue;
+            }
+
+            $body = $request->getBody();
+            $body->rewind();
+
+            $json = \GuzzleHttp\json_decode($body->getContents(), true);
+
+            if ($json['template'] == $template && $json['config'] == $expectedConfiguration) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('Such configured middleware not found');
     }
 
     /**

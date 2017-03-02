@@ -30,9 +30,9 @@ class TraceableClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl): Stack
+    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl, array $middlewares): Stack
     {
-        $stack = $this->decoratedClient->createStack($apiKey, $projectIdentifier, $name, $backendUrl);
+        $stack = $this->decoratedClient->createStack($apiKey, $projectIdentifier, $name, $backendUrl, $middlewares);
 
         $this->createdStacks[] = [
             'project_identifier' => $projectIdentifier,
@@ -46,9 +46,9 @@ class TraceableClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl): void
+    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares): void
     {
-        $this->decoratedClient->updateStack($apiKey, $stackIdentifier, $backendUrl);
+        $this->decoratedClient->updateStack($apiKey, $stackIdentifier, $backendUrl, $middlewares);
 
         $this->updatedStacks[] = [
             'stack_identifier' => $stackIdentifier,

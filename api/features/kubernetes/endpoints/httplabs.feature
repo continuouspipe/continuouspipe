@@ -107,3 +107,69 @@ Feature:
     And the stack "00000000-0000-0000-0000-000000000000" should have been updated
     And the deployment should contain the endpoint "foo-bar.httplabs.io"
     And the deployment endpoint "foo-bar.httplabs.io" should have the port "80"
+
+  Scenario: It creates the middle-wares
+    Given the service "http" will be created with the public IP "1.2.3.4"
+    And the created HttpLabs stack will have the UUID "00000000-0000-0000-0000-000000000000" and the URL address "https://foo-bar.httplabs.io"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "httplabs": {
+              "api_key": "cdba7ddb-06ac-47f8-b389-0819b48a2ee8",
+              "project_identifier": "13d1ab08-0eca-4289-aa8b-132bc569fe3f",
+              "middlewares": [
+                {
+                  "template": "https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication",
+                  "config": {
+                    "realm":"This is a restricted area",
+                    "username":"username",
+                    "password":"password"
+                  }
+                },
+                {
+                  "template":"https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/ip_restrict",
+                  "config":{
+                    "ips": ["217.138.5.218", "217.138.5.2"]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then an HttpLabs stack should have been created with the backend "http://1.2.3.4"
+    And a middleware from the template "https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication" should have been created on the stack "00000000-0000-0000-0000-000000000000" with the following configuration:
+    """
+    {
+      "realm":"This is a restricted area",
+      "username":"username",
+      "password":"password"
+    }
+    """
+    And a middleware from the template "https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/ip_restrict" should have been created on the stack "00000000-0000-0000-0000-000000000000" with the following configuration:
+    """
+    {
+      "ips": ["217.138.5.218", "217.138.5.2"]
+    }
+    """

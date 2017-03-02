@@ -26,7 +26,7 @@ class HttpLabsGuzzleClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl): Stack
+    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl, array $middlewares): Stack
     {
         $httpClient = $this->createClient($apiKey);
 
@@ -60,7 +60,7 @@ class HttpLabsGuzzleClient implements HttpLabsClient
                 $responseJson['url']
             );
 
-            $this->updateStack($apiKey, $stack->getIdentifier(), $backendUrl);
+            $this->updateStack($apiKey, $stack->getIdentifier(), $backendUrl, $middlewares);
         } catch (RequestException $e) {
             throw new HttpLabsException('Unable to create the HttpLabs stack', $e->getCode(), $e);
         }
@@ -71,7 +71,7 @@ class HttpLabsGuzzleClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl): void
+    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares): void
     {
         try {
             $stackUri = 'https://api.httplabs.io/stacks/'.$stackIdentifier;
@@ -81,6 +81,12 @@ class HttpLabsGuzzleClient implements HttpLabsClient
                     'backend' => $backendUrl,
                 ]
             ]);
+
+            foreach ($middlewares as $middleware) {
+                $httpClient->request('post', $stackUri.'/middlewares', [
+                    'json' => $middleware,
+                ]);
+            }
 
             // Deploy the stack
             $httpClient->request('post', $stackUri.'/deployments');
