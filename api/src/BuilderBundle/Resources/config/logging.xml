@@ -30,7 +30,8 @@
             <argument type="service" id="logger" />
         </service>
         <service id="builder.reporting.publisher" class="ContinuousPipe\Builder\Reporting\ElasticSearch\ElasticSearchReportPublisher">
-
+            <argument>%reports_elastic_search_host%</argument>
+            <argument>%reports_elastic_search_api_key%</argument>
         </service>
 
         <service id="builder.reporting.publish_on_events" class="ContinuousPipe\Builder\Reporting\OnBuildEvent\PublishReportOnBuildEvent">

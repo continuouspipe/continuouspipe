@@ -44,6 +44,7 @@ class SecurityContext implements Context
 
     /**
      * @Transform table:username,password,email,serverAddress
+     * @Transform table:username,password,serverAddress,email
      */
     public function transformDockerRegistryCredentials(TableNode $node)
     {
