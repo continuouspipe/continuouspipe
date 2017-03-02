@@ -3,6 +3,7 @@
 namespace ContinuousPipe\HttpLabs\Endpoint;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
+use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointException;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointTransformer;
 use ContinuousPipe\HttpLabs\Client\HttpLabsClient;
 use ContinuousPipe\HttpLabs\Client\HttpLabsException;
@@ -75,16 +76,22 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
         $serviceRepository = $this->deploymentClientFactory->get($deploymentContext)->getServiceRepository();
         $service = $serviceRepository->findOneByName($object->getMetadata()->getName());
 
-        $httpLabsAnnotation = $service->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.httplabs.stack');
-        if (null !== $httpLabsAnnotation) {
-            $metadata = \GuzzleHttp\json_decode($httpLabsAnnotation->getValue(), true);
-        } else {
-            $logger = $this->loggerFactory->from($deploymentContext->getLog())
-                ->child(new Text('Creating HttpLabs stack for endpoint ' . $publicEndpoint->getName()))
-                ->updateStatus(Log::RUNNING)
-            ;
+        $logger = $this->loggerFactory->from($deploymentContext->getLog())
+            ->child(new Text('Configuring the HttpLabs stack for endpoint '.$publicEndpoint->getName()))
+            ->updateStatus(Log::RUNNING)
+        ;
 
-            try {
+        try {
+            $httpLabsAnnotation = $service->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.httplabs.stack');
+            if (null !== $httpLabsAnnotation) {
+                $metadata = \GuzzleHttp\json_decode($httpLabsAnnotation->getValue(), true);
+
+                $this->httpLabsClient->updateStack(
+                    $httpLabsConfiguration->getApiKey(),
+                    $metadata['stack_identifier'],
+                    $this->getBackendAddress($publicEndpoint)
+                );
+            } else {
                 $stack = $this->httpLabsClient->createStack(
                     $httpLabsConfiguration->getApiKey(),
                     $httpLabsConfiguration->getProjectIdentifier(),
@@ -97,26 +104,25 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
                     'stack_address' => $this->getStackAddress($stack),
                 ];
 
-                $logger->child(new Text('Created stack with address: '.$metadata['stack_address']));
-                $logger->updateStatus(Log::SUCCESS);
-
                 $serviceRepository->annotate(
                     $service->getMetadata()->getName(),
                     KeyValueObjectList::fromAssociativeArray([
                         'com.continuouspipe.io.httplabs.stack' => \GuzzleHttp\json_encode($metadata),
                     ], Annotation::class)
                 );
-            } catch (\Throwable $e) {
-                $logger->child(new Text('Something went wrong while creating the HttpLabs stack: ' . $e->getMessage()));
-                $logger->updateStatus(Log::FAILURE);
-
-                $this->logger->warning('Something went wrong while creating the HttpLabs stack', [
-                    'exception' => $e,
-                ]);
-
-                return $publicEndpoint;
             }
+        } catch (\Throwable $e) {
+            $logger->updateStatus(Log::FAILURE);
+
+            $this->logger->warning('Something went wrong while configuring the HttpLabs stack', [
+                'exception' => $e,
+            ]);
+
+            throw new EndpointException('Something went wrong while configuring the HttpLabs stack: ' . $e->getMessage());
         }
+
+        $logger->child(new Text('Stack configured with the address: '.$metadata['stack_address']));
+        $logger->updateStatus(Log::SUCCESS);
 
         return $publicEndpoint->withAddress($metadata['stack_address']);
     }

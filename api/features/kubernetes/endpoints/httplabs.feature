@@ -60,8 +60,9 @@ Feature:
     And the deployment endpoint "foo-bar.httplabs.io" should have the port "80"
     And the HttpLabs stack "00000000-0000-0000-0000-000000000000" should have been deployed
 
-  Scenario: It reuses the created HttpLabs stack
+  Scenario: It reuses the created HttpLabs stack and update it
     Given there is a service "http" for the component "app"
+    And the HttpLabs stack "00000000-0000-0000-0000-000000000000" will be successfully configured
     And the service "http" have the selector "component-identifier=app" and type "LoadBalancer" with the ports:
       | name | port | protocol | targetPort |
       | http | 80   | tcp      | 80         |
@@ -103,5 +104,6 @@ Feature:
     Then the service "http" should not be created
     And the service "http" should not be updated
     And an HttpLabs stack should not have been created
+    And the stack "00000000-0000-0000-0000-000000000000" should have been updated
     And the deployment should contain the endpoint "foo-bar.httplabs.io"
     And the deployment endpoint "foo-bar.httplabs.io" should have the port "80"

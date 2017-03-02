@@ -3,7 +3,6 @@
 namespace ContinuousPipe\HttpLabs\Client;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
@@ -29,14 +28,7 @@ class HttpLabsGuzzleClient implements HttpLabsClient
      */
     public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl): Stack
     {
-        $stack = clone $this->httpHandlerStack;
-        $stack->push(Middleware::mapRequest(function (Request $request) use ($apiKey) {
-            return $request->withAddedHeader('Authorization', $apiKey);
-        }));
-
-        $httpClient = new Client([
-            'handler' => $stack,
-        ]);
+        $httpClient = $this->createClient($apiKey);
 
         try {
             // Create the stack
@@ -50,8 +42,40 @@ class HttpLabsGuzzleClient implements HttpLabsClient
                 ]
             );
 
-            // Update the stack backend
+            // Get the stack information
             $stackUri = $response->getHeaderLine('Location');
+            $stackResponseContents = $httpClient->request('get', $stackUri)->getBody()->getContents();
+            try {
+                $responseJson = \GuzzleHttp\json_decode($stackResponseContents, true);
+
+                if (!isset($responseJson['id']) || !isset($responseJson['url'])) {
+                    throw new \InvalidArgumentException('The response needs to contain `id` and `url`');
+                }
+            } catch (\InvalidArgumentException $e) {
+                throw new HttpLabsException('Unable to understand the response from HttpLabs', $e->getCode(), $e);
+            }
+
+            $stack = new Stack(
+                $responseJson['id'],
+                $responseJson['url']
+            );
+
+            $this->updateStack($apiKey, $stack->getIdentifier(), $backendUrl);
+        } catch (RequestException $e) {
+            throw new HttpLabsException('Unable to create the HttpLabs stack', $e->getCode(), $e);
+        }
+
+        return $stack;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl): void
+    {
+        try {
+            $stackUri = 'https://api.httplabs.io/stacks/'.$stackIdentifier;
+            $httpClient = $this->createClient($apiKey);
             $httpClient->request('put', $stackUri, [
                 'json' => [
                     'backend' => $backendUrl,
@@ -60,26 +84,25 @@ class HttpLabsGuzzleClient implements HttpLabsClient
 
             // Deploy the stack
             $httpClient->request('post', $stackUri.'/deployments');
-
-            // Get the stack information
-            $stackResponseContents = $httpClient->request('get', $stackUri)->getBody()->getContents();
         } catch (RequestException $e) {
-            throw new HttpLabsException('Unable to create the HttpLabs stack', $e->getCode(), $e);
+            throw new HttpLabsException('Unable to update the HttpLabs stack', $e->getCode(), $e);
         }
+    }
 
-        try {
-            $responseJson = \GuzzleHttp\json_decode($stackResponseContents, true);
+    /**
+     * @param string $apiKey
+     *
+     * @return Client
+     */
+    private function createClient(string $apiKey): Client
+    {
+        $stack = clone $this->httpHandlerStack;
+        $stack->push(Middleware::mapRequest(function (Request $request) use ($apiKey) {
+            return $request->withAddedHeader('Authorization', $apiKey);
+        }));
 
-            if (!isset($responseJson['id']) || !isset($responseJson['url'])) {
-                throw new \InvalidArgumentException('The response needs to contain `id` and `url`');
-            }
-        } catch (\InvalidArgumentException $e) {
-            throw new HttpLabsException('Unable to understand the response from HttpLabs', $e->getCode(), $e);
-        }
-
-        return new Stack(
-            $responseJson['id'],
-            $responseJson['url']
-        );
+        return new Client([
+            'handler' => $stack,
+        ]);
     }
 }

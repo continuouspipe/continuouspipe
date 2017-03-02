@@ -48,22 +48,6 @@ class HttpLabsContext implements Context
 
         $this->httpLabsHttpHandler->pushMatcher([
             'match' => function(RequestInterface $request) use ($uuid, $url) {
-                return $request->getMethod() == 'PUT' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'$#i', (string) $request->getUri());
-            },
-            'response' => new Response(204, ['Content-Type' => 'text/html; charset=UTF-8']),
-        ]);
-
-        $this->httpLabsHttpHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($uuid, $url) {
-                return $request->getMethod() == 'POST' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'\/deployments$#i', (string) $request->getUri());
-            },
-            'response' => new Response(201, ['Content-Type' => 'text/html; charset=UTF-8']),
-        ]);
-
-        $this->httpLabsHttpHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($uuid, $url) {
                 return $request->getMethod() == 'GET' &&
                     preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'$#i', (string) $request->getUri());
             },
@@ -71,6 +55,30 @@ class HttpLabsContext implements Context
                 'id' => $uuid,
                 'url' => $url,
             ])),
+        ]);
+
+        $this->theHttplabsStackWillBeSuccessfullyConfigured($uuid);
+    }
+
+    /**
+     * @Given the HttpLabs stack :uuid will be successfully configured
+     */
+    public function theHttplabsStackWillBeSuccessfullyConfigured($uuid)
+    {
+        $this->httpLabsHttpHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($uuid) {
+                return $request->getMethod() == 'PUT' &&
+                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'$#i', (string) $request->getUri());
+            },
+            'response' => new Response(204, ['Content-Type' => 'text/html; charset=UTF-8']),
+        ]);
+
+        $this->httpLabsHttpHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($uuid) {
+                return $request->getMethod() == 'POST' &&
+                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'\/deployments$#i', (string) $request->getUri());
+            },
+            'response' => new Response(201, ['Content-Type' => 'text/html; charset=UTF-8']),
         ]);
     }
 
@@ -112,5 +120,19 @@ class HttpLabsContext implements Context
         }
 
         throw new \RuntimeException('The stack was not deployed');
+    }
+
+    /**
+     * @Then the stack :stackIdentifier should have been updated
+     */
+    public function theStackShouldHaveBeenUpdated($stackIdentifier)
+    {
+        foreach ($this->traceableClient->getUpdatedStacks() as $stack) {
+            if ($stack['stack_identifier'] == $stackIdentifier) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('The stack was not updated');
     }
 }
