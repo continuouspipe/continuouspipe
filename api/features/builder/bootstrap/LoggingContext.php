@@ -1,9 +1,13 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Builder\Reporting\TracedPublisher;
+use ContinuousPipe\Events\TimeResolver\PredictableTimeResolver;
 use LogStream\Log;
 use LogStream\Tests\InMemoryLogClient;
 use LogStream\TraceableClient;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class LoggingContext implements Context
 {
@@ -16,15 +20,79 @@ class LoggingContext implements Context
      * @var InMemoryLogClient
      */
     private $inMemoryLogClient;
-
     /**
-     * @param TraceableClient $traceableClient
-     * @param InMemoryLogClient $inMemoryLogClient
+     * @var TracedPublisher
      */
-    public function __construct(TraceableClient $traceableClient, InMemoryLogClient $inMemoryLogClient)
+    private $tracedPublisher;
+    /**
+     * @var PredictableTimeResolver
+     */
+    private $predictableTimeResolver;
+
+    public function __construct(TraceableClient $traceableClient, InMemoryLogClient $inMemoryLogClient, TracedPublisher $tracedPublisher, PredictableTimeResolver $predictableTimeResolver)
     {
         $this->traceableClient = $traceableClient;
         $this->inMemoryLogClient = $inMemoryLogClient;
+        $this->tracedPublisher = $tracedPublisher;
+        $this->predictableTimeResolver = $predictableTimeResolver;
+    }
+
+    /**
+     * @Transform :datetime
+     */
+    public function transformDateTime($value)
+    {
+        return \DateTime::createFromFormat(\DateTime::ISO8601, $value);
+    }
+
+    /**
+     * @When the current datetime is :datetime
+     */
+    public function theCurrentDatetimeIs(\DateTime $datetime)
+    {
+        $this->predictableTimeResolver->setCurrent($datetime);
+    }
+
+    /**
+     * @Then a report should be published
+     */
+    public function aReportShouldBePublished()
+    {
+        $reports = $this->tracedPublisher->getPublishedReports();
+
+        if (0 === count($reports)) {
+            throw new \RuntimeException('No published reports found');
+        }
+    }
+
+    /**
+     * @Then the published report should contain :value for the key :key
+     */
+    public function thePublishedReportShouldContainForTheKey($value, $key)
+    {
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+
+        foreach ($this->tracedPublisher->getPublishedReports() as $report) {
+            $foundValue = $propertyAccessor->getValue($report, '['.str_replace('.', '][', $key).']');
+
+            if ($foundValue == $value) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('Value not found');
+    }
+
+    /**
+     * @Then the published report should contain the key :key
+     */
+    public function thePublishedReportShouldContainTheKey($key)
+    {
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+
+        foreach ($this->tracedPublisher->getPublishedReports() as $report) {
+            $propertyAccessor->getValue($report, '['.str_replace('.', '][', $key).']');
+        }
     }
 
     /**

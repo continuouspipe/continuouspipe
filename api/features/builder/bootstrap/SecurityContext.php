@@ -43,6 +43,17 @@ class SecurityContext implements Context
     }
 
     /**
+     * @Transform table:username,password,email,serverAddress
+     * @Transform table:username,password,serverAddress,email
+     */
+    public function transformDockerRegistryCredentials(TableNode $node)
+    {
+        return array_map(function(array $row) {
+            return new DockerRegistry($row['username'], $row['password'], $row['email'], $row['serverAddress']);
+        }, $node->getHash());
+    }
+
+    /**
      * @Given I am authenticated
      */
     public function iAmAuthenticated()
@@ -64,12 +75,12 @@ class SecurityContext implements Context
     /**
      * @Given the bucket :uuid contains the following docker registry credentials:
      */
-    public function theBucketContainsTheFollowingDockerRegistryCredentials($uuid, TableNode $table)
+    public function theBucketContainsTheFollowingDockerRegistryCredentials($uuid, array $credentials)
     {
         $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid(Uuid::fromString($uuid));
 
-        foreach ($table->getHash() as $row) {
-            $bucket->getDockerRegistries()->add(new DockerRegistry($row['username'], $row['password'], $row['email'], $row['serverAddress']));
+        foreach ($credentials as $credential) {
+            $bucket->getDockerRegistries()->add($credential);
         }
     }
 

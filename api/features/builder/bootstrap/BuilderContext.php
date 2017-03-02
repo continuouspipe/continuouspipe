@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Builder\Aggregate\Build;
@@ -24,6 +25,7 @@ use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
 use ContinuousPipe\Events\AggregateNotFound;
 use ContinuousPipe\Events\EventStore\EventStore;
+use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use JMS\Serializer\SerializerInterface;
 use SimpleBus\Message\Bus\MessageBus;
@@ -33,6 +35,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
+    /**
+     * @var SecurityContext
+     */
+    private $securityContext;
+
     /**
      * @var Kernel
      */
@@ -125,6 +132,15 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     }
 
     /**
+     * @BeforeScenario
+     */
+    public function gatherContexts(BeforeScenarioScope $scope)
+    {
+        $this->securityContext = $scope->getEnvironment()->getContext('SecurityContext');
+    }
+
+
+    /**
      * @Given there is a build :identifier with the following request:
      */
     public function thereIsABuildWithTheFollowingRequest($identifier, PyStringNode $string)
@@ -132,6 +148,44 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         $this->buildFactory->fromRequest(
             $this->buildRequestTransformer->transform(
                 $this->serializer->deserialize($string->getRaw(), BuildRequest::class, 'json')
+            ),
+            $identifier
+        );
+    }
+
+    /**
+     * @Given there is a build :identifier
+     * @When I create a build :identifier
+     */
+    public function thereIsABuild($identifier)
+    {
+        $this->securityContext->iAmAuthenticated();
+        $this->securityContext->thereIsTheBucket('00000000-0000-0000-0000-000000000000');
+        $this->securityContext->theBucketContainsTheFollowingDockerRegistryCredentials('00000000-0000-0000-0000-000000000000', [
+            new DockerRegistry('sroze', 'password', 'my@email.com', 'docker.io'),
+        ]);
+
+        $request = <<<CONTENT
+{
+  "steps": [
+    {
+      "image": {
+        "name": "sroze/php-example",
+        "tag": "continuous"
+      },
+      "repository": {
+        "address": "fixtures://php-example",
+        "branch": "747850e8c821a443a7b5cee28a48581069049739"
+      }
+    }
+  ],
+  "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+}
+CONTENT;
+
+        $this->buildFactory->fromRequest(
+            $this->buildRequestTransformer->transform(
+                $this->serializer->deserialize($request, BuildRequest::class, 'json')
             ),
             $identifier
         );
