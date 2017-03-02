@@ -91,8 +91,16 @@ class LoggingContext implements Context
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
         foreach ($this->tracedPublisher->getPublishedReports() as $report) {
-            $propertyAccessor->getValue($report, '['.str_replace('.', '][', $key).']');
+            $value = $propertyAccessor->getValue($report, '['.str_replace('.', '][', $key).']');
+
+            if (!empty($value)) {
+                return;
+            }
         }
+
+        throw new \RuntimeException(sprintf(
+            'Value was not found'
+        ));
     }
 
     /**

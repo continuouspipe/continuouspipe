@@ -29,7 +29,13 @@
             <argument type="service" id="builder.event_store" />
             <argument type="service" id="logger" />
         </service>
+        <service id="builder.reporting.builder.add_host_information"
+                 class="ContinuousPipe\Builder\Reporting\AddsHostInformation"
+                 decorates="builder.reporting.builder">
+            <argument type="service" id="builder.reporting.builder.add_host_information.inner" />
+        </service>
         <service id="builder.reporting.publisher" class="ContinuousPipe\Builder\Reporting\ElasticSearch\ElasticSearchReportPublisher">
+            <argument>%reports_elastic_search_index_name%</argument>
             <argument>%reports_elastic_search_host%</argument>
             <argument>%reports_elastic_search_api_key%</argument>
         </service>

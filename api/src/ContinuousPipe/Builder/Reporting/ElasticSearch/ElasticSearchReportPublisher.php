@@ -14,8 +14,15 @@ class ElasticSearchReportPublisher implements ReportPublisher
      */
     private $client;
 
-    public function __construct(string $elasticSearchHostname = null, string $apiKey = null)
+    /**
+     * @var string
+     */
+    private $indexName;
+
+    public function __construct(string $indexName, string $elasticSearchHostname = null, string $apiKey = null)
     {
+        $this->indexName = $indexName;
+
         if (null !== $elasticSearchHostname) {
             $this->client = $this->createClient($elasticSearchHostname, $apiKey);
         }
@@ -32,44 +39,36 @@ class ElasticSearchReportPublisher implements ReportPublisher
 
 
         try {
-            $indexName = 'build-'.date('d.m.Y');
+            $indexName = $this->indexName.'-'.date('d.m.Y');
             $documentType = 'build';
 
             // Ensure that the `@timestamp` field type is properly
-            $indexExists = $this->client->indices()->exists([
-                'index' => $indexName
-            ]);
+            $this->ensureIndexExists($indexName, $documentType);
 
-            if (false === $indexExists) {
-                $this->client->indices()->create([
-                    'index' => $indexName,
-                    'body' => [
-                        'mappings' => [
-                            $documentType => [
-                                '_source' => [
-                                    'enabled' => true
-                                ],
-                                'properties' => [
-                                    '@timestamp' => [
-                                        'type' => 'date',
-                                        'format' => 'epoch_second'
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ]);
-            }
-
+            // Add the report timestamp
             $report['@timestamp'] = time();
-
-            $this->client->index([
+            $documentIdentifier = [
                 'type' => $documentType,
                 'index' => $indexName,
-                'timestamp' => $report['@timestamp'],
                 'id' => $buildIdentifier,
-                'body' => $report,
-            ]);
+            ];
+
+            if ($this->client->exists($documentIdentifier)) {
+                $this->client->update(
+                    array_merge($documentIdentifier, [
+                        'body' => [
+                            'doc' => $report,
+                        ],
+                    ])
+                );
+            } else {
+                $this->client->index(
+                    array_merge($documentIdentifier, [
+                        'timestamp' => $report['@timestamp'],
+                        'body' => $report,
+                    ])
+                );
+            }
         } catch (\Exception $e) {
             throw new ReportException('Something went wrong while publishing the report', $e->getCode(), $e);
         }
@@ -103,5 +102,37 @@ class ElasticSearchReportPublisher implements ReportPublisher
             ])
             ->build()
         ;
+    }
+
+    /**
+     * @param $indexName
+     * @param $documentType
+     */
+    private function ensureIndexExists($indexName, $documentType)
+    {
+        $indexExists = $this->client->indices()->exists([
+            'index' => $indexName
+        ]);
+
+        if (false === $indexExists) {
+            $this->client->indices()->create([
+                'index' => $indexName,
+                'body' => [
+                    'mappings' => [
+                        $documentType => [
+                            '_source' => [
+                                'enabled' => true
+                            ],
+                            'properties' => [
+                                '@timestamp' => [
+                                    'type' => 'date',
+                                    'format' => 'epoch_second'
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+        }
     }
 }
