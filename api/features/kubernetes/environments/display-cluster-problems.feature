@@ -17,6 +17,10 @@ Feature:
     And the environment label "flow" contains "1234567890"
     And the environment label "tide" contains "0987654321"
     And the pods of the deployments will be running after creation
-    When I send the built deployment request
-    Then the deployment should be successful
-    And the cluster alerts should be available
+    And the cluster with the address "1.2.3.4" will have the following problems:
+      | category            | message                   |
+      | schedulable_cpu_low | This is serious my friend |
+    And I send the built deployment request
+    And the deployment should be successful
+    Then I should see a "text" log event in the log stream with message "Found 1 problem with the cluster"
+    Then I should see a "text" log event in the log stream with message "This is serious my friend"
