@@ -82,8 +82,6 @@ class ElasticSearchReportPublisher implements ReportPublisher
                     $request['query_string'] = 'apikey='.$apiKey;
                 }
 
-                var_dump($request);
-
                 return $next($request);
             };
         };
