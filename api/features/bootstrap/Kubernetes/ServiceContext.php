@@ -269,6 +269,35 @@ class ServiceContext implements Context
             }
         }
     }
+
+    /**
+     * @Then the annotation :annotationName of the service :serviceName should contain the following keys in its JSON:
+     */
+    public function theAnnotationOfTheServiceShouldContainTheFollowingKeysInItsJson($annotationName, $serviceName, TableNode $table)
+    {
+        $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $serviceName);
+        $annotation = $service->getMetadata()->getAnnotationList()->get($annotationName);
+        $keys = \GuzzleHttp\json_decode($annotation->getValue(), true);
+
+        foreach ($table->getHash() as $row) {
+            if (!array_key_exists($row['name'], $keys)) {
+                throw new \RuntimeException(sprintf(
+                    'Expected to find the key "%s" but not found',
+                    $row['name']
+                ));
+            }
+
+            $foundValue = $keys[$row['name']];
+            if ($foundValue != $row['value']) {
+                throw new \RuntimeException(sprintf(
+                    'Found value %s for key "%s"',
+                    $foundValue,
+                    $row['name']
+                ));
+            }
+        }
+    }
+
     /**
      * @Then the service :name should have the type :type
      */

@@ -70,7 +70,7 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
 
         $cloudFlareAnnotation = $object->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.cloudflare.zone');
         if (null !== $cloudFlareAnnotation) {
-            $cloudFlareMetadata = \GuzzleHttp\json_decode($cloudFlareAnnotation, true);
+            $cloudFlareMetadata = \GuzzleHttp\json_decode($cloudFlareAnnotation->getValue(), true);
         } else {
             $recordAddress = $publicEndpoint->getAddress();
             $recordType = $this->getRecordTypeFromAddress($recordAddress);
