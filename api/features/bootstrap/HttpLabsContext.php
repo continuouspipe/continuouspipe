@@ -32,6 +32,18 @@ class HttpLabsContext implements Context
     }
 
     /**
+     * @Then an HttpLabs stack should not have been created
+     */
+    public function anHttplabsStackShouldNotHaveBeenCreated()
+    {
+        $createdStacks = $this->traceableClient->getCreatedStacks();
+
+        if (0 !== count($createdStacks)) {
+            throw new \RuntimeException('Found created stacks');
+        }
+    }
+
+    /**
      * @Then an HttpLabs stack should have been created with the backend :backend
      */
     public function anHttplabsStackShouldHaveBeenCreatedWithTheBackend($backend)

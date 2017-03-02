@@ -68,7 +68,11 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
             return $publicEndpoint;
         }
 
-        $cloudFlareAnnotation = $object->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.cloudflare.zone');
+        // Refresh the service with the existing values
+        $serviceRepository = $this->deploymentClientFactory->get($deploymentContext)->getServiceRepository();
+        $service = $serviceRepository->findOneByName($object->getMetadata()->getName());
+
+        $cloudFlareAnnotation = $service->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.cloudflare.zone');
         if (null !== $cloudFlareAnnotation) {
             $cloudFlareMetadata = \GuzzleHttp\json_decode($cloudFlareAnnotation->getValue(), true);
         } else {
@@ -101,7 +105,7 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
                 $logger->updateStatus(Log::SUCCESS);
 
                 $this->deploymentClientFactory->get($deploymentContext)->getServiceRepository()->annotate(
-                    $object->getMetadata()->getName(),
+                    $service->getMetadata()->getName(),
                     KeyValueObjectList::fromAssociativeArray([
                         'com.continuouspipe.io.cloudflare.zone' => \GuzzleHttp\json_encode($cloudFlareMetadata),
                     ], Annotation::class)

@@ -11,6 +11,8 @@ use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceRep
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\Annotation;
+use Kubernetes\Client\Model\KeyValueObjectList;
+use Kubernetes\Client\Model\Label;
 use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\LoadBalancerStatus;
 use Kubernetes\Client\Model\ObjectMetadata;
@@ -86,9 +88,12 @@ class ServiceContext implements Context
      * @Given I have a service :name with the selector :selector
      * @Given I have a service :name with the selector :selector and type :type
      * @Given I have a service :name with the selector :selector and type :type with the ports:
+     * @Given the service :arg1 have the selector :arg2 and type :arg3 with the ports:
      */
     public function iHaveAServiceWithTheSelector($name, $selector, $type = null, TableNode $portsTable = null)
     {
+        $this->iHaveAnExistingService($name);
+        $service = $this->serviceRepository->findOneByName($name);
         $selector = $this->selectorFromString($selector);
         $ports = $portsTable === null ? [] : array_map(function(array $row) {
             return new ServicePort(
@@ -99,11 +104,17 @@ class ServiceContext implements Context
             );
         }, $portsTable->getHash());
 
-        $this->serviceRepository->create(new Service(
-            new ObjectMetadata($name),
-            new ServiceSpecification($selector, $ports, $type ?: ServiceSpecification::TYPE_CLUSTER_IP)
-        ));
+        $service = new Service(
+            $service->getMetadata(),
+            new ServiceSpecification(
+                $selector,
+                $ports,
+                $type ?: ServiceSpecification::TYPE_CLUSTER_IP
+            ),
+            $service->getStatus()
+        );
 
+        $this->serviceRepository->update($service);
         $this->serviceRepository->clear();
     }
 
@@ -117,7 +128,9 @@ class ServiceContext implements Context
             $this->serviceRepository->findOneByName($name);
         } catch (ServiceNotFound $e) {
             $this->serviceRepository->create(new Service(
-                new ObjectMetadata($name),
+                new ObjectMetadata($name, new KeyValueObjectList([
+                    new Label('component-identifier', $componentName ?: $name),
+                ])),
                 new ServiceSpecification(
                     ['component-identifier' => $componentName ?: $name]
                 )
@@ -203,6 +216,7 @@ class ServiceContext implements Context
                 new LoadBalancerIngress($address)
             ]))
         ));
+        $this->serviceRepository->clear();
     }
 
     /**
@@ -225,6 +239,7 @@ class ServiceContext implements Context
             $service->getSpecification(),
             $service->getStatus()
         ));
+        $this->serviceRepository->clear();
     }
 
     /**
@@ -241,6 +256,7 @@ class ServiceContext implements Context
                 new LoadBalancerIngress(null, $hostname)
             ]))
         ));
+        $this->serviceRepository->clear();
     }
 
     /**

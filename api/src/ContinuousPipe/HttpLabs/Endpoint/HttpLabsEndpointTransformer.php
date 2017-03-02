@@ -71,9 +71,13 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
             return $publicEndpoint;
         }
 
-        $httpLabsAnnotation = $object->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.httplabs.stack');
+        // Refresh the service with the existing values
+        $serviceRepository = $this->deploymentClientFactory->get($deploymentContext)->getServiceRepository();
+        $service = $serviceRepository->findOneByName($object->getMetadata()->getName());
+
+        $httpLabsAnnotation = $service->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.httplabs.stack');
         if (null !== $httpLabsAnnotation) {
-            $metadata = \GuzzleHttp\json_decode($httpLabsAnnotation, true);
+            $metadata = \GuzzleHttp\json_decode($httpLabsAnnotation->getValue(), true);
         } else {
             $logger = $this->loggerFactory->from($deploymentContext->getLog())
                 ->child(new Text('Creating HttpLabs stack for endpoint ' . $publicEndpoint->getName()))
@@ -95,8 +99,8 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
                 $logger->child(new Text('Created stack with address: '.$metadata['stack_address']));
                 $logger->updateStatus(Log::SUCCESS);
 
-                $this->deploymentClientFactory->get($deploymentContext)->getServiceRepository()->annotate(
-                    $object->getMetadata()->getName(),
+                $serviceRepository->annotate(
+                    $service->getMetadata()->getName(),
                     KeyValueObjectList::fromAssociativeArray([
                         'com.continuouspipe.io.httplabs.stack' => \GuzzleHttp\json_encode($metadata),
                     ], Annotation::class)
