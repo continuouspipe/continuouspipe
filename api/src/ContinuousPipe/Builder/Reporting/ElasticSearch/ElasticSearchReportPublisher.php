@@ -36,40 +36,32 @@ class ElasticSearchReportPublisher implements ReportPublisher
             $documentType = 'build';
 
             // Ensure that the `@timestamp` field type is properly
-            $indexExists = $this->client->indices()->exists([
-                'index' => $indexName
-            ]);
+            $this->ensureIndexExists($indexName, $documentType);
 
-            if (false === $indexExists) {
-                $this->client->indices()->create([
-                    'index' => $indexName,
-                    'body' => [
-                        'mappings' => [
-                            $documentType => [
-                                '_source' => [
-                                    'enabled' => true
-                                ],
-                                'properties' => [
-                                    '@timestamp' => [
-                                        'type' => 'date',
-                                        'format' => 'epoch_second'
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ]);
-            }
-
+            // Add the report timestamp
             $report['@timestamp'] = time();
-
-            $this->client->index([
+            $documentIdentifier = [
                 'type' => $documentType,
                 'index' => $indexName,
-                'timestamp' => $report['@timestamp'],
                 'id' => $buildIdentifier,
-                'body' => $report,
-            ]);
+            ];
+
+            if ($this->client->exists($documentIdentifier)) {
+                $this->client->update(
+                    array_merge($documentIdentifier, [
+                        'body' => [
+                            'doc' => $report,
+                        ],
+                    ])
+                );
+            } else {
+                $this->client->index(
+                    array_merge($documentIdentifier, [
+                        'timestamp' => $report['@timestamp'],
+                        'body' => $report,
+                    ])
+                );
+            }
         } catch (\Exception $e) {
             throw new ReportException('Something went wrong while publishing the report', $e->getCode(), $e);
         }
@@ -90,6 +82,8 @@ class ElasticSearchReportPublisher implements ReportPublisher
                     $request['query_string'] = 'apikey='.$apiKey;
                 }
 
+                var_dump($request);
+
                 return $next($request);
             };
         };
@@ -103,5 +97,37 @@ class ElasticSearchReportPublisher implements ReportPublisher
             ])
             ->build()
         ;
+    }
+
+    /**
+     * @param $indexName
+     * @param $documentType
+     */
+    private function ensureIndexExists($indexName, $documentType)
+    {
+        $indexExists = $this->client->indices()->exists([
+            'index' => $indexName
+        ]);
+
+        if (false === $indexExists) {
+            $this->client->indices()->create([
+                'index' => $indexName,
+                'body' => [
+                    'mappings' => [
+                        $documentType => [
+                            '_source' => [
+                                'enabled' => true
+                            ],
+                            'properties' => [
+                                '@timestamp' => [
+                                    'type' => 'date',
+                                    'format' => 'epoch_second'
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+        }
     }
 }
