@@ -25,9 +25,9 @@ class TraceableClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function createStack(string $apiKey, string $projectIdentifier, string $backendUrl): Stack
+    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl): Stack
     {
-        $stack = $this->decoratedClient->createStack($apiKey, $projectIdentifier, $backendUrl);
+        $stack = $this->decoratedClient->createStack($apiKey, $projectIdentifier, $name, $backendUrl);
 
         $this->createdStacks[] = [
             'project_identifier' => $projectIdentifier,

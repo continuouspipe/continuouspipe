@@ -124,8 +124,11 @@
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="logger" />
         </service>
+        <service id="pipe.httplabs.http_client.handler" class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+        </service>
         <service id="pipe.httplabs.client" class="ContinuousPipe\HttpLabs\Client\HttpLabsGuzzleClient">
-
+            <argument type="service" id="pipe.httplabs.http_client.handler" />
         </service>
 
         <!-- Synchronous event listeners -->

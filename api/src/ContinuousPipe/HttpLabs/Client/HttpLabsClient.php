@@ -9,11 +9,12 @@ interface HttpLabsClient
      *
      * @param string $apiKey
      * @param string $projectIdentifier
+     * @param string $name
      * @param string $backendUrl
      *
      * @throws HttpLabsException
      *
      * @return Stack
      */
-    public function createStack(string $apiKey, string $projectIdentifier, string $backendUrl) : Stack;
+    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl) : Stack;
 }

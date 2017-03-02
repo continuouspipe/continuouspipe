@@ -88,6 +88,7 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
                 $stack = $this->httpLabsClient->createStack(
                     $httpLabsConfiguration->getApiKey(),
                     $httpLabsConfiguration->getProjectIdentifier(),
+                    $deploymentContext->getEnvironment()->getName(),
                     $this->getBackendAddress($publicEndpoint)
                 );
 

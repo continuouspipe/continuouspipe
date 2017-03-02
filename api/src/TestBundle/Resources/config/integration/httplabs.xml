@@ -5,13 +5,19 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="pipe.httplabs.client.predictable" class="ContinuousPipe\HttpLabs\PredictableClient"/>
+        <service id="pipe.httplabs.http_client.handler.matching" class="ContinuousPipe\Guzzle\MatchingHandler">
+            <argument type="service" id="logger" />
+        </service>
+        <service id="pipe.httplabs.http_client.handler" class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+
+            <argument type="service" id="pipe.httplabs.http_client.handler.matching" />
+        </service>
+
         <service id="pipe.httplabs.client.traceable"
                  class="ContinuousPipe\HttpLabs\TraceableClient"
                  decorates="pipe.httplabs.client">
             <argument type="service" id="pipe.httplabs.client.traceable.inner" />
         </service>
-
-        <service id="pipe.httplabs.client" alias="pipe.httplabs.client.predictable" />
     </services>
 </container>
