@@ -1,9 +1,12 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Builder\Reporting\TracedPublisher;
 use LogStream\Log;
 use LogStream\Tests\InMemoryLogClient;
 use LogStream\TraceableClient;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class LoggingContext implements Context
 {
@@ -16,15 +19,46 @@ class LoggingContext implements Context
      * @var InMemoryLogClient
      */
     private $inMemoryLogClient;
-
     /**
-     * @param TraceableClient $traceableClient
-     * @param InMemoryLogClient $inMemoryLogClient
+     * @var TracedPublisher
      */
-    public function __construct(TraceableClient $traceableClient, InMemoryLogClient $inMemoryLogClient)
+    private $tracedPublisher;
+
+    public function __construct(TraceableClient $traceableClient, InMemoryLogClient $inMemoryLogClient, TracedPublisher $tracedPublisher)
     {
         $this->traceableClient = $traceableClient;
         $this->inMemoryLogClient = $inMemoryLogClient;
+        $this->tracedPublisher = $tracedPublisher;
+    }
+
+    /**
+     * @Then a report should be published
+     */
+    public function aReportShouldBePublished()
+    {
+        $reports = $this->tracedPublisher->getPublishedReports();
+
+        if (0 === count($reports)) {
+            throw new \RuntimeException('No published reports found');
+        }
+    }
+
+    /**
+     * @Then the published report should contain :value for the key :key
+     */
+    public function thePublishedReportShouldContainForTheKey($value, $key)
+    {
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+
+        foreach ($this->tracedPublisher->getPublishedReports() as $report) {
+            $foundValue = $propertyAccessor->getValue($report, '['.$key.']');
+
+            if ($foundValue == $value) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('Value not found');
     }
 
     /**

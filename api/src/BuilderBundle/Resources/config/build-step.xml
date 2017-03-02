@@ -6,7 +6,9 @@
 
     <services>
         <!-- Events storage -->
-        <service id="builder.build_step.event_store" class="ContinuousPipe\Events\EventStore\InMemoryEventStore" />
+        <service id="builder.build_step.event_store" class="ContinuousPipe\Events\EventStore\InMemoryEventStore">
+            <argument type="service" id="builder.time_resolver" />
+        </service>
         <service id="builder.build_step.event_stream_resolver" class="ContinuousPipe\Builder\Aggregate\BuildStep\FromEvents\BuildStepEventStreamResolver" />
 
         <!-- Event bus -->

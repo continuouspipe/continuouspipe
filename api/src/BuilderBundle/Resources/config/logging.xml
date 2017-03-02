@@ -18,5 +18,23 @@
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed" />
         </service>
+
+        <service id="builder.reporting.builder" class="ContinuousPipe\Builder\Reporting\BuildReportFromAggregate">
+            <argument type="service" id="builder.build.repository" />
+        </service>
+        <service id="builder.reporting.publisher" class="ContinuousPipe\Builder\Reporting\ElasticSearch\ElasticSearchReportPublisher">
+
+        </service>
+
+        <service id="builder.reporting.publish_on_events" class="ContinuousPipe\Builder\Reporting\OnBuildEvent\PublishReportOnBuildEvent">
+            <argument type="service" id="builder.reporting.builder" />
+            <argument type="service" id="builder.reporting.publisher" />
+            <argument type="service" id="logger"/>
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildStarted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFinished" />
+        </service>
     </services>
 </container>

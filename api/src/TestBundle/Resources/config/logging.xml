@@ -35,5 +35,12 @@
                  decorates="builder.notifier">
             <argument type="service" id="builder.notifier.traceable.inner" />
         </service>
+
+        <service id="builder.reporting.publisher" class="ContinuousPipe\Builder\Reporting\NullPublisher" />
+        <service id="builder.reporting.publisher.traced"
+                 class="ContinuousPipe\Builder\Reporting\TracedPublisher"
+                 decorates="builder.reporting.publisher">
+            <argument type="service" id="builder.reporting.publisher.traced.inner" />
+        </service>
     </services>
 </container>
