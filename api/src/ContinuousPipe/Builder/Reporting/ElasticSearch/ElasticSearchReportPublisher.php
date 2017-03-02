@@ -14,8 +14,15 @@ class ElasticSearchReportPublisher implements ReportPublisher
      */
     private $client;
 
-    public function __construct(string $elasticSearchHostname = null, string $apiKey = null)
+    /**
+     * @var string
+     */
+    private $indexName;
+
+    public function __construct(string $indexName, string $elasticSearchHostname = null, string $apiKey = null)
     {
+        $this->indexName = $indexName;
+
         if (null !== $elasticSearchHostname) {
             $this->client = $this->createClient($elasticSearchHostname, $apiKey);
         }
@@ -32,7 +39,7 @@ class ElasticSearchReportPublisher implements ReportPublisher
 
 
         try {
-            $indexName = 'build-'.date('d.m.Y');
+            $indexName = $this->indexName.'-'.date('d.m.Y');
             $documentType = 'build';
 
             // Ensure that the `@timestamp` field type is properly
