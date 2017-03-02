@@ -1,27 +1,43 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowRemoteController', function ($scope, $remoteResource, RemoteRepository, flow) {
-        $scope.environments = [];
-        $scope.branchName = 'test';
+    .controller('FlowRemoteController', function ($rootScope, $state, $scope, $remoteResource, $mdToast, RemoteRepository, flow) {
         $scope.token = '';
+        $scope.environments = [];
+        $scope.branchName = 'cpdev/' + $rootScope.user.username;
+        $scope.currentEnvironment = {};
 
-        RemoteRepository.getDevEnvironments(flow).then(function (environments) {
-            environments.forEach(function (env) {
-                $scope.environments.push(env);
-            });
-        });
-
-        $scope.getToken = function (branchName, flow) {
-            RemoteRepository.issueToken(branchName, flow).then(function (token) {
-                $scope.token = token;
-                console.log($scope.token);
-            });
+        $scope.creationScreen = function () {
+            $state.go({name: 'flows.create-remote'});
         };
 
-        $scope.createEnvironment = function (name, flow) {
-            RemoteRepository.createDevEnvironment(name, flow).then(function (env) {
-                $scope.environments.push(env);
+        $scope.copyToken = function () {
+            $('#envToken').select();
+
+            try {
+                document.execCommand('copy');
+                $mdToast.showSimple('Token copied to clipboard')
+            } catch (err) {
+                //console.log('Oops, unable to copy');
+            }
+
+            window.getSelection().removeAllRanges();
+        };
+
+
+        RemoteRepository.getDevEnvironments(flow).then(function (environments) {
+            if (environments.length === 0) $scope.creationScreen();
+            $scope.environments = environments;
+        });
+
+        $scope.getToken = function () {
+            var name = $rootScope.user.username + ' environment';
+            RemoteRepository.createDevEnvironment(name, flow).then(function (environment) {
+                $scope.currentEnvironment = environment;
+
+                RemoteRepository.issueToken($scope.branchName, environment, flow).then(function (token) {
+                    $scope.token = token.token;
+                });
             });
         };
 

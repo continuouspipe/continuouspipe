@@ -12,8 +12,7 @@ angular.module('continuousPipeRiver')
         this.issueToken = function (branchName, env, flow) {
             return $resource(RIVER_API_URL + '/flows/:uuid/development-environments/:envUuid/initialization-token', {}, {
                 create: {
-                    method: 'POST',
-                    isArray: true
+                    method: 'POST'
                 }
             }).create({
                 uuid: flow.uuid,
@@ -24,8 +23,7 @@ angular.module('continuousPipeRiver')
         this.createDevEnvironment = function (name, flow) {
             return $resource(API, {}, {
                 create: {
-                    method: 'POST',
-                    isArray: true
+                    method: 'POST'
                 }
             }).create({
                 uuid: flow.uuid

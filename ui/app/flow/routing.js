@@ -99,5 +99,15 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+            .state('flow.create-remote', {
+                url: '/remote/create',
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/remote/create.html',
+                        controller: 'FlowRemoteController'
+                    }
+                },
+                aside: true
+            })
         ;
     });
