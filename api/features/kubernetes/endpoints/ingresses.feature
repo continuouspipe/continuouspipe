@@ -123,7 +123,9 @@ Feature:
     And the ingress named "http" should be created
 
   Scenario: The existing services should also be waited and their endpoints fetched
-    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app"
+    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app" and type "LoadBalancer" with the ports:
+      | name | port | protocol | targetPort |
+      | http | 80   | tcp      | 80         |
     And the service "app" will be created with the public IP "1.2.3.4"
     When the specification come from the template "simple-app-public"
     And I send the built deployment request
@@ -131,7 +133,9 @@ Feature:
     And the deployment should contain the endpoint "1.2.3.4"
 
   Scenario: It returns the port number of existing services
-    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app"
+    Given I have a service "app" with the selector "com.continuouspipe.visibility=public,component-identifier=app" and type "LoadBalancer" with the ports:
+      | name | port | protocol | targetPort |
+      | http | 80   | tcp      | 80         |
     And the service "app" will be created with the public IP "1.2.3.4"
     When the specification come from the template "simple-app-public"
     And I send the built deployment request

@@ -55,7 +55,7 @@ class ServiceObjectDeployer extends AbstractObjectDeployer
 
     private function portHash(Service $service) : array
     {
-        return array_map(function(ServicePort $port) {
+        return array_map(function (ServicePort $port) {
             return [
                 'name' => strtolower($port->getName()),
                 'protocol' => strtolower($port->getProtocol()),
