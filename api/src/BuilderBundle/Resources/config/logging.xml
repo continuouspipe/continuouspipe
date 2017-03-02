@@ -22,6 +22,13 @@
         <service id="builder.reporting.builder" class="ContinuousPipe\Builder\Reporting\BuildReportFromAggregate">
             <argument type="service" id="builder.build.repository" />
         </service>
+        <service id="builder.reporting.builder.add_durations"
+                 class="ContinuousPipe\Builder\Reporting\AddsDurationFromEvents"
+                 decorates="builder.reporting.builder">
+            <argument type="service" id="builder.reporting.builder.add_durations.inner" />
+            <argument type="service" id="builder.event_store" />
+            <argument type="service" id="logger" />
+        </service>
         <service id="builder.reporting.publisher" class="ContinuousPipe\Builder\Reporting\ElasticSearch\ElasticSearchReportPublisher">
 
         </service>

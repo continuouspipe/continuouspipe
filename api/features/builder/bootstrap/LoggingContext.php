@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Builder\Reporting\TracedPublisher;
+use ContinuousPipe\Events\TimeResolver\PredictableTimeResolver;
 use LogStream\Log;
 use LogStream\Tests\InMemoryLogClient;
 use LogStream\TraceableClient;
@@ -23,12 +24,33 @@ class LoggingContext implements Context
      * @var TracedPublisher
      */
     private $tracedPublisher;
+    /**
+     * @var PredictableTimeResolver
+     */
+    private $predictableTimeResolver;
 
-    public function __construct(TraceableClient $traceableClient, InMemoryLogClient $inMemoryLogClient, TracedPublisher $tracedPublisher)
+    public function __construct(TraceableClient $traceableClient, InMemoryLogClient $inMemoryLogClient, TracedPublisher $tracedPublisher, PredictableTimeResolver $predictableTimeResolver)
     {
         $this->traceableClient = $traceableClient;
         $this->inMemoryLogClient = $inMemoryLogClient;
         $this->tracedPublisher = $tracedPublisher;
+        $this->predictableTimeResolver = $predictableTimeResolver;
+    }
+
+    /**
+     * @Transform :datetime
+     */
+    public function transformDateTime($value)
+    {
+        return \DateTime::createFromFormat(\DateTime::ISO8601, $value);
+    }
+
+    /**
+     * @When the current datetime is :datetime
+     */
+    public function theCurrentDatetimeIs(\DateTime $datetime)
+    {
+        $this->predictableTimeResolver->setCurrent($datetime);
     }
 
     /**
@@ -51,7 +73,7 @@ class LoggingContext implements Context
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
         foreach ($this->tracedPublisher->getPublishedReports() as $report) {
-            $foundValue = $propertyAccessor->getValue($report, '['.$key.']');
+            $foundValue = $propertyAccessor->getValue($report, '['.str_replace('.', '][', $key).']');
 
             if ($foundValue == $value) {
                 return;
