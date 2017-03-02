@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Guzzle\MatchingHandler;
 use ContinuousPipe\HttpLabs\TraceableClient;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
@@ -90,6 +91,57 @@ class HttpLabsContext implements Context
             },
             'response' => new Response(201, ['Content-Type' => 'text/html; charset=UTF-8']),
         ]);
+
+        $this->httpLabsHttpHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($uuid) {
+                return $request->getMethod() == 'DELETE' &&
+                    preg_match('#^https\:\/\/api\.httplabs\.io\/middlewares/([^\/]+)#i', (string) $request->getUri());
+            },
+            'response' => new Response(204, ['Content-Type' => 'text/html; charset=UTF-8']),
+        ]);
+
+        $this->httpLabsHttpHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($uuid) {
+                return $request->getMethod() == 'GET' &&
+                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'\/middlewares#i', (string) $request->getUri());
+            },
+            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
+                'total' => 0,
+            ])),
+        ]);
+    }
+
+    /**
+     * @Given the HttpLabs stack :uuid have the following middlewares:
+     */
+    public function theHttplabsStackHaveTheFollowingMiddlewares($uuid, TableNode $table)
+    {
+        $middlewares = array_map(function(array $row) {
+            return [
+                'config' => json_decode($row['config'], true),
+                '_links' => [
+                    'self' => [
+                        'href' => 'https://api.httplabs.io/middlewares/'.$row['identifier'],
+                    ],
+                    'sp:template' => [
+                        'href' => $row['template'],
+                    ],
+                ],
+            ];
+        }, $table->getHash());
+
+        $this->httpLabsHttpHandler->unshiftMatcher([
+            'match' => function(RequestInterface $request) use ($uuid) {
+                return $request->getMethod() == 'GET' &&
+                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'\/middlewares#i', (string) $request->getUri());
+            },
+            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
+                'total' => count($middlewares),
+                '_embedded' => [
+                    'sp:middlewares' => $middlewares,
+                ]
+            ])),
+        ]);
     }
 
     /**
@@ -124,12 +176,27 @@ class HttpLabsContext implements Context
     public function theHttplabsStackShouldHaveBeenDeployed($stackIdentifier)
     {
         foreach ($this->httpLabsHttpHistory as $request) {
-            if  (preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$stackIdentifier.'/deployments$#i', (string) $request->getUri())) {
+            if  ($request->getMethod() == 'POST' && preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$stackIdentifier.'/deployments$#i', (string) $request->getUri())) {
                 return;
             }
         }
 
         throw new \RuntimeException('The stack was not deployed');
+    }
+
+
+    /**
+     * @Then the middleware :middlewareIdentifier from the stack :stackIdentifier should have been removed
+     */
+    public function theMiddlewareFromTheStackShouldHaveBeenRemoved($middlewareIdentifier, $stackIdentifier)
+    {
+        foreach ($this->httpLabsHttpHistory as $request) {
+            if  ($request->getMethod() == 'DELETE' && preg_match('#^https\:\/\/api\.httplabs\.io\/middlewares\/'.$middlewareIdentifier.'$#i', (string) $request->getUri())) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('The middleware was not removed');
     }
 
     /**

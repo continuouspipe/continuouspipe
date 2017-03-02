@@ -82,16 +82,46 @@ class HttpLabsGuzzleClient implements HttpLabsClient
                 ]
             ]);
 
-            foreach ($middlewares as $middleware) {
-                $httpClient->request('post', $stackUri.'/middlewares', [
-                    'json' => $middleware,
-                ]);
+            if (count($middlewares) > 0) {
+                // List the existing middlewares
+                $existingMiddlewareUris = [];
+                $middlewareListResponse = $httpClient->request('get', $stackUri . '/middlewares');
+                try {
+                    $responseJson = \GuzzleHttp\json_decode($middlewareListResponse->getBody()->getContents(), true);
+                    if (!isset($responseJson['total'])) {
+                        throw new \InvalidArgumentException('The response needs to contain `total`');
+                    }
+
+                    if ($responseJson['total'] > 0) {
+                        if (!isset($responseJson['_embedded']['sp:middlewares'])) {
+                            throw new \InvalidArgumentException('The response needs to contain `_embedded.sp:middlewares`');
+                        }
+
+                        $existingMiddlewareUris = array_map(function (array $middleware) {
+                            return $middleware['_links']['self']['href'];
+                        }, $responseJson['_embedded']['sp:middlewares']);
+                    }
+                } catch (\InvalidArgumentException $e) {
+                    throw new HttpLabsException('Unable to understand the response from HttpLabs', $e->getCode(), $e);
+                }
+
+                // Remove the existing middlewares
+                foreach ($existingMiddlewareUris as $existingMiddlewareUri) {
+                    $httpClient->request('delete', $existingMiddlewareUri);
+                }
+
+                // Add the configured middlewares
+                foreach ($middlewares as $middleware) {
+                    $httpClient->request('post', $stackUri . '/middlewares', [
+                        'json' => $middleware,
+                    ]);
+                }
             }
 
             // Deploy the stack
             $httpClient->request('post', $stackUri.'/deployments');
         } catch (RequestException $e) {
-            throw new HttpLabsException('Unable to update the HttpLabs stack', $e->getCode(), $e);
+            throw new HttpLabsException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
