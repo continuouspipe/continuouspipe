@@ -58,7 +58,6 @@ class HttpLabsGuzzleClient implements HttpLabsClient
 
             $stackResponseContents = $httpClient->request('get', $stackUri)->getBody()->getContents();
         } catch (RequestException $e) {
-            var_dump($e->getMessage());
             throw new HttpLabsException('Unable to create the HttpLabs stack', $e->getCode(), $e);
         }
 
