@@ -337,6 +337,14 @@ class DeploymentContext implements Context
     }
 
     /**
+     * @Then the cluster alerts should be available
+     */
+    public function theClusterAlertsShouldBeAvailable()
+    {
+        // $this->logStream
+    }
+
+    /**
      * @param int $statusCode
      */
     private function assertResponseCodeIs($statusCode)
