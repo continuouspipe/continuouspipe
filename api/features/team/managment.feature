@@ -155,3 +155,11 @@ Feature:
     And the user "samuel" is administrator of the team "foo"
     When I update the team "foo" with the billing profile "00000000-0000-0000-0000-000000000001"
     Then the team should be successfully updated
+
+  @smoke
+  Scenario: Able to delete a team
+    Given there is a team "foo"
+    And the user "samuel" is administrator of the team "foo"
+    When I delete the team "foo"
+    And I request the list of teams
+    Then I should not see the team "foo" in the team list

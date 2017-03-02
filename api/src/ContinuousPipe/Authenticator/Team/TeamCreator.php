@@ -135,4 +135,9 @@ class TeamCreator
 
         return $team;
     }
+
+    public function delete(Team $team)
+    {
+        $this->teamRepository->delete($team);
+    }
 }

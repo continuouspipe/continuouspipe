@@ -64,4 +64,14 @@ class TeamEventProducerRepository implements TeamRepository
     {
         return $this->decoratedRepository->findAll();
     }
+
+    /**
+     * Delete the given team.
+     *
+     * @param Team $team
+     */
+    public function delete(Team $team)
+    {
+        $this->decoratedRepository->delete($team);
+    }
 }

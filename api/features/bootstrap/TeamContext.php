@@ -629,6 +629,19 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I delete the team :slug
+     */
+    public function iDeleteTheTeam($slug)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams/' . $slug,
+            'DELETE'
+        ));
+
+        $this->assertResponseCodeIs($this->response, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
      * @param Response $response
      * @param int $statusCode
      */

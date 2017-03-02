@@ -12,7 +12,7 @@
             <join-column name="user_id" referenced-column-name="username" />
         </many-to-one>
         <many-to-one field="team" target-entity="ContinuousPipe\Security\Team\Team" inversed-by="memberships">
-            <join-column name="team_id" referenced-column-name="slug" />
+            <join-column name="team_id" referenced-column-name="slug" on-delete="CASCADE" />
         </many-to-one>
         <field name="permissions" type="array" />
     </entity>
