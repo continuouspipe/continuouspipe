@@ -16,6 +16,7 @@ angular.module('continuousPipeRiver')
 
             try {
                 document.execCommand('copy');
+                $('[name="branchName"]').attr('disabled', true);
                 $mdToast.showSimple('Token copied to clipboard')
             } catch (err) {
                 //console.log('Oops, unable to copy');
