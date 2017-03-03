@@ -5,25 +5,38 @@
             <span ng-hide="environments">Loading...</span>
         </h2>
         <span flex></span>
-        <md-button class="md-raised" aria-label="Start manually" ui-sref="flow.create-remote">
-            <md-icon>play_arrow</md-icon>
-            Start manually
+        <md-button class="md-raised" aria-label="Start manually" ng-click="stageEnvironment()">
+            <md-icon>control_point</md-icon>
+            Create New
         </md-button>
     </div>
 </md-toolbar>
 <md-content flex id="content" class="card-grid half environment-grid">
+    <div class="zero-content-help zero-content-help--remote" ng-show="showForm">
+        <h3>Create New Enviroment</h3>
+        <form name="remoteEnvForm">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Environment Name</label>
+                <input type="text" ng-model="stagedEnvironment"
+                       value="{{ stagedEnvironment }}"/>
+            </md-input-container>
+        </form>
+        <md-button class="md-raised" ng-click="createEnvironment()">
+            Create {{ stagedEnvironment }}
+        </md-button>
+    </div>
     <remote-resource resource-name="environments">
-        <md-card ng-repeat="environment in environments" ng-class="{'collapsed': !environment.expanded}">
-            <md-card-header ng-click="environment.expanded = !environment.expanded;">
+        <md-card ng-repeat="environment in environments" ui-sref="flow.create-remote({environment: environment})">
+            <md-card-header>
                 <md-card-avatar>
                     <md-icon class="md-avatar-icon">
-                        <i class="material-icons" ng-show="!environment.expanded">chevron_right</i>
-                        <i class="material-icons" ng-show="environment.expanded">expand_more</i>
+                        <i class="material-icons">chevron_right</i>
                     </md-icon>
                 </md-card-avatar>
                 <md-card-header-text>
                     <span class="md-title">{{ environment.name }}</span>
-                    <span class="md-subhead">User: <span class="status-text status-success">{{ environment.username }}</span></span>
+                    <span class="md-subhead">User: <span
+                        class="status-text status-success">{{ environment.username }}</span></span>
                 </md-card-header-text>
 
                 <md-button class="md-raised md-primary environment-card-btn"
@@ -32,40 +45,6 @@
                     Open <code>{{ endpoint.name }}</code>
                 </md-button>
             </md-card-header>
-
-            <table class="table">
-                <!--<thead>-->
-                <!--<tr>-->
-                    <!--<th>Component</th>-->
-                    <!--<th>Status</th>-->
-                    <!--<th>Actions</th>-->
-                <!--</tr>-->
-                <!--</thead>-->
-                <!--<tbody>-->
-                <!--<tr ng-show="!environment.components.length">-->
-                    <!--<td colspan="3">No components found.</td>-->
-                <!--</tr>-->
-                <!--<tr ng-repeat="component in environment.components">-->
-                    <!--<td><strong>{{ component.name }}</strong></td>-->
-                    <!--<td class="status-text" ng-class="{'status-success': component.status.status == 'healthy', 'status-failure': component.status.status == 'unhealthy', 'status-running': component.status.status === 'unknown'}">{{ component.status.status }}</td>-->
-                    <!--<td>-->
-                        <!--<md-button class="md-icon-button logs-button" ng-click="liveStreamComponent(environment, component)">-->
-                            <!--<md-tooltip md-direction="top">Live-stream logs</md-tooltip>-->
-                            <!--<md-icon class="material-icons">playlist_play</md-icon>-->
-                        <!--</md-button>-->
-                    <!--</td>-->
-                <!--</tr>-->
-                <!--</tbody>-->
-            </table>
-
-            <md-card-actions layout="row" layout-align="end center">
-                <md-button class="md-warn"
-                           ng-click="delete(environment)"
-                           ng-disabled="isLoading">
-                    <md-icon class="material-icons">delete</md-icon>
-                    Delete
-                </md-button>
-            </md-card-actions>
         </md-card>
     </remote-resource>
 </md-content>

@@ -1,22 +1,34 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowRemoteController', function ($rootScope, $state, $scope, $remoteResource, $mdToast, RemoteRepository, flow) {
+    .controller('FlowRemoteController', function ($rootScope, $state, $stateParams, $scope, $remoteResource, $mdToast, RemoteRepository, TideRepository, flow) {
         $scope.token = '';
         $scope.environments = [];
+        $scope.showForm = false;
         $scope.branchName = 'cpdev/' + $rootScope.user.username;
-        $scope.currentEnvironment = {};
+        $scope.stagedEnvironment = $rootScope.user.username + ' environment';
 
-        $scope.creationScreen = function () {
-            $state.go({name: 'flows.create-remote'});
+        RemoteRepository.getDevEnvironments(flow).then(function (environments) {
+            $scope.environments = environments;
+        });
+
+        $scope.stageEnvironment = function () {
+            $scope.showForm = true;
+        };
+
+        $scope.createEnvironment = function () {
+            RemoteRepository
+                .createDevEnvironment($scope.stagedEnvironment, flow)
+                .then(function (environment) {
+                    $scope.environments.unshift(environment);
+                    $scope.showForm = false;
+                });
         };
 
         $scope.copyToken = function () {
-            $('#envToken').select();
-
             try {
+                $('#envToken').select();
                 document.execCommand('copy');
-                $('[name="branchName"]').attr('disabled', true);
                 $mdToast.showSimple('Token copied to clipboard')
             } catch (err) {
                 //console.log('Oops, unable to copy');
@@ -25,24 +37,11 @@ angular.module('continuousPipeRiver')
             window.getSelection().removeAllRanges();
         };
 
-
-        RemoteRepository.getDevEnvironments(flow).then(function (environments) {
-            if (environments.length === 0) $scope.creationScreen();
-            $scope.environments = environments;
-        });
-
         $scope.getToken = function () {
-            var name = $rootScope.user.username + ' environment';
-            RemoteRepository.createDevEnvironment(name, flow).then(function (environment) {
-                $scope.currentEnvironment = environment;
-
-                RemoteRepository.issueToken($scope.branchName, environment, flow).then(function (token) {
-                    $scope.token = token.token;
-                });
+            RemoteRepository.issueToken($scope.branchName, $stateParams.environment, flow).then(function (token) {
+                $('input[name="branchName"]').prop('disabled', true);
+                $scope.token = token.token;
             });
-        };
-
-        $scope.delete = function (environment) {
         };
     })
 ;

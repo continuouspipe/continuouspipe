@@ -107,6 +107,9 @@ angular.module('continuousPipeRiver')
                         controller: 'FlowRemoteController'
                     }
                 },
+                params: {
+                    environment: {}
+                },
                 aside: true
             })
         ;

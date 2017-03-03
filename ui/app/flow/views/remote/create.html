@@ -25,7 +25,9 @@
             </md-input-container>
         </form>
         <div>
-            <p id="envToken" style="overflow-wrap: break-word;">{{ token }}</p>
+            <input type="text" id="envToken" style="visibility: hidden;"
+                   ng-model="token" value="{{ token }}"/>
+            <p style="overflow-wrap: break-word;">{{ token }}</p>
             <md-button class="md-raised" ng-click="getToken()" ng-hide="token">
                 Generate an initialization token
             </md-button>
