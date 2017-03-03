@@ -6,6 +6,7 @@ use ContinuousPipe\Alerts\Alert;
 use ContinuousPipe\Alerts\AlertAction;
 use ContinuousPipe\Alerts\AlertFinder;
 use ContinuousPipe\Billing\BillingProfile\Trial\TrialResolver;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Billing\Subscription\Subscription;
@@ -66,78 +67,30 @@ class TeamBillingProfileAlertFinder implements AlertFinder
             ];
         }
 
-        $alerts = [];
+        if (null === ($subscriptionAlert = $this->getSubscriptionAlert($billingProfile))) {
+            return [];
+        }
 
         $now = new \DateTime();
         $trialExpiration = $this->trialResolver->getTrialPeriodExpirationDate($billingProfile);
         if ($trialExpiration > $now) {
-            $alerts[] = new Alert(
-                'billing-profile-trial',
-                sprintf('Your trial period is ending in %d days.', $now->diff($trialExpiration)->format('%a')),
-                new \DateTime(),
-                new AlertAction(
-                    'link',
-                    'Manage by billing',
-                    'https://authenticator.continuouspipe.io/account/billing-profile'
-                )
-            );
-        } else {
-            $subscriptions = $this->subscriptionClient->findSubscriptionsForBillingProfile($billingProfile);
-            if (0 === count($subscriptions)) {
-                $alerts[] = new Alert(
-                    'billing-profile-has-no-subscription',
-                    'Your team billing profile does not have any subscriptions. This will limit your experience.',
+            return [
+                new Alert(
+                    'billing-profile-trial',
+                    sprintf('Your trial period is ending in %d days.', $now->diff($trialExpiration)->format('%a')),
                     new \DateTime(),
                     new AlertAction(
-                        'state',
-                        'Configure the team',
-                        'configuration'
+                        'link',
+                        'Manage my billing',
+                        'https://authenticator.continuouspipe.io/account/billing-profile'
                     )
-                );
-            } else {
-                $activeSubscriptions = $this->getActiveSubscription($subscriptions);
-
-                if (count($activeSubscriptions) == 0) {
-                    $alerts[] = new Alert(
-                        'billing-profile-has-no-active-subscription',
-                        'Your team billing profile does not have any active subscriptions. This will limit your experience.',
-                        new \DateTime(),
-                        new AlertAction(
-                            'state',
-                            'Configure the team',
-                            'configuration'
-                        )
-                    );
-                } else {
-                    $allowedActiveUsers = array_reduce($activeSubscriptions, function (int $carry, Subscription $subscription) {
-                        return $carry + $subscription->getQuantity();
-                    }, 0);
-
-                    /** @var Subscription $principalSubscription */
-                    $principalSubscription = current($activeSubscriptions);
-                    $usage = $this->usageTracker->getUsage($billingProfile->getUuid(), $principalSubscription->getCurrentBillingPeriodStartedAt(), $principalSubscription->getCurrentBillingPeriodEndsAt());
-
-                    if ($usage->getNumberOfActiveUsers() > $allowedActiveUsers) {
-                        $alerts[] = new Alert(
-                            'usage-over-subscription',
-                            sprintf(
-                                'We\'ve identified %d active users in this billing period while your subscription is for %d users.',
-                                $usage->getNumberOfActiveUsers(),
-                                $allowedActiveUsers
-                            ),
-                            new \DateTime(),
-                            new AlertAction(
-                                'link',
-                                'Upgrade',
-                                'https://authenticator.continuouspipe.io/account/billing-profile'
-                            )
-                        );
-                    }
-                }
-            }
+                ),
+            ];
         }
 
-        return $alerts;
+        return [
+            $subscriptionAlert,
+        ];
     }
 
     /**
@@ -150,5 +103,69 @@ class TeamBillingProfileAlertFinder implements AlertFinder
         return array_filter($subscriptions, function (Subscription $subscription) {
             return $subscription->getState() == Subscription::STATE_ACTIVE;
         });
+    }
+
+    /**
+     * @param UserBillingProfile $billingProfile
+     *
+     * @return Alert|null
+     */
+    private function getSubscriptionAlert(UserBillingProfile $billingProfile)
+    {
+        $subscriptions = $this->subscriptionClient->findSubscriptionsForBillingProfile($billingProfile);
+
+        if (0 === count($subscriptions)) {
+            return new Alert(
+                'billing-profile-has-no-subscription',
+                'Your team billing profile does not have any subscriptions. This will limit your experience.',
+                new \DateTime(),
+                new AlertAction(
+                    'state',
+                    'Configure the team',
+                    'configuration'
+                )
+            );
+        }
+
+        $activeSubscriptions = $this->getActiveSubscription($subscriptions);
+        if (count($activeSubscriptions) == 0) {
+            return new Alert(
+                'billing-profile-has-no-active-subscription',
+                'Your team billing profile does not have any active subscriptions. This will limit your experience.',
+                new \DateTime(),
+                new AlertAction(
+                    'state',
+                    'Configure the team',
+                    'configuration'
+                )
+            );
+        }
+
+        $allowedActiveUsers = array_reduce($activeSubscriptions, function (int $carry, Subscription $subscription) {
+            return $carry + $subscription->getQuantity();
+        }, 0);
+
+        /** @var Subscription $principalSubscription */
+        $principalSubscription = current($activeSubscriptions);
+        $usage = $this->usageTracker->getUsage($billingProfile->getUuid(), $principalSubscription->getCurrentBillingPeriodStartedAt(), $principalSubscription->getCurrentBillingPeriodEndsAt());
+
+        if ($usage->getNumberOfActiveUsers() > $allowedActiveUsers) {
+            return new Alert(
+                'usage-over-subscription',
+                sprintf(
+                    'We\'ve identified %d active users in this billing period while your subscription is for %d users.',
+                    $usage->getNumberOfActiveUsers(),
+                    $allowedActiveUsers
+                ),
+                new \DateTime(),
+                new AlertAction(
+                    'link',
+                    'Upgrade',
+                    'https://authenticator.continuouspipe.io/account/billing-profile'
+                )
+            );
+        }
+
+        return null;
     }
 }

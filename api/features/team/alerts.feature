@@ -44,6 +44,16 @@ Feature:
     Then I should not see the "billing-profile-has-no-active-subscription" alert
     And I should not see the "billing-profile-has-no-subscription" alert
 
+  Scenario: A billing profile with a valid subscription should not see the trial alert
+    Given the billing profile "00000000-0000-0000-0000-000000000000" was created 2 days ago and has trial
+    And the billing account "00000000-0000-0000-0000-000000000000" have the following subscriptions:
+      | plan        | quantity | state  |
+      | single-user | 1        | active |
+    And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
+    When I request the alerts of the team "foo"
+    Then I should not see the "billing-profile-has-no-active-subscription" alert
+    And I should not see the "billing-profile-trial" alert
+
   Scenario: An activity over the subscription level will create an alert
     Given the billing account "00000000-0000-0000-0000-000000000000" have the following subscriptions:
       | plan        | quantity | state  |
