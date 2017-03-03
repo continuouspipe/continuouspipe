@@ -26,6 +26,10 @@ class ClusterHealthContext implements Context
      * @var \Symfony\Component\HttpFoundation\Response|null
      */
     private $response;
+
+    /**
+     * @var LogStream\Tests\InMemoryLogClient
+     */
     private $logStream;
 
     public function __construct(HandlerStack $httpHandlerStack, KernelInterface $kernel, InMemoryLogClient $logStream)
@@ -50,16 +54,35 @@ class ClusterHealthContext implements Context
      */
     public function iShouldSeeALogEventInTheLogStreamWithMessage($type, $message)
     {
-        $matching = array_filter(
-            $this->logStream->getLogs(),
-            function (array $entry) use($type, $message) {
-                return $entry['type'] == $type && $entry['contents'] = $message;
-            }
-        );
-        if (!$matching) {
+        $matching = $this->findEvent($type, $message);
+
+        if (count($matching) == 0) {
             throw new \UnexpectedValueException(
                 sprintf('Expected to find an event %s with message %s, none found', $type, $message)
             );
         }
+    }
+
+    /**
+     * @Then I should not see a :type log event in the log stream with message :message
+     */
+    public function iShouldNotSeeALogEventInTheLogStreamWithMessage($type, $message)
+    {
+        $matching = $this->findEvent($type, $message);
+        if (count($matching) > 0) {
+            throw new \UnexpectedValueException(
+                sprintf('Expected to find no %s event with message %s, found %d', $type, $message, count($matching))
+            );
+        }
+    }
+
+    private function findEvent($type, $message)
+    {
+        return array_filter($this->logStream->getLogs(), function (array $entry) use ($type, $message) {
+            if (empty($entry['contents'])) {
+                return false;
+            }
+            return $entry['type'] == $type && $entry['contents'] == $message;
+        });
     }
 }

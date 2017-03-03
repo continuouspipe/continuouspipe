@@ -3,8 +3,10 @@
 namespace ContinuousPipe\Pipe\Listener\DeploymentStarted;
 
 use ContinuousPipe\HealthChecker\HealthCheckerClient;
+use ContinuousPipe\HealthChecker\HealthCheckerException;
 use ContinuousPipe\Pipe\Event\DeploymentStarted;
 use ContinuousPipe\Pipe\View\Deployment;
+use LogStream\Exception as LogStreamException;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Container;
@@ -32,30 +34,35 @@ class DisplayClusterProblems
         $context = $event->getDeploymentContext();
         try {
             $problems = $this->healthChecker->findProblems($context->getCluster());
-            if (count($problems)) {
-                $clusterProblemsLog = $this->createNode(count($problems));
-                foreach ($problems as $problem) {
-                    $logger = $this->loggerFactory->from($clusterProblemsLog);
-                    $logger->child(new Text($problem->getMessage()));
-                }
+            if (0 === count($problems)) {
+                return;
             }
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            $logger = $this->createNode(count($problems));
+            foreach ($problems as $problem) {
+                $logger->child(new Text($problem->getMessage()));
+            }
+        } catch (HealthCheckerException $e) {
+            $this->logger->warning(
+                'Can\t get the cluster problems',
+                ['exception' => $e]
+            );
+        } catch (LogStreamException $e) {
+            $this->logger->warning(
+                'Can\t log to logstream',
+                ['exception' => $e]
+            );
         }
     }
 
     private function createNode(int $numOfProblems)
     {
         $logger = $this->loggerFactory->create();
-        $log = new Text(
-            sprintf(
-                'Found %d %s with the cluster',
-                $numOfProblems,
-                $numOfProblems == 1 ? 'problem' : 'problems'
-            )
-        );
-        $clusterProblemsLog = $logger->child($log);
-        $clusterProblemsLog->updateStatus(Log::FAILURE);
-        return $clusterProblemsLog->getLog();
+        $logger->child(new Text(sprintf(
+            'Found %d %s with the cluster',
+            $numOfProblems,
+            $numOfProblems == 1 ? 'problem' : 'problems'
+        )))->updateStatus(Log::FAILURE);
+
+        return $logger;
     }
 }

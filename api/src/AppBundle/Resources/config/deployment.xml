@@ -56,7 +56,7 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentFailed" />
         </service>
 
-        <service id="pipe.deployment.listener.cluster_alert" class="ContinuousPipe\Pipe\Listener\DeploymentStarted\DisplayClusterProblems">
+        <service id="pipe.deployment.listener.deployment_started.display_cluster_problems" class="ContinuousPipe\Pipe\Listener\DeploymentStarted\DisplayClusterProblems">
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="pipe.k8s_health_checker" />
             <argument type="service" id="logger" />
