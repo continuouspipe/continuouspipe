@@ -5,7 +5,27 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="pipe.adapter.httplabs.proxyier"
-                 class="ContinuousPipe\Adapter\HttpLabs\Tests\EndpointProxier"/>
+        <service id="pipe.httplabs.http_client.handler.matching" class="ContinuousPipe\Guzzle\MatchingHandler">
+            <argument type="service" id="logger" />
+        </service>
+        <service id="pipe.httplabs.http_client.history" class="Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History" />
+        <service id="pipe.httplabs.http_client.handler.history_middleware" class="Closure">
+            <factory class="Csa\Bundle\GuzzleBundle\GuzzleHttp\Middleware" method="history" />
+            <argument type="service" id="pipe.httplabs.http_client.history" />
+        </service>
+        <service id="pipe.httplabs.http_client.handler" class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+
+            <argument type="service" id="pipe.httplabs.http_client.handler.matching" />
+            <call method="push">
+                <argument type="service" id="pipe.httplabs.http_client.handler.history_middleware" />
+            </call>
+        </service>
+
+        <service id="pipe.httplabs.client.traceable"
+                 class="ContinuousPipe\HttpLabs\TraceableClient"
+                 decorates="pipe.httplabs.client">
+            <argument type="service" id="pipe.httplabs.client.traceable.inner" />
+        </service>
     </services>
 </container>

@@ -3,6 +3,7 @@
 namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Adapter\Kubernetes\Tests\PublicEndpoint\PredictableServiceWaiter;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceRepository;
@@ -10,10 +11,13 @@ use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableServiceRep
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\Annotation;
+use Kubernetes\Client\Model\KeyValueObjectList;
+use Kubernetes\Client\Model\Label;
 use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\LoadBalancerStatus;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Service;
+use Kubernetes\Client\Model\ServicePort;
 use Kubernetes\Client\Model\ServiceSpecification;
 use Kubernetes\Client\Model\ServiceStatus;
 use Kubernetes\Client\Repository\ServiceRepository;
@@ -82,16 +86,35 @@ class ServiceContext implements Context
 
     /**
      * @Given I have a service :name with the selector :selector
+     * @Given I have a service :name with the selector :selector and type :type
+     * @Given I have a service :name with the selector :selector and type :type with the ports:
+     * @Given the service :arg1 have the selector :arg2 and type :arg3 with the ports:
      */
-    public function iHaveAServiceWithTheSelector($name, $selector)
+    public function iHaveAServiceWithTheSelector($name, $selector, $type = null, TableNode $portsTable = null)
     {
+        $this->iHaveAnExistingService($name);
+        $service = $this->serviceRepository->findOneByName($name);
         $selector = $this->selectorFromString($selector);
+        $ports = $portsTable === null ? [] : array_map(function(array $row) {
+            return new ServicePort(
+                $row['name'],
+                $row['port'],
+                $row['protocol'],
+                isset($row['targetPort']) ? $row['targetPort'] : null
+            );
+        }, $portsTable->getHash());
 
-        $this->serviceRepository->create(new Service(
-            new ObjectMetadata($name),
-            new ServiceSpecification($selector)
-        ));
+        $service = new Service(
+            $service->getMetadata(),
+            new ServiceSpecification(
+                $selector,
+                $ports,
+                $type ?: ServiceSpecification::TYPE_CLUSTER_IP
+            ),
+            $service->getStatus()
+        );
 
+        $this->serviceRepository->update($service);
         $this->serviceRepository->clear();
     }
 
@@ -105,7 +128,9 @@ class ServiceContext implements Context
             $this->serviceRepository->findOneByName($name);
         } catch (ServiceNotFound $e) {
             $this->serviceRepository->create(new Service(
-                new ObjectMetadata($name),
+                new ObjectMetadata($name, new KeyValueObjectList([
+                    new Label('component-identifier', $componentName ?: $name),
+                ])),
                 new ServiceSpecification(
                     ['component-identifier' => $componentName ?: $name]
                 )
@@ -191,6 +216,7 @@ class ServiceContext implements Context
                 new LoadBalancerIngress($address)
             ]))
         ));
+        $this->serviceRepository->clear();
     }
 
     /**
@@ -213,6 +239,7 @@ class ServiceContext implements Context
             $service->getSpecification(),
             $service->getStatus()
         ));
+        $this->serviceRepository->clear();
     }
 
     /**
@@ -229,6 +256,7 @@ class ServiceContext implements Context
                 new LoadBalancerIngress(null, $hostname)
             ]))
         ));
+        $this->serviceRepository->clear();
     }
 
     /**
@@ -257,6 +285,35 @@ class ServiceContext implements Context
             }
         }
     }
+
+    /**
+     * @Then the annotation :annotationName of the service :serviceName should contain the following keys in its JSON:
+     */
+    public function theAnnotationOfTheServiceShouldContainTheFollowingKeysInItsJson($annotationName, $serviceName, TableNode $table)
+    {
+        $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $serviceName);
+        $annotation = $service->getMetadata()->getAnnotationList()->get($annotationName);
+        $keys = \GuzzleHttp\json_decode($annotation->getValue(), true);
+
+        foreach ($table->getHash() as $row) {
+            if (!array_key_exists($row['name'], $keys)) {
+                throw new \RuntimeException(sprintf(
+                    'Expected to find the key "%s" but not found',
+                    $row['name']
+                ));
+            }
+
+            $foundValue = $keys[$row['name']];
+            if ($foundValue != $row['value']) {
+                throw new \RuntimeException(sprintf(
+                    'Found value %s for key "%s"',
+                    $foundValue,
+                    $row['name']
+                ));
+            }
+        }
+    }
+
     /**
      * @Then the service :name should have the type :type
      */

@@ -143,7 +143,9 @@ Feature:
     And the deployment endpoint "master-myapp.example.com" should have the port "80"
 
   Scenario: It returns the CloudFlare endpoint even if the endpoint was already created
-    Given there is a service "http" for the component "app"
+    Given I have a service "http" with the selector "component-identifier=app" and type "LoadBalancer" with the ports:
+      | name | port | protocol | targetPort |
+      | http | 80   | tcp      | 80         |
     And the service "http" have the public IP "1.2.3.4"
     And the service "http" have the following annotations:
       | name                                  | value                                                                 |
