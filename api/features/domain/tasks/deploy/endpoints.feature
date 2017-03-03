@@ -85,3 +85,61 @@ Feature:
                                 - 80
     """
     Then the tide should be failed
+
+  Scenario: HttpLabs proxy without middleware
+    When I tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                httplabs:
+                                    api_key: 123456
+                                    project_identifier: 7890
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration for the project "7890" and API key "123456"
+
+  Scenario: HttpLabs proxy with middlewares
+    When I tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                httplabs:
+                                    api_key: 123456
+                                    project_identifier: 7890
+                                    middlewares:
+                                        - template: https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication
+                                          config:
+                                              realm: This is secure!
+                                              username: username
+                                              password: password
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration that have 1 middleware
