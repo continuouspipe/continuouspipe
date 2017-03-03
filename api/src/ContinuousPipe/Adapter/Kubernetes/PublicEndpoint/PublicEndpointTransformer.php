@@ -17,6 +17,8 @@ interface PublicEndpointTransformer
      * @param Endpoint $endpointConfiguration
      * @param KubernetesObject $object
      *
+     * @throws EndpointException
+     *
      * @return PublicEndpoint
      */
     public function transform(
