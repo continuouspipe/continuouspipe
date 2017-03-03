@@ -72,7 +72,7 @@ class NotificationContext implements Context
         if ($value !== true) {
             throw new \RuntimeException(sprintf(
                 'Expected value to be true but got %s',
-                var_export($value)
+                var_export($value, true)
             ));
         }
     }
@@ -89,7 +89,7 @@ class NotificationContext implements Context
         if ($value !== false) {
             throw new \RuntimeException(sprintf(
                 'Expected value to be true but got %s',
-                var_export($value)
+                var_export($value, true)
             ));
         }
     }

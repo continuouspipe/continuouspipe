@@ -131,6 +131,23 @@
             <argument type="service" id="pipe.httplabs.http_client.handler" />
         </service>
 
+        <!-- ClusterHealthChecker -->
+        <service id="pipe.k8s_health_checker.http.guzzle_client.stack" class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+        </service>
+        <service id="pipe.k8s_health_checker.http.guzzle_client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument key="handler" type="service" id="pipe.k8s_health_checker.http.guzzle_client.stack" />
+            </argument>
+        </service>
+        <service id="pipe.k8s_health_checker.http" class="ContinuousPipe\HealthChecker\HttpHealthCheckClient">
+            <argument type="service" id="pipe.k8s_health_checker.http.guzzle_client" />
+            <argument type="service" id="jms_serializer" />
+            <argument>%k8s_health_checker_url%</argument>
+        </service>
+
+        <service id="pipe.k8s_health_checker" alias="pipe.k8s_health_checker.http" />
+
         <!-- Synchronous event listeners -->
         <service id="pipe.adapter.kubernetes.listener.before_creating_component.create_persistent_volume_claim" class="ContinuousPipe\Adapter\Kubernetes\Listener\BeforeCreatingComponent\CreatePersistentVolumeClaim">
             <tag name="kernel.event_subscriber" />

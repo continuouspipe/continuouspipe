@@ -3,7 +3,6 @@
 namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
@@ -34,7 +33,7 @@ use Kubernetes\Client\Model\Status;
 use LogStream\LoggerFactory;
 use Symfony\Component\HttpFoundation\Request;
 
-class NamespaceContext implements Context, SnippetAcceptingContext
+class NamespaceContext implements Context
 {
     /**
      * @var \EnvironmentContext
