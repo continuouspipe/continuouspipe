@@ -18,13 +18,11 @@ angular.module('continuousPipeRiver')
             return this.resource.save({flowUuid: flow.uuid}, environment).$promise;
         };
 
-        this.issueToken = function (flow, environment, branchName) {
+        this.issueToken = function (flow, environment, tokenRequest) {
             return $resource(RIVER_API_URL + '/flows/:flowUuid/development-environments/:environmentUuid/initialization-token').save({
                 flowUuid: flow.uuid,
                 environmentUuid: environment.uuid
-            }, {
-                git_branch: branchName
-            }).$promise;
+            }, tokenRequest).$promise;
         };
     })
 ;

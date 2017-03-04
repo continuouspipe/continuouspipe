@@ -8,11 +8,13 @@ angular.module('continuousPipeRiver')
     })
     .controller('DevelopmentEnvironmentController', function ($scope, $mdToast, $stateParams, RemoteRepository, $http, flow, user, developmentEnvironment) {
         $scope.developmentEnvironment = developmentEnvironment;
-        $scope.branchName = 'cpdev/' + user.username;
+        $scope.tokenRequest = {
+            git_branch: 'cpdev/' + user.username
+        };
 
         $scope.getToken = function () {
             $scope.isLoading = true;
-            RemoteRepository.issueToken(flow, {uuid: $stateParams.environmentUuid}, $scope.branchName).then(function (token) {
+            RemoteRepository.issueToken(flow, {uuid: $stateParams.environmentUuid}, $scope.tokenRequest).then(function (token) {
                 $scope.token = token.token;
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occurred creating the initialization token", "error");
