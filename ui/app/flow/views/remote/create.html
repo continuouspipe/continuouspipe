@@ -1,39 +1,26 @@
 <md-toolbar>
     <div class="md-toolbar-tools">
         <h2>
-            <span ng-show="environments">{{ environments.length }} environments</span>
-            <span ng-hide="environments">Loading...</span>
+            <span>Create a development environment</span>
         </h2>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <form name="environmentForm">
+        <div class="form-container">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Environment's name</label>
+                <input ng-model="environment.name" required />
+            </md-input-container>
+        </div>
+    </form>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
         <span flex></span>
-        <md-button class="md-raised" aria-label="Start manually" ui-sref="flow.create-remote">
-            <md-icon>play_arrow</md-icon>
-            Start manually
+        <md-button class="md-raised" aria-label="Create" ng-disabled="environmentForm.$invalid || isLoading" ng-click="create(environment)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
+            Create
         </md-button>
     </div>
 </md-toolbar>
-<md-content flex id="content" class="card-grid half environment-grid">
-    <div class="zero-content-help zero-content-help--remote">
-        <i class="cp-icon-commit" style="font-size: 60px;"></i>
-        <h3>To use your development environment, you’ll have to install the cp-remote command line tool on your
-            machine.</h3>
-        <p>You’ll find all the help you need in the documentation.</p>
-        <p>Generate an initialization token to get started and use it with the `cp-remote init` command.</p>
-        <form name="remoteEnvForm">
-            <md-input-container class="md-block" flex-gt-xs>
-                <label>Remote Branch Name</label>
-                <input type="text" name="branchName" ng-model="branchName" value="{{ branchName }}"/>
-            </md-input-container>
-        </form>
-        <div>
-            <input type="text" id="envToken" style="visibility: hidden;"
-                   ng-model="token" value="{{ token }}"/>
-            <p style="overflow-wrap: break-word;">{{ token }}</p>
-            <md-button class="md-raised" ng-click="getToken()" ng-hide="token">
-                Generate an initialization token
-            </md-button>
-            <md-button class="md-raised" ng-click="copyToken()" ng-show="token">
-                Copy token to clipboard
-            </md-button>
-        </div>
-    </div>
-</md-content>

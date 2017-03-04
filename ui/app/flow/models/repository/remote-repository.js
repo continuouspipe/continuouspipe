@@ -2,32 +2,29 @@
 
 angular.module('continuousPipeRiver')
     .service('RemoteRepository', function (RIVER_API_URL, $resource) {
-        var API = RIVER_API_URL + '/flows/:uuid/development-environments';
+        this.resource = $resource(RIVER_API_URL + '/flows/:flowUuid/development-environments/:environmentUuid');
         // https://github.com/continuouspipe/river/pull/331#issue-210540884
 
-        this.getDevEnvironments = function (flow) {
-            return $resource(API).query({uuid: flow.uuid}).$promise;
+        this.find = function(flow, uuid) {
+            return $resource(RIVER_API_URL + '/flows/:flowUuid/development-environments/:environmentUuid/status')
+                .get({flowUuid: flow.uuid, environmentUuid: uuid}).$promise;
         };
 
-        this.issueToken = function (branchName, env, flow) {
-            return $resource(RIVER_API_URL + '/flows/:uuid/development-environments/:envUuid/initialization-token', {}, {
-                create: {
-                    method: 'POST'
-                }
-            }).create({
-                uuid: flow.uuid,
-                envUuid: env.uuid
-            }, {git_branch: branchName}).$promise;
+        this.findByFlow = function (flow) {
+            return this.resource.query({flowUuid: flow.uuid}).$promise;
         };
 
-        this.createDevEnvironment = function (name, flow) {
-            return $resource(API, {}, {
-                create: {
-                    method: 'POST'
-                }
-            }).create({
-                uuid: flow.uuid
-            }, {name: name}).$promise;
+        this.create = function (flow, environment) {
+            return this.resource.save({flowUuid: flow.uuid}, environment).$promise;
+        };
+
+        this.issueToken = function (flow, environment, branchName) {
+            return $resource(RIVER_API_URL + '/flows/:flowUuid/development-environments/:environmentUuid/initialization-token').save({
+                flowUuid: flow.uuid,
+                environmentUuid: environment.uuid
+            }, {
+                git_branch: branchName
+            }).$promise;
         };
     })
 ;
