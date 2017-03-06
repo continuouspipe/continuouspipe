@@ -369,6 +369,38 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with an HttpLabs configuration for the project :project and API key :apiKey
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithAnHttplabsConfigurationForTheProjectAndApiKey($endpointName, $name, $project, $apiKey)
+    {
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
+
+        if (null === ($httpLabsConfiguration = $endpoint->getHttpLabs())) {
+            throw new \RuntimeException('The HttpLabs configuration is null');
+        }
+
+        if ($httpLabsConfiguration->getProjectIdentifier() != $project || $httpLabsConfiguration->getApiKey() != $apiKey) {
+            throw new \RuntimeException('HttpLabs configuration not matching');
+        }
+    }
+
+    /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with an HttpLabs configuration that have :count middleware
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithAnHttplabsConfigurationThatHaveMiddleware($endpointName, $name, $count)
+    {
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
+
+        if (null === ($httpLabsConfiguration = $endpoint->getHttpLabs())) {
+            throw new \RuntimeException('The HttpLabs configuration is null');
+        }
+
+        if ($count != count($httpLabsConfiguration->getMiddlewares())) {
+            throw new \RuntimeException('Number of middlewares not matching');
+        }
+    }
+
+    /**
      * @Then the component :name should request :request of CPU
      */
     public function theComponentShouldRequestOfCpu($name, $request)

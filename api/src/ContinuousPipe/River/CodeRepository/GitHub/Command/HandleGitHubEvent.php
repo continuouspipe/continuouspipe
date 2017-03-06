@@ -2,11 +2,13 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub\Command;
 
+use ContinuousPipe\River\Flow\Event\FlowEvent;
 use GitHub\WebHook\Event;
 use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\UuidInterface;
 
-class HandleGitHubEvent
+class HandleGitHubEvent implements FlowEvent
 {
     /**
      * @JMS\Type("Ramsey\Uuid\Uuid")
@@ -40,10 +42,7 @@ class HandleGitHubEvent
         return $this->event;
     }
 
-    /**
-     * @return Uuid
-     */
-    public function getFlowUuid(): Uuid
+    public function getFlowUuid(): UuidInterface
     {
         return $this->flowUuid;
     }
