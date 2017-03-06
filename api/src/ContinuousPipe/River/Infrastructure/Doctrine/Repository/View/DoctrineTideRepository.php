@@ -50,7 +50,7 @@ class DoctrineTideRepository implements TideRepository
         ;
 
         return new DoctrineTideList($queryBuilder, function (TideDto $dto) {
-            return $this->dtoToTide($dto);
+            return $dto->toTide();
         });
     }
 
@@ -68,7 +68,7 @@ class DoctrineTideRepository implements TideRepository
         ;
 
         return new DoctrineTideList($queryBuilder, function (TideDto $dto) {
-            return $this->dtoToTide($dto);
+            return $dto->toTide();
         });
     }
 
@@ -84,7 +84,7 @@ class DoctrineTideRepository implements TideRepository
         ], $limit);
 
         return array_map(function (TideDto $dto) {
-            return $this->dtoToTide($dto);
+            return $dto->toTide();
         }, $dtos);
     }
 
@@ -93,11 +93,13 @@ class DoctrineTideRepository implements TideRepository
      */
     public function save(Tide $tide)
     {
+        $pipeline = $tide->getPipeline() !== null ? $this->entityManager->merge($tide->getPipeline()) : null;
+
         try {
             $dto = $this->findDto($tide->getUuid());
-            $dto->merge($tide);
+            $dto->merge($tide, $pipeline);
         } catch (TideNotFound $e) {
-            $dto = TideDto::fromTide($tide);
+            $dto = TideDto::fromTide($tide, $pipeline);
         }
 
         $this->entityManager->persist($dto);
@@ -116,7 +118,7 @@ class DoctrineTideRepository implements TideRepository
         ]);
 
         return array_map(function (TideDto $dto) {
-            return $this->dtoToTide($dto);
+            return $dto->toTide();
         }, $dtos);
     }
 
@@ -133,7 +135,7 @@ class DoctrineTideRepository implements TideRepository
         ]);
 
         return array_map(function (TideDto $dto) {
-            return $this->dtoToTide($dto);
+            return $dto->toTide();
         }, $dtos);
     }
 
@@ -142,7 +144,7 @@ class DoctrineTideRepository implements TideRepository
      */
     public function find(Uuid $uuid)
     {
-        return $this->dtoToTide($this->findDto($uuid));
+        return $this->findDto($uuid)->toTide();
     }
 
     /**
@@ -157,7 +159,7 @@ class DoctrineTideRepository implements TideRepository
         ]);
 
         return array_map(function (TideDto $dto) {
-            return $this->dtoToTide($dto);
+            return $dto->toTide();
         }, $dtos);
     }
 
@@ -173,7 +175,7 @@ class DoctrineTideRepository implements TideRepository
         ]);
 
         return array_map(function (TideDto $dto) {
-            return $this->dtoToTide($dto);
+            return $dto->toTide();
         }, $dtos);
     }
 
@@ -188,7 +190,7 @@ class DoctrineTideRepository implements TideRepository
         ]);
 
         return array_map(function (TideDto $dto) {
-            return $this->dtoToTide($dto);
+            return $dto->toTide();
         }, $dtos);
     }
 
@@ -203,49 +205,18 @@ class DoctrineTideRepository implements TideRepository
         ]);
 
         return array_map(function (TideDto $dto) {
-            return $this->dtoToTide($dto);
+            return $dto->toTide();
         }, $dtos);
     }
 
     /**
-     * Get a tide object from its dto.
-     *
-     * @param TideDto $tideDto
-     *
-     * @return Tide
-     */
-    private function dtoToTide(TideDto $tideDto)
-    {
-        $wrappedTide = $tideDto->getTide();
-
-        $tide = Tide::create(
-            $tideDto->getUuid(),
-            $tideDto->getFlowUuid(),
-            $wrappedTide->getCodeReference(),
-            TreeLog::fromId($wrappedTide->getLogId()),
-            $wrappedTide->getTeam(),
-            $wrappedTide->getUser(),
-            $wrappedTide->getConfiguration() ?: [],
-            $wrappedTide->getCreationDate(),
-            $wrappedTide->getGenerationUuid(),
-            $wrappedTide->getPipeline()
-        );
-
-        $tide->setStatus($wrappedTide->getStatus());
-        $tide->setStartDate($wrappedTide->getStartDate());
-        $tide->setFinishDate($wrappedTide->getFinishDate());
-
-        return $tide;
-    }
-
-    /**
-     * @param Uuid $uuid
+     * @param UuidInterface $uuid
      *
      * @return TideDto
      *
      * @throws TideNotFound
      */
-    private function findDto(Uuid $uuid)
+    private function findDto(UuidInterface $uuid)
     {
         if (null == ($dto = $this->getEntityRepository()->find((string) $uuid))) {
             throw new TideNotFound();

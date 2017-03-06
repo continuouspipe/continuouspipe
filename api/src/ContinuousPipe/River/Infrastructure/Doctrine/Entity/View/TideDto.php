@@ -2,8 +2,10 @@
 
 namespace ContinuousPipe\River\Infrastructure\Doctrine\Entity\View;
 
+use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\River\View\Tide;
 use Doctrine\ORM\Mapping as ORM;
+use LogStream\Tree\TreeLog;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -43,28 +45,66 @@ class TideDto
     private $flowUuid;
 
     /**
+     * @ORM\ManyToOne(targetEntity="ContinuousPipe\River\Flow\Projections\FlatPipeline", cascade={"persist"})
+     * @ORM\JoinColumn(name="pipeline_uuid", referencedColumnName="uuid", nullable=true)
+     *
+     * @var FlatPipeline
+     */
+    private $pipeline;
+
+    /**
      * Create a DTO from the tide.
      *
      * @param Tide $tide
+     * @param FlatPipeline $pipeline
      *
      * @return TideDto
      */
-    public static function fromTide(Tide $tide)
+    public static function fromTide(Tide $tide, FlatPipeline $pipeline)
     {
         $dto = new self();
         $dto->uuid = $tide->getUuid();
         $dto->flowUuid = $tide->getFlowUuid();
-        $dto->merge($tide);
+        $dto->merge($tide, $pipeline);
 
         return $dto;
     }
 
     /**
      * @param Tide $tide
+     * @param FlatPipeline $pipeline
      */
-    public function merge(Tide $tide)
+    public function merge(Tide $tide, FlatPipeline $pipeline)
     {
         $this->tide = $tide;
+        $this->pipeline = $pipeline;
+    }
+
+    /**
+     * @return Tide
+     */
+    public function toTide() : Tide
+    {
+        $wrappedTide = $this->getTide();
+
+        $tide = Tide::create(
+            $this->uuid,
+            $this->flowUuid,
+            $wrappedTide->getCodeReference(),
+            TreeLog::fromId($wrappedTide->getLogId()),
+            $wrappedTide->getTeam(),
+            $wrappedTide->getUser(),
+            $wrappedTide->getConfiguration() ?: [],
+            $wrappedTide->getCreationDate(),
+            $wrappedTide->getGenerationUuid(),
+            $this->pipeline
+        );
+
+        $tide->setStatus($wrappedTide->getStatus());
+        $tide->setStartDate($wrappedTide->getStartDate());
+        $tide->setFinishDate($wrappedTide->getFinishDate());
+
+        return $tide;
     }
 
     /**
