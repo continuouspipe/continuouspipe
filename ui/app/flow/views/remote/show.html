@@ -2,10 +2,11 @@
     <div class="md-toolbar-tools">
         <h2>{{ developmentEnvironmentStatus.development_environment.name }} ({{ developmentEnvironmentStatus.status }})</h2>
         <span flex></span>
-        <md-button class="md-raised" aria-label="Rebuild" ng-click="rebuild()">
-            <md-icon>play_arrow</md-icon>
-            Rebuild
-        </md-button>
+      <md-button ng-repeat="endpoint in developmentEnvironmentStatus.public_endpoints"
+                 class="md-raised md-primary"
+                 ng-click="openEndpoint(endpoint)">
+          Open <code>{{ endpoint.name }}</code>
+      </md-button>
     </div>
 </md-toolbar>
 <md-content flex id="content">
@@ -45,5 +46,10 @@
 <md-toolbar>
     <div class="md-toolbar-tools">
         <md-button class="md-raised md-warn" aria-label="Delete" ng-click="delete()" ng-disabled="isLoading"><md-icon>delete</md-icon> Delete</md-button>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Rebuild" ng-click="rebuild()">
+            <md-icon>play_arrow</md-icon>
+            Rebuild
+        </md-button>
     </div>
 </md-toolbar>

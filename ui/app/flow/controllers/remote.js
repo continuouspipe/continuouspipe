@@ -6,7 +6,7 @@ angular.module('continuousPipeRiver')
             $scope.environments = environments;
         });
     })
-    .controller('DevelopmentEnvironmentController', function ($scope, $mdToast, $stateParams, RemoteRepository, $http, flow, user, developmentEnvironmentStatus) {
+    .controller('DevelopmentEnvironmentController', function ($scope, $mdToast, $stateParams, RemoteRepository, EndpointOpener, $http, flow, user, developmentEnvironmentStatus) {
         $scope.developmentEnvironmentStatus = developmentEnvironmentStatus;
         $scope.hasBeenCreated = ['TokenNotCreated', 'NotStarted'].indexOf(developmentEnvironmentStatus.status) == -1;
 
@@ -24,6 +24,19 @@ angular.module('continuousPipeRiver')
             })['finally'](function() {
                 $scope.isLoading = false;
             });
+        };
+
+        // When the environment is already created
+        $scope.openEndpoint = function(endpoint) {
+            return EndpointOpener.open(endpoint);
+        };
+
+        $scope.rebuild = function() {
+
+        };
+
+        $scope.delete = function() {
+
         };
     })
     .controller('CreateDevelopmentEnvironmentController', function($scope, $http, $state, RemoteRepository, flow, user) {
