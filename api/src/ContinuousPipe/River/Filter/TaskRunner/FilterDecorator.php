@@ -124,7 +124,7 @@ class FilterDecorator implements TaskRunner
             }
         }
 
-        throw new TideConfigurationException(sprintf('ConfigurationDefinition of task "%s" cannot be found', $identifier));
+        throw new TideConfigurationException(sprintf('Configuration of task "%s" cannot be found', $identifier));
     }
 
     /**
