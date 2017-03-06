@@ -2,32 +2,47 @@
 
 namespace ContinuousPipe\DevelopmentEnvironment\ReadModel;
 
-use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
+use JMS\Serializer\Annotation as JMS;
 
 class DevelopmentEnvironment
 {
     /**
+     * @JMS\Type("uuid")
+     * @JMS\Groups({"Default"})
+     *
      * @var UuidInterface
      */
     private $uuid;
 
     /**
+     * @JMS\Type("uuid")
+     * @JMS\Groups({"Default"})
+     *
      * @var UuidInterface
      */
     private $flowUuid;
 
     /**
+     * @JMS\Type("string")
+     * @JMS\Groups({"Default"})
+     *
      * @var string
      */
     private $username;
 
     /**
+     * @JMS\Type("string")
+     * @JMS\Groups({"Default"})
+     *
      * @var string
      */
     private $name;
 
     /**
+     * @JMS\Type("DateTime")
+     * @JMS\Groups({"Default"})
+     *
      * @var \DateTimeInterface
      */
     private $modifiedAt;

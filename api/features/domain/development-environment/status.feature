@@ -14,6 +14,7 @@ Feature:
     Given the user "samuel" have a development environment "00000000-0000-0000-0000-000000000000" for the flow "00000000-0000-0000-0000-000000000000"
     When I request the status of the development environment "00000000-0000-0000-0000-000000000000" of the flow "00000000-0000-0000-0000-000000000000"
     Then I should see that the status of the development environment is "TokenNotCreated"
+    And I should see the details of the development environment
 
   Scenario: Get the status of a development environment without any running tide
     Given the user "samuel" have a development environment "00000000-0000-0000-0000-000000000000" for the flow "00000000-0000-0000-0000-000000000000"

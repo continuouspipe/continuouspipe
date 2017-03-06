@@ -2,12 +2,21 @@
 
 namespace ContinuousPipe\DevelopmentEnvironment\Status;
 
+use ContinuousPipe\DevelopmentEnvironment\ReadModel\DevelopmentEnvironment;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\View\Tide;
 use JMS\Serializer\Annotation as JMS;
 
 class DevelopmentEnvironmentStatus
 {
+    /**
+     * @JMS\Type("ContinuousPipe\DevelopmentEnvironment\ReadModel\DevelopmentEnvironment")
+     * @JMS\Groups({"Default", "DevelopmentEnvironmentStatus"})
+     *
+     * @var DevelopmentEnvironment
+     */
+    private $developmentEnvironment;
+
     /**
      * @JMS\Type("string")
      * @JMS\Groups({"Default", "DevelopmentEnvironmentStatus"})
@@ -48,9 +57,9 @@ class DevelopmentEnvironmentStatus
      */
     private $publicEndpoints = [];
 
-    public function __construct($status = null)
+    public function __construct(DevelopmentEnvironment $developmentEnvironment)
     {
-        $this->status = $status;
+        $this->developmentEnvironment = $developmentEnvironment;
     }
 
     /**

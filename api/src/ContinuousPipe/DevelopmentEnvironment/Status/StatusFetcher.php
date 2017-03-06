@@ -37,7 +37,7 @@ class StatusFetcher
     public function fetch(UuidInterface $environmentUuid) : DevelopmentEnvironmentStatus
     {
         $environment = $this->developmentEnvironmentRepository->find($environmentUuid);
-        $status = new DevelopmentEnvironmentStatus();
+        $status = new DevelopmentEnvironmentStatus($environment->createView());
         if (null === ($token = $environment->getInitializationToken())) {
             return $status->withStatus('TokenNotCreated');
         }
