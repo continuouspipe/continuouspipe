@@ -65,13 +65,13 @@ class TideCreated implements TideEvent
         return $this->flowUuid;
     }
 
-    public function wasContinuousPipeFileChecked() : bool
+    /**
+     * This method can return `null` for BC reasons.
+     *
+     * @return bool|null
+     */
+    public function hasContinuousPipeFile()
     {
-        return !is_null($this->hasContinuousPipeFile);
-    }
-
-    public function hasContinuousPipeFile() : bool
-    {
-        return $this->hasContinuousPipeFile ?: false;
+        return $this->hasContinuousPipeFile;
     }
 }
