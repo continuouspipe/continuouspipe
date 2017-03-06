@@ -1,7 +1,10 @@
 <md-card class="pipeline-card" ng-class="['status-'+pipeline.lastTides[0].status]">
     <md-card-content layout="column">
         <div layout="row" class="pipeline-details-row">
-            <span class="md-headline">{{ pipeline.name }}</span>
+            <span class="md-headline">
+                <span ng-if="headline">{{ headline }}</span>
+                <span ng-if="!headline">{{ pipeline.name }}</span>
+            </span>
             <span ng-if="!disableDeletion">
                 <md-button class="md-icon-button delete-pipeline-btn" ng-click="deletePipeline(pipeline.uuid)">
                     <md-icon>clear</md-icon>

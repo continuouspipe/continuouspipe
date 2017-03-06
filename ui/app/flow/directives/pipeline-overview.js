@@ -7,7 +7,8 @@ angular.module('continuousPipeRiver')
             scope: {
                 pipeline: '=',
                 flow: '=',
-                disableDeletion: '@'
+                disableDeletion: '@',
+                headline: '@'
             },
             templateUrl: 'flow/views/directives/pipeline-overview.html',
             controller: function($scope, PipelineRepository) {
