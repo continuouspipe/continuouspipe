@@ -2,7 +2,7 @@
     <md-card-content layout="column">
         <div layout="row" class="pipeline-details-row">
             <span class="md-headline">{{ pipeline.name }}</span>
-            <span>
+            <span ng-if="!disableDeletion">
                 <md-button class="md-icon-button delete-pipeline-btn" ng-click="deletePipeline(pipeline.uuid)">
                     <md-icon>clear</md-icon>
                 </md-button>

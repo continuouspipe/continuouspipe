@@ -7,6 +7,7 @@ angular.module('continuousPipeRiver')
         });
     })
     .controller('DevelopmentEnvironmentController', function ($scope, $mdToast, $stateParams, RemoteRepository, EndpointOpener, $http, flow, user, developmentEnvironmentStatus) {
+        $scope.flow = flow;
         $scope.developmentEnvironmentStatus = developmentEnvironmentStatus;
         $scope.hasBeenCreated = ['TokenNotCreated', 'NotStarted'].indexOf(developmentEnvironmentStatus.status) == -1;
 

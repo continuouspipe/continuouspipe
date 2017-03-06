@@ -23,17 +23,6 @@ angular.module('continuousPipeRiver')
             var promises = [];
 
             $scope.pipelines.forEach(function (pipeline) {
-                if (pipeline.lastTides) {
-                    return;
-                }
-
-                pipeline.lastTides = $firebaseArray(
-                    database.ref()
-                        .child('flows/' + flow.uuid + '/tides/by-pipelines/' + pipeline.uuid)
-                        .orderByChild('creation_date')
-                        .limitToLast(1)
-                );
-
                 $scope.tidesPerPipeline[pipeline.uuid] = $firebaseArray(
                     database.ref()
                         .child('flows/' + flow.uuid + '/tides/by-pipelines/' + pipeline.uuid)

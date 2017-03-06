@@ -2,11 +2,11 @@
     <div class="md-toolbar-tools">
         <h2>{{ developmentEnvironmentStatus.development_environment.name }} ({{ developmentEnvironmentStatus.status }})</h2>
         <span flex></span>
-      <md-button ng-repeat="endpoint in developmentEnvironmentStatus.public_endpoints"
+        <md-button ng-repeat="endpoint in developmentEnvironmentStatus.public_endpoints"
                  class="md-raised md-primary"
                  ng-click="openEndpoint(endpoint)">
-          Open <code>{{ endpoint.name }}</code>
-      </md-button>
+            Open <code>{{ endpoint.name }}</code>
+        </md-button>
     </div>
 </md-toolbar>
 <md-content flex id="content">
@@ -35,7 +35,12 @@
         </div>
     </div>
     <div ng-if="hasBeenCreated">
-        <pipeline-overview flow="flow" pipeline="developmentEnvironmentStatus.last_tide.pipeline">Loading...</pipeline-overview>
+        <pipeline-overview 
+            flow="flow" 
+            pipeline="developmentEnvironmentStatus.last_tide.pipeline"
+            disable-deletion="true">
+            Loading...
+        </pipeline-overview>
 
         <div class="zero-content-help">
             <h3>You should be ready to go!</h3>
