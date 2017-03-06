@@ -6,8 +6,11 @@ angular.module('continuousPipeRiver')
             $scope.environments = environments;
         });
     })
-    .controller('DevelopmentEnvironmentController', function ($scope, $mdToast, $stateParams, RemoteRepository, $http, flow, user, developmentEnvironment) {
-        $scope.developmentEnvironment = developmentEnvironment;
+    .controller('DevelopmentEnvironmentController', function ($scope, $mdToast, $stateParams, RemoteRepository, $http, flow, user, developmentEnvironmentStatus) {
+        $scope.developmentEnvironmentStatus = developmentEnvironmentStatus;
+        $scope.hasBeenCreated = ['TokenNotCreated', 'NotStarted'].indexOf(developmentEnvironmentStatus.status) == -1;
+
+        // Token creation if not has been created
         $scope.tokenRequest = {
             git_branch: 'cpdev/' + user.username
         };

@@ -5,7 +5,7 @@ angular.module('continuousPipeRiver')
         this.resource = $resource(RIVER_API_URL + '/flows/:flowUuid/development-environments/:environmentUuid');
         // https://github.com/continuouspipe/river/pull/331#issue-210540884
 
-        this.find = function(flow, uuid) {
+        this.getStatus = function(flow, uuid) {
             return $resource(RIVER_API_URL + '/flows/:flowUuid/development-environments/:environmentUuid/status')
                 .get({flowUuid: flow.uuid, environmentUuid: uuid}).$promise;
         };

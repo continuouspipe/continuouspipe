@@ -115,8 +115,8 @@ angular.module('continuousPipeRiver')
             .state('flow.development-environment', {
                 url: '/development-environments/:environmentUuid',
                 resolve: {
-                    developmentEnvironment: function($stateParams, RemoteRepository, flow) {
-                        return RemoteRepository.find(flow, $stateParams.environmentUuid);
+                    developmentEnvironmentStatus: function($stateParams, RemoteRepository, flow) {
+                        return RemoteRepository.getStatus(flow, $stateParams.environmentUuid);
                     }
                 },
                 views: {

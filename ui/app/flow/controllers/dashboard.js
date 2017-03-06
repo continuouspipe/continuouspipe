@@ -49,10 +49,6 @@ angular.module('continuousPipeRiver')
             return $q.all(promises);
         };
 
-        $scope.deletePipeline = function (pipelineId) {
-            PipelineRepository.delete($scope.flow.uuid, pipelineId);
-        };
-
         $remoteResource.load('tides', $authenticatedFirebaseDatabase.get(flow).then(function (database) {
             $scope.pipelines = $firebaseArray(
                 database.ref().child('flows/' + flow.uuid + '/pipelines')
