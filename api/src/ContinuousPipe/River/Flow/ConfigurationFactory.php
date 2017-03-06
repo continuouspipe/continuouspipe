@@ -93,7 +93,12 @@ class ConfigurationFactory implements TideConfigurationFactory
                 $configuration = $configTree->finalize($configuration);
             }
         } catch (InvalidConfigurationException $e) {
-            throw new TideConfigurationException($e->getMessage(), 0, $e);
+            if (!$fileSystem->exists(self::FILENAME)) {
+                throw new TideConfigurationWithMissingYmlException($e->getMessage(), 0, $e);
+            } else {
+                var_dump('?');
+                throw new TideConfigurationException($e->getMessage(), 0, $e);
+            }
         }
 
         return $configuration;

@@ -2,9 +2,9 @@
 
 namespace ContinuousPipe\River\Pipeline\Generation;
 
+use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideFailed;
-use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Pipeline\PipelineTideGenerator;
@@ -13,6 +13,7 @@ use ContinuousPipe\River\Task\NullRunner;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideConfigurationException;
+use ContinuousPipe\River\TideConfigurationFactory;
 use ContinuousPipe\River\TideContext;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -44,9 +45,12 @@ class CreateFailingTideWhenConfigurationIsWrong implements PipelineTideGenerator
                 'exception' => $e,
                 'flow_uuid' => (string) $request->getFlow()->getUuid(),
             ]);
-
+var_dump($e->getMessage());
             $logger = $this->loggerFactory->create();
             $logger->child(new Text($e->getMessage()));
+            if ($e instanceof TideConfigurationWithMissingYmlException) {
+                $logger->child(new Text(sprintf('Configuration file %s is missing!', TideConfigurationFactory::FILENAME)));   
+            }
 
             $tideUuid = Uuid::uuid4();
             $tide = Tide::createFromEvents(

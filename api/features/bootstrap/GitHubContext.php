@@ -257,6 +257,18 @@ class GitHubContext implements CodeRepositoryContext
         });
     }
 
+    public function aFileDoesNotExists(string $filePath)
+    {
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod) use ($filePath) {
+            if (in_array($httpMethod, ['HEAD', 'GET']) && preg_match('#repos/([^/]+)/([^/]+)/contents/'.$filePath.'$#', $path)) {
+                return new \Guzzle\Http\Message\Response(
+                    404,
+                    ['Content-Type' => 'application/json']
+                );
+            }
+        });
+    }
+
     /**
      * @Then the GitHub commit status should be :status
      */

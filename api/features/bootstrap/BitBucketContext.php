@@ -173,6 +173,17 @@ class BitBucketContext implements CodeRepositoryContext
         ]);
     }
 
+    public function aFileDoesNotExists(string $filePath)
+    {
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($filePath) {
+                return $request->getMethod() == 'GET' &&
+                    preg_match('#^https\:\/\/api\.bitbucket\.org\/1\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/src\/([a-z0-9_-]+)\/'.$filePath.'$#i', (string) $request->getUri());
+            },
+            'response' => new Response(404, ['Content-Type' => 'application/json']),
+        ]);
+    }
+
     /**
      * @Given the pull-request #:identifier contains the tide-related commit
      */

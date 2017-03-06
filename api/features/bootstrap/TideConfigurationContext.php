@@ -130,6 +130,14 @@ class TideConfigurationContext implements Context
     }
 
     /**
+     * @Given I do not have a configuration file
+     */
+    public function iDoNotHaveAConfigurationFile()
+    {
+        $this->flowContext->getCodeRepositoryContext()->aFileDoesNotExists(TideConfigurationFactory::FILENAME);
+    }
+
+    /**
      * @param array $array1
      * @param array $array2
      * @return array
