@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Pipeline\Generation;
 
 use ContinuousPipe\River\Filter\ContextFactory;
 use ContinuousPipe\River\Filter\FilterException;
+use ContinuousPipe\River\Flow\Configuration;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Pipeline\PipelineTideGenerator;
@@ -56,6 +57,10 @@ class TideForEachPipelineGenerator implements PipelineTideGenerator
             $request->getCodeReference()
         );
 
+        $request = $request->withContinuousPipeExists(
+            $configuration->hasContinuousPipeFile()
+        );
+
         $pipelines = $this->getPipelines($request->getFlow(), $configuration);
         if (empty($pipelines)) {
             $this->logger->warning('No pipeline found in configuration', [
@@ -90,15 +95,17 @@ class TideForEachPipelineGenerator implements PipelineTideGenerator
     }
 
     /**
-     * @param FlatFlow $flow
-     * @param array    $configuration
+     * @param FlatFlow      $flow
+     * @param Configuration $configuration
      *
      * @return Pipeline[]
      */
-    private function getPipelines(FlatFlow $flow, array $configuration) : array
+    private function getPipelines(FlatFlow $flow, Configuration $configuration) : array
     {
+        $arrayConfiguration = $configuration->getConfiguration();
+
         return array_map(function (array $pipelineConfiguration) use ($flow) {
             return Pipeline::withConfiguration($flow, $pipelineConfiguration);
-        }, $configuration['pipelines']);
+        }, $arrayConfiguration['pipelines']);
     }
 }

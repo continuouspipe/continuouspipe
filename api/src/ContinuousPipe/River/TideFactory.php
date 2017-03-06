@@ -93,9 +93,15 @@ class TideFactory
         );
 
         $taskList = $this->createTideTaskList($events, $tideContext);
-        $tide = Tide::create($this->taskRunner, $taskList, $tideContext, $request, FlatPipeline::fromPipeline($pipeline), $events);
 
-        return $tide;
+        return Tide::create(
+            $this->taskRunner,
+            $taskList,
+            $tideContext,
+            $request,
+            FlatPipeline::fromPipeline($pipeline),
+            $events
+        );
     }
 
     /**

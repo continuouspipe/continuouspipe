@@ -13,7 +13,7 @@
             <argument>%generate_documentation_command.default_name%</argument>
             <argument type="service" id="river.flow.configuration" />
         </service>
-        <service id="river.flow.configuration" class="ContinuousPipe\River\Flow\Configuration">
+        <service id="river.flow.configuration" class="ContinuousPipe\River\Flow\ConfigurationDefinition">
             <argument type="service" id="river.task_factory_registry" />
         </service>
     </services>

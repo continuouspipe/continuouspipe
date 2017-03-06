@@ -51,7 +51,7 @@ class TideConfigurationContext implements Context
         $this->configuration = $this->tideConfigurationFactory->getConfiguration(Flow\Projections\FlatFlow::fromFlow($flow), new CodeReference(
             $flow->getCodeRepository(),
             'sha1'
-        ));
+        ))->getConfiguration();
     }
 
     /**
@@ -75,7 +75,7 @@ class TideConfigurationContext implements Context
             $flow->getCodeRepository(),
             $sha1,
             $branch
-        ));
+        ))->getConfiguration();
     }
 
     /**

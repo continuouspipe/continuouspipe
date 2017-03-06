@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\Model\Component\Port;
 use ContinuousPipe\River\EventCollection;
-use ContinuousPipe\River\Flow\Configuration;
+use ContinuousPipe\River\Flow\ConfigurationDefinition;
 use ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory;
 use ContinuousPipe\River\Task\Deploy\Configuration\Environment;
 use ContinuousPipe\River\Task\TaskContext;
@@ -180,7 +180,7 @@ class DeployTaskFactory implements TaskFactory
                                         ->performNoDeepMerging()
                                         ->prototype('scalar')->end()
                                     ->end()
-                                    ->append(Configuration::getVariablesNode('environment_variables'))
+                                    ->append(ConfigurationDefinition::getVariablesNode('environment_variables'))
                                     ->arrayNode('ports')
                                         ->performNoDeepMerging()
                                         ->prototype('array')

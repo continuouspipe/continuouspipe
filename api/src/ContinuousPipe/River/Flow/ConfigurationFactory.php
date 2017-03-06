@@ -53,7 +53,7 @@ class ConfigurationFactory implements TideConfigurationFactory
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference, bool $validated = true)
+    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference, bool $validated = true) : Configuration
     {
         try {
             $fileSystem = $this->fileSystemResolver->getFileSystem($flow, $codeReference);
@@ -66,7 +66,8 @@ class ConfigurationFactory implements TideConfigurationFactory
         ];
 
         // Read configuration from YML
-        if ($fileSystem->exists(self::FILENAME)) {
+        $continuousPipeFileExists = $fileSystem->exists(self::FILENAME);
+        if ($continuousPipeFileExists) {
             try {
                 $configs[] = Yaml::parse($fileSystem->getContents(self::FILENAME));
             } catch (YamlException $e) {
@@ -81,7 +82,7 @@ class ConfigurationFactory implements TideConfigurationFactory
 
         try {
             // Create the normalized configuration
-            $configTree = (new Configuration($this->taskFactoryRegistry))->getConfigTreeBuilder()->buildTree();
+            $configTree = (new ConfigurationDefinition($this->taskFactoryRegistry))->getConfigTreeBuilder()->buildTree();
             $configuration = $this->mergeConfigurations($configTree, $configs);
 
             // Enhance this configuration as much as possible
@@ -96,7 +97,7 @@ class ConfigurationFactory implements TideConfigurationFactory
             throw new TideConfigurationException($e->getMessage(), 0, $e);
         }
 
-        return $configuration;
+        return new Configuration($configuration, $continuousPipeFileExists);
     }
 
     /**

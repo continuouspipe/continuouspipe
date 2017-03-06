@@ -28,6 +28,10 @@ final class TideGenerationRequest
      * @var UuidInterface
      */
     private $targetTideUuid;
+    /**
+     * @var bool|null
+     */
+    private $continuousPipeFileExists;
 
     /**
      * @param UuidInterface $generationUuid
@@ -88,5 +92,26 @@ final class TideGenerationRequest
     public function getTargetTideUuid()
     {
         return $this->targetTideUuid;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getContinuousPipeFileExists()
+    {
+        return $this->continuousPipeFileExists;
+    }
+
+    /**
+     * @param bool $continuousPipeExists
+     *
+     * @return TideGenerationRequest
+     */
+    public function withContinuousPipeExists(bool $continuousPipeExists) : self
+    {
+        $request = clone $this;
+        $request->continuousPipeFileExists = $continuousPipeExists;
+
+        return $request;
     }
 }
