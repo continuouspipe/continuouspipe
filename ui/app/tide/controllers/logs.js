@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TideLogsController', function(TideRepository, TideSummaryRepository, LogFinder, $scope, $state, $http, flow, tide, summary) {
+    .controller('TideLogsController', function(TideRepository, TideSummaryRepository, LogFinder, EndpointOpener, $scope, $state, $http, flow, tide, summary) {
         $scope.tide = tide;
         $scope.summary = summary;
         $scope.log = LogFinder.find(tide.log_id);
@@ -61,4 +61,8 @@ angular.module('continuousPipeRiver')
         TideSummaryRepository.findExternalRelations(tide).then(function(relations) {
             $scope.relations = relations;
         });
+
+        $scope.openEndpoint = function(endpoint) {
+            return EndpointOpener.open(endpoint);
+        };
     });

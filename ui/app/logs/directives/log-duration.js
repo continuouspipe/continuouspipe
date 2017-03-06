@@ -25,13 +25,17 @@ angular.module('continuousPipeRiver')
                         return element.text('');
                     }
 
+                    function parseDate(s) {
+                        return +new Date(s.split('+')[0]);
+                    }
+
                     var finishAt = log.successAt || log.failureAt;
                     if (!finishAt) {
                         interval = setInterval(function() {
-                            displayDifference(Date.parse(log.runningAt), new Date());
+                            displayDifference(parseDate(log.runningAt), new Date());
                         }, 1000);
                     } else {
-                        displayDifference(Date.parse(log.runningAt), Date.parse(finishAt));
+                        displayDifference(parseDate(log.runningAt), parseDate(finishAt));
                     }
                 };
 

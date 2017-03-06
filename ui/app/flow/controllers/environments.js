@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, TideRepository, EnvironmentRepository, flow) {
+    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, TideRepository, EnvironmentRepository, EndpointOpener, flow) {
         $scope.flow = flow;
 
         var getEnvironmentStatus = function(environment) {
@@ -67,15 +67,7 @@ angular.module('continuousPipeRiver')
         loadEnvironments();
 
         $scope.openEndpoint = function(endpoint) {
-            var confirm = $mdDialog.confirm()
-              .title('This will open the endpoint "'+endpoint.name+'"')
-              .textContent('The address you will be redirected to ('+endpoint.address+') is outside of ContinuousPipe and will work on your browser only it is answers to HTTP.')
-              .ok('Open it!')
-              .cancel('Cancel');
-
-            $mdDialog.show(confirm).then(function() {
-                window.open('http://'+endpoint.address, '_blank');
-            });
+            EndpointOpener.open(endpoint);
         };
 
         $scope.liveStreamComponent = function(environment, component) {
@@ -98,4 +90,5 @@ angular.module('continuousPipeRiver')
                 source: 'environment-list'
             });
         };
-    });
+    })
+;

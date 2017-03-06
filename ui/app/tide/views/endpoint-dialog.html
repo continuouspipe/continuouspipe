@@ -1,0 +1,20 @@
+<md-dialog aria-label="Open endpoint ...">
+    <md-dialog-content>
+        <md-content class="md-padding">
+            <h2 class="md-display-1">This will open the endpoint '{{endpoint.name}}'</h2>
+            <p>
+                The address you will be redirected to ({{endpoint.address}}) is outside of ContinuousPipe and will work on your browser only it is answers to HTTP.
+            </p>
+        </md-content>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="cancel()">
+            Cancel
+        </md-button>
+        <md-button href="http://{{endpoint.address}}" target="_blank">
+            Open it!
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>
