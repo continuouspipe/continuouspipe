@@ -37,7 +37,7 @@ class StatusFetcher
     public function fetch(UuidInterface $environmentUuid) : DevelopmentEnvironmentStatus
     {
         $environment = $this->developmentEnvironmentRepository->find($environmentUuid);
-        $status = new DevelopmentEnvironmentStatus();
+        $status = new DevelopmentEnvironmentStatus($environment->createView());
         if (null === ($token = $environment->getInitializationToken())) {
             return $status->withStatus('TokenNotCreated');
         }
@@ -49,6 +49,8 @@ class StatusFetcher
 
         /** @var Tide $lastTide */
         $lastTide = current($tides);
+        $status = $status->withLastTide($lastTide);
+
         if ($lastTide->getStatus() == Tide::STATUS_RUNNING) {
             return $status->withStatus('TideRunning');
         } elseif ($lastTide->getStatus() == Tide::STATUS_PENDING) {

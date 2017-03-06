@@ -147,6 +147,26 @@ class DevelopmentEnvironmentContext implements Context
     }
 
     /**
+     * @Then I should see the last tide of my development environment
+     */
+    public function iShouldSeeTheLastTideOfMyDevelopmentEnvironment()
+    {
+        if (!isset($this->jsonResponse()['last_tide'])) {
+            throw new \RuntimeException('The last tide was not found');
+        }
+    }
+
+    /**
+     * @Then I should see the details of the development environment
+     */
+    public function iShouldSeeTheDetailsOfTheDevelopmentEnvironment()
+    {
+        if (!isset($this->jsonResponse()['development_environment'])) {
+            throw new \RuntimeException('The last tide was not found');
+        }
+    }
+
+    /**
      * @Then I should see that the cluster identifier of the development environment is :clusterIdentifier
      */
     public function iShouldSeeThatTheClusterIdentifierOfTheDevelopmentEnvironmentIs($clusterIdentifier)
