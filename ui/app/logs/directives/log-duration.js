@@ -14,7 +14,7 @@ angular.module('continuousPipeRiver')
                         var minutes = Math.floor(milliseconds / 1000 / 60);
                         milliseconds -= minutes * 1000 * 60;
                         var seconds = Math.floor(milliseconds / 1000);
-                        // console.log(arguments, milliseconds, minutes, seconds)
+
                         element.text(('0'+minutes).slice(-2)+':'+('0'+seconds).slice(-2));
                     },
                     refreshDuration = function(log) {
