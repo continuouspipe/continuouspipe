@@ -49,7 +49,7 @@ var_dump($e->getMessage());
             $logger = $this->loggerFactory->create();
             $logger->child(new Text($e->getMessage()));
             if ($e instanceof TideConfigurationWithMissingYmlException) {
-                $logger->child(new Text(sprintf('Configuration file %s is missing!', TideConfigurationFactory::FILENAME)));   
+                $logger->child(new Text(sprintf('ConfigurationDefinition file %s is missing!', TideConfigurationFactory::FILENAME)));
             }
 
             $tideUuid = Uuid::uuid4();

@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 class BuildTaskConfiguration
 {
     /**
-     * @JMS\Type("array<string, ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration>")
+     * @JMS\Type("array<string, ContinuousPipe\River\Task\Build\ConfigurationDefinition\ServiceConfiguration>")
      *
      * @var ServiceConfiguration[]
      */

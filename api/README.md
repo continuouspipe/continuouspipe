@@ -20,7 +20,7 @@ Image (1)-> Component       ------------+
 2. On which environment ?
 
 *Where to deploy ?*
-1. Configuration link between image and application
+1. ConfigurationDefinition link between image and application
 2. Automated and/or explicit rules between tag and environment
 
 *How to deploy ?*

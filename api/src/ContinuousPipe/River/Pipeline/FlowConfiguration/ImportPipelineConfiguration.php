@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Pipeline\FlowConfiguration;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow\Configuration;
+use ContinuousPipe\River\Flow\ConfigurationDefinition;
 use ContinuousPipe\River\Flow\ConfigurationFinalizer;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
@@ -28,7 +28,7 @@ class ImportPipelineConfiguration implements ConfigurationFinalizer
             return $configuration;
         }
 
-        $tasksConfigurationDefinition = new Configuration($this->taskFactoryRegistry);
+        $tasksConfigurationDefinition = new ConfigurationDefinition($this->taskFactoryRegistry);
 
         $builder = new TreeBuilder();
         $node = $builder->root('task');

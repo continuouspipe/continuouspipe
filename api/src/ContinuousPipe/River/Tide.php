@@ -195,7 +195,6 @@ class Tide
         }
 
         if (0 === $this->tasks->count()) {
-            debug_print_backtrace();die;
             throw new TideConfigurationException('You need to configure tasks to be run for the tide.');
         } else {
             $this->events->raiseAndApply(new TideStarted(

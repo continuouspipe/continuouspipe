@@ -43,12 +43,12 @@ framework:
     fragments:       ~
     http_method_override: true
 
-# Twig Configuration
+# Twig ConfigurationDefinition
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
 
-# Assetic Configuration
+# Assetic ConfigurationDefinition
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
@@ -61,7 +61,7 @@ assetic:
         #yui_css:
         #    jar: "%kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar"
 
-# Doctrine Configuration
+# Doctrine ConfigurationDefinition
 doctrine:
     dbal:
         driver:   pdo_mysql

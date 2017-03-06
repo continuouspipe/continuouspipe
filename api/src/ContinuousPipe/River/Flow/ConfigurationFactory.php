@@ -66,7 +66,8 @@ class ConfigurationFactory implements TideConfigurationFactory
         ];
 
         // Read configuration from YML
-        if ($fileSystem->exists(self::FILENAME)) {
+        $continuousPipeFileExists = $fileSystem->exists(self::FILENAME);
+        if ($continuousPipeFileExists) {
             try {
                 $configs[] = Yaml::parse($fileSystem->getContents(self::FILENAME));
             } catch (YamlException $e) {
@@ -81,7 +82,7 @@ class ConfigurationFactory implements TideConfigurationFactory
 
         try {
             // Create the normalized configuration
-            $configTree = (new Configuration($this->taskFactoryRegistry))->getConfigTreeBuilder()->buildTree();
+            $configTree = (new ConfigurationDefinition($this->taskFactoryRegistry))->getConfigTreeBuilder()->buildTree();
             $configuration = $this->mergeConfigurations($configTree, $configs);
 
             // Enhance this configuration as much as possible
@@ -93,12 +94,7 @@ class ConfigurationFactory implements TideConfigurationFactory
                 $configuration = $configTree->finalize($configuration);
             }
         } catch (InvalidConfigurationException $e) {
-            if (!$fileSystem->exists(self::FILENAME)) {
-                throw new TideConfigurationWithMissingYmlException($e->getMessage(), 0, $e);
-            } else {
-                var_dump('?');
-                throw new TideConfigurationException($e->getMessage(), 0, $e);
-            }
+            throw new TideConfigurationException($e->getMessage(), 0, $e);
         }
 
         return $configuration;

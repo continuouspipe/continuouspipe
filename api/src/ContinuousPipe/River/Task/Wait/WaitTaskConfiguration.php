@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 class WaitTaskConfiguration
 {
     /**
-     * @JMS\Type("ContinuousPipe\River\Task\Wait\Configuration\Status")
+     * @JMS\Type("ContinuousPipe\River\Task\Wait\ConfigurationDefinition\Status")
      *
      * @var Status
      */

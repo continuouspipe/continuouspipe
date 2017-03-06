@@ -69,7 +69,7 @@ class Tide
     private $logId;
 
     /**
-     * @JMS\Groups({"Configuration"})
+     * @JMS\Groups({"ConfigurationDefinition"})
      *
      * @var array
      */

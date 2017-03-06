@@ -9,7 +9,7 @@ use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-class Configuration implements ConfigurationInterface
+class ConfigurationDefinition implements ConfigurationInterface
 {
     /**
      * @var TaskFactoryRegistry
