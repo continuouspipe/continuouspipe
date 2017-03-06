@@ -48,6 +48,18 @@ $large-screen-size: 900px;
     }
 }
 
+@mixin textWrap {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
 .mobile-only {
     @include largeScreen {
         display: none;
@@ -871,6 +883,20 @@ pre.deployment-logs {
     background-color: #000;
     color: #fff;
     border-radius: 0;
+}
+
+pre.raw {
+    @include smallScreen {
+        @include textWrap();
+        box-sizing: border-box;
+        width: 100%;
+    }
+}
+
+code {
+    @include smallScreen {
+        @include textWrap();
+    }
 }
 
 .yaml-editor {

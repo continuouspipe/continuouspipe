@@ -14,7 +14,7 @@ angular.module('continuousPipeRiver')
                         var minutes = Math.floor(milliseconds / 1000 / 60);
                         milliseconds -= minutes * 1000 * 60;
                         var seconds = Math.floor(milliseconds / 1000);
-
+                        // console.log(arguments, milliseconds, minutes, seconds)
                         element.text(('0'+minutes).slice(-2)+':'+('0'+seconds).slice(-2));
                     },
                     refreshDuration = function(log) {
@@ -25,13 +25,17 @@ angular.module('continuousPipeRiver')
                         return element.text('');
                     }
 
+                    function parseDate(s) {
+                        return +new Date(s.split('+')[0]);
+                    }
+
                     var finishAt = log.successAt || log.failureAt;
                     if (!finishAt) {
                         interval = setInterval(function() {
-                            displayDifference(Date.parse(log.runningAt), new Date());
+                            displayDifference(parseDate(log.runningAt), new Date());
                         }, 1000);
                     } else {
-                        displayDifference(Date.parse(log.runningAt), Date.parse(finishAt));
+                        displayDifference(parseDate(log.runningAt), parseDate(finishAt));
                     }
                 };
 
