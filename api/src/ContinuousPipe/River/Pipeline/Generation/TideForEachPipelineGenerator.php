@@ -58,7 +58,7 @@ class TideForEachPipelineGenerator implements PipelineTideGenerator
         );
 
         $request = $request->withContinuousPipeExists(
-            $configuration->isContinuousPipeFileExists()
+            $configuration->hasContinuousPipeFile()
         );
 
         $pipelines = $this->getPipelines($request->getFlow(), $configuration);

@@ -12,16 +12,16 @@ final class Configuration
     /**
      * @var bool
      */
-    private $continuousPipeFileExists;
+    private $hasContinuousPipeFile;
 
     /**
      * @param array $configuration
-     * @param bool $continuousPipeFileExists
+     * @param bool $hasContinuousPipeFile
      */
-    public function __construct(array $configuration, bool $continuousPipeFileExists)
+    public function __construct(array $configuration, bool $hasContinuousPipeFile)
     {
         $this->configuration = $configuration;
-        $this->continuousPipeFileExists = $continuousPipeFileExists;
+        $this->hasContinuousPipeFile = $hasContinuousPipeFile;
     }
 
     /**
@@ -35,8 +35,8 @@ final class Configuration
     /**
      * @return bool
      */
-    public function isContinuousPipeFileExists(): bool
+    public function hasContinuousPipeFile(): bool
     {
-        return $this->continuousPipeFileExists;
+        return $this->hasContinuousPipeFile;
     }
 }

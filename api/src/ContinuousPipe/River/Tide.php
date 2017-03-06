@@ -170,7 +170,7 @@ class Tide
         if ($event instanceof TideCreated || $event instanceof TideGenerated) {
             if ($event instanceof TideCreated) {
                 $this->context = $event->getTideContext();
-                $this->isContinuousPipeFileExists  = $event->isIsContinuousPipeFileExists();
+                $this->isContinuousPipeFileExists  = $event->hasContinuousPipeFile();
             }
 
             $this->generationUuid = $event->getGenerationUuid();

@@ -70,6 +70,7 @@ class CodeRepositoriesContext implements Context
 
     /**
      * @When the commit :sha1 is pushed to the branch :branch
+     * @When the commit :sha1 was pushed to the branch :branch
      */
     public function theCommitIsPushedToTheBranch($sha1, $branch)
     {
