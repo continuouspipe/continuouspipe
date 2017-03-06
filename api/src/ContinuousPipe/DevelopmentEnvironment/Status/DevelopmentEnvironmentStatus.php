@@ -41,6 +41,9 @@ class DevelopmentEnvironmentStatus
     private $lastTide;
 
     /**
+     * @JMS\Type("array<ContinuousPipe\Pipe\Client\PublicEndpoint>")
+     * @JMS\Groups({"Default", "DevelopmentEnvironmentStatus"})
+     *
      * @var array|PublicEndpoint[]
      */
     private $publicEndpoints = [];
