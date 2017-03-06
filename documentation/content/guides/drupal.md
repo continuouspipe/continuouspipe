@@ -10,13 +10,13 @@ weight: 30
 
 ## Introduction
 
-This is a guide to getting Drupal 8 running on ContinuousPipe with a remote development environment. 
+This is a guide to getting Drupal 8 running on ContinuousPipe with a remote development environment. The code samples used in the guide can be seen at https://github.com/continuouspipe/demo-drupal8. 
 
 ## Prerequisites
 
 Before getting started you will need the following:
 
-- A [GitHub](https://github.com/) or [BitBucket](https://bitbucket.org/) account to host your Symfony project
+- A [GitHub](https://github.com/) or [BitBucket](https://bitbucket.org/) account to host your Drupal project
 - A [ContinuousPipe](https://continuouspipe.io/) account
 - A Kubernetes cluster e.g. [AWS](https://aws.amazon.com/), [GCE](https://cloud.google.com/container-engine/) or [Azure](https://azure.microsoft.com/en-au/)
 - A Docker Registry account e.g. [docker.io](https://docker.io) or [quay.io](https://quay.io)
@@ -25,22 +25,20 @@ You will also need Git and Composer installed on your local machine to follow th
 
 ## Setting Up Drupal 8
 
-Whilst you can start from scratch and add the necessary configuration later, the quickest way to get started is 
-to download the example project from GitHub and use this as the basis for your project.
-
 ### Creating a Skeleton Drupal 8 Project
-Download the following repository and unzip
+
+Whilst you can start from scratch and add the necessary configuration later, the quickest way to get started is to download the example project from GitHub and use this as the basis for your project. Download the following repository and unzip:
 
 ```bash
-https://github.com/continuouspipe/demo-drupal8
+https://github.com/continuouspipe/demo-drupal8/archive/master.zip
 ```
 
 ### Connecting to the GitHub Repository
 
-Move to the project directory
+Move to the downloaded project directory:
 
 ```bash
-cd my-project
+cd demo-drupal8
 ```
 
 Create a local git repository:
@@ -55,14 +53,14 @@ Commit the initial installation:
 git add . && git commit -m "Initial installation of Drupal 8"
 ```
 
-Add the GitHub repository as a remote
+Add a GitHub repository as a remote:
 
 ```bash
 git remote add origin git@github.com:continuouspipe/demo-drupal8.git
 #replacing the organisation and repository with your repository
 ```
 
-## Integrating Symfony with ContinuousPipe
+## Integrating Drupal with ContinuousPipe
 
 ### Adding Docker Configuration Files
 
@@ -88,13 +86,9 @@ RUN container build
 
 ```
 
-The Dockerfile is used to specify how the Docker image is built. It is based on a prebuilt image created specifically 
-for Drupal 8 running on Apache. This is one of several images that can be found at 
-https://github.com/continuouspipe/dockerfiles
+The Dockerfile is used to specify how the Docker image is built. It is based on a prebuilt image created specifically for Drupal 8 running on Apache. This is one of several images that can be found at https://github.com/continuouspipe/dockerfiles.
 
-The README for the prebuilt image lists the arguments that can be passed when it is initialised, including environment 
-variables. The repository project code is copied onto the image and a script is run which will do things like install 
-the vendors with composer.
+The [README](https://github.com/continuouspipe/dockerfiles/blob/master/drupal8-apache/7.0/README.md) for the prebuilt image lists the arguments that can be passed when it is initialised, including environment variables. The repository project code is copied onto the image and a script is run which will do things like install the vendors with composer.
  
 The demo project also includes an example `docker-compose.yml` file in the project root.
 
@@ -141,8 +135,7 @@ services:
 
 ```
 
-ContinuousPipe uses the `docker-compose.yml` configuration to know how to build and configure the services that it 
-deploys. Here we deploy the minimum requirements for Drupal 8 - a web service and a database. 
+ContinuousPipe uses the `docker-compose.yml` configuration to know how to build and configure the services that it deploys. Here we deploy the minimum requirements for Drupal 8 - a web service and a database. 
 
 ### Adding ContinuousPipe Configuration File
 
@@ -287,12 +280,10 @@ pipelines:
 
 ```
 
-This defines three tasks for ContinuousPipe.
+This defines four tasks for ContinuousPipe.
 
 1. `images` builds a Docker image for the web service based on the matching configuration for the web service in the `docker-compose.yml` file. The built image will include the repository contents in the commit that triggered the build (because of the instructions in the `Dockerfile` in the previous step). Once the image is built ContinuousPipe will push it to an image registry configured using the `IMAGE_NAME` variable (setting this variable is explained later).
-2. `db_deployment` deploys the database services to a cluster set with the `CLUSTER` variable 
-(setting this variable is explained later). The environment name used to refer to the deployment is made consistent by 
-combining `demo-drupal8-` with the name of the branch that triggered the process. 
+2. `db_deployment` deploys the database services to a cluster set with the `CLUSTER` variable (setting this variable is explained later). The environment name used to refer to the deployment is made consistent by combining `demo-drupal8-` with the name of the branch that triggered the process. 
 3. `web_deployment` deploys the web container running apache.
 4. `drupal_demo_install` - runs the intial Drupal installation.
 
@@ -320,10 +311,8 @@ Commit any changes if not already done and push them to your code repository. Yo
 
 ![](/images/guides/drupal/cp-tide-running.png)
 
-Clicking on the status will show more details of the build progressing. Some steps, particularly building the image and pushing it to the registry, may take a while to complete. Once it has completed running successfully you can view the environment and from there open the web service and see the running application:
-  
-The default Drupal page should be visible
- 
+Clicking on the status will show more details of the build progressing. Some steps, particularly building the image and pushing it to the registry, may take a while to complete. Once it has completed running successfully you can view the environment and from there open the web service and see the running application. The default Drupal page should be visible.
+
 ## Remote Development with ContinuousPipe
 
 ### Install the Client
@@ -355,27 +344,24 @@ This adds two different pipelines which use conditions to determine which pipeli
 
 
 ### Rebuild the Remote Environment
-To rebuild the remote environment with these changes, commit them 
-to `master` and run `cp-remote build` - this will establish the Production pipeline. 
-You can now switch to a branch prefixed with `cpdev` and run `cp-remote build` again to establish 
-the Remote Pipeline. You will then see the two new pipelines on the overview page in the ContinuousPipe console.
+To rebuild the remote environment with these changes, commit them to `master` and run `cp-remote build` - this will establish the Production pipeline. You can now switch to a branch prefixed with `cpdev` and run `cp-remote build` again to establish the Remote pipeline. You will then see the two new pipelines on the overview page in the ContinuousPipe console.
 
 ### Start Development
 To start development run:
+
 `cp-remote watch`
 
 You can now make changes and they will be synced to the remote environment where you should be able to see the result.
 
 ### Configuration Management in Drupal 8
-The main workflow adjustment you will have to make for Drupal 8 remote development is using `cp-watch` to sync your changes. 
-For example, if you want to make a change to configuration, take the following steps:
+The main workflow adjustment you will have to make for Drupal 8 remote development is using `cp-watch` to sync your changes. For example, if you want to make a change to configuration, take the following steps:
 
 1. Make the change in the UI of the remote environment.
 2. Export as a feature or using Configuration Export
 3. `cp-remote fetch` will rsync the files from the container back to your local machine
 4. Commit the changes in Git
 
-If you are doing custom development, any change you make will immediately be on the container as soon as you save via `cp-watch` (including deletion)
+If you are doing custom development, any change you make will immediately be on the container as soon as you save via `cp-watch` (including deletion).
 
 ### Drush and Drupal Console
 

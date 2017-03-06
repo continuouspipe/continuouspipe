@@ -34,6 +34,7 @@ symfony new demo-symfony #replace demo-symfony with your project name
 Check everything is working so far using the local webserver:
 
 ```bash
+cd demo-symfony
 bin/console server:run
 ```
 
@@ -55,7 +56,7 @@ Commit the initial installation:
 git add . && git commit -m "Initial installation of Symfony"
 ```
 
-Add the GitHub repository as a remote
+Add a GitHub repository as a remote:
 
 ```bash
 git remote add origin git@github.com:continuouspipe/demo-symfony.git
@@ -301,7 +302,7 @@ $kernel->terminate($request, $response);
 These changes will mean that the `SYMFONY_ENV` environment variable will be used to decide which Symfony application mode is used. You can also use a `SYMFONY_DEBUG` environment variable to turn debug more on and off, if not set then it will be on for development mode and off for production mode. 
 
 ### Rebuild the Remote Environment
-To rebuild the remote environment with these changes, commit them to master and run `cp-remote build` - this will establish the Production pipeline. You can now switch to a branch prefixed with "cpdev" and run `cp-remote build` again to establish the Remote Pipeline. You will then see the two new pipelines on the overview page in the ContinuousPipe console.
+To rebuild the remote environment with these changes, commit them to master and run `cp-remote build` - this will establish the Production pipeline. You can now switch to a branch prefixed with "cpdev" and run `cp-remote build` again to establish the Remote pipeline. You will then see the two new pipelines on the overview page in the ContinuousPipe console.
 
 ![](/images/guides/symfony/cp-pipelines.png)
 
