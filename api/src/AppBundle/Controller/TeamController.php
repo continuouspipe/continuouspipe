@@ -8,6 +8,7 @@ use ContinuousPipe\Security\Team\TeamNotFound;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations\View;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -35,6 +36,7 @@ class TeamController
     /**
      * @Route("/teams/{slug}", name="app_team_delete", methods={"DELETE"})
      * @ParamConverter("teamDeletionRequest", converter="teamDeletionRequest", options={"slug"="slug"})
+     * @Security("is_granted('READ', team)")
      * @View
      */
     public function deleteAction(TeamDeletionRequest $teamDeletionRequest)
