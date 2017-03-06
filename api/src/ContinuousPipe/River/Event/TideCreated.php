@@ -13,14 +13,16 @@ class TideCreated implements TideEvent
     private $generationUuid;
     private $flatPipeline;
     private $flowUuid;
+    private $isContinuousPipeFileExists;
 
-    public function __construct(UuidInterface $tideUuid, UuidInterface $flowUuid, TideContext $tideContext, UuidInterface $generationUuid, FlatPipeline $flatPipeline)
+    public function __construct(UuidInterface $tideUuid, UuidInterface $flowUuid, TideContext $tideContext, UuidInterface $generationUuid, FlatPipeline $flatPipeline, bool $isContinuousPipeFileExists = null)
     {
         $this->tideUuid = $tideUuid;
         $this->generationUuid = $generationUuid;
         $this->flatPipeline = $flatPipeline;
         $this->flowUuid = $flowUuid;
         $this->tideContext = $tideContext;
+        $this->isContinuousPipeFileExists = $isContinuousPipeFileExists;
     }
 
     public function getTideUuid(): UuidInterface
@@ -61,5 +63,13 @@ class TideCreated implements TideEvent
     public function getFlowUuid()
     {
         return $this->flowUuid;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isIsContinuousPipeFileExists()
+    {
+        return $this->isContinuousPipeFileExists;
     }
 }

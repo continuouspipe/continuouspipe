@@ -97,7 +97,7 @@ class ConfigurationFactory implements TideConfigurationFactory
             throw new TideConfigurationException($e->getMessage(), 0, $e);
         }
 
-        return new Configuration($configuration);
+        return new Configuration($configuration, $continuousPipeFileExists);
     }
 
     /**

@@ -57,6 +57,10 @@ class TideForEachPipelineGenerator implements PipelineTideGenerator
             $request->getCodeReference()
         );
 
+        $request = $request->withContinuousPipeExists(
+            $configuration->isContinuousPipeFileExists()
+        );
+
         $pipelines = $this->getPipelines($request->getFlow(), $configuration);
         if (empty($pipelines)) {
             $this->logger->warning('No pipeline found in configuration', [

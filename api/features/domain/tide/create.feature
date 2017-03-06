@@ -51,23 +51,19 @@ Feature:
     Then a permission error should be returned
 
   Scenario: A log is displayed and the tide fails when a tide is created without tasks
-    Given I have a flow with the following configuration:
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     {}
     """
+    Given I have a flow
     And the commit "3b0110193e36b317207909163d0a582f6f568qwe" is pushed to the branch "feature"
     When the tide for the branch "feature" and commit "3b0110193e36b317207909163d0a582f6f568qwe" is tentatively started
     And the tide should be failed
     And a log containing "You need to configure tasks to be run for the tide." should be created
 
   Scenario: Two logs are displayed and the tide fails when a tide is created without tasks and without configuration yaml
-    Given I do not have a configuration file
-    And I have a flow with the following configuration:
-    """
-    {}
-    """
+    Given I have a flow
     And the commit "3b0110193e36b317207909163d0a582f6f568qwe" is pushed to the branch "feature"
     When the tide for the branch "feature" and commit "3b0110193e36b317207909163d0a582f6f568qwe" is tentatively started
     And the tide should be failed
-    And a log containing "You need to configure tasks to be run for the tide." should be created
-    And a log containing "Configuration file continuous-pipe.yml is missing!" should be created
+    And a log containing "No `continuous-pipe.yml` file was found in the code repository." should be created

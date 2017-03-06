@@ -45,7 +45,7 @@ class CreateFailingTideWhenConfigurationIsWrong implements PipelineTideGenerator
                 'exception' => $e,
                 'flow_uuid' => (string) $request->getFlow()->getUuid(),
             ]);
-var_dump($e->getMessage());
+            var_dump($e->getMessage());
             $logger = $this->loggerFactory->create();
             $logger->child(new Text($e->getMessage()));
             if ($e instanceof TideConfigurationWithMissingYmlException) {

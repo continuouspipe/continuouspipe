@@ -67,9 +67,14 @@ class Tide
     private $failureReason;
 
     /**
-     * @var string;
+     * @var string
      */
     private $status = Tide::STATUS_PENDING;
+
+    /**
+     * @var bool|null
+     */
+    private $isContinuousPipeFileExists;
 
     /**
      * @param TaskRunner      $taskRunner
@@ -108,7 +113,7 @@ class Tide
         EventCollection $eventCollection
     ) {
         return self::createFromEvents($taskRunner, $tasks, $eventCollection, [
-            new TideCreated($context->getTideUuid(), $context->getFlowUuid(), $context, $generationRequest->getGenerationUuid(), $pipeline),
+            new TideCreated($context->getTideUuid(), $context->getFlowUuid(), $context, $generationRequest->getGenerationUuid(), $pipeline, $generationRequest->getContinuousPipeFileExists()),
             new TideValidated($context->getTideUuid()),
         ]);
     }
@@ -165,6 +170,7 @@ class Tide
         if ($event instanceof TideCreated || $event instanceof TideGenerated) {
             if ($event instanceof TideCreated) {
                 $this->context = $event->getTideContext();
+                $this->isContinuousPipeFileExists  = $event->isIsContinuousPipeFileExists();
             }
 
             $this->generationUuid = $event->getGenerationUuid();
@@ -195,7 +201,11 @@ class Tide
         }
 
         if (0 === $this->tasks->count()) {
-            throw new TideConfigurationException('You need to configure tasks to be run for the tide.');
+            if ($this->isContinuousPipeFileExists) {
+                throw new TideConfigurationException('You need to configure tasks to be run for the tide.');
+            }
+
+            throw new TideConfigurationException('No `continuous-pipe.yml` file was found in the code repository.');
         } else {
             $this->events->raiseAndApply(new TideStarted(
                 $this->getUuid()
