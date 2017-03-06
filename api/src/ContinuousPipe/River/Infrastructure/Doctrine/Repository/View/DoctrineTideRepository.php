@@ -93,11 +93,13 @@ class DoctrineTideRepository implements TideRepository
      */
     public function save(Tide $tide)
     {
+        $pipeline = $tide->getPipeline() !== null ? $this->entityManager->merge($tide->getPipeline()) : null;
+
         try {
             $dto = $this->findDto($tide->getUuid());
-            $dto->merge($tide);
+            $dto->merge($tide, $pipeline);
         } catch (TideNotFound $e) {
-            $dto = TideDto::fromTide($tide);
+            $dto = TideDto::fromTide($tide, $pipeline);
         }
 
         $this->entityManager->persist($dto);

@@ -45,7 +45,7 @@ class TideDto
     private $flowUuid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ContinuousPipe\River\Flow\Projections\FlatPipeline")
+     * @ORM\ManyToOne(targetEntity="ContinuousPipe\River\Flow\Projections\FlatPipeline", cascade={"persist"})
      * @ORM\JoinColumn(name="pipeline_uuid", referencedColumnName="uuid", nullable=true)
      *
      * @var FlatPipeline
@@ -56,17 +56,28 @@ class TideDto
      * Create a DTO from the tide.
      *
      * @param Tide $tide
+     * @param FlatPipeline $pipeline
      *
      * @return TideDto
      */
-    public static function fromTide(Tide $tide)
+    public static function fromTide(Tide $tide, FlatPipeline $pipeline)
     {
         $dto = new self();
         $dto->uuid = $tide->getUuid();
         $dto->flowUuid = $tide->getFlowUuid();
-        $dto->merge($tide);
+        $dto->merge($tide, $pipeline);
 
         return $dto;
+    }
+
+    /**
+     * @param Tide $tide
+     * @param FlatPipeline $pipeline
+     */
+    public function merge(Tide $tide, FlatPipeline $pipeline)
+    {
+        $this->tide = $tide;
+        $this->pipeline = $pipeline;
     }
 
     /**
@@ -94,15 +105,6 @@ class TideDto
         $tide->setFinishDate($wrappedTide->getFinishDate());
 
         return $tide;
-    }
-
-    /**
-     * @param Tide $tide
-     */
-    public function merge(Tide $tide)
-    {
-        $this->tide = $tide;
-        $this->pipeline = $tide->getPipeline();
     }
 
     /**
