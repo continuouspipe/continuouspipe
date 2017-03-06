@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\River\Flow\Configuration;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 interface TideConfigurationFactory
@@ -17,9 +18,9 @@ interface TideConfigurationFactory
      * @param CodeReference $codeReference
      * @param bool          $validated
      *
-     * @return array
+     * @return Configuration
      *
      * @throws TideConfigurationException
      */
-    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference, bool $validated = true);
+    public function getConfiguration(FlatFlow $flow, CodeReference $codeReference, bool $validated = true) : Configuration;
 }
