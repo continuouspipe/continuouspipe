@@ -3,23 +3,42 @@
 namespace ContinuousPipe\DevelopmentEnvironment\Status;
 
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\River\View\Tide;
+use JMS\Serializer\Annotation as JMS;
 
 class DevelopmentEnvironmentStatus
 {
     /**
+     * @JMS\Type("string")
+     * @JMS\Groups({"Default", "DevelopmentEnvironmentStatus"})
+     *
      * @var string
      */
     private $status;
 
     /**
+     * @JMS\Type("string")
+     * @JMS\Groups({"Default", "DevelopmentEnvironmentStatus"})
+     *
      * @var string
      */
     private $clusterIdentifier;
 
     /**
+     * @JMS\Type("string")
+     * @JMS\Groups({"Default", "DevelopmentEnvironmentStatus"})
+     *
      * @var string
      */
     private $environmentName;
+
+    /**
+     * @JMS\Type("ContinuousPipe\River\View\Tide")
+     * @JMS\Groups({"Default", "DevelopmentEnvironmentStatus"})
+     *
+     * @var Tide
+     */
+    private $lastTide;
 
     /**
      * @var array|PublicEndpoint[]
@@ -67,6 +86,14 @@ class DevelopmentEnvironmentStatus
     {
         $status = clone $this;
         $status->status = $environmentStatus;
+
+        return $status;
+    }
+
+    public function withLastTide(Tide $tide) : self
+    {
+        $status = clone $this;
+        $status->lastTide = $tide;
 
         return $status;
     }

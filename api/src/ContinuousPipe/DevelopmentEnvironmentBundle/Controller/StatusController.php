@@ -38,7 +38,7 @@ class StatusController
      * @Route("/flows/{uuid}/development-environments/{environmentUuid}/status", methods={"GET"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
      * @Security("is_granted('READ', flow)")
-     * @View
+     * @View(serializerGroups={"Default", "DevelopmentEnvironmentStatus"})
      */
     public function createAction(string $environmentUuid)
     {

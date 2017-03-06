@@ -49,6 +49,8 @@ class StatusFetcher
 
         /** @var Tide $lastTide */
         $lastTide = current($tides);
+        $status = $status->withLastTide($lastTide);
+
         if ($lastTide->getStatus() == Tide::STATUS_RUNNING) {
             return $status->withStatus('TideRunning');
         } elseif ($lastTide->getStatus() == Tide::STATUS_PENDING) {

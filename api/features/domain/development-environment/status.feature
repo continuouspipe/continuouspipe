@@ -27,6 +27,7 @@ Feature:
     And a tide is started for the branch "cpdev/sroze" with a deploy task
     When I request the status of the development environment "00000000-0000-0000-0000-000000000000" of the flow "00000000-0000-0000-0000-000000000000"
     Then I should see that the status of the development environment is "TideRunning"
+    And I should see the last tide of my development environment
 
   Scenario: Get the status of a development environment with a failed tide
     Given the user "samuel" have a development environment "00000000-0000-0000-0000-000000000000" for the flow "00000000-0000-0000-0000-000000000000"
@@ -35,6 +36,7 @@ Feature:
     And the tide failed
     When I request the status of the development environment "00000000-0000-0000-0000-000000000000" of the flow "00000000-0000-0000-0000-000000000000"
     Then I should see that the status of the development environment is "TideFailed"
+    And I should see the last tide of my development environment
 
   Scenario: Get the status of a development environment with a successful tide
     Given the user "samuel" have a development environment "00000000-0000-0000-0000-000000000000" for the flow "00000000-0000-0000-0000-000000000000"
@@ -48,3 +50,4 @@ Feature:
     And I should see that the cluster identifier of the development environment is "fake/bar"
     And I should see that the public endpoint of the service "app" of my development environment is "1.2.3.4"
     And I should see the environment name of my development environment
+    And I should see the last tide of my development environment
