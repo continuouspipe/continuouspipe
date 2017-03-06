@@ -151,7 +151,6 @@ class DevelopmentEnvironmentContext implements Context
      */
     public function iShouldSeeTheLastTideOfMyDevelopmentEnvironment()
     {
-        var_dump($this->jsonResponse());
         if (!isset($this->jsonResponse()['last_tide'])) {
             throw new \RuntimeException('The last tide was not found');
         }
