@@ -1,10 +1,10 @@
 pipelines:
     - name: Staging
       condition: code_reference.branch == 'master'
-      tasks: [ images, deployment, migrations ]
+      tasks: [ images, migrations, deployment ]
     - name: Production
       condition: code_reference.branch == 'production'
-      tasks: [ images, deployment, migrations ]
+      tasks: [ images, migrations, deployment ]
     - name: Pull-request CI
       condition: code_reference.branch not in ['master', 'production']
       tasks: [ images ]
