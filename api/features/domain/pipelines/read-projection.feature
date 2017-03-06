@@ -11,7 +11,7 @@ Feature:
     And I have a flow
     And there is 1 application images in the repository
 
-  Scenario: It creates the read model for both tides
+  Scenario: It creates the read model for both tides in Firebase
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -38,7 +38,7 @@ Feature:
     And a tide should be wrote in Firebase under the pipeline "First pipeline"
     And a tide should be wrote in Firebase under the pipeline "Second pipeline"
 
-  Scenario: It create the read model without any pipeline in the configuration
+  Scenario: It create the read model without any pipeline in the configuration in Firebase
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -52,3 +52,21 @@ Feature:
     """
     When I send a tide creation request for branch "master" and commit "1234"
     And a tide should be wrote in Firebase under the pipeline "Default pipeline"
+
+  @smoke
+  Scenario: It creates the read model of the tide with the pipeline
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services: []
+    """
+    When I send a tide creation request for branch "master" and commit "1234"
+    Then a tide should be created
+    And a tide view representation should have be created
+    And the tide view should contain a pipeline

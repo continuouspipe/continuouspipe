@@ -499,6 +499,18 @@ EOF;
     }
 
     /**
+     * @Then the tide view should contain a pipeline
+     */
+    public function theTideViewShouldContainAPipeline()
+    {
+        $view = $this->viewTideRepository->find($this->tideUuid);
+
+        if (null === $view->getPipeline()) {
+            throw new \RuntimeException('Found a `null` pipeline for that tide');
+        }
+    }
+
+    /**
      * @Then the tide is represented as pending
      */
     public function theTideIsRepresentedAsPending()
