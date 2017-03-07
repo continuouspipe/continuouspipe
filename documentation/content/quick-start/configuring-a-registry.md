@@ -1,6 +1,5 @@
 ---
 title: Configuring a Registry
-tags: [ "Registry", "Team", "Docker" ]
 menu:
   main:
     parent: 'quick-start'
@@ -8,7 +7,7 @@ menu:
 
 weight: 40
 ---
-Before a Flow can be used it needs to know where to store Docker images. This is done in the "Registries" tab of the Team. You'll be prompted to add a new registry configuration.
+Before a flow can be used it needs to know where to store Docker images. This is done in the "Registries" tab of the project. You'll be prompted to add a new registry configuration.
 
 ![](/images/quick-start/project-registry-overview-no-registry.png)
 

@@ -7,7 +7,7 @@ menu:
 
 weight: 60
 ---
-The final step before executing the Flow is to configure it. You can do this by clicking on the Flow, then selecting the "Configuration" tab. This will present you with an interface that allows you to define YAML variables.
+The final step before executing the flow is to configure it. You can do this by clicking on the flow, then selecting the "Configuration" tab. This will present you with an interface that allows you to define YAML variables.
  
 ![](/images/quick-start/flow-configuration-no-config.png)
 
@@ -65,4 +65,4 @@ tasks:
                             from_external: true
 ```
 
-Once this is committed, the variables in the Flow configuration will now be used instead of the hard coded value set previously.
+Once this is committed, the variables in the flow configuration will now be used instead of the hard coded value set previously.

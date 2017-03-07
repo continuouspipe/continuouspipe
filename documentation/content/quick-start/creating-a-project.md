@@ -1,6 +1,5 @@
 ---
 title: Creating a Project
-tags: [ "Team" ]
 menu:
   main:
     parent: 'quick-start'
@@ -8,19 +7,19 @@ menu:
 
 weight: 10
 ---
-When you log in for the first time you will see the Project overview screen, which will be empty. You'll be prompted to create a new Project.
+When you log in for the first time you will see the project overview screen, which will be empty. You'll be prompted to create a new project.
 
 ![](/images/quick-start/project-overview-no-project.png)
 
-To create a Project, just click the "CREATE A PROJECT" button in the top right of the interface.
+To create a project, just click the "CREATE A PROJECT" button in the top right of the interface.
 
 You will then be asked to enter the following:
 
-* **Name** - A name for your Project
-* **Unique Identifier** - An identifier for your Project, which needs to not be in use by anyone else. 
+* **Name** - A name for your project
+* **Unique Identifier** - An identifier for your project, which needs to not be in use by anyone else. 
 
-The Project will not be created until a unique identifier is found. You will be told if the identifier is already in use when you click "CREATE". 
+The project will not be created until a unique identifier is found. You will be told if the identifier is already in use when you click "CREATE". 
 
-The new Project will now be visible in the Project overview screen.
+The new project will now be visible in the project overview screen.
 
 ![](/images/quick-start/project-overview-new-project.png)

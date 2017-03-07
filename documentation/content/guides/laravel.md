@@ -69,7 +69,7 @@ One last thing we need to do before we can begin using ContinuousPipe is configu
 
 For now we have only got one cluster configured in ContinuousPipe. Lets assign that cluster name “main-cluster” to an environment variable which can be used with our build and deployment tasks.
 
-From within our Flow, click on configuration in the sidebar, create a new environment variable named `CLUSTER` with a value to match what you set as your cluster name/identifier. I have set my cluster name as `main-cluster`. Finally save the configuration.
+From within our flow, click on configuration in the sidebar, create a new environment variable named `CLUSTER` with a value to match what you set as your cluster name/identifier. I have set my cluster name as `main-cluster`. Finally save the configuration.
 
 ![Flow Configuration](/images/guides/laravel/flow-variables-configuration.png)
 
