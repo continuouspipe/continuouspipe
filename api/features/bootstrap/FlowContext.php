@@ -178,10 +178,19 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     }
 
     /**
-     * @Given the flow configuration version is :arg1
+     * @When I delete the flow :flowUuid
      */
-    public function theFlowConfigurationVersionIs($arg1)
+    public function iDeleteTheFlow($flowUuid)
     {
+        $this->response = $this->kernel->handle(Request::create('/flows/'.$flowUuid, 'DELETE'));
+    }
+
+    /**
+     * @Then the flow should be successfully deleted
+     */
+    public function theFlowShouldBeSuccessfullyDeleted()
+    {
+        $this->assertResponseCode(204);
     }
 
     /**
