@@ -5,7 +5,7 @@ namespace ContinuousPipe\Authenticator\EarlyAccess;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-class EarlyAccessToggleFactory
+class BypassWhiteListToggleFactory
 {
     private $session;
 
@@ -18,6 +18,6 @@ class EarlyAccessToggleFactory
     {
         /** @var AttributeBagInterface $attributeBag */
         $attributeBag = $this->session->getBag('attributes');
-        return new EarlyAccessToggle($attributeBag);
+        return new BypassWhiteListToggle($attributeBag);
     }
 }

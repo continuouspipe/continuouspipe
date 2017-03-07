@@ -4,7 +4,7 @@ namespace ContinuousPipe\Authenticator\EarlyAccess;
 
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 
-class EarlyAccessToggle
+class BypassWhiteListToggle
 {
     /**
      * @var AttributeBagInterface
@@ -16,14 +16,20 @@ class EarlyAccessToggle
         $this->storage = $storage;
     }
 
-    public function isActive()
+    public function isActive(): bool
     {
-        return true === $this->storage->get('authenticator.early_access', false);
+        return true === $this->storage->get('authenticator.bypass_white_list', false);
     }
 
-    public function activate(EarlyAccessCode $earlyAccessCode)
+    public function activate()
     {
-        $this->storage->set('authenticator.early_access', true);
+        $this->storage->set('authenticator.bypass_white_list', true);
+    }
+
+    public function activateByCode(EarlyAccessCode $earlyAccessCode)
+    {
+        $this->activate();
+
         $this->storage->set('authenticator.early_access_code', $earlyAccessCode);
     }
 

@@ -4,10 +4,7 @@ namespace ContinuousPipe\Authenticator\EarlyAccess;
 
 use ContinuousPipe\Authenticator\WhiteList\WhiteList;
 
-/**
- * Whitelist users who are provided valid early access code
- */
-class EarlyAccessWhiteList implements WhiteList
+class BypassWhiteList implements WhiteList
 {
     /**
      * @var WhiteList
@@ -15,13 +12,15 @@ class EarlyAccessWhiteList implements WhiteList
     private $decoratedWhiteList;
 
     /**
-     * @var \ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggleFactory
+     * @var \ContinuousPipe\Authenticator\EarlyAccess\BypassWhiteListToggleFactory
      */
-    private $earlyAccessToggleFactory;
+    private $bypassWhiteListToggleFactory;
 
-    public function __construct(WhiteList $decoratedWhiteList, EarlyAccessToggleFactory $earlyAccessToggleFactory)
-    {
-        $this->earlyAccessToggleFactory = $earlyAccessToggleFactory;
+    public function __construct(
+        WhiteList $decoratedWhiteList,
+        BypassWhiteListToggleFactory $bypassWhiteListToggleFactory
+    ) {
+        $this->bypassWhiteListToggleFactory = $bypassWhiteListToggleFactory;
         $this->decoratedWhiteList = $decoratedWhiteList;
     }
 
@@ -30,8 +29,8 @@ class EarlyAccessWhiteList implements WhiteList
      */
     public function contains($username)
     {
-        $earlyAccessToggle = $this->earlyAccessToggleFactory->createFromSession();
-        if ($earlyAccessToggle->isActive()) {
+        $bypassWhiteListToggle = $this->bypassWhiteListToggleFactory->createFromSession();
+        if ($bypassWhiteListToggle->isActive()) {
             return true;
         }
 

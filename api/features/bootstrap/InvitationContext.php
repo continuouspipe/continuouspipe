@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
 use Ramsey\Uuid\Uuid;
@@ -26,6 +27,11 @@ class InvitationContext implements Context
     private $response;
 
     /**
+     * @var SecurityContext
+     */
+    private $securityContext;
+
+    /**
      * @param KernelInterface $kernel
      * @param UserInvitationRepository $userInvitationRepository
      */
@@ -33,6 +39,14 @@ class InvitationContext implements Context
     {
         $this->kernel = $kernel;
         $this->userInvitationRepository = $userInvitationRepository;
+    }
+
+    /** @BeforeScenario */
+    public function gatherContexts(BeforeScenarioScope $scope)
+    {
+        $environment = $scope->getEnvironment();
+
+        $this->securityContext = $environment->getContext('SecurityContext');
     }
 
     /**
@@ -113,14 +127,22 @@ class InvitationContext implements Context
     }
 
     /**
-     * @When the user open the link of the invitation :uuid
+     * @When the user open the link of the invitation :uuid and authentication with :username and :email
      */
-    public function theUserOpenTheLinkOfTheInvitation($uuid)
+    public function theUserOpenTheLinkOfTheInvitation($uuid, $username, $email)
     {
         $this->response = $this->kernel->handle(Request::create('/account/invitation/'.$uuid.'/accept', 'GET', [], [
             'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
         ]));
 
+        $this->assertResponseStatusCode($this->response, Response::HTTP_FOUND);
+        $location = $this->response->headers->get('Location');
+
+        $this->securityContext->theUserWithEmailIsAuthenticatedOnItsAccount($username, $email);
+
+        $this->response = $this->kernel->handle(Request::create($location, 'GET', [], [
+            'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
+        ]));
         $this->assertResponseStatusCode($this->response, Response::HTTP_FOUND);
     }
 
@@ -219,7 +241,7 @@ class InvitationContext implements Context
     {
         $invitations = $invitations ?: \GuzzleHttp\json_decode($this->response->getContent(), true);
 
-        return array_filter($invitations, function(array $invitation) use ($email) {
+        return array_filter($invitations, function (array $invitation) use ($email) {
             return $invitation['user_email'] == $email;
         });
     }
