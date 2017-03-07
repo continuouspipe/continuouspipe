@@ -10,6 +10,7 @@ use Helpers\KernelClientHelper;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class DevelopmentEnvironmentContext implements Context
@@ -90,6 +91,25 @@ class DevelopmentEnvironmentContext implements Context
             '/flows/'.$flowUuid.'/development-environments',
             'GET'
         ));
+    }
+
+    /**
+     * @When I delete the development environment :developmentEnvironmentUuid of the flow :flowUuid
+     */
+    public function iDeleteTheDevelopmentEnvironmentOfTheFlow($developmentEnvironmentUuid, $flowUuid)
+    {
+        $this->request(Request::create(
+            '/flows/'.$flowUuid.'/development-environments/'.$developmentEnvironmentUuid,
+            'DELETE'
+        ));
+    }
+
+    /**
+     * @Then the development environment should be successfully deleted
+     */
+    public function theDevelopmentEnvironmentShouldBeSuccessfullyDeleted()
+    {
+        $this->assertResponseCode(Response::HTTP_NO_CONTENT);
     }
 
     /**

@@ -29,3 +29,8 @@ Feature:
     Then I receive a token that contains the following base64 decoded and comma separated values:
       # | api-key    | environment-uuid                     | flow-uuid                                   |  username         | git-branch  |
       | API-KEY-1234 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000        |  samuel           | cpdev/sroze |
+
+  Scenario: Delete the development environment
+    Given the user "samuel" have a development environment "00000000-0000-0000-0000-000000000000" for the flow "00000000-0000-0000-0000-000000000000"
+    When I delete the development environment "00000000-0000-0000-0000-000000000000" of the flow "00000000-0000-0000-0000-000000000000"
+    Then the development environment should be successfully deleted
