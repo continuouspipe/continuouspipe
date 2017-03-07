@@ -129,7 +129,7 @@ class IntercomContext implements Context
         $matchingTags = array_filter(
             $this->traceableIntercomClient->getCreatedTags(),
             function(array $tag) use ($tagName, $username) {
-                return $tag['name'] == $tagName && in_array(['id' => $username], $tag['users']);
+                return $tag['name'] == $tagName && in_array(['user_id' => $username], $tag['users']);
             }
         );
 

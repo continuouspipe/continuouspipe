@@ -61,7 +61,7 @@ class InMemoryIntercomClient implements IntercomClient
     public function tagUsers(string $name, array $users, int $id = null)
     {
         foreach ($users as $user) {
-            if (!array_key_exists($user['id'], $this->users)) {
+            if (!array_key_exists($user['user_id'], $this->users)) {
                 throw new IntercomException('User not found');
             }
         }

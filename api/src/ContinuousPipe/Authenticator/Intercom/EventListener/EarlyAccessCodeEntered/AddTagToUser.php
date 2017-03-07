@@ -41,7 +41,7 @@ class AddTagToUser implements EventSubscriberInterface
             $this->intercomClient->tagUsers(
                 $tagName = $event->getEarlyAccessCode()->code(),
                 [
-                    ['id' => $event->getUser()->getUsername()]
+                    ['user_id' => $event->getUser()->getUsername()]
                 ]
             );
         } catch (IntercomException $e) {
