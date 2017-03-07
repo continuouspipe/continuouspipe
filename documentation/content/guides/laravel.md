@@ -63,7 +63,7 @@ $ composer require predis/predis
 
 ## Configuring ContinuousPipe
 
-Before we can push any code to our repository, we need to ensure ContinuousPipe console is properly configured. Please refer to the ContinuousPipe Quick Start guide to setup your [team]({{< relref "quick-start/creating-a-team.md" >}}), [cluster]({{< relref "quick-start/configuring-a-cluster.md" >}}), [registry]({{< relref "quick-start/configuring-a-registry.md" >}}) and create your first [flow]({{< relref "quick-start/creating-a-flow.md" >}}).
+Before we can push any code to our repository, we need to ensure ContinuousPipe console is properly configured. Please refer to the ContinuousPipe Quick Start guide to setup your [project]({{< relref "quick-start/creating-a-project.md" >}}), [cluster]({{< relref "quick-start/configuring-a-cluster.md" >}}), [registry]({{< relref "quick-start/configuring-a-registry.md" >}}) and create your first [flow]({{< relref "quick-start/creating-a-flow.md" >}}).
 
 One last thing we need to do before we can begin using ContinuousPipe is configure which cluster we will use. You are free to configure as many clusters as you wish, in fact, its a good idea to have a separate cluster from production as you would for development and testing. 
 

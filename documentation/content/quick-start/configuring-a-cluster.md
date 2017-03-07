@@ -20,7 +20,7 @@ You will then be asked to choose from the following:
 * **My Own Kubernetes Cluster** - A Kubernetes cluster managed elsewhere
 
 ## Google Container Engine
-**In order to use this option you will first need to set up a Google Cloud project.** You will then need to link your Google account with ContinuousPipe, which is discussed in [creating a team]({{< relref "creating-a-team.md" >}}).
+**In order to use this option you will first need to set up a Google Cloud project.** You will then need to link your Google account with ContinuousPipe, which is discussed in [creating a project]({{< relref "creating-a-project.md" >}}).
 
 If selected, you will then be asked to enter the following:
 
