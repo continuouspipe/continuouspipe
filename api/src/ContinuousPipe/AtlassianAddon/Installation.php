@@ -45,8 +45,12 @@ class Installation
     private $publicKey;
 
     /**
+     * Identifying key for the installation of the add-on in Bitbucket. It is unique across Bitbucket as well as all Atlassian Cloud products.
+     *
      * @JMS\SerializedName("clientKey")
      * @JMS\Type("string")
+     *
+     * @see https://developer.atlassian.com/bitbucket/descriptor/lifecycle.html
      *
      * @var string
      */

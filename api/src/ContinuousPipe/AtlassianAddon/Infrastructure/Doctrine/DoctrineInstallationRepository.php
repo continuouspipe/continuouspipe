@@ -36,4 +36,17 @@ class DoctrineInstallationRepository implements InstallationRepository
             'principal.username' => $username,
         ]);
     }
+
+    public function remove(Installation $installation)
+    {
+        $matchingInstallations = $this->entityManager->getRepository(Installation::class)->findBy([
+            'clientKey' => $installation->getClientKey(),
+        ]);
+
+        foreach ($matchingInstallations as $installation) {
+            $this->entityManager->remove($installation);
+        }
+
+        $this->entityManager->flush();
+    }
 }

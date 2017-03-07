@@ -35,4 +35,14 @@ class InstallationController
     {
         $this->installationRepository->save($installation);
     }
+
+    /**
+     * @Route("/uninstalled", methods={"POST"})
+     * @ParamConverter("installation", converter="fos_rest.request_body")
+     * @View
+     */
+    public function uninstalledAction(Installation $installation)
+    {
+        $this->installationRepository->remove($installation);
+    }
 }

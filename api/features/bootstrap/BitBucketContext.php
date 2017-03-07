@@ -568,6 +568,38 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
+     * @When the add-on :clientKey is uninstalled for the user account :principalUsername
+     */
+    public function theAddOnIsUninstalledForTheUserAccount($clientKey, $principalUsername)
+    {
+        $addon = $this->createAddonArray($clientKey, $principalUsername);
+
+        $this->response = $this->kernel->handle(Request::create(
+            '/connect/service/bitbucket/addon/uninstalled',
+            'POST',
+            [], [], [],
+            [
+                'CONTENT_TYPE' => 'application/json'
+            ],
+            json_encode($addon)
+        ));
+
+        $this->assertResponseStatus(204);
+    }
+
+    /**
+     * @Then the add-on :clientKey should be removed
+     */
+    public function theAddOnShouldBeRemoved($clientKey)
+    {
+        $saved = $this->traceableInstallationRepository->getRemoved();
+
+        if (count($saved) == 0) {
+            throw new \RuntimeException('Found 0 removed installation');
+        }
+    }
+
+    /**
      * @Then the installation should be saved
      */
     public function theInstallationShouldBeSaved()
