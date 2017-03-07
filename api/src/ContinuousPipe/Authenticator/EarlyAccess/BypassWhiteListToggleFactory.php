@@ -1,11 +1,11 @@
 <?php
 
-namespace ContinuousPipe\Authenticator\Invitation;
+namespace ContinuousPipe\Authenticator\EarlyAccess;
 
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-class InvitationToggleFactory
+class BypassWhiteListToggleFactory
 {
     private $session;
 
@@ -18,6 +18,6 @@ class InvitationToggleFactory
     {
         /** @var AttributeBagInterface $attributeBag */
         $attributeBag = $this->session->getBag('attributes');
-        return new InvitationToggle($attributeBag);
+        return new BypassWhiteListToggle($attributeBag);
     }
 }

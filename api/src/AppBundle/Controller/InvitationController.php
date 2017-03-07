@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use ContinuousPipe\Authenticator\EarlyAccess\BypassWhiteListToggleFactory;
 use ContinuousPipe\Authenticator\Invitation\InvitationNotFound;
 use ContinuousPipe\Authenticator\Invitation\InvitationToggleFactory;
 use ContinuousPipe\Authenticator\Invitation\InvitationToTeamMembershipTransformer;
@@ -33,7 +34,7 @@ class InvitationController
     /**
      * @var InvitationToggleFactory
      */
-    private $invitationToggleFactory;
+    private $bypassWhiteListToggleFactory;
 
     /**
      * @var RouterInterface
@@ -43,18 +44,18 @@ class InvitationController
     /**
      * @param UserInvitationRepository $userInvitationRepository
      * @param InvitationToTeamMembershipTransformer $invitationToTeamMembershipTransformer
-     * @param InvitationToggleFactory $invitationToggleFactory
+     * @param BypassWhiteListToggleFactory $bypassWhiteListToggleFactory
      * @param RouterInterface $router
      */
     public function __construct(
         UserInvitationRepository $userInvitationRepository,
         InvitationToTeamMembershipTransformer $invitationToTeamMembershipTransformer,
-        InvitationToggleFactory $invitationToggleFactory,
+        BypassWhiteListToggleFactory $bypassWhiteListToggleFactory,
         RouterInterface $router
     ) {
         $this->userInvitationRepository = $userInvitationRepository;
         $this->invitationToTeamMembershipTransformer = $invitationToTeamMembershipTransformer;
-        $this->invitationToggleFactory = $invitationToggleFactory;
+        $this->bypassWhiteListToggleFactory = $bypassWhiteListToggleFactory;
         $this->router = $router;
     }
 
@@ -65,8 +66,8 @@ class InvitationController
     {
         $this->loadInvitation($uuid);
 
-        $invitationToggle = $this->invitationToggleFactory->createFromSession();
-        $invitationToggle->activate();
+        $bypassWhiteListToggle = $this->bypassWhiteListToggleFactory->createFromSession();
+        $bypassWhiteListToggle->activate();
 
         return new RedirectResponse($this->router->generate('transform_invitation', ['uuid' => $uuid]));
     }

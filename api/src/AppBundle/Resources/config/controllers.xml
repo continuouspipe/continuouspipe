@@ -29,13 +29,13 @@
         <service id="app.controller.invitation" class="AppBundle\Controller\InvitationController">
             <argument type="service" id="app.repository.user_invitation" />
             <argument type="service" id="app.invitation.invitation_to_team_membership_transformer" />
-            <argument type="service" id="app.authenticator.invitation_toggle_factory" />
+            <argument type="service" id="app.authenticator.bypass_white_list_toggle_factory" />
             <argument type="service" id="router" />
         </service>
 
         <service id="app.controller.early_access" class="AppBundle\Controller\EarlyAccessController">
             <argument type="service" id="app.repository.early_access_code" />
-            <argument type="service" id="app.authenticator.early_access_toggle_factory" />
+            <argument type="service" id="app.authenticator.bypass_white_list_toggle_factory" />
             <argument type="service" id="router" />
             <argument type="service" id="form.factory" />
         </service>

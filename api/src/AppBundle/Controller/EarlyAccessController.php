@@ -5,7 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Form\Type\EarlyAccessCodeType;
 use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessCode;
 use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessCodeRepository;
-use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggleFactory;
+use ContinuousPipe\Authenticator\EarlyAccess\BypassWhiteListToggleFactory;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -24,9 +24,9 @@ class EarlyAccessController
     private $earlyAccessCodeRepository;
 
     /**
-     * @var EarlyAccessToggleFactory
+     * @var BypassWhiteListToggleFactory
      */
-    private $earlyAccessToggleFactory;
+    private $bypassWhiteListToggleFactory;
 
     /**
      * @var Router
@@ -40,12 +40,12 @@ class EarlyAccessController
 
     public function __construct(
         EarlyAccessCodeRepository $earlyAccessCodeRepository,
-        EarlyAccessToggleFactory $earlyAccessToggleFactory,
+        BypassWhiteListToggleFactory $bypassWhiteListToggleFactory,
         Router $router,
         FormFactoryInterface $formFactory
     ) {
         $this->earlyAccessCodeRepository = $earlyAccessCodeRepository;
-        $this->earlyAccessToggleFactory = $earlyAccessToggleFactory;
+        $this->bypassWhiteListToggleFactory = $bypassWhiteListToggleFactory;
         $this->router = $router;
         $this->formFactory = $formFactory;
     }
@@ -61,8 +61,8 @@ class EarlyAccessController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $earlyAccessToggle = $this->earlyAccessToggleFactory->createFromSession();
-            $earlyAccessToggle->activate(EarlyAccessCode::fromString($code->code));
+            $bypassWhiteListToggle = $this->bypassWhiteListToggleFactory->createFromSession();
+            $bypassWhiteListToggle->activateByCode(EarlyAccessCode::fromString($code->code));
             return new RedirectResponse($this->router->generate('hwi_oauth_connect'));
         }
 

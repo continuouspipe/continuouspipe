@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Invitation\EventProducer;
 
-use ContinuousPipe\Authenticator\EarlyAccess\EarlyAccessToggleFactory;
+use ContinuousPipe\Authenticator\EarlyAccess\BypassWhiteListToggleFactory;
 use ContinuousPipe\Authenticator\Invitation\Event\EarlyAccessCodeEntered;
 use ContinuousPipe\Authenticator\Security\Event\UserCreated;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -11,18 +11,20 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class EarlyAccessCodeEnteredEventProducer implements EventSubscriberInterface
 {
     /**
-     * @var EarlyAccessToggleFactory
+     * @var BypassWhiteListToggleFactory
      */
-    private $earlyAccessToggleFactory;
+    private $bypassWhiteListToggleFactory;
 
     /**
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
 
-    public function __construct(EarlyAccessToggleFactory $earlyAccessToggleFactory, EventDispatcherInterface $eventDispatcher)
-    {
-        $this->earlyAccessToggleFactory = $earlyAccessToggleFactory;
+    public function __construct(
+        BypassWhiteListToggleFactory $bypassWhiteListToggleFactory,
+        EventDispatcherInterface $eventDispatcher
+    ) {
+        $this->bypassWhiteListToggleFactory = $bypassWhiteListToggleFactory;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -38,7 +40,7 @@ class EarlyAccessCodeEnteredEventProducer implements EventSubscriberInterface
 
     public function onUserCreated(UserCreated $event)
     {
-        $toggle = $this->earlyAccessToggleFactory->createFromSession();
+        $toggle = $this->bypassWhiteListToggleFactory->createFromSession();
 
         if ($toggle->isActive()) {
             $this->eventDispatcher->dispatch(
