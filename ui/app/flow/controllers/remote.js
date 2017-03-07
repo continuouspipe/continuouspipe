@@ -6,7 +6,7 @@ angular.module('continuousPipeRiver')
             $scope.environments = environments;
         });
     })
-    .controller('DevelopmentEnvironmentController', function ($scope, $mdToast, $stateParams, RemoteRepository, EndpointOpener, $http, flow, user, developmentEnvironmentStatus) {
+    .controller('DevelopmentEnvironmentController', function ($scope, $mdToast, $stateParams, RemoteRepository, EndpointOpener, $http, TideRepository, flow, user, developmentEnvironmentStatus) {
         $scope.flow = flow;
         $scope.developmentEnvironmentStatus = developmentEnvironmentStatus;
         $scope.hasBeenCreated = ['TokenNotCreated', 'NotStarted'].indexOf(developmentEnvironmentStatus.status) == -1;
@@ -33,11 +33,19 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.rebuild = function() {
-
-        };
-
-        $scope.delete = function() {
-
+            $scope.isLoading = true;
+            TideRepository.create(flow, {branch: developmentEnvironmentStatus.last_tide.code_reference.branch}).then(function() {
+                $mdToast.show($mdToast.simple()
+                    .textContent('The tide has been created!')
+                    .position('top')
+                    .hideDelay(3000)
+                    .parent($('md-content#content'))
+                );
+            }, function(error) {
+                swal("Error !", $http.getError(error) || "An unknown error occured while creating a tide", "error");
+            })['finally'](function() {
+                $scope.isLoading = false;
+            });
         };
     })
     .controller('CreateDevelopmentEnvironmentController', function($scope, $http, $state, RemoteRepository, flow, user) {

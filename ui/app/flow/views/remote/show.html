@@ -51,11 +51,11 @@
 </md-content>
 <md-toolbar>
     <div class="md-toolbar-tools">
-        <md-button class="md-raised md-warn" aria-label="Delete" ng-click="delete()" ng-disabled="isLoading"><md-icon>delete</md-icon> Delete</md-button>
+        <!-- <md-button class="md-raised md-warn" aria-label="Delete" ng-click="delete()" ng-disabled="isLoading"><md-icon>delete</md-icon> Delete</md-button> -->
         <span flex></span>
-        <md-button class="md-raised" aria-label="Rebuild" ng-click="rebuild()">
+        <md-button class="md-raised" aria-label="Re-deploy" ng-click="rebuild()" ng-disabled="isLoading">
             <md-icon>play_arrow</md-icon>
-            Rebuild
+            Re-deploy
         </md-button>
     </div>
 </md-toolbar>
