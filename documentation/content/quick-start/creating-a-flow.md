@@ -8,9 +8,9 @@ menu:
 
 weight: 20
 ---
-Once you have created a Team you'll be prompted to create a Flow.
+Once you have created a Project you'll be prompted to create a Flow.
 
-![](/images/quick-start/team-view-new-team.png)
+![](/images/quick-start/project-view-new-project.png)
 
 To create a Flow, just click the “CREATE A FLOW” button in the top right of the interface.
 
@@ -38,4 +38,4 @@ By default your personal repositories from the linked account are displayed. If 
 
 Once you have selected your repository, click "CREATE" to finish creating the Flow.
 
-![](/images/quick-start/team-flow-overview.png)
+![](/images/quick-start/project-flow-overview.png)

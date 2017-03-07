@@ -11,12 +11,35 @@ The final step before executing the Flow is to configure it. You can do this by 
  
 ![](/images/quick-start/flow-configuration-no-config.png)
 
-We are going to variablise the cluster identifier. The cluster identifier is defined when [configuring a cluster]({{< relref "configuring-a-cluster.md" >}}) then referenced in the `continuous-pipe.yml` when [configuring your repository]({{< relref "configuring-your-repository.md" >}}).
+We are going to variablise the image name and the cluster identifier that were defined in `continuous-pipe.yml` when [configuring your repository]({{< relref "configuring-your-repository.md" >}}). Here's a reminder of what that looks like:
 
-To create the variable click "ADD A VARIABLE" and then enter:
+```
+tasks:
+    images:
+        build:
+            services:
+                web:
+                    image: docker.io/pswaine/hello-world
+
+    deployment:
+        deploy:
+            cluster: hello-world
+            services:
+                web:
+                    specification:
+                        accessibility:
+                            from_external: true
+```
+
+To create the image variable click "ADD A VARIABLE" and then enter:
+
+- **Name**: "IMAGE_NAME"
+- **Value**: "docker.io/pswaine/hello-world"
+
+To create the cluster variable click "ADD A VARIABLE" and then enter:
 
 - **Name**: "CLUSTER"
-- **Value**: "acme-products"
+- **Value**: "hello-world"
 
 Then click "SAVE".
 
@@ -26,6 +49,12 @@ The cluster note in `continuous-pipe.yml` can now be updated:
 
 ```
 tasks:
+    images:
+        build:
+            services:
+                web:
+                    image: ${IMAGE_NAME}
+
     deployment:
         deploy:
             cluster: ${CLUSTER}
@@ -36,4 +65,4 @@ tasks:
                             from_external: true
 ```
 
-This will now reference the variable in the Flow configuration value instead of the hard coded value used previously.
+Once this is committed, the variables in the Flow configuration will now be used instead of the hard coded value set previously.

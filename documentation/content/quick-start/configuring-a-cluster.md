@@ -10,7 +10,7 @@ weight: 30
 ---
 Before a Flow can be used it needs to know where to deploy to. This is done in the "Clusters" tab of the Team. You'll be prompted to add a new cluster configuration.
 
-![](/images/quick-start/team-cluster-overview-no-cluster.png)
+![](/images/quick-start/project-cluster-overview-no-cluster.png)
 
 To add a new cluster configuration, click the “ADD” button in the top right of the interface.
 
@@ -41,4 +41,4 @@ If selected, you will then be asked to enter the following:
 
 Then click "CREATE" to finish.
 
-![](/images/quick-start/team-cluster-overview.png)
+![](/images/quick-start/project-cluster-overview.png)
