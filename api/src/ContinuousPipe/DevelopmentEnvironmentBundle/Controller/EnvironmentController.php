@@ -8,6 +8,7 @@ use ContinuousPipe\DevelopmentEnvironmentBundle\Request\EnvironmentCreationReque
 use ContinuousPipe\Events\TimeResolver\TimeResolver;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\User\User;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -68,5 +69,18 @@ class EnvironmentController
     public function listAction(FlatFlow $flow)
     {
         return $this->developmentEnvironmentRepository->findByFlow($flow->getUuid());
+    }
+
+    /**
+     * @Route("/flows/{uuid}/development-environments/{developmentEnvironmentUuid}", methods={"DELETE"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
+     * @Security("is_granted('READ', flow)")
+     * @View
+     */
+    public function deleteAction(FlatFlow $flow, string $developmentEnvironmentUuid)
+    {
+        $this->developmentEnvironmentRepository->delete(
+            Uuid::fromString($developmentEnvironmentUuid)
+        );
     }
 }

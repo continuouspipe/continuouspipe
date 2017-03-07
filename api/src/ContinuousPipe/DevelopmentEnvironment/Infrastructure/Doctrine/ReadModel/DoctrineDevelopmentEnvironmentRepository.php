@@ -54,4 +54,15 @@ class DoctrineDevelopmentEnvironmentRepository implements DevelopmentEnvironment
 
         return $developmentEnvironment;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(UuidInterface $uuid)
+    {
+        $environment = $this->find($uuid);
+
+        $this->entityManager->remove($environment);
+        $this->entityManager->flush();
+    }
 }

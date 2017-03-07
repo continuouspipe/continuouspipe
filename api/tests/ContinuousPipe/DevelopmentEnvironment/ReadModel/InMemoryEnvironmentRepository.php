@@ -37,4 +37,16 @@ class InMemoryEnvironmentRepository implements DevelopmentEnvironmentRepository
 
         return $this->environments[$uuid->toString()];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(UuidInterface $uuid)
+    {
+        if (!array_key_exists($uuid->toString(), $this->environments)) {
+            throw new DevelopmentEnvironmentNotFound('The environment is not found');
+        }
+
+        unset($this->environments[$uuid->toString()]);
+    }
 }
