@@ -6,7 +6,7 @@ angular.module('continuousPipeRiver')
             $scope.environments = environments;
         });
     })
-    .controller('DevelopmentEnvironmentController', function ($scope, $mdToast, $stateParams, RemoteRepository, EndpointOpener, $http, TideRepository, flow, user, developmentEnvironmentStatus) {
+    .controller('DevelopmentEnvironmentController', function ($scope, $state, $mdToast, $stateParams, RemoteRepository, EndpointOpener, $http, TideRepository, flow, user, developmentEnvironmentStatus) {
         $scope.flow = flow;
         $scope.developmentEnvironmentStatus = developmentEnvironmentStatus;
         $scope.hasBeenCreated = ['TokenNotCreated', 'NotStarted'].indexOf(developmentEnvironmentStatus.status) == -1;
@@ -30,6 +30,29 @@ angular.module('continuousPipeRiver')
         // When the environment is already created
         $scope.openEndpoint = function(endpoint) {
             return EndpointOpener.open(endpoint);
+        };
+
+        $scope.delete = function() {
+            swal({
+                title: "Are you sure?",
+                text: "After deleting the environment you'll have to recreate and reconfigure your development environment.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
+            }, function() {
+                RemoteRepository.delete(flow, developmentEnvironmentStatus.development_environment).then(function() {
+                    $state.go('flow.development-environments');
+
+                    swal("Successfully deleted !");
+                }, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the environment", "error");
+                })['finally'](function() {
+                    $scope.isLoading = false;
+                });
+            });
         };
 
         $scope.rebuild = function() {
