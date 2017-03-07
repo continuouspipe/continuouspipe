@@ -58,6 +58,11 @@
             <argument type="service" id="river.github.client_factory" />
         </service>
         <service id="river.notifications.notifier.github.commit_status" alias="river.notifications.notifier.github.commit_status.http" />
+        <service id="river.notifications.notifier.github.commit_status.truncate_status_description"
+                 class="ContinuousPipe\River\CodeRepository\GitHub\CommitStatuses\TruncateStatusDescription"
+                 decorates="river.notifications.notifier.github.commit_status">
+            <argument type="service" id="river.notifications.notifier.github.commit_status.truncate_status_description.inner" />
+        </service>
 
         <!-- Pull Requests -->
         <service id="river.notifications.notifier.pull_request" class="ContinuousPipe\River\Notifications\CodeRepository\PullRequestCommentNotifier">

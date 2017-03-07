@@ -272,10 +272,11 @@ EOF;
 
     /**
      * @When the tide failed
+     * @When the tide is failing because :reason
      */
-    public function theTideFailed()
+    public function theTideFailed($reason = null)
     {
-        $this->eventBus->handle(new TideFailed($this->tideUuid, 'TideContext reason'));
+        $this->eventBus->handle(new TideFailed($this->tideUuid, $reason ?: 'TideContext reason'));
     }
 
     /**
