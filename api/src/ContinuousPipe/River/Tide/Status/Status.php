@@ -77,4 +77,12 @@ final class Status
     {
         return $this->publicEndpoints;
     }
+
+    public function withDescription(string $description) : self
+    {
+        $status = clone $this;
+        $status->description = $description;
+
+        return $status;
+    }
 }

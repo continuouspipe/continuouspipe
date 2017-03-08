@@ -34,6 +34,14 @@ Feature:
     Task "build" failed
     """
 
+  Scenario: If the description is too long, it needs to be reduced to 140 characters maximum
+    Given a tide is created
+    When the tide is failing because "This is a very long reason that is not really supported by GitHub because the number of characters of this reason is more than 140 characters."
+    And the GitHub commit status description should be:
+    """
+    This is a very long reason that is not really supported by GitHub because the number of characters of this reason is more than 140 charac...
+    """
+
   Scenario: I can disable the default GitHub commit status
     Given I have a flow with the following configuration:
     """

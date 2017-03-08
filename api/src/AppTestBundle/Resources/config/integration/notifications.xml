@@ -19,7 +19,8 @@
         <service id="river.notifications.notifier.github.commit_status.http" class="ContinuousPipe\River\Notifications\NullGitHubNotifier" />
         <service id="river.notifications.notifier.github.commit_status.traceable"
                  class="ContinuousPipe\River\Notifications\TraceableNotifier"
-                 decorates="river.notifications.notifier.github.commit_status">
+                 decorates="river.notifications.notifier.github.commit_status"
+                 decoration-priority="5">
             <argument type="service" id="river.notifications.notifier.github.commit_status.traceable.inner" />
         </service>
     </services>
