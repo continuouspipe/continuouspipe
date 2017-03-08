@@ -7,7 +7,7 @@ angular.module('continuousPipeRiver')
                 controller: function($scope, $mdDialog) {
                     $scope.endpoint = endpoint;
 
-                    $scope.cancel = function() {
+                    $scope.opened = $scope.cancel = function() {
                         $mdDialog.cancel();
                     };
                 },
