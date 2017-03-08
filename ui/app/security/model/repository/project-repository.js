@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('ProjectRepository', function($resource, AUTHENTICATOR_API_URL) {
+    .service('ProjectRepository', function($resource, AUTHENTICATOR_API_URL, RIVER_API_URL) {
         this.resource = $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug', {}, {
             patch: {
                 method: 'PATCH'
@@ -21,7 +21,7 @@ angular.module('continuousPipeRiver')
         };
 
         this.delete = function(project) {
-            return this.resource.remove({slug: project.slug}).$promise;
+            return $resource(RIVER_API_URL+'/api/teams/:slug').remove({slug: project.slug}).$promise;
         };
 
         this.update = function(project, patch) {
