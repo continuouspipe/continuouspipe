@@ -21,7 +21,7 @@ angular.module('continuousPipeRiver')
         };
 
         this.delete = function(project) {
-            return $resource(RIVER_API_URL+'/api/teams/:slug').remove({slug: project.slug}).$promise;
+            return $resource(RIVER_API_URL+'/teams/:slug').remove({slug: project.slug}).$promise;
         };
 
         this.update = function(project, patch) {
