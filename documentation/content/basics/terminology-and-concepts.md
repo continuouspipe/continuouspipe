@@ -10,17 +10,17 @@ weight: 11
 ---
 
 ## Technology
-### Code Repositories
+### Code Repository
 Code repositories such as Github and Bitbucket are used to store project code. Interaction with these repositories (such as pushing a branch) is used to initiate the build process for an ContinuousPipe environment.
 
-### Docker Registries
+### Docker Registry
 Docker registries such as Docker Hub and Quay.io are used to store Docker images that have been built to support the application.
 
 ### Kubernetes
 Kubernetes clusters are used to run Docker images. ContinuousPipe supports GCE, AWS or Kubernetes clusters on your own infrastructure.
 
 ## Concepts
-### Projects
+### Project
 A project is used to group together users, code repository access tokens, Docker image registries and Kubernetes deployment clusters.
 
 ### Flow

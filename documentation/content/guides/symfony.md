@@ -144,7 +144,7 @@ The ContinousPipe documentation has more information about [tasks]({{< relref "c
 
 ### Configuring the ContinuousPipe Console
 
-Before we can push any code to our repository, we need to ensure ContinuousPipe console is properly configured. Please refer to the ContinuousPipe Quick Start guide to setup your [project]({{< relref "quick-start/creating-a-project.md" >}}), [cluster]({{< relref "quick-start/configuring-a-cluster.md" >}}), [registry]({{< relref "quick-start/configuring-a-registry.md" >}}) and create your first [flow]({{< relref "quick-start/creating-a-flow.md" >}}).
+Before we can push any code to our repository, we need to ensure that the ContinuousPipe console is properly configured. Please refer to the ContinuousPipe Quick Start guide to setup your [project]({{< relref "quick-start/creating-a-project.md" >}}), [cluster]({{< relref "quick-start/configuring-a-cluster.md" >}}), [registry]({{< relref "quick-start/configuring-a-registry.md" >}}) and create your first [flow]({{< relref "quick-start/creating-a-flow.md" >}}).
 
 ### Adding Variables to the ContinuousPipe Console 
 
