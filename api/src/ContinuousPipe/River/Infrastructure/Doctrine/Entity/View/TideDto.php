@@ -46,7 +46,7 @@ class TideDto
 
     /**
      * @ORM\ManyToOne(targetEntity="ContinuousPipe\River\Flow\Projections\FlatPipeline", cascade={"persist"})
-     * @ORM\JoinColumn(name="pipeline_uuid", referencedColumnName="uuid", nullable=true)
+     * @ORM\JoinColumn(name="pipeline_uuid", referencedColumnName="uuid", nullable=true, onDelete="CASCADE")
      *
      * @var FlatPipeline
      */

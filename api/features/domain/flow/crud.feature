@@ -48,3 +48,22 @@ Feature:
     filter: 'code_reference.branch == "feature/continuous-pipe-migration"'
     """
     Then the flow is not saved because of a bad request error
+
+  @smoke
+  Scenario: It allows to delete a flow that have tides that have pipelines
+    Given the team "samuel" exists
+    And the user "samuel" is "ADMIN" of the team "samuel"
+    And I have a flow with UUID "00000000-0000-0000-0000-000000000000" in the team "samuel"
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+    pipelines:
+        - name: To master
+          tasks: [ images ]
+    """
+    And a tide is created
+    When I delete the flow "00000000-0000-0000-0000-000000000000"
+    Then the flow should be successfully deleted
