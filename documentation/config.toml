@@ -17,7 +17,7 @@ PygmentsOptions = "startinline=true"
 
 	#version = "1.0.0"
 	logo = "images/logo.png"
-	favicon = ""
+	favicon = "images/favicon.png"
 
 	permalink = "#"
 

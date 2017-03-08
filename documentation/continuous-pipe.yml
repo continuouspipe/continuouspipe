@@ -18,3 +18,8 @@ tasks:
                   - name: continuouspipeio
                     cert: ${WILDCARD_SSL_CERT}
                     key: ${WILDCARD_SSL_KEY}
+            deployment_strategy:
+                readiness_probe:
+                    type: http
+                    port: 80
+                    path: /
