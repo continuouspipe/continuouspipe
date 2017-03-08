@@ -62,16 +62,18 @@ class DoctrineTeamMembershipRepository implements TeamMembershipRepository
      */
     public function save(TeamMembership $membership)
     {
-        try {
-            $this->entityManager->persist($membership);
-            $this->entityManager->flush();
-        } catch (UniqueConstraintViolationException $e) {
-            $this->logger->warning('Team membership already saved, ignoring.', [
-                'username' => $membership->getUser()->getUsername(),
-                'team' => $membership->getTeam()->getSlug(),
-                'permissions' => $membership->getPermissions(),
-            ]);
+        $oldMembership = $this->entityManager->find(
+            'ContinuousPipeSecurity:Team\TeamMembership',
+            ['user' => $membership->getUser(), 'team' => $membership->getTeam()]
+        );
+
+        if (null !== $oldMembership) {
+            $oldMembership->setPermissions($membership->getPermissions());
+            $membership = $oldMembership;
         }
+
+        $this->entityManager->persist($membership);
+        $this->entityManager->flush();
     }
 
     /**
