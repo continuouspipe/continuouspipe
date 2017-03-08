@@ -163,3 +163,12 @@ Feature:
     When I delete the team "foo"
     And I request the list of teams
     Then I should not see the team "foo" in the team list
+
+  @smoke
+  Scenario: Able to delete a team which has a billing profile
+    Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    And there is a team "foo-bar" with the billing profile "00000000-0000-0000-0000-000000000000"
+    And the user "samuel" is administrator of the team "foo-bar"
+    When I delete the team "foo-bar"
+    And I request the list of teams
+    Then I should not see the team "foo-bar" in the team list
