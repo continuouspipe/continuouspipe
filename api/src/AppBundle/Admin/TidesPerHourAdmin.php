@@ -7,6 +7,16 @@ use Sonata\AdminBundle\Form\FormMapper;
 
 class TidesPerHourAdmin extends Admin
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected $baseRouteName = 'users_tides_per_hour';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $baseRoutePattern = '/users/tides-per-hour';
+
     protected function configureFormFields(FormMapper $form)
     {
         $form
