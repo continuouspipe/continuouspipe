@@ -22,4 +22,13 @@ class InMemoryInstallationRepository implements InstallationRepository
             return $principal->getType() == $type && $principal->getUsername() == $username;
         }));
     }
+
+    public function remove(Installation $installation)
+    {
+        foreach ($this->installations as $key => $foundInstallation) {
+            if ($installation->getClientKey() == $foundInstallation->getClientKey()) {
+                unset($this->installations[$key]);
+            }
+        }
+    }
 }

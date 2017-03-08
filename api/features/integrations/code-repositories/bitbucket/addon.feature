@@ -8,6 +8,11 @@ Feature:
     When the add-on "connection:659577" is installed for the user account "sroze"
     Then the installation should be saved
 
+  Scenario: Uninstall an add-on
+    Given there is the add-on "connection:67890" installed for the user account "sroze"
+    When the add-on "connection:67890" is uninstalled for the user account "sroze"
+    Then the add-on "connection:67890" should be removed
+
   Scenario: Uses the correct installation to sign the request
     Given there is the add-on "connection:12345" installed for the user account "foo"
     And there is the add-on "connection:67890" installed for the user account "sroze"

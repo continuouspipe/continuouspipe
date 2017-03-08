@@ -15,6 +15,11 @@ class TraceableInstallationRepository implements InstallationRepository
     private $saved = [];
 
     /**
+     * @var Installation[]
+     */
+    private $removed = [];
+
+    /**
      * @param InstallationRepository $decoratedRepository
      */
     public function __construct(InstallationRepository $decoratedRepository)
@@ -35,6 +40,16 @@ class TraceableInstallationRepository implements InstallationRepository
     /**
      * {@inheritdoc}
      */
+    public function remove(Installation $installation)
+    {
+        $this->decoratedRepository->remove($installation);
+
+        $this->removed[] = $installation;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findByPrincipal(string $type, string $username): array
     {
         return $this->decoratedRepository->findByPrincipal($type, $username);
@@ -46,5 +61,13 @@ class TraceableInstallationRepository implements InstallationRepository
     public function getSaved(): array
     {
         return $this->saved;
+    }
+
+    /**
+     * @return Installation[]
+     */
+    public function getRemoved(): array
+    {
+        return $this->removed;
     }
 }
