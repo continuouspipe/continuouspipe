@@ -15,12 +15,15 @@
         <p>A project is a logical group of different <em>flows</em>. It will help you to organise your different flows.</p>
     </div>
     <remote-resource resource-name="projects">
-        <md-card ng-repeat="project in projects">
-            <md-card-header ui-sref="flows({project: project.slug})">
+        <md-card ng-repeat="project in projects" class="project-dashboard-card">
+            <md-card-header>
+                <md-button class="md-icon-button project-dashboard-card__delete" ng-click="delete(project)">
+                    <md-icon>clear</md-icon>
+                </md-button>
                 <md-card-avatar>
                     <md-icon class="md-avatar-icon"><i class="material-icons">group</i></md-icon>
                 </md-card-avatar>
-                <md-card-header-text>
+                <md-card-header-text ui-sref="flows({project: project.slug})">
                     <span class="md-title">{{ project.name || project.slug }}</span>
                     <span class="md-subhead">{{ project.memberships.length }} user(s)</span>
                 </md-card-header-text>

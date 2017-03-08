@@ -20,6 +20,10 @@ angular.module('continuousPipeRiver')
             return this.resource.save({team: project}).$promise;
         };
 
+        this.delete = function(project) {
+            return this.resource.remove({slug: project.slug}).$promise;
+        };
+
         this.update = function(project, patch) {
             // Rewrite the "project" key to "team"
             if (patch.project) {

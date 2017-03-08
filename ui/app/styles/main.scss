@@ -908,3 +908,20 @@ code {
     text-align: center;
     padding: 10px;
 }
+
+.project-dashboard-card {
+    position: relative;
+
+    &__delete {
+        position: absolute;
+        right: 0;
+
+        @include largeScreen {
+            visibility: hidden;
+        }
+    }
+
+    &:hover &__delete {
+        visibility: visible;
+    }
+}
