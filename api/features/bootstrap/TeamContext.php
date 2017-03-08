@@ -159,6 +159,7 @@ class TeamContext implements Context
 
     /**
      * @When I create a team :slug with the billing profile :billingAccountUuid
+     * @Given there is a team :slug with the billing profile :billingAccountUuid
      */
     public function iCreateATeamWithTheBillingProfile($slug, $billingAccountUuid)
     {

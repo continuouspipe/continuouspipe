@@ -62,16 +62,7 @@ class DoctrineTeamMembershipRepository implements TeamMembershipRepository
      */
     public function save(TeamMembership $membership)
     {
-        $oldMembership = $this->entityManager->find(
-            'ContinuousPipeSecurity:Team\TeamMembership',
-            ['user' => $membership->getUser(), 'team' => $membership->getTeam()]
-        );
-
-        if (null !== $oldMembership) {
-            $oldMembership->setPermissions($membership->getPermissions());
-            $membership = $oldMembership;
-        }
-
+        $membership = $this->entityManager->merge($membership);
         $this->entityManager->persist($membership);
         $this->entityManager->flush();
     }

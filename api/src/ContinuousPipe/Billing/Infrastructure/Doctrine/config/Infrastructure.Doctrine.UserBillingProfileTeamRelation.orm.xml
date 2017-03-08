@@ -9,7 +9,7 @@
         <id name="userBillingProfile" association-key="true" />
 
         <many-to-one field="team" target-entity="ContinuousPipe\Security\Team\Team">
-            <join-column name="team_slug" referenced-column-name="slug" />
+            <join-column name="team_slug" referenced-column-name="slug" on-delete="CASCADE" />
         </many-to-one>
 
         <many-to-one field="userBillingProfile" target-entity="ContinuousPipe\Billing\BillingProfile\UserBillingProfile">
