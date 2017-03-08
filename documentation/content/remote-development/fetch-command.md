@@ -23,3 +23,8 @@ For example to resync with the `web` container:
 ```
 cp-remote fetch web
 ```
+
+To specify a specific remote project path use the `--remote-project-path` flag
+```
+cp-remote fetch --remote-project-path /public/sub-folder/
+```

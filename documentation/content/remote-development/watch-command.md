@@ -23,3 +23,8 @@ cp-remote watch -s web
 ```
 
 The `watch` command should be left running, it will however need restarting whenever the remote environment is rebuilt using `build`.
+
+To watch a specific remote project path use the `--remote-project-path` flag
+```
+cp-remote watch --remote-project-path= /app/sub-folder/
+```
