@@ -99,6 +99,7 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
                 $cloudFlareMetadata = [
                     'record_name' => $recordName,
                     'record_identifier' => $identifier,
+                    'zone_identifier' => $cloudFlareZone->getZoneIdentifier(),
                 ];
 
                 $logger->child(new Text('Created zone record: ' . $recordName));

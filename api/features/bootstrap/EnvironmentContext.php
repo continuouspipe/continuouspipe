@@ -245,26 +245,6 @@ class EnvironmentContext implements Context
     }
 
     /**
-     * @When I delete the environment named :name of provider :providerName
-     */
-    public function iDeleteTheEnvironmentNamedOfProvider($name, $providerName, $type = 'fake')
-    {
-        $response = $this->kernel->handle(Request::create(sprintf(
-            '/providers/%s/%s/environments/%s',
-            $type,
-            $providerName,
-            $name
-        ), 'DELETE'));
-
-        if (!in_array($response->getStatusCode(), [200, 204])) {
-            throw new \RuntimeException(sprintf(
-                'Expected response 200 or 204, got %d',
-                $response->getStatusCode()
-            ));
-        }
-    }
-
-    /**
      * @Then I should see the component :name
      */
     public function iShouldSeeTheComponentInEnvironment($name)

@@ -97,9 +97,11 @@ Feature:
     When I send the built deployment request
     Then the service "http" should be created
     And the CloudFlare zone "master-myapp.example.com" should have been created with the type CNAME and the address "112345.elb.aws.com"
-    And the service "http" should contain the following annotations:
-      | name                                  | value                                                                 |
-      | com.continuouspipe.io.cloudflare.zone | {"record_name":"master-myapp.example.com","record_identifier":"1234"} |
+    And the annotation "com.continuouspipe.io.cloudflare.zone" of the service "http" should contain the following keys in its JSON:
+      | name              | value                    |
+      | record_name       | master-myapp.example.com |
+      | record_identifier | 1234                     |
+      | zone_identifier   | 1234531235qwerty         |
 
   Scenario: It still returns the port in the endpoints
     Given the service "http" will be created with the public DNS address "112345.elb.aws.com"
@@ -186,3 +188,14 @@ Feature:
     """
     When I send the built deployment request
     And the deployment endpoint "master-myapp.example.com" should have the port "80"
+
+  Scenario: It removes the CF record when the environment is deleted
+    Given I have a service "http" with the selector "component-identifier=app" and type "LoadBalancer" with the ports:
+      | name | port | protocol | targetPort |
+      | http | 80   | tcp      | 80         |
+    And the service "http" have the public IP "1.2.3.4"
+    And the service "http" have the following annotations:
+      | name                                  | value                                                                                          |
+      | com.continuouspipe.io.cloudflare.zone | {"record_name":"master-myapp.example.com","record_identifier":"1234","zone_identifier":"9876"} |
+    When I delete the environment named "name" of the cluster "cluster" of the team "foo"
+    Then the CloudFlare record "1234" of the zone "9876" should have been deleted
