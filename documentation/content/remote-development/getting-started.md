@@ -28,6 +28,13 @@ If the GitHub repository is not the origin of your checked out project then you 
 
 ### OSX (64-bit):
 
+If you use [Homebrew](https://brew.sh/), you can install `cp-remote` via:
+
+```
+brew install continuouspipe/tools/cp-remote
+```
+Otherwise you can install it manually via:
+
 ```
 sudo curl https://continuouspipe.github.io/remote-environment-client/0.0.1/darwin-amd64.gz > cp-remote.gz
 gzip -d cp-remote.gz;
