@@ -25,7 +25,7 @@
         <div>
             <input type="text" id="envToken" style="visibility: hidden;"
                    ng-model="token" value="{{ token }}"/>
-            <p style="overflow-wrap: break-word;">{{ token }}</p>
+            <pre>cp-remote init {{ token }}</pre>
             <md-button class="md-raised" ng-click="getToken()" ng-hide="token" ng-disabled="isLoading">
                 Generate an initialization token
             </md-button>
