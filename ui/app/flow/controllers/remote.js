@@ -57,7 +57,7 @@ angular.module('continuousPipeRiver')
                 RemoteRepository.delete(flow, developmentEnvironmentStatus.development_environment).then(function() {
                     $state.go('flow.development-environments');
 
-                    swal("Successfully deleted !");
+                    swal("Deleted!", "Development environment successfully deleted.", "success");
                 }, function(error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the environment", "error");
                 })['finally'](function() {

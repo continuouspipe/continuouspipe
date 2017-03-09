@@ -16,22 +16,19 @@
             machine.</h3>
         <p>You’ll find all the help you need in the documentation.</p>
         <p>Generate an initialization token to get started and use it with the `cp-remote init` command.</p>
-        <form name="remoteEnvForm">
+        <form name="remoteEnvForm" ng-show="!token">
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Remote Branch Name</label>
                 <input type="text" name="branchName" ng-model="tokenRequest.git_branch" ng-disabled="token" />
             </md-input-container>
-        </form>
-        <div>
-            <input type="text" id="envToken" style="visibility: hidden;"
-                   ng-model="token" value="{{ token }}"/>
-            <pre>cp-remote init {{ token }}</pre>
+
             <md-button class="md-raised" ng-click="getToken()" ng-hide="token" ng-disabled="isLoading">
                 Generate an initialization token
             </md-button>
-            <md-button class="md-raised" ng-click="copyToken()" ng-show="token">
-                Copy token to clipboard
-            </md-button>
+        </form>
+        <div ng-show="token">
+            <h3>Get started by running the following command in your project repository!</h3>
+            <pre ng-show="token" style="white-space: pre-wrap; word-wrap: break-word;">cp-remote init {{ token }}</pre>
         </div>
     </div>
     <div ng-if="hasBeenCreated">
