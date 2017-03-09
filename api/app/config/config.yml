@@ -126,9 +126,15 @@ lexik_jwt_authentication:
     token_ttl:        %jwt_token_ttl%
 
 continuous_pipe_security:
-    authenticator_url: %authenticator_url%
-    api_key: %authenticator_api_key%
+    authenticator_url: "%authenticator_url%"
+    api_key: "%authenticator_api_key%"
     cache: true
+    encryption:
+        google_kms:
+            project_id: "%google_kms_project_id%"
+            location: "%google_kms_location%"
+            service_account_path: "%google_kms_service_account_path%"
+            key_ring: "%google_kms_key_ring%"
 
 fos_rest:
     body_converter:

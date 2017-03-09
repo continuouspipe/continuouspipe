@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f7d2922a95bc05f105a604b85f12c770",
-    "content-hash": "28b6f7e0053e3c949857d27896bbc53c",
+    "hash": "1ac74e3741d483f3468711b485cdc2b0",
+    "content-hash": "bff4148a1eb21ecc7d8ebbabf3aba9f2",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -346,16 +346,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.5.1",
+            "version": "dev-security-encryption",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "4dccf120015772ba12e575a21414ce9dec9c2930"
+                "reference": "f3b46224c16c0323d54f281815a2b10e22af62e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/4dccf120015772ba12e575a21414ce9dec9c2930",
-                "reference": "4dccf120015772ba12e575a21414ce9dec9c2930",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/f3b46224c16c0323d54f281815a2b10e22af62e1",
+                "reference": "f3b46224c16c0323d54f281815a2b10e22af62e1",
                 "shasum": ""
             },
             "require": {
@@ -366,7 +366,8 @@
                 "ramsey/uuid": "^3.1"
             },
             "require-dev": {
-                "phpspec/phpspec": "^2.3"
+                "defuse/php-encryption": "^2.0",
+                "phpspec/phpspec": "~3.0.0"
             },
             "type": "library",
             "autoload": {
@@ -375,10 +376,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.5.1",
+                "source": "https://github.com/continuouspipe/security/tree/security-encryption",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-03-03 18:07:41"
+            "time": "2017-03-09 11:07:54"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -8043,6 +8044,7 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
+        "continuous-pipe/security": 20,
         "continuous-pipe/worker-bundle": 20
     },
     "prefer-stable": false,

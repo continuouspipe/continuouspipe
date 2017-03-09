@@ -1,12 +1,12 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\River\Flow\EncryptedVariable\PreviouslyKnownEncryptedVariableVault;
 use ContinuousPipe\Security\Account\BitBucketAccount;
 use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
+use ContinuousPipe\Security\Encryption\InMemory\PreviouslyKnownValuesVault;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamNotFound;
@@ -38,9 +38,9 @@ class SecurityContext implements Context
      */
     private $kernel;
     /**
-     * @var PreviouslyKnownEncryptedVariableVault
+     * @var PreviouslyKnownValuesVault
      */
-    private $previouslyKnownEncryptedVariableVault;
+    private $previouslyKnownValuesVault;
 
     /**
      * @var Response|null
@@ -56,12 +56,12 @@ class SecurityContext implements Context
         TokenStorageInterface $tokenStorage,
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         KernelInterface $kernel,
-        PreviouslyKnownEncryptedVariableVault $previouslyKnownEncryptedVariableVault
+        PreviouslyKnownValuesVault $previouslyKnownValuesVault
     ) {
         $this->tokenStorage = $tokenStorage;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->kernel = $kernel;
-        $this->previouslyKnownEncryptedVariableVault = $previouslyKnownEncryptedVariableVault;
+        $this->previouslyKnownValuesVault = $previouslyKnownValuesVault;
     }
 
     /**
@@ -269,8 +269,8 @@ class SecurityContext implements Context
      */
     public function theEncryptedVersionOfTheValueForTheFlowWillBe($plainValue, $flowUuid, $encryptedValue)
     {
-        $this->previouslyKnownEncryptedVariableVault->addEncryptionMapping(
-            Uuid::fromString($flowUuid),
+        $this->previouslyKnownValuesVault->addEncryptionMapping(
+            'flow-'.$flowUuid,
             $plainValue,
             $encryptedValue
         );
@@ -281,8 +281,8 @@ class SecurityContext implements Context
      */
     public function theDecryptedVersionOfTheValueForTheFlowWillBe($encryptedValue, $flowUuid, $plainValue)
     {
-        $this->previouslyKnownEncryptedVariableVault->addDecryptionMapping(
-            Uuid::fromString($flowUuid),
+        $this->previouslyKnownValuesVault->addDecryptionMapping(
+            'flow-'.$flowUuid,
             $encryptedValue,
             $plainValue
         );
