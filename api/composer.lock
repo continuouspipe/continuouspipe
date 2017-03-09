@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1ac74e3741d483f3468711b485cdc2b0",
-    "content-hash": "bff4148a1eb21ecc7d8ebbabf3aba9f2",
+    "hash": "86c3379f8159f27bd6537326559c0944",
+    "content-hash": "846c6b49e08587685e00362173680c22",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -346,16 +346,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "dev-security-encryption",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "f3b46224c16c0323d54f281815a2b10e22af62e1"
+                "reference": "02dc67aca71a5c36ae4586f5182151bc2888e085"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/f3b46224c16c0323d54f281815a2b10e22af62e1",
-                "reference": "f3b46224c16c0323d54f281815a2b10e22af62e1",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/02dc67aca71a5c36ae4586f5182151bc2888e085",
+                "reference": "02dc67aca71a5c36ae4586f5182151bc2888e085",
                 "shasum": ""
             },
             "require": {
@@ -376,10 +376,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/security-encryption",
+                "source": "https://github.com/continuouspipe/security/tree/2.6.0",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-03-09 11:07:54"
+            "time": "2017-03-09 15:22:06"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -8044,7 +8044,6 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
-        "continuous-pipe/security": 20,
         "continuous-pipe/worker-bundle": 20
     },
     "prefer-stable": false,
