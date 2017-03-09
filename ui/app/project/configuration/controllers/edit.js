@@ -68,7 +68,7 @@ angular.module('continuousPipeRiver')
                 closeOnConfirm: false
             }, function () {
                 ProjectRepository.delete($scope.project).then(function () {
-                    swal("Deleted!", "project successfully deleted.", "success");
+                    swal("Deleted!", "Project successfully deleted.", "success");
                 }, function (error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting project", "error");
                 })['finally'](function () {
