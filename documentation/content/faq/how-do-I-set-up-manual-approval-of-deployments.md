@@ -28,5 +28,5 @@ pipelines:
       tasks: [ images, deployment ]
 ```
 
-In this configuration the `Features` pipeline will start a Tide which will run the `images` and `deployment` tasks automatically. However, the `Production` pipeline will start a Tide which will run the `images` task, then pause until approval is granted. This is done by clicking on the paused Tide and clicking "APPROVE", which will cause the Tide to resume and run the `deployment` task.
+In this configuration the `Features` pipeline will start a tide which will run the `images` and `deployment` tasks automatically. However, the `Production` pipeline will start a tide which will run the `images` task, then pause until approval is granted. This is done by clicking on the paused tide and clicking "APPROVE", which will cause the tide to resume and run the `deployment` task.
 

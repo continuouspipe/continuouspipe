@@ -7,7 +7,7 @@ menu:
 
 weight: 50
 ---
-At this stage you should have a fully configured Team, so it's time to configure your code repository by adding the configuration files that are needed to build a Docker image and set up ContinuousPipe deployments.
+At this stage you should have a fully configured project, so it's time to configure your code repository by adding the configuration files that are needed to build a Docker image and set up ContinuousPipe deployments.
 
 ```
 .
@@ -55,11 +55,11 @@ tasks:
         build:
             services:
                 web:
-                    image: docker.io/pswaine/acme-anvils
+                    image: docker.io/pswaine/hello-world
 
     deployment:
         deploy:
-            cluster: acme-products
+            cluster: hello-world
             services:
                 web:
                     specification:
@@ -69,8 +69,8 @@ tasks:
 
 This YAML does the following:
 
-- It will configure the Docker image to be called `acme-anvils` and stored in an account at docker.io
-- It will configure the Docker image to be deployed to the `acme-products` cluster - this cluster identifier is defined when [configuring a cluster]({{< relref "configuring-a-cluster.md" >}})
+- It will configure the Docker image to be called `hello-world` and stored in an account at docker.io
+- It will configure the Docker image to be deployed to the `hello-world` cluster - this cluster identifier is defined when [configuring a cluster]({{< relref "configuring-a-cluster.md" >}})
 - It will configure the Kubernetes cluster to create a public load-balancer for the web service allowing public access
 
 See [configuring deployments]({{< relref "configuration/deployments.md" >}}) for more documentation.

@@ -22,14 +22,14 @@ notifications:
             webhook_url: https://hooks.slack.com/services/1/2/3
 ```
 
-In this default configuration you will then receive notification for each stage of a Tide:
+In this default configuration you will then receive notification for each stage of a tide:
 
 - `pending`
 - `running`
 - `success`
 - `failure`
 
-You may want to filter this and (for example) only receive notifications for failed Tides. This can be done using the following:
+You may want to filter this and (for example) only receive notifications for failed tides. This can be done using the following:
 
 ```yaml
 tasks:

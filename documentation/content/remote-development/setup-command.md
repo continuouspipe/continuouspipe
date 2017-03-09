@@ -70,7 +70,7 @@ These are only needed if you want to log usage stats using https://keen.io/.
 * **What is the IP of the cluster?**
 * **What is the cluster username?**
 
-The cluster IP address and username can be found on the cluster page for the team in the [ContinuousPipe console](https://ui.continuouspipe.io/):
+The cluster IP address and username can be found on the cluster page for the project in the [ContinuousPipe console](https://ui.continuouspipe.io/):
 
 ![Project Key](/images/guides/remote-development/kubernetes-config.png)
 
