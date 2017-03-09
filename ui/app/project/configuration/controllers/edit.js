@@ -54,4 +54,26 @@ angular.module('continuousPipeRiver')
                 swal("Error !", $http.getError(error) || "An unknown error occured while loading your billing profiles", "error");
             });
         };
+
+        $scope.delete = function () {
+            $scope.isLoading = true;
+
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this project!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }, function () {
+                ProjectRepository.delete($scope.project).then(function () {
+                    swal("Deleted!", "project successfully deleted.", "success");
+                }, function (error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting project", "error");
+                })['finally'](function () {
+                    $scope.isLoading = false;
+                });
+            });
+        };
     });

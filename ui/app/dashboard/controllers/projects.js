@@ -5,28 +5,6 @@ angular.module('continuousPipeRiver')
         $remoteResource.load('projects', ProjectRepository.findAll()).then(function (projects) {
             $scope.projects = projects;
         });
-
-        $scope.delete = function (project) {
-            $scope.isLoading = true;
-
-            swal({
-                title: "Are you sure?",
-                text: "You will not be able to recover this project!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                closeOnConfirm: false
-            }, function () {
-                ProjectRepository.delete(project).then(function () {
-                    swal("Deleted!", "project successfully deleted.", "success");
-                }, function (error) {
-                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting project", "error");
-                })['finally'](function () {
-                    $scope.isLoading = false;
-                });
-            });
-        };
     })
     .controller('CreateProjectController', function ($scope, $state, $http, Slug, ProjectRepository) {
         $scope.$watch('project.name', function (name, previous) {
