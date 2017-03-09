@@ -6,5 +6,10 @@
 
     <services>
         <service id="security.authenticator.client" class="ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient" />
+        <service id="security.encryption.vault.previously_known"
+                 class="ContinuousPipe\Security\Encryption\InMemory\PreviouslyKnownValuesVault"
+                 decorates="security.encryption.vault">
+            <argument type="service" id="security.encryption.vault.previously_known.inner" />
+        </service>
     </services>
 </container>

@@ -134,9 +134,10 @@ class EnvironmentContext implements Context
     }
 
     /**
+     * @Then the namespace should be deleted successfully
      * @Then the namespace :namespace should be deleted successfully
      */
-    public function theNamespaceShouldBeDeletedSuccessfully($namespace)
+    public function theNamespaceShouldBeDeletedSuccessfully($namespace = null)
     {
         if (!in_array($this->response->getStatusCode(), [200, 204])) {
             echo $this->response->getContent();

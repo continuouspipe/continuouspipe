@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\EnvironmentNotFound;
+use ContinuousPipe\Model\Application;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;

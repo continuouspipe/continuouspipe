@@ -12,6 +12,11 @@ class TraceableCloudFlareClient implements CloudFlareClient
     private $createdRecords = [];
 
     /**
+     * @var string[]
+     */
+    private $deletedRecords = [];
+
+    /**
      * @var CloudFlareClient
      */
     private $decoratedClient;
@@ -37,10 +42,28 @@ class TraceableCloudFlareClient implements CloudFlareClient
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function deleteRecord(string $zone, CloudFlareAuthentication $authentication, string $recordIdentifier)
+    {
+        $this->decoratedClient->deleteRecord($zone, $authentication, $recordIdentifier);
+
+        $this->deletedRecords[] = $recordIdentifier;
+    }
+
+    /**
      * @return ZoneRecord[]
      */
     public function getCreatedRecords(): array
     {
         return $this->createdRecords;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDeletedRecords(): array
+    {
+        return $this->deletedRecords;
     }
 }

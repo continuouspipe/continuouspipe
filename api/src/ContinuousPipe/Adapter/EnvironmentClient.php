@@ -35,6 +35,8 @@ interface EnvironmentClient
      * Delete the given environment.
      *
      * @param Environment $environment
+     *
+     * @throws EnvironmentNotFound
      */
     public function delete(Environment $environment);
 }

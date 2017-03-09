@@ -4,9 +4,12 @@ namespace ContinuousPipe\CloudFlare;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointTransformer;
+use ContinuousPipe\CloudFlare\Encryption\EncryptedAuthentication;
+use ContinuousPipe\CloudFlare\Encryption\EncryptionNamespace;
 use ContinuousPipe\Model\Component\Endpoint;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
+use ContinuousPipe\Security\Encryption\Vault;
 use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\KubernetesObject;
@@ -34,17 +37,23 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var Vault
+     */
+    private $vault;
 
     public function __construct(
         CloudFlareClient $cloudFlareClient,
         LoggerFactory $loggerFactory,
         DeploymentClientFactory $deploymentClientFactory,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        Vault $vault
     ) {
         $this->cloudFlareClient = $cloudFlareClient;
         $this->loggerFactory = $loggerFactory;
         $this->deploymentClientFactory = $deploymentClientFactory;
         $this->logger = $logger;
+        $this->vault = $vault;
     }
 
     /**
@@ -96,10 +105,16 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
                     )
                 );
 
+                $encryptedAuthentication = new EncryptedAuthentication(
+                    $this->vault,
+                    EncryptionNamespace::from($cloudFlareZone->getZoneIdentifier(), $identifier)
+                );
+
                 $cloudFlareMetadata = [
                     'record_name' => $recordName,
                     'record_identifier' => $identifier,
                     'zone_identifier' => $cloudFlareZone->getZoneIdentifier(),
+                    'encrypted_authentication' => $encryptedAuthentication->encrypt($cloudFlareZone->getAuthentication()),
                 ];
 
                 $logger->child(new Text('Created zone record: ' . $recordName));
