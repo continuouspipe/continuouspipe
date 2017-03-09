@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f7d2922a95bc05f105a604b85f12c770",
-    "content-hash": "28b6f7e0053e3c949857d27896bbc53c",
+    "hash": "e901fbb6871517f5d84d9cb45dd478c6",
+    "content-hash": "8b38b7a2cb02d14c6eb44f5c9472d262",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -346,16 +346,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.5.1",
+            "version": "2.5.2",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "4dccf120015772ba12e575a21414ce9dec9c2930"
+                "reference": "a11fdf59d66c377e9e2476e62713c7445a678033"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/4dccf120015772ba12e575a21414ce9dec9c2930",
-                "reference": "4dccf120015772ba12e575a21414ce9dec9c2930",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/a11fdf59d66c377e9e2476e62713c7445a678033",
+                "reference": "a11fdf59d66c377e9e2476e62713c7445a678033",
                 "shasum": ""
             },
             "require": {
@@ -366,7 +366,7 @@
                 "ramsey/uuid": "^3.1"
             },
             "require-dev": {
-                "phpspec/phpspec": "^2.3"
+                "phpspec/phpspec": "~3.0.0"
             },
             "type": "library",
             "autoload": {
@@ -375,10 +375,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.5.1",
+                "source": "https://github.com/continuouspipe/security/tree/master",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-03-03 18:07:41"
+            "time": "2017-03-09 09:55:12"
         },
         {
             "name": "continuous-pipe/worker-bundle",
