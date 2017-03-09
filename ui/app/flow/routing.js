@@ -89,5 +89,43 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+            .state('flow.development-environments', {
+                url: '/development-environments',
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/remote/list.html',
+                        controller: 'ListOfDevelopmentEnvironmentsController'
+                    }
+                },
+                aside: true
+            })
+            .state('flow.create-development-environment', {
+                url: '/development-environments/create',
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/remote/create.html',
+                        controller: 'CreateDevelopmentEnvironmentController'
+                    }
+                },
+                params: {
+                    environment: {}
+                },
+                aside: true
+            })
+            .state('flow.development-environment', {
+                url: '/development-environments/:environmentUuid',
+                resolve: {
+                    developmentEnvironmentStatus: function($stateParams, RemoteRepository, flow) {
+                        return RemoteRepository.getStatus(flow, $stateParams.environmentUuid);
+                    }
+                },
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/remote/show.html',
+                        controller: 'DevelopmentEnvironmentController'
+                    }
+                },
+                aside: true
+            })
         ;
     });
