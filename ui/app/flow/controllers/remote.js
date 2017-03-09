@@ -8,8 +8,19 @@ angular.module('continuousPipeRiver')
     })
     .controller('DevelopmentEnvironmentController', function ($scope, $state, $mdToast, $stateParams, RemoteRepository, EndpointOpener, $http, TideRepository, flow, user, developmentEnvironmentStatus) {
         $scope.flow = flow;
-        $scope.developmentEnvironmentStatus = developmentEnvironmentStatus;
-        $scope.hasBeenCreated = ['TokenNotCreated', 'NotStarted'].indexOf(developmentEnvironmentStatus.status) == -1;
+
+        var refresh = function(status) {
+            $scope.developmentEnvironmentStatus = $.extend(true, $scope.developmentEnvironmentStatus, status);
+            $scope.hasBeenCreated = ['TokenNotCreated', 'NotStarted'].indexOf(status.status) == -1;
+
+            if (!$scope.hasBeenCreated) {
+                setTimeout(function() {
+                    RemoteRepository.getStatus(flow, status.development_environment.uuid).then(function(status) {
+                        refresh(status);
+                    });
+                }, 5000);
+            }
+        };
 
         // Token creation if not has been created
         $scope.tokenRequest = {
@@ -70,6 +81,8 @@ angular.module('continuousPipeRiver')
                 $scope.isLoading = false;
             });
         };
+
+        refresh(developmentEnvironmentStatus);
     })
     .controller('CreateDevelopmentEnvironmentController', function($scope, $http, $state, RemoteRepository, flow, user) {
         $scope.environment = {
