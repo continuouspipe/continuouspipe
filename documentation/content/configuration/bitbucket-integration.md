@@ -1,6 +1,5 @@
 ---
-title: BitBucket Integration
-LinkTitle: BitBucket Integration
+title: Bitbucket Integration
 menu:
   main:
     parent: 'configuration'
@@ -8,19 +7,19 @@ menu:
 
 weight: 100
 ---
-In order to use ContinuousPipe with a BitBucket repository, you need to configure two interaction points: 
+In order to use ContinuousPipe with a Bitbucket repository, you need to configure two interaction points: 
 
 ## Creating a Linked Account in ContinuousPipe
 
-The first interaction is linking the BitBucket account to ContinuousPipe. This is needed when creating a flow so that ContinuousPipe can list repositories to select. 
+The first interaction is linking the Bitbucket account to ContinuousPipe. This is needed when creating a flow so that ContinuousPipe can list repositories to select. 
 
 Setting up a linked account is demonstrated in the Quick Start guide to [creating a flow]({{< relref "quick-start/creating-a-flow.md" >}}).
 
-## Installing the ContinuousPipe Integration in BitBucket
+## Installing the ContinuousPipe Integration in Bitbucket
 
-The second interaction is installing the ContinuousPipe integration in BitBucket. This is needed in order to let ContinuousPipe know about any repository changes that have been made and to add comments on pull requests.
+The second interaction is installing the ContinuousPipe integration in Bitbucket. This is needed in order to let ContinuousPipe know about any repository changes that have been made and to add comments on pull requests.
 
-To install the integration go to your BitBucket account settings page. In the left menu, click on "Manage integrations".
+To install the integration go to your Bitbucket account settings page. In the left menu, click on "Manage integrations".
 
 ![](/images/configuration/bitbucket-settings-menu.png)
 
@@ -32,4 +31,4 @@ The last step is to grant ContinuousPipe access to your code repository by click
 
 ![](/images/configuration/bitbucket-grant-access-popup.png)
 
-You are now all set and the BitBucket integration is configured for your account.
+You are now all set and the Bitbucket integration is configured for your account.

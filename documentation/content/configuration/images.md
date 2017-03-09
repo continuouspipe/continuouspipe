@@ -1,5 +1,5 @@
 ---
-title: Building the Docker Images
+title: Building Docker Images
 menu:
   main:
     parent: 'configuration'

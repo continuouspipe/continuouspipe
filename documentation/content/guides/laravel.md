@@ -16,7 +16,7 @@ In this tutorial we are going to setup a new Laravel project, run it within Dock
 
 Before getting started you will need the following - 
 
-- A [GitHub](https://github.com/) or [BitBucket](https://bitbucket.org/) account to host your Laravel project
+- A [GitHub](https://github.com/) or [Bitbucket](https://bitbucket.org/) account to host your Laravel project
 - A [ContinuousPipe](https://continuouspipe.io/) account
 - A Kubernetes cluster e.g. [AWS](https://aws.amazon.com/), [GCE](https://cloud.google.com/container-engine/) or [Azure](https://azure.microsoft.com/en-au/)
 - A Docker Registry account e.g. [docker.io](https://docker.io) or [quay.io](https://quay.io)
