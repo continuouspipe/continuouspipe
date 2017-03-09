@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowAlertsController', function ($scope, $state, ProjectAlertsRepository, AlertsRepository, AlertManager, flow, project) {
+    .controller('FlowAlertsController', function ($rootScope, $scope, $state, ProjectAlertsRepository, AlertsRepository, AlertManager, flow, project) {
         $scope.alerts = [];
 
         $scope.loadAlerts = function () {
@@ -26,9 +26,8 @@ angular.module('continuousPipeRiver')
             AlertManager.showAll($scope.alerts);
         };
 
-        $scope.$watch('$state', function () {
-            $scope.loadAlerts();
-        });
+        $rootScope.$on('configuration-saved', $scope.loadAlerts);
+        $rootScope.$on('page-reopened', $scope.loadAlerts);
 
         $scope.loadAlerts();
     });
