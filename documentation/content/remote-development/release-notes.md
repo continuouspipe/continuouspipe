@@ -14,11 +14,11 @@ weight: 170
 
 * Added `push` (aka `sync`) command which will sync files and folders to the remote container.
 
-* Added `pods` (aka `checkconnection`) command which lists the pods available for the environment
+* Added `pods` (aka `checkconnection`) command which lists the pods available for the environment.
 
 * In order to keep the cluster credentials secret, all communications to the cluster will go through the cp kubernetes proxy by default. You can still use a direct communication by editing the `.cp-remote-setting` and adding the cluster credentials.
 
-* Allowing to override the remote path with `--remote-project-path`
+* Allowing to override the remote path with `--remote-project-path`.
 
 ## Bug Fixes
 
@@ -28,10 +28,12 @@ weight: 170
 
 * Fixed an issue where rsync was not deleting individual folder because its contained file where excluded.
 
+* Fixed an issue where the full path to the logs folder (rather than the name of the folder only) was being added to the `.gitignore`.
+
 ## Other Changes
 
-* The config has been split in 2, local and global. The global config is stored in the home directory `~/.cp-remote/config.yml` (on linux/osx) `C:\Users\{YourUserName}\.cp-remote\config.yml` (on windows) contains username, api-key and the urls for cp-kube-proxy and cp-authenticator cp-river-api
+* The config has been split in 2, local and global. The global config is stored in the home directory `~/.cp-remote/config.yml` (on linux/osx) `C:\Users\{YourUserName}\.cp-remote\config.yml` (on windows) contains username, api-key and the urls for cp-kube-proxy and cp-authenticator cp-river-api.
 
-* Local config has changed: ~~.cp-remote-env-settings.yml~~ to .cp-remote-settings.yml
+* Local config has changed: ~~.cp-remote-env-settings.yml~~ to .cp-remote-settings.yml.
 
-* Replaced the flags `--project-key` and `--branch-name` with a single `--environment` flag as the 2 flags where always used as a pair to form the environment
+* Replaced the flags `--project-key` and `--branch-name` with a single `--environment` flag as the 2 flags where always used as a pair to form the environment.
