@@ -1,5 +1,5 @@
 ---
-title: Configuration files
+title: Configuration Files
 menu:
   main:
     parent: 'configuration'
