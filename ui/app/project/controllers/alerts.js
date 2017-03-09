@@ -19,7 +19,7 @@ angular.module('continuousPipeRiver')
         };
 
         $rootScope.$on('configuration-saved', $scope.loadAlerts);
-        $rootScope.$on('page-reopened', $scope.loadAlerts);
+        $rootScope.$on('location-changed', $scope.loadAlerts);
 
         $scope.loadAlerts();
     })

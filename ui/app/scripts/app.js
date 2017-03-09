@@ -77,6 +77,7 @@ angular
         }
 
         $rootScope.$on('$stateChangeStart', function (event, current, params) {
+            $rootScope.$emit('location-changed');
             $rootScope.title = formatTitle(current.name);
 
             if (current.redirectTo) {
