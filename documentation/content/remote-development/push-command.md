@@ -3,9 +3,9 @@ title: Push Command
 menu:
   main:
     parent: 'remote-development'
-    weight: 90
+    weight: 80
 
-weight: 90
+weight: 80
 ---
 ## Using the Push Command
 

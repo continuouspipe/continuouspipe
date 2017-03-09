@@ -3,9 +3,9 @@ title: Release Notes v0.1.0
 menu:
   main:
     parent: 'remote-development'
-    weight: 50
+    weight: 170
 
-weight: 50
+weight: 170
 ---
 
 ## New Features

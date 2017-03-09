@@ -3,9 +3,9 @@ title: Working with a Different Environment
 menu:
   main:
     parent: 'remote-development'
-    weight: 110
+    weight: 140
 
-weight: 110
+weight: 140
 ---
 ## Working with a Different Environment
 

@@ -3,9 +3,9 @@ title: Check Connection Command
 menu:
   main:
     parent: 'remote-development'
-    weight: 100
+    weight: 130
 
-weight: 100
+weight: 130
 ---
 ## Using the Check Connection Command
 

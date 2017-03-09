@@ -3,9 +3,9 @@ title: Pods Command
 menu:
   main:
     parent: 'remote-development'
-    weight: 100
+    weight: 120
 
-weight: 100
+weight: 120
 ---
 ## Using the Pods Command
 
