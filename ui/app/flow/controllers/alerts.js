@@ -4,17 +4,25 @@ angular.module('continuousPipeRiver')
     .controller('FlowAlertsController', function ($rootScope, $scope, $state, ProjectAlertsRepository, AlertsRepository, AlertManager, flow, project) {
         $scope.alerts = [];
 
-        $scope.loadAlerts = function () {
-            ProjectAlertsRepository.findByProject(project).then(function (alerts) {
-                alerts.forEach(function (alert) {
+        function filterUniqueAlerts(alerts) {
+            alerts
+                .filter(function (alert) {
+                    return !$scope.alerts.filter(function (inScope) {
+                        return inScope.message === alert.message;
+                    }).length;
+                })
+                .forEach(function (alert) {
                     $scope.alerts.push(alert);
                 });
+        }
+
+        $scope.loadAlerts = function () {
+            ProjectAlertsRepository.findByProject(project).then(function (alerts) {
+                filterUniqueAlerts(alerts);
             });
 
             AlertsRepository.findByFlow(flow).then(function (alerts) {
-                alerts.forEach(function (alert) {
-                    $scope.alerts.push(alert);
-                });
+                filterUniqueAlerts(alerts);
             });
         };
 

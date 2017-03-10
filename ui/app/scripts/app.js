@@ -28,7 +28,7 @@ angular
         'firebase',
         'RecursionHelper'
     ])
-    .config(function($urlRouterProvider, $breadcrumbProvider, $locationProvider, $mdThemingProvider, AnalyticsProvider) {
+    .config(function ($urlRouterProvider, $breadcrumbProvider, $locationProvider, $mdThemingProvider, AnalyticsProvider) {
         $urlRouterProvider.otherwise('/');
         $locationProvider.html5Mode(true);
         $breadcrumbProvider.setOptions({
@@ -38,7 +38,7 @@ angular
         AnalyticsProvider
             .setAccount('UA-71216332-2')
             .setPageEvent('$stateChangeSuccess')
-        ;
+            ;
 
         $mdThemingProvider.theme('blue');
 
@@ -62,7 +62,7 @@ angular
         };
     })
     // We need to inject it at least once to have automatic tracking
-    .run(['$rootScope', '$state', '$http', function($rootScope, $state, $http) {
+    .run(['$rootScope', '$state', '$http', function ($rootScope, $state, $http) {
         function capitalizeFirstLetter(word) {
             return word.charAt(0).toUpperCase() + word.slice(1);
         }
@@ -73,11 +73,11 @@ angular
 
         function formatTitle(text) {
             var titleCasedText = titleCase(text);
-            return titleCasedText ? titleCasedText  + ' - ' : '';
+            return titleCasedText ? titleCasedText + ' - ' : '';
         }
 
         document.addEventListener('visibilitychange', function () {
-            $rootScope.$emit('visibility-changed');
+            if (!document.hidden) $rootScope.$emit('visibility-changed');
         });
 
         $rootScope.$on('$stateChangeStart', function (event, current, params) {
@@ -85,11 +85,11 @@ angular
 
             if (current.redirectTo) {
                 event.preventDefault();
-                $state.go(current.redirectTo, params, {location: 'replace'});
+                $state.go(current.redirectTo, params, { location: 'replace' });
             }
         });
 
-        $rootScope.$on('user_context.user_updated', function(event, user) {
+        $rootScope.$on('user_context.user_updated', function (event, user) {
             window.Intercom("boot", {
                 app_id: "i0yqsxbt",
                 user_id: user.username,
@@ -99,7 +99,7 @@ angular
             });
         });
 
-        $http.getError = function(error) {
+        $http.getError = function (error) {
             var response = error || {};
             var body = response.data || {};
             var message = body.message || body.error;
@@ -116,4 +116,4 @@ angular
             return message;
         };
     }])
-;
+    ;
