@@ -134,9 +134,10 @@ class EnvironmentContext implements Context
     }
 
     /**
+     * @Then the namespace should be deleted successfully
      * @Then the namespace :namespace should be deleted successfully
      */
-    public function theNamespaceShouldBeDeletedSuccessfully($namespace)
+    public function theNamespaceShouldBeDeletedSuccessfully($namespace = null)
     {
         if (!in_array($this->response->getStatusCode(), [200, 204])) {
             echo $this->response->getContent();
@@ -240,26 +241,6 @@ class EnvironmentContext implements Context
             throw new \RuntimeException(sprintf(
                 'Found an environment named "%s"',
                 $name
-            ));
-        }
-    }
-
-    /**
-     * @When I delete the environment named :name of provider :providerName
-     */
-    public function iDeleteTheEnvironmentNamedOfProvider($name, $providerName, $type = 'fake')
-    {
-        $response = $this->kernel->handle(Request::create(sprintf(
-            '/providers/%s/%s/environments/%s',
-            $type,
-            $providerName,
-            $name
-        ), 'DELETE'));
-
-        if (!in_array($response->getStatusCode(), [200, 204])) {
-            throw new \RuntimeException(sprintf(
-                'Expected response 200 or 204, got %d',
-                $response->getStatusCode()
             ));
         }
     }

@@ -32,4 +32,18 @@ class CloudFlareContext implements Context
             throw new \RuntimeException('No matching created record found');
         }
     }
+
+    /**
+     * @Then the CloudFlare record :record of the zone :zone should have been deleted
+     */
+    public function theCloudFlareRecordOfTheZoneShouldHaveBeenDeleted($record, $zone)
+    {
+        $matchingRecords = array_filter($this->traceableCloudFlareClient->getDeletedRecords(), function(string $deletedRecord) use ($record) {
+            return $deletedRecord == $record;
+        });
+
+        if (count($matchingRecords) == 0) {
+            throw new \RuntimeException('No matching deleted record found');
+        }
+    }
 }
