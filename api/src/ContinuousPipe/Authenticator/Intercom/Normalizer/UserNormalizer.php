@@ -7,6 +7,7 @@ use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\User\User;
 use ContinuousPipe\Billing\BillingProfile\Trial\TrialResolver;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 
 class UserNormalizer
 {
@@ -46,7 +47,11 @@ class UserNormalizer
      */
     public function normalize(User $user)
     {
-        $trialExpiryDate = $this->getUserTrialExpiryDate($user);
+        try {
+            $trialExpiryDate = $this->getUserTrialExpiryDate($user);
+        } catch (UserBillingProfileNotFound $e) {
+            $trialExpiryDate = new \DateTimeImmutable('yesterday');
+        }
 
         return [
             'user_id' => $user->getUsername(),
