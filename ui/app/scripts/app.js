@@ -76,8 +76,11 @@ angular
             return titleCasedText ? titleCasedText  + ' - ' : '';
         }
 
+        document.addEventListener('visibilitychange', function () {
+            $rootScope.$emit('visibility-changed');
+        });
+
         $rootScope.$on('$stateChangeStart', function (event, current, params) {
-            $rootScope.$emit('location-changed');
             $rootScope.title = formatTitle(current.name);
 
             if (current.redirectTo) {

@@ -27,7 +27,7 @@ angular.module('continuousPipeRiver')
         };
 
         $rootScope.$on('configuration-saved', $scope.loadAlerts);
-        $rootScope.$on('location-changed', $scope.loadAlerts);
+        $rootScope.$on('visibility-changed', $scope.loadAlerts);
 
         $scope.loadAlerts();
     });
