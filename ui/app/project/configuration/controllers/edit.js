@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectConfigurationController', function($rootScope, $scope, $remoteResource, $http, $mdToast, ProjectRepository, UserRepository, project) {
+    .controller('ProjectConfigurationController', function($rootScope, $scope, $remoteResource, $http, $mdToast, $state, ProjectRepository, UserRepository, project) {
         $scope.project = project;
         $scope.patch = {
             project: {
@@ -54,6 +54,30 @@ angular.module('continuousPipeRiver')
                 $scope.billingProfiles = billingProfiles;
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occured while loading your billing profiles", "error");
+            });
+        };
+
+        $scope.delete = function () {
+            $scope.isLoading = true;
+
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this project!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }, function () {
+                ProjectRepository.delete($scope.project).then(function () {
+                    swal("Deleted!", "Project successfully deleted.", "success");
+                    
+                    $state.go('projects');
+                }, function (error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting project", "error");
+                })['finally'](function () {
+                    $scope.isLoading = false;
+                });
             });
         };
     });
