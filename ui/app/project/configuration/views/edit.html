@@ -27,6 +27,7 @@
 </md-content>
 <md-toolbar>
     <div class="md-toolbar-tools">
+        <md-button class="md-raised md-warn" aria-label="Delete" ng-click="delete()" ng-disabled="isLoading"><md-icon>delete</md-icon> Delete</md-button>
         <span flex></span>
         <md-button class="md-raised" aria-label="Update" ng-disabled="projectForm.$invalid || isLoading" ng-click="update(project)">
             <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
