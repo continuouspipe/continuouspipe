@@ -12,10 +12,12 @@
 <md-content flex id="content">
     <div class="zero-content-help zero-content-help--remote" ng-if="!hasBeenCreated">
         <i class="cp-icon-commit" style="font-size: 60px;"></i>
-        <h3>To use your development environment, you’ll have to install the cp-remote command line tool on your
-            machine.</h3>
-        <p>You’ll find all the help you need in the documentation.</p>
-        <p>Generate an initialization token to get started and use it with the <a href="https://docs.continuouspipe.io/remote-development/init-command/" target="_blank"><code>cp-remote init</code></a> command.</p>
+        <p>To use your development environment, you'll need to install the <a href="https://docs.continuouspipe.io/remote-development/getting-started/#installation" target="_blank">cp-remote command line tool</a> on your
+            machine.</p>
+
+        <p>You will then need to generate an initialization token below. You can then pass the token as an argument into the <a href="https://docs.continuouspipe.io/remote-development/init-command/" target="_blank"><code>cp-remote init</code></a> command.</p>
+
+        <p>You'll find all the help you need in the <a href="https://docs.continuouspipe.io/remote-development/" target="_blank">remote development documentation.</a></p>
         <form name="remoteEnvForm" ng-show="!token">
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Remote Branch Name</label>
@@ -27,7 +29,7 @@
             </md-button>
         </form>
         <div ng-show="token">
-            <h3>Get started by running the following command in your project repository!</h3>
+            <h3>Get started by running the following command in your project repository:</h3>
             <pre ng-show="token" style="white-space: pre-wrap; word-wrap: break-word;">cp-remote init {{ token }}</pre>
         </div>
     </div>
