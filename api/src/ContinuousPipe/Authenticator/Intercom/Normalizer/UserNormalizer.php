@@ -5,6 +5,8 @@ namespace ContinuousPipe\Authenticator\Intercom\Normalizer;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\User\User;
+use ContinuousPipe\Billing\BillingProfile\Trial\TrialResolver;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 
 class UserNormalizer
 {
@@ -14,11 +16,25 @@ class UserNormalizer
     private $teamMembershipRepository;
 
     /**
-     * @param TeamMembershipRepository $teamMembershipRepository
+     * @var TrialResolver
      */
-    public function __construct(TeamMembershipRepository $teamMembershipRepository)
+    private $trialResolver;
+
+    /**
+     * @var UserBillingProfileRepository
+     */
+    private $userBillingPorfileRepository;
+
+    /**
+     * @param TeamMembershipRepository     $teamMembershipRepository
+     * @param TrialResolver                $trialResolver
+     * @param UserBillingProfileRepository $userBillingProfileRepository
+     */
+    public function __construct(TeamMembershipRepository $teamMembershipRepository, TrialResolver $trialResolver, UserBillingProfileRepository $userBillingProfileRepository)
     {
         $this->teamMembershipRepository = $teamMembershipRepository;
+        $this->trialResolver = $trialResolver;
+        $this->userBillingPorfileRepository = $userBillingProfileRepository;
     }
 
     /**
@@ -30,6 +46,8 @@ class UserNormalizer
      */
     public function normalize(User $user)
     {
+        $trialExpiryDate = $this->getUserTrialExpiryDate($user);
+
         return [
             'user_id' => $user->getUsername(),
             'email' => $user->getEmail(),
@@ -41,6 +59,20 @@ class UserNormalizer
                     'name' => $teamMembership->getTeam()->getName(),
                 ];
             })->toArray(),
+            'in_trial' => $trialExpiryDate->format('y-m-d') >= (new \DateTimeImmutable('today'))->format('y-m-d') ? 'Yes': 'No',
+            'trial_expiry_date' => $trialExpiryDate,
         ];
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return \DateTimeInterface
+     */
+    private function getUserTrialExpiryDate(User $user) : \DateTimeInterface
+    {
+        return $this->trialResolver->getTrialPeriodExpirationDate(
+            $this->userBillingPorfileRepository->findByUser($user)
+        );
     }
 }
