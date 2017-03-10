@@ -1,5 +1,5 @@
 ---
-title: Waiting statuses
+title: Waiting Statuses
 menu:
   main:
     parent: 'configuration'

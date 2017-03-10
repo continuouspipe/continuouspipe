@@ -63,13 +63,13 @@ $ composer require predis/predis
 
 ## Configuring ContinuousPipe
 
-Before we can push any code to our repository, we need to ensure ContinuousPipe console is properly configured. Please refer to the ContinuousPipe Quick Start guide to setup your [team]({{< relref "quick-start/creating-a-team.md" >}}), [cluster]({{< relref "quick-start/configuring-a-cluster.md" >}}), [registry]({{< relref "quick-start/configuring-a-registry.md" >}}) and create your first [flow]({{< relref "quick-start/creating-a-flow.md" >}}).
+Before we can push any code to our repository, we need to ensure that the ContinuousPipe console is properly configured. Please refer to the ContinuousPipe Quick Start guide to setup your [project]({{< relref "quick-start/creating-a-project.md" >}}), [cluster]({{< relref "quick-start/configuring-a-cluster.md" >}}), [registry]({{< relref "quick-start/configuring-a-registry.md" >}}) and create your first [flow]({{< relref "quick-start/creating-a-flow.md" >}}).
 
 One last thing we need to do before we can begin using ContinuousPipe is configure which cluster we will use. You are free to configure as many clusters as you wish, in fact, its a good idea to have a separate cluster from production as you would for development and testing. 
 
 For now we have only got one cluster configured in ContinuousPipe. Lets assign that cluster name “main-cluster” to an environment variable which can be used with our build and deployment tasks.
 
-From within our Flow, click on configuration in the sidebar, create a new environment variable named `CLUSTER` with a value to match what you set as your cluster name/identifier. I have set my cluster name as `main-cluster`. Finally save the configuration.
+From within the flow, click on configuration in the sidebar, create a new environment variable named `CLUSTER` with a value to match what you set as your cluster name/identifier. I have set my cluster name as `main-cluster`. Finally save the configuration.
 
 ![Flow Configuration](/images/guides/laravel/flow-variables-configuration.png)
 
