@@ -1,20 +1,30 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowAlertsController', function ($scope, $state, ProjectAlertsRepository, AlertsRepository, AlertManager, flow, project) {
+    .controller('FlowAlertsController', function ($rootScope, $scope, $state, ProjectAlertsRepository, AlertsRepository, AlertManager, flow, project) {
         $scope.alerts = [];
 
-        ProjectAlertsRepository.findByProject(project).then(function (alerts) {
-            alerts.forEach(function (alert) {
-                $scope.alerts.push(alert);
-            });
-        });
+        function filterUniqueAlerts(alerts) {
+            alerts
+                .filter(function (alert) {
+                    return !$scope.alerts.filter(function (inScope) {
+                        return inScope.message === alert.message;
+                    }).length;
+                })
+                .forEach(function (alert) {
+                    $scope.alerts.push(alert);
+                });
+        }
 
-        AlertsRepository.findByFlow(flow).then(function (alerts) {
-            alerts.forEach(function (alert) {
-                $scope.alerts.push(alert);
+        $scope.loadAlerts = function () {
+            ProjectAlertsRepository.findByProject(project).then(function (alerts) {
+                filterUniqueAlerts(alerts);
             });
-        });
+
+            AlertsRepository.findByFlow(flow).then(function (alerts) {
+                filterUniqueAlerts(alerts);
+            });
+        };
 
         $scope.actionAlert = function (alert) {
             AlertManager.open(alert);
@@ -23,4 +33,9 @@ angular.module('continuousPipeRiver')
         $scope.showAlerts = function () {
             AlertManager.showAll($scope.alerts);
         };
+
+        $rootScope.$on('configuration-saved', $scope.loadAlerts);
+        $rootScope.$on('visibility-changed', $scope.loadAlerts);
+
+        $scope.loadAlerts();
     });

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowConfigurationController', function($scope, $remoteResource, $mdToast, $state, $http, TideRepository, EnvironmentRepository, FlowRepository, flow) {
+    .controller('FlowConfigurationController', function($rootScope, $scope, $remoteResource, $mdToast, $state, $http, TideRepository, EnvironmentRepository, FlowRepository, flow) {
         $scope.flow = flow;
         $scope.variables = [];
 
@@ -24,6 +24,8 @@ angular.module('continuousPipeRiver')
             $scope.isLoading = true;
 
             FlowRepository.updateConfiguration(flow).then(function() {
+                $rootScope.$emit('configuration-saved');
+
                 $mdToast.show($mdToast.simple()
                     .textContent('Configuration successfully saved!')
                     .position('top')
@@ -106,7 +108,7 @@ angular.module('continuousPipeRiver')
             var parsed = loadYamlConfiguration();
             var target = parsed.environment_variables ? 'environment_variables' : 'variables';
 
-            parsed[target] = 
+            parsed[target] =
                 variables.filter(function(variable) {
                     return variable.name && (variable.value || variable.encrypted_value);
                 }).map(function(variable) {

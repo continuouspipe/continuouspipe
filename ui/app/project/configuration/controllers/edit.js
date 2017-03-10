@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectConfigurationController', function($scope, $remoteResource, $http, $mdToast, $state, ProjectRepository, UserRepository, project) {
+    .controller('ProjectConfigurationController', function($rootScope, $scope, $remoteResource, $http, $mdToast, $state, ProjectRepository, UserRepository, project) {
         $scope.project = project;
         $scope.patch = {
             project: {
@@ -30,6 +30,8 @@ angular.module('continuousPipeRiver')
         var doUpdate = function() {
             $scope.isLoading = true;
             ProjectRepository.update(project, $scope.patch).then(function() {
+                $rootScope.$emit('configuration-saved');
+
                 $mdToast.show($mdToast.simple()
                     .textContent('Configuration successfully saved!')
                     .position('top')
