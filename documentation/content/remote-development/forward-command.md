@@ -3,9 +3,9 @@ title: Forward Command
 menu:
   main:
     parent: 'remote-development'
-    weight: 80
+    weight: 100
 
-weight: 80
+weight: 100
 ---
 ## Using the Forward Command
 

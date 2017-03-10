@@ -3,9 +3,9 @@ title: Destroy Command
 menu:
   main:
     parent: 'remote-development'
-    weight: 90
+    weight: 110
 
-weight: 90
+weight: 110
 ---
 ## Using the Destroy Command
 

@@ -36,7 +36,7 @@ brew install continuouspipe/tools/cp-remote
 Otherwise you can install it manually via:
 
 ```
-sudo curl https://continuouspipe.github.io/remote-environment-client/0.0.1/darwin-amd64.gz > cp-remote.gz
+sudo curl https://continuouspipe.github.io/remote-environment-client/0.1.0/darwin-amd64.gz > cp-remote.gz
 gzip -d cp-remote.gz;
 mv cp-remote /usr/local/bin/cp-remote
 chmod +x /usr/local/bin/cp-remote
@@ -47,7 +47,7 @@ chmod +x /usr/local/bin/cp-remote
 ### Linux (64-bit):
 
 ```
-sudo curl https://continuouspipe.github.io/remote-environment-client/0.0.1/linux-amd64.gz > cp-remote.gz
+sudo curl https://continuouspipe.github.io/remote-environment-client/0.1.0/linux-amd64.gz > cp-remote.gz
 gzip -d cp-remote.gz;
 mv cp-remote /usr/local/bin/cp-remote
 chmod +x /usr/local/bin/cp-remote
@@ -59,7 +59,7 @@ If your architecture is 32-bit use `linux-386.gz` rather than `linux-amd64.gz`.
 
 ### Windows (64-bit):
 
-* Download https://continuouspipe.github.io/remote-environment-client/0.0.1/windows-amd64.gz
+* Download https://continuouspipe.github.io/remote-environment-client/0.1.0/windows-amd64.gz
 * Extract `cp-remote.gz`
 * Move `cp-remote.exe` into your project folder
 
