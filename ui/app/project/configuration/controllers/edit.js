@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectConfigurationController', function($scope, $remoteResource, $http, $mdToast, ProjectRepository, UserRepository, project) {
+    .controller('ProjectConfigurationController', function($scope, $remoteResource, $http, $mdToast, $state, ProjectRepository, UserRepository, project) {
         $scope.project = project;
         $scope.patch = {
             project: {
@@ -69,6 +69,8 @@ angular.module('continuousPipeRiver')
             }, function () {
                 ProjectRepository.delete($scope.project).then(function () {
                     swal("Deleted!", "Project successfully deleted.", "success");
+                    
+                    $state.go('projects');
                 }, function (error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting project", "error");
                 })['finally'](function () {
