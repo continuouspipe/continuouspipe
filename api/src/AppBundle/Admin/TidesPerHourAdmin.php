@@ -46,8 +46,6 @@ class TidesPerHourAdmin extends Admin
     {
         $datagridMapper
             ->add('user.username')
-//            ->add('name')
-//            ->add('tides_per_hour')
         ;
     }
 }
