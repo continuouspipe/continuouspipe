@@ -643,6 +643,38 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I request the limitations for the team :slug
+     */
+    public function iRequestTheLimitationsForTheTeam($slug)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams/' . $slug . '/limitations',
+            'GET'
+        ));
+
+        $this->assertResponseCodeIs($this->response, Response::HTTP_OK);
+    }
+
+    /**
+     * @Then the tides per hour limit for the team :slug should be :tidesPerHour
+     */
+    public function theLimitationsForTheTeamShouldBe($slug, $tidesPerHour)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if (!array_key_exists('tides_per_hour', $json)) {
+            throw new \RuntimeException('There are no tides_per_hour limitation returned for the team ' . $slug);
+        } else if ($tidesPerHour != $json['tides_per_hour']) {
+            throw new \RuntimeException(sprintf(
+                'The limitation for team "%s" should be "%d", received "%d"',
+                $slug,
+                $tidesPerHour,
+                $json['tides_per_hour']
+            ));
+        }
+    }
+
+    /**
      * @param Response $response
      * @param int $statusCode
      */

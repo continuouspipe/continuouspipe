@@ -2,12 +2,14 @@
 
 namespace ApiBundle\Controller;
 
+use AppBundle\Entity\TeamLimitations;
 use ContinuousPipe\Alerts\AlertFinder;
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use ContinuousPipe\Authenticator\Team\Request\TeamCreationRequest;
 use ContinuousPipe\Authenticator\Team\Request\TeamPartialUpdateRequest;
 use ContinuousPipe\Authenticator\Team\TeamCreationException;
 use ContinuousPipe\Authenticator\Team\TeamCreator;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -51,12 +53,18 @@ class TeamController
      */
     private $alertFinder;
 
+    /**
+     * @var UserBillingProfileRepository
+     */
+    private $userBillingProfileRepository;
+
     public function __construct(
         TeamRepository $teamRepository,
         TeamMembershipRepository $teamMembershipRepository,
         TeamCreator $teamCreator,
         ValidatorInterface $validator,
-        AlertFinder $alertFinder
+        AlertFinder $alertFinder,
+        UserBillingProfileRepository $userBillingProfileRepository
     ) {
         $this->teamRepository = $teamRepository;
         $this->teamMembershipRepository = $teamMembershipRepository;
@@ -64,6 +72,7 @@ class TeamController
         $this->validator = $validator;
 
         $this->alertFinder = $alertFinder;
+        $this->userBillingProfileRepository = $userBillingProfileRepository;
     }
 
     /**
@@ -154,6 +163,20 @@ class TeamController
             $team->getName(),
             $team->getBucketUuid(),
             $this->teamMembershipRepository->findByTeam($team)->toArray()
+        );
+    }
+
+    /**
+     * @Route("/teams/{slug}/limitations", methods={"GET"})
+     * @ParamConverter("team", converter="team")
+     * @Security("is_granted('READ', team)")
+     * @View
+     */
+    public function limitationsAction(Team $team)
+    {
+        $userBillingProfile = $this->userBillingProfileRepository->findByTeam($team);
+        return new TeamLimitations(
+            $userBillingProfile->getTidesPerHour()
         );
     }
 

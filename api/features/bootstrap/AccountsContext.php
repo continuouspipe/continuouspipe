@@ -98,6 +98,21 @@ class AccountsContext implements Context
     }
 
     /**
+     * @Given there is a billing profile :uuid for the user :username with :tidesPerHour tides per hour
+     */
+    public function thereIsABillingProfileForTheUserWithTidesPerHour($uuid, $username, $tidesPerHour)
+    {
+        $this->userBillingProfileRepository->save(new UserBillingProfile(
+            Uuid::fromString($uuid),
+            $this->securityContext->thereIsAUser($username)->getUser(),
+            'NAME',
+            new \DateTime(),
+            false,
+            $tidesPerHour
+        ));
+    }
+
+    /**
      * @Given the billing profile :uuid was created :createdDaysAgo days ago and has trial
      */
     public function theBillingProfileWasCreatedDaysAgoAndHasTrial($uuid, $createdDaysAgo)
@@ -113,7 +128,7 @@ class AccountsContext implements Context
     }
 
     /**
-     * @Then the user :usernmae should have a billing account
+     * @Then the user :username should have a billing account
      */
     public function theUserShouldHaveABillingAccount($username)
     {
