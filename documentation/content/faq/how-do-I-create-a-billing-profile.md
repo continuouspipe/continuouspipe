@@ -7,13 +7,6 @@ menu:
 weight: 5
 linkTitle: Billing Profile
 ---
-
-{{< note title="Note" >}}
-Access to ContinuousPipe is currently resticted to an invite only early access programme. If you have an access code, please visit https://authenticator.continuouspipe.io/early-access/ and enter your code.
-
-If you don't have an access code, you can [contact us and ask for one](https://continuouspipe.io/contact).
-{{< /note >}}
-
 To create a billing profile you will first need to log into the [ContinuousPipe console](https://ui.continuouspipe.io/). You then need to navigate to the Account section using the sub menu in the top right corner. 
 
 ![](/images/faq/billing-account-menu.png)
