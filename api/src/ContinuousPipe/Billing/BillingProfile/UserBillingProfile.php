@@ -47,13 +47,21 @@ class UserBillingProfile
      */
     private $hasTrial;
 
-    public function __construct(UuidInterface $uuid, User $user, string $name, \DateTimeInterface $creationDate, bool $hasTrial)
+    /**
+     * @JMS\Type("integer")
+     *
+     * @var int
+     */
+    private $tidesPerHour;
+
+    public function __construct(UuidInterface $uuid, User $user, string $name, \DateTimeInterface $creationDate, bool $hasTrial, int $tidesPerHour = 0)
     {
         $this->uuid = $uuid;
         $this->user = $user;
         $this->name = $name;
         $this->creationDate = $creationDate;
         $this->hasTrial = $hasTrial;
+        $this->tidesPerHour = $tidesPerHour;
     }
 
     /**
@@ -94,5 +102,18 @@ class UserBillingProfile
     public function hasTrial(): bool
     {
         return $this->hasTrial ?: false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTidesPerHour(): int
+    {
+        return $this->tidesPerHour ?: 0;
+    }
+
+    public  function setTidesPerHour(int $tiderPerHour)
+    {
+        $this->tidesPerHour = $tiderPerHour;
     }
 }
