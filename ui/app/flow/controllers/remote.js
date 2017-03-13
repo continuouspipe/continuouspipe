@@ -13,12 +13,22 @@ angular.module('continuousPipeRiver')
             $scope.developmentEnvironmentStatus = $.extend(true, $scope.developmentEnvironmentStatus, status);
             $scope.hasBeenCreated = ['TokenNotCreated', 'NotStarted'].indexOf(status.status) == -1;
 
-            if (!$scope.hasBeenCreated) {
-                setTimeout(function() {
-                    RemoteRepository.getStatus(flow, status.development_environment.uuid).then(function(status) {
-                        refresh(status);
-                    });
-                }, 5000);
+            // Do not refresh until we know that the environment has been successfully
+            // initialized with the token it created. Until this is fixed with the UI, we allow to refresh
+            // the screen with a "Refresh" button.
+            //
+            // if (!$scope.hasBeenCreated) {
+            //     setTimeout(function() {
+            //         RemoteRepository.getStatus(flow, status.development_environment.uuid).then(function(status) {
+            //             refresh(status);
+            //         });
+            //     }, 5000);
+            // }
+            
+            $scope.refresh = function() {
+                RemoteRepository.getStatus(flow, status.development_environment.uuid).then(function(status) {
+                    refresh(status);
+                });
             }
         };
 
