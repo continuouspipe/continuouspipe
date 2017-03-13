@@ -5,7 +5,7 @@ angular.module('continuousPipeRiver')
         $stateProvider
             .state('team', {
                 url: '/team/:project',
-                redirectTo: 'project'
+                redirectTo: 'flows'
             })
             .state('team.tide-logs', {
                 url: '/:uuid/:tideUuid/logs',
