@@ -68,3 +68,7 @@ main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
     font-size: 18px;
     color: #5677fc;
 }
+
+.admonition a {
+    color: initial !important;
+}

@@ -1,6 +1,5 @@
 ---
-title: Task List
-LinkTitle: Tasks overview
+title: Tasks
 menu:
   main:
     parent: 'configuration'

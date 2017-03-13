@@ -16,7 +16,7 @@ This is a guide to getting a Symfony application running on ContinuousPipe with 
 
 Before getting started you will need the following:
 
-- A [GitHub](https://github.com/) or [BitBucket](https://bitbucket.org/) account to host your Symfony project
+- A [GitHub](https://github.com/) or [Bitbucket](https://bitbucket.org/) account to host your Symfony project
 - A [ContinuousPipe](https://continuouspipe.io/) account
 - A Kubernetes cluster e.g. [AWS](https://aws.amazon.com/), [GCE](https://cloud.google.com/container-engine/) or [Azure](https://azure.microsoft.com/en-au/)
 - A Docker Registry account e.g. [docker.io](https://docker.io) or [quay.io](https://quay.io)

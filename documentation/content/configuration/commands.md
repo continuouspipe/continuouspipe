@@ -1,6 +1,5 @@
 ---
 title: Commands
-LinkTitle: Running commands
 menu:
   main:
     parent: 'configuration'

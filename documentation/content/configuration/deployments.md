@@ -1,7 +1,5 @@
 ---
-title: Deployments
-LinkTitle: Deploying Services # notice how this overrides what's shown in the menu
-
+title: Deploying Services
 menu:
   main:
     parent: 'configuration'
