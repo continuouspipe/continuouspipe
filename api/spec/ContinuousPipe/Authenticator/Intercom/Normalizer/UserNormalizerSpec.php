@@ -67,8 +67,7 @@ class UserNormalizerSpec extends ObjectBehavior
             'email' => self::EMAIL,
             'name' => self::USERNAME,
             'companies' => [['company_id' => self::TEAM_SLUG, 'name' => self::TEAM_NAME]],
-            'in_trial' => 'Yes',
-            'trial_expiry_date' => $this->tomorrow,
+            'custom_attributes' => ['in_trial' => 'Yes', 'trial_ends_at' => $this->tomorrow->getTimestamp()],
         ] as $key => $value) {
             $normalisedUser->shouldHaveKeyWithValue($key, $value);
         }
@@ -82,9 +81,13 @@ class UserNormalizerSpec extends ObjectBehavior
 
         $userBillingProfileRepository->findByUser($this->user)->willReturn($userBillingProfile);
 
-        $trialResolver->getTrialPeriodExpirationDate($userBillingProfile)->willReturn(new \DateTimeImmutable('yesterday'));
+        $yesterday = new \DateTimeImmutable('yesterday');
+        $trialResolver->getTrialPeriodExpirationDate($userBillingProfile)->willReturn($yesterday);
 
         $normalisedUser = $this->normalize($this->user);
-        $normalisedUser->shouldHaveKeyWithValue('in_trial', 'No');
+        $normalisedUser->shouldHaveKeyWithValue('custom_attributes', [
+            'in_trial' => 'No',
+            'trial_ends_at' => $yesterday->getTimestamp(),
+        ]);
     }
 }

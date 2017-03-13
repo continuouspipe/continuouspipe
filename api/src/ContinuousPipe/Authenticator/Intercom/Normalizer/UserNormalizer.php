@@ -64,8 +64,10 @@ class UserNormalizer
                     'name' => $teamMembership->getTeam()->getName(),
                 ];
             })->toArray(),
-            'in_trial' => $trialExpiryDate->format('y-m-d') >= (new \DateTimeImmutable('today'))->format('y-m-d') ? 'Yes': 'No',
-            'trial_expiry_date' => $trialExpiryDate,
+            'custom_attributes' => [
+                'in_trial' => $trialExpiryDate >= (new \DateTimeImmutable('today')) ? 'Yes': 'No',
+                'trial_ends_at' => $trialExpiryDate->getTimestamp(),
+            ],
         ];
     }
 
