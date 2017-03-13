@@ -76,18 +76,21 @@ class BillingContext implements Context
 
     /**
      * @Given I received the following :type message:
+     * @Given I receive the following :type message :count times:
      * @When I receive the following :type message:
      */
-    public function iReceiveTheFollowingMessage($type, PyStringNode $string)
+    public function iReceiveTheFollowingMessage($type, PyStringNode $string, $count = 1)
     {
-        $this->messageConsumer->execute(new AMQPMessage(
-            $string->getRaw(),
-            [
-                'application_headers' => [
-                    'X-Message-Name' => $type,
-                ],
-            ]
-        ));
+        for ($i = 1; $i <= $count; $i++) {
+            $this->messageConsumer->execute(new AMQPMessage(
+                $string->getRaw(),
+                [
+                    'application_headers' => [
+                        'X-Message-Name' => $type,
+                    ],
+                ]
+            ));
+        }
     }
 
     /**
@@ -104,9 +107,20 @@ class BillingContext implements Context
 
     /**
      * @Then I should see the activity of the user :username
+     * @Then I should see the activity of the user :username :count times
      */
-    public function iShouldSeeTheActivityOfTheUser($username)
+    public function iShouldSeeTheActivityOfTheUser($username, $count = 1)
     {
+        if ($count != count($this->activities)) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Expected to see the user activity %d times, but it occurred %d times.',
+                    $count,
+                    count($this->activities)
+                )
+            );
+        }
+
         foreach ($this->activities as $activity) {
             if ($activity->getUser()->getUsername() == $username) {
                 return;

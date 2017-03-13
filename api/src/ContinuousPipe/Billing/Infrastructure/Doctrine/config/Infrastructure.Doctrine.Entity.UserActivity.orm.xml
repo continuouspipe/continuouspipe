@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <entity name="ContinuousPipe\Billing\Infrastructure\Doctrine\Entity\UserActivity">
+        <indexes>
+            <index columns="user_activity_team_slug,user_activity_date_time" />
+        </indexes>
+
+        <lifecycle-callbacks>
+            <lifecycle-callback type="prePersist" method="initializeCounterOnPersist"/>
+            <lifecycle-callback type="preUpdate" method="incrementCounterOnUpdate"/>
+        </lifecycle-callbacks>
+
+        <id name="id" type="uuid" />
+        <field name="eventCount" type="integer" />
+        <embedded name="userActivity" class="ContinuousPipe\Message\UserActivity" />
+    </entity>
+
+</doctrine-mapping>
