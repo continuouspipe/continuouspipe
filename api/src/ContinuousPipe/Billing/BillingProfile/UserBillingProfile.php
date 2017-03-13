@@ -111,4 +111,9 @@ class UserBillingProfile
     {
         return $this->tidesPerHour ?: 0;
     }
+
+    public  function setTidesPerHour(int $tiderPerHour)
+    {
+        $this->tidesPerHour = $tiderPerHour;
+    }
 }
