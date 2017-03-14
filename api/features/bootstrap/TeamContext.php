@@ -648,7 +648,7 @@ class TeamContext implements Context
     public function iRequestTheLimitationsForTheTeam($slug)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams/' . $slug . '/limitations',
+            '/api/teams/' . $slug . '/usage-limits',
             'GET'
         ));
 

@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galzsolt
- * Date: 13/03/2017
- * Time: 15:10
- */
 
 namespace AppBundle\Entity;
 
 use JMS\Serializer\Annotation as JMS;
 
-class TeamLimitations
+class TeamUsageLimits
 {
     /**
      * @JMS\Type("integer")

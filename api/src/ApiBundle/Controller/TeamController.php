@@ -2,7 +2,7 @@
 
 namespace ApiBundle\Controller;
 
-use AppBundle\Entity\TeamLimitations;
+use AppBundle\Entity\TeamUsageLimits;
 use ContinuousPipe\Alerts\AlertFinder;
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use ContinuousPipe\Authenticator\Team\Request\TeamCreationRequest;
@@ -167,15 +167,15 @@ class TeamController
     }
 
     /**
-     * @Route("/teams/{slug}/limitations", methods={"GET"})
+     * @Route("/teams/{slug}/usage-limits", methods={"GET"})
      * @ParamConverter("team", converter="team")
      * @Security("is_granted('READ', team)")
      * @View
      */
-    public function limitationsAction(Team $team)
+    public function usageLimitsAction(Team $team)
     {
         $userBillingProfile = $this->userBillingProfileRepository->findByTeam($team);
-        return new TeamLimitations(
+        return new TeamUsageLimits(
             $userBillingProfile->getTidesPerHour()
         );
     }
