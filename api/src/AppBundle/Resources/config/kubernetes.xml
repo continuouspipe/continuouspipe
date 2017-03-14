@@ -109,12 +109,21 @@
         </service>
 
         <!-- CloudFlare integration -->
+        <service id="pipe.cloud_flare.annotation_manager.service_and_ingress" class="ContinuousPipe\CloudFlare\AnnotationManager\ServiceAndIngressAnnotationManager">
+            <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
+        </service>
+        <service id="pipe.cloud_flare.annotation_manager" class="ContinuousPipe\CloudFlare\AnnotationManager\ChainAnnotationManager">
+            <argument type="collection">
+                <argument type="service" id="pipe.cloud_flare.annotation_manager.service_and_ingress" />
+            </argument>
+        </service>
         <service id="pipe.cloud_flare.endpoint_transformer" class="ContinuousPipe\CloudFlare\CloudFlareEndpointTransformer">
             <argument type="service" id="pipe.cloud_flare.client" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="logger" />
             <argument type="service" id="security.encryption.vault" />
+            <argument type="service" id="pipe.cloud_flare.annotation_manager" />
         </service>
         <service id="pipe.cloud_flare.before_environment_deletion.delete_records" class="ContinuousPipe\CloudFlare\BeforeEnvironmentDeletion\DeleteCloudFlareRecords">
             <argument type="service" id="logger" />

@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace;
 
 use Kubernetes\Client\Model\Ingress;
+use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Repository\IngressRepository;
 
 class TraceableIngressRepository implements IngressRepository
@@ -11,6 +12,11 @@ class TraceableIngressRepository implements IngressRepository
      * @var Ingress[]
      */
     private $created = [];
+
+    /**
+     * @var Ingress[]
+     */
+    private $updated = [];
 
     /**
      * @var IngressRepository
@@ -66,7 +72,23 @@ class TraceableIngressRepository implements IngressRepository
      */
     public function update(Ingress $ingress)
     {
-        return $this->decoratedRepository->update($ingress);
+        $updated = $this->decoratedRepository->update($ingress);
+
+        $this->updated[] = $updated;
+
+        return $updated;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function annotate(string $name, KeyValueObjectList $annotations)
+    {
+        $annotated = $this->decoratedRepository->annotate($name, $annotations);
+
+        $this->updated[] = $annotated;
+
+        return $annotated;
     }
 
     /**
@@ -75,5 +97,13 @@ class TraceableIngressRepository implements IngressRepository
     public function getCreated()
     {
         return $this->created;
+    }
+
+    /**
+     * @return Ingress[]
+     */
+    public function getUpdated(): array
+    {
+        return $this->updated;
     }
 }
