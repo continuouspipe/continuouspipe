@@ -7,6 +7,8 @@
     <services>
         <service id="admin.controller.team" class="AdminBundle\Controller\TeamController">
             <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.view.tide_repository" />
         </service>
 
         <service id="admin.controller.flow" class="AdminBundle\Controller\FlowController">
