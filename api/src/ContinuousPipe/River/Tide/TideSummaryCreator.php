@@ -69,10 +69,19 @@ class TideSummaryCreator
 
         $summary = [];
         foreach ($statuses as $serviceName => $status) {
-            $summary[$serviceName] = new DeployedService(
-                $status,
-                array_key_exists($serviceName, $publicEndpoints) ? $publicEndpoints[$serviceName] : null
-            );
+            if (array_key_exists($serviceName, $publicEndpoints)) {
+                $endpoint = $publicEndpoints[$serviceName];
+
+                unset($publicEndpoints[$serviceName]);
+            } else {
+                $endpoint = null;
+            }
+
+            $summary[$serviceName] = new DeployedService($status, $endpoint);
+        }
+
+        foreach ($publicEndpoints as $name => $endpoint) {
+            $summary[$name] = new DeployedService(null, $endpoint);
         }
 
         return $summary;

@@ -42,3 +42,16 @@ Feature:
     Given a tide is started
     When I ask the external relations
     Then I should see no external relation
+
+  Scenario: It also returns the unknown endpoints as components
+    Given a tide is started with a deploy task
+    And the service "zed" was created with the following public endpoints:
+      | name     | address | ports  |
+      | zed      | 1.2.3.4 | 80     |
+      | zedhttps | 9.8.7.6 | 80,443 |
+    And the deployment succeed
+    When I ask the summary of the tide
+    Then I should see in the list the following deployed services:
+      | name     | address |
+      | zed      | 1.2.3.4 |
+      | zedhttps | 9.8.7.6 |
