@@ -15,6 +15,7 @@ package main
 // KEEN_IO_PROJECT_ID                   the keen.io project id
 // KEEN_IO_EVENT_COLLECTION             master
 // KEEN_IO_WRITE_KEY                    the keen.io write key
+// KUBE_PROXY_ALSO_LOG_TO_STDERR        true, on production
 //
 
 import (

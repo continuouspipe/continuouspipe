@@ -13,6 +13,8 @@ import (
 //low timeout but we want to see the logs if something went wrong
 const flushInterval = 5 * time.Second
 
+var envAlsoLogToStdErr, _ = os.LookupEnv("KUBE_PROXY_ALSO_LOG_TO_STDERR")
+
 var logDir string
 var LogDir string
 
@@ -46,7 +48,12 @@ func init() {
 
 	//overrides settings that glog usually sets by flag
 	logging.toStderr = false
-	logging.alsoToStderr = false
+
+	if envAlsoLogToStdErr == "true" {
+		logging.alsoToStderr = true
+	} else {
+		logging.alsoToStderr = false
+	}
 
 	//default stderrThreshold is ERROR.
 	logging.stderrThreshold = errorLog
