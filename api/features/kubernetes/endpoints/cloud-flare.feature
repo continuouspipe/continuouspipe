@@ -207,3 +207,45 @@ Feature:
     When I delete the environment named "app" of the cluster "my-cluster" of the team "my-team"
     Then the namespace should be deleted successfully
     And the CloudFlare record "1234" of the zone "9876" should have been deleted
+
+  Scenario: It creates and return the endpoints with ingresses
+    Given the ingress "http" will be created with the public DNS address "112345.elb.aws.com"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "type": "ingress",
+            "cloud_flare_zone": {
+              "zone_identifier": "1234531235qwerty",
+              "record_suffix": "-myapp.example.com",
+              "authentication": {
+                "email": "samuel@example.com",
+                "api_key": "foobar"
+              }
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the service "http" should be created
+    And the CloudFlare zone "master-myapp.example.com" should have been created with the type CNAME and the address "112345.elb.aws.com"
+    And the deployment endpoint "master-myapp.example.com" should have the port "80"

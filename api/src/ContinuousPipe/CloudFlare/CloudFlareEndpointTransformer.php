@@ -4,12 +4,14 @@ namespace ContinuousPipe\CloudFlare;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointTransformer;
+use ContinuousPipe\CloudFlare\AnnotationManager\AnnotationManager;
 use ContinuousPipe\CloudFlare\Encryption\EncryptedAuthentication;
 use ContinuousPipe\CloudFlare\Encryption\EncryptionNamespace;
 use ContinuousPipe\Model\Component\Endpoint;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Security\Encryption\Vault;
+use Kubernetes\Client\Exception\Exception;
 use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\KubernetesObject;
@@ -41,19 +43,25 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
      * @var Vault
      */
     private $vault;
+    /**
+     * @var AnnotationManager
+     */
+    private $annotationManager;
 
     public function __construct(
         CloudFlareClient $cloudFlareClient,
         LoggerFactory $loggerFactory,
         DeploymentClientFactory $deploymentClientFactory,
         LoggerInterface $logger,
-        Vault $vault
+        Vault $vault,
+        AnnotationManager $annotationManager
     ) {
         $this->cloudFlareClient = $cloudFlareClient;
         $this->loggerFactory = $loggerFactory;
         $this->deploymentClientFactory = $deploymentClientFactory;
         $this->logger = $logger;
         $this->vault = $vault;
+        $this->annotationManager = $annotationManager;
     }
 
     /**
@@ -69,21 +77,19 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
             return $publicEndpoint;
         }
 
-        if (!$object instanceof Service) {
-            $this->logger->warning('Unable to apply CloudFlare transformation on such object', [
+        try {
+            $cloudFlareAnnotation = $this->annotationManager->readAnnotation($deploymentContext, $object, 'com.continuouspipe.io.cloudflare.zone');
+        } catch (Exception $e) {
+            $this->logger->warning('Unable to apply CloudFlare transformation', [
+                'exception' => $e,
                 'object' => $object,
             ]);
 
             return $publicEndpoint;
         }
 
-        // Refresh the service with the existing values
-        $serviceRepository = $this->deploymentClientFactory->get($deploymentContext)->getServiceRepository();
-        $service = $serviceRepository->findOneByName($object->getMetadata()->getName());
-
-        $cloudFlareAnnotation = $service->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.cloudflare.zone');
         if (null !== $cloudFlareAnnotation) {
-            $cloudFlareMetadata = \GuzzleHttp\json_decode($cloudFlareAnnotation->getValue(), true);
+            $cloudFlareMetadata = \GuzzleHttp\json_decode($cloudFlareAnnotation, true);
         } else {
             $recordAddress = $publicEndpoint->getAddress();
             $recordType = $this->getRecordTypeFromAddress($recordAddress);
@@ -120,13 +126,8 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
                 $logger->child(new Text('Created zone record: ' . $recordName));
                 $logger->updateStatus(Log::SUCCESS);
 
-                $this->deploymentClientFactory->get($deploymentContext)->getServiceRepository()->annotate(
-                    $service->getMetadata()->getName(),
-                    KeyValueObjectList::fromAssociativeArray([
-                        'com.continuouspipe.io.cloudflare.zone' => \GuzzleHttp\json_encode($cloudFlareMetadata),
-                    ], Annotation::class)
-                );
-            } catch (\Exception $e) {
+                $this->annotationManager->writeAnnotation($deploymentContext, $object, 'com.continuouspipe.io.cloudflare.zone', \GuzzleHttp\json_encode($cloudFlareMetadata));
+            } catch (\Throwable $e) {
                 $logger->child(new Text('Error: ' . $e->getMessage()));
                 $logger->updateStatus(Log::FAILURE);
 
