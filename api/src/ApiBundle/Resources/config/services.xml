@@ -28,6 +28,7 @@
             <argument type="service" id="app.team_creator" />
             <argument type="service" id="validator" />
             <argument type="service" id="authenticator.alerts.finder" />
+            <argument type="service" id="app.repository.billing_profile" />
         </service>
         <service id="api.controller.invitation" class="ApiBundle\Controller\InvitationController">
             <argument type="service" id="validator" />
