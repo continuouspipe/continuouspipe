@@ -36,10 +36,9 @@ brew install continuouspipe/tools/cp-remote
 Otherwise you can install it manually via:
 
 ```
-sudo curl https://continuouspipe.github.io/remote-environment-client/0.1.0/darwin-amd64.gz > cp-remote.gz
-gzip -d cp-remote.gz;
+sudo curl https://continuouspipe.github.io/remote-environment-client/latest/darwin-amd64/cp-remote.tar.gz > cp-remote.tar.gz
+tar -xzvf cp-remote.tar.gz;
 mv cp-remote /usr/local/bin/cp-remote
-chmod +x /usr/local/bin/cp-remote
 ```
 
 **Dependencies:** You need to have `git`, and `rsync` installed and available in the shell where `cp-remote` runs.
@@ -47,22 +46,21 @@ chmod +x /usr/local/bin/cp-remote
 ### Linux (64-bit):
 
 ```
-sudo curl https://continuouspipe.github.io/remote-environment-client/0.1.0/linux-amd64.gz > cp-remote.gz
-gzip -d cp-remote.gz;
+sudo curl https://continuouspipe.github.io/remote-environment-client/latest/linux-amd64/cp-remote.tar.gz > cp-remote.tar.gz
+tar -xzvf cp-remote.tar.gz;
 mv cp-remote /usr/local/bin/cp-remote
-chmod +x /usr/local/bin/cp-remote
 ```
 
-If your architecture is 32-bit use `linux-386.gz` rather than `linux-amd64.gz`.
+If your architecture is 32-bit use `latest/linux-386/` rather than `latest/linux-amd64/`.
 
 **Dependencies:** You need to have `git`, and `rsync` installed and available in the shell where `cp-remote` runs.
 
 ### Windows (64-bit):
 
-* Download https://continuouspipe.github.io/remote-environment-client/0.1.0/windows-amd64.gz
-* Extract `cp-remote.gz`
+* Download https://continuouspipe.github.io/remote-environment-client/latest/windows-amd64/cp-remote.zip
+* Extract `cp-remote.zip`
 * Move `cp-remote.exe` into your project folder
 
-If your architecture is 32-bit use `windows-386.gz` rather than `windows-amd64.gz`.
+If your architecture is 32-bit use `latest/windows-386/` rather than `latest/windows-amd64/`.
 
 **Dependencies:** You need to have `git`, and `cwRsync` installed and available in your environment `PATHS` variable.
