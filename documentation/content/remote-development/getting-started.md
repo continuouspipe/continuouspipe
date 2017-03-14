@@ -51,7 +51,13 @@ tar -xzvf cp-remote.tar.gz;
 mv cp-remote /usr/local/bin/cp-remote
 ```
 
-If your architecture is 32-bit use `latest/linux-386/` rather than `latest/linux-amd64/`.
+### Linux (32-bit):
+
+```
+sudo curl https://continuouspipe.github.io/remote-environment-client/latest/linux-386/cp-remote.tar.gz > cp-remote.tar.gz
+tar -xzvf cp-remote.tar.gz;
+mv cp-remote /usr/local/bin/cp-remote
+```
 
 **Dependencies:** You need to have `git`, and `rsync` installed and available in the shell where `cp-remote` runs.
 
@@ -61,6 +67,9 @@ If your architecture is 32-bit use `latest/linux-386/` rather than `latest/linux
 * Extract `cp-remote.zip`
 * Move `cp-remote.exe` into your project folder
 
-If your architecture is 32-bit use `latest/windows-386/` rather than `latest/windows-amd64/`.
+### Windows (32-bit):
+* Download https://continuouspipe.github.io/remote-environment-client/latest/windows-386/cp-remote.zip
+* Extract `cp-remote.zip`
+* Move `cp-remote.exe` into your project folder
 
 **Dependencies:** You need to have `git`, and `cwRsync` installed and available in your environment `PATHS` variable.
