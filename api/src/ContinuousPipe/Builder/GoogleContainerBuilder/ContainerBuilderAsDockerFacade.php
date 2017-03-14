@@ -128,17 +128,35 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
         $json = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
         $buildIdentifier = $json['metadata']['build']['id'];
 
+
         $serviceBuilder = new ServiceBuilder([
             'projectId' => $this->projectId,
             'keyFilePath' => $this->serviceAccountPath,
         ]);
 
-        $entries = $serviceBuilder->logging()->entries([
-            'filter' => 'resource.type="build" resource.labels.build_id="'.$buildIdentifier.'"'
-        ]);
+        $lastLog = null;
+        $start = time();
 
-        foreach ($entries as $entry) {
-            var_dump($entry->info()['textPayload']);
+        while (time() < ($start + 30)) {
+            $filter = 'resource.type="build" resource.labels.build_id="'.$buildIdentifier.'"';
+
+            if (null !== $lastLog) {
+                $filter .= ' (timestamp>"'.$lastLog['timestamp'].'" OR (timestamp="'.$lastLog['timestamp'].'" insertId>"'.$lastLog['insertId'].'"))';
+            }
+
+            $entries = $serviceBuilder->logging()->entries([
+                'filter' => $filter
+            ]);
+
+            foreach ($entries as $entry) {
+                $log = $entry->info();
+
+                echo $log['textPayload'];
+            }
+
+            if (isset($log)) {
+                $lastLog = $log;
+            }
         }
 
         exit;
