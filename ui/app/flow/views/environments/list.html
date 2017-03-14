@@ -7,7 +7,7 @@
     </div>
 </md-toolbar>
 <md-content flex id="content" class="card-grid half environment-grid">
-    <remote-resource resource-name="environments">
+    <remote-resource resource-name="environments" class="environment-grid-inner">
         <md-card ng-repeat="environment in environments" ng-class="{'collapsed': !environment.expanded}">
             <md-card-header ng-click="environment.expanded = !environment.expanded;">
                 <md-card-avatar>
