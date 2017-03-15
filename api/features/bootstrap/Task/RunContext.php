@@ -401,6 +401,29 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the endpoint :endpointName of the component :componentName should be deployed with the following annotations:
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithTheFollowingAnnotations($endpointName, $componentName, TableNode $table)
+    {
+        $endpoint = $this->getEndpointOfComponent($componentName, $endpointName);
+        $annotations = $endpoint->getAnnotations();
+
+        foreach ($table->getHash() as $row) {
+            if (!array_key_exists($row['name'], $annotations)) {
+                throw new \RuntimeException(sprintf('Annotation named %s not found', $row['name']));
+            }
+
+            if ($annotations[$row['name']] != $row['value']) {
+                throw new \RuntimeException(sprintf(
+                    'Found value "%s" for the annotation "%s"',
+                    $annotations[$row['name']],
+                    $row['name']
+                ));
+            }
+        }
+    }
+
+    /**
      * @Then the component :name should request :request of CPU
      */
     public function theComponentShouldRequestOfCpu($name, $request)
