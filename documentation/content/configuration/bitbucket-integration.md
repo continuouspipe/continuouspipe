@@ -19,7 +19,7 @@ Setting up a linked account is demonstrated in the Quick Start guide to [creatin
 
 The second interaction is installing the ContinuousPipe integration in Bitbucket. This is needed in order to let ContinuousPipe know about any repository changes that have been made and to add comments on pull requests.
 
-To install the integration go to your Bitbucket account settings page. In the left menu, click on "Manage integrations".
+The integration needs to be installed on the Bitbucket account hosting the repository. Go to the Bitbucket account settings page, and in the left menu click on "Manage integrations".
 
 ![](/images/configuration/bitbucket-settings-menu.png)
 
@@ -27,8 +27,8 @@ You can now click on "Install add-on from URL" and enter `https://authenticator.
 
 ![](/images/configuration/bitbucket-addon-install.png)
 
-The last step is to grant ContinuousPipe access to your code repository by clicking the "Grant access" button in the following screen.
+The last step is to grant ContinuousPipe access to the code repository by clicking the "Grant access" button in the following screen.
 
 ![](/images/configuration/bitbucket-grant-access-popup.png)
 
-You are now all set and the Bitbucket integration is configured for your account.
+You are now all set and the Bitbucket integration is configured for the code repository.
