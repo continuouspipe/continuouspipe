@@ -75,7 +75,7 @@ From within the flow, click on configuration in the sidebar, create a new enviro
 
 ### Adding Docker configuration
 
-Lets start by configuring our `Dockerfile`. We are going to use ContinuousPipe's [php7-nginx](https://github.com/continuouspipe/dockerfiles/tree/master/php-nginx) image as our base. In reality, you would want to create a new base image that would extend this image to give you the ability to add other services, such as your NodeJS dependencies often used for the frontend build tools i.e. webpack
+Lets start by configuring our `Dockerfile`. We are going to use one of the [ContinuousPipe images]({{< relref "faq/what-are-the-continuous-pipe-images.md" >}}) as our base. In reality, you would want to create a new base image that would extend this image to give you the ability to add other services, such as your NodeJS dependencies often used for the frontend build tools i.e. webpack
 
 > **Dockerfile**
 ```dockerfile

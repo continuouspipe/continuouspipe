@@ -86,7 +86,7 @@ RUN container build
 
 ```
 
-The Dockerfile is used to specify how the Docker image is built. It is based on a prebuilt image created specifically for Drupal 8 running on Apache. This is one of several images that can be found at https://github.com/continuouspipe/dockerfiles.
+The Dockerfile is used to specify how the Docker image is built. It is based on a prebuilt image created specifically for Drupal 8 running on Apache. This is one of several [ContinuousPipe images]({{< relref "faq/what-are-the-continuous-pipe-images.md" >}}) that can be found at https://github.com/continuouspipe/dockerfiles.
 
 The [README](https://github.com/continuouspipe/dockerfiles/blob/master/drupal8-apache/7.0/README.md) for the prebuilt image lists the arguments that can be passed when it is initialised, including environment variables. The repository project code is copied onto the image and a script is run which will do things like install the vendors with composer.
  

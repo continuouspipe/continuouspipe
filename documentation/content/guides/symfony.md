@@ -79,7 +79,7 @@ COPY . /app
 RUN container build
 ```
 
-The Dockerfile is used to specify how the Docker image is built. It is based on a prebuilt image created specifically for Symfony running on nginx. This is one of several images that can be found at https://github.com/continuouspipe/dockerfiles. The [README](https://github.com/continuouspipe/dockerfiles/tree/master/symfony#environment-variables) for the prebuilt image lists the arguments that can be passed when it is initialised, including the `SYMFONY_ENV` environment variable. The repository project code is copied onto the image and a script is run which will do things like install the vendors with composer. Read more about [Dockerfiles](https://docs.docker.com/engine/reference/builder/).
+The Dockerfile is used to specify how the Docker image is built. It is based on a prebuilt image created specifically for Symfony running on nginx. This is one of several [ContinuousPipe images]({{< relref "faq/what-are-the-continuous-pipe-images.md" >}}) that can be found at https://github.com/continuouspipe/dockerfiles. The [README](https://github.com/continuouspipe/dockerfiles/tree/master/symfony#environment-variables) for the prebuilt image lists the arguments that can be passed when it is initialised, including the `SYMFONY_ENV` environment variable. The repository project code is copied onto the image and a script is run which will do things like install the vendors with composer. Read more about [Dockerfiles](https://docs.docker.com/engine/reference/builder/).
 
 Add the following docker compose configuration in a `docker-compose.yml` file in the project root.
 

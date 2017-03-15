@@ -7,7 +7,7 @@ menu:
 weight: 50
 linkTitle: Basic Authentication
 ---
-Publicly exposed endpoints are accessible to anyone by default. If you are using one of the [ContinuousPipe dockerfiles](https://github.com/continuouspipe/dockerfiles) for [Apache](https://github.com/continuouspipe/dockerfiles/tree/master/php-apache#basic-authentication) or [Nginx](https://github.com/continuouspipe/dockerfiles/tree/master/php-nginx#basic-authentication) then you can enable basic auth using environment variables:
+Publicly exposed endpoints are accessible to anyone by default. If you are using one of the [ContinuousPipe images]({{< relref "faq/what-are-the-continuous-pipe-images.md" >}}) for [Apache](https://github.com/continuouspipe/dockerfiles/tree/master/php-apache#basic-authentication) or [Nginx](https://github.com/continuouspipe/dockerfiles/tree/master/php-nginx#basic-authentication) then you can enable basic auth using environment variables:
 
 ```yaml
 tasks:
