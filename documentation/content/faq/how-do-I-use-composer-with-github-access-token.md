@@ -9,7 +9,7 @@ linkTitle: Setup GitHub Token
 ---
 If you need to download private repositories from GitHub during the build process, an access token has to be available during `composer install`.
 
-If you are using one of the [ContinuousPipe dockerfiles](https://github.com/continuouspipe/dockerfiles) then you can pass the image a GitHub token using the `GITHUB_TOKEN` environment variable. During the build process the image will then run `composer global config github-oauth.github.com "$GITHUB_TOKEN"` which will then allow subsequent composer commands permission to access the private repository.
+If you are using one of the [ContinuousPipe images]({{< relref "faq/what-are-the-continuous-pipe-images.md" >}}) then you can pass the image a GitHub token using the `GITHUB_TOKEN` environment variable. During the build process the image will then run `composer global config github-oauth.github.com "$GITHUB_TOKEN"` which will then allow subsequent composer commands permission to access the private repository.
 
 ```yaml
 tasks:
