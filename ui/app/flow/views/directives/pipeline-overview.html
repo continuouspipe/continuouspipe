@@ -25,7 +25,10 @@
             <span flex></span>
             <task-list tide="pipeline.last_tide" />
         </div>
-        <div layout="row" ng-show="!pipeline.last_tide">
+        <div layout="row" ng-show="!pipeline.last_tide && isLoading">
+            <span>Loading...</span>
+        </div>
+        <div layout="row" ng-show="!pipeline.last_tide && !isLoading">
             <span>No matching tide found.</span>
         </div>
     </md-card-content>

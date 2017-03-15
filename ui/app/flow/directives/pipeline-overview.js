@@ -13,12 +13,16 @@ angular.module('continuousPipeRiver')
             },
             templateUrl: 'flow/views/directives/pipeline-overview.html',
             controller: function ($scope, PipelineRepository) {
+                $scope.isLoading = true;
                 $authenticatedFirebaseDatabase.get($scope.flow).then(function (database) {
                     var lastTides = $firebaseArray(
                         database.ref()
                             .child('flows/' + $scope.flow.uuid + '/tides/by-pipelines/' + $scope.pipeline.uuid)
                             .orderByChild('creation_date')
-                            .limitToLast(40)
+
+                            // Limit to 100 so we have high chances to find a matching tide
+                            // while we don't filter without so 1 is enough.
+                            .limitToLast($scope.branch ? 100 : 1)
                     );
 
                     lastTides.$watch(function(e) {
@@ -30,6 +34,10 @@ angular.module('continuousPipeRiver')
                         // coming from Firebase.
                         $scope.pipeline.last_tide = matchingTides[matchingTides.length - 1];
                     });
+
+                    lastTides.$loaded().then(function() {
+                        $scope.isLoading = false;
+                    });
                 });
 
                 $scope.deletePipeline = function (pipelineId) {
@@ -38,4 +46,4 @@ angular.module('continuousPipeRiver')
             }
         };
     })
-    ;
+;
