@@ -74,14 +74,24 @@ class BillingProfileController
     }
 
     /**
-     * @Route("/account/billing-profile", name="account_billing_profile")
+     * @Route("/account/billing-profiles", name="account_billing_profiles")
      * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
      * @Template
      */
-    public function configureAction(User $user, Request $request)
+    public function billingProfilesAction(User $user, Request $request)
+    {
+        return ['billingProfiles' => $this->userBillingProfileRepository->findAllByUser($user)];
+    }
+
+    /**
+     * @Route("/account/billing-profile/{uuid}", name="account_billing_profile")
+     * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @Template
+     */
+    public function configureAction(User $user, string $uuid, Request $request)
     {
         try {
-            $billingProfile = $this->userBillingProfileRepository->findByUser($user);
+            $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
             $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
 
             $activities = [];

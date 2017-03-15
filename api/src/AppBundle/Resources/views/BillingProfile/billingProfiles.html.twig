@@ -1,0 +1,12 @@
+{% extends "AppBundle:Account:layout.html.twig" %}
+{% block nav_billing_profile_class %} class="active"{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.0/css/bootstrap-slider.min.css" />
+{% endblock %}
+{% block account_content %}
+    <h2>Billing profiles</h2>
+    {% for billingProfile in billingProfiles %}
+        <a href="{{ path('account_billing_profile', { 'uuid': billingProfile.uuid}) }}">{{ billingProfile.name }}</a>
+    {% endfor %}
+{% endblock %}

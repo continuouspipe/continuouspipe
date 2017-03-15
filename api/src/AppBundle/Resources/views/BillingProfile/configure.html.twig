@@ -7,7 +7,7 @@
 {% block account_content %}
 <form action="" method="POST">
 {% if subscriptions is empty %}
-<h2>Subscription</h2>
+<h2>Subscription: {{ billingProfile.name }}</h2>
 {% if trialExpiration < date() %}
     <div class="alert alert-danger">
         Your trial expired on {{ trialExpiration | date('d/m/Y') }}
