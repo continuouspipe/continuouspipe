@@ -2,7 +2,6 @@
 
 namespace ApiBundle\Controller;
 
-use AppBundle\Entity\TeamUsageLimits;
 use ContinuousPipe\Alerts\AlertFinder;
 use ContinuousPipe\Authenticator\Security\User\SystemUser;
 use ContinuousPipe\Authenticator\Team\Request\TeamCreationRequest;
@@ -18,6 +17,7 @@ use FOS\RestBundle\Controller\Annotations\View;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
+use ContinuousPipe\Security\Team\TeamUsageLimits;
 use ContinuousPipe\Security\User\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
