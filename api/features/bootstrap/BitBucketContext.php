@@ -643,16 +643,17 @@ class BitBucketContext implements CodeRepositoryContext
 
     /**
      * @Given there is a :path file in my BitBucket repository that contains:
+     * @Given there is a :path file in the BitBucket repository :slug owned by :owner that contains:
      */
-    public function thereIsAFileInMyBitbucketRepositoryThatContains($path, PyStringNode $string)
+    public function thereIsAFileInMyBitbucketRepositoryThatContains($path, PyStringNode $string, $slug = null, $owner = null)
     {
         $this->bitBucketMatchingClientHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($path) {
+            'match' => function(RequestInterface $request) use ($path, $slug, $owner) {
                 if ($request->getMethod() != 'GET') {
                     return false;
                 }
 
-                if (!preg_match('#^https\:\/\/api\.bitbucket\.org\/1\.0\/repositories\/([a-z0-9_-]+)\/([a-z0-9_-]+)\/src\/([a-z0-9_-]+)\/(?<path>.+)$#i', (string) $request->getUri(), $matches)) {
+                if (!preg_match('#^https\:\/\/api\.bitbucket\.org\/1\.0\/repositories\/'.($owner ?: '([a-z0-9_-]+)').'\/'.($slug ?: '([a-z0-9_-]+)').'\/src\/([a-z0-9_-]+)\/(?<path>.+)$#i', (string) $request->getUri(), $matches)) {
                     return false;
                 }
 
@@ -727,7 +728,17 @@ class BitBucketContext implements CodeRepositoryContext
             },
         ]);
 
-        $this->client->getReference('owner', 'repository', 'branch');
+        $this->client->getReference(
+            new BitBucketCodeRepository(
+                '{'.Uuid::uuid4()->toString().'}',
+                new BitBucketAccount('UUID', 'owner', 'user', 'owner display name'),
+                'repository',
+                'https://api.bitbucket.org/2.0/repositories/owner/repository',
+                'develop',
+                'private'
+            ),
+            'branch'
+        );
     }
 
     /**

@@ -27,11 +27,7 @@ class BitBucketCommitResolver implements CommitResolver
         $repository = $flow->getRepository();
 
         try {
-            return $this->clientFactory->createForCodeRepository($repository)->getReference(
-                $repository->getOwner()->getUsername(),
-                $repository->getName(),
-                $branch
-            );
+            return $this->clientFactory->createForCodeRepository($repository)->getReference($repository, $branch);
         } catch (BitBucketClientException $e) {
             throw new CommitResolverException($e->getMessage(), $e->getCode(), $e);
         }

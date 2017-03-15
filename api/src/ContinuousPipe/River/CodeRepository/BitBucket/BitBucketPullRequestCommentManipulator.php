@@ -25,8 +25,7 @@ class BitBucketPullRequestCommentManipulator implements PullRequestCommentManipu
 
         try {
             return $client->writePullRequestComment(
-                $repository->getOwner()->getUsername(),
-                $repository->getName(),
+                $repository,
                 $pullRequest->getIdentifier(),
                 $contents
             );
@@ -41,8 +40,7 @@ class BitBucketPullRequestCommentManipulator implements PullRequestCommentManipu
 
         try {
             return $client->deletePullRequestComment(
-                $repository->getOwner()->getUsername(),
-                $repository->getName(),
+                $repository,
                 $pullRequest->getIdentifier(),
                 $identifier
             );
