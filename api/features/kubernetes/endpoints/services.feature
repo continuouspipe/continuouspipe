@@ -151,3 +151,41 @@ Feature:
     When the specification come from the template "simple-app-public"
     And I send the built deployment request
     Then the service "app" should be updated
+
+  Scenario: LoadBalancer services annotations default endpoints
+    Given the service "http" will be created with the public IP "1.2.3.4"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "annotations": {
+              "service.beta.kubernetes.io/external-traffic": "OnlyLocal"
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the service "http" should be created
+    And the service "http" should have the type "LoadBalancer"
+    And the service "http" should have the following annotations:
+      | name                                        | value     |
+      | service.beta.kubernetes.io/external-traffic | OnlyLocal |
