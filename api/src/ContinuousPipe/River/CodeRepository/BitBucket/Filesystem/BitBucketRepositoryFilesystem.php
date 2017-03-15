@@ -44,8 +44,7 @@ class BitBucketRepositoryFilesystem implements RelativeFileSystem
             $repository = $this->codeReference->getRepository();
 
             return $this->bitBucketClient->getContents(
-                $repository->getOwner()->getUsername(),
-                $repository->getName(),
+                $repository,
                 $this->codeReference->getCommitSha() ?: $this->codeReference->getBranch(),
                 $filePath
             );
