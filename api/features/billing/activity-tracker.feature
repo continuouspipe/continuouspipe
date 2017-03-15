@@ -18,3 +18,12 @@ Feature:
     """
     When I request the activity of the team "foo" between "2017-01-23T10:02:46+00:00" and "2017-01-23T10:02:46+00:00"
     Then I should see the activity of the user "sroze"
+
+  @smoke
+  Scenario: A counter is incremented when the same user activity occurs multiple times
+    Given I receive the following "user_activity" message 5 times:
+    """
+    {"team_slug": "foo", "flow_uuid": "00000000-0000-0000-0000-000000000000", "type": "push", "date_time": "2017-01-23T10:02:46+00:00", "user": {"username": "sroze", "email": "no-reply@github.com"}}
+    """
+    When I request the activity of the team "foo" between "2017-01-23T10:02:46+00:00" and "2017-01-23T10:02:46+00:00"
+    Then I should see the activity of the user "sroze" 5 times

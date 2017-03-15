@@ -14,12 +14,10 @@
             <argument type="service" id="logger" />
         </service>
 
-        <service id="builder.billing.activity_tracker.redis" class="ContinuousPipe\Billing\Infrastructure\Redis\RedisActivityTracker">
-            <argument type="service" id="snc_redis.default_client" />
-            <argument type="service" id="jms_serializer.serializer" />
-            <argument type="service" id="logger"/>
+        <service id="builder.billing.activity_tracker.doctrine" class="ContinuousPipe\Billing\Infrastructure\Doctrine\DoctrineActivityTracker">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
-        <service id="app.billing.activity_tracker" alias="builder.billing.activity_tracker.redis" />
+        <service id="app.billing.activity_tracker" alias="builder.billing.activity_tracker.doctrine" />
         <service id="builder.billing.activity_tracker.store_user_activity" class="ContinuousPipe\Billing\ActivityTracker\EventListener\StoreLastUserActivity">
             <argument type="service" id="app.billing.activity_tracker" />
 
