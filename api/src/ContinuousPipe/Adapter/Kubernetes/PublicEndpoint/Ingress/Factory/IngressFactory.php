@@ -7,10 +7,12 @@ use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointFactory;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\TransformationException;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Component\Endpoint;
+use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressBackend;
 use Kubernetes\Client\Model\IngressSpecification;
 use Kubernetes\Client\Model\IngressTls;
+use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\Label;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Secret;
@@ -86,7 +88,7 @@ class IngressFactory implements EndpointFactory
 
         $labels = $this->namingStrategy->getLabelsByComponent($component);
         $serviceSpecification = new ServiceSpecification($labels->toAssociativeArray(), $ports, $type);
-        $objectMetadata = new ObjectMetadata($endpoint->getName(), $labels);
+        $objectMetadata = new ObjectMetadata($endpoint->getName(), $labels, KeyValueObjectList::fromAssociativeArray($endpoint->getAnnotations(), Annotation::class));
         $service = new Service($objectMetadata, $serviceSpecification);
 
         return $service;
