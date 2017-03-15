@@ -24,12 +24,12 @@ angular.module('continuousPipeRiver')
             //         });
             //     }, 5000);
             // }
-            
+
             $scope.refresh = function() {
                 RemoteRepository.getStatus(flow, status.development_environment.uuid).then(function(status) {
                     refresh(status);
                 });
-            }
+            };
         };
 
         // Token creation if not has been created
@@ -110,6 +110,6 @@ angular.module('continuousPipeRiver')
             })['finally'](function() {
                 $scope.isLoading = false;
             });
-        }
+        };
     })
 ;

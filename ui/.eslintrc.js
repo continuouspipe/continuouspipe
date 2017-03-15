@@ -3,7 +3,10 @@ module.exports = {
         "browser": true
     },
     "globals": {
-        "angular": true
+        "angular": true,
+        "jQuery": true,
+        "$": true,
+        "swal": true
     },
     "extends": "eslint:recommended",
     "rules": {
@@ -14,10 +17,6 @@ module.exports = {
         "linebreak-style": [
             "error",
             "unix"
-        ],
-        "quotes": [
-            "error",
-            "single"
         ],
         "semi": [
             "error",
