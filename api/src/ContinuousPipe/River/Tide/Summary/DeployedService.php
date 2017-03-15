@@ -21,7 +21,7 @@ class DeployedService
      * @param ComponentStatus $status
      * @param PublicEndpoint  $publicEndpoint
      */
-    public function __construct(ComponentStatus $status, PublicEndpoint $publicEndpoint = null)
+    public function __construct(ComponentStatus $status = null, PublicEndpoint $publicEndpoint = null)
     {
         $this->status = $status;
         $this->publicEndpoint = $publicEndpoint;

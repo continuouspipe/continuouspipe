@@ -113,4 +113,12 @@ class BitBucketCodeRepository extends AbstractCodeRepository
     {
         return $this->private;
     }
+
+    /**
+     * @return string
+     */
+    public function getApiSlug() : string
+    {
+        return $this->owner->getUsername().substr($this->address, strrpos($this->address, '/'));
+    }
 }

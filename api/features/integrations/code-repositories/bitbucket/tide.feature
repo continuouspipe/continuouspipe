@@ -21,6 +21,19 @@ Feature:
     Then the tide should be created
     And the tide should have the task "images"
 
+  Scenario: Create a tide from a repository with space in the name
+    Given I have a flow with a BitBucket repository named "My example" with slug "my-example" and owned by user "foo"
+    And there is the add-on installed for the BitBucket repository "example" owned by user "foo"
+    And there is a "continuous-pipe.yml" file in the BitBucket repository "my-example" owned by "foo" that contains:
+    """
+    tasks:
+        images:
+            build: {services: []}
+    """
+    When I send a tide creation request for branch "master" and commit "123456"
+    Then the tide should be created
+    And the tide should have the task "images"
+
   Scenario: The first status is stopped when I just push something
     Given I have a flow with a BitBucket repository "example" owned by user "foo"
     And there is the add-on installed for the BitBucket repository "example" owned by user "foo"
