@@ -899,6 +899,8 @@ EOF;
     {
         $uuid = $uuid ?: Uuid::uuid1();
         $team = $team ?: $this->securityContext->theTeamExists('samuel');
+        // add default usage limits
+        $this->securityContext->theTeamHasATidesPerHourUsageLimit($team->getSlug(), 0);
         $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
         $repository = $codeRepository ?: $this->generateRepository();
 
