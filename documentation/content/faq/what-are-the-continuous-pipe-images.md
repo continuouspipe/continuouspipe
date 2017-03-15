@@ -31,4 +31,4 @@ FROM quay.io/continuouspipe/php7.1-apache:stable
 
 The benefit of using ContinuousPipe images are that they have been created according to best practices on security and performance. For example, the Apache and NGINX server images are automatically configured to use HTTPS only websites and install self signed SSL certificate on container start. More information about the specific setup of each image is provided in the README for each image within https://github.com/continuouspipe/dockerfiles.
 
-ContinuousPipe images are also compatible with the [remote development]({{< relref "remote-development" >}}) functionality without any additional configuration.
+ContinuousPipe images are also compatible with the [remote development]({{< relref "remote-development/getting-started.md" >}}) functionality without any additional configuration.
