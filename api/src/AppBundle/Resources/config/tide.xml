@@ -218,6 +218,7 @@
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.time_resolver" />
             <argument type="service" id="security.authenticator.client" />
+            <argument type="service" id="log_stream.logger_factory" />
         </service>
 
         <service id="river.tide.concurrency.run_pending_tides_handler" class="ContinuousPipe\River\Tide\Concurrency\Handler\RunPendingTidesHandler">

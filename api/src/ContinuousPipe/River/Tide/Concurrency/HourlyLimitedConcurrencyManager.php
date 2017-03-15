@@ -6,6 +6,8 @@ use ContinuousPipe\River\View\TimeResolver;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\Security\Authenticator\AuthenticatorClient;
+use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 
 class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
 {
@@ -25,18 +27,31 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
      * @var AuthenticatorClient
      */
     private $authenticatorClient;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
 
-    public function __construct(TideConcurrencyManager $decoratedConcurrencyManager, TideRepository $tideRepository, TimeResolver $timeResolver, AuthenticatorClient $authenticatorClient)
+    public function __construct(
+        TideConcurrencyManager $decoratedConcurrencyManager,
+        TideRepository $tideRepository,
+        TimeResolver $timeResolver,
+        AuthenticatorClient $authenticatorClient,
+        LoggerFactory $loggerFactory
+    )
     {
         $this->decoratedConcurrencyManager = $decoratedConcurrencyManager;
         $this->tideRepository = $tideRepository;
         $this->timeResolver = $timeResolver;
         $this->authenticatorClient = $authenticatorClient;
+        $this->loggerFactory = $loggerFactory;
     }
 
     public function shouldTideStart(Tide $tide)
     {
         if ($this->hasReachedLimits($tide)) {
+            $log = $this->loggerFactory->create();
+            $log->child(new Text('Tides per hour limit reached.'));
             return false;
         }
         return $this->decoratedConcurrencyManager->shouldTideStart($tide);
