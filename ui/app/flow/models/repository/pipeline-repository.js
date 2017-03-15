@@ -17,7 +17,7 @@ angular.module('continuousPipeRiver')
                     .textContent(results[response.status.toString()])
                     .position('top')
                     .hideDelay(3000)
-                    .parent($('#content')))
+                    .parent($('#content')));
             }, function error(response) {
                 swal("Error !", $http.getError(response) || results[response.status.toString()], "error");
             });
