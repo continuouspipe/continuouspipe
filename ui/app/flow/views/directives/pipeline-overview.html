@@ -1,4 +1,4 @@
-<md-card class="pipeline-card" ng-class="['status-'+pipeline.lastTides[0].status]">
+<md-card class="pipeline-card" ng-class="['status-'+pipeline.last_tide.status]">
     <md-card-content layout="column">
         <div layout="row" class="pipeline-details-row">
             <span class="md-headline">
@@ -11,19 +11,22 @@
                 </md-button>
             </span>
             <span flex></span>
-            <span class="pipeline-details-row__details">
-                <i class="cp-icon-git-branch"></i> {{ pipeline.lastTides[0].code_reference.branch }}
-                <md-icon>code</md-icon> {{ pipeline.lastTides[0].code_reference.sha1 | limitTo:7 }}
+            <span class="pipeline-details-row__details" ng-show="pipeline.last_tide">
+                <i class="cp-icon-git-branch"></i> {{ pipeline.last_tide.code_reference.branch }}
+                <md-icon>code</md-icon> {{ pipeline.last_tide.code_reference.sha1 | limitTo:7 }}
                 <span>
-                    <md-tooltip md-direction="bottom">{{ pipeline.lastTides[0].creation_date | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
-                    <md-icon>schedule</md-icon> {{ pipeline.lastTides[0].creation_date | timeAgo }}
+                    <md-tooltip md-direction="bottom">{{ pipeline.last_tide.creation_date | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+                    <md-icon>schedule</md-icon> {{ pipeline.last_tide.creation_date | timeAgo }}
                 </span>
             </span>
         </div>
-        <div layout="row">
-            <span class="status-text" ng-class="['status-'+pipeline.lastTides[0].status]">{{ pipeline.lastTides[0].status }}</span>
+        <div layout="row" ng-show="pipeline.last_tide">
+            <span class="status-text" ng-class="['status-'+pipeline.last_tide.status]">{{ pipeline.last_tide.status }}</span>
             <span flex></span>
-            <task-list tide="pipeline.lastTides[0]" />
+            <task-list tide="pipeline.last_tide" />
+        </div>
+        <div layout="row" ng-show="!pipeline.last_tide">
+            <span>No matching tide found.</span>
         </div>
     </md-card-content>
 </md-card>

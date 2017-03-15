@@ -7,31 +7,29 @@ angular.module('continuousPipeRiver')
             scope: {
                 pipeline: '=',
                 flow: '=',
+                branch: '=',
                 disableDeletion: '@',
                 headline: '@'
             },
             templateUrl: 'flow/views/directives/pipeline-overview.html',
             controller: function ($scope, PipelineRepository) {
                 $authenticatedFirebaseDatabase.get($scope.flow).then(function (database) {
-                    $scope.pipeline.lastTides = [];
+                    var lastTides = $firebaseArray(
+                        database.ref()
+                            .child('flows/' + $scope.flow.uuid + '/tides/by-pipelines/' + $scope.pipeline.uuid)
+                            .orderByChild('creation_date')
+                            .limitToLast(40)
+                    );
 
-                    var dbRef = database.ref()
-                        .child('flows/' + $scope.flow.uuid + '/tides/by-pipelines/' + $scope.pipeline.uuid)
-                        .orderByChild('creation_date')
-                        .limitToLast(10);
+                    lastTides.$watch(function(e) {
+                        var matchingTides = lastTides.filter(function(element) {
+                            return !$scope.branch || element.code_reference.branch == $scope.branch;
+                        });
 
-                    dbRef.on('value', function (data) {
-                        var environments = data.val();
-
-                        Object.keys(environments)
-                            .map(function (key) { return environments[key]; })
-                            .filter(function (env) { return env.code_reference.branch === 'dev-briandgls'; })
-                            .reduce(function (a, b) {
-                                return new Date(a.creation_date) > new Date(b.creation_date) ? a : b;
-                            });
+                        // The last tide is the last in the array because of the order
+                        // coming from Firebase.
+                        $scope.pipeline.last_tide = matchingTides[matchingTides.length - 1];
                     });
-
-                    $scope.pipeline.lastTides = $firebaseArray(dbRef);
                 });
 
                 $scope.deletePipeline = function (pipelineId) {
