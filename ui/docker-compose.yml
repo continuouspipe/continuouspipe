@@ -3,10 +3,12 @@ ui:
   volumes:
     - ./app:/app/app
   environment:
-    - RIVER_API_URL=river_api.docker/app_dev.php
-    - AUTHENTICATOR_API_URL=authenticator_app.docker/app_dev.php
-    - PIPE_API_URL=pipe_api.docker/app_dev.php
-    - LOG_STREAM_API_URL=logstream-api.docker
+    - RIVER_API_URL=http://localhost:81/app_dev.php
+    - AUTHENTICATOR_API_URL=https://authenticator-staging.continuouspipe.io
+    - PIPE_API_URL=https://pipe-staging.continuouspipe.io
+    - LOG_STREAM_API_URL=http://logstream-api.docker
   expose:
     - 80
     - 35729
+  ports:
+    - 80:80
