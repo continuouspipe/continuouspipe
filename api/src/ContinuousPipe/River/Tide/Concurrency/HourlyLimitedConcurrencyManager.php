@@ -38,8 +38,7 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
         TimeResolver $timeResolver,
         AuthenticatorClient $authenticatorClient,
         LoggerFactory $loggerFactory
-    )
-    {
+    ) {
         $this->decoratedConcurrencyManager = $decoratedConcurrencyManager;
         $this->tideRepository = $tideRepository;
         $this->timeResolver = $timeResolver;
