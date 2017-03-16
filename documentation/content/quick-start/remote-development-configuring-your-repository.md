@@ -23,5 +23,5 @@ This update adds two [RUN instructions](https://docs.docker.com/engine/reference
 **You will then need to push this update to your code repository.**
 
 {{< note title="Note" >}}
-If you are using one of the [ContinuousPipe distributed dockerfiles](https://github.com/continuouspipe/dockerfiles) then `rsync` will already be configured for installation.
+If you are using one of the [ContinuousPipe images]({{< relref "faq/what-are-the-continuous-pipe-images.md" >}}) then `rsync` will already be configured for installation.
 {{< /note >}}
