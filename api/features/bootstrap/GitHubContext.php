@@ -12,6 +12,7 @@ use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Notifications\GitHub\CommitStatus\GitHubStateResolver;
 use ContinuousPipe\River\Notifications\TraceableNotifier;
+use ContinuousPipe\River\Repository\CodeRepositoryRepository;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\TestHttpClient;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver;
@@ -21,7 +22,9 @@ use GitHub\Integration\InMemoryInstallationRepository;
 use GitHub\Integration\InMemoryInstallationTokenResolver;
 use GitHub\Integration\Installation;
 use GitHub\Integration\InstallationAccount;
+use GitHub\Integration\InstallationRepository;
 use GitHub\Integration\InstallationToken;
+use GitHub\Integration\InstallationTokenResolver;
 use GitHub\WebHook\Model\Repository;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -100,6 +103,16 @@ class GitHubContext implements CodeRepositoryContext
      */
     private $secret;
 
+    /**
+     * @var InstallationTokenResolver
+     */
+    private $realInstallationTokenResolver;
+
+    /**
+     * @var CodeRepositoryRepository
+     */
+    private $realInstallationRepositoryRepository;
+
     public function __construct(
         Kernel $kernel,
         TraceableNotifier $gitHubTraceableNotifier,
@@ -109,7 +122,9 @@ class GitHubContext implements CodeRepositoryContext
         TestHttpClient $gitHubHttpClient,
         InMemoryInstallationRepository $inMemoryInstallationRepository,
         InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver,
+        InstallationTokenResolver $realInstallationTokenResolver,
         InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository,
+        InstallationRepository $realCodeRepositoryRepository,
         MatchingHandler $matchingHandler
     ) {
         $this->kernel = $kernel;
@@ -123,6 +138,8 @@ class GitHubContext implements CodeRepositoryContext
         $this->inMemoryCodeRepositoryRepository = $inMemoryCodeRepositoryRepository;
         $this->matchingHandler = $matchingHandler;
         $this->secret = $kernel->getContainer()->getParameter('github_secret');
+        $this->realInstallationTokenResolver = $realInstallationTokenResolver;
+        $this->realInstallationRepositoryRepository = $realCodeRepositoryRepository;
     }
 
     /**
@@ -803,6 +820,90 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @When I look up the token for installation :installationIdentifier :count times
+     * @Given the token for installation :installationIdentifier is retrieved once
+     */
+    public function iLookUpTheTokenForInstallationTimes($installationIdentifier, $count = 1)
+    {
+        $installations = array_filter(
+            $this->inMemoryInstallationRepository->findAll(),
+            function(Installation $installation) use($installationIdentifier) {
+                return $installationIdentifier == $installation->getId();
+            }
+        );
+
+        if (count($installations) === 0) {
+            throw new \RuntimeException(
+                sprintf('No installation with ID "%s" found in repository.', $installationIdentifier)
+            );
+        }
+
+        $installation = reset($installations);
+
+        for ($i = 1; $i <= $count; $i++) {
+            $this->realInstallationTokenResolver->get($installation);
+        }
+    }
+
+    /**
+     * @Then GitHub access token API should have been called once
+     *
+     */
+    public function gitHubAPIShouldBeCalledOnce()
+    {
+        $this->gitHubAPIShouldBeCalledTimes(1);
+    }
+
+    /**
+     * @Then GitHub access token API should have been called twice
+     */
+    public function gitHubAPIShouldBeCalledTwice()
+    {
+        $this->gitHubAPIShouldBeCalledTimes(2);
+    }
+
+    /**
+     * @When I look up the installation for repository :identifier :count times
+     * @Given the installation for repository :identifier is retrieved once
+     */
+    public function iLookUpTheInstallationForRepositoryTimes($identifier, $count = 1)
+    {
+        $repository = $this->inMemoryCodeRepositoryRepository->findByIdentifier($identifier);
+
+        for ($i = 1; $i <= $count; $i++) {
+            $this->realInstallationRepositoryRepository->findByRepository($repository);
+        }
+    }
+
+    /**
+     * @Then GitHub repository API should have been called once
+     */
+    public function gitHubRepositoryAPIShouldHaveBeenCalledOnce()
+    {
+        $this->gitHubRepositoryAPIShouldHaveBeenCalledTimes(1);
+    }
+
+    /**
+     * @Then GitHub repository API should have been called twice
+     */
+    public function gitHubRepositoryAPIShouldHaveBeenCalledTwice()
+    {
+        $this->gitHubRepositoryAPIShouldHaveBeenCalledTimes(2);
+    }
+
+    /**
+     * @When GitHub installation :installationIdentifier is deleted
+     */
+    public function gitHubInstallationIsDeleted($installationIdentifier)
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('integration_installation-deleted.json'), true);
+
+        $contents['installation']['id'] = $installationIdentifier;
+
+        $this->sendWebHook('integration_installation', json_encode($contents));
+    }
+
+    /**
      * @param string $type
      * @param string $contents
      */
@@ -889,6 +990,32 @@ class GitHubContext implements CodeRepositoryContext
                 $expectedStatus,
                 $this->response->getStatusCode()
             ));
+        }
+    }
+
+    private function gitHubAPIShouldBeCalledTimes($count)
+    {
+        if ($count != $this->inMemoryInstallationTokenResolver->countApiCalls()) {
+            throw new \UnexpectedValueException(
+                sprintf(
+                    'GitHub access token API expected to be called %d time(s), but called %d time(s).',
+                    $count,
+                    $this->inMemoryInstallationTokenResolver->countApiCalls()
+                )
+            );
+        }
+    }
+
+    private function gitHubRepositoryAPIShouldHaveBeenCalledTimes($count)
+    {
+        if ($count != $this->inMemoryInstallationRepository->countApiCalls()) {
+            throw new \UnexpectedValueException(
+                sprintf(
+                    'GitHub repository API expected to be called %d time(s), but called %d time(s).',
+                    $count,
+                    $this->inMemoryInstallationRepository->countApiCalls()
+                )
+            );
         }
     }
 }

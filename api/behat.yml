@@ -96,7 +96,9 @@ default:
                     - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
+                    - @github.integration.installation_repository
                     - @github.integration.installation_token_resolver.in_memory
+                    - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
 
@@ -110,6 +112,9 @@ default:
                 - %paths.base%/features/integrations/code-repositories/github/
 
             contexts:
+                - CacheContext:
+                    - @predis_client
+
                 # GitHub-specific contexts
                 - GitHubContext:
                     - @kernel
@@ -119,7 +124,9 @@ default:
                     - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
+                    - @github.integration.installation_repository
                     - @github.integration.installation_token_resolver.in_memory
+                    - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
 
@@ -338,7 +345,9 @@ smoke:
                     - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
+                    - @github.integration.installation_repository
                     - @github.integration.installation_token_resolver.in_memory
+                    - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
                 - CodeRepositoriesContext:

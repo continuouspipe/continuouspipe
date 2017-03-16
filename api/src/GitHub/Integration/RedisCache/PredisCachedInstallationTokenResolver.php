@@ -42,7 +42,7 @@ class PredisCachedInstallationTokenResolver implements InstallationTokenResolver
      */
     public function get(Installation $installation)
     {
-        $key = 'github_installation_'.$installation->getId();
+        $key = $this->generateCacheKey($installation);
 
         // This is done in order to have a cache safety threshold
         $now = new \DateTime('+1min');
@@ -68,5 +68,21 @@ class PredisCachedInstallationTokenResolver implements InstallationTokenResolver
         }
 
         return $token;
+    }
+
+    public function invalidate(Installation $installation)
+    {
+        $key = $this->generateCacheKey($installation);
+        $this->redisClient->del([$key]);
+    }
+
+    /**
+     * @param Installation $installation
+     *
+     * @return string
+     */
+    private function generateCacheKey(Installation $installation): string
+    {
+        return 'github_installation_' . $installation->getId();
     }
 }

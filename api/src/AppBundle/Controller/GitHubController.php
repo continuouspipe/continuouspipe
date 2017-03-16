@@ -4,11 +4,14 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
+use ContinuousPipe\River\CodeRepository\GitHub\Handler\GitHubWebHookHandler;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Repository\FlowRepository;
+use GitHub\WebHook\Event\IntegrationInstallationEvent;
 use GitHub\WebHook\GitHubRequest;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -69,6 +72,15 @@ class GitHubController
      */
     public function integrationAction(GitHubRequest $request)
     {
+        if ($request->getEvent() instanceof IntegrationInstallationEvent) {
+            $this->commandBus->handle(new HandleGitHubEvent(
+                    Uuid::fromString('00000000-0000-0000-0000-000000000000'),
+                    $request->getEvent()
+                )
+            );
+            return new Response(null, Response::HTTP_ACCEPTED);
+        }
+
         $repository = GitHubCodeRepository::fromRepository($request->getEvent()->getRepository());
         $flows = $this->flowRepository->findByCodeRepository($repository);
 

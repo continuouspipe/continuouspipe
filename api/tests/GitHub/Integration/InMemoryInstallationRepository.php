@@ -11,6 +11,8 @@ class InMemoryInstallationRepository implements InstallationRepository
      */
     private $installations = [];
 
+    private $apiCallCount = 0;
+
     /**
      * {@inheritdoc}
      */
@@ -32,6 +34,8 @@ class InMemoryInstallationRepository implements InstallationRepository
             throw new InstallationNotFound();
         }
 
+        ++$this->apiCallCount;
+
         return current($matchingInstallations);
     }
 
@@ -41,5 +45,10 @@ class InMemoryInstallationRepository implements InstallationRepository
     public function save(Installation $installation)
     {
         $this->installations[$installation->getId()] = $installation;
+    }
+
+    public function countApiCalls()
+    {
+        return $this->apiCallCount;
     }
 }

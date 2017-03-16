@@ -9,6 +9,7 @@ class DefaultEventClassMapping extends EventClassMapping
         'ping' => 'GitHub\\WebHook\\Event\\PingEvent',
         'push' => 'GitHub\\WebHook\\Event\\PushEvent',
         'status' => 'GitHub\\WebHook\\Event\\StatusEvent',
+        'integration_installation' => 'GitHub\\WebHook\\Event\\IntegrationInstallationEvent',
     ];
 
     public function __construct()

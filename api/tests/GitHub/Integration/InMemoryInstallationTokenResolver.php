@@ -6,6 +6,8 @@ class InMemoryInstallationTokenResolver implements InstallationTokenResolver
 {
     private $tokenByInstallation = [];
 
+    private $apiCallsCount = 0;
+
     /**
      * {@inheritdoc}
      */
@@ -14,6 +16,8 @@ class InMemoryInstallationTokenResolver implements InstallationTokenResolver
         if (!array_key_exists($installation->getId(), $this->tokenByInstallation)) {
             throw new InstallationTokenException('Installation token not found');
         }
+
+        ++$this->apiCallsCount;
 
         return $this->tokenByInstallation[$installation->getId()];
     }
@@ -25,5 +29,10 @@ class InMemoryInstallationTokenResolver implements InstallationTokenResolver
     public function addToken($installationId, InstallationToken $token)
     {
         $this->tokenByInstallation[$installationId] = $token;
+    }
+
+    public function countApiCalls(): int
+    {
+        return $this->apiCallsCount;
     }
 }

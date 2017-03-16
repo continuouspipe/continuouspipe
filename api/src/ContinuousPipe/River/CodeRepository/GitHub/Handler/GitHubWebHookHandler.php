@@ -8,12 +8,14 @@ use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
 use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
 use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use ContinuousPipe\River\CodeRepository\PullRequest;
+use ContinuousPipe\River\Event\GitHub\IntegrationInstallationDeleted;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
 use ContinuousPipe\River\CodeRepository\Event\PullRequestOpened;
 use ContinuousPipe\River\Event\GitHub\PullRequestSynchronized;
 use ContinuousPipe\River\Event\GitHub\StatusUpdated;
 use ContinuousPipe\River\Notifications\GitHub\CommitStatus\GitHubCommitStatusNotifier;
 use ContinuousPipe\River\View;
+use GitHub\WebHook\Event\IntegrationInstallationEvent;
 use GitHub\WebHook\Event\PullRequestEvent;
 use GitHub\WebHook\Event\PushEvent;
 use GitHub\WebHook\Event\StatusEvent;
@@ -75,6 +77,8 @@ class GitHubWebHookHandler
             $this->handlePullRequestEvent($command->getFlowUuid(), $event);
         } elseif ($event instanceof StatusEvent) {
             $this->handleStatusEvent($command->getFlowUuid(), $event);
+        } elseif ($event instanceof IntegrationInstallationEvent) {
+            $this->handleIntegrationInstallationEvent($event);
         }
     }
 
@@ -145,6 +149,13 @@ class GitHubWebHookHandler
                 $tide->getUuid(),
                 $event
             ));
+        }
+    }
+
+    private function handleIntegrationInstallationEvent(IntegrationInstallationEvent $event)
+    {
+        if ($event->isDeletedAction()) {
+            $this->eventBus->handle(new IntegrationInstallationDeleted($event->getInstallation()));
         }
     }
 
