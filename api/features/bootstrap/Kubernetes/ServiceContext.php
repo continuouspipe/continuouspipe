@@ -344,6 +344,26 @@ class ServiceContext implements Context
         }
     }
 
+
+    /**
+     * @Then the service :name should have the following annotations:
+     */
+    public function theServiceShouldHaveTheFollowingAnnotations($name, TableNode $table)
+    {
+        $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $name);
+        $foundAnnotations = $service->getMetadata()->getAnnotationList();
+
+        foreach ($table->getHash() as $row) {
+            if ($annotation = $foundAnnotations->get($row['name'])) {
+                if ($annotation->getValue() == $row['value']) {
+                    return;
+                }
+            }
+        }
+
+        throw new \RuntimeException('Annotation not found');
+    }
+
     /**
      * @param Service[] $services
      * @param string $name

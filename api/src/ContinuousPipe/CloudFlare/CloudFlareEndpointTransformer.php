@@ -128,6 +128,10 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
 
                 $this->annotationManager->writeAnnotation($deploymentContext, $object, 'com.continuouspipe.io.cloudflare.zone', \GuzzleHttp\json_encode($cloudFlareMetadata));
             } catch (\Throwable $e) {
+                $this->logger->warning('Something went wrong while creating the CloudFlare zone', [
+                    'exception' => $e,
+                ]);
+                
                 $logger->child(new Text('Error: ' . $e->getMessage()));
                 $logger->updateStatus(Log::FAILURE);
 
