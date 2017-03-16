@@ -73,6 +73,14 @@ class BillingProfileController
     }
 
     /**
+     * @Route("/account/billing-profile", name="account_billing_profile_legacy")
+     */
+    public function billingProfileLegacyAction()
+    {
+        return new RedirectResponse($this->urlGenerator->generate('account_billing_profiles'));
+    }
+
+    /**
      * @Route("/account/billing-profiles", name="account_billing_profiles")
      * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
      * @Template
