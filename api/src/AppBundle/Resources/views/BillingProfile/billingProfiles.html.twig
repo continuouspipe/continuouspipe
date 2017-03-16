@@ -6,7 +6,17 @@
 {% endblock %}
 {% block account_content %}
     <h2>Billing profiles</h2>
-    {% for billingProfile in billingProfiles %}
-        <a href="{{ path('account_billing_profile', { 'uuid': billingProfile.uuid}) }}">{{ billingProfile.name }}</a>
-    {% endfor %}
+    <ul>
+        {% for billingProfile in billingProfiles %}
+            <li><a href="{{ path('account_billing_profile', { 'uuid': billingProfile.uuid}) }}">{{ billingProfile.name }}</a></li>
+        {% endfor %}
+    </ul>
+    <h2>Add billing profile</h2>
+    <form method="post">
+        <label for="billing-profile-name">Name</label>
+        <input type="text" name="name" id="billing-profile-name" />
+        <br />
+        <input type="submit" value="Save" />
+    </form>
+
 {% endblock %}

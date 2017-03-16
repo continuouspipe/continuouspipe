@@ -41,11 +41,31 @@ class SubscriptionContext implements Context
     }
 
     /**
-     * @When I configure my billing profile
+     * @When I configure my billing profile :profileUuid
      */
-    public function iConfigureMyBillingProfile()
+    public function iConfigureMyBillingProfile($profileUuid)
     {
-        $this->response = $this->kernel->handle(Request::create('/account/billing-profile', 'GET', [], [
+        $this->response = $this->kernel->handle(Request::create('/account/billing-profile/' . $profileUuid, 'GET', [], [
+            'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
+        ]));
+    }
+
+    /**
+     * @When I view the list of billing profiles
+     */
+    public function iViewTheListOfBillingProfiles()
+    {
+        $this->response = $this->kernel->handle(Request::create('/account/billing-profiles', 'GET', [], [
+            'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
+        ]));
+    }
+
+    /**
+     * @When I view the billing profile :uuid
+     */
+    public function iViewTheBillingProfile($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create('/account/billing-profile/' . $uuid, 'GET', [], [
             'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
         ]));
     }
@@ -63,11 +83,23 @@ class SubscriptionContext implements Context
     }
 
     /**
-     * @When I subscribe for :count users
+     * @Then I should see that one has been created in the name :profileName
      */
-    public function iSubscribeForUsers($count)
+    public function iShouldSeeThatOneHasBeenCreatedForMe($profileName)
     {
-        $this->response = $this->kernel->handle(Request::create('/account/billing-profile', 'POST', [
+        $this->assertStatusCode(200);
+
+        if (false === strpos($this->response->getContent(), $profileName . '</a></li>')) {
+            throw new \RuntimeException('Did not found \'samuel (samuel.roze@gmail.com)\' in the page');
+        }
+    }
+
+    /**
+     * @When I subscribe for :count users to the profile :uuid
+     */
+    public function iSubscribeForUsers($count, $uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create('/account/billing-profile/' . $uuid, 'POST', [
             'quantity' => $count,
             '_operation' => 'subscribe',
         ], [
@@ -153,11 +185,11 @@ class SubscriptionContext implements Context
     }
 
     /**
-     * @When I cancel my subscription :subscriptionUuid
+     * @When I cancel my subscription :subscriptionUuid for the profile :profileUuid
      */
-    public function iCancelMySubscription($subscriptionUuid)
+    public function iCancelMySubscription($subscriptionUuid, $profileUuid)
     {
-        $this->response = $this->kernel->handle(Request::create('/account/billing-profile', 'POST', [
+        $this->response = $this->kernel->handle(Request::create('/account/billing-profile/' . $profileUuid, 'POST', [
             '_subscription_uuid' => $subscriptionUuid,
             '_operation' => 'cancel',
         ], [
@@ -180,11 +212,11 @@ class SubscriptionContext implements Context
     }
 
     /**
-     * @When I update my subscription :subscriptionUuid with a quantity of :quantity
+     * @When I update my subscription :subscriptionUuid with a quantity of :quantity for the profile :profileUuid
      */
-    public function iUpdateMySubscriptionWithAQuantityOf($subscriptionUuid, $quantity)
+    public function iUpdateMySubscriptionWithAQuantityOf($subscriptionUuid, $quantity, $profileUuid)
     {
-        $this->response = $this->kernel->handle(Request::create('/account/billing-profile', 'POST', [
+        $this->response = $this->kernel->handle(Request::create('/account/billing-profile/' . $profileUuid, 'POST', [
             '_subscription_uuid' => $subscriptionUuid,
             '_operation' => 'update',
             'quantity' => $quantity,
@@ -212,6 +244,18 @@ class SubscriptionContext implements Context
         }
 
         throw new \RuntimeException('The subscription was not updated');
+    }
+
+    /**
+     * @When I add a billing profile named :profileName
+     */
+    public function iAddABillingProfileNamed($profileName)
+    {
+        $this->response = $this->kernel->handle(Request::create('/account/billing-profiles', 'POST', [
+            'name' => $profileName
+        ], [
+            'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
+        ]));
     }
 
     private function assertStatusCode(int $code)
