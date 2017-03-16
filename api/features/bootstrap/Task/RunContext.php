@@ -363,8 +363,22 @@ class RunContext implements Context
     {
         $endpoint = $this->getEndpointOfComponent($name, $endpointName);
 
-        if (null === $endpoint->getCloudFlareZone()) {
+        if (null === ($configuration = $endpoint->getCloudFlareZone())) {
             throw new \RuntimeException('The CloudFlare configuration is null');
+        }
+
+        return $configuration;
+    }
+
+    /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with a proxied CloudFlare DNS zone configuration
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithAProxiedCloudflareDnsZoneConfiguration($endpointName, $name)
+    {
+        $configuration = $this->theEndpointOfTheComponentShouldBeDeployedWithACloudflareDnsZoneConfiguration($endpointName, $name);
+
+        if (!$configuration->isProxied()) {
+            throw new \RuntimeException('The zone is not proxied');
         }
     }
 
