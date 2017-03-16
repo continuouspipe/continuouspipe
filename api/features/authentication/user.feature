@@ -3,10 +3,10 @@ Feature:
   As a user
   I should be able to login with GitHub and my account should be ready to use
 
-  Scenario: If a user is not in the white list, he can't authenticate himself
+  Scenario: If a user is not in the white list, he CAN authenticate himself (now)
     Given The user "samuel" is not in the white list
     When the user "samuel" try to authenticate himself with GitHub
-    Then the authentication should be failed
+    Then the authentication should be successful
 
   Scenario: If a user is in the white list, he can authenticate himself
     Given The user "samuel" is in the white list
