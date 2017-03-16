@@ -26,3 +26,19 @@ The `init` command will use the default Git remote name `origin` to create a Con
 ```
 cp-remote init [token] --remote-name=foo
 ```
+
+### Interactive mode
+
+Using the `--interactive` or `-i` you will be requested only the cp username and cp api-key which will be stored in the global configuration file.
+
+```
+cp-remote init --interactive 
+```
+
+If the credentials are already stored and you want to override them use the `--reset` flag
+
+```
+cp-remote init --interactive --reset
+```
+
+You will then be able to run the `bash` and `exec` command in interactive mode. Note that step is optional, you can also run directly `cp-remote bash -i` without having to run `cp-remote init -i` first.
