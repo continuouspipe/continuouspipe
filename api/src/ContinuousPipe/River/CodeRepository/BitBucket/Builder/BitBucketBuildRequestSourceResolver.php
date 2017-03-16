@@ -48,9 +48,8 @@ class BitBucketBuildRequestSourceResolver implements BuildRequestSourceResolverA
         }
 
         $uri = sprintf(
-            '/%s/%s/get/%s.tar.gz',
-            $repository->getOwner()->getUsername(),
-            $repository->getName(),
+            '/%s/get/%s.tar.gz',
+            $repository->getApiSlug(),
             $codeReference->getCommitSha() ?: $codeReference->getBranch()
         );
 
