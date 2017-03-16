@@ -132,7 +132,10 @@
 
             <tag name="kernel.event_subscriber" />
         </service>
-        <service id="pipe.cloud_flare.client.api" class="ContinuousPipe\CloudFlare\CloudFlareApiClient" />
+        <service id="pipe.cloud_flare.client.api.official_client_factory" class="ContinuousPipe\CloudFlare\OfficialClientCloudFlareClientFactory" />
+        <service id="pipe.cloud_flare.client.api" class="ContinuousPipe\CloudFlare\CloudFlareApiClient">
+            <argument type="service" id="pipe.cloud_flare.client.api.official_client_factory" />
+        </service>
         <service id="pipe.cloud_flare.client" alias="pipe.cloud_flare.client.api" />
 
         <!-- HttpLabs integation -->
