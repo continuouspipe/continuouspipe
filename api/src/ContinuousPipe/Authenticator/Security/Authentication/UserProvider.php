@@ -39,11 +39,6 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     private $userDetails;
 
     /**
-     * @var WhiteList
-     */
-    private $whiteList;
-
-    /**
      * @var BucketRepository
      */
     private $bucketRepository;
@@ -80,7 +75,6 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     /**
      * @param SecurityUserRepository    $securityUserRepository
      * @param UserDetails               $userDetails
-     * @param WhiteList                 $whiteList
      * @param BucketRepository          $bucketRepository
      * @param TeamMembershipRepository  $teamMembershipRepository
      * @param TeamRepository            $teamRepository
@@ -89,11 +83,10 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      * @param AccountRepository         $accountRepository
      * @param AccountConnectorInterface $accountConnector
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, WhiteList $whiteList, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger, AccountRepository $accountRepository, AccountConnectorInterface $accountConnector)
+    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger, AccountRepository $accountRepository, AccountConnectorInterface $accountConnector)
     {
         $this->securityUserRepository = $securityUserRepository;
         $this->userDetails = $userDetails;
-        $this->whiteList = $whiteList;
         $this->bucketRepository = $bucketRepository;
         $this->teamMembershipRepository = $teamMembershipRepository;
         $this->teamRepository = $teamRepository;
@@ -116,17 +109,6 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
             ]));
 
             throw new InsufficientAuthenticationException('Unable to find your username from GitHub');
-        }
-
-        if (!$this->whiteList->contains($username)) {
-            $this->logger->warning('User is not in whitelist', [
-                'username' => $username,
-            ]);
-
-            throw new InsufficientAuthenticationException(sprintf(
-                'User "%s" is not in the white list, yet? :)',
-                $username
-            ));
         }
 
         try {
