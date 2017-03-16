@@ -16,7 +16,6 @@ You will need the following:
 
  * A ContinuousPipe hosted project with the GitHub, Docker and Kubernetes integration set up
  * The project checked out locally
- * The IP address, username and password to use for the Kubenetes cluster
  * `rsync` installed locally
  * Optionally, a [keen.io](https://keen.io) write token, project id and event collection name if you want to log usage stats
 
@@ -73,3 +72,11 @@ mv cp-remote /usr/local/bin/cp-remote
 * Move `cp-remote.exe` into your project folder
 
 **Dependencies:** You need to have `git`, and `cwRsync` installed and available in your environment `PATHS` variable.
+
+## Quick Start
+
+The quick start guide gives an overview of how to get running with remote development:
+
+- [Remote Development: Configuring Your Repository]({{< relref "quick-start/remote-development-configuring-your-repository.md" >}})
+- [Remote Development: Creating a Remote Environment]({{< relref "quick-start/remote-development-creating-a-remote-environment.md" >}})
+- [Remote Development: Using a Remote Environment]({{< relref "quick-start/remote-development-using-a-remote-environment.md" >}})
