@@ -3,6 +3,7 @@
 namespace ContinuousPipe\CloudFlare;
 
 use ContinuousPipe\Model\Component\Endpoint\CloudFlareAuthentication;
+use Psr\Log\LoggerInterface;
 
 class CloudFlareApiClient implements CloudFlareClient
 {
@@ -12,11 +13,18 @@ class CloudFlareApiClient implements CloudFlareClient
     private $authenticatedCloudFlareClientFactory;
 
     /**
-     * @param AuthenticatedCloudFlareClientFactory $authenticatedCloudFlareClientFactory
+     * @var LoggerInterface
      */
-    public function __construct(AuthenticatedCloudFlareClientFactory $authenticatedCloudFlareClientFactory)
+    private $logger;
+
+    /**
+     * @param AuthenticatedCloudFlareClientFactory $authenticatedCloudFlareClientFactory
+     * @param LoggerInterface $logger
+     */
+    public function __construct(AuthenticatedCloudFlareClientFactory $authenticatedCloudFlareClientFactory, LoggerInterface $logger)
     {
         $this->authenticatedCloudFlareClientFactory = $authenticatedCloudFlareClientFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -26,15 +34,19 @@ class CloudFlareApiClient implements CloudFlareClient
     {
         try {
             $response = $this->authenticatedCloudFlareClientFactory->dns($authentication)->create($zone, $record->getType(), $record->getHostname(), $record->getAddress());
-
-            if (!isset($response->result->id)) {
-                throw new CloudFlareException('The response from CloudFlare wasn\'t matching expected response');
-            }
-
-            return $response->result->id;
         } catch (\Exception $e) {
             throw new CloudFlareException($e->getMessage(), $e->getCode(), $e);
         }
+
+        if (!isset($response->result->id)) {
+            $this->logger->warning('CloudFlare response is not understandable', [
+                'response' => \GuzzleHttp\json_encode($response),
+            ]);
+
+            throw new CloudFlareException('The response from CloudFlare wasn\'t matching expected response');
+        }
+
+        return $response->result->id;
     }
 
     /**

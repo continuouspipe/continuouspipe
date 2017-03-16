@@ -135,6 +135,7 @@
         <service id="pipe.cloud_flare.client.api.official_client_factory" class="ContinuousPipe\CloudFlare\OfficialClientCloudFlareClientFactory" />
         <service id="pipe.cloud_flare.client.api" class="ContinuousPipe\CloudFlare\CloudFlareApiClient">
             <argument type="service" id="pipe.cloud_flare.client.api.official_client_factory" />
+            <argument type="service" id="logger" />
         </service>
         <service id="pipe.cloud_flare.client" alias="pipe.cloud_flare.client.api" />
 
