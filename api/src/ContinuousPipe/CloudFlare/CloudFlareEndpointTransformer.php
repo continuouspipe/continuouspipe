@@ -107,7 +107,9 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
                     new ZoneRecord(
                         $recordName,
                         $recordType,
-                        $recordAddress
+                        $recordAddress,
+                        $cloudFlareZone->getTtl(),
+                        $cloudFlareZone->isProxied()
                     )
                 );
 

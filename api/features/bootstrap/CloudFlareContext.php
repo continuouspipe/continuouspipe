@@ -34,6 +34,27 @@ class CloudFlareContext implements Context
     }
 
     /**
+     * @Then the CloudFlare zone :name should have been created as proxied
+     */
+    public function theCloudflareZoneShouldHaveBeenCreatedAsProxied($name)
+    {
+        /** @var ZoneRecord[] $matchingRecords */
+        $matchingRecords = array_filter($this->traceableCloudFlareClient->getCreatedRecords(), function(ZoneRecord $record) use ($name) {
+            return $record->getHostname() == $name;
+        });
+
+        if (count($matchingRecords) == 0) {
+            throw new \RuntimeException('No matching created record found');
+        }
+
+        foreach ($matchingRecords as $record) {
+            if (!$record->isProxied()) {
+                throw new \RuntimeException('The record should be proxied but is not');
+            }
+        }
+    }
+
+    /**
      * @Then the CloudFlare record :record of the zone :zone should have been deleted
      */
     public function theCloudFlareRecordOfTheZoneShouldHaveBeenDeleted($record, $zone)

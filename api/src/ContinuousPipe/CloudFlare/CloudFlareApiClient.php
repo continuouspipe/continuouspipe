@@ -33,7 +33,14 @@ class CloudFlareApiClient implements CloudFlareClient
     public function createRecord(string $zone, CloudFlareAuthentication $authentication, ZoneRecord $record) : string
     {
         try {
-            $response = $this->authenticatedCloudFlareClientFactory->dns($authentication)->create($zone, $record->getType(), $record->getHostname(), $record->getAddress());
+            $response = $this->authenticatedCloudFlareClientFactory->dns($authentication)->create(
+                $zone,
+                $record->getType(),
+                $record->getHostname(),
+                $record->getAddress(),
+                $record->getTtl() ?: 1,
+                $record->isProxied() ?: false
+            );
         } catch (\Exception $e) {
             throw new CloudFlareException($e->getMessage(), $e->getCode(), $e);
         }
