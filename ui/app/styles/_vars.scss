@@ -1,0 +1,36 @@
+$header-background: #232731;
+
+$sidebar-background: #333844;
+$sidebar-color: #ACB1B4;
+
+$inner-toolbar-background: white;
+$inner-toolbar-color: #6D6D6D;
+$inner-toolbar-button-background: #52A6FF;
+$inner-toolbar-button-color: #fff;
+$inner-background-color-grey: #f2f4f6;
+$border-grey: #a1a1a1;
+$inactive-grey: #a5a5a5;
+$active-grey: #676767;
+
+$logo-size: 30px;
+$header-height: 64px;
+$sidebar-selected-background: rgba(255, 255, 255, 0.1);
+$content-background: #F2F4F6;
+$inner-toolbar-button-hovered-background: #3076FF;
+
+$success-color: #E3F2D4;
+$success-dark-color: #80BD42;
+$running-color: #E6F2FB;
+$running-dark-color: #1D8CD9;
+$failure-color: #FDE3E3;
+$failure-dark-color: #F28282;
+
+$skipped-color: $inactive-grey;
+$skipped-dark-color: $active-grey;
+$cancelled-color: #ffb10a;
+$cancelled-dark-color: #966600;
+$pending-color: #e5e5e5;
+$pending-dark-color: #bcbcbc;
+
+$small-screen-size: 900px;
+$large-screen-size: 1100px;
