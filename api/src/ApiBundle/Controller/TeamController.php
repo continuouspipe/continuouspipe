@@ -220,4 +220,15 @@ class TeamController
     {
         return $this->alertFinder->findByTeam($team);
     }
+
+    /**
+     * @Route("/teams/{slug}/billing-profile", methods={"GET"})
+     * @ParamConverter("team", converter="team")
+     * @Security("is_granted('READ', team)")
+     * @View
+     */
+    public function billingProfileAction(Team $team)
+    {
+        return $this->userBillingProfileRepository->findByTeam($team);
+    }
 }
