@@ -73,7 +73,7 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
         $limits = $this->getLimitByTide($tide);
 
         if ($this->hasReachedLimits($tide, $limits)) {
-            $this->transactionManager->apply($tide->getUuid(), function(TideAggregate $tide) use ($limits) {
+            $this->transactionManager->apply($tide->getUuid(), function (TideAggregate $tide) use ($limits) {
                 $tide->notifyPendingReason($this->loggerFactory, sprintf('You\'ve used your %d tides per hour usage limit. This tide will start automatically in a moment.', $limits));
             });
 
