@@ -89,14 +89,11 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
             return false;
         }
 
-        $oneHourAgo = $this->timeResolver->resolve()->modify('-1 hour');
-        $tides = array_filter(
-            $this->tideRepository->findByFlowUuid($tide->getFlowUuid())->toArray(),
-            function (Tide $tide) use ($oneHourAgo) {
-                return $tide->getStartDate() >= $oneHourAgo;
-            }
+        $startedTidesCount = $this->tideRepository->countStartedTidesByFlowSince(
+            $tide->getFlowUuid(),
+            $this->timeResolver->resolve()->modify('-1 hour')
         );
 
-        return count($tides) > $limit;
+        return $startedTidesCount > $limit;
     }
 }
