@@ -42,14 +42,14 @@ cp-remote init -i
 
 The first time you run this, you will be asked to enter your ContinuousPipe username and the ContinuousPipe API key you generated. They are then stored in a local configuration file `.cp-remote-settings.yml` so you won't need to enter them again.  
 
-If you want to change the stored credentials, use the `--reset` flag:
-
-```
-cp-remote init --interactive --reset
-```
-
 You will then be able to run the `bash` and `exec` command within the interactive mode. 
 
 {{< note title="Note" >}}
 The [bash command]({{< relref "remote-development/bash-command.md" >}}) and [exec command]({{< relref "remote-development/exec-command.md" >}}) can also be run in interactive mode directly without having to run `cp-remote init -i` first.
 {{< /note >}}
+
+If you want to change the stored username and API key, use the `--reset` flag:
+
+```
+cp-remote init --interactive --reset
+```

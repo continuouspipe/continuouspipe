@@ -43,5 +43,5 @@ cp-remote exec -i -e php-example-cpdev-foo -s web -f 1268cc54-0c360641bb54 -- /b
 If you have not previously run interactive mode with any command, the first time you run this you will be asked to enter your ContinuousPipe username and the ContinuousPipe API key you generated. They are then stored in a local configuration file `.cp-remote-settings.yml` so you won't need to enter them again. 
 
 {{< note title="Note" >}}
-If you need to reset the stored credentials you need to run the [init command]({{< relref "remote-development/init-command.md#interactive-mode" >}}) with the `--reset` flag.
+If you need to reset the stored username and API key, you need to run the [init command]({{< relref "remote-development/init-command.md#interactive-mode" >}}) with the `--reset` flag.
 {{< /note >}}
