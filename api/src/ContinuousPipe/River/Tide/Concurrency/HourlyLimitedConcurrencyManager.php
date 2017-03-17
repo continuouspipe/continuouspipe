@@ -36,6 +36,10 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var integer
+     */
+    private $limit;
 
     public function __construct(
         TideConcurrencyManager $decoratedConcurrencyManager,
@@ -60,7 +64,7 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
     {
         if ($this->hasReachedLimits($tide)) {
             $log = $this->loggerFactory->fromId($tide->getLogId());
-            $log->child(new Text('Tides per hour limit reached.'));
+            $log->child(new Text(sprintf('Tides per hour limit of %d reached.', $this->getLimitByTide($tide))));
             return false;
         }
         return $this->decoratedConcurrencyManager->shouldTideStart($tide);
@@ -76,16 +80,7 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
 
     private function hasReachedLimits(Tide $tide)
     {
-        try {
-            $limit = $this->authenticatorClient->findTeamUsageLimitsBySlug($tide->getTeam()->getSlug())->getTidesPerHour();
-        } catch (\Exception $exception) {
-            $this->logger->warning(
-                'Can\'t get team usage limits',
-                ['exception' => $exception, 'tide' => $tide, 'team' => $tide->getTeam()->getSlug()]
-            );
-            $limit = 0;
-        }
-        if (0 === $limit) {
+        if (0 === ($limit = $this->getLimitByTide($tide))) {
             return false;
         }
 
@@ -95,5 +90,24 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
         );
 
         return $startedTidesCount > $limit;
+    }
+
+    private function getLimitByTide(Tide $tide) : int
+    {
+        if (isset($this->limit)) {
+            return $this->limit;
+        }
+
+        try {
+            $this->limit = $this->authenticatorClient->findTeamUsageLimitsBySlug($tide->getTeam()->getSlug())->getTidesPerHour();
+        } catch (\Exception $exception) {
+            $this->logger->warning(
+                'Can\'t get team usage limits',
+                ['exception' => $exception, 'tide' => $tide, 'team' => $tide->getTeam()->getSlug()]
+            );
+            $this->limit = 0;
+        } finally {
+            return $this->limit;
+        }
     }
 }
