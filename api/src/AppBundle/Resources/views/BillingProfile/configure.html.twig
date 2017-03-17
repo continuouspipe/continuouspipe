@@ -6,8 +6,9 @@
 {% endblock %}
 {% block account_content %}
 <form action="" method="POST">
+    <h1>Billing profile <em>{{ billingProfile.name }}</em></h1>
 {% if subscriptions is empty %}
-<h2>Subscription</h2>
+    <h2>Subscribe</h2>
 {% if trialExpiration < date() %}
     <div class="alert alert-danger">
         Your trial expired on {{ trialExpiration | date('d/m/Y') }}
@@ -49,7 +50,7 @@
 </form>
 {% else %}
 {% for subscription in subscriptions %}
-<h2>My subscription</h2>
+<h2>Your subscription</h2>
 {% if subscription.state != constant('STATE_ACTIVE', subscription) %}
     <div class="alert alert-danger">Your subscription is not active.</div>
 {% endif %}

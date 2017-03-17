@@ -44,6 +44,14 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
     /**
      * {@inheritdoc}
      */
+    public function findAllByUser(User $user): array
+    {
+        return $this->getUserBillingProfileRepository()->findBy(['user' => $user]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function save(UserBillingProfile $billingProfile)
     {
         $merged = $this->entityManager->merge($billingProfile);

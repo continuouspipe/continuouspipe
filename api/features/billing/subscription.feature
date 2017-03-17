@@ -7,13 +7,22 @@ Feature:
     Given there is a user "samuel"
     And the user "samuel" with email "samuel.roze@gmail.com" is authenticated on its account
 
-  Scenario: I can subscribe when I don't have any subscription
-    When I configure my billing profile
+  Scenario: It automatically creates a billing profile
+    When I view the list of billing profiles
+    Then I should see that one has been created in the name "samuel"
+
+  Scenario: I can subscribe for a billing profile
+    Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    When I configure my billing profile "00000000-0000-0000-0000-000000000000"
     Then I should be able to subscribe
+
+  Scenario: I can create a new billing profile
+    When I add a billing profile named "New profile"
+    Then I should see that one has been created in the name "New profile"
 
   Scenario: I don't have any subscription, I subscribe with Recurly
     Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
-    When I subscribe for 10 users
+    When I subscribe for 10 users to the profile "00000000-0000-0000-0000-000000000000"
     Then I should be redirected to the Recurly subscription page of the account "00000000-0000-0000-0000-000000000000"
 
   Scenario: Subscription is displayed on the billing page
@@ -21,7 +30,7 @@ Feature:
      | plan        | quantity | state  |
      | single-user | 10       | active |
     And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
-    When I configure my billing profile
+    When I view the billing profile "00000000-0000-0000-0000-000000000000"
     Then I should see that my current plan is for 10 users
 
   Scenario: I do have a subscription, I can cancel it
@@ -29,7 +38,7 @@ Feature:
       | plan        | quantity | state  |
       | single-user | 10       | active |
     And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
-    When I configure my billing profile
+    When I view the billing profile "00000000-0000-0000-0000-000000000000"
     Then I should be able to cancel my subscription
 
   Scenario: I do have a subscription, I cancel it
@@ -37,7 +46,7 @@ Feature:
       | uuid                                 | plan        | quantity | state  |
       | 00000000-1111-1111-1111-000000000000 | single-user | 10       | active |
     And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
-    When I cancel my subscription "00000000-1111-1111-1111-000000000000"
+    When I cancel my subscription "00000000-1111-1111-1111-000000000000" for the profile "00000000-0000-0000-0000-000000000000"
     Then the subscription "00000000-1111-1111-1111-000000000000" should have been cancelled
 
   Scenario: I do have a subscription, I update it
@@ -45,7 +54,7 @@ Feature:
       | uuid                                 | plan        | quantity | state  |
       | 00000000-1111-1111-1111-000000000000 | single-user | 1        | active |
     And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
-    When I update my subscription "00000000-1111-1111-1111-000000000000" with a quantity of 4
+    When I update my subscription "00000000-1111-1111-1111-000000000000" with a quantity of 4 for the profile "00000000-0000-0000-0000-000000000000"
     Then the subscription "00000000-1111-1111-1111-000000000000" should have been updated with a quantity of 4
 
   Scenario: Subscription usage is displayed on the admin
@@ -57,5 +66,5 @@ Feature:
       | 00000000-0000-0000-0000-000000000000 | push | user1 | -2 days    |
       | 00000000-0000-0000-0000-000000000000 | push | user2 | -3 days    |
     And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
-    When I configure my billing profile
+    When I view the billing profile "00000000-0000-0000-0000-000000000000"
     Then I should see that my current usage is of 2 active users

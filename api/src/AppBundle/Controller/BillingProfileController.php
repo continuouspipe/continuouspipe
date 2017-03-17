@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use ContinuousPipe\Billing\ActivityTracker\ActivityTracker;
 use ContinuousPipe\Billing\BillingProfile\Trial\TrialResolver;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
-use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Billing\Subscription\Subscription;
 use ContinuousPipe\Billing\Subscription\SubscriptionClient;
@@ -74,35 +73,50 @@ class BillingProfileController
     }
 
     /**
-     * @Route("/account/billing-profile", name="account_billing_profile")
+     * @Route("/account/billing-profile", name="account_billing_profile_legacy")
+     */
+    public function billingProfileLegacyAction()
+    {
+        return new RedirectResponse($this->urlGenerator->generate('account_billing_profiles'));
+    }
+
+    /**
+     * @Route("/account/billing-profiles", name="account_billing_profiles")
      * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
      * @Template
      */
-    public function configureAction(User $user, Request $request)
+    public function billingProfilesAction(User $user, Request $request)
     {
-        try {
-            $billingProfile = $this->userBillingProfileRepository->findByUser($user);
-            $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
-
-            $activities = [];
-            foreach ($billingProfileTeams as $team) {
-                $activities = array_merge($activities, $this->activityTracker->findBy($team, new \DateTime('-30 days'), new \DateTime()));
-            }
-
-            usort($activities, function (UserActivity $left, UserActivity $right) {
-                return $left->getDateTime() > $right->getDateTime() ? -1 : 1;
-            });
-        } catch (UserBillingProfileNotFound $e) {
-            $billingProfileTeams = [];
-            $activities = [];
-            $billingProfile = new UserBillingProfile(
-                Uuid::uuid4(),
-                $user,
-                sprintf('%s (%s)', $user->getUsername(), $user->getEmail()),
-                new \DateTime(),
-                true
-            );
+        $billingProfiles = $this->userBillingProfileRepository->findAllByUser($user);
+        if (count($billingProfiles) == 0) {
+            $this->createBillingProfile($user, $user->getUsername());
         }
+
+        if ($request->isMethod('POST')) {
+            $this->createBillingProfile($user, $request->get('name'));
+        }
+
+        return ['billingProfiles' => $this->userBillingProfileRepository->findAllByUser($user)];
+    }
+
+    /**
+     * @Route("/account/billing-profile/{uuid}", name="account_billing_profile")
+     * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @Template
+     */
+    public function configureAction(User $user, string $uuid, Request $request)
+    {
+        $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
+        $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
+
+        $activities = [];
+        foreach ($billingProfileTeams as $team) {
+            $activities = array_merge($activities, $this->activityTracker->findBy($team, new \DateTime('-30 days'), new \DateTime()));
+        }
+
+        usort($activities, function (UserActivity $left, UserActivity $right) {
+            return $left->getDateTime() > $right->getDateTime() ? -1 : 1;
+        });
 
         // Load subscriptions
         $subscriptions = $this->subscriptionClient->findSubscriptionsForBillingProfile($billingProfile);
@@ -187,5 +201,26 @@ class BillingProfileController
         }
 
         return $perDay;
+    }
+
+    /**
+     * @param User $user
+     * @param string $name
+     *
+     * @return UserBillingProfile
+     */
+    private function createBillingProfile(User $user, string $name): UserBillingProfile
+    {
+        $billingProfile = new UserBillingProfile(
+            Uuid::uuid4(),
+            $user,
+            $name,
+            new \DateTime(),
+            true
+        );
+
+        $this->userBillingProfileRepository->save($billingProfile);
+
+        return $billingProfile;
     }
 }

@@ -66,6 +66,21 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
     /**
      * {@inheritdoc}
      */
+    public function findAllByUser(User $user): array
+    {
+        $profiles = [];
+        foreach ($this->profiles as $profile) {
+            if ($profile->getUser()->getUsername() == $user->getUsername()) {
+                $profiles[] = $profile;
+            }
+        }
+
+        return $profiles;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function save(UserBillingProfile $billingProfile)
     {
         $this->profiles[(string) $billingProfile->getUuid()] = $billingProfile;
