@@ -345,6 +345,8 @@ class DeployTaskFactory implements TaskFactory
                         ->children()
                             ->scalarNode('zone_identifier')->isRequired()->end()
                             ->scalarNode('record_suffix')->isRequired()->end()
+                            ->integerNode('ttl')->end()
+                            ->booleanNode('proxied')->end()
                             ->arrayNode('authentication')
                                 ->isRequired()
                                 ->children()
