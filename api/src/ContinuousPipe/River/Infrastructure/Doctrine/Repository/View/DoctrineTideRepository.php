@@ -216,7 +216,7 @@ class DoctrineTideRepository implements TideRepository
     {
         $qb = $this->getEntityRepository()->createQueryBuilder('e');
         $qb->where('e.flowUuid', $flowUuid);
-        $qb->andWhere($qb->expr()->lt('e.tide.startDate', $from));
+        $qb->andWhere($qb->expr()->gt('e.tide.startDate', $from));
         return $qb->getQuery()->getMaxResults();
     }
 
