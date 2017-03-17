@@ -210,22 +210,26 @@ class AccountsContext implements Context
     }
 
     /**
-     * @Then I should see two billing profiles :uuid1 and :uuid2
+     * @Then I should see the following billing profiles:
      */
-    public function iShouldSeeTwoBillingProfilesAnd($uuid1, $uuid2)
+    public function iShouldSeeTheFollowingBillingProfiles(TableNode $table)
     {
         $this->assertResponseCode(200);
 
         $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
 
-        if (count($json) != 2) {
-            throw new \RuntimeException('There should be exactly two billing profile');
+        $uuids = array_map(function($billingProfile){
+            return $billingProfile['uuid'];
+        }, $json);
+
+        foreach ($table->getColumnsHash() as $row) {
+            if (!in_array($row['uuid'], $uuids)) {
+                throw new \RuntimeException(sprintf('The uuid %s should be one of the billing profiles', $row['uuid']));
+            }
         }
 
-        if ($json[0]['uuid'] != $uuid1 && $json[1]['uuid'] != $uuid2) {
-            throw new \RuntimeException(sprintf('The UUIDs of the billing profiles (%s, %s) do not match the expected (%s, %s)', $json[0]['uuid'], $json[1]['uuid'], $uuid1, $uuid2));
-        }
     }
+
 
     /**
      * @Then I should see the billing profile to be not found
