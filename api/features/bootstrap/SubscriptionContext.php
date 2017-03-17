@@ -258,6 +258,14 @@ class SubscriptionContext implements Context
         ]));
     }
 
+    /**
+     * @Then I should not be authorized to view that billing profile
+     */
+    public function iShouldNotBeAuthorizedToViewThatBillingProfile()
+    {
+        $this->assertStatusCode(403);
+    }
+
     private function assertStatusCode(int $code)
     {
         if ($this->response->getStatusCode() != $code) {

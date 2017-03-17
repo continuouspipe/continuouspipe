@@ -28,3 +28,18 @@ Feature:
     Given I am authenticated as user "unknown"
     When I request my billing profiles
     Then I should see the billing profile to be not found
+
+  Scenario: Get a team's billing profile
+    Given I am authenticated as user "samuel"
+    And there is a team "foo"
+    And the user "samuel" is administrator of the team "foo"
+    And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
+    When I request the billing profile of the team "foo"
+    Then I should see that the billing profile is "00000000-0000-0000-0000-000000000000"
+
+  Scenario: Cannot access a team's billing profile if I'm not part of that team
+    Given I am authenticated as user "samuel"
+    And there is a team "foo"
+    And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
+    When I request the billing profile of the team "foo"
+    Then I should be told that I don't have the authorization

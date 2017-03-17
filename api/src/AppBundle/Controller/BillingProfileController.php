@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -107,6 +108,11 @@ class BillingProfileController
     public function configureAction(User $user, string $uuid, Request $request)
     {
         $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
+
+        if ($billingProfile->getUser() != $user) {
+            throw new AccessDeniedHttpException('You are not authorized to access this billing profile');
+        }
+
         $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
 
         $activities = [];

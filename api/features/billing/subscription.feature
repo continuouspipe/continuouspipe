@@ -16,6 +16,13 @@ Feature:
     When I configure my billing profile "00000000-0000-0000-0000-000000000000"
     Then I should be able to subscribe
 
+  Scenario: I cannot see someone else's billing profile
+    Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    And there is a user "test"
+    And the user "test" with email "test@example.com" is authenticated on its account
+    When I configure my billing profile "00000000-0000-0000-0000-000000000000"
+    Then I should not be authorized to view that billing profile
+
   Scenario: I can create a new billing profile
     When I add a billing profile named "New profile"
     Then I should see that one has been created in the name "New profile"

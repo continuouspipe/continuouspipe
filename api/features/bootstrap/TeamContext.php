@@ -250,6 +250,26 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I request the billing profile of the team :team
+     */
+    public function iRequestTheBillingProfileOfTheTeam($team)
+    {
+        $this->response = $this->kernel->handle(Request::create('/api/teams/'.$team.'/billing-profile', 'GET'));
+    }
+
+    /**
+     * @Then I should see that the billing profile is :profileUuid
+     */
+    public function iShouldSeeThatTheBillingProfileIs($profileUuid)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if ($json['uuid'] != $profileUuid) {
+            throw new \RuntimeException(sprintf('Expected billing profile uuid (%s), but got (%s)', $profileUuid, $json['uuid']));
+        }
+    }
+
+    /**
      * @When I request the details of team :team with the API key :key
      */
     public function iRequestTheDetailsOfTeamWithTheApiKey($team, $key)
