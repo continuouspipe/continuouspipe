@@ -213,12 +213,15 @@
             <argument>%retry_interval%</argument>
         </service>
 
-        <service id="continuous_pipe.river.tide.usage_limiter.hourly_limited_concurrency_manager" class="ContinuousPipe\River\Tide\Concurrency\HourlyLimitedConcurrencyManager" decorates="river.tide.concurrency_manager">
+        <service id="continuous_pipe.river.tide.usage_limiter.hourly_limited_concurrency_manager"
+                 class="ContinuousPipe\River\Tide\Concurrency\HourlyLimitedConcurrencyManager"
+                 decorates="river.tide.concurrency_manager">
             <argument type="service" id="continuous_pipe.river.tide.usage_limiter.hourly_limited_concurrency_manager.inner" />
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.time_resolver" />
             <argument type="service" id="security.authenticator.client" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="logger" />
         </service>
 
         <service id="river.tide.concurrency.run_pending_tides_handler" class="ContinuousPipe\River\Tide\Concurrency\Handler\RunPendingTidesHandler">

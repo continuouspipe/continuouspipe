@@ -8,6 +8,7 @@ Feature: Starting a tide is limited by usage limits
     """
     And the team "samuel" exists
 
+  @smoke
   Scenario: Any number of tides could be started if limitation is not configured
     Given the team "samuel" has a "0" tides per hour usage limit
     When the commit "000000000000000000000000000000000000000" is pushed to the branch "master"
@@ -20,6 +21,7 @@ Feature: Starting a tide is limited by usage limits
     And the tide for the branch "develop" and commit "111111111111111111111111111111111111111" should be started
     And the tide for the branch "feature" and commit "222222222222222222222222222222222222222" should be started
 
+  @smoke
   Scenario: A tide can be started only if usage is within limits
     Given the team "samuel" has a "1" tides per hour usage limit
     When the commit "000000000000000000000000000000000000000" is pushed to the branch "master"

@@ -210,6 +210,18 @@ class DoctrineTideRepository implements TideRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function countStartedTidesByFlowSince(UuidInterface $flowUuid, \DateTime $from): int
+    {
+        $qb = $this->getEntityRepository()->createQueryBuilder('e');
+        $qb->where('e.flowUuid', $flowUuid);
+        $qb->andWhere($qb->expr()->lt('e.tide.startDate', $from));
+        return $qb->getQuery()->getMaxResults();
+    }
+
+
+    /**
      * @param UuidInterface $uuid
      *
      * @return TideDto

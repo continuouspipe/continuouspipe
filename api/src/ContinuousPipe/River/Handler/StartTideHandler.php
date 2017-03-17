@@ -69,7 +69,7 @@ class StartTideHandler
             return;
         }
 
-        if ($this->concurrencyManager->shouldTideStart($tide)) { // <----
+        if ($this->concurrencyManager->shouldTideStart($tide)) {
             $this->startTide($command);
         } else {
             $this->concurrencyManager->postPoneTideStart($tide);
