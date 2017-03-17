@@ -31,6 +31,6 @@ If you then go to the "Environments" tab, you will see an entry representing the
 
 If you click the "OPEN" button you will see a confirm message to let you know that you are being redirected outside ContinuousPipe to the deployed environment. Click "OPEN IT" to proceed. Finally, you should see your deployed site in a new tab.
 
-![](/images/quick-start/flow-environments-view-site.png)
+![](/images/quick-start/flow-environments-view-endpoint.png)
 
 
