@@ -67,6 +67,7 @@ class BitBucketClientFactory
             $this->logger->alert('Found multiple installations for a given code repository', [
                 'repository_owner' => $repository->getOwner()->getUsername(),
                 'repository_name' => $repository->getName(),
+                'repository_api_slug' => $repository->getApiSlug(),
             ]);
         }
 

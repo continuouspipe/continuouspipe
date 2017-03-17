@@ -463,8 +463,9 @@ class BuildContext implements Context
 
     /**
      * @Then the build should be started with a BitBucket archive URL
+     * @Then the build should be started with a BitBucket archive URL for the repository :repository
      */
-    public function theBuildShouldBeStartedWithABitbucketArchiveUrl()
+    public function theBuildShouldBeStartedWithABitbucketArchiveUrl($repository = null)
     {
         $archive = $this->getBuildRequestStep()->getArchive();
 
@@ -472,7 +473,7 @@ class BuildContext implements Context
             throw new \RuntimeException('The archive is not found in the build request');
         }
 
-        if (strpos($archive->getUrl(), 'bitbucket') === false) {
+        if (strpos($archive->getUrl(), $repository ?: 'bitbucket') === false) {
             throw new \RuntimeException(sprintf(
                 '"bitbucket" not found in archive URL: %s',
                 $archive->getUrl()

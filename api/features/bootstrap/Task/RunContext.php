@@ -363,8 +363,22 @@ class RunContext implements Context
     {
         $endpoint = $this->getEndpointOfComponent($name, $endpointName);
 
-        if (null === $endpoint->getCloudFlareZone()) {
+        if (null === ($configuration = $endpoint->getCloudFlareZone())) {
             throw new \RuntimeException('The CloudFlare configuration is null');
+        }
+
+        return $configuration;
+    }
+
+    /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with a proxied CloudFlare DNS zone configuration
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithAProxiedCloudflareDnsZoneConfiguration($endpointName, $name)
+    {
+        $configuration = $this->theEndpointOfTheComponentShouldBeDeployedWithACloudflareDnsZoneConfiguration($endpointName, $name);
+
+        if (!$configuration->isProxied()) {
+            throw new \RuntimeException('The zone is not proxied');
         }
     }
 
@@ -397,6 +411,29 @@ class RunContext implements Context
 
         if ($count != count($httpLabsConfiguration->getMiddlewares())) {
             throw new \RuntimeException('Number of middlewares not matching');
+        }
+    }
+
+    /**
+     * @Then the endpoint :endpointName of the component :componentName should be deployed with the following annotations:
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithTheFollowingAnnotations($endpointName, $componentName, TableNode $table)
+    {
+        $endpoint = $this->getEndpointOfComponent($componentName, $endpointName);
+        $annotations = $endpoint->getAnnotations();
+
+        foreach ($table->getHash() as $row) {
+            if (!array_key_exists($row['name'], $annotations)) {
+                throw new \RuntimeException(sprintf('Annotation named %s not found', $row['name']));
+            }
+
+            if ($annotations[$row['name']] != $row['value']) {
+                throw new \RuntimeException(sprintf(
+                    'Found value "%s" for the annotation "%s"',
+                    $annotations[$row['name']],
+                    $row['name']
+                ));
+            }
         }
     }
 

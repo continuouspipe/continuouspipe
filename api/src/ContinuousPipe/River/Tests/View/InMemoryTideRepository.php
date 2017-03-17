@@ -158,6 +158,21 @@ class InMemoryTideRepository implements TideRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function countStartedTidesByFlowSince(UuidInterface $flowUuid, \DateTime $from): int
+    {
+        $tides = array_filter(
+            $this->tides,
+            function (Tide $tide) use ($from, $flowUuid) {
+                return $tide->getStartDate() >= $from && $tide->getFlowUuid() == $flowUuid;
+            }
+        );
+        return count($tides);
+    }
+
+
+    /**
      * @param CodeReference $codeReference
      *
      * @return string

@@ -1,7 +1,4 @@
 inherit: true
-
-filter:
-    paths: [src/*]
     
 build_failure_conditions:
     - 'issues.label("coding-style").new.exists'

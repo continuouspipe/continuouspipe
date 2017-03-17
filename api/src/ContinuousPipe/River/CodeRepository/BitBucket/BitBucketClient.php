@@ -7,19 +7,17 @@ use ContinuousPipe\AtlassianAddon\BitBucket\PullRequest;
 interface BitBucketClient
 {
     /**
-     * @param string $owner
-     * @param string $repository
+     * @param BitBucketCodeRepository $codeRepository
      * @param string $branch
      *
      * @throws BitBucketClientException
      *
      * @return string
      */
-    public function getReference(string $owner, string $repository, string $branch) : string;
+    public function getReference(BitBucketCodeRepository $codeRepository, string $branch) : string;
 
     /**
-     * @param string $owner
-     * @param string $repository
+     * @param BitBucketCodeRepository $codeRepository
      * @param string $reference
      * @param string $filePath
      *
@@ -27,35 +25,32 @@ interface BitBucketClient
      *
      * @return string
      */
-    public function getContents(string $owner, string $repository, string $reference, string $filePath) : string;
+    public function getContents(BitBucketCodeRepository $codeRepository, string $reference, string $filePath) : string;
 
     /**
-     * @param string      $owner
-     * @param string      $repository
+     * @param BitBucketCodeRepository $codeRepository
      * @param string      $reference
      * @param BuildStatus $status
      *
      * @throws BitBucketClientException
      */
-    public function buildStatus(string $owner, string $repository, string $reference, BuildStatus $status);
+    public function buildStatus(BitBucketCodeRepository $codeRepository, string $reference, BuildStatus $status);
 
     /**
-     * @param string $owner
-     * @param string $repository
+     * @param BitBucketCodeRepository $codeRepository
      *
      * @throws BitBucketClientException
      *
      * @return PullRequest[]
      */
-    public function getOpenedPullRequests(string $owner, string $repository) : array;
+    public function getOpenedPullRequests(BitBucketCodeRepository $codeRepository) : array;
 
     /**
      * Write a pull-request comment.
      *
      * Returns the identifier of the comment.
      *
-     * @param string $owner
-     * @param string $repository
+     * @param BitBucketCodeRepository $codeRepository
      * @param string $pullRequestIdentifier
      * @param string $contents
      *
@@ -63,17 +58,16 @@ interface BitBucketClient
      *
      * @return string
      */
-    public function writePullRequestComment(string $owner, string $repository, string $pullRequestIdentifier, string $contents) : string;
+    public function writePullRequestComment(BitBucketCodeRepository $codeRepository, string $pullRequestIdentifier, string $contents) : string;
 
     /**
      * Delete the given comment.
      *
-     * @param string $owner
-     * @param string $repository
+     * @param BitBucketCodeRepository $codeRepository
      * @param string $pullRequestIdentifier
      * @param string $commentIdentifier
      *
      * @throws BitBucketClientException
      */
-    public function deletePullRequestComment(string $owner, string $repository, string $pullRequestIdentifier, string $commentIdentifier);
+    public function deletePullRequestComment(BitBucketCodeRepository $codeRepository, string $pullRequestIdentifier, string $commentIdentifier);
 }

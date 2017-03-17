@@ -35,10 +35,7 @@ class BitBucketPullRequestResolver implements PullRequestResolver
             throw new CodeRepositoryException('This pull-request comment manipulator only supports BitBucket repositories');
         }
 
-        $pullRequests = $this->bitBucketClientFactory->createForCodeRepository($repository)->getOpenedPullRequests(
-            $repository->getOwner()->getUsername(),
-            $repository->getName()
-        );
+        $pullRequests = $this->bitBucketClientFactory->createForCodeRepository($repository)->getOpenedPullRequests($repository);
 
         $matchingPullRequests = array_values(array_filter($pullRequests, function (BitBucketPullRequest $pullRequest) use ($codeReference) {
             return $codeReference->getBranch() == $pullRequest->getSource()->getBranch()->getName()

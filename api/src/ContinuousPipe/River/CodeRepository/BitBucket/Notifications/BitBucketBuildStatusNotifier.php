@@ -48,8 +48,7 @@ class BitBucketBuildStatusNotifier implements Notifier
 
         try {
             $client->buildStatus(
-                $repository->getOwner()->getUsername(),
-                $repository->getName(),
+                $repository,
                 $tide->getCodeReference()->getCommitSha(),
                 $buildStatus
             );
