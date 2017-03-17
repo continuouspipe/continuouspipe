@@ -77,8 +77,6 @@ class GitHubWebHookHandler
             $this->handlePullRequestEvent($command->getFlowUuid(), $event);
         } elseif ($event instanceof StatusEvent) {
             $this->handleStatusEvent($command->getFlowUuid(), $event);
-        } elseif ($event instanceof IntegrationInstallationEvent) {
-            $this->handleIntegrationInstallationEvent($event);
         }
     }
 
@@ -149,13 +147,6 @@ class GitHubWebHookHandler
                 $tide->getUuid(),
                 $event
             ));
-        }
-    }
-
-    private function handleIntegrationInstallationEvent(IntegrationInstallationEvent $event)
-    {
-        if ($event->isDeletedAction()) {
-            $this->eventBus->handle(new IntegrationInstallationDeleted($event->getInstallation()));
         }
     }
 

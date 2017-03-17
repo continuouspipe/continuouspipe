@@ -4,10 +4,9 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\CodeRepository\GitHub\Handler\GitHubWebHookHandler;
+use ContinuousPipe\River\Event\GitHub\IntegrationInstallationDeleted;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
-use ContinuousPipe\River\Repository\FlowRepository;
 use GitHub\WebHook\Event\IntegrationInstallationEvent;
 use GitHub\WebHook\GitHubRequest;
 use Psr\Log\LoggerInterface;
@@ -40,15 +39,26 @@ class GitHubController
     private $logger;
 
     /**
-     * @param MessageBus         $commandBus
-     * @param FlatFlowRepository $flowRepository
-     * @param LoggerInterface    $logger
+     * @var MessageBus
      */
-    public function __construct(MessageBus $commandBus, FlatFlowRepository $flowRepository, LoggerInterface $logger)
-    {
+    private $eventBus;
+
+    /**
+     * @param MessageBus $commandBus
+     * @param FlatFlowRepository $flowRepository
+     * @param LoggerInterface $logger
+     * @param MessageBus $eventBus
+     */
+    public function __construct(
+        MessageBus $commandBus,
+        FlatFlowRepository $flowRepository,
+        LoggerInterface $logger,
+        MessageBus $eventBus
+    ) {
         $this->commandBus = $commandBus;
         $this->flowRepository = $flowRepository;
         $this->logger = $logger;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -72,16 +82,15 @@ class GitHubController
      */
     public function integrationAction(GitHubRequest $request)
     {
-        if ($request->getEvent() instanceof IntegrationInstallationEvent) {
-            $this->commandBus->handle(new HandleGitHubEvent(
-                    Uuid::fromString('00000000-0000-0000-0000-000000000000'),
-                    $request->getEvent()
-                )
-            );
+        $event = $request->getEvent();
+        if ($event instanceof IntegrationInstallationEvent) {
+            if ($event->isDeletedAction()) {
+                $this->eventBus->handle(new IntegrationInstallationDeleted($event->getInstallation()));
+            }
             return new Response(null, Response::HTTP_ACCEPTED);
         }
 
-        $repository = GitHubCodeRepository::fromRepository($request->getEvent()->getRepository());
+        $repository = GitHubCodeRepository::fromRepository($event->getRepository());
         $flows = $this->flowRepository->findByCodeRepository($repository);
 
         if (empty($flows)) {
@@ -96,7 +105,7 @@ class GitHubController
         foreach ($flows as $flow) {
             $this->commandBus->handle(new HandleGitHubEvent(
                 $flow->getUuid(),
-                $request->getEvent()
+                $event
             ));
         }
 

@@ -3,39 +3,40 @@
 namespace GitHub\WebHook\Setup;
 
 use ContinuousPipe\River\Event\GitHub\IntegrationInstallationDeleted;
-use GitHub\Integration\InstallationRepository;
-use GitHub\Integration\InstallationTokenResolver;
-use GitHub\Integration\RedisCache\PredisCachedInstallationRepository;
-use GitHub\Integration\RedisCache\PredisCachedInstallationTokenResolver;
+use GitHub\Integration\InstallationRepositoryWithCacheInvalidation;
+use Psr\Log\LoggerInterface;
 
 class CacheManager
 {
     /**
-     * @var InstallationTokenResolver
+     * @var array
      */
-    private $installationTokenResolver;
+    private $installationRepositories;
 
     /**
-     * @var InstallationRepository
+     * @var LoggerInterface
      */
-    private $installationRepository;
+    private $logger;
 
-    public function __construct(
-        InstallationTokenResolver $installationTokenResolver,
-        InstallationRepository $installationRepository
-    ) {
-        $this->installationTokenResolver = $installationTokenResolver;
-        $this->installationRepository = $installationRepository;
+    public function __construct(array $installationRepositories, LoggerInterface $logger)
+    {
+        $this->installationRepositories = $installationRepositories;
+        $this->logger = $logger;
     }
 
     public function notify(IntegrationInstallationDeleted $event)
     {
-        if ($this->installationTokenResolver instanceof PredisCachedInstallationTokenResolver) {
-            $this->installationTokenResolver->invalidate($event->getInstallation());
-        }
-
-        if ($this->installationRepository instanceof PredisCachedInstallationRepository) {
-            $this->installationRepository->invalidate($event->getInstallation());
+        foreach ($this->installationRepositories as $repository) {
+            if ($repository instanceof InstallationRepositoryWithCacheInvalidation) {
+                $repository->invalidate($event->getInstallation());
+            } else {
+                $this->logger->warning(
+                    sprintf(
+                        'The GitHub installation repository "%s" does not support cache invalidation.',
+                        get_class($repository)
+                    )
+                );
+            }
         }
     }
 }

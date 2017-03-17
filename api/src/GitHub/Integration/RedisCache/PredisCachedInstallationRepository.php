@@ -5,10 +5,11 @@ namespace GitHub\Integration\RedisCache;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use GitHub\Integration\Installation;
 use GitHub\Integration\InstallationRepository;
+use GitHub\Integration\InstallationRepositoryWithCacheInvalidation;
 use JMS\Serializer\SerializerInterface;
 use Predis\ClientInterface;
 
-class PredisCachedInstallationRepository implements InstallationRepository
+class PredisCachedInstallationRepository implements InstallationRepository, InstallationRepositoryWithCacheInvalidation
 {
     /**
      * @var InstallationRepository

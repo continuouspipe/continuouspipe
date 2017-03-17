@@ -29,6 +29,7 @@
             <argument type="service" id="command_bus" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="logger" />
+            <argument type="service" id="event_bus" />
         </service>
         <service id="app.controller.github_code_archive" class="AppBundle\Controller\GitHubCodeCodeArchiveController">
             <argument type="service" id="river.github.guzzle_http_client" />

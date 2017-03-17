@@ -96,7 +96,9 @@ default:
                     - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
+                    - @github.integration.traceable_installation_repository
                     - @github.integration.installation_repository
+                    - @github.integration.traceable_installation_token_resolver
                     - @github.integration.installation_token_resolver.in_memory
                     - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
@@ -124,7 +126,9 @@ default:
                     - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
+                    - @github.integration.traceable_installation_repository
                     - @github.integration.installation_repository
+                    - @github.integration.traceable_installation_token_resolver
                     - @github.integration.installation_token_resolver.in_memory
                     - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
@@ -345,7 +349,9 @@ smoke:
                     - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
+                    - @github.integration.traceable_installation_repository
                     - @github.integration.installation_repository
+                    - @github.integration.traceable_installation_token_resolver
                     - @github.integration.installation_token_resolver.in_memory
                     - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository

@@ -25,6 +25,8 @@ use GitHub\Integration\InstallationAccount;
 use GitHub\Integration\InstallationRepository;
 use GitHub\Integration\InstallationToken;
 use GitHub\Integration\InstallationTokenResolver;
+use GitHub\Integration\TraceableInstallationRepository;
+use GitHub\Integration\TraceableInstallationTokenResolver;
 use GitHub\WebHook\Model\Repository;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -113,6 +115,15 @@ class GitHubContext implements CodeRepositoryContext
      */
     private $realInstallationRepositoryRepository;
 
+    /**
+     * @var TraceableInstallationRepository
+     */
+    private $traceableInstallationRepository;
+    /**
+     * @var TraceableInstallationTokenResolver
+     */
+    private $traceableInstallationTokenResolver;
+
     public function __construct(
         Kernel $kernel,
         TraceableNotifier $gitHubTraceableNotifier,
@@ -121,7 +132,9 @@ class GitHubContext implements CodeRepositoryContext
         EventStore $eventStore,
         TestHttpClient $gitHubHttpClient,
         InMemoryInstallationRepository $inMemoryInstallationRepository,
+        TraceableInstallationRepository $traceableInstallationRepository,
         InMemoryInstallationTokenResolver $inMemoryInstallationTokenResolver,
+        TraceableInstallationTokenResolver $traceableInstallationTokenResolver,
         InstallationTokenResolver $realInstallationTokenResolver,
         InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository,
         InstallationRepository $realCodeRepositoryRepository,
@@ -140,6 +153,8 @@ class GitHubContext implements CodeRepositoryContext
         $this->secret = $kernel->getContainer()->getParameter('github_secret');
         $this->realInstallationTokenResolver = $realInstallationTokenResolver;
         $this->realInstallationRepositoryRepository = $realCodeRepositoryRepository;
+        $this->traceableInstallationRepository = $traceableInstallationRepository;
+        $this->traceableInstallationTokenResolver = $traceableInstallationTokenResolver;
     }
 
     /**
@@ -995,12 +1010,12 @@ class GitHubContext implements CodeRepositoryContext
 
     private function gitHubAPIShouldBeCalledTimes($count)
     {
-        if ($count != $this->inMemoryInstallationTokenResolver->countApiCalls()) {
+        if ($count != $this->traceableInstallationTokenResolver->countApiCalls()) {
             throw new \UnexpectedValueException(
                 sprintf(
                     'GitHub access token API expected to be called %d time(s), but called %d time(s).',
                     $count,
-                    $this->inMemoryInstallationTokenResolver->countApiCalls()
+                    $this->traceableInstallationTokenResolver->countApiCalls()
                 )
             );
         }
@@ -1008,12 +1023,12 @@ class GitHubContext implements CodeRepositoryContext
 
     private function gitHubRepositoryAPIShouldHaveBeenCalledTimes($count)
     {
-        if ($count != $this->inMemoryInstallationRepository->countApiCalls()) {
+        if ($count != $this->traceableInstallationRepository->countApiCalls()) {
             throw new \UnexpectedValueException(
                 sprintf(
                     'GitHub repository API expected to be called %d time(s), but called %d time(s).',
                     $count,
-                    $this->inMemoryInstallationRepository->countApiCalls()
+                    $this->traceableInstallationRepository->countApiCalls()
                 )
             );
         }
