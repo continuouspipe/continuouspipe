@@ -45,3 +45,20 @@ Feature: Starting a tide is limited by usage limits
     Then the tide for the branch "master" and commit "000000000000000000000000000000000000000" should be started
     And the tide for the branch "develop" and commit "111111111111111111111111111111111111111" should be started
     And the tide for the branch "feature" and commit "222222222222222222222222222222222222222" should not be started
+
+  Scenario: It display why the tide is pending if reached limits
+    Given the team "samuel" has a "1" tides per hour usage limit
+    When the commit "000000000000000000000000000000000000000" is pushed to the branch "master"
+    And the tide for the branch "master" and commit "000000000000000000000000000000000000000" is tentatively started
+    And the commit "111111111111111111111111111111111111111" is pushed to the branch "develop"
+    And the tide for the branch "develop" and commit "111111111111111111111111111111111111111" is tentatively started
+    Then a "You've used your 1 tides per hour usage limit. This tide will start automatically in a moment." log should be created
+
+  Scenario: It display why the tide is pending if reached limits only once
+    Given the team "samuel" has a "1" tides per hour usage limit
+    When the commit "000000000000000000000000000000000000000" is pushed to the branch "master"
+    And the tide for the branch "master" and commit "000000000000000000000000000000000000000" is tentatively started
+    And the commit "111111111111111111111111111111111111111" is pushed to the branch "develop"
+    And the tide for the branch "develop" and commit "111111111111111111111111111111111111111" is tentatively started
+    And the tide for the branch "develop" and commit "111111111111111111111111111111111111111" is tentatively started
+    Then a "You've used your 1 tides per hour usage limit. This tide will start automatically in a moment." log should be created only once

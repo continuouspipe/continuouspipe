@@ -2,12 +2,14 @@
 
 namespace ContinuousPipe\River\Tide\Concurrency;
 
+use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\Tide\Transaction\TransactionManager;
 use ContinuousPipe\River\View\TimeResolver;
 use ContinuousPipe\River\View\Tide;
-use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\River\View\TideRepository as TideViewRepository;
 use ContinuousPipe\Security\Authenticator\AuthenticatorClient;
 use LogStream\LoggerFactory;
-use LogStream\Node\Text;
+use ContinuousPipe\River\Tide as TideAggregate;
 use Psr\Log\LoggerInterface;
 
 class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
@@ -17,9 +19,9 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
      */
     private $decoratedConcurrencyManager;
     /**
-     * @var TideRepository
+     * @var TideViewRepository
      */
-    private $tideRepository;
+    private $tideViewRepository;
     /**
      * @var TimeResolver
      */
@@ -40,21 +42,27 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
      * @var integer
      */
     private $limit;
+    /**
+     * @var TransactionManager
+     */
+    private $transactionManager;
 
     public function __construct(
         TideConcurrencyManager $decoratedConcurrencyManager,
-        TideRepository $tideRepository,
+        TideViewRepository $tideViewRepository,
         TimeResolver $timeResolver,
         AuthenticatorClient $authenticatorClient,
         LoggerFactory $loggerFactory,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        TransactionManager $transactionManager
     ) {
         $this->decoratedConcurrencyManager = $decoratedConcurrencyManager;
-        $this->tideRepository = $tideRepository;
+        $this->tideViewRepository = $tideViewRepository;
         $this->timeResolver = $timeResolver;
         $this->authenticatorClient = $authenticatorClient;
         $this->loggerFactory = $loggerFactory;
         $this->logger = $logger;
+        $this->transactionManager = $transactionManager;
     }
 
     /**
@@ -62,11 +70,16 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
      */
     public function shouldTideStart(Tide $tide)
     {
-        if ($this->hasReachedLimits($tide)) {
-            $log = $this->loggerFactory->fromId($tide->getLogId());
-            $log->child(new Text(sprintf('Tides per hour limit of %d reached.', $this->getLimitByTide($tide))));
+        $limits = $this->getLimitByTide($tide);
+
+        if ($this->hasReachedLimits($tide, $limits)) {
+            $this->transactionManager->apply($tide->getUuid(), function(TideAggregate $tide) use ($limits) {
+                $tide->notifyPendingReason($this->loggerFactory, sprintf('You\'ve used your %d tides per hour usage limit. This tide will start automatically in a moment.', $limits));
+            });
+
             return false;
         }
+
         return $this->decoratedConcurrencyManager->shouldTideStart($tide);
     }
 
@@ -78,13 +91,13 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
         return $this->decoratedConcurrencyManager->postPoneTideStart($tide);
     }
 
-    private function hasReachedLimits(Tide $tide)
+    private function hasReachedLimits(Tide $tide, $limit) : bool
     {
-        if (0 === ($limit = $this->getLimitByTide($tide))) {
+        if (0 === $limit) {
             return false;
         }
 
-        $startedTidesCount = $this->tideRepository->countStartedTidesByFlowSince(
+        $startedTidesCount = $this->tideViewRepository->countStartedTidesByFlowSince(
             $tide->getFlowUuid(),
             $this->timeResolver->resolve()->modify('-1 hour')
         );
