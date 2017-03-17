@@ -40,7 +40,7 @@ cp-remote init --interactive
 cp-remote init -i
 ```
 
-The first time you run this, you will be asked to enter your ContinuousPipe username and the ContinuousPipe API key you generated. They are then stored in a local configuration file `.cp-remote-settings.yml` so you won't need to enter them again.  
+The first time you run this, you will be asked to enter your ContinuousPipe username and the ContinuousPipe API key you generated. They are then stored in a global configuration file `~/.cp-remote/config.yml` (on linux/osx) `C:\Users\{YourUserName}\.cp-remote\config.yml` (on windows), so you won't need to enter them again.  
 
 You will then be able to run the `bash` and `exec` command within the interactive mode. 
 
