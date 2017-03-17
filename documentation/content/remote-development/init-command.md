@@ -27,18 +27,29 @@ The `init` command will use the default Git remote name `origin` to create a Con
 cp-remote init [token] --remote-name=foo
 ```
 
-### Interactive mode
+### Interactive Mode
 
-Using the `--interactive` or `-i` you will be requested only the cp username and cp api-key which will be stored in the global configuration file.
+Sometimes you may want to connect to an environment that's not set up as a remote environment, e.g. an environment created for a pull request. You can do this using interactive mode. 
+
+You will first need to generate a [ContinuousPipe API key](https://authenticator.continuouspipe.io/account/api-keys).
+
+You can then use interactive mode by using the `--interactive` or `-i` flags.
 
 ```
-cp-remote init --interactive 
+cp-remote init --interactive
+cp-remote init -i
 ```
 
-If the credentials are already stored and you want to override them use the `--reset` flag
+The first time you run this, you will be asked to enter your ContinuousPipe username and the ContinuousPipe API key you generated. They are then stored in a local configuration file `.cp-remote-settings.yml` so you won't need to enter them again.  
+
+If you want to change the stored credentials, use the `--reset` flag:
 
 ```
 cp-remote init --interactive --reset
 ```
 
-You will then be able to run the `bash` and `exec` command in interactive mode. Note that step is optional, you can also run directly `cp-remote bash -i` without having to run `cp-remote init -i` first.
+You will then be able to run the `bash` and `exec` command within the interactive mode. 
+
+{{< note title="Note" >}}
+The [bash command]({{< relref "remote-development/bash-command.md" >}}) and [exec command]({{< relref "remote-development/exec-command.md" >}}) can also be run in interactive mode directly without having to run `cp-remote init -i` first.
+{{< /note >}}

@@ -16,13 +16,13 @@ weight: 170
 
 ## Bug Fixes
 
-* Fix in the `build` command as it was not pushing to remote when remote already existed.
+* Fix in `build` comand - it was not pushing to remote when remote already existed.
 
-* Fix in `init` if an error occurs when git pushes to remote the init process will immediately terminate with an error.
+* Fix in `init` command - if an error occurs when git pushes to remote the init process will immediately terminate with an error.
 
-* Fix in `exec` it will now stream the output of the commands. This fix will allow to run an alternative shell if bash does not exist in the remote container by doing `cp-remote exec -- /bin/sh`
+* Fix in `exec` command - it will now stream the output of the commands. This fix will allow an alternative shell to be used if bash does not exist in the remote container by running `cp-remote exec -- /bin/sh`
 
-* Fix in the `.cp-remote-ignore` since `rsync` does not use `regex` but is own pattern implementation we have replaced `/\.[^/]*$` with `.*`, `\.idea` with `.idea` and `\.git` with `.git`. To more information about the `rsync` patterns refer to the section INCLUDE/EXCLUDE PATTERN RULES in the rsync manual (`man rsync`)
+* Fix in `.cp-remote-ignore` - `rsync` uses its own pattern implementation rather than `regex` so we have replaced `/\.[^/]*$` with `.*`, `\.idea` with `.idea` and `\.git` with `.git`. For more information about the `rsync` patterns refer to the section INCLUDE/EXCLUDE PATTERN RULES in the rsync manual (`man rsync`)
 
 ## Other Changes
 
