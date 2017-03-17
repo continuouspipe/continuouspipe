@@ -1,0 +1,29 @@
+@mixin smallScreen {
+    @media (max-width: #{$small-screen-size}) {
+        @content;
+    }
+}
+
+@mixin mediumScreen {
+    @media (min-width: #{$small-screen-size + 1px}) and (max-width: #{$large-screen-size - 1px}) {
+        @content;
+    }
+}
+
+@mixin largeScreen {
+    @media (min-width: #{$large-screen-size}) {
+        @content;
+    }
+}
+
+@mixin textWrap {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
