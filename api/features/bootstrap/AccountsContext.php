@@ -157,9 +157,9 @@ class AccountsContext implements Context
     }
 
     /**
-     * @When I request my billing profile
+     * @When I request my billing profiles
      */
-    public function iRequestMyBillingProfile()
+    public function iRequestMyBillingProfiles()
     {
         $this->response = $this->kernel->handle(Request::create('/api/me/billing-profile'));
     }
@@ -197,11 +197,39 @@ class AccountsContext implements Context
     public function iShouldSeeTheBillingProfile($uuid)
     {
         $this->assertResponseCode(200);
+
         $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
-        if ($json['uuid'] != $uuid) {
-            throw new \RuntimeException(sprintf('Found UUID %s while expecting %s', $json['uuid'], $uuid));
+
+        if (count($json) != 1) {
+            throw new \RuntimeException('There should be exactly one billing profile');
+        }
+
+        if ($json[0]['uuid'] != $uuid) {
+            throw new \RuntimeException(sprintf('Found UUID %s while expecting %s', $json[0]['uuid'], $uuid));
         }
     }
+
+    /**
+     * @Then I should see the following billing profiles:
+     */
+    public function iShouldSeeTheFollowingBillingProfiles(TableNode $table)
+    {
+        $this->assertResponseCode(200);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        $uuids = array_map(function($billingProfile){
+            return $billingProfile['uuid'];
+        }, $json);
+
+        foreach ($table->getColumnsHash() as $row) {
+            if (!in_array($row['uuid'], $uuids)) {
+                throw new \RuntimeException(sprintf('The uuid %s should be one of the billing profiles', $row['uuid']));
+            }
+        }
+
+    }
+
 
     /**
      * @Then I should see the billing profile to be not found
