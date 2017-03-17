@@ -10,10 +10,16 @@ Feature:
 
   Scenario: I can see my billing profile
     Given I am authenticated as user "samuel"
-    When I request my billing profile
+    When I request my billing profiles
     Then I should see the billing profile "00000000-0000-0000-0000-000000000000"
+
+  Scenario: I can see my billing profile
+    Given I am authenticated as user "samuel"
+    And there is a billing profile "00000000-0000-0000-0000-000000000002" for the user "samuel"
+    When I request my billing profiles
+    Then I should see two billing profiles "00000000-0000-0000-0000-000000000000" and "00000000-0000-0000-0000-000000000002"
 
   Scenario: No user profile is a 404
     Given I am authenticated as user "unknown"
-    When I request my billing profile
+    When I request my billing profiles
     Then I should see the billing profile to be not found

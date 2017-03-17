@@ -157,9 +157,9 @@ class AccountsContext implements Context
     }
 
     /**
-     * @When I request my billing profile
+     * @When I request my billing profiles
      */
-    public function iRequestMyBillingProfile()
+    public function iRequestMyBillingProfiles()
     {
         $this->response = $this->kernel->handle(Request::create('/api/me/billing-profile'));
     }
@@ -197,9 +197,33 @@ class AccountsContext implements Context
     public function iShouldSeeTheBillingProfile($uuid)
     {
         $this->assertResponseCode(200);
+
         $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
-        if ($json['uuid'] != $uuid) {
-            throw new \RuntimeException(sprintf('Found UUID %s while expecting %s', $json['uuid'], $uuid));
+
+        if (count($json) != 1) {
+            throw new \RuntimeException('There should be exactly one billing profile');
+        }
+
+        if ($json[0]['uuid'] != $uuid) {
+            throw new \RuntimeException(sprintf('Found UUID %s while expecting %s', $json[0]['uuid'], $uuid));
+        }
+    }
+
+    /**
+     * @Then I should see two billing profiles :uuid1 and :uuid2
+     */
+    public function iShouldSeeTwoBillingProfilesAnd($uuid1, $uuid2)
+    {
+        $this->assertResponseCode(200);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if (count($json) != 2) {
+            throw new \RuntimeException('There should be exactly two billing profile');
+        }
+
+        if ($json[0]['uuid'] != $uuid1 && $json[1]['uuid'] != $uuid2) {
+            throw new \RuntimeException(sprintf('The UUIDs of the billing profiles (%s, %s) do not match the expected (%s, %s)', $json[0]['uuid'], $json[1]['uuid'], $uuid1, $uuid2));
         }
     }
 
