@@ -16,5 +16,21 @@
                  decorates="builder.client">
             <argument type="service" id="builder.client.hookable.inner" />
         </service>
+        <service id="builder.client.faulty_api_simulator"
+                 class="ContinuousPipe\Builder\Client\FaultyApiSimulatorBuilderClient"
+                 decorates="builder.client" decoration-priority="32">
+            <argument type="service" id="builder.client.faulty_api_simulator.inner" />
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="build"
+                 runner="tolerance.operation_runners.builder" />
+        </service>
+
+        <service id="builder.metrics.traced_publisher"
+                 class="ContinuousPipe\Tolerance\Metrics\Publisher\TracedPublisher"
+                 decorates="tolerance.metrics.publisher.statsd"
+                 public="false">
+            <argument type="service" id="builder.metrics.traced_publisher.inner" />
+        </service>
     </services>
 </container>
