@@ -89,17 +89,11 @@ class BillingProfileController
     {
         $billingProfiles = $this->userBillingProfileRepository->findAllByUser($user);
         if (count($billingProfiles) == 0) {
-            $this->createBillingProfile(
-                $user,
-                sprintf('%s (%s)', $user->getUsername(), $user->getEmail())
-            );
+            $this->createBillingProfile($user, $user->getUsername());
         }
 
         if ($request->isMethod('POST')) {
-            $this->createBillingProfile(
-                $user,
-                $request->get('name')
-            );
+            $this->createBillingProfile($user, $request->get('name'));
         }
 
         return ['billingProfiles' => $this->userBillingProfileRepository->findAllByUser($user)];

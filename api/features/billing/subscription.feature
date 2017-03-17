@@ -9,7 +9,7 @@ Feature:
 
   Scenario: It automatically creates a billing profile
     When I view the list of billing profiles
-    Then I should see that one has been created in the name "samuel ()"
+    Then I should see that one has been created in the name "samuel"
 
   Scenario: I can subscribe for a billing profile
     Given there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
