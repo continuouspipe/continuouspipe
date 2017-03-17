@@ -1,0 +1,22 @@
+.sidenav-footer {
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+
+    &__content, &__link {
+        color: $sidebar-color;
+    }
+
+    &__content {
+        font-size: .9rem;
+        padding: 1rem 0;
+        text-align: center;
+    }
+
+    &__copy {
+    }
+
+    &__link {
+    }
+}
+
