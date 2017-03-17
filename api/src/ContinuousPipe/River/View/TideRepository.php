@@ -24,14 +24,14 @@ interface TideRepository extends TideViewStorage
      * Find last `$limit` tides of this flow.
      *
      * @param UuidInterface $flowUuid
-     * @param int           $limit
+     * @param int $limit
      *
      * @return Tide[]
      */
     public function findLastByFlowUuid(UuidInterface $flowUuid, $limit);
 
     /**
-     * @param Uuid          $flowUuid
+     * @param Uuid $flowUuid
      * @param CodeReference $codeReference
      *
      * @return Tide[]
@@ -41,7 +41,7 @@ interface TideRepository extends TideViewStorage
     /**
      * Find all the tides of a given flow for the given branch. So we can record the comments.
      *
-     * @param Uuid   $flowUuid
+     * @param Uuid $flowUuid
      * @param string $branch
      *
      * @return Tide[]
@@ -49,7 +49,7 @@ interface TideRepository extends TideViewStorage
     public function findByBranch(Uuid $flowUuid, $branch);
 
     /**
-     * @param Uuid   $flowUuid
+     * @param Uuid $flowUuid
      * @param string $branch
      *
      * @return Tide[]
@@ -57,7 +57,7 @@ interface TideRepository extends TideViewStorage
     public function findRunningByFlowUuidAndBranch(Uuid $flowUuid, $branch);
 
     /**
-     * @param Uuid   $flowUuid
+     * @param Uuid $flowUuid
      * @param string $branch
      *
      * @return Tide[]
@@ -100,4 +100,13 @@ interface TideRepository extends TideViewStorage
      * @return Tide[]
      */
     public function findByGenerationUuid(UuidInterface $flowUuid, UuidInterface $generationUuid);
+
+    /**
+     * Count the started tides by flow uuid
+     *
+     * @param UuidInterface $flowUuid
+     * @param \DateTime $from
+     * @return int
+     */
+    public function countStartedTidesByFlowSince(UuidInterface $flowUuid, \DateTime $from) : int;
 }

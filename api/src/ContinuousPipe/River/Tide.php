@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\River\Event\NotifiedPendingTideReason;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Event\TideFailed;
@@ -20,6 +21,8 @@ use ContinuousPipe\River\Task\TaskSkipped;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use LogStream\Log;
+use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
@@ -75,6 +78,11 @@ class Tide
      * @var bool|null
      */
     private $isContinuousPipeFileExists;
+
+    /**
+     * @var string|null
+     */
+    private $pendingTideNotificationLogIdentifier;
 
     /**
      * @param TaskRunner      $taskRunner
@@ -191,6 +199,8 @@ class Tide
         } elseif ($event instanceof TideCancelled) {
             $this->status = self::STATUS_CANCELLED;
             $this->failureReason = 'Tide was cancelled';
+        } elseif ($event instanceof NotifiedPendingTideReason) {
+            $this->pendingTideNotificationLogIdentifier = $event->getLogIdentifier();
         }
     }
 
@@ -225,6 +235,20 @@ class Tide
     {
         $this->events->raiseAndApply(new TideCancelled(
             $this->getUuid()
+        ));
+    }
+
+    public function notifyPendingReason(LoggerFactory $loggerFactory, string $reason)
+    {
+        if (null !== $this->pendingTideNotificationLogIdentifier) {
+            return;
+        }
+
+        $log = $loggerFactory->from($this->getLog())->child(new Text($reason))->getLog();
+
+        $this->events->raiseAndApply(new NotifiedPendingTideReason(
+            $this->getUuid(),
+            $log->getId()
         ));
     }
 

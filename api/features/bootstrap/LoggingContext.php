@@ -52,6 +52,23 @@ class LoggingContext implements Context
     }
 
     /**
+     * @Then a :contetns log should be created only once
+     */
+    public function aLogShouldBeCreatedOnlyOnce($contents)
+    {
+        $matchingLogs = $this->findLogsByContents($contents, $this->findAllLogs());
+
+        if (count($matchingLogs) != 1) {
+            throw new \RuntimeException(sprintf(
+                'Found this log %d times',
+                count($matchingLogs)
+            ));
+        }
+    }
+
+
+
+    /**
      * @Then a log of type :type should be created under the log :parentContents
      */
     public function aLogOfTypeShouldBeCreatedUnderTheLog($type, $parentContents)
