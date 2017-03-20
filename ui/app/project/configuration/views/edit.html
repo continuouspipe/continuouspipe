@@ -4,26 +4,28 @@
     </div>
 </md-toolbar>
 <md-content flex class="configuration-content">
-    <form name="projectForm">
-        <div class="form-container">
-            <md-input-container class="md-block" flex-gt-xs>
-                <label>Unique identifier (you can't change it anymore)</label>
-                <input ng-model="project.slug" required disabled="disabled" />
-            </md-input-container>
-            <md-input-container class="md-block" flex-gt-xs>
-                <label>Name</label>
-                <input ng-model="patch.project.name" required />
-            </md-input-container>
+    <remote-resource resource-name="billingProfile">
+        <form name="projectForm">
+            <div class="form-container">
+                <md-input-container class="md-block" flex-gt-xs>
+                    <label>Unique identifier (you can't change it anymore)</label>
+                    <input ng-model="project.slug" required disabled="disabled" />
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-xs>
+                    <label>Name</label>
+                    <input ng-model="patch.project.name" required />
+                </md-input-container>
 
-            <md-input-container class="md-block" flex-gt-xs>
-                <label>Billing profile</label>
-                <md-select ng-model="patch.billing_profile" md-on-open="loadBillingProfiles()" placeholder="Select the billing profile">
-                    <md-option ng-value="null"><em>Don't change</em></md-option>
-                    <md-option ng-value="billingProfile" ng-repeat="billingProfile in billingProfiles">{{ billingProfile.name }}</md-option>
-                </md-select>
-            </md-input-container>
-        </div>
-    </form>
+                <md-input-container class="md-block" flex-gt-xs>
+                    <label>Billing profile</label>
+                    <md-select ng-model="patch.billing_profile" md-on-open="loadBillingProfiles()" placeholder="Select the billing profile">
+                        <md-option ng-value="undefined" selected="selected">{{ billingProfile.name }} (user "{{ billingProfile.user.username }}") <em>(Don't change)</em></md-option>
+                        <md-option ng-value="billingProfile" ng-repeat="billingProfile in billingProfiles">{{ billingProfile.name }}</md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+        </form>
+    </remote-resource>
 </md-content>
 <md-toolbar>
     <div class="md-toolbar-tools">

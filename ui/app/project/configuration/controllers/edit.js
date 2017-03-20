@@ -9,6 +9,10 @@ angular.module('continuousPipeRiver')
             }
         };
 
+        $remoteResource.load('billingProfile', ProjectRepository.getBillingProfile(project)).then(function (billingProfile) {
+            $scope.billingProfile = billingProfile;
+        });
+
         $scope.update = function() {
             if ($scope.patch.billing_profile) {
                 swal({

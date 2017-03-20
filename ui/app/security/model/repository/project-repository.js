@@ -40,4 +40,19 @@ angular.module('continuousPipeRiver')
         this.getMembersStatus = function(slug) {
             return $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug/members-status').get({slug: slug}).$promise;
         };
+
+        this.getBillingProfile = function(project) {
+            return $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug/billing-profile').get({slug: project.slug}).$promise.then(function(billingProfile) {
+                return billingProfile;
+            }, function(e) {
+                Raven.captureException(e);
+
+                return {
+                    name: 'Unknown',
+                    user: {
+                        username: 'unknown'
+                    }
+                };
+            });
+        };
     });

@@ -9,8 +9,6 @@ angular.module('continuousPipeRiver')
         };
 
         this.findBillingProfilesForCurrentUser = function() {
-            return $resource(AUTHENTICATOR_API_URL+'/api/me/billing-profile').get().$promise.then(function(profile) {
-                return [profile];
-            });
+            return $resource(AUTHENTICATOR_API_URL+'/api/me/billing-profiles').query().$promise;
         };
     });
