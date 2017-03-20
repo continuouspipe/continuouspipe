@@ -1,6 +1,7 @@
 .kubeproxy.yml
 server.crt
 server.key
-vendor/
 kube-proxy-logs/
 bin/
+/.cp-remote-settings.yml
+cp-remote-logs
