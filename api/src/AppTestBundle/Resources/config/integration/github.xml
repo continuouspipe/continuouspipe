@@ -17,8 +17,14 @@
         <service id="github.integration.installation_token_resolver.in_memory" class="GitHub\Integration\InMemoryInstallationTokenResolver" />
 
         <service id="github.integration.in_memory_installation_repository" class="GitHub\Integration\InMemoryInstallationRepository" />
-        <service id="github.integration.installation_repository" alias="github.integration.in_memory_installation_repository" />
-        <service id="github.integration.installation_token_resolver" alias="github.integration.installation_token_resolver.in_memory" />
+        <service id="github.integration.api_installation_repository" alias="github.integration.traceable_installation_repository" />
+        <service id="github.integration.traceable_installation_repository" class="GitHub\Integration\TraceableInstallationRepository">
+            <argument type="service" id="github.integration.in_memory_installation_repository" />
+        </service>
+        <service id="github.integration.installation_token_resolver.api" alias="github.integration.traceable_installation_token_resolver" />
+        <service id="github.integration.traceable_installation_token_resolver" class="GitHub\Integration\TraceableInstallationTokenResolver">
+            <argument type="service" id="github.integration.installation_token_resolver.in_memory" />
+        </service>
 
         <service id="river.github.guzzle_http_client.handler.matching" class="ContinuousPipe\River\Guzzle\MatchingHandler">
             <argument type="service" id="logger" />
