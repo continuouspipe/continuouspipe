@@ -1,5 +1,5 @@
 ---
-title: Waiting Statuses
+title: "Tasks: Waiting Statuses"
 menu:
   main:
     parent: 'configuration'
@@ -7,11 +7,11 @@ menu:
 
 weight: 60
 ---
-Sometimes, as part of your deployment pipeline, you'll wait to wait for other GitHub status. For example if you use the static code analyser tool Scrutinizer, you may want to deployment your application only if the static analysis passes.
+Sometimes, as part of your deployment pipeline, you'll want to wait for other service integrations to return with a status. For example if you use the static code analyser tool Scrutinizer, you may want to deploy your application only if the static analysis passes.
 
 ![GitHub statuses on Pull-Request](/images/github-statuses.png)
 
-In order to achieve that, you can add a new `wait` task in your tasks list:
+In order to achieve that, you can add a new `wait` task to your `tasks` list:
 
 ``` yaml
 tasks:
@@ -25,4 +25,5 @@ tasks:
 
     # ...
 ```
-That way, the tide will be failed if the received status from the given 3rd party do not match the expected state, `success` from Scrutinizer in this example.
+
+The tide will be failed if the received status from the given third party service does not match the expected state - `success` from Scrutinizer in this example.
