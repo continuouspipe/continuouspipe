@@ -5,9 +5,9 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/continuouspipe/kube-proxy/cpapi"
-	"github.com/continuouspipe/kube-proxy/cplogs"
 	"github.com/continuouspipe/kube-proxy/keenapi"
 	"github.com/continuouspipe/kube-proxy/parser"
+	"github.com/golang/glog"
 	"io"
 	"io/ioutil"
 	"net"
@@ -34,16 +34,16 @@ func NewHttpHandler() *HttpHandler {
 }
 
 func (m *HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	cplogs.V(5).Infof("Start serving request %s", r.URL.String())
+	glog.V(5).Infof("Start serving request %s", r.URL.String())
 
 	proxy, err := m.NewUpgradeAwareSingleHostReverseProxy(r)
 	if err != nil {
-		cplogs.Errorf("Error when creating the single host reverse proxy. " + err.Error())
-		cplogs.Flush()
+		glog.Errorf("Error when creating the single host reverse proxy. " + err.Error())
+		glog.Flush()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	cplogs.Flush()
+	glog.Flush()
 	proxy.ServeHTTP(w, r)
 }
 
@@ -63,7 +63,7 @@ func (m HttpHandler) NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*Up
 	start := time.Now()
 	transport := http.DefaultTransport.(*http.Transport)
 	if envInsecureSkipVerify == "true" {
-		cplogs.V(5).Infoln("InsecureSkipVerify enabled")
+		glog.V(5).Infoln("InsecureSkipVerify enabled")
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
 
@@ -127,7 +127,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) RoundTrip(req *http.Request) (*http
 	}
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		cplogs.V(5).Infof("got unauthorized error from backend for: %s %s", req.Method, req.URL)
+		glog.V(5).Infof("got unauthorized error from backend for: %s %s", req.Method, req.URL)
 		// Internal error, backend didn't recognize proxy identity
 		// Surface as a server error to the client
 		resp = &http.Response{
@@ -180,9 +180,9 @@ func (p *UpgradeAwareSingleHostReverseProxy) isUpgradeRequest(req *http.Request)
 func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	newReq, err := p.newProxyRequest(req)
 	if err != nil {
-		cplogs.V(5).Infof("Error creating backend request: %s", err)
+		glog.V(5).Infof("Error creating backend request: %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		cplogs.Flush()
+		glog.Flush()
 		return
 	}
 
@@ -190,12 +190,12 @@ func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, re
 
 	if !p.isUpgradeRequest(req) {
 		p.reverseProxy.ServeHTTP(w, newReq)
-		cplogs.Flush()
+		glog.Flush()
 		return
 	}
 
 	p.serveUpgrade(w, newReq)
-	cplogs.Flush()
+	glog.Flush()
 }
 
 func (p *UpgradeAwareSingleHostReverseProxy) dialBackend(req *http.Request) (net.Conn, error) {
@@ -233,7 +233,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) dialBackend(req *http.Request) (net
 func (p *UpgradeAwareSingleHostReverseProxy) serveUpgrade(w http.ResponseWriter, req *http.Request) {
 	backendConn, err := p.dialBackend(req)
 	if err != nil {
-		cplogs.V(5).Infof("Error connecting to backend: %s", err)
+		glog.V(5).Infof("Error connecting to backend: %s", err)
 		w.WriteHeader(http.StatusServiceUnavailable)
 		return
 	}
@@ -241,20 +241,20 @@ func (p *UpgradeAwareSingleHostReverseProxy) serveUpgrade(w http.ResponseWriter,
 
 	err = req.Write(backendConn)
 	if err != nil {
-		cplogs.V(5).Infof("Error writing request to backend: %s", err)
+		glog.V(5).Infof("Error writing request to backend: %s", err)
 		return
 	}
 
 	resp, err := http.ReadResponse(bufio.NewReader(backendConn), req)
 	if err != nil {
-		cplogs.V(5).Infof("Error reading response from backend: %s", err)
+		glog.V(5).Infof("Error reading response from backend: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Internal Server Error"))
 		return
 	}
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		cplogs.V(5).Infof("Got unauthorized error from backend for: %s %s", req.Method, req.URL)
+		glog.V(5).Infof("Got unauthorized error from backend for: %s %s", req.Method, req.URL)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Internal Server Error"))
 		return
@@ -262,7 +262,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) serveUpgrade(w http.ResponseWriter,
 
 	requestHijackedConn, _, err := w.(http.Hijacker).Hijack()
 	if err != nil {
-		cplogs.V(5).Infof("Error hijacking request connection: %s", err)
+		glog.V(5).Infof("Error hijacking request connection: %s", err)
 		return
 	}
 	defer requestHijackedConn.Close()
@@ -272,7 +272,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) serveUpgrade(w http.ResponseWriter,
 
 	err = resp.Write(requestHijackedConn)
 	if err != nil {
-		cplogs.V(5).Infof("Error writing backend response to client: %s", err)
+		glog.V(5).Infof("Error writing backend response to client: %s", err)
 		return
 	}
 
@@ -281,7 +281,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) serveUpgrade(w http.ResponseWriter,
 	go func() {
 		_, err := io.Copy(backendConn, requestHijackedConn)
 		if err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
-			cplogs.V(5).Infof("error proxying data from client to backend: %v", err)
+			glog.V(5).Infof("error proxying data from client to backend: %v", err)
 		}
 		done <- struct{}{}
 	}()
@@ -289,7 +289,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) serveUpgrade(w http.ResponseWriter,
 	go func() {
 		_, err := io.Copy(requestHijackedConn, backendConn)
 		if err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
-			cplogs.V(5).Infof("error proxying data from backend to client: %v", err)
+			glog.V(5).Infof("error proxying data from backend to client: %v", err)
 		}
 		done <- struct{}{}
 	}()

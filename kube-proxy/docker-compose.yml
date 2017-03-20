@@ -5,13 +5,4 @@ web:
     volumes:
         - .:/go/src/github.com/continuouspipe/kube-proxy/bin
     environment:
-        WILDCARD_SSL_CERT:
-        WILDCARD_SSL_KEY:
-        KUBE_PROXY_LISTEN_ADDRESS:
-        KUBE_PROXY_INSECURE_SKIP_VERIFY:
-        KUBE_PROXY_AUTHENTICATOR_HOST:
-        KUBE_PROXY_RIVER_HOST:
-        KUBE_PROXY_MASTER_API_KEY:
-        KEEN_IO_PROJECT_ID:
-        KEEN_IO_EVENT_COLLECTION:
-        KEEN_IO_WRITE_KEY:
+        KUBE_STATUS_LISTEN_ADDRESS:

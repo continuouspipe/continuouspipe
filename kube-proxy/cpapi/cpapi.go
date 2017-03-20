@@ -3,11 +3,11 @@ package cpapi
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/continuouspipe/kube-proxy/cplogs"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
+	"github.com/golang/glog"
 )
 
 var envCpAuthenticatorHost, _ = os.LookupEnv("KUBE_PROXY_AUTHENTICATOR_HOST") //e.g.: authenticator-staging.continuouspipe.io
@@ -87,16 +87,16 @@ func (c ClusterInfo) GetApiFlow(apiKey string, flowId string) (*ApiFlow, error) 
 	respBody, err := c.getResponseBody(c.client, req)
 
 	if err != nil {
-		cplogs.V(4).Infof("Error during GetApiFlow request %s response %s, "+err.Error(), url.String(), respBody)
-		cplogs.Flush()
+		glog.V(4).Infof("Error during GetApiFlow request %s response %s, "+err.Error(), url.String(), respBody)
+		glog.Flush()
 		return nil, fmt.Errorf("Failed to get response body for GetApiFlow, " + err.Error())
 	}
 
 	apiFlowResponse := &ApiFlow{}
 	err = json.Unmarshal(respBody, apiFlowResponse)
 	if err != nil {
-		cplogs.V(4).Infof("Error unmarshalling GetApiFlow request %s response %s, "+err.Error(), url.String(), respBody)
-		cplogs.Flush()
+		glog.V(4).Infof("Error unmarshalling GetApiFlow request %s response %s, "+err.Error(), url.String(), respBody)
+		glog.Flush()
 		return nil, err
 	}
 
@@ -117,16 +117,16 @@ func (c ClusterInfo) GetApiBucketClusters(bucketUuid string) ([]ApiCluster, erro
 
 	respBody, err := c.getResponseBody(c.client, req)
 	if err != nil {
-		cplogs.V(4).Infof("Error during GetApiBucketClusters request %s response %s, "+err.Error(), url.String(), respBody)
-		cplogs.Flush()
+		glog.V(4).Infof("Error during GetApiBucketClusters request %s response %s, "+err.Error(), url.String(), respBody)
+		glog.Flush()
 		return nil, err
 	}
 
 	clusters := make([]ApiCluster, 0)
 	err = json.Unmarshal(respBody, &clusters)
 	if err != nil {
-		cplogs.V(4).Infof("Error unmarshalling GetApiFlow request %s response %s, "+err.Error(), url.String(), respBody)
-		cplogs.Flush()
+		glog.V(4).Infof("Error unmarshalling GetApiFlow request %s response %s, "+err.Error(), url.String(), respBody)
+		glog.Flush()
 		return nil, err
 	}
 
@@ -136,7 +136,7 @@ func (c ClusterInfo) GetApiBucketClusters(bucketUuid string) ([]ApiCluster, erro
 func (c ClusterInfo) getResponseBody(client *http.Client, req *http.Request) ([]byte, error) {
 	res, err := client.Do(req)
 	if err != nil {
-		cplogs.V(4).Infoln("Error when creating client for request")
+		glog.V(4).Infoln("Error when creating client for request")
 		return nil, err
 	}
 	if res.Body == nil {
