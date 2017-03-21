@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component\Port;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Flow\ConfigurationDefinition;
@@ -98,9 +99,21 @@ class DeployTaskFactory implements TaskFactory
                     ->end()
                 ->end()
                 ->arrayNode('services')
-                    ->normalizeKeys(false)
+                    ->normalizeKeys(true)
                     ->isRequired()
                     ->useAttributeAsKey('name')
+                    ->beforeNormalization()
+                        ->always()
+                        ->then(function(array $services) {
+                            $slug = new Slugify();
+                            foreach ($services as $id => $specification) {
+                                $normalizedId = $slug->slugify($id);
+                                $services[$normalizedId] = $specification;
+                                unset($services[$id]);
+                            }
+                            return $services;
+                        })
+                    ->end()
                     ->prototype('array')
                         ->addDefaultsIfNotSet()
                         ->canBeEnabled()
