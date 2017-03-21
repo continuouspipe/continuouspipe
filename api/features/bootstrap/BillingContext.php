@@ -49,6 +49,11 @@ class BillingContext implements Context
      */
     private $serializer;
 
+    /**
+     * @var int
+     */
+    private $activitiesCount;
+
     public function __construct(
         ConsumerInterface $messageConsumer,
         TracedActivityTracker $tracedActivityTracker,
@@ -117,15 +122,16 @@ class BillingContext implements Context
     }
 
     /**
-     * @When I request the activity of the team :team between :left and :right
+     * @When I request the activity of the team :teamName between :left and :right
      */
-    public function iRequestTheActivityOfTheFlowBetweenAnd($team, $left, $right)
+    public function iRequestTheActivityOfTheFlowBetweenAnd($teamName, $left, $right)
     {
-        $this->activities = $this->tracedActivityTracker->findBy(
-            new Team($team, $team),
-            \DateTime::createFromFormat(\DateTime::ISO8601, $left),
-            \DateTime::createFromFormat(\DateTime::ISO8601, $right)
-        );
+        $team = new Team($teamName, $teamName);
+        $fromTime = \DateTime::createFromFormat(\DateTime::ISO8601, $left);
+        $toTime = \DateTime::createFromFormat(\DateTime::ISO8601, $right);
+
+        $this->activities = $this->tracedActivityTracker->findBy($team, $fromTime, $toTime);
+        $this->activitiesCount = $this->tracedActivityTracker->countEventsBy($team, $fromTime, $toTime);
     }
 
     /**
@@ -134,12 +140,12 @@ class BillingContext implements Context
      */
     public function iShouldSeeTheActivityOfTheUser($username, $count = 1)
     {
-        if ($count != count($this->activities)) {
+        if ($count != $this->activitiesCount) {
             throw new \RuntimeException(
                 sprintf(
                     'Expected to see the user activity %d times, but it occurred %d times.',
                     $count,
-                    count($this->activities)
+                    $this->activitiesCount
                 )
             );
         }

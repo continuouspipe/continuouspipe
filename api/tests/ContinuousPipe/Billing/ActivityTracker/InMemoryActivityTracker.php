@@ -32,4 +32,22 @@ class InMemoryActivityTracker implements ActivityTracker
                 $activity->getDateTime() <= $end;
         }));
     }
+
+    /**
+     * Count how many user activity occurred during the given time period.
+     *
+     * @param Team $team
+     * @param \DateTimeInterface $start
+     * @param \DateTimeInterface $end
+     *
+     * @return int
+     */
+    public function countEventsBy(Team $team, \DateTimeInterface $start, \DateTimeInterface $end): int
+    {
+        return count(array_filter($this->activities, function(UserActivity $activity) use ($team, $start, $end) {
+            return $activity->getTeamSlug() == $team->getSlug() &&
+                $activity->getDateTime() >= $start &&
+                $activity->getDateTime() <= $end;
+        }));
+    }
 }
