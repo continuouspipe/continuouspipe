@@ -38,4 +38,4 @@ You can also forward multiple ports to your local environment:
 cp-remote forward -s db 3306 6379
 ```
 
-will forward both ports to the same port in the local environment.
+This will forward both ports 3306 and 6379 to the same port in the local environment.
