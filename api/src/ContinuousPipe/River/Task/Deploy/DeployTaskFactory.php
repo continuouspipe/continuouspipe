@@ -261,7 +261,7 @@ class DeployTaskFactory implements TaskFactory
                 continue;
             }
 
-            $services[] = $this->componentFactory->createFromConfiguration($name, $configuration);
+            $services[] = $this->componentFactory->createFromConfiguration($this->getIdentifier($name), $configuration);
         }
 
         return $services;
@@ -437,5 +437,14 @@ class DeployTaskFactory implements TaskFactory
                 ->end()
             ->end()
         ;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    private function getIdentifier(string $name) : string
+    {
+        return (new Slugify())->slugify($name);
     }
 }
