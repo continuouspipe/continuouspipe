@@ -24,7 +24,7 @@ mysql -h127.0.0.1 -u dbuser -pdbpass dbname
 You can specify a second port number if the remote port number is different to the local port number:
 
 ```
-cp-remote forward -s db 3307 3306
+cp-remote forward -s db 3307:3306
 ```
 
 Here the local port 3307 is forward to 3306 on the remote, you could then connect using:
@@ -32,3 +32,10 @@ Here the local port 3307 is forward to 3306 on the remote, you could then connec
 ```
 mysql -h127.0.0.1 -P3307 -u dbuser -pdbpass dbname
 ```
+You can also forward multiple ports to your local environment:
+
+```
+cp-remote forward -s db 3306 6379
+```
+
+will forward both ports to the same port in the local environment.
