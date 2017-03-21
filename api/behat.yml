@@ -43,12 +43,15 @@ default:
                     - @authenticator.team_repository
                     - @event_bus
                 - Task\BuildContext:
+                    - @builder.client
+                    - @builder.client.traceable
+                    - @builder.client.hookable
+                    - @builder.client.faulty_api_simulator
                     - @river.tide_event_store
                     - @event_bus
                     - @kernel
                     - @jms_serializer
-                    - @builder.client.traceable
-                    - @builder.client.hookable
+                    - @tolerance.metrics.publisher.statsd
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -173,12 +176,15 @@ default:
                     - @authenticator.team_repository
                     - @event_bus
                 - Task\BuildContext:
+                    - @builder.client
+                    - @builder.client.traceable
+                    - @builder.client.hookable
+                    - @builder.client.faulty_api_simulator
                     - @river.tide_event_store
                     - @event_bus
                     - @kernel
                     - @jms_serializer
-                    - @builder.client.traceable
-                    - @builder.client.hookable
+                    - @tolerance.metrics.publisher.statsd
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -266,12 +272,15 @@ default:
                     - @authenticator.team_repository
                     - @event_bus
                 - Task\BuildContext:
+                    - @builder.client
+                    - @builder.client.traceable
+                    - @builder.client.hookable
+                    - @builder.client.faulty_api_simulator
                     - @river.tide_event_store
                     - @event_bus
                     - @kernel
                     - @jms_serializer
-                    - @builder.client.traceable
-                    - @builder.client.hookable
+                    - @tolerance.metrics.publisher.statsd
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -366,12 +375,15 @@ smoke:
                     - @event_bus
                     - @river.repository.tide
                 - Task\BuildContext:
+                    - @builder.client
+                    - @builder.client.traceable
+                    - @builder.client.hookable
+                    - @builder.client.faulty_api_simulator
                     - @river.tide_event_store
                     - @event_bus
                     - @kernel
                     - @jms_serializer
-                    - @builder.client.traceable
-                    - @builder.client.hookable
+                    - @tolerance.metrics.publisher.statsd
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
                 - DevelopmentEnvironmentContext:

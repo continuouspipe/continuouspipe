@@ -276,9 +276,19 @@ tolerance:
                 runner: tolerance.operation_runners.null_placeholdered
 
         builder:
-            success_failure_metrics:
-                publisher: tolerance.metrics.publisher.statsd
-                namespace: river.outgoing.builder
+            retry:
+                runner:
+                    success_failure_metrics:
+                        publisher: tolerance.metrics.publisher.statsd
+                        namespace: river.outgoing.builder
+                waiter:
+                    count_limited:
+                        waiter:
+                            exponential_back_off:
+                                waiter:
+                                    sleep: ~
+                                exponent: 1
+                        count: %api_retry_count%
 
         pipe:
             success_failure_metrics:

@@ -6,9 +6,12 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Builder\Client\BuilderBuild;
+use ContinuousPipe\Builder\Client\BuilderClient;
 use ContinuousPipe\Builder\Client\BuilderException;
 use ContinuousPipe\Builder\Client\HookableBuilderClient;
 use ContinuousPipe\Builder\Client\TraceableBuilderClient;
+use ContinuousPipe\Builder\Logging;
+use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestStep;
 use ContinuousPipe\River\Event\TideEvent;
@@ -21,12 +24,17 @@ use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use ContinuousPipe\River\Task\Task;
+use ContinuousPipe\Builder\Client\FaultyApiSimulatorBuilderClient;
+use ContinuousPipe\Security\User\User;
+use GuzzleHttp\Exception\ServerException;
 use JMS\Serializer\SerializerInterface;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Tolerance\Metrics\Metric;
+use ContinuousPipe\Tolerance\Metrics\Publisher\TracedPublisher;
 
 class BuildContext implements Context
 {
@@ -73,20 +81,45 @@ class BuildContext implements Context
     private $hookableBuilderClient;
 
     /**
+     * @var FaultyApiSimulatorBuilderClient
+     */
+    private $faultyApiSimulatorBuilderClient;
+
+    /**
+     * @var BuilderClient
+     */
+    private $realBuilderClient;
+
+    /**
+     * @var \Exception
+     */
+    private $buildException;
+    /**
+     * @var TracedPublisher
+     */
+    private $tracedPublisher;
+
+    /**
+     * @param BuilderClient $realBuilderClient
+     * @param TraceableBuilderClient $traceableBuilderClient
+     * @param HookableBuilderClient $hookableBuilderClient
+     * @param FaultyApiSimulatorBuilderClient $faultyApiSimulatorBuilderClient
      * @param EventStore $eventStore
      * @param MessageBus $eventBus
      * @param KernelInterface $kernel
      * @param SerializerInterface $serializer
-     * @param TraceableBuilderClient $traceableBuilderClient
-     * @param HookableBuilderClient $hookableBuilderClient
+     * @param TracedPublisher $tracedPublisher
      */
     public function __construct(
+        $realBuilderClient,
+        $traceableBuilderClient,
+        $hookableBuilderClient,
+        $faultyApiSimulatorBuilderClient,
         EventStore $eventStore,
         MessageBus $eventBus,
         KernelInterface $kernel,
         SerializerInterface $serializer,
-        TraceableBuilderClient $traceableBuilderClient,
-        HookableBuilderClient $hookableBuilderClient
+        TracedPublisher $tracedPublisher
     ) {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
@@ -94,6 +127,9 @@ class BuildContext implements Context
         $this->serializer = $serializer;
         $this->traceableBuilderClient = $traceableBuilderClient;
         $this->hookableBuilderClient = $hookableBuilderClient;
+        $this->faultyApiSimulatorBuilderClient = $faultyApiSimulatorBuilderClient;
+        $this->realBuilderClient = $realBuilderClient;
+        $this->tracedPublisher = $tracedPublisher;
     }
 
     /**
@@ -559,6 +595,101 @@ class BuildContext implements Context
         throw new \RuntimeException('Artifact not found');
     }
 
+    /**
+     * @Given the builder API returns :statusCode HTTP status code :count times
+     */
+    public function theBuilderAPIReturnsHTTPStatusCodeTimes($statusCode, $count)
+    {
+        $faultGenerator = function() use ($statusCode) {
+            $request = new \GuzzleHttp\Psr7\Request('GET', 'http://api.builder.dev/');
+            $response = new \GuzzleHttp\Psr7\Response($statusCode);
+            throw ServerException::create($request, $response);
+        };
+
+        for ($i = 1; $i <= $count; $i++) {
+            $this->faultyApiSimulatorBuilderClient->addFault($faultGenerator);
+        }
+    }
+
+    /**
+     * @When I send a build request
+     */
+    public function iSendABuildRequest()
+    {
+        $dummyRequest = new BuildRequest(
+            [],
+            new Notification(),
+            new Logging(),
+            Uuid::fromString('00000000-0000-0000-0000-000000000000')
+        );
+        $dummyUser = new User('geza', Uuid::fromString('00000000-0000-0000-0000-000000000000'), ['USER']);
+
+        try {
+            $this->realBuilderClient->build($dummyRequest, $dummyUser);
+        } catch (\Exception $e) {
+            $this->buildException = $e;
+        }
+    }
+
+    /**
+     * @Then I should see the build call as successful
+     */
+    public function iShouldSeeTheBuildCallAsSuccessful()
+    {
+        if (!is_null($this->buildException)) {
+            throw new \UnexpectedValueException(
+                sprintf('Build failed with the following error: %s', $this->buildException->getMessage())
+            );
+        }
+    }
+
+    /**
+     * @Then I should see the build call as failed
+     */
+    public function iShouldSeeTheBuildCallAsFailed()
+    {
+        if (!$this->buildException instanceof \Exception) {
+            throw new \UnexpectedValueException('Build expected to fail, but returned no errors.');
+        }
+    }
+
+    /**
+     * @Then I should see the metrics published as below:
+     */
+    public function iShouldSeeTheMetricsPublishedAsBelow(TableNode $table)
+    {
+        $allMetrics = $this->tracedPublisher->getPublishedMetrics();
+        foreach ($table->getColumnsHash() as $row) {
+            $sumOfMetrics = $this->sumMetricsByName($allMetrics, $row['metric']);
+            if ($sumOfMetrics != $row['value']) {
+                throw new \UnexpectedValueException(
+                    sprintf('The sum of values for metric %s is "%f", but "%f" expected.',
+                        $row['metric'],
+                        $sumOfMetrics,
+                        $row['value']
+                    )
+                );
+            }
+        }
+    }
+
+    /**
+     * @Given the :name parameter is set to :value
+     */
+    public function theParameterIsSetTo($name, $value)
+    {
+        if ($value != $this->kernel->getContainer()->getParameter($name)) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Test expect to have "%s" parameter set to "%s", but it is "%s".',
+                    $name,
+                    $value,
+                    $this->kernel->getContainer()->getParameter($name)
+                )
+            );
+        }
+    }
+
     private function assertBuildIsStartedWithTheFollowingEnvironmentVariables($index, TableNode $environs)
     {
         $step = $this->getBuildRequestStep($index);
@@ -704,5 +835,18 @@ class BuildContext implements Context
         $request = $buildStartedEvent->getBuild()->getRequest();
 
         return $request;
+    }
+
+    private function sumMetricsByName(array $allMetrics, string $name): float
+    {
+        $metricsForName = array_filter($allMetrics, function(Metric $metric) use ($name) {
+            return $name == $metric->getName();
+        });
+
+        $metricValuesForName = array_map(function(Metric $metric) {
+            return $metric->getValue();
+        }, $metricsForName);
+
+        return array_sum($metricValuesForName);
     }
 }
