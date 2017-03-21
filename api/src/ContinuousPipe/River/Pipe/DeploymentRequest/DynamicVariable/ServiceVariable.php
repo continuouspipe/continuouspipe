@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Pipe\DeploymentRequest\DynamicVariable;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
 
 /**
@@ -53,7 +54,7 @@ final class ServiceVariable
      */
     public function getVariableName(): string
     {
-        $name = mb_strtoupper($this->name);
+        $name = mb_strtoupper((new Slugify(['regex' => '/([^A-Za-z0-9])+/']))->slugify($this->name, '_'));
         return sprintf('SERVICE_%s_PUBLIC_ENDPOINT', $name);
     }
 
