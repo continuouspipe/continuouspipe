@@ -136,9 +136,9 @@ class SubscriptionContext implements Context
     }
 
     /**
-     * @Then I should be redirect to the page of the billing profile :uuid
+     * @Then I should be redirected to the page of the billing profile :uuid
      */
-    public function iShouldBeRedirectToThePageOfTheBillingProfile($uuid)
+    public function iShouldBeRedirectedToThePageOfTheBillingProfile($uuid)
     {
         $this->assertStatusCode(302);
         if (null === ($location = $this->response->headers->get('Location'))) {
