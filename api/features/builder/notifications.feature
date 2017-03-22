@@ -42,8 +42,8 @@ Feature:
 
 
   Scenario: It notify if asked
-    Given the "api_retry_count" parameter is set to "4"
-    And the notification will fail the first 4 times
+    Given the "api_retry_count" parameter is set to "5"
+    And the notification will fail the first 5 times
     When I send the following build request:
     """
     {
@@ -69,10 +69,11 @@ Feature:
     """
     Then the build should be successful
     And the notification should be sent
+    And a log containing "Notification failed." should not be found
 
   Scenario: Limit the number of retried API calls
-    Given the "api_retry_count" parameter is set to "4"
-    And the notification will fail the first 5 times
+    Given the "api_retry_count" parameter is set to "5"
+    And the notification will fail the first 6 times
     When I send the following build request:
     """
     {
@@ -97,9 +98,10 @@ Feature:
     }
     """
     Then the build should be failed
+    And a log containing "Notification failed." should be created once
 
   Scenario: Record the number of failed API calls in StatsD
-    Given the "api_retry_count" parameter is set to "4"
+    Given the "api_retry_count" parameter is set to "5"
     And the notification will fail the first 3 times
     When I send the following build request:
     """

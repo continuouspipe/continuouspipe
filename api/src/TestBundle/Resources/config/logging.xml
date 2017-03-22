@@ -24,11 +24,10 @@
         </service>
 
         <service id="builder.notifier.retry.waiter" class="Tolerance\Waiter\NullWaiter" />
-        <service id="builder.http_notifier" class="ContinuousPipe\Builder\Notifier\NullNotifier" />
-        <service id="builder.notifier.hookable"
-                 class="ContinuousPipe\Builder\Notifier\HookableNotifier"
-                 decorates="builder.http_notifier">
-            <argument type="service" id="builder.notifier.hookable.inner" />
+        <service id="builder.null_notifier" class="ContinuousPipe\Builder\Notifier\NullNotifier" public="false" />
+        <service id="builder.notifier.hookable" alias="builder.http_notifier" />
+        <service id="builder.http_notifier" class="ContinuousPipe\Builder\Notifier\HookableNotifier">
+            <argument type="service" id="builder.null_notifier" />
 
             <tag name="tolerance.operation_wrapper"
                  methods="notify"
