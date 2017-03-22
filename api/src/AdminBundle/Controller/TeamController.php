@@ -5,6 +5,7 @@ namespace AdminBundle\Controller;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -29,17 +30,23 @@ class TeamController
      * @var TideRepository
      */
     private $tideRepository;
+    /**
+     * @var BucketRepository
+     */
+    private $bucketRepository;
 
     /**
      * @param TeamRepository $teamRepository
      * @param FlatFlowRepository $flowRepository
      * @param TideRepository $tideRepository
+     * @param BucketRepository $bucketRepository
      */
-    public function __construct(TeamRepository $teamRepository, FlatFlowRepository $flowRepository, TideRepository $tideRepository)
+    public function __construct(TeamRepository $teamRepository, FlatFlowRepository $flowRepository, TideRepository $tideRepository, BucketRepository $bucketRepository)
     {
         $this->teamRepository = $teamRepository;
         $this->flowRepository = $flowRepository;
         $this->tideRepository = $tideRepository;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -88,6 +95,7 @@ class TeamController
         return [
             'team' => $team,
             'flows' => $this->flowRepository->findByTeam($team),
+            'clusters' => $this->bucketRepository->find($team->getBucketUuid())->getClusters(),
         ];
     }
 }
