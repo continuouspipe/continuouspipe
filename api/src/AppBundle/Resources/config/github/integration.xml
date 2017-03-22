@@ -53,5 +53,15 @@
         </service>
 
         <service id="github.integration.installation_token_resolver" alias="github.integration.installation_token_resolver.api" />
+
+        <service id="github.webhook.setup.cache_manager" class="GitHub\WebHook\Setup\CacheManager">
+            <argument type="collection">
+                <argument type="service" id="github.integration.installation_token_resolver" />
+                <argument type="service" id="github.integration.installation_repository" />
+            </argument>
+            <argument type="service" id="logger" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\IntegrationInstallationDeleted" />
+        </service>
     </services>
 </container>

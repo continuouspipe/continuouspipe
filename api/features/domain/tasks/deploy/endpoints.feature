@@ -143,3 +143,61 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration that have 1 middleware
+
+  Scenario: Add endpoints annotations
+    When I tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                annotations:
+                                    service.beta.kubernetes.io/external-traffic: OnlyLocal
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with the following annotations:
+      | name                                        | value     |
+      | service.beta.kubernetes.io/external-traffic | OnlyLocal |
+
+  Scenario: Configure CloudFlare proxied & ttl options
+    When I tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    record_suffix: .example.com
+                                    proxied: true
+                                    ttl: 1800
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with a proxied CloudFlare DNS zone configuration

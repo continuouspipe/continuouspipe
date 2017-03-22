@@ -3,7 +3,6 @@
 
 namespace ContinuousPipe\River\CodeRepository\GitHub\CommitStatuses;
 
-
 use ContinuousPipe\River\Notifications\NotificationException;
 use ContinuousPipe\River\Notifications\Notifier;
 use ContinuousPipe\River\Tide\Status\Status;

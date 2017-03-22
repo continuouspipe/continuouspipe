@@ -43,12 +43,15 @@ default:
                     - @authenticator.team_repository
                     - @event_bus
                 - Task\BuildContext:
+                    - @builder.client
+                    - @builder.client.traceable
+                    - @builder.client.hookable
+                    - @builder.client.faulty_api_simulator
                     - @river.tide_event_store
                     - @event_bus
                     - @kernel
                     - @jms_serializer
-                    - @builder.client.traceable
-                    - @builder.client.hookable
+                    - @tolerance.metrics.publisher.statsd
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -96,7 +99,11 @@ default:
                     - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
+                    - @github.integration.traceable_installation_repository
+                    - @github.integration.installation_repository
+                    - @github.integration.traceable_installation_token_resolver
                     - @github.integration.installation_token_resolver.in_memory
+                    - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
 
@@ -110,6 +117,9 @@ default:
                 - %paths.base%/features/integrations/code-repositories/github/
 
             contexts:
+                - CacheContext:
+                    - @predis_client
+
                 # GitHub-specific contexts
                 - GitHubContext:
                     - @kernel
@@ -119,7 +129,11 @@ default:
                     - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
+                    - @github.integration.traceable_installation_repository
+                    - @github.integration.installation_repository
+                    - @github.integration.traceable_installation_token_resolver
                     - @github.integration.installation_token_resolver.in_memory
+                    - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
 
@@ -162,12 +176,15 @@ default:
                     - @authenticator.team_repository
                     - @event_bus
                 - Task\BuildContext:
+                    - @builder.client
+                    - @builder.client.traceable
+                    - @builder.client.hookable
+                    - @builder.client.faulty_api_simulator
                     - @river.tide_event_store
                     - @event_bus
                     - @kernel
                     - @jms_serializer
-                    - @builder.client.traceable
-                    - @builder.client.hookable
+                    - @tolerance.metrics.publisher.statsd
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -255,12 +272,15 @@ default:
                     - @authenticator.team_repository
                     - @event_bus
                 - Task\BuildContext:
+                    - @builder.client
+                    - @builder.client.traceable
+                    - @builder.client.hookable
+                    - @builder.client.faulty_api_simulator
                     - @river.tide_event_store
                     - @event_bus
                     - @kernel
                     - @jms_serializer
-                    - @builder.client.traceable
-                    - @builder.client.hookable
+                    - @tolerance.metrics.publisher.statsd
                 - Task\DeployContext:
                     - @river.tide_event_store
                     - @event_bus
@@ -338,7 +358,11 @@ smoke:
                     - @river.tide_event_store
                     - @river.github.http_client
                     - @github.integration.in_memory_installation_repository
+                    - @github.integration.traceable_installation_repository
+                    - @github.integration.installation_repository
+                    - @github.integration.traceable_installation_token_resolver
                     - @github.integration.installation_token_resolver.in_memory
+                    - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
                 - CodeRepositoriesContext:
@@ -351,12 +375,15 @@ smoke:
                     - @event_bus
                     - @river.repository.tide
                 - Task\BuildContext:
+                    - @builder.client
+                    - @builder.client.traceable
+                    - @builder.client.hookable
+                    - @builder.client.faulty_api_simulator
                     - @river.tide_event_store
                     - @event_bus
                     - @kernel
                     - @jms_serializer
-                    - @builder.client.traceable
-                    - @builder.client.hookable
+                    - @tolerance.metrics.publisher.statsd
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
                 - DevelopmentEnvironmentContext:

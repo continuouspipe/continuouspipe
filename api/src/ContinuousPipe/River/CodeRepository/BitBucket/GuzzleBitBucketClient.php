@@ -25,10 +25,10 @@ class GuzzleBitBucketClient implements BitBucketClient
         $this->serializer = $serializer;
     }
 
-    public function getReference(string $owner, string $repository, string $branch) : string
+    public function getReference(BitBucketCodeRepository $codeRepository, string $branch) : string
     {
         try {
-            $response = $this->client->request('GET', '/2.0/repositories/'.$owner.'/'.$repository.'/refs/branches/'.$branch);
+            $response = $this->client->request('GET', '/2.0/repositories/'.$codeRepository->getApiSlug().'/refs/branches/'.$branch);
         } catch (RequestException $e) {
             $message = $e->getMessage();
             if ($e->getResponse() && $e->getResponse()->getStatusCode() == 404) {
@@ -43,10 +43,10 @@ class GuzzleBitBucketClient implements BitBucketClient
         return $json['target']['hash'];
     }
 
-    public function getContents(string $owner, string $repository, string $reference, string $filePath): string
+    public function getContents(BitBucketCodeRepository $codeRepository, string $reference, string $filePath): string
     {
         try {
-            $response = $this->client->request('GET', '/1.0/repositories/'.$owner.'/'.$repository.'/src/'.$reference.'/'.$filePath);
+            $response = $this->client->request('GET', '/1.0/repositories/'.$codeRepository->getApiSlug().'/src/'.$reference.'/'.$filePath);
         } catch (RequestException $e) {
             $message = $e->getMessage();
             if ($e->getResponse() && $e->getResponse()->getStatusCode() == 404) {
@@ -64,10 +64,10 @@ class GuzzleBitBucketClient implements BitBucketClient
     /**
      * {@inheritdoc}
      */
-    public function buildStatus(string $owner, string $repository, string $reference, BuildStatus $status)
+    public function buildStatus(BitBucketCodeRepository $codeRepository, string $reference, BuildStatus $status)
     {
         try {
-            $this->client->request('POST', '/2.0/repositories/'.$owner.'/'.$repository.'/commit/'.$reference.'/statuses/build', [
+            $this->client->request('POST', '/2.0/repositories/'.$codeRepository->getApiSlug().'/commit/'.$reference.'/statuses/build', [
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],
@@ -78,17 +78,17 @@ class GuzzleBitBucketClient implements BitBucketClient
         }
     }
 
-    public function getOpenedPullRequests(string $owner, string $repository): array
+    public function getOpenedPullRequests(BitBucketCodeRepository $codeRepository): array
     {
         return $this->readPullRequests(
-            '/2.0/repositories/'.$owner.'/'.$repository.'/pullrequests?state=OPEN'
+            '/2.0/repositories/'.$codeRepository->getApiSlug().'/pullrequests?state=OPEN'
         );
     }
 
-    public function writePullRequestComment(string $owner, string $repository, string $pullRequestIdentifier, string $contents): string
+    public function writePullRequestComment(BitBucketCodeRepository $codeRepository, string $pullRequestIdentifier, string $contents): string
     {
         try {
-            $response = $this->client->request('POST', '/1.0/repositories/'.$owner.'/'.$repository.'/pullrequests/'.$pullRequestIdentifier.'/comments', [
+            $response = $this->client->request('POST', '/1.0/repositories/'.$codeRepository->getApiSlug().'/pullrequests/'.$pullRequestIdentifier.'/comments', [
                 'form_params' => [
                     'content' => $contents,
                 ],
@@ -102,10 +102,10 @@ class GuzzleBitBucketClient implements BitBucketClient
         return $json['comment_id'];
     }
 
-    public function deletePullRequestComment(string $owner, string $repository, string $pullRequestIdentifier, string $commentIdentifier)
+    public function deletePullRequestComment(BitBucketCodeRepository $codeRepository, string $pullRequestIdentifier, string $commentIdentifier)
     {
         try {
-            $this->client->request('DELETE', '/1.0/repositories/'.$owner.'/'.$repository.'/pullrequests/'.$pullRequestIdentifier.'/comments/'.$commentIdentifier);
+            $this->client->request('DELETE', '/1.0/repositories/'.$codeRepository->getApiSlug().'/pullrequests/'.$pullRequestIdentifier.'/comments/'.$commentIdentifier);
         } catch (RequestException $e) {
             throw new BitBucketClientException($e->getMessage(), $e->getCode(), $e);
         }

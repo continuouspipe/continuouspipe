@@ -11,6 +11,7 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamNotFound;
 use ContinuousPipe\Security\Team\TeamRepository;
+use ContinuousPipe\Security\Team\TeamUsageLimits;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
@@ -147,6 +148,15 @@ class SecurityContext implements Context
         }
 
         return $team;
+    }
+
+    /**
+     * @Given the team :slug has a :tidesPerHour tides per hour usage limit
+     */
+    public function theTeamHasATidesPerHourUsageLimit($slug, $tidesPerHour)
+    {
+        $team = $this->theTeamExists($slug);
+        $this->inMemoryAuthenticatorClient->addTeamUsageLimit($team, new TeamUsageLimits($tidesPerHour));
     }
 
     /**

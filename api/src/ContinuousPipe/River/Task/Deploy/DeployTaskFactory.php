@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component\Port;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Flow\ConfigurationDefinition;
@@ -260,7 +261,7 @@ class DeployTaskFactory implements TaskFactory
                 continue;
             }
 
-            $services[] = $this->componentFactory->createFromConfiguration($name, $configuration);
+            $services[] = $this->componentFactory->createFromConfiguration($this->getIdentifier($name), $configuration);
         }
 
         return $services;
@@ -326,6 +327,12 @@ class DeployTaskFactory implements TaskFactory
                 ->children()
                     ->scalarNode('name')->isRequired()->end()
                     ->scalarNode('type')->defaultNull()->end()
+                    ->arrayNode('annotations')
+                        ->normalizeKeys(false)
+                        ->requiresAtLeastOneElement()
+                        ->useAttributeAsKey('name')
+                        ->prototype('scalar')->end()
+                    ->end()
                     ->arrayNode('ssl_certificates')
                         ->prototype('array')
                             ->children()
@@ -339,6 +346,8 @@ class DeployTaskFactory implements TaskFactory
                         ->children()
                             ->scalarNode('zone_identifier')->isRequired()->end()
                             ->scalarNode('record_suffix')->isRequired()->end()
+                            ->integerNode('ttl')->end()
+                            ->booleanNode('proxied')->end()
                             ->arrayNode('authentication')
                                 ->isRequired()
                                 ->children()
@@ -428,5 +437,14 @@ class DeployTaskFactory implements TaskFactory
                 ->end()
             ->end()
         ;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    private function getIdentifier(string $name) : string
+    {
+        return (new Slugify())->slugify($name);
     }
 }

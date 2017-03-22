@@ -9,7 +9,8 @@ use JMS\Serializer\Annotation as JMS;
  *     "ping": "GitHub\WebHook\Event\PingEvent",
  *     "pull_request": "GitHub\WebHook\Event\PullRequestEvent",
  *     "status": "GitHub\WebHook\Event\StatusEvent",
- *     "push": "GitHub\WebHook\Event\PushEvent"
+ *     "push": "GitHub\WebHook\Event\PushEvent",
+ *     "integration_installation": "GitHub\WebHook\Event\IntegrationInstallationEvent"
  * })
  */
 abstract class AbstractEvent implements Event
