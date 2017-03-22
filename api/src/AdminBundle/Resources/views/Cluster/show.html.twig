@@ -1,4 +1,5 @@
 {% extends "@Admin/layout.html.twig" %}
+{% import _self as macros %}
 {% block header_navbar_team_class %} class="active"{% endblock %}
 {% block content %}
 <ol class="breadcrumb">
@@ -7,8 +8,6 @@
     <li>Clusters</li>
     <li class="active">{{ cluster.identifier }}</li>
 </ol>
-
-<pre>{{ clusterStatus|json_encode }}</pre>
 
 <div class="row">
     <div class="col-md-12">
@@ -25,14 +24,22 @@
                             <div class="resource-title">CPU</div>
                             <div class="resource-container">
                                 <div class="resource-value">{{ node.resources.percentOfAvailable.cpu.requests }} %</div>
-                                <div class="resource-usage" style="height: {{ node.resources.percentOfAvailable.cpu.requests }}%;"></div>
+                                <div class="resource-usage" style="height: {{ node.resources.percentOfAvailable.cpu.requests }}%; background-color: {{ macros.colour_from_percents(node.resources.percentOfAvailable.cpu.requests) }};"></div>
                             </div>
                         </div>
                         <div class="resource">
                             <div class="resource-title">Memory</div>
                             <div class="resource-container">
                                 <div class="resource-value">{{ node.resources.percentOfAvailable.memory.requests }} %</div>
-                                <div class="resource-usage" style="height: {{ node.resources.percentOfAvailable.memory.requests }}%;"></div>
+                                <div class="resource-usage" style="height: {{ node.resources.percentOfAvailable.memory.requests }}%; background-color: {{ macros.colour_from_percents(node.resources.percentOfAvailable.memory.requests) }};"></div>
+                            </div>
+                        </div>
+                        <div class="resource">
+                            <div class="resource-title">Volumes</div>
+                            {% set volumePercents = (node.volumesInUse / 16) * 100 %}
+                            <div class="resource-container">
+                                <div class="resource-value">{{ node.volumesInUse }}</div>
+                                <div class="resource-usage" style="height: {{ volumePercents }}%; background-color: {{ macros.colour_from_percents(volumePercents) }};"></div>
                             </div>
                         </div>
                     </div>
@@ -43,16 +50,27 @@
         </div>
     </div>
 </div>
+
+<pre>{{ clusterStatus|json_encode }}</pre>
+
 {% endblock %}
+{% macro colour_from_percents(percents) %}{% spaceless %}
+{% if percents > 90 %}red
+{% elseif percents > 80 %}orange
+{% elseif percents > 40 %}blue
+{% else %}blue
+{% endif %}
+{% endspaceless %}{% endmacro %}
 {% block stylesheets %}
 {{ parent() }}
 <style type="text/css">
 .status-nodes .node {
     display: flex;
-    width: 120px;
+    width: 200px;
     flex-direction: column;
     float: left;
     margin-right: 15px;
+    margin-bottom: 15px;
 }
 .status-nodes .node .node-name {
     white-space: nowrap;
@@ -86,9 +104,15 @@
     right: 0;
     left: 0;
     background: grey;
+    z-index: 1;
 }
 .status-nodes .node .resources-overview .resource .resource-container .resource-value {
     text-align: center;
+    z-index: 2;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
 }
 .status-nodes .node .node-status {
     text-align: center;
