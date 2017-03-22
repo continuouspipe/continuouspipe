@@ -22,6 +22,12 @@ class RecurlyController extends Controller
     {
         $request->getSession()->getFlashBag()->add('success', 'You\'ve been successfully subscribed');
 
-        return new RedirectResponse($this->generateUrl('account_billing_profile'));
+        if ($billingProfileUuid = $request->getSession()->get('_current_billing_profile')) {
+            return new RedirectResponse($this->generateUrl('account_billing_profile', [
+                'uuid' => $billingProfileUuid,
+            ]));
+        }
+
+        return new RedirectResponse($this->generateUrl('account_billing_profiles'));
     }
 }

@@ -32,6 +32,13 @@ Feature:
     When I subscribe for 10 users to the profile "00000000-0000-0000-0000-000000000000"
     Then I should be redirected to the Recurly subscription page of the account "00000000-0000-0000-0000-000000000000"
 
+  Scenario: I am redirected to the correct billing profile
+    Given there is a team "foo"
+    And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
+    When I subscribe for 10 users to the profile "00000000-0000-0000-0000-000000000000"
+    And the Recurly subscription is successful
+    Then I should be redirect to the page of the billing profile "00000000-0000-0000-0000-000000000000"
+
   Scenario: Subscription is displayed on the billing page
     Given the billing account "00000000-0000-0000-0000-000000000000" have the following subscriptions:
      | plan        | quantity | state  |
