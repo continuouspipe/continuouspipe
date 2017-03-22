@@ -42,7 +42,8 @@ Feature:
 
 
   Scenario: It notify if asked
-    Given the notification will fail the first 2 times
+    Given the "api_retry_count" parameter is set to "4"
+    And the notification will fail the first 4 times
     When I send the following build request:
     """
     {
@@ -68,3 +69,63 @@ Feature:
     """
     Then the build should be successful
     And the notification should be sent
+
+  Scenario: Limit the number of retried API calls
+    Given the "api_retry_count" parameter is set to "4"
+    And the notification will fail the first 5 times
+    When I send the following build request:
+    """
+    {
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "continuous"
+          },
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "747850e8c821a443a7b5cee28a48581069049739"
+          }
+        }
+      ],
+      "notification": {
+        "http": {
+          "address": "https://example.com"
+        }
+      },
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+    }
+    """
+    Then the build should be failed
+
+  Scenario: Record the number of failed API calls in StatsD
+    Given the "api_retry_count" parameter is set to "4"
+    And the notification will fail the first 3 times
+    When I send the following build request:
+    """
+    {
+      "steps": [
+        {
+          "image": {
+            "name": "sroze/php-example",
+            "tag": "continuous"
+          },
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "747850e8c821a443a7b5cee28a48581069049739"
+          }
+        }
+      ],
+      "notification": {
+        "http": {
+          "address": "https://example.com"
+        }
+      },
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+    }
+    """
+    Then the build should be successful
+    And I should see the metrics published as below:
+      | metric                             | value |
+      | builder.outgoing.notifier.success  | 1     |
+      | builder.outgoing.notifier.failure  | 3     |

@@ -42,6 +42,7 @@ class DisplaysNotificationIfFailing implements Notifier
         } catch (Notifier\NotificationException $e) {
             $logger = $this->loggerFactory->forBuild($build);
             $logger->child(new Text('Notification failed. '.$e->getMessage()))->updateStatus(Log::FAILURE);
+            throw $e;
         }
     }
 }
