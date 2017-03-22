@@ -8,4 +8,93 @@
     <li class="active">{{ cluster.identifier }}</li>
 </ol>
 
+<pre>{{ clusterStatus|json_encode }}</pre>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Nodes (requests)</h3>
+            </div>
+            <div class="panel-body status-nodes">
+                {% for node in clusterStatus.nodes %}
+                <div class="node">
+                    <div class="node-name">{{ node.name }}</div>
+                    <div class="resources-overview">
+                        <div class="resource">
+                            <div class="resource-title">CPU</div>
+                            <div class="resource-container">
+                                <div class="resource-value">{{ node.resources.percentOfAvailable.cpu.requests }} %</div>
+                                <div class="resource-usage" style="height: {{ node.resources.percentOfAvailable.cpu.requests }}%;"></div>
+                            </div>
+                        </div>
+                        <div class="resource">
+                            <div class="resource-title">Memory</div>
+                            <div class="resource-container">
+                                <div class="resource-value">{{ node.resources.percentOfAvailable.memory.requests }} %</div>
+                                <div class="resource-usage" style="height: {{ node.resources.percentOfAvailable.memory.requests }}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="node-status">{{ node.status }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block stylesheets %}
+{{ parent() }}
+<style type="text/css">
+.status-nodes .node {
+    display: flex;
+    width: 120px;
+    flex-direction: column;
+    float: left;
+    margin-right: 15px;
+}
+.status-nodes .node .node-name {
+    white-space: nowrap;
+    overflow: hidden;              /* "overflow" value must be different from "visible" */
+    text-overflow:    ellipsis;
+    direction:rtl;
+    text-align:left;
+    padding-bottom: 10px;
+}
+.status-nodes .node .resources-overview {
+    height: 200px;
+    display: flex;
+}
+.status-nodes .node .resources-overview .resource {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.status-nodes .node .resources-overview .resource .resource-title {
+    text-align: center;
+    font-weight: bold;
+}
+.status-nodes .node .resources-overview .resource .resource-container {
+    border: 1px solid #ccc;
+    flex: 1;
+    position: relative;
+}
+.status-nodes .node .resources-overview .resource .resource-container .resource-usage {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: grey;
+}
+.status-nodes .node .resources-overview .resource .resource-container .resource-value {
+    text-align: center;
+}
+.status-nodes .node .node-status {
+    text-align: center;
+}
+</style>
+{% endblock %}
+{% block javascripts %}
+{{ parent() }}
 {% endblock %}

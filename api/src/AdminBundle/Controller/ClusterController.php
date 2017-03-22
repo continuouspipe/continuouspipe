@@ -3,12 +3,15 @@
 namespace AdminBundle\Controller;
 
 use ContinuousPipe\Security\Credentials\BucketRepository;
+use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
+use GuzzleHttp\Client;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 /**
  * @Route(service="admin.controller.cluster")
@@ -49,9 +52,26 @@ class ClusterController
             ));
         }
 
+        if (!$cluster instanceof Kubernetes) {
+            throw new UnprocessableEntityHttpException('Cannot display the page of a non Kubernetes cluster');
+        }
+
+        $httpClient = new Client();
+        $response = $httpClient->post('https://35.186.193.108/cluster/full-status', [
+            'verify' => false,
+            'json' => [
+                'address' => $cluster->getAddress(),
+                'username' => $cluster->getUsername(),
+                'password' => $cluster->getPassword(),
+            ],
+        ]);
+
+        $status = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+
         return [
             'team' => $team,
             'cluster' => $cluster,
+            'clusterStatus' => $status,
         ];
     }
 
