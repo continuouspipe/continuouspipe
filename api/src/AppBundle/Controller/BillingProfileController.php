@@ -132,6 +132,9 @@ class BillingProfileController
             $operation = $request->request->get('_operation');
 
             if ('subscribe' === $operation) {
+                // Add the billing profile in the session
+                $request->getSession()->set('_current_billing_profile', $billingProfile->getUuid()->toString());
+
                 // Redirect to the subscription page
                 return new RedirectResponse(sprintf(
                     'https://%s.recurly.com/subscribe/%s/%s/%s?%s',

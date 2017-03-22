@@ -108,6 +108,16 @@ class SubscriptionContext implements Context
     }
 
     /**
+     * @When the Recurly subscription is successful
+     */
+    public function theRecurlySubscriptionIsSuccessful()
+    {
+        $this->response = $this->kernel->handle(Request::create('/account/recurly/success', 'GET', [], [
+            'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
+        ]));
+    }
+
+    /**
      * @Then I should be redirected to the Recurly subscription page of the account :accountUuid
      */
     public function iShouldBeRedirectedToTheRecurlySubscriptionPageOfTheAccount($accountUuid)
@@ -120,6 +130,29 @@ class SubscriptionContext implements Context
         if (!preg_match('#^https://continuouspipe.recurly.com/subscribe/[a-z-]+/'.$accountUuid.'/#', $location)) {
             throw new \RuntimeException(sprintf(
                 'The location "%s" is not matching the expected expression',
+                $location
+            ));
+        }
+    }
+
+    /**
+     * @Then I should be redirected to the page of the billing profile :uuid
+     */
+    public function iShouldBeRedirectedToThePageOfTheBillingProfile($uuid)
+    {
+        $this->assertStatusCode(302);
+        if (null === ($location = $this->response->headers->get('Location'))) {
+            throw new \RuntimeException('Did not found any `Location` header in the request');
+        }
+
+        $expectedPath = $this->kernel->getContainer()->get('router')->generate('account_billing_profile', [
+            'uuid' => $uuid,
+        ]);
+
+        if ($location != $expectedPath) {
+            throw new \RuntimeException(sprintf(
+                'Expected redirection to "%s" but found "%s"',
+                $expectedPath,
                 $location
             ));
         }
