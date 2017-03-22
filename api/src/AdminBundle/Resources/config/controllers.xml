@@ -37,6 +37,11 @@
             <argument type="service" id="knp_paginator" />
         </service>
 
+        <service id="admin.controller.cluster" class="AdminBundle\Controller\ClusterController">
+            <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="authenticator.bucket_repository" />
+        </service>
+
         <service id="admin.twig_extension" class="AdminBundle\Twig\AdminExtension" public="false">
             <tag name="twig.extension" />
         </service>

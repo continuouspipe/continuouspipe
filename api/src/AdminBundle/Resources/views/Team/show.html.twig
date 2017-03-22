@@ -21,6 +21,10 @@
             <td>{{ flow.repository.address }}</td>
             <td>{{ flow.user.username }}</td>
         </tr>
+    {% else %}
+        <tr>
+            <td colspan="3">No flows found.</td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>
@@ -41,9 +45,13 @@
     <tbody>
     {% for cluster in clusters %}
         <tr>
-            <td>{{ cluster.identifier }}</td>
+            <td><a href="{{ path('admin_team_cluster', {'team': team.slug, 'clusterIdentifier': cluster.identifier}) }}">{{ cluster.identifier }}</a></td>
             <td>{{ cluster.address }}</td>
             <td>{{ cluster.version }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="3">No cluster found.</td>
         </tr>
     {% endfor %}
     </tbody>

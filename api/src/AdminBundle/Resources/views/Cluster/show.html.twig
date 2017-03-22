@@ -1,0 +1,11 @@
+{% extends "@Admin/layout.html.twig" %}
+{% block header_navbar_team_class %} class="active"{% endblock %}
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="{{ path('admin_teams') }}">Teams</a></li>
+    <li class="active">{{ team.slug }}</li>
+    <li>Clusters</li>
+    <li class="active">{{ cluster.identifier }}</li>
+</ol>
+
+{% endblock %}
