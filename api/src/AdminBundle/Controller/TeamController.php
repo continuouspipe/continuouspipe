@@ -9,6 +9,7 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 /**
@@ -74,6 +75,19 @@ class TeamController
 
         return [
             'items' => $items,
+        ];
+    }
+
+    /**
+     * @Route("/teams/{team}", name="admin_team")
+     * @ParamConverter("team", converter="team", options={"slug"="team"})
+     * @Template
+     */
+    public function showAction(Team $team)
+    {
+        return [
+            'team' => $team,
+            'flows' => $this->flowRepository->findByTeam($team),
         ];
     }
 }

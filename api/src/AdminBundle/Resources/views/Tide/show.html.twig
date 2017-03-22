@@ -3,8 +3,8 @@
 {% block content %}
 <ol class="breadcrumb">
     <li><a href="{{ path('admin_teams') }}">Teams</a></li>
-    <li class="active">{{ team.slug }}</li>
-    <li><a href="{{ path('admin_flows', {'team': team.slug}) }}">Flows</a></li>
+    <li class="active"><a href="{{ path('admin_team', {'team': team.slug}) }}">{{ team.slug }}</a></li>
+    <li>Flows</li>
     <li class="active">{{ flow.uuid }}</li>
     <li><a href="{{ path('admin_tides', {'team': team.slug, 'flow': flow.uuid}) }}">Tides</a></li>
     <li class="active">{{ tide.uuid }}</li>

@@ -16,7 +16,7 @@
     <tbody>
     {% for item in items %}
         <tr>
-            <td><a href="{{ path('admin_flows', {'team': item.team.slug}) }}">{{ item.team.slug }}</a></td>
+            <td><a href="{{ path('admin_team', {'team': item.team.slug}) }}">{{ item.team.slug }}</a></td>
             <td>{{ item.team.memberships.count() }}</td>
             <td>{{ item.flows | length }}</td>
             <td>
