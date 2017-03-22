@@ -8,6 +8,9 @@ pipelines:
     - name: Pull-request CI
       condition: code_reference.branch not in ['master', 'production']
       tasks: [ images ]
+    - name: Pre-staging environment
+      condition: '"cp:tide" in pull_request.labels'
+      tasks: [ images, deployment ]
 
 variables:
     - name: BUILDER_URL
