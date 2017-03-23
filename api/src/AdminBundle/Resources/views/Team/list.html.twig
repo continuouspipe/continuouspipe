@@ -9,13 +9,23 @@
         <tr>
             <th>Name</th>
             <th>Users</th>
+            <th># of flows</th>
+            <th>Last tide</th>
         </tr>
     </thead>
     <tbody>
-    {% for team in teams %}
+    {% for item in items %}
         <tr>
-            <td><a href="{{ path('admin_flows', {'team': team.slug}) }}">{{ team.slug }}</a></td>
-            <td>{{ team.memberships.count() }}</td>
+            <td><a href="{{ path('admin_team', {'team': item.team.slug}) }}">{{ item.team.slug }}</a></td>
+            <td>{{ item.team.memberships.count() }}</td>
+            <td>{{ item.flows | length }}</td>
+            <td>
+                {% if item.last_tide is null %}
+                <em>None</em>
+                {% else %}
+                    {{ item.last_tide.creationDate | date('Y-m-d H:i:s') }} ({{ item.last_tide.status }})
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>
