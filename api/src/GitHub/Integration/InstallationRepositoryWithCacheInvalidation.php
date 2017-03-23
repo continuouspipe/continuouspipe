@@ -2,7 +2,6 @@
 
 namespace GitHub\Integration;
 
-
 interface InstallationRepositoryWithCacheInvalidation
 {
     /**

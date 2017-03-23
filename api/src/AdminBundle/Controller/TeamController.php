@@ -55,7 +55,7 @@ class TeamController
      */
     public function listAction()
     {
-        $items = array_map(function(Team $team) {
+        $items = array_map(function (Team $team) {
             $flows = $this->flowRepository->findByTeam($team);
 
             /** @var Tide|null $lastTide */
