@@ -27,11 +27,13 @@ use ContinuousPipe\Events\AggregateNotFound;
 use ContinuousPipe\Events\EventStore\EventStore;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
+use ContinuousPipe\Tolerance\Metrics\Publisher\TracedPublisher;
 use JMS\Serializer\SerializerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
+use Tolerance\Metrics\Metric;
 
 class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
@@ -101,6 +103,11 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      */
     private $buildRequestTransformer;
 
+    /**
+     * @var TracedPublisher
+     */
+    private $tracedPublisher;
+
     public function __construct(
         Kernel $kernel,
         TraceableDockerClient $traceableDockerClient,
@@ -114,7 +121,8 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         SerializerInterface $serializer,
         MessageBus $commandBus,
         EventStore $eventStore,
-        BuildRequestTransformer $buildRequestTransformer
+        BuildRequestTransformer $buildRequestTransformer,
+        TracedPublisher $tracedPublisher
     ) {
         $this->kernel = $kernel;
         $this->traceableDockerClient = $traceableDockerClient;
@@ -129,6 +137,7 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
         $this->buildRequestTransformer = $buildRequestTransformer;
+        $this->tracedPublisher = $tracedPublisher;
     }
 
     /**
@@ -525,6 +534,43 @@ EOF;
     }
 
     /**
+     * @Given the :name parameter is set to :value
+     */
+    public function theParameterIsSetTo($name, $value)
+    {
+        if ($value != $this->kernel->getContainer()->getParameter($name)) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Test expect to have "%s" parameter set to "%s", but it is "%s".',
+                    $name,
+                    $value,
+                    $this->kernel->getContainer()->getParameter($name)
+                )
+            );
+        }
+    }
+
+    /**
+     * @Then I should see the metrics published as below:
+     */
+    public function iShouldSeeTheMetricsPublishedAsBelow(TableNode $table)
+    {
+        $allMetrics = $this->tracedPublisher->getPublishedMetrics();
+        foreach ($table->getColumnsHash() as $row) {
+            $sumOfMetrics = $this->sumMetricsByName($allMetrics, $row['metric']);
+            if ($sumOfMetrics != $row['value']) {
+                throw new \UnexpectedValueException(
+                    sprintf('The sum of values for metric %s is "%f", but "%f" expected.',
+                        $row['metric'],
+                        $sumOfMetrics,
+                        $row['value']
+                    )
+                );
+            }
+        }
+    }
+
+    /**
      * @param int $status
      */
     private function assertResponseCode($status)
@@ -553,6 +599,19 @@ EOF;
             $this->getBuild()->getIdentifier(),
             $stepPosition
         );
+    }
+
+    private function sumMetricsByName(array $allMetrics, string $name): float
+    {
+        $metricsForName = array_filter($allMetrics, function(Metric $metric) use ($name) {
+            return $name == $metric->getName();
+        });
+
+        $metricValuesForName = array_map(function(Metric $metric) {
+            return $metric->getValue();
+        }, $metricsForName);
+
+        return array_sum($metricValuesForName);
     }
 }
 

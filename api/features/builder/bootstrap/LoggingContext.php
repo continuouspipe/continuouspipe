@@ -112,6 +112,28 @@ class LoggingContext implements Context
     }
 
     /**
+     * @Then a log containing :text should be created once
+     */
+    public function aLogContainingShouldBeCreatedOnce($text)
+    {
+        $count = count($this->findAllLogsContaining($this->traceableClient->getCreated(), $text));
+        if (1 !== $count) {
+            throw new \RuntimeException(sprintf('Expected to find the text one, but found %d times.', $count));
+        }
+    }
+
+    /**
+     * @Then a log containing :text should not be found
+     */
+    public function aLogContainingShouldNotBeFound($text)
+    {
+        $count = count($this->findAllLogsContaining($this->traceableClient->getCreated(), $text));
+        if (0 !== $count) {
+            throw new \RuntimeException(sprintf('The text found %d times, but not expected.', $count));
+        }
+    }
+
+    /**
      * @Then the log containing :text should be failed
      */
     public function theLogContainingShouldBeFailed($text)
@@ -144,5 +166,25 @@ class LoggingContext implements Context
         }
 
         throw new \RuntimeException('No matching log found');
+    }
+
+    /**
+     * @param Log[] $logs
+     * @param string $text
+     *
+     * @return Log[]
+     */
+    private function findAllLogsContaining(array $logs, string $text): array
+    {
+        $list = [];
+        foreach ($logs as $created) {
+            $serialized = $created->getNode()->jsonSerialize();
+
+            if ($serialized['type'] == 'text' && false !== strpos($serialized['contents'], $text)) {
+                $list[] = $created;
+            }
+        }
+
+        return $list;
     }
 }
