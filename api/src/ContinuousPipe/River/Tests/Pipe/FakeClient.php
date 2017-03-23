@@ -64,7 +64,7 @@ class FakeClient implements Client
     {
         $environments = $this->getEnvironments($clusterIdentifier, $team, $authenticatedUser);
 
-        return $environments->then(function(array $environments) use ($labels) {
+        return $environments->then(function (array $environments) use ($labels) {
             return array_values(array_filter($environments, function (Environment $environment) use ($labels) {
                 $environmentLabels = $environment->getLabels();
 

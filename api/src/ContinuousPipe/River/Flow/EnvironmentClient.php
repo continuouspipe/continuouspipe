@@ -13,6 +13,7 @@ use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise;
+use Psr\Log\LoggerInterface;
 
 /**
  * @deprecated To be moved under `ContinuousPipe\River\Environment` namespace
@@ -40,17 +41,29 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     private $bucketRepository;
 
     /**
-     * @param Client                    $pipeClient
-     * @param ClusterIdentifierResolver $clusterIdentifierResolver
-     * @param UserContext               $userContext
-     * @param BucketRepository          $bucketRepository
+     * @var LoggerInterface
      */
-    public function __construct(Client $pipeClient, ClusterIdentifierResolver $clusterIdentifierResolver, UserContext $userContext, BucketRepository $bucketRepository)
-    {
+    private $logger;
+
+    /**
+     * @param Client $pipeClient
+     * @param ClusterIdentifierResolver $clusterIdentifierResolver
+     * @param UserContext $userContext
+     * @param BucketRepository $bucketRepository
+     * @param LoggerInterface $logger
+     */
+    public function __construct(
+        Client $pipeClient,
+        ClusterIdentifierResolver $clusterIdentifierResolver,
+        UserContext $userContext,
+        BucketRepository $bucketRepository,
+        LoggerInterface $logger
+    ) {
         $this->pipeClient = $pipeClient;
         $this->clusterIdentifierResolver = $clusterIdentifierResolver;
         $this->userContext = $userContext;
         $this->bucketRepository = $bucketRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -61,9 +74,8 @@ class EnvironmentClient implements DeployedEnvironmentRepository
         $promises = [];
 
         foreach ($this->findClusterIdentifiers($flow) as $clusterIdentifier) {
-            $clusterEnvironmentsPromise = $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier);
-            $clusterEnvironmentsPromise->then(
-                function(array $clusterEnvironments) use ($clusterIdentifier) {
+            $clusterEnvironmentsPromise = $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier)->then(
+                function (array $clusterEnvironments) use ($clusterIdentifier) {
                     // Convert Pipe's `Environment` objects to `DeployedEnvironment`s
                     return array_map(function (Environment $environment) use ($clusterIdentifier) {
                         return new DeployedEnvironment(
@@ -73,7 +85,8 @@ class EnvironmentClient implements DeployedEnvironmentRepository
                         );
                     }, $clusterEnvironments);
                 },
-                function(\Throwable $e) {
+                function (\Throwable $e) {
+                    $this->logger->warning('Fetching environment list from Pipe failed.', ['exception' => $e]);
 
                     return [];
                 }
@@ -82,9 +95,13 @@ class EnvironmentClient implements DeployedEnvironmentRepository
             $promises[] = $clusterEnvironmentsPromise;
         }
 
-        $environments = array_reduce(Promise\unwrap($promises), function($carry, array $item) {
-            return array_merge(is_array($carry) ? $carry : [], $item);
-        });
+        $environments = array_reduce(
+            Promise\unwrap($promises),
+            function ($carry, array $item) {
+                return array_merge($carry, $item);
+            },
+            []
+        );
 
         return $this->uniqueEnvironments($environments);
     }

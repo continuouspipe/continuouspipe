@@ -34,12 +34,13 @@ default:
                     - @event_bus
                     - @river.tide_event_store
                 - FlowContext:
+                    - @river.pipe_client.fake
+                    - @river.pipe_client
+                    - @river.hookable_pipe_client
                     - @kernel
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
                     - @security.authenticator.client.in_memory
-                    - @river.pipe_client.fake
-                    - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
                 - Task\BuildContext:
@@ -167,12 +168,13 @@ default:
                     - @event_bus
                     - @river.tide_event_store
                 - FlowContext:
+                    - @river.pipe_client.fake
+                    - @river.pipe_client
+                    - @river.hookable_pipe_client
                     - @kernel
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
                     - @security.authenticator.client.in_memory
-                    - @river.pipe_client.fake
-                    - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
                 - Task\BuildContext:
@@ -263,12 +265,13 @@ default:
                     - @event_bus
                     - @river.tide_event_store
                 - FlowContext:
+                    - @river.pipe_client.fake
+                    - @river.pipe_client
+                    - @river.hookable_pipe_client
                     - @kernel
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
                     - @security.authenticator.client.in_memory
-                    - @river.pipe_client.fake
-                    - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
                 - Task\BuildContext:
@@ -332,12 +335,13 @@ smoke:
                     - @kernel
                     - @security.encryption.vault
                 - FlowContext:
+                    - @river.pipe_client.fake
+                    - @river.pipe_client
+                    - @river.hookable_pipe_client
                     - @kernel
                     - @river.repository.flow
                     - @repository_river.code_repository_repository
                     - @security.authenticator.client.in_memory
-                    - @river.pipe_client.fake
-                    - @river.pipe_client
                     - @authenticator.team_repository
                     - @event_bus
                 - TideContext:

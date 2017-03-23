@@ -153,18 +153,18 @@ class HttpPipeClient implements Client
      */
     private function requestEnvironmentList(User $user, $url)
     {
-        $promise = $this->client->requestAsync('get', $url, [
+        $httpPromise = $this->client->requestAsync('get', $url, [
             'headers' => $this->getRequestHeaders($user),
         ]);
 
-        $promise->then(
-            function(ResponseInterface $response) {
+        $environmentPromise = $httpPromise->then(
+            function (ResponseInterface $response) {
                 $contents = $this->getResponseContents($response);
                 $environments = $this->serializer->deserialize($contents, 'array<'.Environment::class.'>', 'json');
 
                 return $environments;
             },
-            function(RequestException $e) {
+            function (RequestException $e) {
                 if ($e->getResponse()->getStatusCode() == 404) {
                     throw new ClusterNotFound('Unable to get the environment list');
                 }
@@ -173,6 +173,6 @@ class HttpPipeClient implements Client
             }
         );
 
-        return $promise;
+        return $environmentPromise;
     }
 }
