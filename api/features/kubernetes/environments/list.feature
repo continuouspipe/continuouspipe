@@ -59,3 +59,12 @@ Feature:
       | com.continuouspipe.io.cloudflare.zone | {"record_name":"master-myapp.example.com","record_identifier":"1234"} |
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should contain the public endpoint "master-myapp.example.com"
+
+  Scenario: It returns multiple endpoints for a service
+    Given the service "app" have the public hostname "foo.bar.dns"
+    And the service "app" have the following annotations:
+      | name                                  | value                                                                 |
+      | com.continuouspipe.io.cloudflare.zone | {"record_name":"master-myapp.example.com","record_identifier":"1234"} |
+    When I request the environment list of the cluster "my-cluster" of the team "my-team"
+    Then the status of the component "app" should contain the public endpoint "foo.bar.dns"
+    Then the status of the component "app" should contain the public endpoint "master-myapp.example.com"

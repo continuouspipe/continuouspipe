@@ -1,31 +1,18 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
-use ContinuousPipe\Adapter\Kubernetes\Cluster;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
 use ContinuousPipe\Model\Environment;
-use ContinuousPipe\Pipe\DeploymentContext;
-use ContinuousPipe\Pipe\DeploymentRequest;
-use ContinuousPipe\Pipe\Event\DeploymentEvent;
-use ContinuousPipe\Pipe\Event\DeploymentFailed;
-use ContinuousPipe\Pipe\Event\DeploymentStarted;
-use ContinuousPipe\Pipe\Event\DeploymentSuccessful;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
-use ContinuousPipe\Pipe\Tests\Cluster\TestCluster;
-use ContinuousPipe\Pipe\Notification\TraceableNotifier;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
-use ContinuousPipe\Security\User\User;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\EventBus\EventStore;
 use Ramsey\Uuid\Uuid;
 
@@ -260,7 +247,14 @@ class EnvironmentContext implements Context
     {
         $component = $this->getComponentFromListResponse($name);
 
-        if ($endpoint != $component['status']['public_endpoints'][0]) {
+        $matchingEndpoints = array_filter(
+            $component['status']['public_endpoints'],
+            function ($publicEndpoint) use ($endpoint) {
+                return $publicEndpoint == $endpoint;
+            }
+        );
+
+        if (!count($matchingEndpoints)) {
             var_dump($component['status']);
 
             throw new \RuntimeException('Public endpoint was not found');
