@@ -52,7 +52,7 @@ class DefaultComponentPublicEndpointResolver implements ComponentPublicEndpointR
                 }
             }
         } catch (ExceptionInterface $e) {
-            $this->logger->warning($e->getMessage(), ['service_or_ingress' => $serviceOrIngress, 'exception' => $e]);
+            $this->logger->warning('Cannot resolve the Kubernetes public endpoint', ['service_or_ingress' => $serviceOrIngress, 'exception' => $e]);
         }
 
         return $publicEndpoints;

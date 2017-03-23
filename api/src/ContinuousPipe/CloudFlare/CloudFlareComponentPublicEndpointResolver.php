@@ -30,7 +30,7 @@ class CloudFlareComponentPublicEndpointResolver implements ComponentPublicEndpoi
                 $cloudFlareMetadata = \GuzzleHttp\json_decode($cloudFlareAnnotation->getValue(), true);
                 $publicEndpoints[] = $cloudFlareMetadata['record_name'];
             } catch (\InvalidArgumentException $exception) {
-                $this->logger->warning($exception->getMessage(), ['service_or_ingress' => $serviceOrIngress, 'exception' => $exception]);
+                $this->logger->warning('Cannot gather CloudFlare data from annotation', ['service_or_ingress' => $serviceOrIngress, 'exception' => $exception]);
             }
         }
 
