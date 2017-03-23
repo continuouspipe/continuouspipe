@@ -4,7 +4,6 @@ namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\Pipe\ClusterNotFound;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
 use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
@@ -12,6 +11,8 @@ use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
 use ContinuousPipe\Security\Authenticator\UserContext;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Promise;
 
 /**
  * @deprecated To be moved under `ContinuousPipe\River\Environment` namespace
@@ -57,26 +58,33 @@ class EnvironmentClient implements DeployedEnvironmentRepository
      */
     public function findByFlow(FlatFlow $flow)
     {
-        $environments = [];
+        $promises = [];
 
         foreach ($this->findClusterIdentifiers($flow) as $clusterIdentifier) {
-            try {
-                $clusterEnvironments = $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier);
-            } catch (ClusterNotFound $e) {
-                $clusterEnvironments = [];
-            }
+            $clusterEnvironmentsPromise = $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier);
+            $clusterEnvironmentsPromise->then(
+                function(array $clusterEnvironments) use ($clusterIdentifier) {
+                    // Convert Pipe's `Environment` objects to `DeployedEnvironment`s
+                    return array_map(function (Environment $environment) use ($clusterIdentifier) {
+                        return new DeployedEnvironment(
+                            $environment->getIdentifier(),
+                            $clusterIdentifier,
+                            $environment->getComponents()
+                        );
+                    }, $clusterEnvironments);
+                },
+                function(\Throwable $e) {
 
-            // Convert Pipe's `Environment` objects to `DeployedEnvironment`s
-            $deployedEnvironments = array_map(function (Environment $environment) use ($clusterIdentifier) {
-                return new DeployedEnvironment(
-                    $environment->getIdentifier(),
-                    $clusterIdentifier,
-                    $environment->getComponents()
-                );
-            }, $clusterEnvironments);
+                    return [];
+                }
+            );
 
-            $environments = array_merge($environments, $deployedEnvironments);
+            $promises[] = $clusterEnvironmentsPromise;
         }
+
+        $environments = array_reduce(Promise\unwrap($promises), function($carry, array $item) {
+            return array_merge(is_array($carry) ? $carry : [], $item);
+        });
 
         return $this->uniqueEnvironments($environments);
     }
@@ -117,7 +125,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
      * @param FlatFlow $flow
      * @param string   $clusterIdentifier
      *
-     * @return Environment[]
+     * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
      */
     private function findEnvironmentsLabelledByFlow(FlatFlow $flow, $clusterIdentifier)
     {

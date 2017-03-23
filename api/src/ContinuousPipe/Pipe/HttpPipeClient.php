@@ -9,7 +9,8 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Promise\PromiseInterface;
 use JMS\Serializer\Serializer;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -148,25 +149,30 @@ class HttpPipeClient implements Client
      *
      * @throws ClusterNotFound
      *
-     * @return Environment[]
+     * @return PromiseInterface Array of Environment objects.
      */
     private function requestEnvironmentList(User $user, $url)
     {
-        try {
-            $response = $this->client->request('get', $url, [
-                'headers' => $this->getRequestHeaders($user),
-            ]);
-        } catch (ClientException $e) {
-            if ($e->getResponse()->getStatusCode() == 404) {
-                throw new ClusterNotFound('Unable to get the environment list');
+        $promise = $this->client->requestAsync('get', $url, [
+            'headers' => $this->getRequestHeaders($user),
+        ]);
+
+        $promise->then(
+            function(ResponseInterface $response) {
+                $contents = $this->getResponseContents($response);
+                $environments = $this->serializer->deserialize($contents, 'array<'.Environment::class.'>', 'json');
+
+                return $environments;
+            },
+            function(RequestException $e) {
+                if ($e->getResponse()->getStatusCode() == 404) {
+                    throw new ClusterNotFound('Unable to get the environment list');
+                }
+
+                throw $e;
             }
+        );
 
-            throw $e;
-        }
-
-        $contents = $this->getResponseContents($response);
-        $environments = $this->serializer->deserialize($contents, 'array<'.Environment::class.'>', 'json');
-
-        return $environments;
+        return $promise;
     }
 }
