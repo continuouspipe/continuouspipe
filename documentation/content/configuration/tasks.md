@@ -34,10 +34,11 @@ tasks:
 As with the [conditional variables]({{< relref "configuration-files.md#conditional-variables" >}}), this expression has access to a context of objects. The first part of this context is tide-related values:
 
 * `code_reference` that contains the following properties:
-  - `branch` which is the name of the branch
-  - `sha1` which is the SHA1 of the given commit
+  - `branch` - the name of the branch
+  - `sha1` - the SHA1 of the given commit
 * `pull_request` contains the following properties:
-  - `labels` an array of the labels on the pull-request.
+  - `labels` - an array of the labels on the pull request
+  - `title` - the name of the pull request
 
 ## Retrieving Task Information
 
