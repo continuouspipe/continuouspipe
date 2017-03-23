@@ -72,3 +72,7 @@ main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
 .admonition a {
     color: initial !important;
 }
+
+figure {
+    margin-top: 1.5em;
+}

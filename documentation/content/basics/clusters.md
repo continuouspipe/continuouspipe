@@ -1,5 +1,5 @@
 ---
-title: Clusters
+title: Kubernetes Clusters
 menu:
   main:
     parent: 'basics'
