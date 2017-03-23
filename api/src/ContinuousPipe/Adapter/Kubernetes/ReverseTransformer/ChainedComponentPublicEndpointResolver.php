@@ -14,9 +14,12 @@ class ChainedComponentPublicEndpointResolver implements ComponentPublicEndpointR
     public function __construct(array $resolvers)
     {
         foreach ($resolvers as $resolver) {
-            if ($resolver instanceof ComponentPublicEndpointResolver) {
-                $this->resolvers[] = $resolver;
+            if (!$resolver instanceof ComponentPublicEndpointResolver) {
+                throw new \ErrorException(
+                    sprintf('The class "%s" must implement "%s"', get_class($resolver), ComponentPublicEndpointResolver::class)
+                );
             }
+            $this->resolvers[] = $resolver;
         }
     }
 
