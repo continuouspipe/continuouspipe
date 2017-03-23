@@ -1,5 +1,5 @@
 ---
-title: Building Docker Images
+title: "Tasks: Building Docker Images"
 menu:
   main:
     parent: 'configuration'
@@ -7,9 +7,9 @@ menu:
 
 weight: 35
 ---
-## The YAML bit
+## YAML Configuration
 
-Before deploying anything, you will most of the time want ContinuousPipe to build your Docker images. Being probably the simple task, the only mandatory parameter being the image name you want to build.
+Before deploying anything, you will most of the time want ContinuousPipe to build your Docker images. The only mandatory parameter is the image name you want to build:
 
 ``` yaml
 tasks:
@@ -24,8 +24,8 @@ You can obviously use any other image name as long as it contains the Docker reg
 
 ContinuousPipe is guessing parameters from your `docker-compose.yml` file. The `image` is the only required value if you have such a Docker Compose file.
 
-## Naming strategy
-At the moment, there are two naming strategies: the default one being the `sha1` strategy, that basically builds a tag per commit SHA1. If you require it you can use the `branch` strategy that will create a tag per branch.
+## Naming Strategy
+At the moment, there are two naming strategies: the default one being the `sha1` strategy, which basically builds a tag per commit SHA1. If you require it you can instead use the `branch` strategy, which will create a tag per branch.
 
 ``` yaml
 tasks:
@@ -38,14 +38,14 @@ tasks:
 ```
 
 {{< warning title="Warning" >}}
-we do not recommend the branch naming strategy as when updated, some clusters might not force pull the new image while rolling-updating the services.
+The branch naming strategy is not recommended, as sometimes when clusters are updated they do not force pull the new image while rolling-updating the services.
 {{< /warning >}}
 
 ## Arguments
 
 If you need to inject token or strings in your build process in order to download private dependencies for instance, you can use [Docker build arguments](https://docs.docker.com/engine/reference/builder/#/arg).
 
-The following example shows how to be able to install PHP private dependencies (using [Composer](http://getcomposer.org/)) using a private GitHub token:
+The following example shows how to install PHP private dependencies (using [Composer](http://getcomposer.org/)) using a private GitHub token:
 
 ``` yaml
 # Dockerfile
@@ -69,7 +69,10 @@ tasks:
 
             # ...
 ```
-Note: this assume that you have defined the `GITHUB_TOKEN` variable somewhere. You can refer to the [variable section]({{< relref "configuration-files.md#variables" >}}).
+
+{{< note title="Note" >}}
+This assume that you have defined the `GITHUB_TOKEN` variable somewhere. You can refer to the [variable section]({{< relref "configuration-files.md#variables" >}}).
+{{< /note >}}
 
 If you want to build multiple services at the same time, you can also provide the build argument per service:
 
@@ -89,7 +92,7 @@ tasks:
 
 ## Artifacts
 
-In order to build small images and/or hide secret values requried during the build process, you can use artifacts. These artifacts will allow you to share files or folders between different build steps that use a combination of Dockerfiles, context and build arguments.
+In order to build small images and/or hide secret values required during the build process, you can use artifacts. These artifacts will allow you to share files or folders between different build steps that use a combination of Dockerfiles, context and build arguments.
 
 ![](/images/multi-step-building.png)
 

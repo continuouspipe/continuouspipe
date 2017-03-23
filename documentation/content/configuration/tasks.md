@@ -3,9 +3,9 @@ title: Tasks
 menu:
   main:
     parent: 'configuration'
-    weight: 30
+    weight: 20
 
-weight: 30
+weight: 20
 ---
 As you've seen in the configuration files section, most of ContinuousPipe's configuration is about tasks. These tasks achieve a specific behaviour and can be picked up independently. As of now, here are the 4 official tasks:
 
@@ -18,7 +18,7 @@ As you've seen in the configuration files section, most of ContinuousPipe's conf
 Tasks are run in sequential order, which can be useful if a task should depend on a previous task before execution. For example, ensuring your integration tests are run successfully before deployment. 
 {{< /note >}}
 
-## Conditional tasks {#filters}
+## Conditional Tasks {#filters}
 You can filter the execution of each task by using the `filter` configuration in the YML file. This can be done with an expression, as you can see in the following sample configuration:
 
 ``` yaml
@@ -34,23 +34,24 @@ tasks:
 As with the [conditional variables]({{< relref "configuration-files.md#conditional-variables" >}}), this expression has access to a context of objects. The first part of this context is tide-related values:
 
 * `code_reference` that contains the following properties:
-  - `branch` which is the name of the branch
-  - `sha1` which is the SHA1 of the given commit
+  - `branch` - the name of the branch
+  - `sha1` - the SHA1 of the given commit
 * `pull_request` contains the following properties:
-  - `labels` an array of the labels on the pull-request.
+  - `labels` - an array of the labels on the pull request
+  - `title` - the title of the pull request
 
-### Task-related information
+## Retrieving Task Information
 
-Under the `tasks` value, you can have access to information that come from the previous tasks. You need to use named tasks, as in the previous examples, to access to them by their names.
+Under the `tasks` value, you can get access to information that comes from the previous tasks. You need to use named tasks, as in the previous examples, to access the task information.
 
 The `deploy` task exposes the following configuration:
 
-* `services` which is an array of objects indexed by key. The key is the name of the deployed service. Then, the objects contains the following property:
+* `services` which is an array of objects indexed by key. The key is the name of the deployed service. The object will contain the following properties:
   - `created` true if the service was created
   - `updated` true if the service was updated
   - `deleted` true if the service was deleted
 
-For example, if you want to run some setup script only if the database was created you can use the following configuration:
+For example, if you want to run a setup script, but only when the database is created, you can use the following configuration:
 
 ``` yaml
 tasks:

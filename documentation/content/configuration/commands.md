@@ -1,5 +1,5 @@
 ---
-title: Commands
+title: "Tasks: Running Commands"
 menu:
   main:
     parent: 'configuration'
@@ -8,7 +8,7 @@ menu:
 weight: 50
 ---
 
-The `run` task allows to run commands in containers, in the deployed environment context if any. That way, you can run your *integration tests* or your *application migrations* for example.
+The `run` task allows to run commands in containers, in the deployed environment context. That way, you can run your integration tests or your application migrations, for example.
 
 Most of the options are shared with the [`deploy` task]({{< relref "deployments.md" >}}):
 
@@ -38,4 +38,5 @@ tasks:
                 - name: DATABASE_PASSWORD
                   value: ${THE_PRIVATE_DATABASE_PASSWORD_VARIABLE}
 ```
+
 That example will run the some migration commands in a container created from the image of the web service. It will run on the cluster named `my-cluster` and will have the environment variable named `DATABASE_PASSWORD` injected with the value of a `THE_PRIVATE_DATABASE_PASSWORD_VARIABLE` [variable previously defined]({{< relref "configuration-files.md#variables" >}}).

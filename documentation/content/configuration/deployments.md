@@ -1,5 +1,5 @@
 ---
-title: Deploying Services
+title: "Tasks: Deploying Services"
 menu:
   main:
     parent: 'configuration'
@@ -7,7 +7,7 @@ menu:
 
 weight: 40
 ---
-Once your images are built (if you have to build some), you can deploy them. The `deploy` task is configurable in many ways.
+Whether you are using a pre-built image or needed to build an image, you can now deploy it. The `deploy` task is configurable in many ways.
 
 The following example assume that you have at least a `web` and a `database` service configured in your `docker-compose.yml` file.
 
@@ -21,7 +21,8 @@ tasks:
                 web: ~
                 database: ~
 ```
-For each of these services, you can fine-tune a lot of options that are presented in the following paragraphs. Therefore, the full YAML structure won't be presented but assume that every option is under a service configuration, for example:
+
+For each of these services, you can fine tune a lot of options that are presented in the following paragraphs. Therefore, the full YAML structure won't be presented but assume that every option is under a service configuration like this one:
 
 ``` yaml
 tasks:
@@ -33,10 +34,10 @@ tasks:
                         image: mysql
 ```
 
-## Image source
-If you have a [`build` task]({{< relref "tasks.md" >}}) before the deployment task and an image for the service having the same name have been built just before, it'll use this image name, you have nothing to configure.
+## Image Source
+If you have a [`build` task]({{< relref "tasks.md" >}}) before the deployment task and an image for the service with the same name was built just before, this image name will be used automatically, so you have nothing to configure.
 
-If it's not the case, the first way is to explicitly mentioning the image name. Note that this value is automatically guessed if you have a service having the same name in your project's `docker-compose.yml` file.
+If that's not the case, the first way to reference an image is to explicitly mention the image name. Note that this value is automatically guessed if you have a service having the same name in your project's `docker-compose.yml` file.
 
 ``` yaml
 specification:
@@ -44,7 +45,8 @@ specification:
         image: mysql
         tag: latest
 ```
-The last option, if for instance you are deploying the same image but with different runtime commands, you can use a source from a given service:
+
+The second way to reference an image, if for instance you are deploying the same image but with different runtime commands, is to use a source from a given service:
 
 ``` yaml
 specification:
@@ -52,7 +54,7 @@ specification:
         from_service: web
 ```
 
-## Environment name
+## Environment Name
 You can configure the name of the deployed environment (the namespace in Kubernetes terms) using an expression:
 
 ``` yaml
@@ -60,8 +62,8 @@ environment:
     name: '"my-app-" ~ code_reference.branch'
 ```
 
-## Deployment strategy
-The deployment strategy describe how would you like the container(s) to be deployed.
+## Deployment Strategy
+The deployment strategy describes how would you like the container(s) to be deployed.
 
 ``` yaml
 deployment_strategy:
@@ -78,7 +80,7 @@ deployment_strategy:
     reset: false
 ```
 
-## Environment variables
+## Environment Variables
 You can set environment variables that are going to be injected in the running containers.
 
 ``` yaml
@@ -91,7 +93,7 @@ specification:
 ```
 
 ## Ports
-In order to expose some services to other ones or through a load-balancer, you need to precise which ports are exposed by this service.
+In order to expose some services to other ones or through a load-balancer, you need to define which ports are exposed by this service.
 
 ``` yaml
 specification:
@@ -99,7 +101,9 @@ specification:
         - 80
 ```
 
-Note: if you have an `expose` configuration in your `docker-compose.yml` file, this configuration will be filled automatically.
+{{< note title="Note" >}}
+If you have an `expose` configuration in your `docker-compose.yml` file, this configuration will be filled automatically.
+{{< /note >}}
 
 ## Accessibility
 ``` yaml
@@ -113,9 +117,7 @@ specification:
 ```
 
 ## Endpoints
-Note: in most cases, the `from_external` accessibility value is enough.
-
-If you are using a cluster that supports Ingress and SSL certificates, then you can use the `endpoints` configuration to define these endpoints:
+In most cases, the `from_external` accessibility value is enough to configure an endpoint. However, if you are using a cluster that supports Ingress and SSL certificates, then you can use the `endpoints` configuration to define these endpoints:
 
 ``` yaml
 endpoints:
@@ -129,14 +131,14 @@ endpoints:
                 key: ${WILDCARD_SSL_KEY}
 ```
 
-## Conditional services
+## Conditional Services
 If you need to not deploy some services on a given condition, you can use the `condition` expression:
 
 ``` yaml
 condition: code_reference.branch not in ["production", "uat", "integration"]
 ```
 
-## Persistent volumes
+## Persistent Volumes
 If you want some volumes containing data that will be persistent across the deployments, you can mount some persistent volumes:
 
 ``` yaml
@@ -166,7 +168,7 @@ specification:
 ```
 
 ## Health-checks
-Health-checks (also called probes) helps to identify when a container is ready during a deployment and when a container is still alive when deployed.
+Health-checks (also called probes) help to identify when a container is ready during a deployment and when a container is still alive when deployed.
 
 ``` yaml
 deployment_strategy:
