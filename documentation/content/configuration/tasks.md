@@ -38,7 +38,7 @@ As with the [conditional variables]({{< relref "configuration-files.md#condition
   - `sha1` - the SHA1 of the given commit
 * `pull_request` contains the following properties:
   - `labels` - an array of the labels on the pull request
-  - `title` - the name of the pull request
+  - `title` - the title of the pull request
 
 ## Retrieving Task Information
 
