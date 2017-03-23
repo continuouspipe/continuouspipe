@@ -12,7 +12,6 @@ use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
 use ContinuousPipe\Security\Authenticator\UserContext;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
-use GuzzleHttp\Promise\PromiseInterface;
 
 /**
  * @deprecated To be moved under `ContinuousPipe\River\Environment` namespace
@@ -61,36 +60,23 @@ class EnvironmentClient implements DeployedEnvironmentRepository
         $environments = [];
 
         foreach ($this->findClusterIdentifiers($flow) as $clusterIdentifier) {
-            /** @var PromiseInterface $promise */
-            $promise = $this->pipeClient->getEnvironmentsLabelled(
-                $clusterIdentifier,
-                $flow->getTeam(),
-                $this->userContext->getCurrent(),
-                [
-                    'flow' => (string)$flow->getUuid(),
-                ]
-            );
+            try {
+                $clusterEnvironments = $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier);
+            } catch (ClusterNotFound $e) {
+                $clusterEnvironments = [];
+            }
 
-            $promise = $promise->then(function(array $clusterEnvironments) use ($clusterIdentifier) {
-                return array_map(function (Environment $environment) use ($clusterIdentifier) {
-                    return new DeployedEnvironment(
-                        $environment->getIdentifier(),
-                        $clusterIdentifier,
-                        $environment->getComponents()
-                    );
-                }, $clusterEnvironments);
+            // Convert Pipe's `Environment` objects to `DeployedEnvironment`s
+            $deployedEnvironments = array_map(function (Environment $environment) use ($clusterIdentifier) {
+                return new DeployedEnvironment(
+                    $environment->getIdentifier(),
+                    $clusterIdentifier,
+                    $environment->getComponents()
+                );
+            }, $clusterEnvironments);
 
-            }, function(\Throwable $e) {
-                $this->logger->warning('...', ['exception' => $e,]);
-
-                return [];
-            });
-
-            $promises[] = $promise;
+            $environments = array_merge($environments, $deployedEnvironments);
         }
-
-        $results = \GuzzleHttp\Promise\unwrap($promises);
-
 
         return $this->uniqueEnvironments($environments);
     }
@@ -123,6 +109,26 @@ class EnvironmentClient implements DeployedEnvironmentRepository
         return $credentialsBucket->getClusters()->map(function (Cluster $cluster) {
             return $cluster->getIdentifier();
         })->toArray();
+    }
+
+    /**
+     * Find environments labelled by the flow UUID.
+     *
+     * @param FlatFlow $flow
+     * @param string   $clusterIdentifier
+     *
+     * @return Environment[]
+     */
+    private function findEnvironmentsLabelledByFlow(FlatFlow $flow, $clusterIdentifier)
+    {
+        return $this->pipeClient->getEnvironmentsLabelled(
+            $clusterIdentifier,
+            $flow->getTeam(),
+            $this->userContext->getCurrent(),
+            [
+                'flow' => (string) $flow->getUuid(),
+            ]
+        );
     }
 
     /**
