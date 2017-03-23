@@ -174,7 +174,7 @@ class ComponentTransformer
     {
         $publicEndpoints = [];
 
-        foreach ($this->getServicesAndIngress($namespaceClient, $componentName) as $serviceOrIngress) {
+        foreach ($this->getServicesAndIngresses($namespaceClient, $componentName) as $serviceOrIngress) {
             $publicEndpoints = array_merge($publicEndpoints, $this->resolver->resolve($serviceOrIngress));
         }
 
@@ -237,7 +237,7 @@ class ComponentTransformer
      *
      * @return Service[]|Ingress[]|null[]
      */
-    private function getServicesAndIngress(NamespaceClient $namespaceClient, $componentName)
+    private function getServicesAndIngresses(NamespaceClient $namespaceClient, $componentName)
     {
         $labels = [
             'component-identifier' => $componentName,
