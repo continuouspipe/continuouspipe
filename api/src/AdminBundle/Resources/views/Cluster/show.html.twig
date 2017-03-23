@@ -49,8 +49,32 @@
             </div>
         </div>
     </div>
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <button onclick="$(this).parent().parent().toggleClass('display-namespace-name');" class="pull-right btn btn-small">Toggle display namespace name</button>
+                <h3 class="panel-title">Pods</h3>
+            </div>
+            <div class="panel-body status-pods">
+                {% for namespace, pods in clusterStatus.pods %}
+                <div class="pod-namespace">
+                    <div class="namespace-name">{{ namespace }}</div>
+                    <div class="pods">
+                        {% for pod in pods %}
+                        <div class="pod"
+                             style="background-color: {{ macros.get_colour_from_pod(pod) }};"
+                             role="button"
+                             data-toggle="popover"
+                             title="{{ pod.name }}"
+                             data-content="<b>Namespace:</b> {{ namespace }}<br><b>Status:</b> {{ pod.status }}<br><b>Ready:</b> {% if pod.isReady %}true{% else %}false{% endif %}<br><b>Creation date:</b> {{ pod.creationTimestamp }}"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
-
 <pre>{{ clusterStatus|json_encode }}</pre>
 
 {% endblock %}
@@ -61,9 +85,34 @@
 {% else %}blue
 {% endif %}
 {% endspaceless %}{% endmacro %}
+
+{% macro get_colour_from_pod(pod) %}
+{% if pod.status == 'Running' %}
+    {% if pod.isReady %}green{% else %}blue{% endif %}
+{% elseif pod.status == 'Pending' %}orange
+{% else %}red
+{% endif %}
+{% endmacro %}
 {% block stylesheets %}
 {{ parent() }}
 <style type="text/css">
+.status-pods .pod-namespace {
+    border: 1px dotted #999;
+    float: left;
+    padding: 5px;
+}
+.status-pods .pod-namespace .namespace-name {
+    display: none;
+}
+.display-namespace-name .status-pods .pod-namespace .namespace-name {
+    display: block;
+}
+.status-pods .pod-namespace .pod {
+    display: inline-block;
+    background: #ccc;
+    width: 20px;
+    height: 20px;
+}
 .status-nodes .node {
     display: flex;
     width: 200px;
@@ -121,4 +170,11 @@
 {% endblock %}
 {% block javascripts %}
 {{ parent() }}
+<script>
+$(function () {
+    $('[data-toggle="popover"]').popover({
+        html: true
+    });
+});
+</script>
 {% endblock %}
