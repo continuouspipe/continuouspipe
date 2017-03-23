@@ -13,4 +13,11 @@ class NullClient implements CloudFlareClient
     {
         return '1234';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteRecord(string $zone, CloudFlareAuthentication $authentication, string $recordIdentifier)
+    {
+    }
 }

@@ -25,7 +25,7 @@ class TestExtension extends Extension
         $loader->load('message-bus.xml');
 
         // Add integration stubs
-        $loader->load('integration/authenticator.xml');
+        $loader->load('integration/security.xml');
         $loader->load('integration/logstream.xml');
         $loader->load('integration/notification.xml');
         $loader->load('kubernetes/client.xml');

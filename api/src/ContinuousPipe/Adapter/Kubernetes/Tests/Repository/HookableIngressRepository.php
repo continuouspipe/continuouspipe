@@ -4,6 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressList;
+use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Repository\IngressRepository;
 
 class HookableIngressRepository implements IngressRepository
@@ -71,6 +72,14 @@ class HookableIngressRepository implements IngressRepository
     public function update(Ingress $ingress)
     {
         return $this->decoratedRepository->update($ingress);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function annotate(string $name, KeyValueObjectList $annotations)
+    {
+        return $this->decoratedRepository->annotate($name, $annotations);
     }
 
     /**

@@ -287,6 +287,20 @@ class ServiceContext implements Context
     }
 
     /**
+     * @Then the annotation :annotationName of the service :serviceName should contain the JSON key :key
+     */
+    public function theAnnotationOfTheServiceShouldContainTheJsonKey($annotationName, $serviceName, $key)
+    {
+        $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $serviceName);
+        $annotation = $service->getMetadata()->getAnnotationList()->get($annotationName);
+        $keys = \GuzzleHttp\json_decode($annotation->getValue(), true);
+
+        if (!array_key_exists($key, $keys)) {
+            throw new \RuntimeException('The key was not found');
+        }
+    }
+
+    /**
      * @Then the annotation :annotationName of the service :serviceName should contain the following keys in its JSON:
      */
     public function theAnnotationOfTheServiceShouldContainTheFollowingKeysInItsJson($annotationName, $serviceName, TableNode $table)
@@ -328,6 +342,26 @@ class ServiceContext implements Context
                 $service->getSpecification()->getType()
             ));
         }
+    }
+
+
+    /**
+     * @Then the service :name should have the following annotations:
+     */
+    public function theServiceShouldHaveTheFollowingAnnotations($name, TableNode $table)
+    {
+        $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $name);
+        $foundAnnotations = $service->getMetadata()->getAnnotationList();
+
+        foreach ($table->getHash() as $row) {
+            if ($annotation = $foundAnnotations->get($row['name'])) {
+                if ($annotation->getValue() == $row['value']) {
+                    return;
+                }
+            }
+        }
+
+        throw new \RuntimeException('Annotation not found');
     }
 
     /**

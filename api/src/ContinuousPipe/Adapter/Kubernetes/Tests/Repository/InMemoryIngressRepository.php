@@ -5,6 +5,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 use Kubernetes\Client\Exception\IngressNotFound;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressList;
+use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Repository\IngressRepository;
 
 class InMemoryIngressRepository implements IngressRepository
@@ -70,5 +71,20 @@ class InMemoryIngressRepository implements IngressRepository
         }));
 
         return IngressList::fromIngresses($ingresses);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function annotate(string $name, KeyValueObjectList $annotations)
+    {
+        $ingress = $this->findOneByName($name);
+        $existingAnnotations = $ingress->getMetadata()->getAnnotationList();
+
+        foreach ($annotations as $annotation) {
+            $existingAnnotations->add($annotation);
+        }
+
+        return $ingress;
     }
 }
