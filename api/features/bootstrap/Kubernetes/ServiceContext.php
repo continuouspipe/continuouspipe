@@ -209,12 +209,21 @@ class ServiceContext implements Context
     {
         $service = $this->serviceRepository->findOneByName($name);
 
+        $ingresses = [];
+        if ($status = $service->getStatus()) {
+            $ingresses = $service->getStatus()->getLoadBalancer()->getIngresses();
+            foreach ($ingresses as $ingress) {
+                if ($ingress->getIp() == $address) {
+                    return;
+                }
+            }
+        }
+        $ingresses[] = new LoadBalancerIngress($address);
+
         $this->serviceRepository->update(new Service(
             $service->getMetadata(),
             $service->getSpecification(),
-            new ServiceStatus(new LoadBalancerStatus([
-                new LoadBalancerIngress($address)
-            ]))
+            new ServiceStatus(new LoadBalancerStatus($ingresses))
         ));
         $this->serviceRepository->clear();
     }
@@ -249,12 +258,21 @@ class ServiceContext implements Context
     {
         $service = $this->serviceRepository->findOneByName($name);
 
+        $ingresses = [];
+        if ($status = $service->getStatus()) {
+            $ingresses = $status->getLoadBalancer()->getIngresses();
+            foreach ($ingresses as $ingress) {
+                if ($ingress->getHostname() == $hostname) {
+                    return;
+                }
+            }
+        }
+        $ingresses[] = new LoadBalancerIngress(null, $hostname);
+
         $this->serviceRepository->update(new Service(
             $service->getMetadata(),
             $service->getSpecification(),
-            new ServiceStatus(new LoadBalancerStatus([
-                new LoadBalancerIngress(null, $hostname)
-            ]))
+            new ServiceStatus(new LoadBalancerStatus($ingresses))
         ));
         $this->serviceRepository->clear();
     }
