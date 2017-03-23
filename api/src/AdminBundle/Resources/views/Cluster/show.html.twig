@@ -66,7 +66,54 @@
                              role="button"
                              data-toggle="popover"
                              title="{{ pod.name }}"
-                             data-content="<b>Namespace:</b> {{ namespace }}<br><b>Status:</b> {{ pod.status }}<br><b>Ready:</b> {% if pod.isReady %}true{% else %}false{% endif %}<br><b>Creation date:</b> {{ pod.creationTimestamp }}"></div>
+                             data-content="<b>Namespace:</b> {{ namespace }}<br><b>Status:</b> {{ pod.status }}<br><b>Ready:</b> {% if pod.isReady %}true{% else %}false{% endif %}<br><b>Creation date:</b> {{ pod.creationTimestamp }}<br><button class='btn' data-open-modal='modal-events-{{ namespace }}-{{ pod.name }}'>See events</button>">
+                        </div>
+
+                        <div class="modal fade" id="modal-events-{{ namespace }}-{{ pod.name }}" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document" style="width: 90%;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Events</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table table-bordered table-hovered">
+                                            <thead>
+                                            <tr>
+                                                <th>First seen</th>
+                                                <th>Last seen</th>
+                                                <th>Count</th>
+                                                <th>From</th>
+                                                <th>Type</th>
+                                                <th>Reason</th>
+                                                <th>Message</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for event in pod.events %}
+                                                <tr>
+                                                    <td>{{ event.firstTimestamp }}</td>
+                                                    <td>{{ event.lastTimestamp }}</td>
+                                                    <td>{{ event.count }}</td>
+                                                    <td>{{ event.source.component }}</td>
+                                                    <td>{{ event.type }}</td>
+                                                    <td>{{ event.reason }}</td>
+                                                    <td>{{ event.message }}</td>
+                                                </tr>
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="7">No events found.</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
                         {% endfor %}
                     </div>
                 </div>
@@ -174,6 +221,16 @@
 $(function () {
     $('[data-toggle="popover"]').popover({
         html: true
+    }).on('shown.bs.popover', function () {
+        var popover = $(this);
+
+        $('[data-open-modal]').click(function() {
+            popover.popover('hide');
+
+            var modalId = $(this).data('open-modal');
+
+            $('#'+modalId).modal();
+        })
     });
 });
 </script>
