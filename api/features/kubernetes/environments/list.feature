@@ -60,11 +60,26 @@ Feature:
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should contain the public endpoint "master-myapp.example.com"
 
-  Scenario: It returns multiple endpoints for a service
+  Scenario: It returns the cloudflare endpoint for a service
     Given the service "app" have the public hostname "foo.bar.dns"
     And the service "app" have the following annotations:
       | name                                  | value                                                                 |
       | com.continuouspipe.io.cloudflare.zone | {"record_name":"master-myapp.example.com","record_identifier":"1234"} |
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
-    Then the status of the component "app" should contain the public endpoint "foo.bar.dns"
     Then the status of the component "app" should contain the public endpoint "master-myapp.example.com"
+    Then the status of the component "app" should not contain the public endpoint "foo.bar.dns"
+
+  Scenario: It returns multiple endpoints for a service
+    Given the service "app" have the public hostname "foo.bar.dns"
+    And the service "app" have the public IP "1.2.3.4"
+    When I request the environment list of the cluster "my-cluster" of the team "my-team"
+    Then the status of the component "app" should contain the public endpoint "1.2.3.4"
+    Then the status of the component "app" should contain the public endpoint "foo.bar.dns"
+    Then the status of the component "app" should not contain the public endpoint "master-myapp.example.com"
+
+  Scenario: Returns all the status addresses
+    Given the service "app" have the public IP "1.2.3.4"
+    And the service "app" have the public hostname "foo.bar.dns"
+    When I request the environment list of the cluster "my-cluster" of the team "my-team"
+    Then the status of the component "app" should contain the public endpoint "1.2.3.4"
+    And the status of the component "app" should contain the public endpoint "foo.bar.dns"

@@ -52,7 +52,7 @@ class DefaultComponentPublicEndpointResolver implements ComponentPublicEndpointR
                 }
             }
         } catch (ExceptionInterface $e) {
-            $this->logger->warning($e->getMessage(), ['service_or_ingress' => $serviceOrIngress]);
+            $this->logger->warning($e->getMessage(), ['service_or_ingress' => $serviceOrIngress, 'exception' => $e]);
         }
 
         return $publicEndpoints;

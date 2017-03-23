@@ -28,10 +28,11 @@ class ChainedComponentPublicEndpointResolver implements ComponentPublicEndpointR
      */
     public function resolve(KubernetesObject $serviceOrIngress) : array
     {
-        $endpoints = [];
         foreach ($this->resolvers as $resolver) {
-            $endpoints = array_merge($endpoints, $resolver->resolve($serviceOrIngress));
+            if ($endpoints = $resolver->resolve($serviceOrIngress)) {
+                return $endpoints;
+            }
         }
-        return $endpoints;
+        return [];
     }
 }

@@ -247,17 +247,28 @@ class EnvironmentContext implements Context
     {
         $component = $this->getComponentFromListResponse($name);
 
-        $matchingEndpoints = array_filter(
-            $component['status']['public_endpoints'],
-            function ($publicEndpoint) use ($endpoint) {
-                return $publicEndpoint == $endpoint;
-            }
-        );
+        $matchingEndpoints = $this->getMatchingEndpoints($component, $endpoint);
 
         if (!count($matchingEndpoints)) {
             var_dump($component['status']);
 
             throw new \RuntimeException('Public endpoint was not found');
+        }
+    }
+
+    /**
+     * @Then the status of the component :name should not contain the public endpoint :endpoint
+     */
+    public function theStatusOfTheComponentShouldNotContainThePublicEndpoint($name, $endpoint)
+    {
+        $component = $this->getComponentFromListResponse($name);
+
+        $matchingEndpoints = $this->getMatchingEndpoints($component, $endpoint);
+
+        if (count($matchingEndpoints) !== 0) {
+            var_dump($component['status']);
+
+            throw new \RuntimeException('Public endpoint was found');
         }
     }
 
@@ -367,5 +378,16 @@ class EnvironmentContext implements Context
         }
 
         return $environments;
+    }
+
+    private function getMatchingEndpoints($component, $endpoint)
+    {
+        return array_filter(
+            $component['status']['public_endpoints'],
+            function ($publicEndpoint) use ($endpoint) {
+                return $publicEndpoint == $endpoint;
+            }
+        );
+
     }
 }
