@@ -34,12 +34,14 @@
         <service id="kubernetes.reverse_transformer.component" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ComponentTransformer">
             <argument type="service" id="kubernetes.reverse_transformer.component_public_endpoint_resolver"/>
         </service>
-        <service id="kubernetes.reverse_transformer.component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ChainedComponentPublicEndpointResolver">
+        <service id="kubernetes.reverse_transformer.chained_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ChainedComponentPublicEndpointResolver">
             <argument type="collection">
                 <argument type="service" id="pipe.cloud_flare.component_public_endpoint_resolver"/>
                 <argument type="service" id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver"/>
             </argument>
         </service>
+        <service id="kubernetes.reverse_transformer.component_public_endpoint_resolver" alias="kubernetes.reverse_transformer.chained_component_public_endpoint_resolver" />
+
         <service id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\DefaultComponentPublicEndpointResolver"/>
 
         <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector">
