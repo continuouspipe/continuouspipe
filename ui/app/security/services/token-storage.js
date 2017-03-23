@@ -13,4 +13,8 @@ angular.module('continuousPipeRiver')
         this.set = function(token) {
             localStorage.setItem('token', token);
         };
+
+        this.remove = function() {
+            localStorage.removeItem('token');
+        }
     });
