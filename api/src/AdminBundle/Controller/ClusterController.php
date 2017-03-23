@@ -57,8 +57,7 @@ class ClusterController
         }
 
         $httpClient = new Client();
-        $response = $httpClient->post('https://35.186.193.108/cluster/full-status', [
-            'verify' => false,
+        $response = $httpClient->post('https://kube-status.continuouspipe.io/cluster/full-status', [
             'json' => [
                 'address' => $cluster->getAddress(),
                 'username' => $cluster->getUsername(),
