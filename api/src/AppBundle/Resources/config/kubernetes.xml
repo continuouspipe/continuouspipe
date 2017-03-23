@@ -31,7 +31,17 @@
         <service id="kubernetes.transformer.environment" class="ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer">
             <argument type="service" id="kubernetes.transformer.component" />
         </service>
-        <service id="kubernetes.reverse_transformer.component" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ComponentTransformer" />
+        <service id="kubernetes.reverse_transformer.component" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ComponentTransformer">
+            <argument type="service" id="kubernetes.reverse_transformer.component_public_endpoint_resolver"/>
+        </service>
+        <service id="kubernetes.reverse_transformer.component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ChainedComponentPublicEndpointResolver">
+            <argument type="collection">
+                <argument type="service" id="pipe.cloud_flare.component_public_endpoint_resolver"/>
+                <argument type="service" id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver"/>
+            </argument>
+        </service>
+        <service id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\DefaultComponentPublicEndpointResolver"/>
+
         <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector">
             <argument type="service" id="kubernetes.reverse_transformer.component" />
         </service>
@@ -116,6 +126,7 @@
         </service>
         <service id="pipe.cloud_flare.client.api" class="ContinuousPipe\CloudFlare\CloudFlareApiClient" />
         <service id="pipe.cloud_flare.client" alias="pipe.cloud_flare.client.api" />
+        <service id="pipe.cloud_flare.component_public_endpoint_resolver" class="ContinuousPipe\CloudFlare\CloudFlareComponentPublicEndpointResolver"/>
 
         <!-- HttpLabs integation -->
         <service id="pipe.httplabs.endpoint_transformer" class="ContinuousPipe\HttpLabs\Endpoint\HttpLabsEndpointTransformer">

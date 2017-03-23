@@ -10,19 +10,24 @@ use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\KubernetesObject;
-use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServiceSpecification;
 use Kubernetes\Client\NamespaceClient;
-use Symfony\Component\PropertyAccess\Exception\ExceptionInterface;
-use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
-use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\PropertyAccess\PropertyPath;
 
 class ComponentTransformer
 {
+    /**
+     * @var ComponentPublicEndpointResolver
+     */
+    private $resolver;
+
+    public function __construct(ComponentPublicEndpointResolver $resolver)
+    {
+        $this->resolver = $resolver;
+    }
+
     /**
      * @param NamespaceClient       $namespaceClient
      * @param ReplicationController $replicationController
@@ -168,28 +173,10 @@ class ComponentTransformer
     private function getComponentPublicEndpoints(NamespaceClient $namespaceClient, $componentName)
     {
         $publicEndpoints = [];
-        $accessor = PropertyAccess::createPropertyAccessor();
 
         foreach ($this->getServicesAndIngress($namespaceClient, $componentName) as $serviceOrIngress) {
-            try {
-                $ingressesPath = 'status.loadBalancer.ingresses';
-
-                /** @var LoadBalancerIngress[] $ingresses */
-                $ingresses = $accessor->getValue($serviceOrIngress, $ingressesPath);
-                if (!is_array($ingresses)) {
-                    throw new UnexpectedTypeException($ingresses, new PropertyPath($ingressesPath), 0);
-                }
-
-                foreach ($ingresses as $ingress) {
-                    if ($hostname = $ingress->getHostname()) {
-                        $publicEndpoints[] = $hostname;
-                    }
-
-                    if ($ip = $ingress->getIp()) {
-                        $publicEndpoints[] = $ip;
-                    }
-                }
-            } catch (ExceptionInterface $e) {
+            if ($publicEndpoint = $this->resolver->resolve($serviceOrIngress)) {
+                $publicEndpoints[] = $publicEndpoint;
             }
         }
 
@@ -250,7 +237,7 @@ class ComponentTransformer
      * @param NamespaceClient $namespaceClient
      * @param string          $componentName
      *
-     * @return Service|Ingress|null[]
+     * @return Service[]|Ingress[]|null[]
      */
     private function getServicesAndIngress(NamespaceClient $namespaceClient, $componentName)
     {
