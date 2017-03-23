@@ -4,6 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\ReverseTransformer;
 
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\LoadBalancerIngress;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\Exception\ExceptionInterface;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -14,20 +15,26 @@ class DefaultComponentPublicEndpointResolver implements ComponentPublicEndpointR
 {
     const INGRESSES_PATH = 'status.loadBalancer.ingresses';
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
      * @var PropertyAccessor
      */
     private $accessor;
 
-    public function __construct()
+    public function __construct(LoggerInterface $logger, PropertyAccessor $propertyAccessor = null)
     {
-        $this->accessor = PropertyAccess::createPropertyAccessor();
+        $this->logger = $logger;
+        $this->accessor = $propertyAccessor ?: PropertyAccess::createPropertyAccessor();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function resolve(KubernetesObject $serviceOrIngress)
+    public function resolve(KubernetesObject $serviceOrIngress) : array
     {
+        $publicEndpoints = [];
         try {
             /** @var LoadBalancerIngress[] $ingresses */
             $ingresses = $this->accessor->getValue($serviceOrIngress, self::INGRESSES_PATH);
@@ -37,14 +44,17 @@ class DefaultComponentPublicEndpointResolver implements ComponentPublicEndpointR
 
             foreach ($ingresses as $ingress) {
                 if ($hostname = $ingress->getHostname()) {
-                    return $hostname;
+                    $publicEndpoints[] = $hostname;
                 }
 
                 if ($ip = $ingress->getIp()) {
-                    return $ip;
+                    $publicEndpoints[] = $ip;
                 }
             }
         } catch (ExceptionInterface $e) {
+            $this->logger->warning($e->getMessage(), ['service_or_ingress' => $serviceOrIngress]);
         }
+
+        return $publicEndpoints;
     }
 }

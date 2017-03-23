@@ -42,7 +42,9 @@
         </service>
         <service id="kubernetes.reverse_transformer.component_public_endpoint_resolver" alias="kubernetes.reverse_transformer.chained_component_public_endpoint_resolver" />
 
-        <service id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\DefaultComponentPublicEndpointResolver"/>
+        <service id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\DefaultComponentPublicEndpointResolver">
+            <argument type="service" id="logger" />
+        </service>
 
         <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector">
             <argument type="service" id="kubernetes.reverse_transformer.component" />
@@ -150,7 +152,9 @@
             <argument type="service" id="logger" />
         </service>
         <service id="pipe.cloud_flare.client" alias="pipe.cloud_flare.client.api" />
-        <service id="pipe.cloud_flare.component_public_endpoint_resolver" class="ContinuousPipe\CloudFlare\CloudFlareComponentPublicEndpointResolver"/>
+        <service id="pipe.cloud_flare.component_public_endpoint_resolver" class="ContinuousPipe\CloudFlare\CloudFlareComponentPublicEndpointResolver">
+            <argument type="service" id="logger" />
+        </service>
 
         <!-- HttpLabs integation -->
         <service id="pipe.httplabs.endpoint_transformer" class="ContinuousPipe\HttpLabs\Endpoint\HttpLabsEndpointTransformer">

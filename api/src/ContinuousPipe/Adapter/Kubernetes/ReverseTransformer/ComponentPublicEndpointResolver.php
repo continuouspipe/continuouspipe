@@ -6,5 +6,9 @@ use Kubernetes\Client\Model\KubernetesObject;
 
 interface ComponentPublicEndpointResolver
 {
-    public function resolve(KubernetesObject $serviceOrIngress);
+    /**
+     * @param KubernetesObject $serviceOrIngress
+     * @return string[]
+     */
+    public function resolve(KubernetesObject $serviceOrIngress) : array;
 }

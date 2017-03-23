@@ -175,9 +175,7 @@ class ComponentTransformer
         $publicEndpoints = [];
 
         foreach ($this->getServicesAndIngress($namespaceClient, $componentName) as $serviceOrIngress) {
-            if ($publicEndpoint = $this->resolver->resolve($serviceOrIngress)) {
-                $publicEndpoints[] = $publicEndpoint;
-            }
+            $publicEndpoints = array_merge($publicEndpoints, $this->resolver->resolve($serviceOrIngress));
         }
 
         return $publicEndpoints;
