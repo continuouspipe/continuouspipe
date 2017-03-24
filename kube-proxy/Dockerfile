@@ -19,4 +19,4 @@ WORKDIR /go/src/github.com/continuouspipe/kube-proxy
 RUN go install
 
 # Run the outyet command by default when the container starts.
-ENTRYPOINT ["/go/bin/kube-proxy", "-logtostderr", "-v 5"]
+ENTRYPOINT ["/go/bin/kube-proxy", "-logtostderr", "-v", "5"]
