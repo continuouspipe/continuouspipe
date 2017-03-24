@@ -6,9 +6,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/continuouspipe/kube-proxy/cplogs"
 	"net/http"
 	"os"
+	"github.com/golang/glog"
 )
 
 var envKeenIoProjectId, _ = os.LookupEnv("KEEN_IO_PROJECT_ID")
@@ -50,7 +50,7 @@ func (k *Sender) Send(payload interface{}) (bool, error) {
 
 	req, err := http.NewRequest("POST", k.getEndpointUrl(), reader)
 	if err != nil {
-		cplogs.V(4).Infof("could not create request for GET request for url: %s", k.getEndpointUrl())
+		glog.V(4).Infof("could not create request for GET request for url: %s", k.getEndpointUrl())
 		return false, err
 	}
 
@@ -59,7 +59,7 @@ func (k *Sender) Send(payload interface{}) (bool, error) {
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		cplogs.V(4).Infof("could not execute the GET request for url: %s", k.getEndpointUrl())
+		glog.V(4).Infof("could not execute the GET request for url: %s", k.getEndpointUrl())
 		return false, err
 	}
 	if resp.StatusCode == 200 || resp.StatusCode == 201 {

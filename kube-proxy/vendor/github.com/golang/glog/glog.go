@@ -68,12 +68,13 @@
 //			-vmodule=gopher*=3
 //		sets the V level to 3 in all Go files whose names begin "gopher".
 //
-package cplogs
+package glog
 
 import (
 	"bufio"
 	"bytes"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	stdLog "log"
@@ -336,7 +337,7 @@ func (t *traceLocation) match(file string, line int) bool {
 	if t.line != line {
 		return false
 	}
-	if i := strings.LastIndex(file, string(filepath.Separator)); i >= 0 {
+	if i := strings.LastIndex(file, "/"); i >= 0 {
 		file = file[i+1:]
 	}
 	return t.file == file
@@ -394,20 +395,20 @@ type flushSyncWriter interface {
 	io.Writer
 }
 
-//func init() {
-//	flag.BoolVar(&logging.toStderr, "logtostderr", false, "log to standard error instead of files")
-//	flag.BoolVar(&logging.alsoToStderr, "alsologtostderr", false, "log to standard error as well as files")
-//	flag.Var(&logging.verbosity, "v", "log level for V logs")
-//	flag.Var(&logging.stderrThreshold, "stderrthreshold", "logs at or above this threshold go to stderr")
-//	flag.Var(&logging.vmodule, "vmodule", "comma-separated list of pattern=N settings for file-filtered logging")
-//	flag.Var(&logging.traceLocation, "log_backtrace_at", "when logging hits line file:N, emit a stack trace")
-//
-//	// Default stderrThreshold is ERROR.
-//	logging.stderrThreshold = errorLog
-//
-//	logging.setVState(0, nil, false)
-//	go logging.flushDaemon()
-//}
+func init() {
+	flag.BoolVar(&logging.toStderr, "logtostderr", false, "log to standard error instead of files")
+	flag.BoolVar(&logging.alsoToStderr, "alsologtostderr", false, "log to standard error as well as files")
+	flag.Var(&logging.verbosity, "v", "log level for V logs")
+	flag.Var(&logging.stderrThreshold, "stderrthreshold", "logs at or above this threshold go to stderr")
+	flag.Var(&logging.vmodule, "vmodule", "comma-separated list of pattern=N settings for file-filtered logging")
+	flag.Var(&logging.traceLocation, "log_backtrace_at", "when logging hits line file:N, emit a stack trace")
+
+	// Default stderrThreshold is ERROR.
+	logging.stderrThreshold = errorLog
+
+	logging.setVState(0, nil, false)
+	go logging.flushDaemon()
+}
 
 // Flush flushes all pending log I/O.
 func Flush() {
@@ -537,7 +538,7 @@ func (l *loggingT) header(s severity, depth int) (*buffer, string, int) {
 		file = "???"
 		line = 1
 	} else {
-		slash := strings.LastIndex(file, string(filepath.Separator))
+		slash := strings.LastIndex(file, "/")
 		if slash >= 0 {
 			file = file[slash+1:]
 		}
@@ -674,10 +675,6 @@ func (l *loggingT) output(s severity, buf *buffer, file string, line int, alsoTo
 			buf.Write(stacks(false))
 		}
 	}
-	//if !flag.Parsed() {
-	//	os.Stderr.Write([]byte("ERROR: logging before flag.Parse: "))
-	//	os.Stderr.Write(data)
-	//} else
 	data := buf.Bytes()
 	if l.toStderr {
 		os.Stderr.Write(data)
@@ -875,7 +872,7 @@ func (l *loggingT) createFiles(sev severity) error {
 	return nil
 }
 
-//const flushInterval = 30 * time.Second
+const flushInterval = 30 * time.Second
 
 // flushDaemon periodically flushes the log file buffers.
 func (l *loggingT) flushDaemon() {
@@ -965,7 +962,7 @@ func (l *loggingT) setV(pc uintptr) Level {
 	if strings.HasSuffix(file, ".go") {
 		file = file[:len(file)-3]
 	}
-	if slash := strings.LastIndex(file, string(filepath.Separator)); slash >= 0 {
+	if slash := strings.LastIndex(file, "/"); slash >= 0 {
 		file = file[slash+1:]
 	}
 	for _, filter := range l.vmodule.filter {

@@ -19,9 +19,10 @@ package main
 
 import (
 	"encoding/base64"
+	"flag"
 	"fmt"
-	"github.com/continuouspipe/kube-proxy/cplogs"
 	kproxy "github.com/continuouspipe/kube-proxy/proxy"
+	"github.com/golang/glog"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -36,14 +37,17 @@ var sslCertFileName = "server.crt"
 var sslKeyFileName = "server.key"
 
 func main() {
+	//parse the flags before glog start using them
+	flag.Parse()
+
 	if envWildcardSSLCert != "" && envWildcardSSLKey != "" {
 		writeSSLCertAndKey()
 	}
 
 	listenURL, err := url.Parse(envListenAddress)
 	if err != nil {
-		cplogs.V(5).Infof("Cannot parse URL: %v\n", err.Error())
-		cplogs.Flush()
+		glog.V(5).Infof("Cannot parse URL: %v\n", err.Error())
+		glog.Flush()
 		fmt.Printf("Cannot parse URL: %v\n", err.Error())
 		os.Exit(1)
 	}
@@ -52,28 +56,28 @@ func main() {
 	err = http.ListenAndServeTLS(listenURL.Host, sslCertFileName, sslKeyFileName, h)
 
 	if err != nil {
-		cplogs.V(5).Infof("Error when listening: %v\n", err.Error())
-		cplogs.Flush()
+		glog.V(5).Infof("Error when listening: %v\n", err.Error())
+		glog.Flush()
 		fmt.Printf("Error when listening: %v\n", err.Error())
 		os.Exit(1)
 	}
-	cplogs.Flush()
+	glog.Flush()
 }
 
 func writeSSLCertAndKey() {
-	cplogs.V(5).Infoln("Writing provided SSL Cert")
+	glog.V(5).Infoln("Writing provided SSL Cert")
 
 	wildcardSSLCert, err := base64.StdEncoding.DecodeString(envWildcardSSLCert)
 	if err != nil {
-		cplogs.V(5).Infof("Error decoding wildcardSSLCert: %v\n", err.Error())
-		cplogs.Flush()
+		glog.V(5).Infof("Error decoding wildcardSSLCert: %v\n", err.Error())
+		glog.Flush()
 		fmt.Printf("Error decoding wildcardSSLCert: %v\n", err.Error())
 		os.Exit(1)
 	}
 	wildcardSSLKey, err := base64.StdEncoding.DecodeString(envWildcardSSLKey)
 	if err != nil {
-		cplogs.V(5).Infof("Error decoding wildcardSSLKey: %v\n", err.Error())
-		cplogs.Flush()
+		glog.V(5).Infof("Error decoding wildcardSSLKey: %v\n", err.Error())
+		glog.Flush()
 		fmt.Printf("Error decoding wildcardSSLKey: %v\n", err.Error())
 		os.Exit(1)
 	}
