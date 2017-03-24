@@ -7,7 +7,11 @@
     <services>
         <service id="river.pipe_client.fake" class="ContinuousPipe\River\Tests\Pipe\FakeClient" />
 
-        <service id="river.pipe_client" class="ContinuousPipe\River\Tests\Pipe\TraceableClient">
+        <service id="river.pipe_client" alias="river.traceable_pipe_client" />
+        <service id="river.traceable_pipe_client" class="ContinuousPipe\River\Tests\Pipe\TraceableClient">
+            <argument type="service" id="river.hookable_pipe_client" />
+        </service>
+        <service id="river.hookable_pipe_client" class="ContinuousPipe\River\Tests\Pipe\HookableClient">
             <argument type="service" id="river.pipe_client.fake" />
         </service>
     </services>

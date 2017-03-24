@@ -2,11 +2,11 @@
 
 namespace ContinuousPipe\Pipe;
 
-use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
+use GuzzleHttp\Promise\PromiseInterface;
 
 interface Client
 {
@@ -34,7 +34,7 @@ interface Client
      *
      * @throws ClusterNotFound
      *
-     * @return \ContinuousPipe\Model\Environment[]
+     * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
      */
     public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser);
 
@@ -46,7 +46,7 @@ interface Client
      *
      * @throws ClusterNotFound
      *
-     * @return Environment[]
+     * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
      */
     public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels);
 }
