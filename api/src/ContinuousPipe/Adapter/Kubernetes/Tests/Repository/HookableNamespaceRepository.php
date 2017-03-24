@@ -19,6 +19,21 @@ class HookableNamespaceRepository implements NamespaceRepository
     private $deleteHooks = [];
 
     /**
+     * @var callable[]
+     */
+    private $findAllHooks = [];
+
+    /**
+     * @var callable[]
+     */
+    private $findByLabelsHooks = [];
+
+    /**
+     * @var callable[]
+     */
+    private $findOneByNameHooks = [];
+
+    /**
      * @param NamespaceRepository $decoratedRepository
      */
     public function __construct(NamespaceRepository $decoratedRepository)
@@ -31,7 +46,9 @@ class HookableNamespaceRepository implements NamespaceRepository
      */
     public function findAll()
     {
-        return $this->decoratedRepository->findAll();
+        $result = $this->decoratedRepository->findAll();
+
+        return $this->executeHooks($this->findAllHooks, $result);
     }
 
     /**
@@ -39,7 +56,9 @@ class HookableNamespaceRepository implements NamespaceRepository
      */
     public function findByLabels(KeyValueObjectList $labels)
     {
-        return $this->decoratedRepository->findByLabels($labels);
+        $result = $this->decoratedRepository->findByLabels($labels);
+
+        return $this->executeHooks($this->findByLabelsHooks, $result);
     }
 
     /**
@@ -47,7 +66,9 @@ class HookableNamespaceRepository implements NamespaceRepository
      */
     public function findOneByName($name)
     {
-        return $this->decoratedRepository->findOneByName($name);
+        $result = $this->decoratedRepository->findOneByName($name);
+
+        return $this->executeHooks($this->findOneByNameHooks, $result);
     }
 
     /**
@@ -73,11 +94,7 @@ class HookableNamespaceRepository implements NamespaceRepository
     {
         $result = $this->decoratedRepository->delete($namespace);
 
-        foreach ($this->deleteHooks as $hook) {
-            $result = $hook($result);
-        }
-
-        return $result;
+        return $this->executeHooks($this->deleteHooks, $result);
     }
 
     /**
@@ -86,5 +103,29 @@ class HookableNamespaceRepository implements NamespaceRepository
     public function addDeleteHooks(callable $hook)
     {
         $this->deleteHooks[] = $hook;
+    }
+
+    public function addFindAllHook(callable $hook)
+    {
+        $this->findAllHooks[] = $hook;
+    }
+
+    public function addFindByLabelsHook(callable $hook)
+    {
+        $this->findByLabelsHooks[] = $hook;
+    }
+
+    public function addFindOneByNameHook(callable $hook)
+    {
+        $this->findOneByNameHooks[] = $hook;
+    }
+
+    private function executeHooks($hooks, $input)
+    {
+        $result = $input;
+        foreach ($hooks as $hook) {
+            $result = $hook($result);
+        }
+        return $result;
     }
 }
