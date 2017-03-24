@@ -85,8 +85,11 @@ class EnvironmentClient implements DeployedEnvironmentRepository
                         );
                     }, $clusterEnvironments);
                 },
-                function (\Throwable $e) {
-                    $this->logger->warning('Fetching environment list from Pipe failed.', ['exception' => $e]);
+                function (\Throwable $e) use ($clusterIdentifier) {
+                    $this->logger->warning(
+                        'Fetching environment list from Pipe failed.',
+                        ['exception' => $e, 'cluster' => $clusterIdentifier]
+                    );
 
                     return [];
                 }
