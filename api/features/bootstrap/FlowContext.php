@@ -123,9 +123,9 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
     private $hookablePipeClient;
 
     public function __construct(
-        $pipeClient,
-        $traceablePipeClient,
-        $hookablePipeClient,
+        FakeClient $pipeClient,
+        HookableClient $hookablePipeClient,
+        TraceableClient $traceablePipeClient,
         Kernel $kernel,
         FlowRepository $flowRepository,
         InMemoryCodeRepositoryRepository $codeRepositoryRepository,
