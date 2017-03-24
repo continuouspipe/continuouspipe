@@ -65,7 +65,7 @@ class GitHubPullRequestResolver implements PullRequestResolver
         $pullRequests = $this->serializer->deserialize($jsonEncoded, 'array<'.PullRequest::class.'>', 'json');
 
         $matchingPullRequests = array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
-            return $codeReference->getCommitSha() == $pullRequest->getHead()->getSha1();
+            return $codeReference->getBranch() == $pullRequest->getHead()->getReference();
         }));
 
         return array_map(function (PullRequest $pullRequest) {
