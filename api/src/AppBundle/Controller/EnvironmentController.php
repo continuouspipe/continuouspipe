@@ -9,6 +9,8 @@ use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\Team\Team;
+use Kubernetes\Client\Exception\ServerError;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -16,12 +18,15 @@ use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 /**
  * @Route(service="pipe.controllers.environment")
  */
 class EnvironmentController extends Controller
 {
+    const RETRY_AFTER_SECONDS = 2;
+
     /**
      * @var EnvironmentClientFactory
      */
@@ -33,13 +38,22 @@ class EnvironmentController extends Controller
     private $bucketRepository;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param BucketRepository         $bucketRepository
      * @param EnvironmentClientFactory $environmentClientFactory
      */
-    public function __construct(BucketRepository $bucketRepository, EnvironmentClientFactory $environmentClientFactory)
-    {
+    public function __construct(
+        BucketRepository $bucketRepository,
+        EnvironmentClientFactory $environmentClientFactory,
+        LoggerInterface $logger
+    ) {
         $this->bucketRepository = $bucketRepository;
         $this->environmentClientFactory = $environmentClientFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -49,14 +63,21 @@ class EnvironmentController extends Controller
      */
     public function listAction(Request $request, Team $team, $clusterIdentifier)
     {
-        $cluster = $this->getCluster($team, $clusterIdentifier);
-        $environmentClient = $this->environmentClientFactory->getByCluster($cluster);
+        try {
+            $cluster = $this->getCluster($team, $clusterIdentifier);
+            $environmentClient = $this->environmentClientFactory->getByCluster($cluster);
 
-        if (is_array($labels = $request->query->get('labels'))) {
-            return $environmentClient->findByLabels($labels);
+            if (is_array($labels = $request->query->get('labels'))) {
+                return $environmentClient->findByLabels($labels);
+            }
+
+            return $environmentClient->findAll();
+        } catch (ServerError $e) {
+            $message = 'Collecting environment list from clusters failed.';
+            $this->logger->warning($message, ['exception' => $e]);
+
+            throw new ServiceUnavailableHttpException(self::RETRY_AFTER_SECONDS, $message);
         }
-
-        return $environmentClient->findAll();
     }
 
     /**

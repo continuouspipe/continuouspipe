@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableNamespaceRepository;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient;
 use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
@@ -9,6 +10,8 @@ use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
+use Kubernetes\Client\Exception\ServerError;
+use Kubernetes\Client\Model\Status;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,21 +66,35 @@ class EnvironmentContext implements Context
     private $inMemoryAuthenticatorClient;
 
     /**
+     * @var HookableNamespaceRepository
+     */
+    private $hookableNamespaceRepository;
+
+    /**
      * @param Kernel $kernel
      * @param EventStore $eventStore
      * @param DeploymentRepository $deploymentRepository
      * @param MessageBus $eventBus
      * @param FakeEnvironmentClient $fakeEnvironmentClient
      * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
+     * @param HookableNamespaceRepository $hookableNamespaceRepository
      */
-    public function __construct(Kernel $kernel, EventStore $eventStore, DeploymentRepository $deploymentRepository, MessageBus $eventBus, FakeEnvironmentClient $fakeEnvironmentClient, InMemoryAuthenticatorClient $inMemoryAuthenticatorClient)
-    {
+    public function __construct(
+        Kernel $kernel,
+        EventStore $eventStore,
+        DeploymentRepository $deploymentRepository,
+        MessageBus $eventBus,
+        FakeEnvironmentClient $fakeEnvironmentClient,
+        InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
+        HookableNamespaceRepository $hookableNamespaceRepository
+    ) {
         $this->kernel = $kernel;
         $this->eventStore = $eventStore;
         $this->deploymentRepository = $deploymentRepository;
         $this->eventBus = $eventBus;
         $this->fakeEnvironmentClient = $fakeEnvironmentClient;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
+        $this->hookableNamespaceRepository = $hookableNamespaceRepository;
     }
 
     /**
@@ -333,6 +350,32 @@ class EnvironmentContext implements Context
 
         if (count($matchingEnvironments) > 0) {
             throw new \RuntimeException(sprintf('Found %d matching environments, while expecting 0', count($matchingEnvironments)));
+        }
+    }
+
+    /**
+     * @Given the environment API calls to the cluster failed
+     */
+    public function theEnvironmentAPICallsToTheClusterFailed()
+    {
+        $faultGenerator = function() {
+            throw new ServerError(new Status(Status::UNKNOWN, 'This error is intentional.'));
+        };
+
+        $this->hookableNamespaceRepository->addFindAllHook($faultGenerator);
+        $this->hookableNamespaceRepository->addFindByLabelsHook($faultGenerator);
+        $this->hookableNamespaceRepository->addFindOneByNameHook($faultGenerator);
+    }
+
+    /**
+     * @Then I should receive a service unavailable error
+     */
+    public function iShouldReceiveAServiceUnavailableError()
+    {
+        if (Response::HTTP_SERVICE_UNAVAILABLE != $this->response->getStatusCode()) {
+            throw new \RuntimeException(
+                sprintf('Unexpected to get HTTP status code %d returned.', $this->response->getStatusCode())
+            );
         }
     }
 

@@ -217,4 +217,3 @@ Feature:
     And the ingress named "www" should have the class "nginx"
     And the ingress named "www" should have the backend service "www" on port "80"
     And the ingress named "www" should not be using secure backends
-

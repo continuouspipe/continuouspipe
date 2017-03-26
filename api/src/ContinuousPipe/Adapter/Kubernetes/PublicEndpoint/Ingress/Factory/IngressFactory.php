@@ -7,6 +7,7 @@ use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointFactory;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\TransformationException;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Component\Endpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpointPort;
 use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressBackend;
@@ -52,11 +53,19 @@ class IngressFactory implements EndpointFactory
         }
 
         if ($type == 'ingress') {
-            if (null === $endpoint->getIngress() && count($endpoint->getSslCertificates()) > 0) {
+            if (null === ($endpointIngress = $endpoint->getIngress())) {
+                if (count($endpoint->getSslCertificates()) > 0) {
+                    $serviceType = ServiceSpecification::TYPE_CLUSTER_IP;
+                } else {
+                    $serviceType = ServiceSpecification::TYPE_NODE_PORT;
+                }
+            } elseif ($this->classHasToBeNodePort($endpointIngress->getClass())) {
                 $serviceType = ServiceSpecification::TYPE_NODE_PORT;
             } else {
                 $serviceType = ServiceSpecification::TYPE_CLUSTER_IP;
             }
+        } elseif ($type == 'NodePort') {
+            $serviceType = ServiceSpecification::TYPE_NODE_PORT;
         } else {
             $serviceType = ServiceSpecification::TYPE_LOAD_BALANCER;
         }
@@ -77,6 +86,11 @@ class IngressFactory implements EndpointFactory
         $service->getMetadata()->getLabelList()->add(
             new Label('source-of-ingress', $endpoint->getName())
         );
+
+        if (count($endpointIngress->getRules()) > 0 && count($endpoint->getSslCertificates()) == 0) {
+            // Generate SSL certificates if the ingress as rules but don't have SSL certs for it.
+            // FIXME: Why?
+        }
 
         $sslCertificatesSecrets = array_map(function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
             return $this->createSslCertificateSecret($endpoint, $sslCertificate);
@@ -164,7 +178,7 @@ class IngressFactory implements EndpointFactory
             $annotations->add(new Annotation('kubernetes.io/ingress.class', $class));
         }
 
-        $portNumbers = array_map(function(ServicePort $port) {
+        $portNumbers = array_map(function (ServicePort $port) {
             return (int) $port->getPort();
         }, $service->getSpecification()->getPorts());
 
@@ -190,7 +204,7 @@ class IngressFactory implements EndpointFactory
             new IngressSpecification(
                 $ingressBackend,
                 $tlsCertificates,
-                array_map(function(IngressRule $rule) use ($ingressBackend) {
+                array_map(function (IngressRule $rule) use ($ingressBackend) {
                     if (null === ($http = $rule->getHttp())) {
                         $http = new IngressHttpRule([
                             new IngressHttpRulePath($ingressBackend),
@@ -204,5 +218,10 @@ class IngressFactory implements EndpointFactory
                 }, $rules)
             )
         );
+    }
+
+    private function classHasToBeNodePort(string $class) : bool
+    {
+        return in_array($class, ['gce']);
     }
 }

@@ -83,3 +83,9 @@ Feature:
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should contain the public endpoint "1.2.3.4"
     And the status of the component "app" should contain the public endpoint "foo.bar.dns"
+
+  Scenario: Return 503 HTTP code in case of API error
+    Given the environment API calls to the cluster failed
+    When I request the environment list of the cluster "my-cluster" of the team "my-team"
+    Then I should receive a service unavailable error
+    And I should see the "Collecting environment list from clusters failed." message in the log

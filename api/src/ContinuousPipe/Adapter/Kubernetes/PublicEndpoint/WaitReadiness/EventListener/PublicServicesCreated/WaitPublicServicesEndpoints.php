@@ -117,7 +117,7 @@ class WaitPublicServicesEndpoints
     {
         $objects = array_merge($status->getCreated(), $status->getUpdated(), $status->getIgnored());
         $objects = array_filter($objects, function (KubernetesObject $object) {
-            return $this->publicEndpointObjectVoter->isPublicEndpointObject($object);
+            return $this->publicEndpointObjectVoter->isThePrimaryPublicEndpointToWait($object);
         });
 
         return array_values($objects);

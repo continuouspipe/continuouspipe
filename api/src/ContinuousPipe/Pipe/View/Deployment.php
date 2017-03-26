@@ -106,7 +106,7 @@ class Deployment
      */
     public function getPublicEndpoints()
     {
-        return $this->publicEndpoints;
+        return $this->publicEndpoints ?: [];
     }
 
     /**

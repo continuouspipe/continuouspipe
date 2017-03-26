@@ -135,12 +135,12 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
             $updateEvents();
 
             return $endpoint;
-        }, function ($reason) use ($timer, $updateEvents) {
+        }, function (\Throwable $reason) use ($timer, $updateEvents) {
             $timer->cancel();
             $updateEvents();
 
             if ($reason instanceof React\Promise\Timer\TimeoutException) {
-                $reason = new EndpointNotFound('Endpoint still not found. Timed-out.');
+                $reason = new EndpointNotFound('Endpoint still not found. Timed-out.', $reason->getCode(), $reason);
             }
 
             throw $reason;
