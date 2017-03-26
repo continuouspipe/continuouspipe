@@ -351,7 +351,7 @@ class ServiceContext implements Context
      */
     public function theServiceShouldHaveTheType($name, $type)
     {
-        $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $name);
+        $service = $this->serviceRepository->findOneByName($name);
 
         if ($service->getSpecification()->getType() != $type) {
             throw new \RuntimeException(sprintf(

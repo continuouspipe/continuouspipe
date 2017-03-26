@@ -21,11 +21,10 @@ class PublicEndpointObjectVoter
         if ($object instanceof Ingress) {
             return true;
         } elseif ($object instanceof Service) {
-            $serviceType = $object->getSpecification()->getType();
-        } else {
-            $serviceType = null;
+            return $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER
+                || $object->getMetadata()->getLabelList()->hasKey('source-of-ingress');
         }
 
-        return $serviceType == ServiceSpecification::TYPE_LOAD_BALANCER;
+        return false;
     }
 }
