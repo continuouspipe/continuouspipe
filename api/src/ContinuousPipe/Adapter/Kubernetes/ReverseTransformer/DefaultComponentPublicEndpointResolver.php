@@ -52,7 +52,8 @@ class DefaultComponentPublicEndpointResolver implements ComponentPublicEndpointR
                 }
             }
         } catch (ExceptionInterface $e) {
-            $this->logger->warning('Cannot resolve the Kubernetes public endpoint', ['service_or_ingress' => $serviceOrIngress, 'exception' => $e]);
+            // The endpoint was not found. It's a normal behaviour, the only reason of using
+            // exceptions here it's because we are using Symfony's property accessor.
         }
 
         return $publicEndpoints;
