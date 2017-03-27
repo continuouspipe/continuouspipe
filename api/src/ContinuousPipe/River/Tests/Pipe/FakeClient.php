@@ -7,6 +7,7 @@ use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
+use GuzzleHttp\Promise;
 use Ramsey\Uuid\Uuid;
 
 class FakeClient implements Client
@@ -50,10 +51,10 @@ class FakeClient implements Client
     public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
     {
         if (!array_key_exists($clusterIdentifier, $this->environmentsPerCluster)) {
-            return [];
+            return Promise\promise_for([]);
         }
 
-        return $this->environmentsPerCluster[$clusterIdentifier];
+        return Promise\promise_for($this->environmentsPerCluster[$clusterIdentifier]);
     }
 
     /**
@@ -63,19 +64,21 @@ class FakeClient implements Client
     {
         $environments = $this->getEnvironments($clusterIdentifier, $team, $authenticatedUser);
 
-        return array_values(array_filter($environments, function (Environment $environment) use ($labels) {
-            $environmentLabels = $environment->getLabels();
+        return $environments->then(function (array $environments) use ($labels) {
+            return array_values(array_filter($environments, function (Environment $environment) use ($labels) {
+                $environmentLabels = $environment->getLabels();
 
-            foreach ($labels as $key => $value) {
-                if (!array_key_exists($key, $environmentLabels)) {
-                    return false;
-                } elseif ($environmentLabels[$key] != $value) {
-                    return false;
+                foreach ($labels as $key => $value) {
+                    if (!array_key_exists($key, $environmentLabels)) {
+                        return false;
+                    } elseif ($environmentLabels[$key] != $value) {
+                        return false;
+                    }
                 }
-            }
 
-            return true;
-        }));
+                return true;
+            }));
+        });
     }
 
     /**

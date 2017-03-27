@@ -10,6 +10,7 @@
             <argument type="service" id="river.pipe.cluster_identifier_resolver" />
             <argument type="service" id="security.user_context" />
             <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="logger" />
         </service>
 
         <service id="river.repository.flow.deprecated.doctrine" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository">

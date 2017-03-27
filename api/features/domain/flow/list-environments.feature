@@ -37,3 +37,11 @@ Feature:
     And I request the list of deployed environments of the flow "00000000-0000-0000-0000-000000000000"
     Then I should not see the environment "staging"
     And the environment "staging" should have been deleted
+
+  Scenario: Return empty environment list in case of API error
+    Given a tide is created with a deploy task
+    And I have a deployed environment named "my-custom" and labelled "flow=00000000-0000-0000-0000-000000000000" on the cluster "fra-01"
+    And the environment API calls to the Pipe API failed
+    When I request the list of deployed environments of the flow "00000000-0000-0000-0000-000000000000"
+    Then I should receive an empty list of environments
+    And I should see the "Fetching environment list from Pipe failed." message in the log

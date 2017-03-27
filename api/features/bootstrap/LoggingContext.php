@@ -279,6 +279,20 @@ class LoggingContext implements Context
     }
 
     /**
+     * @Given I should see the :message message in the log
+     */
+    public function iShouldSeeTheWarningMessageInTheLog($message)
+    {
+        foreach ($this->logger->getLogs() as $logEntry) {
+            if ($message === $logEntry['message']) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('The specified message not found in the log.');
+    }
+
+    /**
      * @param string           $contents
      * @param array $logCollection
      *

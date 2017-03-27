@@ -7,10 +7,12 @@
     <services>
         <service id="admin.controller.team" class="AdminBundle\Controller\TeamController">
             <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="authenticator.bucket_repository" />
         </service>
 
         <service id="admin.controller.flow" class="AdminBundle\Controller\FlowController">
-            <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="command_bus"/>
             <argument type="service" id="router" />
             <argument type="service" id="session" />
@@ -33,6 +35,11 @@
         <service id="admin.controller.last_tides" class="AdminBundle\Controller\LastTidesController">
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="knp_paginator" />
+        </service>
+
+        <service id="admin.controller.cluster" class="AdminBundle\Controller\ClusterController">
+            <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="authenticator.bucket_repository" />
         </service>
 
         <service id="admin.twig_extension" class="AdminBundle\Twig\AdminExtension" public="false">

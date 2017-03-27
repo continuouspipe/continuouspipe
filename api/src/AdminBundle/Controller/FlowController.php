@@ -22,11 +22,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class FlowController
 {
     /**
-     * @var FlatFlowRepository
-     */
-    private $flowRepository;
-
-    /**
      * @var MessageBus
      */
     private $commandBus;
@@ -42,30 +37,15 @@ class FlowController
     private $session;
 
     /**
-     * @param FlatFlowRepository    $flowRepository
      * @param MessageBus            $commandBus
      * @param UrlGeneratorInterface $urlGenerator
      * @param Session               $session
      */
-    public function __construct(FlatFlowRepository $flowRepository, MessageBus $commandBus, UrlGeneratorInterface $urlGenerator, Session $session)
+    public function __construct(MessageBus $commandBus, UrlGeneratorInterface $urlGenerator, Session $session)
     {
-        $this->flowRepository = $flowRepository;
         $this->commandBus = $commandBus;
         $this->urlGenerator = $urlGenerator;
         $this->session = $session;
-    }
-
-    /**
-     * @Route("/teams/{team}/flows", name="admin_flows")
-     * @ParamConverter("team", converter="team", options={"slug"="team"})
-     * @Template
-     */
-    public function listAction(Team $team)
-    {
-        return [
-            'team' => $team,
-            'flows' => $this->flowRepository->findByTeam($team),
-        ];
     }
 
     /**

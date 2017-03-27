@@ -21,6 +21,8 @@
         {% elseif tide.status == 'running' %}
             {% set tr_class = 'info' %}
         {% elseif tide.status == 'pending' %}
+            {% set tr_class = '' %}
+        {% elseif tide.status == 'cancelled' %}
             {% set tr_class = 'warning' %}
         {% else %}
             {% set tr_class = 'danger' %}

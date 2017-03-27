@@ -12,12 +12,14 @@ use ContinuousPipe\River\EventStore\EventStore;
 use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
+use ContinuousPipe\River\Tests\Pipe\HookableClient;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
+use GuzzleHttp\Promise\PromiseInterface;
 use Ramsey\Uuid\Uuid;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\FlowContext as RiverFlowContext;
@@ -115,14 +117,19 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var string
      */
     private $output;
+    /**
+     * @var HookableClient
+     */
+    private $hookablePipeClient;
 
     public function __construct(
+        FakeClient $pipeClient,
+        HookableClient $hookablePipeClient,
+        TraceableClient $traceablePipeClient,
         Kernel $kernel,
         FlowRepository $flowRepository,
         InMemoryCodeRepositoryRepository $codeRepositoryRepository,
         InMemoryAuthenticatorClient $authenticatorClient,
-        FakeClient $pipeClient,
-        TraceableClient $traceablePipeClient,
         TeamRepository $teamRepository,
         MessageBus $eventBus
     ) {
@@ -134,6 +141,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         $this->teamRepository = $teamRepository;
         $this->traceablePipeClient = $traceablePipeClient;
         $this->eventBus = $eventBus;
+        $this->hookablePipeClient = $hookablePipeClient;
     }
 
     /**
@@ -992,6 +1000,20 @@ EOF;
             $renderer = new Diff_Renderer_Text_Unified();
             throw new \UnexpectedValueException($diff->render($renderer));
         }
+    }
+
+    /**
+     * @Given the environment API calls to the Pipe API failed
+     */
+    public function theEnvironmentAPICallsToThePipeAPIFailed()
+    {
+        $faultGenerator = function() {
+            $request = new \GuzzleHttp\Psr7\Request('GET', '/');
+            $exception = new \GuzzleHttp\Exception\ServerException('This is an intentional error.', $request);
+            return \GuzzleHttp\Promise\rejection_for($exception);
+        };
+
+        $this->hookablePipeClient->addEnvironmentHook($faultGenerator);
     }
 
     /**
