@@ -1,14 +1,14 @@
 ---
-title: How do I configure Cloudflare integration?
+title: Cloudflare Integration?
 menu:
   main:
-    parent: 'faq'
+    parent: 'configuration'
     weight: 110
 weight: 110
 linkTitle: Cloudflare Integration
 ---
 
-You may want to integrate your endpoints with the [Cloudflare](https://www.cloudflare.com/) service. At a minimum this allows you to take advantage of Cloudflare DNS functionality and view deployed tides using a domain name (rather than just an IP address). If you choose to proxy the traffic as well, you can use advanced features in Cloudflare, including adding SSL to the endpoint.
+You can integrate your endpoints with the [Cloudflare](https://www.cloudflare.com/) service. At a minimum this allows you to take advantage of Cloudflare DNS functionality and view deployed tides using a domain name (rather than just an IP address). If you choose to proxy the traffic as well, you can use advanced features in Cloudflare, including adding SSL to the endpoint.
 
 An example of the Cloudflare endpoint integration is as follows:
 

@@ -22,7 +22,7 @@ tasks:
 
 You can obviously use any other image name as long as it contains the Docker registry as first part of it. You can also see that it's configured per _service_, here we have only one (named `web`) that we need to deploy.
 
-ContinuousPipe is guessing parameters from your `docker-compose.yml` file. The `image` is the only required value if you have such a Docker Compose file.
+ContinuousPipe is getting parameters from your `docker-compose.yml` file. The `image` is the only required value if you have such a Docker Compose file.
 
 ## Naming Strategy
 At the moment, there are two naming strategies: the default one being the `sha1` strategy, which basically builds a tag per commit SHA1. If you require it you can instead use the `branch` strategy, which will create a tag per branch.

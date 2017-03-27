@@ -10,12 +10,12 @@ weight: 50
 
 The `run` task allows to run commands in containers, in the deployed environment context. That way, you can run your integration tests or your application migrations, for example.
 
-Most of the options are shared with the [`deploy` task]({{< relref "deployments.md" >}}):
+Most of the options are shared with the [`deploy` task]({{< relref "configuration/tasks-deploy.md" >}}):
 
-* `cluster`, to select the [cluster]({{< relref "deployments.md#cluster" >}}) on which the container will run
-* `image`, to select the [image]({{< relref "deployments.md#image-source" >}}) that will be used to run the commands
-* `environment`, to select the [name of the environment]({{< relref "deployments.md#environment-name" >}}) on which the container will be created
-* `environment_variables`, to inject some [environment variables]({{< relref "deployments.md#environment-variables" >}})  in the container
+* `cluster`, to select the [cluster]({{< relref "configuration/tasks-deploy.md#cluster" >}}) on which the container will run
+* `image`, to select the [image]({{< relref "configuration/tasks-deploy.md#image-source" >}}) that will be used to run the commands
+* `environment`, to select the [name of the environment]({{< relref "configuration/tasks-deploy.md#environment-name" >}}) on which the container will be created
+* `environment_variables`, to inject some [environment variables]({{< relref "configuration/tasks-deploy.md#environment-variables" >}})  in the container
 
 Once you've configured these options according to your needs, you only have to define the `commands` options as in the following example.
 
