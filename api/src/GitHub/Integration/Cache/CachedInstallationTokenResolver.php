@@ -1,15 +1,15 @@
 <?php
 
-namespace GitHub\Integration\RedisCache;
+namespace GitHub\Integration\Cache;
 
+use Doctrine\Common\Cache\Cache;
 use GitHub\Integration\Installation;
 use GitHub\Integration\InstallationRepositoryWithCacheInvalidation;
 use GitHub\Integration\InstallationToken;
 use GitHub\Integration\InstallationTokenResolver;
 use JMS\Serializer\SerializerInterface;
-use Predis\ClientInterface;
 
-class PredisCachedInstallationTokenResolver implements InstallationTokenResolver, InstallationRepositoryWithCacheInvalidation
+class CachedInstallationTokenResolver implements InstallationTokenResolver, InstallationRepositoryWithCacheInvalidation
 {
     /**
      * @var InstallationTokenResolver
@@ -22,20 +22,20 @@ class PredisCachedInstallationTokenResolver implements InstallationTokenResolver
     private $serializer;
 
     /**
-     * @var ClientInterface
+     * @var Cache
      */
-    private $redisClient;
+    private $cache;
 
     /**
      * @param InstallationTokenResolver $decoratedResolver
      * @param SerializerInterface       $serializer
-     * @param ClientInterface           $redisClient
+     * @param Cache                     $cache
      */
-    public function __construct(InstallationTokenResolver $decoratedResolver, SerializerInterface $serializer, ClientInterface $redisClient)
+    public function __construct(InstallationTokenResolver $decoratedResolver, SerializerInterface $serializer, Cache $cache)
     {
         $this->decoratedResolver = $decoratedResolver;
         $this->serializer = $serializer;
-        $this->redisClient = $redisClient;
+        $this->cache = $cache;
     }
 
     /**
@@ -48,7 +48,7 @@ class PredisCachedInstallationTokenResolver implements InstallationTokenResolver
         // This is done in order to have a cache safety threshold
         $now = new \DateTime('+1min');
 
-        if (!empty($serializedToken = $this->redisClient->get($key))) {
+        if (false !== ($serializedToken = $this->cache->fetch($key))) {
             /** @var InstallationToken $token */
             $token = $this->serializer->deserialize($serializedToken, InstallationToken::class, 'json');
 
@@ -65,16 +65,20 @@ class PredisCachedInstallationTokenResolver implements InstallationTokenResolver
         if ($expirationInSeconds > 0) {
             $serializedToken = $this->serializer->serialize($token, 'json');
 
-            $this->redisClient->setex($key, $expirationInSeconds, $serializedToken);
+            $this->cache->save($key, $serializedToken, $expirationInSeconds);
         }
 
         return $token;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function invalidate(Installation $installation)
     {
-        $key = $this->generateCacheKey($installation);
-        $this->redisClient->del([$key]);
+        $this->cache->delete(
+            $this->generateCacheKey($installation)
+        );
     }
 
     /**

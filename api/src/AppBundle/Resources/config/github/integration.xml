@@ -27,11 +27,11 @@
             <argument>%github_integration.id%</argument>
         </service>
 
-        <service id="github.integration.installation_repository.predis_cached"
-                 class="GitHub\Integration\RedisCache\PredisCachedInstallationRepository"
+        <service id="github.integration.installation_repository.cached"
+                 class="GitHub\Integration\Cache\CachedInstallationRepository"
                  decorates="github.integration.api_installation_repository">
-            <argument type="service" id="github.integration.installation_repository.predis_cached.inner" />
-            <argument type="service" id="predis_client" />
+            <argument type="service" id="github.integration.installation_repository.cached.inner" />
+            <argument type="service" id="river.cache" />
             <argument type="service" id="jms_serializer" />
         </service>
 
@@ -44,12 +44,12 @@
             <argument>%github_integration.id%</argument>
         </service>
 
-        <service id="github.integration.installation_token_resolver.redis_cached"
-                 class="GitHub\Integration\RedisCache\PredisCachedInstallationTokenResolver"
+        <service id="github.integration.installation_token_resolver.cached"
+                 class="GitHub\Integration\Cache\CachedInstallationTokenResolver"
                  decorates="github.integration.installation_token_resolver.api">
-            <argument type="service" id="github.integration.installation_token_resolver.redis_cached.inner" />
+            <argument type="service" id="github.integration.installation_token_resolver.cached.inner" />
             <argument type="service" id="jms_serializer" />
-            <argument type="service" id="predis_client" />
+            <argument type="service" id="river.cache" />
         </service>
 
         <service id="github.integration.installation_token_resolver" alias="github.integration.installation_token_resolver.api" />
