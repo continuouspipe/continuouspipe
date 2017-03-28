@@ -88,60 +88,56 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
             return $publicEndpoint;
         }
 
-        if (null !== $cloudFlareAnnotation) {
-            $cloudFlareMetadata = \GuzzleHttp\json_decode($cloudFlareAnnotation, true);
-        } else {
-            $recordAddress = $publicEndpoint->getAddress();
-            $recordType = $this->getRecordTypeFromAddress($recordAddress);
-            $recordName = $deploymentContext->getEnvironment()->getName() . $cloudFlareZone->getRecordSuffix();
+        $recordAddress = $publicEndpoint->getAddress();
+        $recordType = $this->getRecordTypeFromAddress($recordAddress);
+        $recordName = $deploymentContext->getEnvironment()->getName() . $cloudFlareZone->getRecordSuffix();
 
-            $logger = $this->loggerFactory->from($deploymentContext->getLog())
-                ->child(new Text('Creating CloudFlare DNS record for endpoint ' . $publicEndpoint->getName()));
+        $logger = $this->loggerFactory->from($deploymentContext->getLog())
+            ->child(new Text('Creating CloudFlare DNS record for endpoint ' . $publicEndpoint->getName()));
 
-            $logger->updateStatus(Log::RUNNING);
+        $logger->updateStatus(Log::RUNNING);
 
-            try {
-                $identifier = $this->cloudFlareClient->createRecord(
-                    $cloudFlareZone->getZoneIdentifier(),
-                    $cloudFlareZone->getAuthentication(),
-                    new ZoneRecord(
-                        $recordName,
-                        $recordType,
-                        $recordAddress,
-                        $cloudFlareZone->getTtl(),
-                        $cloudFlareZone->isProxied()
-                    )
-                );
+        try {
+            $identifier = $this->cloudFlareClient->createOrUpdateRecord(
+                $cloudFlareZone->getZoneIdentifier(),
+                $cloudFlareZone->getAuthentication(),
+                new ZoneRecord(
+                    $recordName,
+                    $recordType,
+                    $recordAddress,
+                    $cloudFlareZone->getTtl(),
+                    $cloudFlareZone->isProxied()
+                )
+            );
 
-                $encryptedAuthentication = new EncryptedAuthentication(
-                    $this->vault,
-                    EncryptionNamespace::from($cloudFlareZone->getZoneIdentifier(), $identifier)
-                );
+            $encryptedAuthentication = new EncryptedAuthentication(
+                $this->vault,
+                EncryptionNamespace::from($cloudFlareZone->getZoneIdentifier(), $identifier)
+            );
 
-                $cloudFlareMetadata = [
-                    'record_name' => $recordName,
-                    'record_identifier' => $identifier,
-                    'zone_identifier' => $cloudFlareZone->getZoneIdentifier(),
-                    'encrypted_authentication' => $encryptedAuthentication->encrypt($cloudFlareZone->getAuthentication()),
-                ];
+            $cloudFlareMetadata = [
+                'record_name' => $recordName,
+                'record_identifier' => $identifier,
+                'zone_identifier' => $cloudFlareZone->getZoneIdentifier(),
+                'encrypted_authentication' => $encryptedAuthentication->encrypt($cloudFlareZone->getAuthentication()),
+            ];
 
-                $logger->child(new Text('Created zone record: ' . $recordName));
-                $logger->updateStatus(Log::SUCCESS);
+            $logger->child(new Text('Created zone record: ' . $recordName));
+            $logger->updateStatus(Log::SUCCESS);
 
-                $this->annotationManager->writeAnnotation($deploymentContext, $object, 'com.continuouspipe.io.cloudflare.zone', \GuzzleHttp\json_encode($cloudFlareMetadata));
-            } catch (\Throwable $e) {
-                $this->logger->warning('Something went wrong while creating the CloudFlare zone', [
-                    'exception' => $e,
-                ]);
-                
-                $logger->child(new Text('Error: ' . $e->getMessage()));
-                $logger->updateStatus(Log::FAILURE);
+            $this->annotationManager->writeAnnotation($deploymentContext, $object, 'com.continuouspipe.io.cloudflare.zone', \GuzzleHttp\json_encode($cloudFlareMetadata));
+        } catch (\Throwable $e) {
+            $this->logger->warning('Something went wrong while creating the CloudFlare zone', [
+                'exception' => $e,
+            ]);
 
-                return $publicEndpoint;
-            }
+            $logger->child(new Text('Error: ' . $e->getMessage()));
+            $logger->updateStatus(Log::FAILURE);
+
+            return $publicEndpoint;
         }
 
-        return $publicEndpoint->withAddress($cloudFlareMetadata['record_name']);
+        return $publicEndpoint->withAddress($recordName);
     }
 
     /**

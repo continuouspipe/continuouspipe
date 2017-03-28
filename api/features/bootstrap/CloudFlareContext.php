@@ -21,6 +21,7 @@ class CloudFlareContext implements Context
 
     /**
      * @Then the CloudFlare zone :name should have been created with the type :type and the address :address
+     * @Then the CloudFlare zone :name should have been updated with the type :type and the address :address
      */
     public function theCloudflareZoneShouldHaveBeenCreatedWithTheTypeAAndTheAddress($name, $type, $address)
     {

@@ -191,6 +191,51 @@ Feature:
     When I send the built deployment request
     And the deployment endpoint "master-myapp.example.com" should have the port "80"
 
+  Scenario: It updates the CloudFlare record even when it exists
+    Given I have a service "http" with the selector "component-identifier=app" and type "LoadBalancer" with the ports:
+      | name | port | protocol | targetPort |
+      | http | 80   | tcp      | 80         |
+    And the service "http" have the public IP "1.2.3.4"
+    And the service "http" have the following annotations:
+      | name                                  | value                                                                 |
+      | com.continuouspipe.io.cloudflare.zone | {"record_name":"master-myapp.example.com","record_identifier":"1234"} |
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "cloud_flare_zone": {
+              "zone_identifier": "1234531235qwerty",
+              "record_suffix": "-myapp.example.com",
+              "authentication": {
+                "email": "samuel@example.com",
+                "api_key": "foobar"
+              }
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the CloudFlare zone "master-myapp.example.com" should have been updated with the type A and the address "1.2.3.4"
+
   Scenario: It removes the CF record when the environment is deleted
     Given I have a namespace "app"
     And I have a service "http" with the selector "component-identifier=app" and type "LoadBalancer" with the ports:
