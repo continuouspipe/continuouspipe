@@ -24,11 +24,26 @@ class CloudFlareComponentPublicEndpointResolver implements ComponentPublicEndpoi
     public function resolve(KubernetesObject $serviceOrIngress) : array
     {
         $publicEndpoints = [];
+
+        // TODO: Remove this deprecated usage of `com.continuouspipe.io.cloudflare.zone`
         $cloudFlareAnnotation = $serviceOrIngress->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.cloudflare.zone');
         if (null !== $cloudFlareAnnotation) {
             try {
                 $cloudFlareMetadata = \GuzzleHttp\json_decode($cloudFlareAnnotation->getValue(), true);
                 $publicEndpoints[] = $cloudFlareMetadata['record_name'];
+            } catch (\InvalidArgumentException $exception) {
+                $this->logger->warning('Cannot gather CloudFlare data from annotation', ['service_or_ingress' => $serviceOrIngress, 'exception' => $exception]);
+            }
+        }
+
+        $cloudFlareAnnotation = $serviceOrIngress->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.cloudflare.records');
+        if (null !== $cloudFlareAnnotation) {
+            try {
+                $cloudFlareMetadata = \GuzzleHttp\json_decode($cloudFlareAnnotation->getValue(), true);
+
+                foreach ($cloudFlareMetadata as $record) {
+                    $publicEndpoints[] = $record['record_name'];
+                }
             } catch (\InvalidArgumentException $exception) {
                 $this->logger->warning('Cannot gather CloudFlare data from annotation', ['service_or_ingress' => $serviceOrIngress, 'exception' => $exception]);
             }

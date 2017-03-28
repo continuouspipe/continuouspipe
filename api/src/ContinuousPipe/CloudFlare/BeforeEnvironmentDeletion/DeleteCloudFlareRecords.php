@@ -57,7 +57,7 @@ class DeleteCloudFlareRecords implements EventSubscriberInterface
         }
 
         foreach ($services as $service) {
-            $annotation = $service->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.cloudflare.zone');
+            $annotation = $service->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.cloudflare.records');
             if (null === $annotation) {
                 continue;
             }
@@ -65,11 +65,15 @@ class DeleteCloudFlareRecords implements EventSubscriberInterface
             try {
                 $json = \GuzzleHttp\json_decode($annotation->getValue(), true);
 
-                if (!isset($json['record_identifier']) || !isset($json['record_identifier']) || !isset($json['encrypted_authentication'])) {
-                    throw new \InvalidArgumentException('The JSON object do not contain the required fields');
-                }
+                $records = array_map(function (array $row) {
+                    if (!isset($row['record_identifier']) || !isset($row['record_identifier']) || !isset($row['encrypted_authentication'])) {
+                        throw new \InvalidArgumentException('The JSON object do not contain the required fields');
+                    }
+
+                    return $row;
+                }, $json);
             } catch (\InvalidArgumentException $e) {
-                $this->logger->warning('The content of the annotation `com.continuouspipe.io.cloudflare.zone` is not readable', [
+                $this->logger->warning('The content of the annotation `com.continuouspipe.io.cloudflare.records` is not readable', [
                     'value' => $annotation->getValue(),
                     'exception' => $e,
                 ]);
@@ -77,14 +81,16 @@ class DeleteCloudFlareRecords implements EventSubscriberInterface
                 continue;
             }
 
-            $encryptedAuthentication = new EncryptedAuthentication(
-                $this->vault,
-                EncryptionNamespace::from($json['zone_identifier'], $json['record_identifier'])
-            );
+            foreach ($records as $record) {
+                $encryptedAuthentication = new EncryptedAuthentication(
+                    $this->vault,
+                    EncryptionNamespace::from($record['zone_identifier'], $record['record_identifier'])
+                );
 
-            $authentication = $encryptedAuthentication->decrypt($json['encrypted_authentication']);
+                $authentication = $encryptedAuthentication->decrypt($record['encrypted_authentication']);
 
-            $this->cloudFlareClient->deleteRecord($json['zone_identifier'], $authentication, $json['record_identifier']);
+                $this->cloudFlareClient->deleteRecord($record['zone_identifier'], $authentication, $record['record_identifier']);
+            }
         }
     }
 }

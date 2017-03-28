@@ -3,6 +3,7 @@
 namespace ContinuousPipe\CloudFlare;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
+use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointException;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointTransformer;
 use ContinuousPipe\CloudFlare\AnnotationManager\AnnotationManager;
 use ContinuousPipe\CloudFlare\Encryption\EncryptedAuthentication;
@@ -13,6 +14,7 @@ use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Security\Encryption\Vault;
 use Kubernetes\Client\Exception\Exception;
 use Kubernetes\Client\Model\Annotation;
+use Kubernetes\Client\Model\IngressRule;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Service;
@@ -77,9 +79,20 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
             return $publicEndpoint;
         }
 
+        if (null !== $cloudFlareZone->getRecordSuffix()) {
+            $records = [
+                $deploymentContext->getEnvironment()->getName() . $cloudFlareZone->getRecordSuffix(),
+            ];
+        } elseif (null !== $endpointConfiguration->getIngress() && 0 !== count($rules = $endpointConfiguration->getIngress()->getRules())) {
+            $records = array_map(function (IngressRule $ingressRule) {
+                return $ingressRule->getHost();
+            }, $rules);
+        } else {
+            throw new EndpointException('Can\'t find which DNS record to create. You can set the `record_suffix` or some ingress hosts.');
+        }
+
         $recordAddress = $publicEndpoint->getAddress();
         $recordType = $this->getRecordTypeFromAddress($recordAddress);
-        $recordName = $deploymentContext->getEnvironment()->getName() . $cloudFlareZone->getRecordSuffix();
 
         $logger = $this->loggerFactory->from($deploymentContext->getLog())
             ->child(new Text('Creating CloudFlare DNS record for endpoint ' . $publicEndpoint->getName()));
@@ -87,34 +100,39 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
         $logger->updateStatus(Log::RUNNING);
 
         try {
-            $identifier = $this->cloudFlareClient->createOrUpdateRecord(
-                $cloudFlareZone->getZoneIdentifier(),
-                $cloudFlareZone->getAuthentication(),
-                new ZoneRecord(
-                    $recordName,
-                    $recordType,
-                    $recordAddress,
-                    $cloudFlareZone->getTtl(),
-                    $cloudFlareZone->isProxied()
-                )
-            );
+            $cloudFlareMetadata = [];
 
-            $encryptedAuthentication = new EncryptedAuthentication(
-                $this->vault,
-                EncryptionNamespace::from($cloudFlareZone->getZoneIdentifier(), $identifier)
-            );
+            foreach ($records as $recordName) {
+                $identifier = $this->cloudFlareClient->createOrUpdateRecord(
+                    $cloudFlareZone->getZoneIdentifier(),
+                    $cloudFlareZone->getAuthentication(),
+                    new ZoneRecord(
+                        $recordName,
+                        $recordType,
+                        $recordAddress,
+                        $cloudFlareZone->getTtl(),
+                        $cloudFlareZone->isProxied()
+                    )
+                );
 
-            $cloudFlareMetadata = [
-                'record_name' => $recordName,
-                'record_identifier' => $identifier,
-                'zone_identifier' => $cloudFlareZone->getZoneIdentifier(),
-                'encrypted_authentication' => $encryptedAuthentication->encrypt($cloudFlareZone->getAuthentication()),
-            ];
+                $encryptedAuthentication = new EncryptedAuthentication(
+                    $this->vault,
+                    EncryptionNamespace::from($cloudFlareZone->getZoneIdentifier(), $identifier)
+                );
 
-            $logger->child(new Text('Created zone record: ' . $recordName));
+                $cloudFlareMetadata[] = [
+                    'record_name' => $recordName,
+                    'record_identifier' => $identifier,
+                    'zone_identifier' => $cloudFlareZone->getZoneIdentifier(),
+                    'encrypted_authentication' => $encryptedAuthentication->encrypt($cloudFlareZone->getAuthentication()),
+                ];
+
+                $logger->child(new Text('Created zone record: ' . $recordName));
+            }
+
             $logger->updateStatus(Log::SUCCESS);
 
-            $this->annotationManager->writeAnnotation($deploymentContext, $object, 'com.continuouspipe.io.cloudflare.zone', \GuzzleHttp\json_encode($cloudFlareMetadata));
+            $this->annotationManager->writeAnnotation($deploymentContext, $object, 'com.continuouspipe.io.cloudflare.records', \GuzzleHttp\json_encode($cloudFlareMetadata));
         } catch (\Throwable $e) {
             $this->logger->warning('Something went wrong while creating the CloudFlare zone', [
                 'exception' => $e,
@@ -126,7 +144,7 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
             return $publicEndpoint;
         }
 
-        return $publicEndpoint->withAddress($recordName);
+        return $publicEndpoint->withAddress(current($records));
     }
 
     /**

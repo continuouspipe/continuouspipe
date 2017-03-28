@@ -305,17 +305,21 @@ class ServiceContext implements Context
     }
 
     /**
-     * @Then the annotation :annotationName of the service :serviceName should contain the JSON key :key
+     * @Then the annotation :annotationName of the service :serviceName should contain an entry with the JSON key :key
      */
-    public function theAnnotationOfTheServiceShouldContainTheJsonKey($annotationName, $serviceName, $key)
+    public function theAnnotationOfTheServiceShouldContainAnEntryWithTheJsonKey($annotationName, $serviceName, $key)
     {
         $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $serviceName);
         $annotation = $service->getMetadata()->getAnnotationList()->get($annotationName);
-        $keys = \GuzzleHttp\json_decode($annotation->getValue(), true);
+        $rows = \GuzzleHttp\json_decode($annotation->getValue(), true);
 
-        if (!array_key_exists($key, $keys)) {
-            throw new \RuntimeException('The key was not found');
+        foreach ($rows as $row) {
+            if (array_key_exists($key, $row)) {
+                return;
+            }
         }
+
+        throw new \RuntimeException('The key was not found');
     }
 
     /**
@@ -325,25 +329,31 @@ class ServiceContext implements Context
     {
         $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $serviceName);
         $annotation = $service->getMetadata()->getAnnotationList()->get($annotationName);
-        $keys = \GuzzleHttp\json_decode($annotation->getValue(), true);
+        $row = \GuzzleHttp\json_decode($annotation->getValue(), true);
 
-        foreach ($table->getHash() as $row) {
-            if (!array_key_exists($row['name'], $keys)) {
-                throw new \RuntimeException(sprintf(
-                    'Expected to find the key "%s" but not found',
-                    $row['name']
-                ));
-            }
+        $this->findKeysInRow($table, $row);
+    }
 
-            $foundValue = $keys[$row['name']];
-            if ($foundValue != $row['value']) {
-                throw new \RuntimeException(sprintf(
-                    'Found value %s for key "%s"',
-                    $foundValue,
-                    $row['name']
-                ));
+    /**
+     * @Then the annotation :annotationName of the service :serviceName should contain an entry the following keys in its JSON:
+     */
+    public function theAnnotationOfTheServiceShouldContainAnEntryTheFollowingKeysInItsJson($annotationName, $serviceName, TableNode $table)
+    {
+        $service = $this->findServiceByNameInList($this->serviceRepository->getCreated(), $serviceName);
+        $annotation = $service->getMetadata()->getAnnotationList()->get($annotationName);
+        $annotationRows = \GuzzleHttp\json_decode($annotation->getValue(), true);
+
+        foreach ($annotationRows as $row) {
+            try {
+                $this->findKeysInRow($table, $row);
+
+                return;
+            } catch (\Exception $e) {
+                // Try the next one...
             }
         }
+
+        throw new \RuntimeException('Such entry not found');
     }
 
     /**
@@ -420,5 +430,30 @@ class ServiceContext implements Context
         }
 
         return $selector;
+    }
+
+    /**
+     * @param TableNode $table
+     * @param array $row
+     */
+    private function findKeysInRow(TableNode $table, array $row)
+    {
+        foreach ($table->getHash() as $tableRow) {
+            if (!array_key_exists($tableRow['name'], $row)) {
+                throw new \RuntimeException(sprintf(
+                    'Expected to find the key "%s" but not found',
+                    $tableRow['name']
+                ));
+            }
+
+            $foundValue = $row[$tableRow['name']];
+            if ($foundValue != $tableRow['value']) {
+                throw new \RuntimeException(sprintf(
+                    'Found value %s for key "%s"',
+                    $foundValue,
+                    $tableRow['name']
+                ));
+            }
+        }
     }
 }
