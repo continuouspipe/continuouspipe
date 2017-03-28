@@ -8,6 +8,7 @@ use ContinuousPipe\Adapter\Events;
 use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Model\Environment;
+use function GuzzleHttp\Promise\unwrap;
 use Kubernetes\Client\Client;
 use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Exception\NamespaceNotFound;
@@ -139,10 +140,15 @@ class KubernetesEnvironmentClient implements EnvironmentClient
         $namespaceMetadata = $namespace->getMetadata();
         $namespaceClient = $this->client->getNamespaceClient($namespace);
 
+        $components = [];
+        foreach ($this->namespaceInspector->getComponents($namespaceClient)->wait() as $namespacedComponent) {
+            $components = array_merge($components, $namespacedComponent);
+        }
+
         return new Environment(
             $namespaceMetadata->getName(),
             $namespaceMetadata->getName(),
-            $this->namespaceInspector->getComponents($namespaceClient)
+            $components
         );
     }
 

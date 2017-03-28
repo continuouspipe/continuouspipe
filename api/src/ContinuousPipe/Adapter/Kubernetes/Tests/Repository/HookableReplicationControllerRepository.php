@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Repository\ReplicationControllerRepository;
 
@@ -36,6 +37,14 @@ class HookableReplicationControllerRepository implements ReplicationControllerRe
     public function findAll()
     {
         return $this->repository->findAll();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll()
+    {
+        return $this->repository->asyncFindAll();
     }
 
     /**

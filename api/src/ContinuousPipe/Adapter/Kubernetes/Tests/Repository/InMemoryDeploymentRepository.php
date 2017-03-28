@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use GuzzleHttp\Promise\FulfilledPromise;
 use JMS\Serializer\SerializerInterface;
 use Kubernetes\Client\Exception\DeploymentNotFound;
 use Kubernetes\Client\Model\Deployment;
@@ -31,6 +32,14 @@ class InMemoryDeploymentRepository implements DeploymentRepository
     public function findAll()
     {
         return DeploymentList::fromDeployments($this->deployments);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll()
+    {
+        return new FulfilledPromise(DeploymentList::fromDeployments($this->deployments));
     }
 
     /**

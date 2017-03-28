@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use GuzzleHttp\Promise\FulfilledPromise;
 use Kubernetes\Client\Exception\ReplicationControllerNotFound;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Model\ReplicationControllerList;
@@ -20,6 +21,14 @@ class InMemoryReplicationControllerRepository implements ReplicationControllerRe
     public function findAll()
     {
         return ReplicationControllerList::fromReplicationControllers($this->replicationControllers);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll()
+    {
+        return new FulfilledPromise(ReplicationControllerList::fromReplicationControllers($this->replicationControllers));
     }
 
     /**
