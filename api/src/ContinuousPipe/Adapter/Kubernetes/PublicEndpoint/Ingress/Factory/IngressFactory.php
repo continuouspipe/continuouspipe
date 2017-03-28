@@ -44,31 +44,8 @@ class IngressFactory implements EndpointFactory
      */
     public function createObjectsFromEndpoint(Component $component, Endpoint $endpoint)
     {
-        if (null === ($type = $endpoint->getType())) {
-            if (null !== $endpoint->getIngress() || count($endpoint->getSslCertificates()) > 0) {
-                $type = 'ingress';
-            } else {
-                $type = 'service';
-            }
-        }
-
-        if ($type == 'ingress') {
-            if (null === ($endpointIngress = $endpoint->getIngress())) {
-                if (count($endpoint->getSslCertificates()) > 0) {
-                    $serviceType = ServiceSpecification::TYPE_CLUSTER_IP;
-                } else {
-                    $serviceType = ServiceSpecification::TYPE_NODE_PORT;
-                }
-            } elseif ($this->classHasToBeNodePort($endpointIngress->getClass())) {
-                $serviceType = ServiceSpecification::TYPE_NODE_PORT;
-            } else {
-                $serviceType = ServiceSpecification::TYPE_CLUSTER_IP;
-            }
-        } elseif ($type == 'NodePort') {
-            $serviceType = ServiceSpecification::TYPE_NODE_PORT;
-        } else {
-            $serviceType = ServiceSpecification::TYPE_LOAD_BALANCER;
-        }
+        $ingressType = $this->getIngressType($endpoint);
+        $serviceType = $this->getServiceType($endpoint, $ingressType);
 
         $service = $this->createService($component, $endpoint, $serviceType);
 
@@ -215,12 +192,6 @@ class IngressFactory implements EndpointFactory
             )
         );
     }
-
-    private function classHasToBeNodePort(string $class) : bool
-    {
-        return in_array($class, ['gce']);
-    }
-
     /**
      * @param IngressRule[] $rules
      *
@@ -231,5 +202,44 @@ class IngressFactory implements EndpointFactory
         return array_map(function (IngressRule $rule) {
             return $rule->getHost();
         }, $rules);
+    }
+
+    private function getIngressType(Endpoint $endpoint): string
+    {
+        if (null !== ($type = $endpoint->getType())) {
+            return $type;
+        }
+
+        if (null !== $endpoint->getIngress() || count($endpoint->getSslCertificates()) > 0) {
+            return 'ingress';
+        }
+
+        return 'service';
+    }
+
+    private function getServiceType(Endpoint $endpoint, string $ingressType): string
+    {
+        if ($ingressType == 'NodePort') {
+            return ServiceSpecification::TYPE_NODE_PORT;
+        } elseif ($ingressType != 'ingress') {
+            return ServiceSpecification::TYPE_LOAD_BALANCER;
+        }
+
+        if (null === ($endpointIngress = $endpoint->getIngress())) {
+            if (count($endpoint->getSslCertificates()) > 0) {
+                return ServiceSpecification::TYPE_CLUSTER_IP;
+            } else {
+                return ServiceSpecification::TYPE_NODE_PORT;
+            }
+        } elseif ($this->classHasToBeNodePort($endpointIngress->getClass())) {
+            return ServiceSpecification::TYPE_NODE_PORT;
+        }
+
+        return ServiceSpecification::TYPE_CLUSTER_IP;
+    }
+
+    private function classHasToBeNodePort(string $class) : bool
+    {
+        return in_array($class, ['gce']);
     }
 }
