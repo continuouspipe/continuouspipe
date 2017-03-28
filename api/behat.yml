@@ -119,7 +119,7 @@ default:
 
             contexts:
                 - CacheContext:
-                    - @predis_client
+                    - @river.cache
 
                 # GitHub-specific contexts
                 - GitHubContext:
