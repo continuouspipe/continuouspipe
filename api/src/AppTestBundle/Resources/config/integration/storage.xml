@@ -6,5 +6,6 @@
 
     <services>
         <service id="river.pipeline.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage" />
+        <service id="river.cache" class="Doctrine\Common\Cache\ArrayCache" />
     </services>
 </container>

@@ -1,18 +1,23 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\FlushableCache;
 use Predis\ClientInterface;
 
 class CacheContext implements Context
 {
     /**
-     * @var ClientInterface
+     * @var FlushableCache
      */
-    private $client;
+    private $cache;
 
-    public function __construct(ClientInterface $client)
+    /**
+     * @param FlushableCache $cache
+     */
+    public function __construct(FlushableCache $cache)
     {
-        $this->client = $client;
+        $this->cache = $cache;
     }
 
     /**
@@ -20,6 +25,6 @@ class CacheContext implements Context
      */
     public function theCacheIsClean()
     {
-        $this->client->flushall();
+        $this->cache->flushAll();
     }
 }
