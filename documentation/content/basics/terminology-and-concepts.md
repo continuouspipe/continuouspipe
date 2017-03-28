@@ -4,10 +4,14 @@ title: Terminology & Concepts
 menu:
   main:
     parent: 'basics'
-    weight: 11
+    weight: 20
 
 weight: 11
 ---
+
+## System Overview
+
+{{< figure src="/images/basics/cp-system-overview.png" class="diagram system-overview" >}}
 
 ## Technology
 ### Code Repository
@@ -28,3 +32,5 @@ A flow is used to define a code repository. Typically a single flow is all that 
 
 ### Tide
 A tide is an execution of a flow. Typically this will be triggered when a branch is pushed to a code repository although it can also be triggered manually. The result of a tide is a working environment, ready to test.
+
+

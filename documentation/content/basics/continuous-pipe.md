@@ -8,10 +8,25 @@ menu:
 
 weight: 10
 ---
-ContinuousPipe is a system for continuous automated deployment of multiple environments with simple configuration. Utilising Docker and Kubernetes to automatically deploy new environments, it dramatically speeds up your feedback loop and cuts lead time.
 
-![](/images/cp-overview.png)
+## What is ContinuousPipe?
 
-Built on Docker and Kubernetes you can deploy your [Docker compatible application]({{< relref "docker-images.md" >}}) on [any cluster]({{< relref "clusters.md" >}}) – your own infrastructure, for example, or on any cloud such as AWS or GCE.
+ContinuousPipe is a system for continuous automated deployment of multiple environments with simple configuration. It utilises Docker and Kubernetes to automatically deploy new environments, dramatically speeding up your feedback loop and cutting lead time.
 
-The [customizable workflow]({{< relref "workflow.md" >}}) allows you to integrate developers, QA and product owners to produce super-fast feedback cycles on a feature-by-feature basis.
+## Technology Stack
+
+ContinuousPipe allows you to deploy your [Docker application]({{< relref "basics/docker-images.md" >}}) on any [Kubernetes cluster]({{< relref "basics/clusters.md" >}}).
+
+{{< figure src="/images/basics/cp-technology-stack.png" class="diagram technology-stack" >}}
+
+## Getting Started
+
+To get started with ContinuousPipe you will need the following:
+
+- A [GitHub](https://github.com/) or [Bitbucket](https://bitbucket.org/) account to host your project
+- A Docker registry account e.g. [docker.io](https://docker.io) or [quay.io](https://quay.io)
+- A Kubernetes cluster e.g. [GCE](https://cloud.google.com/container-engine/), [AWS](https://aws.amazon.com/) or [Azure](https://azure.microsoft.com/en-au/)
+
+## Customizable Workflow
+
+The [customizable workflow]({{< relref "basics/workflow.md" >}}) allows you to integrate developers, QA and product owners to produce super-fast feedback cycles on a feature-by-feature basis.
