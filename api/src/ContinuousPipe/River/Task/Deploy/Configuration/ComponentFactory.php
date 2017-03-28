@@ -78,7 +78,7 @@ class ComponentFactory
         }
 
         // Resolve hosts expression
-        $configuration['endpoints'] = array_map(function(array $endpointConfiguration) use ($context) {
+        $configuration['endpoints'] = array_map(function (array $endpointConfiguration) use ($context) {
             if (isset($endpointConfiguration['ingress']['host'])) {
                 $endpointConfiguration['ingress']['rules'] = [
                     $this->transformIngressHostIntoRule($context, $endpointConfiguration['ingress']['host']),

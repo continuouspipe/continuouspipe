@@ -228,3 +228,66 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-certeo.inviqa-001.continuouspipe.net"
+
+  Scenario: Add the CloudFlare backend manually
+    When I tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    record_suffix: .example.com
+                                    backend_address: 1.2.3.4
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with the backend "1.2.3.4"
+
+  Scenario: CloudFlare do not require record prefix with the ingresses
+    When I tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                ingress:
+                                    class: nginx
+                                    host:
+                                        expression: 'code_reference.branch ~ "-certeo.inviqa-001.continuouspipe.net"'
+
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration

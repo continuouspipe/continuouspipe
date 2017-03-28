@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Flow\Variable;
 
-
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
