@@ -371,6 +371,21 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with a CloudFlare DNS zone configuration with the backend :backend
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithACloudflareDnsZoneConfigurationWithTheBackend($endpointName, $name, $backend)
+    {
+        $configuration = $this->theEndpointOfTheComponentShouldBeDeployedWithACloudflareDnsZoneConfiguration($endpointName, $name);
+
+        if ($configuration->getBackendAddress() != $backend) {
+            throw new \RuntimeException(sprintf(
+                'Found "%s" has backend instead',
+                $configuration->getBackendAddress()
+            ));
+        }
+    }
+
+    /**
      * @Then the endpoint :endpointName of the component :name should be deployed with a proxied CloudFlare DNS zone configuration
      */
     public function theEndpointOfTheComponentShouldBeDeployedWithAProxiedCloudflareDnsZoneConfiguration($endpointName, $name)
@@ -380,6 +395,29 @@ class RunContext implements Context
         if (!$configuration->isProxied()) {
             throw new \RuntimeException('The zone is not proxied');
         }
+    }
+
+    /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with an ingress with the host :host
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithAnIngressWithTheHost($endpointName, $name, $host)
+    {
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
+
+        if (null === ($ingress = $endpoint->getIngress())) {
+            throw new \RuntimeException('The ingress configuration is null');
+        }
+
+        $foundHosts = [];
+        foreach ($ingress->getRules() as $rule) {
+            $foundHosts[] = $rule->getHost();
+
+            if ($rule->getHost() == $host) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException(sprintf('Such host not found. Found %s', implode(', ', $foundHosts)));
     }
 
     /**

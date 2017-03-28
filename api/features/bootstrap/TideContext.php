@@ -923,10 +923,11 @@ EOF;
 
     /**
      * @Given I tide is started with the following configuration:
+     * @Given I tide is started for the branch :branch with the following configuration:
      */
-    public function iTideIsStartedWithTheFollowingConfiguration(PyStringNode $configuration)
+    public function iTideIsStartedWithTheFollowingConfiguration(PyStringNode $configuration, $branch = null)
     {
-        $this->aTideIsStartedWithConfiguration(Yaml::parse($configuration->getRaw()));
+        $this->aTideIsStartedWithConfiguration(Yaml::parse($configuration->getRaw()), $branch ?: 'master');
     }
 
     /**

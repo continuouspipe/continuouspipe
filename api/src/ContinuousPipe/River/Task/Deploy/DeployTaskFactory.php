@@ -261,7 +261,7 @@ class DeployTaskFactory implements TaskFactory
                 continue;
             }
 
-            $services[] = $this->componentFactory->createFromConfiguration($this->getIdentifier($name), $configuration);
+            $services[] = $this->componentFactory->createFromConfiguration($taskContext, $this->getIdentifier($name), $configuration);
         }
 
         return $services;
@@ -345,7 +345,8 @@ class DeployTaskFactory implements TaskFactory
                     ->arrayNode('cloud_flare_zone')
                         ->children()
                             ->scalarNode('zone_identifier')->isRequired()->end()
-                            ->scalarNode('record_suffix')->isRequired()->end()
+                            ->scalarNode('record_suffix')->end()
+                            ->scalarNode('backend_address')->end()
                             ->integerNode('ttl')->end()
                             ->booleanNode('proxied')->end()
                             ->arrayNode('authentication')
@@ -363,6 +364,17 @@ class DeployTaskFactory implements TaskFactory
                             ->scalarNode('api_key')->isRequired()->end()
                             ->arrayNode('middlewares')
                                 ->prototype('variable')->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('ingress')
+                        ->children()
+                            ->scalarNode('class')->isRequired()->end()
+                            ->arrayNode('host')
+                                ->isRequired()
+                                ->children()
+                                    ->scalarNode('expression')->isRequired()->end()
+                                ->end()
                             ->end()
                         ->end()
                     ->end()

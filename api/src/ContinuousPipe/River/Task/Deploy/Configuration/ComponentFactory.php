@@ -4,30 +4,37 @@ namespace ContinuousPipe\River\Task\Deploy\Configuration;
 
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Extension;
-use JMS\Serializer\Serializer;
+use ContinuousPipe\River\Flow\Variable\FlowVariableResolver;
+use ContinuousPipe\River\Pipeline\TideGenerationException;
+use ContinuousPipe\River\Task\TaskContext;
+use ContinuousPipe\River\TideConfigurationException;
+use JMS\Serializer\SerializerInterface;
 
 class ComponentFactory
 {
     /**
-     * @var Serializer
+     * @var SerializerInterface
      */
     private $serializer;
-
     /**
-     * @param Serializer $serializer
+     * @var FlowVariableResolver
      */
-    public function __construct(Serializer $serializer)
+    private $flowVariableResolver;
+
+    public function __construct(FlowVariableResolver $flowVariableResolver, SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
+        $this->flowVariableResolver = $flowVariableResolver;
     }
 
     /**
-     * @param string $name
-     * @param array  $configuration
+     * @parem TaskContext $context
+     * @param string      $name
+     * @param array       $configuration
      *
      * @return Component
      */
-    public function createFromConfiguration($name, array $configuration)
+    public function createFromConfiguration(TaskContext $context, string $name, array $configuration)
     {
         $component = new Component(
             $name,
@@ -37,7 +44,7 @@ class ComponentFactory
             [],
             null,
             $this->getDeploymentStrategy($configuration),
-            $this->getEndpoints($configuration)
+            $this->getEndpoints($context, $configuration)
         );
 
         return $component;
@@ -64,11 +71,22 @@ class ComponentFactory
      *
      * @return Component\Endpoint[]
      */
-    private function getEndpoints(array $configuration)
+    private function getEndpoints(TaskContext $context, array $configuration)
     {
         if (!array_key_exists('endpoints', $configuration)) {
             return [];
         }
+
+        // Resolve hosts expression
+        $configuration['endpoints'] = array_map(function (array $endpointConfiguration) use ($context) {
+            if (isset($endpointConfiguration['ingress']['host'])) {
+                $endpointConfiguration['ingress']['rules'] = [
+                    $this->transformIngressHostIntoRule($context, $endpointConfiguration['ingress']['host']),
+                ];
+            }
+
+            return $endpointConfiguration;
+        }, $configuration['endpoints']);
 
         $jsonEncodedEndpoints = json_encode($configuration['endpoints']);
 
@@ -120,5 +138,25 @@ class ComponentFactory
             sprintf('array<%s>', Extension::class),
             'json'
         );
+    }
+
+    private function transformIngressHostIntoRule(TaskContext $context, array $hostConfiguration)
+    {
+        if (!isset($hostConfiguration['expression'])) {
+            throw new TideGenerationException('The ingress host needs an expression');
+        }
+
+        try {
+            $resolvedHostname = $this->flowVariableResolver->resolveExpression(
+                $hostConfiguration['expression'],
+                $this->flowVariableResolver->createContext($context->getFlowUuid(), $context->getCodeReference())
+            );
+        } catch (TideConfigurationException $e) {
+            throw new TideGenerationException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return [
+            'host' => $resolvedHostname,
+        ];
     }
 }

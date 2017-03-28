@@ -7,6 +7,7 @@ use ContinuousPipe\River\Flow\ConfigurationFinalizer;
 use ContinuousPipe\River\Flow\EncryptedVariable\EncryptedVariableVault;
 use ContinuousPipe\River\Flow\EncryptedVariable\EncryptionException;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Flow\Variable\FlowVariableResolver;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\TideConfigurationException;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -18,10 +19,15 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
      * @var EncryptedVariableVault
      */
     private $encryptedVariableVault;
+    /**
+     * @var FlowVariableResolver
+     */
+    private $flowVariableResolver;
 
-    public function __construct(EncryptedVariableVault $encryptedVariableVault)
+    public function __construct(FlowVariableResolver $flowVariableResolver, EncryptedVariableVault $encryptedVariableVault)
     {
         $this->encryptedVariableVault = $encryptedVariableVault;
+        $this->flowVariableResolver = $flowVariableResolver;
     }
 
     /**
@@ -29,14 +35,16 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
      */
     public function finalize(FlatFlow $flow, CodeReference $codeReference, array $configuration)
     {
+        $variableContext = $this->flowVariableResolver->createContext($flow->getUuid(), $codeReference);
+
         // Replace the pipeline variables first
         foreach ($configuration['pipelines'] as &$pipeline) {
-            $variables = $this->resolveVariables($flow, $pipeline, $this->createContext($flow, $codeReference));
+            $variables = $this->resolveVariables($flow, $pipeline, $variableContext);
             $pipeline = self::replaceValues($pipeline, $variables);
         }
 
         // Replace the tasks variables
-        $variables = $this->resolveVariables($flow, $configuration, $this->createContext($flow, $codeReference));
+        $variables = $this->resolveVariables($flow, $configuration, $variableContext);
         $configuration = self::replaceValues($configuration, $variables);
 
         return $configuration;
@@ -46,6 +54,8 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
      * @param FlatFlow    $flow
      * @param array       $configuration
      * @param ArrayObject $context
+     *
+     * @throws TideConfigurationException
      *
      * @return array
      */
@@ -62,7 +72,7 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
             }
 
             if (array_key_exists('expression', $item)) {
-                $item['value'] = $this->resolveExpression($item['expression'], $context);
+                $item['value'] = $this->flowVariableResolver->resolveExpression($item['expression'], $context);
             }
 
             if (array_key_exists('encrypted_value', $item)) {
@@ -123,25 +133,6 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
     }
 
     /**
-     * @param FlatFlow      $flow
-     * @param CodeReference $codeReference
-     *
-     * @return ArrayObject
-     */
-    private function createContext(FlatFlow $flow, CodeReference $codeReference)
-    {
-        return new ArrayObject([
-            'code_reference' => new ArrayObject([
-                'branch' => $codeReference->getBranch(),
-                'sha' => $codeReference->getCommitSha(),
-            ]),
-            'flow' => new ArrayObject([
-                'uuid' => (string) $flow->getUuid(),
-            ]),
-        ]);
-    }
-
-    /**
      * @param string      $condition
      * @param ArrayObject $context
      *
@@ -151,31 +142,6 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
      */
     private function isConditionValid($condition, ArrayObject $context)
     {
-        return (bool) $this->resolveExpression($condition, $context);
-    }
-
-    /**
-     * @param string      $expression
-     * @param ArrayObject $context
-     *
-     * @return string
-     *
-     * @throws TideConfigurationException
-     */
-    private function resolveExpression($expression, ArrayObject $context)
-    {
-        $language = new ExpressionLanguage();
-
-        try {
-            return $language->evaluate($expression, $context->asArray());
-        } catch (SyntaxError $e) {
-            throw new TideConfigurationException(sprintf(
-                'The expression provided ("%s") is not valid: %s',
-                $expression,
-                $e->getMessage()
-            ), $e->getCode(), $e);
-        } catch (\InvalidArgumentException $e) {
-            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
-        }
+        return (bool) $this->flowVariableResolver->resolveExpression($condition, $context);
     }
 }
