@@ -383,6 +383,29 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with an ingress with the host :host
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithAnIngressWithTheHost($endpointName, $name, $host)
+    {
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
+
+        if (null === ($ingress = $endpoint->getIngress())) {
+            throw new \RuntimeException('The ingress configuration is null');
+        }
+
+        $foundHosts = [];
+        foreach ($ingress->getRules() as $rule) {
+            $foundHosts[] = $rule->getHost();
+
+            if ($rule->getHost() == $host) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException(sprintf('Such host not found. Found %s', implode(', ', $foundHosts)));
+    }
+
+    /**
      * @Then the endpoint :endpointName of the component :name should be deployed with an HttpLabs configuration for the project :project and API key :apiKey
      */
     public function theEndpointOfTheComponentShouldBeDeployedWithAnHttplabsConfigurationForTheProjectAndApiKey($endpointName, $name, $project, $apiKey)

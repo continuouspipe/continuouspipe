@@ -201,3 +201,30 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with a proxied CloudFlare DNS zone configuration
+
+  Scenario: Create ingresses endpoints with hosts
+    When I tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                ingress:
+                                    class: nginx
+                                    host:
+                                        expression: 'code_reference.branch ~ "-certeo.inviqa-001.continuouspipe.net"'
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-certeo.inviqa-001.continuouspipe.net"

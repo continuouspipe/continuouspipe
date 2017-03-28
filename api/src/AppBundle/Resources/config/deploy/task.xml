@@ -58,6 +58,7 @@
         </service>
 
         <service id="river.task.deploy.configuration.component_factory" class="ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory">
+            <argument type="service" id="river.flow.variable.flow_variable_resolver" />
             <argument type="service" id="jms_serializer" />
         </service>
     </services>

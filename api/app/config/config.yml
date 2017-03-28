@@ -118,6 +118,9 @@ jms_serializer:
             ContinuousPipeModel:
                 namespace_prefix: "ContinuousPipe\\Model"
                 path: "%kernel.root_dir%/../vendor/continuous-pipe/model/src/Resources/serializer"
+            KubernetesClient:
+                namespace_prefix: "Kubernetes\\Client"
+                path: "%kernel.root_dir%/../vendor/sroze/kubernetes-client/src/Resources/serializer"
 
 lexik_jwt_authentication:
     private_key_path: %jwt_private_key_path%

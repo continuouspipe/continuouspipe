@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\EventCollection;
+use ContinuousPipe\River\Pipeline\TideGenerationException;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 
 interface TaskFactory
@@ -11,6 +12,8 @@ interface TaskFactory
      * @param EventCollection $events
      * @param TaskContext     $taskContext
      * @param array           $configuration
+     *
+     * @throws TideGenerationException
      *
      * @return Task
      */

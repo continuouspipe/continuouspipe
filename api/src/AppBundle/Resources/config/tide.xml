@@ -79,8 +79,10 @@
             </argument>
         </service>
 
+        <service id="river.flow.variable.flow_variable_resolver" class="ContinuousPipe\River\Flow\Variable\FlowVariableResolver" />
         <service id="river.tide.configuration_finalizer.replace_environ_values"
                  class="ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues">
+            <argument type="service" id="river.flow.variable.flow_variable_resolver" />
             <argument type="service" id="river.flow.encrypted_variable_vault" />
         </service>
 
