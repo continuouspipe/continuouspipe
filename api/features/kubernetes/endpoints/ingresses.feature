@@ -261,3 +261,44 @@ Feature:
     Then the ingress named "www" should be created
     And the deployment should contain the endpoint "app-yves.continuouspipe.net"
     And the deployment should contain the endpoint "app-zed.continuouspipe.net"
+
+  Scenario: The ingress should use secure backends if the component exposes the port 443
+    Given the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "https", "port": 443, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "www",
+            "ingress": {
+              "class": "nginx",
+              "rules": [
+                {
+                  "host": "app-www.continuouspipe.net"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the ingress named "www" should be created
+    And the ingress named "www" should have the hostname "app-www.continuouspipe.net"
+    And the ingress named "www" should have the backend service "www" on port "443"
+    And the ingress named "www" should be using secure backends
