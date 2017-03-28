@@ -228,7 +228,7 @@ class IngressFactory implements EndpointFactory
      */
     private function getHostsFromRules(array $rules) : array
     {
-        return array_map(function(IngressRule $rule) {
+        return array_map(function (IngressRule $rule) {
             return $rule->getHost();
         }, $rules);
     }
