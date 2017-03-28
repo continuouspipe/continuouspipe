@@ -87,14 +87,16 @@ class WaitPublicServicesEndpoints
         $loop = React\EventLoop\Factory::create();
 
         $waitPromises = array_map(function (KubernetesObject $object) use ($loop, $context) {
-            return $this->waiter->waitEndpoint($loop, $context, $object);
+            return $this->waiter->waitEndpoints($loop, $context, $object);
         }, $objects);
 
         $endpoints = [];
         $exception = null;
 
-        React\Promise\all($waitPromises)->then(function (array $foundEndpoints) use (&$endpoints) {
-            $endpoints = $foundEndpoints;
+        React\Promise\all($waitPromises)->then(function (array $foundEndpointsPerObject) use (&$endpoints) {
+            foreach ($foundEndpointsPerObject as $foundEndpoints) {
+                $endpoints = array_merge($endpoints, $foundEndpoints);
+            }
         }, function (EndpointException $e) use (&$exception) {
             $exception = $e;
         });

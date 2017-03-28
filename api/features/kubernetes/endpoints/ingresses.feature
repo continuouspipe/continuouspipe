@@ -175,7 +175,7 @@ Feature:
     Then the ingress named "www" should be created
     And the deployment should be failed
 
-  Scenario: Create an ingress wth hostname
+  Scenario: Create an ingress with hostname
     Given the components specification are:
     """
     [
@@ -217,3 +217,47 @@ Feature:
     And the ingress named "www" should have the class "nginx"
     And the ingress named "www" should have the backend service "www" on port "80"
     And the ingress named "www" should not be using secure backends
+
+  Scenario: It returns the ingress hosts in the endpoints
+    Given the ingress "www" will be created with the public IP "1.2.3.4"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "www",
+            "ingress": {
+              "class": "nginx",
+              "rules": [
+                {
+                  "host": "app-yves.continuouspipe.net"
+                },
+                {
+                  "host": "app-zed.continuouspipe.net"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the ingress named "www" should be created
+    And the deployment should contain the endpoint "app-yves.continuouspipe.net"
+    And the deployment should contain the endpoint "app-zed.continuouspipe.net"

@@ -77,17 +77,6 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
             return $publicEndpoint;
         }
 
-        try {
-            $cloudFlareAnnotation = $this->annotationManager->readAnnotation($deploymentContext, $object, 'com.continuouspipe.io.cloudflare.zone');
-        } catch (Exception $e) {
-            $this->logger->warning('Unable to apply CloudFlare transformation', [
-                'exception' => $e,
-                'object' => $object,
-            ]);
-
-            return $publicEndpoint;
-        }
-
         $recordAddress = $publicEndpoint->getAddress();
         $recordType = $this->getRecordTypeFromAddress($recordAddress);
         $recordName = $deploymentContext->getEnvironment()->getName() . $cloudFlareZone->getRecordSuffix();

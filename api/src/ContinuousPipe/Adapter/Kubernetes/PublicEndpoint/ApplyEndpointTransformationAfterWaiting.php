@@ -28,18 +28,35 @@ class ApplyEndpointTransformationAfterWaiting implements PublicEndpointWaiter
     /**
      * {@inheritdoc}
      */
-    public function waitEndpoint(React\EventLoop\LoopInterface $loop, DeploymentContext $context, KubernetesObject $object)
+    public function waitEndpoints(React\EventLoop\LoopInterface $loop, DeploymentContext $context, KubernetesObject $object)
     {
-        return $this->decoratedWaiter->waitEndpoint($loop, $context, $object)->then(function (PublicEndpoint $endpoint) use ($context, $object) {
-            if (null === ($configuration = $this->getEndpointConfiguration($context, $endpoint))) {
+        return $this->decoratedWaiter->waitEndpoints($loop, $context, $object)->then(function (array $foundEndpoints) use ($context, $object) {
+            // Create the `PublicEndpointWithItsConfiguration` objects
+            $endpointsWithConfiguration = array_map(function (PublicEndpoint $endpoint) use ($context) {
+                if (null !== ($configuration = $this->getEndpointConfiguration($context, $endpoint))) {
+                    return PublicEndpointWithItsConfiguration::fromEndpoint($endpoint, $configuration);
+                }
+
                 return $endpoint;
-            }
+            }, $foundEndpoints);
 
             foreach ($this->transformers as $transformer) {
-                $endpoint = $transformer->transform($context, $endpoint, $configuration, $object);
+                if ($transformer instanceof PublicEndpointTransformer) {
+                    $endpointsWithConfiguration = array_map(function (PublicEndpoint $publicEndpoint) use ($context, $object, $transformer) {
+                        if ($publicEndpoint instanceof PublicEndpointWithItsConfiguration) {
+                            return $transformer->transform($context, $publicEndpoint, $publicEndpoint->getConfiguration(), $object);
+                        }
+
+                        return $publicEndpoint;
+                    }, $endpointsWithConfiguration);
+                }
+
+                if ($transformer instanceof PublicEndpointCollectionTransformer) {
+                    $endpointsWithConfiguration = $transformer->transform($context, $endpointsWithConfiguration, $object);
+                }
             }
 
-            return $endpoint;
+            return $endpointsWithConfiguration;
         });
     }
 

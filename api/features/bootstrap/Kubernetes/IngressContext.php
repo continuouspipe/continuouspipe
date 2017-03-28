@@ -200,14 +200,30 @@ class IngressContext implements Context
      */
     public function theIngressWillBeCreatedWithThePublicDnsAddress($name, $address)
     {
-        $this->hookableIngressRepository->addFindOneByNameHooks(function(Ingress $ingress) use ($name, $address) {
+        $this->theIngressWillBeCreatedWithTheStatus($name, new LoadBalancerIngress(null, $address));
+    }
 
+    /**
+     * @Given the ingress :name will be created with the public IP :ip
+     */
+    public function theIngressWillBeCreatedWithThePublicIp($name, $ip)
+    {
+        $this->theIngressWillBeCreatedWithTheStatus($name, new LoadBalancerIngress($ip));
+    }
+
+    /**
+     * @param $name
+     * @param $status
+     */
+    private function theIngressWillBeCreatedWithTheStatus($name, $status)
+    {
+        $this->hookableIngressRepository->addFindOneByNameHooks(function (Ingress $ingress) use ($name, $status) {
             if ($ingress->getMetadata()->getName() == $name) {
                 $ingress = new Ingress(
                     $ingress->getMetadata(),
                     $ingress->getSpecification(),
                     new IngressStatus(new LoadBalancerStatus([
-                        new LoadBalancerIngress($address)
+                        $status
                     ]))
                 );
             }
