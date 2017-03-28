@@ -150,7 +150,7 @@ class IngressFactory implements EndpointFactory
                 'tls.crt' => $sslCertificate->getCert(),
                 'tls.key' => $sslCertificate->getKey(),
             ],
-            'Opaque'
+            'kubernetes.io/tls'
         );
     }
 
