@@ -7,9 +7,13 @@ use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointFactory;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\TransformationException;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Component\Endpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpointPort;
 use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressBackend;
+use Kubernetes\Client\Model\IngressHttpRule;
+use Kubernetes\Client\Model\IngressHttpRulePath;
+use Kubernetes\Client\Model\IngressRule;
 use Kubernetes\Client\Model\IngressSpecification;
 use Kubernetes\Client\Model\IngressTls;
 use Kubernetes\Client\Model\KeyValueObjectList;
@@ -40,31 +44,44 @@ class IngressFactory implements EndpointFactory
      */
     public function createObjectsFromEndpoint(Component $component, Endpoint $endpoint)
     {
-        if (null === ($type = $endpoint->getType())) {
-            $type = count($endpoint->getSslCertificates()) > 0 ? ServiceSpecification::TYPE_CLUSTER_IP : ServiceSpecification::TYPE_LOAD_BALANCER;
+        $ingressType = $this->getIngressType($endpoint);
+        $serviceType = $this->getServiceType($endpoint, $ingressType);
+
+        $service = $this->createService($component, $endpoint, $serviceType);
+
+        // The `LoadBalancer` service is enough.
+        if ($serviceType === ServiceSpecification::TYPE_LOAD_BALANCER) {
+            return [
+                $service,
+            ];
         }
 
-        if ($type == 'ingress') {
-            $type = ServiceSpecification::TYPE_NODE_PORT;
+        if (null === ($endpointIngress = $endpoint->getIngress())) {
+            $endpointIngress = new Endpoint\EndpointIngress(null, []);
         }
 
-        $service = $this->createService($component, $endpoint, $type);
+        $service->getMetadata()->getLabelList()->add(
+            new Label('source-of-ingress', $endpoint->getName())
+        );
 
-        if ($type !== ServiceSpecification::TYPE_LOAD_BALANCER) {
-            $service->getMetadata()->getLabelList()->add(
-                new Label('source-of-ingress', $endpoint->getName())
-            );
+        $sslCertificatesSecrets = array_map(function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
+            return $this->createSslCertificateSecret($endpoint, $sslCertificate);
+        }, $endpoint->getSslCertificates());
 
-            $sslCertificatesSecrets = array_map(function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
-                return $this->createSslCertificateSecret($endpoint, $sslCertificate);
-            }, $endpoint->getSslCertificates());
+        $ingress = $this->createIngress(
+            $component,
+            $service,
+            $endpointIngress->getClass(),
+            array_map(function (Secret $secret) use ($endpointIngress) {
+                return new IngressTls(
+                    $secret->getMetadata()->getName(),
+                    $this->getHostsFromRules($endpointIngress->getRules())
+                );
+            }, $sslCertificatesSecrets),
+            $endpointIngress->getRules()
+        );
 
-            $ingress = $this->createIngress($component, $service, $sslCertificatesSecrets);
-
-            return array_merge($sslCertificatesSecrets, [$service, $ingress]);
-        }
-
-        return [$service];
+        return array_merge($sslCertificatesSecrets, [$service, $ingress]);
     }
 
     /**
@@ -110,38 +127,119 @@ class IngressFactory implements EndpointFactory
                 'tls.crt' => $sslCertificate->getCert(),
                 'tls.key' => $sslCertificate->getKey(),
             ],
-            'Opaque'
+            'kubernetes.io/tls'
         );
     }
 
     /**
-     * @param Component                 $component
-     * @param Service                   $service
-     * @param Endpoint\SslCertificate[] $sslCertificatesSecrets
+     * @param Component $component
+     * @param Service $service
+     * @param string $class
+     * @param array $tlsCertificates
+     * @param array $rules
      *
      * @return Ingress
      */
-    private function createIngress(Component $component, Service $service, array $sslCertificatesSecrets)
+    private function createIngress(Component $component, Service $service, string $class = null, array $tlsCertificates = [], array $rules = [])
     {
         $labels = $this->namingStrategy->getLabelsByComponent($component);
         $labels->add(new Label('service-type', $service->getSpecification()->getType()));
 
+        $annotations = new KeyValueObjectList();
+
+        if (null !== $class) {
+            $annotations->add(new Annotation('kubernetes.io/ingress.class', $class));
+        }
+
+        $portNumbers = array_map(function (ServicePort $port) {
+            return (int) $port->getPort();
+        }, $service->getSpecification()->getPorts());
+
+        $exposedPort = current($portNumbers);
+        if (in_array(443, $portNumbers)) {
+            $exposedPort = 443;
+            $annotations->add(new Annotation('ingress.kubernetes.io/secure-backends', 'true'));
+        } elseif (in_array(80, $portNumbers)) {
+            $exposedPort = 80;
+        }
+
+        $ingressBackend = new IngressBackend(
+            $service->getMetadata()->getName(),
+            $exposedPort
+        );
+
         return new Ingress(
             new ObjectMetadata(
                 $service->getMetadata()->getName(),
-                $labels
+                $labels,
+                $annotations
             ),
             new IngressSpecification(
-                new IngressBackend(
-                    $service->getMetadata()->getName(),
-                    $service->getSpecification()->getPorts()[0]->getPort()
-                ),
-                array_map(function (Secret $secret) {
-                    return new IngressTls(
-                        $secret->getMetadata()->getName()
+                $ingressBackend,
+                $tlsCertificates,
+                array_map(function (IngressRule $rule) use ($ingressBackend) {
+                    if (null === ($http = $rule->getHttp())) {
+                        $http = new IngressHttpRule([
+                            new IngressHttpRulePath($ingressBackend),
+                        ]);
+                    }
+
+                    return new IngressRule(
+                        $rule->getHost(),
+                        $http
                     );
-                }, $sslCertificatesSecrets)
+                }, $rules)
             )
         );
+    }
+    /**
+     * @param IngressRule[] $rules
+     *
+     * @return string[]
+     */
+    private function getHostsFromRules(array $rules) : array
+    {
+        return array_map(function (IngressRule $rule) {
+            return $rule->getHost();
+        }, $rules);
+    }
+
+    private function getIngressType(Endpoint $endpoint): string
+    {
+        if (null !== ($type = $endpoint->getType())) {
+            return $type;
+        }
+
+        if (null !== $endpoint->getIngress() || count($endpoint->getSslCertificates()) > 0) {
+            return 'ingress';
+        }
+
+        return 'service';
+    }
+
+    private function getServiceType(Endpoint $endpoint, string $ingressType): string
+    {
+        if ($ingressType == 'NodePort') {
+            return ServiceSpecification::TYPE_NODE_PORT;
+        } elseif ($ingressType != 'ingress') {
+            return ServiceSpecification::TYPE_LOAD_BALANCER;
+        }
+
+        if (null === ($endpointIngress = $endpoint->getIngress())) {
+            if (count($endpoint->getSslCertificates()) > 0) {
+                return ServiceSpecification::TYPE_CLUSTER_IP;
+            } else {
+                return ServiceSpecification::TYPE_NODE_PORT;
+            }
+        } elseif ($this->classHasToBeNodePort($endpointIngress->getClass())) {
+            return ServiceSpecification::TYPE_NODE_PORT;
+        }
+
+        return ServiceSpecification::TYPE_CLUSTER_IP;
+    }
+
+    private function classHasToBeNodePort(string $class) : bool
+    {
+        return in_array($class, ['gce']);
     }
 }

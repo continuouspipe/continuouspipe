@@ -70,7 +70,7 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
      *
      * @throws EndpointNotFound
      */
-    public function waitEndpoint(React\EventLoop\LoopInterface $loop, DeploymentContext $context, KubernetesObject $object)
+    public function waitEndpoints(React\EventLoop\LoopInterface $loop, DeploymentContext $context, KubernetesObject $object)
     {
         $objectName = $object->getMetadata()->getName();
         $logger = $this->loggerFactory->from($context->getLog())->child(new Text('Waiting public endpoint of service '.$objectName));
@@ -81,7 +81,9 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         return $this->waitPublicEndpoint($loop, $client, $object, $logger)->then(function (PublicEndpoint $endpoint) use ($logger) {
             $logger->updateStatus(Log::SUCCESS);
 
-            return $endpoint;
+            return [
+                $endpoint,
+            ];
         }, function (EndpointNotFound $e) use ($logger) {
             $logger->updateStatus(Log::FAILURE);
 
@@ -135,12 +137,12 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
             $updateEvents();
 
             return $endpoint;
-        }, function ($reason) use ($timer, $updateEvents) {
+        }, function (\Throwable $reason) use ($timer, $updateEvents) {
             $timer->cancel();
             $updateEvents();
 
             if ($reason instanceof React\Promise\Timer\TimeoutException) {
-                $reason = new EndpointNotFound('Endpoint still not found. Timed-out.');
+                $reason = new EndpointNotFound('Endpoint still not found. Timed-out.', $reason->getCode(), $reason);
             }
 
             throw $reason;

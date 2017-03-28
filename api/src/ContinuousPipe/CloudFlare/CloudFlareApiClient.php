@@ -30,27 +30,45 @@ class CloudFlareApiClient implements CloudFlareClient
     /**
      * {@inheritdoc}
      */
-    public function createRecord(string $zone, CloudFlareAuthentication $authentication, ZoneRecord $record) : string
+    public function createOrUpdateRecord(string $zone, CloudFlareAuthentication $authentication, ZoneRecord $record) : string
     {
         try {
-            $response = $this->authenticatedCloudFlareClientFactory->dns($authentication)->create(
-                $zone,
-                $record->getType(),
-                $record->getHostname(),
-                $record->getAddress(),
-                $record->getTtl() ?: 1,
-                $record->isProxied() ?: false
-            );
+            $dns = $this->authenticatedCloudFlareClientFactory->dns($authentication);
+
+            $response = $dns->list_records($zone, null, $record->getHostname());
+            $existingRecord = isset($response->result) && is_array($response->result) ? reset($response->result) : false;
+
+            if (false === $existingRecord) {
+                $response = $dns->create(
+                    $zone,
+                    $record->getType(),
+                    $record->getHostname(),
+                    $record->getAddress(),
+                    $record->getTtl() ?: 1,
+                    $record->isProxied() ?: false
+                );
+            } else {
+                $response = $dns->update(
+                    $zone,
+                    $existingRecord->id,
+                    $record->getType(),
+                    $record->getHostname(),
+                    $record->getAddress(),
+                    $record->getTtl() ?: 1,
+                    $record->isProxied() ?: false
+                );
+            }
+
+            if (!isset($response->result->id)) {
+                $this->logger->warning('CloudFlare response is not understandable', [
+                    'response' => \GuzzleHttp\json_encode($response),
+                    'existing_record' => $existingRecord,
+                ]);
+
+                throw new CloudFlareException('The response from CloudFlare wasn\'t matching expected response');
+            }
         } catch (\Exception $e) {
             throw new CloudFlareException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        if (!isset($response->result->id)) {
-            $this->logger->warning('CloudFlare response is not understandable', [
-                'response' => \GuzzleHttp\json_encode($response),
-            ]);
-
-            throw new CloudFlareException('The response from CloudFlare wasn\'t matching expected response');
         }
 
         return $response->result->id;

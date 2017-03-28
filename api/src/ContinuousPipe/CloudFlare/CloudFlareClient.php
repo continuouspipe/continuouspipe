@@ -15,7 +15,7 @@ interface CloudFlareClient
      *
      * @return string
      */
-    public function createRecord(string $zone, CloudFlareAuthentication $authentication, ZoneRecord $record) : string;
+    public function createOrUpdateRecord(string $zone, CloudFlareAuthentication $authentication, ZoneRecord $record) : string;
 
     /**
      * @param string $zone

@@ -112,6 +112,7 @@
         </service>
 
         <!-- Endpoint integrations -->
+        <service id="pipe.adapter.kubernetes.public_endpoint.ingress.use_ingress_rules_as_endpoint" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\Ingress\Transformer\UsesIngressRulesAsEndpoint" />
         <service id="pipe.adapter.kubernetes.service_waiter.transform_endpoints"
                  class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\ApplyEndpointTransformationAfterWaiting"
                  decorates="pipe.adapter.kubernetes.service_waiter">
@@ -119,6 +120,7 @@
             <argument type="collection">
                 <argument type="service" id="pipe.httplabs.endpoint_transformer" />
                 <argument type="service" id="pipe.cloud_flare.endpoint_transformer" />
+                <argument type="service" id="pipe.adapter.kubernetes.public_endpoint.ingress.use_ingress_rules_as_endpoint" />
             </argument>
         </service>
 
