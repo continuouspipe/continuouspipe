@@ -389,3 +389,47 @@ Feature:
     And the CloudFlare zone "app-zed.continuouspipe.net" should have been created with the type A and the address "1.2.3.4"
     And the deployment should contain the endpoint "app-yves.continuouspipe.net"
     And the deployment should contain the endpoint "app-zed.continuouspipe.net"
+
+  Scenario: It creates a DNS zone in CloudFlare with the manually defined
+    Given the service "http" will be created with the public DNS address "112345.elb.aws.com"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "cloud_flare_zone": {
+              "zone_identifier": "1234531235qwerty",
+              "record_suffix": "-myapp.example.com",
+              "backend_address": "google.com",
+              "authentication": {
+                "email": "samuel@example.com",
+                "api_key": "foobar"
+              }
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the service "http" should be created
+    And the CloudFlare zone "master-myapp.example.com" should have been created with the type CNAME and the address "google.com"
+    And the annotation "com.continuouspipe.io.cloudflare.records" of the service "http" should contain an entry the following keys in its JSON:
+      | name              | value                    |
+      | record_name       | master-myapp.example.com |

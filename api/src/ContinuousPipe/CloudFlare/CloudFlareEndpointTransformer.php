@@ -91,7 +91,10 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
             throw new EndpointException('Can\'t find which DNS record to create. You can set the `record_suffix` or some ingress hosts.');
         }
 
-        $recordAddress = $publicEndpoint->getAddress();
+        if (null === ($recordAddress = $cloudFlareZone->getBackendAddress())) {
+            $recordAddress = $publicEndpoint->getAddress();
+        }
+        
         $recordType = $this->getRecordTypeFromAddress($recordAddress);
 
         $logger = $this->loggerFactory->from($deploymentContext->getLog())
