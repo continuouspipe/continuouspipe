@@ -302,3 +302,47 @@ Feature:
     And the ingress named "www" should have the hostname "app-www.continuouspipe.net"
     And the ingress named "www" should have the backend service "www" on port "443"
     And the ingress named "www" should be using secure backends
+
+  Scenario: The ingress should use the provided SSL certificates
+    Given the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "https", "port": 443, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "www",
+            "ssl_certificates": [
+              {"name": "continuous-pipe", "cert": "...", "key": "..."}
+            ],
+            "ingress": {
+              "class": "nginx",
+              "rules": [
+                {
+                  "host": "app-www.continuouspipe.net"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the ingress named "www" should be created
+    And the ingress named "www" should have the hostname "app-www.continuouspipe.net"
+    And the ingress named "www" should have the backend service "www" on port "443"
+    And the ingress named "www" should have a SSL certificate for the host "app-www.continuouspipe.net"

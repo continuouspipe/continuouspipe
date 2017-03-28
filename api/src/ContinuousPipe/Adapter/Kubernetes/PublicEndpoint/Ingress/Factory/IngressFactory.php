@@ -87,11 +87,6 @@ class IngressFactory implements EndpointFactory
             new Label('source-of-ingress', $endpoint->getName())
         );
 
-        if (count($endpointIngress->getRules()) > 0 && count($endpoint->getSslCertificates()) == 0) {
-            // Generate SSL certificates if the ingress as rules but don't have SSL certs for it.
-            // FIXME: Why?
-        }
-
         $sslCertificatesSecrets = array_map(function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
             return $this->createSslCertificateSecret($endpoint, $sslCertificate);
         }, $endpoint->getSslCertificates());
@@ -100,9 +95,10 @@ class IngressFactory implements EndpointFactory
             $component,
             $service,
             $endpointIngress->getClass(),
-            array_map(function (Secret $secret) {
+            array_map(function (Secret $secret) use ($endpointIngress) {
                 return new IngressTls(
-                    $secret->getMetadata()->getName()
+                    $secret->getMetadata()->getName(),
+                    $this->getHostsFromRules($endpointIngress->getRules())
                 );
             }, $sslCertificatesSecrets),
             $endpointIngress->getRules()
@@ -223,5 +219,17 @@ class IngressFactory implements EndpointFactory
     private function classHasToBeNodePort(string $class) : bool
     {
         return in_array($class, ['gce']);
+    }
+
+    /**
+     * @param IngressRule[] $rules
+     *
+     * @return string[]
+     */
+    private function getHostsFromRules(array $rules) : array
+    {
+        return array_map(function(IngressRule $rule) {
+            return $rule->getHost();
+        }, $rules);
     }
 }

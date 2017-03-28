@@ -158,6 +158,10 @@ class IngressContext implements Context
         $ingress = $this->ingressRepository->findOneByName($name);
 
         foreach ($ingress->getSpecification()->getTls() as $tls) {
+            if (null === $tls->getHosts()) {
+                continue;
+            }
+
             foreach ($tls->getHosts() as $tlsHost) {
                 if ($tlsHost == $host) {
                     return $tls;
@@ -166,16 +170,6 @@ class IngressContext implements Context
         }
 
         throw new \RuntimeException('No TLS certificate found for this host');
-    }
-
-    /**
-     * @Then the ingress named :name should have a SSL certificate for the host :host with a CN :cn
-     */
-    public function theIngressNamedShouldHaveASslCertificateForTheHostWithACn($name, $host, $cn)
-    {
-        $ingress = $this->theIngressNamedShouldHaveASslCertificateForTheHost($name, $host);
-
-        throw new \RuntimeException('TODO: Get TLS from secret '.$ingress->getSecretName());
     }
 
     /**
