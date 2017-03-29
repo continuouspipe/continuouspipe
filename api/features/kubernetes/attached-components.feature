@@ -35,3 +35,18 @@ Feature:
     When I send the built deployment request
     And the deployment should be successful
     And the pod "app" should be deleted
+
+  Scenario: If such pod is already running, failing with a clear error message
+    Given there is a pod "app" already running
+    And the specification come from the template "attached-component"
+    When I send the built deployment request
+    And the deployment should be failed
+    And I should see a text log event in the log stream with message 'A running pod named "app" was found'
+
+  Scenario: It such pod already exists but is completed, deletes it
+    Given there is a completed pod "app"
+    And the pod "app" will run successfully
+    And the specification come from the template "attached-component"
+    When I send the built deployment request
+    And the deployment should be successful
+    And the pod "app" should be deleted
