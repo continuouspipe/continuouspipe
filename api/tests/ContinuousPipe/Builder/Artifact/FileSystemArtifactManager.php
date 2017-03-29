@@ -28,7 +28,7 @@ class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter, Artif
     {
         $localArtifactPath = $this->getArtifactPath($artifact);
         if (!file_exists($localArtifactPath)) {
-            throw new ArtifactNotFound(sprintf('Artifact "%s" is not found (searched: %s)', $artifact->getIdentifier(), $localArtifactPath));
+            throw new ArtifactNotFound(sprintf('Artifact "%s" not found (searched: %s)', $artifact->getName(), $localArtifactPath));
         }
 
         return Archive\FileSystemArchive::fromStream(fopen($localArtifactPath, 'r'));

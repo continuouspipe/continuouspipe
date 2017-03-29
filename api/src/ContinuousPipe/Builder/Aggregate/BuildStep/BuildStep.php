@@ -207,10 +207,12 @@ class BuildStep
 
             try {
                 $archive = $artifactReader->read($artifact);
-            } catch (ArtifactNotFound $e) {
-                $line->child(new Text('The artifact was not found, considering it empty.'));
             } catch (ArtifactException $e) {
-                return $this->failed($e, $line);
+                if ($e instanceof ArtifactNotFound && $artifact->isPersistent()) {
+                    $line->child(new Text('The artifact was not found, considering it empty.'));
+                } else {
+                    return $this->failed($e, $line);
+                }
             }
 
             if (isset($archive)) {

@@ -198,7 +198,7 @@ Feature:
     And the artifact "artifact-00000000-0000-0000-0000-000000000000" should not have been deleted
     And a log containing 'Writing artifact "/app/dist"' should be created
 
-  Scenario: It considers an artifact as empty if it do not exists
+  Scenario: It fails if an artifact do not exists and is not persistent
     When I send the following build request:
     """
     {
@@ -213,6 +213,31 @@ Feature:
             {
               "identifier": "artifact-00000000-0000-0000-0000-000000000000",
               "path": "/dist-renamed"
+            }
+          ]
+        }
+      ]
+    }
+    """
+    Then the build should be failed
+    And a log containing 'Artifact "/dist-renamed" not found' should be created
+
+  Scenario: It considers an artifact as empty if it do not exists if it is persistent
+    When I send the following build request:
+    """
+    {
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "steps": [
+        {
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "master"
+          },
+          "read_artifacts": [
+            {
+              "identifier": "artifact-00000000-0000-0000-0000-000000000000",
+              "path": "/dist-renamed",
+              "persistent": true
             }
           ]
         }

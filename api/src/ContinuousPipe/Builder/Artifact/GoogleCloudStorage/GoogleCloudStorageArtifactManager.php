@@ -47,7 +47,7 @@ class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReade
                 )
             );
         } catch (NotFoundException $e) {
-            throw new ArtifactException(sprintf('Artifact "%s" not found', $artifact->getIdentifier()), $e->getCode(), $e);
+            throw new ArtifactException(sprintf('Artifact "%s" not found', $artifact->getName()), $e->getCode(), $e);
         } catch (GoogleException $e) {
             throw new ArtifactException('Unable to read the artifact from the bucket', $e->getCode(), $e);
         }
