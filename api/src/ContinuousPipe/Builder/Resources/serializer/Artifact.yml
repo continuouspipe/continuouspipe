@@ -4,3 +4,5 @@ ContinuousPipe\Builder\Artifact:
             type: string
         path:
             type: string
+        persistent:
+            type: boolean

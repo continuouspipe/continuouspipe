@@ -165,3 +165,34 @@ Feature:
     """
     Then the build should be successful
     And the artifact "artifact-00000000-0000-0000-0000-000000000000" should not have been deleted
+
+  Scenario: It do not remove the persistent artifacts after the builds
+    When I send the following build request:
+    """
+    {
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "steps": [
+        {
+          "repository": {
+            "address": "fixtures://build-container-with-artifacts",
+            "branch": "master"
+          },
+          "context": {
+            "docker_file_path": "Buildfile"
+          },
+          "environment": {
+            "TOKEN": "secret-token"
+          },
+          "write_artifacts": [
+            {
+              "identifier": "artifact-00000000-0000-0000-0000-000000000000",
+              "path": "/app/dist",
+              "persistent": true
+            }
+          ]
+        }
+      ]
+    }
+    """
+    Then the build should be successful
+    And the artifact "artifact-00000000-0000-0000-0000-000000000000" should not have been deleted

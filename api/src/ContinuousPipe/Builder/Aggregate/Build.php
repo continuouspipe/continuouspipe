@@ -17,6 +17,7 @@ use ContinuousPipe\Events\Aggregate;
 use ContinuousPipe\Events\Capabilities\ApplyEventCapability;
 use ContinuousPipe\Events\Capabilities\RaiseEventCapability;
 use ContinuousPipe\Security\User\User;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 class Build implements Aggregate
@@ -93,13 +94,20 @@ class Build implements Aggregate
         ));
     }
 
-    public function cleanUp(Artifact\ArtifactRemover $artifactRemover)
+    public function cleanUp(Artifact\ArtifactRemover $artifactRemover, LoggerInterface $logger)
     {
         foreach ($this->writtenArtifacts as $artifact) {
+            if ($artifact->isPersistent()) {
+                continue;
+            }
+
             try {
                 $artifactRemover->remove($artifact);
             } catch (Artifact\ArtifactException $e) {
-                // Ignore if we weren't able to remove an artifact
+                $logger->warning('Unable to delete an artifact', [
+                    'build_identifier' => $this->identifier,
+                    'exception' => $e,
+                ]);
             }
         }
     }
