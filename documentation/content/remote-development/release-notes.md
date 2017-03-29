@@ -1,5 +1,5 @@
 ---
-title: Release Notes v0.1.1
+title: Release Notes v0.1.2
 menu:
   main:
     parent: 'remote-development'
@@ -10,20 +10,25 @@ weight: 170
 
 ## New Features
 
-* Added `--interactive [-i]` flag to the `bash`, `exec` and `init` commands
+* Added `logs` command, check the available flags using `cp-remote logs --help`
 
-* The list of the public endpoints in shown in the commands `watch [-wa]`, `checkconnection [-ck]` and `pods [-po]`
+* Added `--dry-run` flag for watch, fetch and sync
+
+* Added `--rsync-verbose` flag in watch, fetch and push to help throubleshooting potential issues with ignore files
+
+* Allowing user to create a `.cp-remote-ignore-fetch` which will be included only when doing `fetch`. It allows to override the default `.cp-remote-ignore` file
+
 
 ## Bug Fixes
 
-* Fix in `build` comand - it was not pushing to remote when remote already existed.
+* Fix in `init` command - when a tide is successful but it skipped the whole build due to filters the environment does not exist and it will now exit with an error
 
-* Fix in `init` command - if an error occurs when git pushes to remote the init process will immediately terminate with an error.
-
-* Fix in `exec` command - it will now stream the output of the commands. This fix will allow an alternative shell to be used if bash does not exist in the remote container by running `cp-remote exec -- /bin/sh`
-
-* Fix in `.cp-remote-ignore` - `rsync` uses its own pattern implementation rather than `regex` so we have replaced `/\.[^/]*$` with `.*`, `\.idea` with `.idea` and `\.git` with `.git`. For more information about the `rsync` patterns refer to the section INCLUDE/EXCLUDE PATTERN RULES in the rsync manual (`man rsync`)
+* Fix in `init` command - when a tide failed the process was hanging rather than exiting
 
 ## Other Changes
 
-* Showing all public endpoints after `init` has built the environment
+* More descriptive error messages when the CP Api does not respond or it fails to return the data
+
+* Printing version number at the top of the cp-remote log file
+
+* `watch` and `sync` commands won't delete files unless the flag `--delete` is set.
