@@ -3,9 +3,9 @@ title: "Tasks: Building Docker Images"
 menu:
   main:
     parent: 'configuration'
-    weight: 35
+    weight: 30
 
-weight: 35
+weight: 30
 ---
 ## YAML Configuration
 

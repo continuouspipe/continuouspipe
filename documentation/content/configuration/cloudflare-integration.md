@@ -1,5 +1,5 @@
 ---
-title: Cloudflare Integration?
+title: Cloudflare Integration
 menu:
   main:
     parent: 'configuration'
