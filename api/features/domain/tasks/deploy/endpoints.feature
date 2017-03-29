@@ -291,3 +291,29 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration
+
+  Scenario: A wrong tide expression do not fail dramatically
+    When I tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                ingress:
+                                    class: nginx
+                                    host:
+                                        expression: 'certeo.inviqa-001.continuouspipe.net'
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the tide should be failed
+    And a log containing 'The expression provided ("certeo.inviqa-001.continuouspipe.net") is not valid' should be created
