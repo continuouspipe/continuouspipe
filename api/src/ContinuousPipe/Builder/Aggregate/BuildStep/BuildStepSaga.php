@@ -24,6 +24,7 @@ use ContinuousPipe\Builder\Docker\DockerImageReader;
 use ContinuousPipe\Builder\Request\ArchiveSource;
 use ContinuousPipe\Events\Transaction\TransactionManager;
 use Http\Client\Common\Plugin\DecoderPlugin;
+use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
 
 class BuildStepSaga
@@ -56,6 +57,10 @@ class BuildStepSaga
      * @var DockerImageReader
      */
     private $dockerImageReader;
+    /**
+     * @var LoggerFactory
+     */
+    private $loggerFactory;
 
     public function __construct(
         BuildStepRepository $buildStepRepository,
@@ -64,7 +69,8 @@ class BuildStepSaga
         DockerFacade $dockerFacade,
         ArtifactReader $artifactReader,
         ArtifactWriter $artifactWriter,
-        DockerImageReader $dockerImageReader
+        DockerImageReader $dockerImageReader,
+        LoggerFactory $loggerFactory
     ) {
         $this->buildStepRepository = $buildStepRepository;
         $this->eventBus = $eventBus;
@@ -73,6 +79,7 @@ class BuildStepSaga
         $this->artifactReader = $artifactReader;
         $this->artifactWriter = $artifactWriter;
         $this->dockerImageReader = $dockerImageReader;
+        $this->loggerFactory = $loggerFactory;
     }
 
     public function notify($event)
@@ -99,11 +106,11 @@ class BuildStepSaga
         if ($event instanceof StepStarted) {
             $step->downloadArchive($this->archiveBuilder);
         } elseif ($event instanceof CodeArchiveCreated) {
-            $step->readArtifacts($this->artifactReader);
+            $step->readArtifacts($this->artifactReader, $this->loggerFactory);
         } elseif ($event instanceof ReadArtifacts) {
             $step->buildImage($this->dockerFacade);
         } elseif ($event instanceof DockerImageBuilt) {
-            $step->writeArtifacts($this->dockerImageReader, $this->artifactWriter);
+            $step->writeArtifacts($this->dockerImageReader, $this->artifactWriter, $this->loggerFactory);
         } elseif ($event instanceof WroteArtifacts) {
             $step->pushImage($this->dockerFacade);
         } elseif ($event instanceof StepFinished || $event instanceof StepFailed) {

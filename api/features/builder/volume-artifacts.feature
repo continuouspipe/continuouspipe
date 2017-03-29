@@ -165,3 +165,85 @@ Feature:
     """
     Then the build should be successful
     And the artifact "artifact-00000000-0000-0000-0000-000000000000" should not have been deleted
+
+  Scenario: It do not remove the persistent artifacts after the builds
+    When I send the following build request:
+    """
+    {
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "steps": [
+        {
+          "repository": {
+            "address": "fixtures://build-container-with-artifacts",
+            "branch": "master"
+          },
+          "context": {
+            "docker_file_path": "Buildfile"
+          },
+          "environment": {
+            "TOKEN": "secret-token"
+          },
+          "write_artifacts": [
+            {
+              "identifier": "artifact-00000000-0000-0000-0000-000000000000",
+              "path": "/app/dist",
+              "persistent": true
+            }
+          ]
+        }
+      ]
+    }
+    """
+    Then the build should be successful
+    And the artifact "artifact-00000000-0000-0000-0000-000000000000" should not have been deleted
+    And a log containing 'Writing artifact "/app/dist"' should be created
+
+  Scenario: It fails if an artifact do not exists and is not persistent
+    When I send the following build request:
+    """
+    {
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "steps": [
+        {
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "master"
+          },
+          "read_artifacts": [
+            {
+              "identifier": "artifact-00000000-0000-0000-0000-000000000000",
+              "path": "/dist-renamed"
+            }
+          ]
+        }
+      ]
+    }
+    """
+    Then the build should be failed
+    And a log containing 'Artifact "/dist-renamed" not found' should be created
+
+  Scenario: It considers an artifact as empty if it do not exists if it is persistent
+    When I send the following build request:
+    """
+    {
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "steps": [
+        {
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "master"
+          },
+          "read_artifacts": [
+            {
+              "identifier": "artifact-00000000-0000-0000-0000-000000000000",
+              "path": "/dist-renamed",
+              "persistent": true
+            }
+          ]
+        }
+      ]
+    }
+    """
+    Then the build should be successful
+    And a log containing 'Reading artifact "/dist-renamed"' should be created
+    And a log containing 'The artifact was not found, considering it empty.' should be created

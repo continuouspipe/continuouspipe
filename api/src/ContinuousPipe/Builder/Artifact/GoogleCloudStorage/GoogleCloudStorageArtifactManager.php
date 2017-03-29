@@ -9,6 +9,7 @@ use ContinuousPipe\Builder\Artifact\ArtifactReader;
 use ContinuousPipe\Builder\Artifact\ArtifactWriter;
 use ContinuousPipe\Builder\Artifact\ArtifactRemover;
 use Google\Cloud\Exception\GoogleException;
+use Google\Cloud\Exception\NotFoundException;
 use Google\Cloud\ServiceBuilder;
 use Google\Cloud\Storage\Bucket;
 use GuzzleHttp\Psr7\StreamWrapper;
@@ -45,6 +46,8 @@ class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReade
                     $this->getBucket()->object($artifact->getIdentifier())->downloadAsStream()
                 )
             );
+        } catch (NotFoundException $e) {
+            throw new ArtifactException(sprintf('Artifact "%s" not found', $artifact->getName()), $e->getCode(), $e);
         } catch (GoogleException $e) {
             throw new ArtifactException('Unable to read the artifact from the bucket', $e->getCode(), $e);
         }

@@ -10,6 +10,7 @@ use ContinuousPipe\Builder\Aggregate\Event\BuildFinished;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStarted;
 use ContinuousPipe\Builder\Artifact\ArtifactRemover;
 use ContinuousPipe\Events\Transaction\TransactionManager;
+use Psr\Log\LoggerInterface;
 
 class BuildSaga
 {
@@ -21,13 +22,19 @@ class BuildSaga
      * @var ArtifactRemover
      */
     private $artifactRemover;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     public function __construct(
         TransactionManager $transactionManager,
-        ArtifactRemover $artifactRemover
+        ArtifactRemover $artifactRemover,
+        LoggerInterface $logger
     ) {
         $this->transactionManager = $transactionManager;
         $this->artifactRemover = $artifactRemover;
+        $this->logger = $logger;
     }
 
     public function notify($event)
@@ -47,7 +54,7 @@ class BuildSaga
             } elseif ($event instanceof StepFinished) {
                 $build->stepFinished($event);
             } elseif ($event instanceof BuildFinished || $event instanceof BuildFailed) {
-                $build->cleanUp($this->artifactRemover);
+                $build->cleanUp($this->artifactRemover, $this->logger);
             }
         });
     }

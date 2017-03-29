@@ -76,7 +76,7 @@ class ElasticSearchReportPublisher implements ReportPublisher
 
     private function createClient($elasticSearchHostname, $apiKey) : Client
     {
-        $apiKeyHandler = function(callable $next, string $apiKey) {
+        $apiKeyHandler = function (callable $next, string $apiKey) {
             return function (array $request) use ($next, $apiKey) {
                 if (($questionMarkIndex = strpos($request['uri'], '?')) !== false) {
                     $request['query_string'] = substr($request['uri'], $questionMarkIndex + 1);
