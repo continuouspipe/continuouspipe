@@ -208,6 +208,11 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
         }, $services);
     }
 
+    /**
+     * @param TideContext $context
+     * @param array $stepConfiguration
+     * @return BuildRequestStep
+     */
     private function transformStep(TideContext $context, array $stepConfiguration) : BuildRequestStep
     {
         $step = (new BuildRequestStep())
@@ -231,6 +236,17 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
             $step = $step->withImage(new Image($stepConfiguration['image'], $stepConfiguration['tag']));
         }
 
+        if (isset($stepConfiguration['cache'])) {
+            $cacheArtifacts = array_map(function (array $cacheConfiguration) use ($context) {
+                return $this->createCacheArtifact($context, $cacheConfiguration);
+            }, $stepConfiguration['cache']);
+
+            $step = $step
+                ->withReadArtifacts(array_merge($step->getReadArtifacts(), $cacheArtifacts))
+                ->withWriteArtifacts(array_merge($step->getWriteArtifacts(), $cacheArtifacts))
+            ;
+        }
+
         return $step;
     }
 
@@ -239,6 +255,15 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
         return new Artifact(
             $context->getTideUuid()->toString() . '-' . $artifactConfiguration['name'],
             $artifactConfiguration['path']
+        );
+    }
+
+    private function createCacheArtifact(TideContext $context, array $cacheConfiguration)
+    {
+        return new Artifact(
+            $context->getFlowUuid()->toString() . '-' . $cacheConfiguration['identifier'],
+            $cacheConfiguration['path'],
+            true
         );
     }
 
@@ -321,6 +346,23 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
             ->end()
             ->append($this->artifactsNode('read_artifacts'))
             ->append($this->artifactsNode('write_artifacts'))
+            ->arrayNode('cache')
+                ->prototype('array')
+                    ->beforeNormalization()
+                        ->ifString()
+                        ->then(function ($path) {
+                            return [
+                                'identifier' => md5($path),
+                                'path' => $path,
+                            ];
+                        })
+                    ->end()
+                    ->children()
+                        ->scalarNode('identifier')->isRequired()->end()
+                        ->scalarNode('path')->isRequired()->end()
+                    ->end()
+                ->end()
+            ->end()
         ;
     }
 

@@ -575,6 +575,19 @@ class BuildContext implements Context
      */
     public function theStepOfTheBuildShouldBeStartedWithAWriteArtifactIdentifiedOnPath($stepIndex, $artifactType, $artifactIdentifier, $path)
     {
+        $this->assertTheStepOfTheBuildShouldBeStartedWithAWriteArtifactIdentifiedOnPath($stepIndex, $artifactType, $artifactIdentifier, $path);
+    }
+
+    /**
+     * @Then the step #:stepIndex of the build should be started with a persistent :artifactType artifact identified :artifactIdentifier on path :path
+     */
+    public function theStepOfTheBuildShouldBeStartedWithAPersistentWriteArtifactIdentifiedOnPath($stepIndex, $artifactType, $artifactIdentifier, $path)
+    {
+        $this->assertTheStepOfTheBuildShouldBeStartedWithAWriteArtifactIdentifiedOnPath($stepIndex, $artifactType, $artifactIdentifier, $path, true);
+    }
+
+    private function assertTheStepOfTheBuildShouldBeStartedWithAWriteArtifactIdentifiedOnPath($stepIndex, $artifactType, $artifactIdentifier, $path, $persistent = null)
+    {
         if ($artifactType === 'read') {
             $artifacts = $this->getBuildRequestStep(null, $stepIndex)->getReadArtifacts();
         } elseif ($artifactType == 'write') {
@@ -587,7 +600,13 @@ class BuildContext implements Context
         }
 
         foreach ($artifacts as $artifact) {
-            if ($artifact->getIdentifier() == $artifactIdentifier && $artifact->getPath() == $path) {
+            if (
+                $artifact->getIdentifier() == $artifactIdentifier
+                && $artifact->getPath() == $path
+                && (
+                    $persistent === null || $persistent == $artifact->isPersistent()
+                )
+            ) {
                 return;
             }
         }

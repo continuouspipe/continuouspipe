@@ -204,11 +204,12 @@ EOF;
     /**
      * @When a tide is started
      * @When a tide is started with the UUID :uuid
+     * @When a tide is started with the UUID :uuid and branch :branch
      */
-    public function aTideIsStarted($uuid = null)
+    public function aTideIsStarted($uuid = null, $branch = null)
     {
         if (null === $this->tideUuid || $uuid !== null) {
-            $this->aTideIsCreatedForBranchAndCommit(null, null, null !== $uuid ? Uuid::fromString($uuid) : null);
+            $this->aTideIsCreatedForBranchAndCommit($branch, null, null !== $uuid ? Uuid::fromString($uuid) : null);
         }
 
         $this->startTide();
