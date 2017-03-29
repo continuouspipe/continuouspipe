@@ -20,38 +20,35 @@ class Artifact
     private $persistent;
 
     /**
-     * @param string $identifier
-     * @param string $path
-     * @param bool $persistent
+     * @var string
      */
-    public function __construct($identifier, $path, bool $persistent = false)
+    private $name;
+
+    public function __construct(string $identifier, string $path, bool $persistent = false, string $name = null)
     {
         $this->identifier = $identifier;
         $this->path = $path;
         $this->persistent = $persistent;
+        $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
     public function getIdentifier(): string
     {
         return $this->identifier;
     }
 
-    /**
-     * @return string
-     */
     public function getPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * @return bool
-     */
     public function isPersistent(): bool
     {
         return $this->persistent ?: false;
+    }
+
+    public function getName() : string
+    {
+        return $this->name ?: $this->path;
     }
 }

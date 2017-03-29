@@ -196,3 +196,29 @@ Feature:
     """
     Then the build should be successful
     And the artifact "artifact-00000000-0000-0000-0000-000000000000" should not have been deleted
+    And a log containing 'Writing artifact "/app/dist"' should be created
+
+  Scenario: It considers an artifact as empty if it do not exists
+    When I send the following build request:
+    """
+    {
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "steps": [
+        {
+          "repository": {
+            "address": "fixtures://php-example",
+            "branch": "master"
+          },
+          "read_artifacts": [
+            {
+              "identifier": "artifact-00000000-0000-0000-0000-000000000000",
+              "path": "/dist-renamed"
+            }
+          ]
+        }
+      ]
+    }
+    """
+    Then the build should be successful
+    And a log containing 'Reading artifact "/dist-renamed"' should be created
+    And a log containing 'The artifact was not found, considering it empty.' should be created

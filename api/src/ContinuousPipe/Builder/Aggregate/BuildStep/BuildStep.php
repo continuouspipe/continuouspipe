@@ -13,6 +13,7 @@ use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepStarted;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Artifact\ArtifactException;
+use ContinuousPipe\Builder\Artifact\ArtifactNotFound;
 use ContinuousPipe\Builder\Artifact\ArtifactReader;
 use ContinuousPipe\Builder\Artifact\ArtifactWriter;
 use ContinuousPipe\Builder\BuildStepConfiguration;
@@ -26,6 +27,10 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Events\Capabilities\ApplyEventCapability;
 use ContinuousPipe\Events\Capabilities\RaiseEventCapability;
 use ContinuousPipe\Security\Credentials\BucketRepository;
+use LogStream\Log;
+use LogStream\Logger;
+use LogStream\LoggerFactory;
+use LogStream\Node\Text;
 
 class BuildStep
 {
@@ -172,8 +177,16 @@ class BuildStep
         ));
     }
 
-    private function failed(\Throwable $exception)
+    private function failed(\Throwable $exception, Logger $logger = null)
     {
+        if (null !== $logger) {
+            try {
+                $logger->updateStatus(Log::FAILURE);
+            } catch (\Throwable $e) {
+                // Ignore if the logging failed.
+            }
+        }
+
         $this->raise(new StepFailed(
             $this->buildIdentifier,
             $this->position,
@@ -182,24 +195,35 @@ class BuildStep
         ));
     }
 
-    public function readArtifacts(ArtifactReader $artifactReader)
+    public function readArtifacts(ArtifactReader $artifactReader, LoggerFactory $loggerFactory)
     {
         $archives = [];
 
         foreach ($this->configuration->getReadArtifacts() as $artifact) {
+            $line = $this->createLogger($loggerFactory)->child(new Text(sprintf(
+                'Reading artifact "%s"',
+                $artifact->getName()
+            )))->updateStatus(Log::RUNNING);
+
             try {
                 $archive = $artifactReader->read($artifact);
+            } catch (ArtifactNotFound $e) {
+                $line->child(new Text('The artifact was not found, considering it empty.'));
             } catch (ArtifactException $e) {
-                return $this->failed($e);
+                return $this->failed($e, $line);
             }
 
-            try {
-                $this->codeArchive->write($artifact->getPath(), $archive);
-            } catch (Archive\ArchiveException $e) {
-                return $this->failed($e);
+            if (isset($archive)) {
+                try {
+                    $this->codeArchive->write($artifact->getPath(), $archive);
+                } catch (Archive\ArchiveException $e) {
+                    return $this->failed($e, $line);
+                }
+
+                $archives[] = $archive;
             }
 
-            $archives[] = $archive;
+            $line->updateStatus(Log::SUCCESS);
         }
 
         $this->raise(new ReadArtifacts(
@@ -209,24 +233,31 @@ class BuildStep
         ));
     }
 
-    public function writeArtifacts(DockerImageReader $dockerImageReader, ArtifactWriter $artifactWriter)
+    public function writeArtifacts(DockerImageReader $dockerImageReader, ArtifactWriter $artifactWriter, LoggerFactory $loggerFactory)
     {
         $archives = [];
 
         foreach ($this->configuration->getWriteArtifacts() as $artifact) {
+            $line = $this->createLogger($loggerFactory)->child(new Text(sprintf(
+                'Writing artifact "%s"',
+                $artifact->getName()
+            )))->updateStatus(Log::RUNNING);
+
             try {
                 $archive = $dockerImageReader->read($this->image, $artifact->getPath());
             } catch (DockerException $e) {
-                return $this->failed($e);
+                return $this->failed($e, $line);
             }
 
             try {
                 $artifactWriter->write($archive, $artifact);
             } catch (ArtifactException $e) {
-                return $this->failed($e);
+                return $this->failed($e, $line);
             }
 
             $archives[] = $archive;
+
+            $line->updateStatus(Log::SUCCESS);
         }
 
         $this->raise(new WroteArtifacts(
@@ -284,5 +315,14 @@ class BuildStep
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    private function createLogger(LoggerFactory $loggerFactory) : Logger
+    {
+        if (null === ($logIdentifier = $this->configuration->getLogStreamIdentifier())) {
+            return $loggerFactory->create();
+        }
+
+        return $loggerFactory->fromId($logIdentifier);
     }
 }
