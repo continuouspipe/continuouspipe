@@ -56,6 +56,10 @@ main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
     color: #FFF;
 }
 
+.article .data {
+    padding: 0;
+}
+
 .article h2, .article h3 {
     font-weight: 700;
 }
@@ -73,6 +77,9 @@ main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
     color: initial !important;
 }
 
+.palette-primary-blue .article table th {
+    background-color: #5677fc;
+}
 figure {
     margin-top: 1.5em;
 }

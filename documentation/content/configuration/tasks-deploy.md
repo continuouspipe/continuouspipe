@@ -6,6 +6,9 @@ menu:
     weight: 40
 
 weight: 40
+
+aliases:
+    - /configuration/deployments/
 ---
 Whether you are using a pre-built image or needed to build an image, you can now deploy it. The `deploy` task is configurable in many ways.
 
@@ -67,11 +70,11 @@ The deployment strategy describes how would you like the container(s) to be depl
 
 ``` yaml
 deployment_strategy:
-    # If true, the locked parameter ensure that the container(s) won't never
-    #  be updated once created
+    # If true, the locked parameter ensure that the container(s) won't ever
+    # be updated once created
     locked: false
 
-    # If true, an attached container means that CP will wait this container
+    # If true, an attached container means that ContinuousPipe will wait this container
     # to have finished its job and stream the output
     attached: false
 
@@ -81,7 +84,7 @@ deployment_strategy:
 ```
 
 ## Environment Variables
-You can set environment variables that are going to be injected in the running containers.
+You can set environment variables that will be injected in the running containers.
 
 ``` yaml
 specification:
@@ -130,6 +133,21 @@ endpoints:
                 cert: ${WILDCARD_SSL_CERT}
                 key: ${WILDCARD_SSL_KEY}
 ```
+
+## Basic HTTP Authentication
+
+If you are using one of the [ContinuousPipe images]({{< relref "faq/what-are-the-continuous-pipe-images.md" >}}) for [Apache](https://github.com/continuouspipe/dockerfiles/tree/master/php-apache#basic-authentication) or [Nginx](https://github.com/continuouspipe/dockerfiles/tree/master/php-nginx#basic-authentication) then you can enable basic auth using environment variables:
+
+``` yaml
+specification:
+   environment_variables:
+       - name: AUTH_HTTP_ENABLED
+         value: true
+       - name: AUTH_HTTP_HTPASSWD
+         value: ${AUTH_HTTP_HTPASSWD}
+```
+
+Here the value of `AUTH_HTTP_HTPASSWD` is being passed in as a variable to keep it out of version control, this needs to be set on the [configuration page for the flow]({{< relref "configuring-a-flow.md" >}}) in the ContinuousPipe console.
 
 ## Conditional Services
 If you need to not deploy some services on a given condition, you can use the `condition` expression:
@@ -199,3 +217,45 @@ deployment_strategy:
         success_threshold: 1
         failure_threshold: 10
 ```
+
+## Manual Approval
+
+A manual approval task can be added to suspend a deployment, pending approval.
+
+Adding the predefined `manual_approval` task will suspend the task sequence until manual approval is given to the tide in the ContinuousPipe console.
+
+``` yaml
+tasks:
+    images:
+        # ...
+    wait_product_owner:
+         manual_approval: ~
+    deployment:
+        # ...
+```
+
+In this configuration the `images` task will run as normal, but the tide will be suspended when it reaches the `wait_product_owner` task. Once approval has been given the tide will resume and run the `deployment` task.
+
+## Retrieving Deployed Endpoint Addresses
+
+You may have a complex script that contains several `deploy` tasks, each creating their own endpoint. To inform subsequent services about a previous endpoint address ContinuousPipe creates a dynamic variable using the service name. 
+
+``` yaml
+tasks:
+    infrastructure:
+        deploy:
+            services:
+                backend:
+                    # ...
+
+    application:
+        deploy:
+            services:
+                frontend:
+                    specification:
+                        environment_variables:
+                            - name: BACKEND_ENDPOINT
+                              value: ${SERVICE_BACKEND_PUBLIC_ENDPOINT}
+```
+
+This configuration defines an initial `deploy` task that creates a `backend` service. The second `deploy` task creates a `frontend` service that passes the endpoint address of the `backend` service as an environment variable `BACKEND_ENDPOINT` using the dynamic variable `${SERVICE_BACKEND_PUBLIC_ENDPOINT}` as the value.

@@ -73,6 +73,6 @@ This YAML does the following:
 - It will configure the Docker image to be deployed to the `hello-world` cluster - this cluster identifier is defined when [configuring a cluster]({{< relref "configuring-a-cluster.md" >}})
 - It will configure the Kubernetes cluster to create a public load-balancer for the web service allowing public access
 
-See [configuring deployments]({{< relref "configuration/deployments.md" >}}) for more documentation.
+See [configuring deployments]({{< relref "configuration/tasks-deploy.md" >}}) for more documentation.
 
 **These new configuration files then need pushing to your code repository so that ContinuousPipe can read them.**
