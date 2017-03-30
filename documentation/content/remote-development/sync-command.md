@@ -22,3 +22,17 @@ To specify a specific remote project path use the `--remote-project-path` flag
 ```
 cp-remote sync --remote-project-path /public/sub-folder/
 ```
+
+### Argument List:
+
+Argument | Alias | Default | Description
+---------|-------|---------|------------
+`--delete`                         |      |       | Delete extraneous files from destination directories
+`--dry-run`                        |      |       | Show what will be transferred without executing
+`--file`                           | `-f` |       | Fetch a specific file from the pod
+`--kube-environment-name`          | `-e` |       | The full remote environment name (e.g. project-key-git-branch)
+`--latency`                        | `-l` | 500   | Sync latency / speed in milli-seconds
+`--remote-project-path`            | `-a` | /app/ | The absolute path to the remote project folder
+`--rsync-verbose`                  |      |       | Run rsync in verbose mode for debugging
+`--service`                        | `-s` |       | The service to use (e.g. web, mysql)
+`--yes`                            | `-y` |       | Skip warning
