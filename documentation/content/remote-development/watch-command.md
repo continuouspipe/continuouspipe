@@ -29,14 +29,16 @@ To watch a specific remote project path use the `--remote-project-path` flag
 cp-remote watch --remote-project-path= /app/sub-folder/
 ```
 
-Argument list:
+### Argument List:
 
-- `--delete` Delete extraneous files from destination directories
-- `--dry-run` Show what would have been transferred
-- `--individual-file-sync-threshold` or `-t` Above this threshold the watch command will sync any file or folder that is different compared to the local one (default 10)
-- `--kube-environment-name` or `-e` The full remote environment name: project-key-git-branch
-- `--latency` or `-l` Sync latency / speed in milli-seconds (default 500)
-- `--remote-project-path` or `-a` Specify the absolute path to your project folder, by default set to /app/ (default "/app/")
-- `--rsync-verbose` Allows to use rsync in verbose mode and debug issues with exclusions
-- `--service` or `-s` The service to use (e.g.: web, mysql)
-- `--yes` or `-y` Skip warning
+Argument | Alias | Default | Description
+---------|-------|---------|------------
+`--delete`                         |      |       | Delete extraneous files from destination directories
+`--dry-run`                        |      |       | Show what will be transferred without executing
+`--individual-file-sync-threshold` | `-t` | 10    | Above this threshold any file or folder that is different compared to the local one will be synced
+`--kube-environment-name`          | `-e` |       | The full remote environment name (e.g. project-key-git-branch)
+`--latency`                        | `-l` | 500   | Sync latency / speed in milli-seconds
+`--remote-project-path`            | `-a` | /app/ | The absolute path to the remote project folder
+`--rsync-verbose`                  |      |       | Run rsync in verbose mode for debugging
+`--service`                        | `-s` |       | The service to use (e.g. web, mysql)
+`--yes`                            | `-y` |       | Skip warning

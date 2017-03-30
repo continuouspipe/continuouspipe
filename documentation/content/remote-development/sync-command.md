@@ -23,14 +23,16 @@ To specify a specific remote project path use the `--remote-project-path` flag
 cp-remote sync --remote-project-path /public/sub-folder/
 ```
 
-Argument list:
-  
-- `--delete` Delete extraneous files from destination directories
-- `--dry-run` Show what would have been transferred
-- `--file` or `-f` Allows to specify a file that needs to be pushed to the pod
-- `--kube-environment-name` or `-e` The full remote environment name: project-key-git-branch
-- `--latency` or `-l` Sync latency / speed in milli-seconds (default 500)
-- `--remote-project-path` or `-a` Specify the absolute path to your project folder, by default set to /app/ (default "/app/")
-- `--rsync-verbose` Allows to use rsync in verbose mode and debug issues with exclusions
-- `--service` or `-s` The service to use (e.g.: web, mysql)
-- `--yes` or `-y` Skip warning
+### Argument List:
+
+Argument | Alias | Default | Description
+---------|-------|---------|------------
+`--delete`                         |      |       | Delete extraneous files from destination directories
+`--dry-run`                        |      |       | Show what will be transferred without executing
+`--file`                           | `-f` |       | Fetch a specific file from the pod
+`--kube-environment-name`          | `-e` |       | The full remote environment name (e.g. project-key-git-branch)
+`--latency`                        | `-l` | 500   | Sync latency / speed in milli-seconds
+`--remote-project-path`            | `-a` | /app/ | The absolute path to the remote project folder
+`--rsync-verbose`                  |      |       | Run rsync in verbose mode for debugging
+`--service`                        | `-s` |       | The service to use (e.g. web, mysql)
+`--yes`                            | `-y` |       | Skip warning

@@ -29,26 +29,26 @@ To specify a specific remote project path use the `--remote-project-path` flag
 cp-remote fetch --remote-project-path /public/sub-folder/
 ```
 
+### Ignoring Files
 
-{{< note title="Note" >}}
-You can override any of the `.cp-remote-ignore` settings by adding a `.cp-remote-ignore-fetch` and using it to add or remove pattern entries:
+You can use `.cp-remote-ignore` to [ignore files and directories when syncing]({{< relref "remote-development/advanced-setup.md#ignoring-files-directories-when-syncing" >}}).
 
-Examples:
+This behaviour can be overridden for the `fetch` command by adding a `.cp-remote-ignore-fetch` file. Like `.cp-remote-ignore` it uses standard rsync excludes-from format:
 
-exclude `- /exclude/folder/`
-
-include `+ /include/folder/`
-{{< /note >}}
+- To exclude use: `- /path/to/folder1/`
+- To include use: `+ /path/to/folder2/`
 
 
-Argument list:
+### Argument List:
 
-- `--dry-run` Show what would have been transferred
-- `--file` or `-f` Allows to specify a file that needs to be fetch from the pod
-- `--individual-file-sync-threshold` or `-t` Above this threshold the watch command will sync any file or folder that is different compared to the local one (default 10)
-- `--kube-environment-name` or `-e` The full remote environment name: project-key-git-branch
-- `--latency` or `-l` Sync latency / speed in milli-seconds (default 500)
-- `--remote-project-path` or `-a` Specify the absolute path to your project folder, by default set to /app/ (default "/app/")
-- `--rsync-verbose` Allows to use rsync in verbose mode and debug issues with exclusions
-- `--service` or `-s` The service to use (e.g.: web, mysql)
-- `--yes` or `-y` Skip warning
+Argument | Alias | Default | Description
+---------|-------|---------|------------
+`--dry-run`                        |      |       | Show what will be transferred without executing
+`--file`                           | `-f` |       | Fetch a specific file from the pod
+`--individual-file-sync-threshold` | `-t` | 10    | Above this threshold any file or folder that is different compared to the local one will be synced
+`--kube-environment-name`          | `-e` |       | The full remote environment name (e.g. project-key-git-branch)
+`--latency`                        | `-l` | 500   | Sync latency / speed in milli-seconds
+`--remote-project-path`            | `-a` | /app/ | The absolute path to the remote project folder
+`--rsync-verbose`                  |      |       | Run rsync in verbose mode for debugging
+`--service`                        | `-s` |       | The service to use (e.g. web, mysql)
+`--yes`                            | `-y` |       | Skip warning
