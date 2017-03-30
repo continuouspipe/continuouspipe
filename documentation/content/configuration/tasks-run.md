@@ -6,6 +6,9 @@ menu:
     weight: 50
 
 weight: 50
+
+aliases:
+    - /configuration/commands/
 ---
 
 The `run` task allows to run commands in containers, in the deployed environment context. That way, you can run your integration tests or your application migrations, for example.

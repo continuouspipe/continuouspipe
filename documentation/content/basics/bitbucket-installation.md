@@ -6,6 +6,9 @@ menu:
     weight: 70
 
 weight: 70
+
+aliases:
+    - /configuration/bitbucket-integration/
 ---
 In order to use ContinuousPipe with a Bitbucket repository, you need to configure two interaction points: 
 

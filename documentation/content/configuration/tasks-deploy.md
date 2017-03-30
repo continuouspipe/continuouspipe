@@ -6,6 +6,9 @@ menu:
     weight: 40
 
 weight: 40
+
+aliases:
+    - /configuration/deployments/
 ---
 Whether you are using a pre-built image or needed to build an image, you can now deploy it. The `deploy` task is configurable in many ways.
 

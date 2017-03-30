@@ -6,6 +6,9 @@ menu:
     weight: 30
 
 weight: 30
+
+aliases:
+    - /configuration/images/
 ---
 ## YAML Configuration
 

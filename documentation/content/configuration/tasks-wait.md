@@ -6,6 +6,9 @@ menu:
     weight: 60
 
 weight: 60
+
+aliases:
+    - /configuration/wait-statuses/
 ---
 Sometimes, as part of your deployment pipeline, you'll want to wait for other service integrations to return with a status. For example if you use the static code analyser tool Scrutinizer, you may want to deploy your application only if the static analysis passes.
 
