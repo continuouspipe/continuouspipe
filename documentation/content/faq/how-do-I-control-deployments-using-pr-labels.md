@@ -14,13 +14,13 @@ tasks:
   images:
       build:
           # ...
-          filter:
-              expression: 'pull_request.number != 0'
+      filter:
+          expression: 'pull_request.number != 0'
   deployment:
       deploy:
           # ...
-          filter:
-              expression: 'pull_request.number != 0'
+      filter:
+          expression: 'pull_request.number != 0'
 ```
 
 With this configuration the `images` and `deployment` tasks will only run when a branch has a pull request open.
@@ -32,13 +32,13 @@ tasks:
   images:
       build:
           # ...
-          filter:
-              expression: '"Ready for review" in pull_request.labels'
+      filter:
+          expression: '"Ready for review" in pull_request.labels'
   deployment:
       deploy:
           # ...
-          filter:
-              expression: '"Ready for review" in pull_request.labels'
+      filter:
+          expression: '"Ready for review" in pull_request.labels'
 ```
 
 Now the `images` and `deployment` tasks will only run when a branch has a pull request open which has a "Ready for review" label. 
@@ -50,11 +50,11 @@ tasks:
   images:
       build:
           # ...
-          filter:
-              expression: 'code_reference.branch in ["uat", "production"] or "Ready for review" in pull_request.labels'
+      filter:
+          expression: 'code_reference.branch in ["uat", "production"] or "Ready for review" in pull_request.labels'
   deployment:
       deploy:
           # ...
-          filter:
-              expression: 'code_reference.branch in ["uat", "production"] or "Ready for review" in pull_request.labels'
+      filter:
+          expression: 'code_reference.branch in ["uat", "production"] or "Ready for review" in pull_request.labels'
 ```
