@@ -229,6 +229,34 @@ Feature:
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-certeo.inviqa-001.continuouspipe.net"
 
+  Scenario: If the branch name contains non valid characters, the host name should be slugified
+    When a tide is started for the branch "feature/123-foo-bar" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                ingress:
+                                    class: nginx
+                                    host:
+                                        expression: 'code_reference.branch ~ "-certeo.inviqa-001.continuouspipe.net"'
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "feature-123-foo-bar-certeo.inviqa-001.continuouspipe.net"
+
+
   Scenario: Add the CloudFlare backend manually
     When a tide is started with the following configuration:
     """

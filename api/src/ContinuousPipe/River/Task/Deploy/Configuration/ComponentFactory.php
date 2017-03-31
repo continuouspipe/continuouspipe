@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Configuration;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Extension;
 use ContinuousPipe\River\Flow\Variable\FlowVariableResolver;
@@ -147,10 +148,10 @@ class ComponentFactory
         }
 
         try {
-            $resolvedHostname = $this->flowVariableResolver->resolveExpression(
+            $resolvedHostname = (new Slugify(['regexp' => '/([^A-Za-z0-9\.]|-)+/']))->slugify($this->flowVariableResolver->resolveExpression(
                 $hostConfiguration['expression'],
                 $this->flowVariableResolver->createContext($context->getFlowUuid(), $context->getCodeReference())
-            );
+            ));
         } catch (TideConfigurationException $e) {
             throw new TideGenerationException($e->getMessage(), $e->getCode(), $e);
         }
