@@ -923,18 +923,18 @@ EOF;
     }
 
     /**
-     * @Given I tide is started with the following configuration:
-     * @Given I tide is started for the branch :branch with the following configuration:
+     * @Given a tide is started with the following configuration:
+     * @Given a tide is started for the branch :branch with the following configuration:
      */
-    public function iTideIsStartedWithTheFollowingConfiguration(PyStringNode $configuration, $branch = null)
+    public function aTideIsStartedWithTheFollowingConfiguration(PyStringNode $configuration, $branch = null)
     {
         $this->aTideIsStartedWithConfiguration(Yaml::parse($configuration->getRaw()), $branch ?: 'master');
     }
 
     /**
-     * @Given I tide is started with the following configurations:
+     * @Given a tide is started with the following configurations:
      */
-    public function iTideIsStartedWithTheFollowingConfigurations(TableNode $tasksTable)
+    public function aTideIsStartedWithTheFollowingConfigurations(TableNode $tasksTable)
     {
         $tasks = [];
 

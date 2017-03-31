@@ -4,7 +4,7 @@ Feature:
   I want to be able to configure endpoints
 
   Scenario: Add endpoints
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
@@ -34,7 +34,7 @@ Feature:
     And the endpoint "https" of the component "app" should be deployed with 1 SSL certificate
 
   Scenario: Add the CloudFlare configuration
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
@@ -63,7 +63,7 @@ Feature:
     And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration
 
   Scenario: The authentication is a required piece of information for CloudFlare
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
@@ -87,7 +87,7 @@ Feature:
     Then the tide should be failed
 
   Scenario: HttpLabs proxy without middleware
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
@@ -113,7 +113,7 @@ Feature:
     And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration for the project "7890" and API key "123456"
 
   Scenario: HttpLabs proxy with middlewares
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
@@ -145,7 +145,7 @@ Feature:
     And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration that have 1 middleware
 
   Scenario: Add endpoints annotations
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
@@ -172,7 +172,7 @@ Feature:
       | service.beta.kubernetes.io/external-traffic | OnlyLocal |
 
   Scenario: Configure CloudFlare proxied & ttl options
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
@@ -203,7 +203,7 @@ Feature:
     And the endpoint "http" of the component "app" should be deployed with a proxied CloudFlare DNS zone configuration
 
   Scenario: Create ingresses endpoints with hosts
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
@@ -229,8 +229,36 @@ Feature:
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-certeo.inviqa-001.continuouspipe.net"
 
+  Scenario: If the branch name contains non valid characters, the host name should be slugified
+    When a tide is started for the branch "feature/123-foo-bar" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                ingress:
+                                    class: nginx
+                                    host:
+                                        expression: 'code_reference.branch ~ "-certeo.inviqa-001.continuouspipe.net"'
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "feature-123-foo-bar-certeo.inviqa-001.continuouspipe.net"
+
+
   Scenario: Add the CloudFlare backend manually
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
@@ -260,7 +288,7 @@ Feature:
     And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with the backend "1.2.3.4"
 
   Scenario: CloudFlare do not require record prefix with the ingresses
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:

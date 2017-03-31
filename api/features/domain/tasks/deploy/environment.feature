@@ -165,7 +165,7 @@ Feature:
 
   Scenario: The environment is created with some tags
     Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
