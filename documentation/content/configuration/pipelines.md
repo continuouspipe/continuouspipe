@@ -3,9 +3,9 @@ title: Pipelines
 menu:
   main:
     parent: 'configuration'
-    weight: 70
+    weight: 100
 
-weight: 70
+weight: 100
 ---
 You can use a `pipelines` section to simplify your configuration. By default tasks run in the order they are defined, but the addition of pipeline configuration disables this behaviour, and instead the pipelines become responsible for defining the task sequence.
  

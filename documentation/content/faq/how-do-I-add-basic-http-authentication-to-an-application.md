@@ -25,4 +25,4 @@ tasks:
                              value: ${AUTH_HTTP_HTPASSWD}
 ```
 
-Here the value of `AUTH_HTTP_HTPASSWD` is being passed in as a variable to keep it out of version control, this needs to be set on the [configuration page for the flow]({{< relref "configuring-a-flow.md" >}}) in the ContinuousPipe console.
+Here the value of `AUTH_HTTP_HTPASSWD` is being passed in as a variable to keep it out of version control, this needs to be set on the [configuration page for the flow]({{< relref "quick-start/configuring-a-flow.md" >}}) in the ContinuousPipe console.

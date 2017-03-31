@@ -24,7 +24,7 @@ tasks:
             # ...
 ```
 
-Here the `api` service is passed `GITHUB_TOKEN` as an environment variable, with the value being passed in as a variable to keep it out of version control. This needs to be set on the [configuration page for the flow]({{< relref "configuring-a-flow.md" >}}) in the ContinuousPipe console.
+Here the `api` service is passed `GITHUB_TOKEN` as an environment variable, with the value being passed in as a variable to keep it out of version control. This needs to be set on the [configuration page for the flow]({{< relref "quick-start/configuring-a-flow.md" >}}) in the ContinuousPipe console.
 
 By setting up these build arguments, the `Dockerfile` will able to consume the `GITHUB_TOKEN` variable using a Docker ARG, as described in the ContinuousPipe image documentation for [Apache](https://github.com/continuouspipe/dockerfiles/tree/master/php-apache#php-70-base) or [Nginx](https://github.com/continuouspipe/dockerfiles/tree/master/php-nginx#php-nginx).
 

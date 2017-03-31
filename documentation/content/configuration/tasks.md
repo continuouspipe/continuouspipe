@@ -17,8 +17,8 @@ ContinuousPipe has several inbuilt tasks that can be included in your workflow:
 * `deploy`: Will [deploy]({{< relref "configuration/tasks-deploy.md" >}}) your service(s) to a cluster
 * `run`: Will [run]({{< relref "configuration/tasks-run.md" >}}) some commands inside a deployed context
 * `wait`: Will [wait]({{< relref "configuration/tasks-wait.md" >}}) for some other GitHub statuses
-* `manual_approval`: Will suspend the task sequence until [manual approval]({{< relref "configuration/tasks-deploy.md#manual-approval" >}}) is given to the tide in the ContinuousPipe console
-* `webhook`: Will wait for a response from a third party service
+* `manual_approval`: Will suspend the task sequence until [manual approval]({{< relref "configuration/tasks-manual-approval.md" >}}) is given to the tide in the ContinuousPipe console
+* `webhook`: Will trigger a [webhook]({{< relref "configuration/tasks-webhook.md" >}}) for use by a third party service
 
 ## Conditional Tasks {#filters}
 

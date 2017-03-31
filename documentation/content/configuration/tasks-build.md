@@ -10,9 +10,10 @@ weight: 30
 aliases:
     - /configuration/images/
 ---
-## YAML Configuration
 
-Before deploying anything, you will most of the time want ContinuousPipe to build your Docker images. The only mandatory parameter is the image name you want to build:
+Before deploying anything, you will most of the time want ContinuousPipe to build your Docker images. For this you need to use the `build` task, which is one of the [inbuilt tasks]({{< relref "configuration/tasks.md#inbuilt-tasks" >}}).
+
+The only mandatory parameter of `build` is the image name you want to build:
 
 ``` yaml
 tasks:
