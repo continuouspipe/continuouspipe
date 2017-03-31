@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River\Pipeline;
 
-class TideGenerationException extends \Exception
+use ContinuousPipe\River\TideConfigurationException;
+
+class TideGenerationException extends TideConfigurationException
 {
 }
