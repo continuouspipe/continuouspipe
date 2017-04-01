@@ -321,7 +321,7 @@ Feature:
     And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration
 
   Scenario: A wrong tide expression do not fail dramatically
-    When I tide is started with the following configuration:
+    When a tide is started with the following configuration:
     """
     tasks:
         first:
