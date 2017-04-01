@@ -62,3 +62,24 @@ Feature:
       | added    | Dockerfile |
     When a tide is started for the branch "feature/foo" and commit "12345"
     Then the task "base_images" should be "skipped"
+
+  Scenario: No previous successful tide, on default branch
+    Given there is a failed tide for the branch "master"
+    When a tide is started for the branch "master"
+    Then the task "base_images" should be "successful"
+
+  Scenario: Previous successful tide, on default branch, matching changes
+    Given there is a successful tide for the branch "master" and commit "12345"
+    And the changes between the reference "12345" and "67890" are:
+      | status   | filename               |
+      | added    | docker/base/Dockerfile |
+    When a tide is started for the branch "master" and commit "67890"
+    Then the task "base_images" should be "successful"
+
+  Scenario: Previous successful tide, on default branch, matching changes
+    Given there is a successful tide for the branch "master" and commit "12345"
+    And the changes between the reference "12345" and "67890" are:
+      | status   | filename    |
+      | modified | src/Foo.php |
+    When a tide is started for the branch "master" and commit "67890"
+    Then the task "base_images" should be "skipped"
