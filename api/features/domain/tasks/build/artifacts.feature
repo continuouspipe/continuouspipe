@@ -101,3 +101,30 @@ Feature:
     And the step #0 of the build should be started with a write artifact identified "00000000-0000-0000-0000-000000000000-built-files" on path "/dist"
     And the step #0 of the build should be started with a persistent write artifact identified "11111111-1111-1111-1111-111111111111-2ad5d7cee913d733ad04aafde20a26db" on path "/app/node_modules"
     And the step #0 of the build should be started with a persistent read artifact identified "11111111-1111-1111-1111-111111111111-2ad5d7cee913d733ad04aafde20a26db" on path "/app/node_modules"
+
+  Scenario: A build with cache is successful
+    Given I have a flow with UUID "11111111-1111-1111-1111-111111111111"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    first:
+                        steps:
+                            - docker_file_path: ./Buildfile
+                              cache:
+                              - /app/node_modules
+                              write_artifacts:
+                                  - name: built-files
+                                    path: /dist
+
+                            - docker_file_path: ./Dockerfile
+                              image: sroze/image
+                              read_artifacts:
+                                  - name: built-files
+                                    path: /var/www/html
+    """
+    When a tide is started with the UUID "00000000-0000-0000-0000-000000000000"
+    And the first image build is successful
+    Then the tide should be successful
