@@ -49,18 +49,21 @@ class Repository
     private $defaultBranch;
 
     /**
+     * @param User $owner
      * @param string $name
      * @param string $url
-     * @param bool   $private
+     * @param bool $private
      * @param string $id
+     * @param string $defaultBranch
      */
-    public function __construct(User $owner, $name, $url, $private = false, $id = null)
+    public function __construct(User $owner, $name, $url, $private = false, $id = null, string $defaultBranch = null)
     {
         $this->owner = $owner;
         $this->name = $name;
         $this->url = $url;
         $this->private = $private;
         $this->id = $id;
+        $this->defaultBranch = $defaultBranch;
     }
 
     /**

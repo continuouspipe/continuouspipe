@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Filter;
 
+use ContinuousPipe\River\Filter\CodeChanges\CodeChangesResolver;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideConfigurationException;
 
@@ -13,11 +14,18 @@ class ExpressionLanguageFilterEvaluator implements FilterEvaluator
     private $contextFactory;
 
     /**
-     * @param ContextFactory $contextFactory
+     * @var CodeChangesResolver
      */
-    public function __construct(ContextFactory $contextFactory)
+    private $codeChangesResolver;
+
+    /**
+     * @param ContextFactory $contextFactory
+     * @param CodeChangesResolver $codeChangesResolver
+     */
+    public function __construct(ContextFactory $contextFactory, CodeChangesResolver $codeChangesResolver)
     {
         $this->contextFactory = $contextFactory;
+        $this->codeChangesResolver = $codeChangesResolver;
     }
 
     /**
@@ -32,7 +40,7 @@ class ExpressionLanguageFilterEvaluator implements FilterEvaluator
         );
 
         try {
-            return (new Filter($filter['expression']))->evaluates($context->asArray());
+            return Filter::forTide($this->codeChangesResolver, $tide, $context->asArray())->evaluates($filter['expression']);
         } catch (FilterException $e) {
             throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
         }

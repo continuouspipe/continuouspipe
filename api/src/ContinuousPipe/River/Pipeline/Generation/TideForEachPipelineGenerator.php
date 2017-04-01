@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Pipeline\Generation;
 
+use ContinuousPipe\River\Filter\CodeChanges\CodeChangesResolver;
 use ContinuousPipe\River\Filter\ContextFactory;
 use ContinuousPipe\River\Filter\FilterException;
 use ContinuousPipe\River\Flow\Configuration;
@@ -33,17 +34,23 @@ class TideForEachPipelineGenerator implements PipelineTideGenerator
      * @var ContextFactory
      */
     private $contextFactory;
+    /**
+     * @var CodeChangesResolver
+     */
+    private $codeChangesResolver;
 
     public function __construct(
         TideConfigurationFactory $tideConfigurationFactory,
         TideFactory $tideFactory,
         LoggerInterface $logger,
-        ContextFactory $contextFactory
+        ContextFactory $contextFactory,
+        CodeChangesResolver $codeChangesResolver
     ) {
         $this->tideConfigurationFactory = $tideConfigurationFactory;
         $this->tideFactory = $tideFactory;
         $this->logger = $logger;
         $this->contextFactory = $contextFactory;
+        $this->codeChangesResolver = $codeChangesResolver;
     }
 
     /**
@@ -71,6 +78,7 @@ class TideForEachPipelineGenerator implements PipelineTideGenerator
         foreach ($pipelines as $pipeline) {
             try {
                 $matchesCondition = $pipeline->matchesCondition(
+                    $this->codeChangesResolver,
                     $this->contextFactory,
                     $request->getFlow()->getUuid(),
                     $request->getCodeReference()

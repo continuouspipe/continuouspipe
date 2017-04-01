@@ -19,6 +19,12 @@
             </argument>
         </service>
 
+        <service id="river.changes_comparator" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToChangesComparator">
+            <argument type="collection">
+                <argument type="service" id="river.github.changes_comparator" />
+            </argument>
+        </service>
+
         <service id="river.file_system_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\FileSystemResolverDelegator">
             <argument type="collection">
                 <argument type="service" id="river.bitbucket.file_system_resolver" />

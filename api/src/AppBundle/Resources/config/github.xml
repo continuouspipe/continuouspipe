@@ -96,6 +96,10 @@
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="river.github.repository_address_descriptor" />
         </service>
+        <service id="river.github.changes_comparator" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubChangesComparator">
+            <argument type="service" id="river.github.client_factory" />
+            <argument type="service" id="river.github.repository_address_descriptor" />
+        </service>
 
         <service id="river.listener.github.pull_request.delete_related_environment" class="ContinuousPipe\River\EventListener\GitHub\BranchDeleted\DeleteRelatedEnvironment">
             <argument type="service" id="command_bus" />

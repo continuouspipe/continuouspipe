@@ -142,6 +142,18 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
+    public function findLastSuccessfulByFlowUuidAndBranch(UuidInterface $flowUuid, string $branch, int $limit): array
+    {
+        $tides = array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) use ($branch) {
+            return $tide->getCodeReference()->getBranch() == $branch && $tide->getStatus() == Tide::STATUS_SUCCESS;
+        }));
+
+        return array_slice($tides, 0, $limit);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findByGenerationUuid(UuidInterface $flowUuid, UuidInterface $generationUuid)
     {
         return array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) use ($generationUuid) {

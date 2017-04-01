@@ -472,6 +472,10 @@ EOF;
      */
     public function theTaskShouldBe($taskIdentifier, $status)
     {
+        if (null === $this->view) {
+            $this->iRequestTheTideView();
+        }
+
         $matchingTasks = array_filter($this->view->getTasks(), function(TideTaskView $view) use ($taskIdentifier) {
             return $view->getIdentifier() == $taskIdentifier;
         });

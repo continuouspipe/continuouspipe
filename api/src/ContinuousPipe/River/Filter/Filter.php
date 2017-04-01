@@ -2,37 +2,73 @@
 
 namespace ContinuousPipe\River\Filter;
 
+use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Filter\CodeChanges\CodeChangesResolver;
+use ContinuousPipe\River\Tide;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 final class Filter
 {
-    private $expression;
+    /**
+     * @var CodeChangesResolver
+     */
+    private $codeChangesResolver;
+    /**
+     * @var UuidInterface
+     */
+    private $flowUuid;
+    /**
+     * @var CodeReference
+     */
+    private $codeReference;
+    /**
+     * @var array
+     */
+    private $context;
 
-    public function __construct(string $expression)
+    public function __construct(CodeChangesResolver $codeChangesResolver, UuidInterface $flowUuid, CodeReference $codeReference, array $context)
     {
-        $this->expression = $expression;
+        $this->codeChangesResolver = $codeChangesResolver;
+        $this->flowUuid = $flowUuid;
+        $this->codeReference = $codeReference;
+        $this->context = $context;
+    }
+
+    public static function forTide(CodeChangesResolver $codeChangesResolver, Tide $tide, array $context) : self
+    {
+        return new self($codeChangesResolver, $tide->getFlowUuid(), $tide->getCodeReference(), $context);
     }
 
     /**
      * Evaluates the filter with the given context.
      *
-     * @param array $context
+     * @param string $expression
      *
      * @throws FilterException
      *
      * @return bool
      */
-    public function evaluates(array $context) : bool
+    public function evaluates(string $expression) : bool
     {
         $language = new ExpressionLanguage();
+        $language->register('has_changes_for_files', function () {
+            throw new \RuntimeException('This function is not compilable');
+        }, function (array $context, $files) {
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+
+            return $this->codeChangesResolver->hasChangesInFiles($this->flowUuid, $this->codeReference, $files);
+        });
 
         try {
-            $evaluated = $language->evaluate($this->expression, $context);
+            $evaluated = $language->evaluate($expression, $this->context);
         } catch (SyntaxError $e) {
             throw new FilterException(sprintf(
                 'The expression provided ("%s") is not valid: %s',
-                $this->expression,
+                $expression,
                 $e->getMessage()
             ), $e->getCode(), $e);
         } catch (\InvalidArgumentException $e) {
@@ -48,7 +84,7 @@ final class Filter
         if (!is_bool($evaluated)) {
             throw new FilterException(sprintf(
                 'Expression "%s" is not valid as it does not return a boolean',
-                $this->expression
+                $expression
             ));
         }
 
