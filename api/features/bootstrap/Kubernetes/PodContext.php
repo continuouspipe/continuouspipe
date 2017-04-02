@@ -7,12 +7,15 @@ use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookablePodRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryPodRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePodRepository;
+use Kubernetes\Client\Model\ContainerStatus;
+use Kubernetes\Client\Model\ContainerStatusState;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\Label;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodSpecification;
 use Kubernetes\Client\Model\PodStatus;
+use Kubernetes\Client\Model\PodStatusCondition;
 
 class PodContext implements Context
 {
@@ -59,6 +62,58 @@ class PodContext implements Context
             new PodSpecification(
                 []
             )
+        ));
+    }
+
+    /**
+     * @Given there is a pod :name already running
+     */
+    public function thereIsAPodAlreadyRunning($name)
+    {
+        $this->inMemoryPodRepository->create(new Pod(
+            new ObjectMetadata($name, new KeyValueObjectList([
+                new Label('component-identifier', $name),
+            ])),
+            new PodSpecification(
+                []
+            ),
+            new PodStatus(PodStatus::PHASE_RUNNING, '1.2.3.4', '10.0.0.1', [
+                new PodStatusCondition('Ready', true),
+            ], [
+                new ContainerStatus(
+                    'app',
+                    0,
+                    'container-id',
+                    new ContainerStatusState(),
+                    true
+                )
+            ])
+        ));
+    }
+
+    /**
+     * @Given there is a completed pod :name
+     */
+    public function thereIsACompletedPod($name)
+    {
+        $this->inMemoryPodRepository->create(new Pod(
+            new ObjectMetadata($name, new KeyValueObjectList([
+                new Label('component-identifier', $name),
+            ])),
+            new PodSpecification(
+                []
+            ),
+            new PodStatus(PodStatus::PHASE_SUCCEEDED, '1.2.3.4', '10.0.0.1', [
+                new PodStatusCondition('Ready', false),
+            ], [
+                new ContainerStatus(
+                    'app',
+                    0,
+                    'container-id',
+                    new ContainerStatusState(),
+                    false
+                )
+            ])
         ));
     }
 

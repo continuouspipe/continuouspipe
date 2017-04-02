@@ -4,6 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\Handler;
 
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Component\ComponentCreationStatus;
+use ContinuousPipe\Adapter\Kubernetes\Inspector\PodInspector;
 use ContinuousPipe\Pipe\Command\WaitComponentsCommand;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\ComponentsReady;
@@ -70,12 +71,17 @@ class WaitComponentsHandler implements DeploymentHandler
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var PodInspector
+     */
+    private $podInspector;
 
     public function __construct(
         DeploymentClientFactory $clientFactory,
         MessageBus $eventBus,
         LoggerFactory $loggerFactory,
         LoggerInterface $logger,
+        PodInspector $podInspector,
         $checkInternal = self::DEFAULT_COMPONENT_CHECK_INTERVAL,
         $timeout = self::DEFAULT_COMPONENT_TIMEOUT
     ) {
@@ -83,6 +89,7 @@ class WaitComponentsHandler implements DeploymentHandler
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
         $this->logger = $logger;
+        $this->podInspector = $podInspector;
         $this->checkInternal = $checkInternal;
         $this->timeout = $timeout;
     }
@@ -149,11 +156,7 @@ class WaitComponentsHandler implements DeploymentHandler
                 $pods = $client->getPodRepository()->findByReplicationController($replicationController);
 
                 $runningPods = array_filter($pods->getPods(), function (Pod $pod) {
-                    if (null === ($status = $pod->getStatus())) {
-                        return false;
-                    }
-
-                    return $this->isPodRunningAndReady($status);
+                    return $this->podInspector->isRunningAndReady($pod);
                 });
 
                 if (count($runningPods) > 0) {
@@ -283,24 +286,6 @@ class WaitComponentsHandler implements DeploymentHandler
     }
 
     /**
-     * @param PodStatus $status
-     *
-     * @return bool
-     */
-    protected function isPodRunningAndReady(PodStatus $status)
-    {
-        if ($status->getPhase() != PodStatus::PHASE_RUNNING) {
-            return false;
-        }
-
-        $allContainersAreReady = array_reduce($status->getContainerStatuses(), function (bool $allAreReady, ContainerStatus $containerStatus) {
-            return $allAreReady && $containerStatus->isReady();
-        }, true);
-
-        return $allContainersAreReady;
-    }
-
-    /**
      * @param DeploymentContext $deploymentContext
      * @param Deployment        $deployment
      *
@@ -337,7 +322,7 @@ class WaitComponentsHandler implements DeploymentHandler
             'containers' => array_map(function (Container $container) {
                 return $this->normalizeContainer($container);
             }, $pod->getSpecification()->getContainers()),
-            'status' => null !== $pod->getStatus() ? $this->normalizePodStatus($pod->getStatus()) : null,
+            'status' => $this->normalizePodStatus($pod),
         ];
     }
 
@@ -355,15 +340,19 @@ class WaitComponentsHandler implements DeploymentHandler
     }
 
     /**
-     * @param PodStatus $status
+     * @param Pod $pod
      *
-     * @return array
+     * @return array|null
      */
-    private function normalizePodStatus(PodStatus $status)
+    private function normalizePodStatus(Pod $pod)
     {
+        if (null === ($status = $pod->getStatus())) {
+            return null;
+        }
+
         return [
             'phase' => $status->getPhase(),
-            'ready' => $this->isPodRunningAndReady($status),
+            'ready' => $this->podInspector->isRunningAndReady($pod),
         ];
     }
 
