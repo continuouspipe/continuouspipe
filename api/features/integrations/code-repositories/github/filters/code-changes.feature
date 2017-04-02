@@ -47,7 +47,6 @@ Feature:
     When a tide is started for the branch "feature/foo" and commit "12345"
     Then the task "base_images" should be "successful"
 
-  @wip
   Scenario: No previous tide, on non-default branch, matching recursive changes
     Given the changes between the reference "master" and "12345" are:
       | status   | filename                   |

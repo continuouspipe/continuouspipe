@@ -52,7 +52,7 @@ class CodeChangesResolver
 
         $changedFiles = $this->changesComparator->listChangedFiles($flow, $base, $codeReference->getCommitSha());
         foreach ($fileGlobs as $glob) {
-            $regex = Glob::toRegex($glob);
+            $regex = $this->globToRegex($glob);
 
             foreach ($changedFiles as $changedFile) {
                 if (preg_match($regex, $changedFile)) {
@@ -62,5 +62,19 @@ class CodeChangesResolver
         }
 
         return false;
+    }
+
+    private function globToRegex(string $glob) : string
+    {
+        return str_replace(
+            [
+                '\\*\\*',
+                '\\*'
+            ], [
+                '.*',
+                '[^\/]*',
+            ],
+            '#^'.preg_quote($glob, '#').'$#'
+        );
     }
 }
