@@ -114,7 +114,10 @@ class StartDeploymentHandler
         });
 
         if (0 === $matchingClusters->count()) {
-            throw new ClusterNotFound('Cluster not found in bucket');
+            throw new ClusterNotFound(sprintf(
+                'The cluster "%s" is not found in your project',
+                $clusterIdentifier
+            ));
         }
 
         return $matchingClusters->first();
