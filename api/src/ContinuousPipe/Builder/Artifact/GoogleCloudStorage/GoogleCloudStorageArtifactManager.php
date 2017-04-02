@@ -10,29 +10,21 @@ use ContinuousPipe\Builder\Artifact\ArtifactWriter;
 use ContinuousPipe\Builder\Artifact\ArtifactRemover;
 use Google\Cloud\Exception\GoogleException;
 use Google\Cloud\Exception\NotFoundException;
-use Google\Cloud\ServiceBuilder;
-use Google\Cloud\Storage\Bucket;
 use GuzzleHttp\Psr7\StreamWrapper;
 
 class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReader, ArtifactRemover
 {
     /**
-     * @var ServiceBuilder
+     * @var BucketResolver
      */
-    private $serviceBuilder;
+    private $bucketResolver;
 
     /**
-     * @var string
+     * @param BucketResolver $bucketResolver
      */
-    private $bucketName;
-
-    public function __construct(string $projectId, string $keyFilePath, string $bucketName)
+    public function __construct(BucketResolver $bucketResolver)
     {
-        $this->bucketName = $bucketName;
-        $this->serviceBuilder = new ServiceBuilder([
-            'projectId' => $projectId,
-            'keyFilePath' => $keyFilePath,
-        ]);
+        $this->bucketResolver = $bucketResolver;
     }
 
     /**
@@ -43,11 +35,11 @@ class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReade
         try {
             return Archive\FileSystemArchive::fromStream(
                 StreamWrapper::getResource(
-                    $this->getBucket()->object($artifact->getIdentifier())->downloadAsStream()
+                    $this->bucketResolver->resolve()->object($artifact->getIdentifier())->downloadAsStream()
                 )
             );
         } catch (NotFoundException $e) {
-            throw new ArtifactException(sprintf('Artifact "%s" not found', $artifact->getName()), $e->getCode(), $e);
+            throw new Artifact\ArtifactNotFound(sprintf('Artifact "%s" not found', $artifact->getName()), $e->getCode(), $e);
         } catch (GoogleException $e) {
             throw new ArtifactException('Unable to read the artifact from the bucket', $e->getCode(), $e);
         }
@@ -58,7 +50,7 @@ class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReade
      */
     public function write(Archive $source, Artifact $artifact)
     {
-        $bucket = $this->getBucket();
+        $bucket = $this->bucketResolver->resolve();
 
         if ($bucket->object($artifact->getIdentifier())->exists()) {
             throw new ArtifactException(sprintf(
@@ -68,7 +60,7 @@ class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReade
         }
 
         try {
-            $this->getBucket()->upload($source->read(), [
+            $bucket->upload($source->read(), [
                 'resumable' => false,
                 'validate' => false,
                 'predefinedAcl' => 'projectPrivate',
@@ -85,14 +77,9 @@ class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReade
     public function remove(Artifact $artifact)
     {
         try {
-            $this->getBucket()->object($artifact->getIdentifier())->delete();
+            $this->bucketResolver->resolve()->object($artifact->getIdentifier())->delete();
         } catch (GoogleException $e) {
             throw new ArtifactException('Unable to delete the artifact', $e->getCode(), $e);
         }
-    }
-
-    private function getBucket() : Bucket
-    {
-        return $this->serviceBuilder->storage()->bucket($this->bucketName);
     }
 }
