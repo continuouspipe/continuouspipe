@@ -37,7 +37,7 @@ class TeamDoNotHaveAnyClusterOrRegistry implements AlertsRepository
         if ($bucket->getClusters()->isEmpty()) {
             $alerts[] = new Alert(
                 'team-missing-cluster',
-                'The team does not have a configured cluster',
+                'The project does not have a configured cluster',
                 new \DateTime(),
                 new AlertAction(
                     'state',
@@ -50,7 +50,7 @@ class TeamDoNotHaveAnyClusterOrRegistry implements AlertsRepository
         if ($bucket->getDockerRegistries()->isEmpty()) {
             $alerts[] = new Alert(
                 'team-missing-docker-registry',
-                'The team does not have a registry to push the Docker images to',
+                'The project does not have a registry to push the Docker images to',
                 new \DateTime(),
                 new AlertAction(
                     'state',

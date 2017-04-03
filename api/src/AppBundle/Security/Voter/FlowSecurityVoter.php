@@ -78,6 +78,6 @@ class FlowSecurityVoter extends Voter
             return $subject->getTeam();
         }
 
-        throw new \InvalidArgumentException(sprintf('Unable to extract the team from %s', get_class($subject)));
+        throw new \InvalidArgumentException(sprintf('Unable to extract the project from %s', get_class($subject)));
     }
 }
