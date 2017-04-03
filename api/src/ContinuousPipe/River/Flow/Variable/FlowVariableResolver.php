@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\Flow\Variable;
 
+use ContinuousPipe\DomainName\DomainNameExpressions;
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\TideConfigurationException;
 use Ramsey\Uuid\UuidInterface;
@@ -36,6 +36,7 @@ class FlowVariableResolver
     public function resolveExpression(string $expression, ArrayObject $context)
     {
         $language = new ExpressionLanguage();
+        $language->registerProvider(new DomainNameExpressions());
 
         try {
             return $language->evaluate($expression, $context->asArray());

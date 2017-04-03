@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Configuration;
 
-use Cocur\Slugify\Slugify;
+use ContinuousPipe\DomainName\Transformer;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Extension;
 use ContinuousPipe\River\Flow\Variable\FlowVariableResolver;
@@ -13,6 +13,7 @@ use JMS\Serializer\SerializerInterface;
 
 class ComponentFactory
 {
+    const MAX_INGRESS_HOST_LENGTH = 64;
     /**
      * @var SerializerInterface
      */
@@ -80,6 +81,14 @@ class ComponentFactory
 
         // Resolve hosts expression
         $configuration['endpoints'] = array_map(function (array $endpointConfiguration) use ($context) {
+
+            $this->checkIngressConfiguration($endpointConfiguration);
+
+            if (isset($endpointConfiguration['ingress']['host_suffix'])) {
+                $endpointConfiguration['ingress']['host']['expression'] =
+                    $this->generateHostExpression($endpointConfiguration['ingress']['host_suffix']);
+            }
+
             if (isset($endpointConfiguration['ingress']['host'])) {
                 $endpointConfiguration['ingress']['rules'] = [
                     $this->transformIngressHostIntoRule($context, $endpointConfiguration['ingress']['host']),
@@ -148,10 +157,10 @@ class ComponentFactory
         }
 
         try {
-            $resolvedHostname = (new Slugify(['regexp' => '/([^A-Za-z0-9\.]|-)+/']))->slugify($this->flowVariableResolver->resolveExpression(
+            $resolvedHostname = $this->flowVariableResolver->resolveExpression(
                 $hostConfiguration['expression'],
                 $this->flowVariableResolver->createContext($context->getFlowUuid(), $context->getCodeReference())
-            ));
+            );
         } catch (TideConfigurationException $e) {
             throw new TideGenerationException($e->getMessage(), $e->getCode(), $e);
         }
@@ -159,5 +168,39 @@ class ComponentFactory
         return [
             'host' => $resolvedHostname,
         ];
+    }
+
+    private function generateHostExpression(string $hostSuffix): string
+    {
+        return sprintf(
+            'hash_long_domain_prefix(slugify(code_reference.branch), %s) ~ "%s"',
+            self::MAX_INGRESS_HOST_LENGTH - mb_strlen($hostSuffix),
+            $hostSuffix
+        );
+    }
+
+    /**
+     * @param array $endpointConfiguration
+     * @return array
+     */
+    private function checkIngressConfiguration(array $endpointConfiguration)
+    {
+        if (!isset($endpointConfiguration['ingress'])) {
+            return;
+        }
+
+        if (isset($endpointConfiguration['ingress']['host_suffix'])) {
+            $maxSuffixLength = self::MAX_INGRESS_HOST_LENGTH - Transformer::HOST_HASH_LENGTH;
+            if (mb_strlen($endpointConfiguration['ingress']['host_suffix']) > $maxSuffixLength) {
+                throw new TideGenerationException("The ingress host_suffix cannot be more than $maxSuffixLength characters long");
+            }
+            return;
+        }
+
+        if (isset($endpointConfiguration['ingress']['host']['expression'])) {
+            return;
+        }
+
+        throw new TideGenerationException('The ingress needs a host_suffix or a host expression');
     }
 }
