@@ -13,6 +13,8 @@ use JMS\Serializer\SerializerInterface;
 
 class ComponentFactory
 {
+    const HOST_MAX_LENGTH = 64;
+    const HOST_HASH_LENGTH = 10;
     /**
      * @var SerializerInterface
      */
@@ -148,10 +150,12 @@ class ComponentFactory
         }
 
         try {
-            $resolvedHostname = (new Slugify(['regexp' => '/([^A-Za-z0-9\.]|-)+/']))->slugify($this->flowVariableResolver->resolveExpression(
-                $hostConfiguration['expression'],
-                $this->flowVariableResolver->createContext($context->getFlowUuid(), $context->getCodeReference())
-            ));
+            $resolvedHostname = $this->transformHostnames(
+                $this->flowVariableResolver->resolveExpression(
+                    $hostConfiguration['expression'],
+                    $this->flowVariableResolver->createContext($context->getFlowUuid(), $context->getCodeReference())
+                )
+            );
         } catch (TideConfigurationException $e) {
             throw new TideGenerationException($e->getMessage(), $e->getCode(), $e);
         }
@@ -159,5 +163,25 @@ class ComponentFactory
         return [
             'host' => $resolvedHostname,
         ];
+    }
+
+    private function transformHostnames(string $hostname): string
+    {
+        return $this->hashLongHostnames($this->slugifyHostnames($hostname));
+    }
+
+    private function hashLongHostnames(string $hostname): string
+    {
+        if (mb_strlen($hostname) <= self::HOST_MAX_LENGTH) {
+            return $hostname;
+        }
+        return mb_substr(
+            md5($hostname), 0, self::HOST_HASH_LENGTH
+        ) . '-' .mb_substr($hostname, - (self::HOST_MAX_LENGTH - self::HOST_HASH_LENGTH - 1));
+    }
+
+    private function slugifyHostnames(string $hostname): string
+    {
+        return (new Slugify(['regexp' => '/([^A-Za-z0-9\.]|-)+/']))->slugify($hostname);
     }
 }
