@@ -7,7 +7,6 @@ use ContinuousPipe\Model\Component\Port;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Flow\ConfigurationDefinition;
 use ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory;
-use ContinuousPipe\River\Task\Deploy\Configuration\Environment;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;

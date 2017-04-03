@@ -283,7 +283,7 @@ Feature:
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an ingress with the host "my-very-long-shi-02b27a5635-certeo.inviqa-001.continuouspipe.net"
 
-  Scenario: The host_suffix keu can be used to simplify slugifying and shortening hostnames
+  Scenario: The host_suffix key can be used to simplify slugifying and shortening hostnames
     When a tide is started for the branch "feature/my-very-long-shiny-new-branch-name" with the following configuration:
     """
     tasks:
@@ -309,6 +309,30 @@ Feature:
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an ingress with the host "feature-my-very--c5743d6c37-certeo.inviqa-001.continuouspipe.net"
 
+  Scenario: The host_suffix cannot be too long
+    When a tide is started for the branch "feature/new-branch-name" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                ingress:
+                                    class: nginx
+                                    host_suffix: "my-very-long-host-suffix-certeo.inviqa-001.continuouspipe.net"
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the tide should be failed
+    And a log containing 'The ingress host_suffix cannot be more than 53 characters long' should be created
 
   Scenario: Add the CloudFlare backend manually
     When a tide is started with the following configuration:

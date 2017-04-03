@@ -6,7 +6,7 @@ use Cocur\Slugify\Slugify;
 
 class Transformer
 {
-    const HOST_HASH_LENGTH = 10;
+    const HOST_HASH_LENGTH = 11;
 
     public function shortenWithHash(string $hostPrefix, int $maxLength)
     {
@@ -14,9 +14,9 @@ class Transformer
             return $hostPrefix;
         }
 
-        $shortenToLength = ($maxLength - self::HOST_HASH_LENGTH) - 1;
+        $shortenToLength = $maxLength - self::HOST_HASH_LENGTH;
         $shortenedPrefix = mb_substr($hostPrefix, 0, $shortenToLength);
-        $hash = mb_substr(md5($hostPrefix), 0, self::HOST_HASH_LENGTH);
+        $hash = mb_substr(md5($hostPrefix), 0, self::HOST_HASH_LENGTH - 1);
 
         return $shortenedPrefix . '-' . $hash;
     }

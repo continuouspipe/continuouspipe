@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Configuration;
 
+use ContinuousPipe\DomainName\Transformer;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Extension;
 use ContinuousPipe\River\Flow\Variable\FlowVariableResolver;
@@ -80,6 +81,8 @@ class ComponentFactory
 
         // Resolve hosts expression
         $configuration['endpoints'] = array_map(function (array $endpointConfiguration) use ($context) {
+
+            $this->checkIngressConfiguration($endpointConfiguration);
 
             if (isset($endpointConfiguration['ingress']['host_suffix'])) {
                 $endpointConfiguration['ingress']['host']['expression'] =
@@ -174,5 +177,30 @@ class ComponentFactory
             self::MAX_INGRESS_HOST_LENGTH - mb_strlen($hostSuffix),
             $hostSuffix
         );
+    }
+
+    /**
+     * @param array $endpointConfiguration
+     * @return array
+     */
+    private function checkIngressConfiguration(array $endpointConfiguration)
+    {
+        if (!isset($endpointConfiguration['ingress'])) {
+            return;
+        }
+
+        if (isset($endpointConfiguration['ingress']['host_suffix'])) {
+            $maxSuffixLength = self::MAX_INGRESS_HOST_LENGTH - Transformer::HOST_HASH_LENGTH;
+            if (mb_strlen($endpointConfiguration['ingress']['host_suffix']) > $maxSuffixLength) {
+                throw new TideGenerationException("The ingress host_suffix cannot be more than $maxSuffixLength characters long");
+            }
+            return;
+        }
+
+        if (isset($endpointConfiguration['ingress']['host']['expression'])) {
+            return;
+        }
+
+        throw new TideGenerationException('The ingress needs a host_suffix or a host expression');
     }
 }
