@@ -27,7 +27,7 @@ class DisplayClusterProblems
     }
 
     /**
-     * @param DeploymentEvent $event
+     * @param DeploymentStarted $event
      */
     public function notify(DeploymentStarted $event)
     {
@@ -43,12 +43,12 @@ class DisplayClusterProblems
             }
         } catch (HealthCheckerException $e) {
             $this->logger->warning(
-                'Can\t get the cluster problems',
+                'Can\'t get the cluster problems',
                 ['exception' => $e]
             );
         } catch (LogStreamException $e) {
             $this->logger->warning(
-                'Can\t log to logstream',
+                'Can\'t log to logstream',
                 ['exception' => $e]
             );
         }

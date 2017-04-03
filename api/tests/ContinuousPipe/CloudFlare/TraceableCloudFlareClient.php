@@ -32,9 +32,9 @@ class TraceableCloudFlareClient implements CloudFlareClient
     /**
      * {@inheritdoc}
      */
-    public function createRecord(string $zone, CloudFlareAuthentication $authentication, ZoneRecord $record) : string
+    public function createOrUpdateRecord(string $zone, CloudFlareAuthentication $authentication, ZoneRecord $record) : string
     {
-        $identifier = $this->decoratedClient->createRecord($zone, $authentication, $record);
+        $identifier = $this->decoratedClient->createOrUpdateRecord($zone, $authentication, $record);
 
         $this->createdRecords[] = $record;
 

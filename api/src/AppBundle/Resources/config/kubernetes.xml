@@ -46,9 +46,11 @@
             <argument type="service" id="logger" />
         </service>
 
+        <service id="kubernetes.inspector.pod" class="ContinuousPipe\Adapter\Kubernetes\Inspector\PodInspector" />
         <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector">
             <argument type="service" id="kubernetes.reverse_transformer.component" />
         </service>
+
         <service id="kubernetes.public_endpoint.public_service_voter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointObjectVoter" />
 
         <!-- Kubernetes client -->
@@ -112,6 +114,7 @@
         </service>
 
         <!-- Endpoint integrations -->
+        <service id="pipe.adapter.kubernetes.public_endpoint.ingress.use_ingress_rules_as_endpoint" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\Ingress\Transformer\UsesIngressRulesAsEndpoint" />
         <service id="pipe.adapter.kubernetes.service_waiter.transform_endpoints"
                  class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\ApplyEndpointTransformationAfterWaiting"
                  decorates="pipe.adapter.kubernetes.service_waiter">
@@ -119,6 +122,7 @@
             <argument type="collection">
                 <argument type="service" id="pipe.httplabs.endpoint_transformer" />
                 <argument type="service" id="pipe.cloud_flare.endpoint_transformer" />
+                <argument type="service" id="pipe.adapter.kubernetes.public_endpoint.ingress.use_ingress_rules_as_endpoint" />
             </argument>
         </service>
 
@@ -201,7 +205,9 @@
         </service>
 
         <!-- Object deployer -->
-        <service id="pipe.adapter.kubernetes.object_deployer.pod" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\PodObjectDeployer" />
+        <service id="pipe.adapter.kubernetes.object_deployer.pod" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\PodObjectDeployer">
+            <argument type="service" id="kubernetes.inspector.pod" />
+        </service>
         <service id="pipe.adapter.kubernetes.object_deployer.service" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\ServiceObjectDeployer" />
         <service id="pipe.adapter.kubernetes.object_deployer.secret" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\SecretObjectDeployer" />
         <service id="pipe.adapter.kubernetes.object_deployer.ingress" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\IngressObjectDeployer" />
@@ -263,6 +269,7 @@
             <argument type="service" id="event_bus" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="logger" />
+            <argument type="service" id="kubernetes.inspector.pod" />
             <argument>%pipe.wait_component_interval%</argument>
             <argument>%pipe.wait_component_timeout%</argument>
 
