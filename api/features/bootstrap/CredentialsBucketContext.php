@@ -368,6 +368,14 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @Then the new credentials should not have been saved successfully
+     */
+    public function theNewCredentialsShouldNotHaveBeenSavedSuccessfully()
+    {
+        $this->assertResponseCodeIs($this->response, 400);
+    }
+
+    /**
      * @Then I should receive a bad request error
      */
     public function iShouldReceiveABadRequestError()
