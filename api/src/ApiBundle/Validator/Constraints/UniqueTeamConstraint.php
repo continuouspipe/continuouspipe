@@ -6,7 +6,7 @@ use Symfony\Component\Validator\Constraint;
 
 class UniqueTeamConstraint extends Constraint
 {
-    public $message = 'The team "%slug%" already exists.';
+    public $message = 'The project "%slug%" already exists.';
 
     /**
      * {@inheritdoc}

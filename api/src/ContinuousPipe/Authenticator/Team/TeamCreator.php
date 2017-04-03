@@ -101,7 +101,7 @@ class TeamCreator
     {
         if (null !== ($teamUpdate = $updateRequest->getTeam())) {
             if ($teamUpdate->getSlug() !== null) {
-                throw new TeamCreationException('You cannot update the team slug');
+                throw new TeamCreationException('You cannot update the project slug');
             }
 
             if ($name = $teamUpdate->getName()) {
