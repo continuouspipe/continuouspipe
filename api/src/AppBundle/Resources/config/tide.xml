@@ -111,8 +111,15 @@
             <argument type="service" id="logger" />
         </service>
 
+        <service id="river.filter.code_changes_resolver" class="ContinuousPipe\River\Filter\CodeChanges\CodeChangesResolver">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.changes_comparator" />
+        </service>
+
         <service id="river.task_filter.expression_language_filter_evaluator" class="ContinuousPipe\River\Filter\ExpressionLanguageFilterEvaluator">
             <argument type="service" id="river.task_filter.context_factory" />
+            <argument type="service" id="river.filter.code_changes_resolver" />
         </service>
         <service id="river.tide.task_runner.filter_tasks"
                  class="ContinuousPipe\River\Filter\TaskRunner\FilterDecorator"

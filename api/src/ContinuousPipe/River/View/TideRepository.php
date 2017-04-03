@@ -109,4 +109,15 @@ interface TideRepository extends TideViewStorage
      * @return int
      */
     public function countStartedTidesByFlowSince(UuidInterface $flowUuid, \DateTime $from) : int;
+
+    /**
+     * Find the last X successful tides for this given flow and branch.
+     *
+     * @param UuidInterface $flowUuid
+     * @param string $branch
+     * @param int $limit
+     *
+     * @return Tide[]
+     */
+    public function findLastSuccessfulByFlowUuidAndBranch(UuidInterface $flowUuid, string $branch, int $limit) : array;
 }

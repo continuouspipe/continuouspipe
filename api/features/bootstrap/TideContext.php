@@ -472,6 +472,10 @@ EOF;
      */
     public function theTaskShouldBe($taskIdentifier, $status)
     {
+        if (null === $this->view) {
+            $this->iRequestTheTideView();
+        }
+
         $matchingTasks = array_filter($this->view->getTasks(), function(TideTaskView $view) use ($taskIdentifier) {
             return $view->getIdentifier() == $taskIdentifier;
         });
@@ -1188,18 +1192,43 @@ EOF;
     }
 
     /**
+     * @Given there is a :status tide for the branch :branch
+     * @Given there is a :status tide for the branch :branch and commit :commit
+     */
+    public function thereIsATideForTheBranch($status, $branch, $commit = null)
+    {
+        if ($status == 'failed') {
+            $status = Tide::STATUS_FAILURE;
+        } elseif ($status == 'successful') {
+            $status = Tide::STATUS_SUCCESS;
+        } else {
+            throw new \RuntimeException(sprintf('Status "%s" unknown', $status));
+        }
+
+        $uuid = Uuid::uuid4()->toString();
+
+        $this->iHaveATide($uuid, $branch, $commit);
+
+        $tideUuid = Uuid::fromString($uuid);
+        $tide = $this->viewTideRepository->find($tideUuid);
+        $tide->setStatus($status);
+
+        $this->viewTideRepository->save($tide);
+    }
+
+    /**
      * @Given I have a tide :uuid
      */
-    public function iHaveATide($uuid)
+    public function iHaveATide($uuid, $branch = null, $commit = null)
     {
-        $generationRequest = $this->createGenerationRequest('master', sha1('master'));
+        $generationRequest = $this->createGenerationRequest($branch ?: 'master', $commit ?: sha1($branch ?: 'master'));
 
         $tide = $this->tideFactory->create(
             Pipeline::withConfiguration($generationRequest->getFlow(), [
                 'tasks' => [],
                 'name' => 'Default pipeline',
             ]),
-            $this->createGenerationRequest('master', sha1('master')),
+            $generationRequest,
             Uuid::fromString($uuid)
         );
 

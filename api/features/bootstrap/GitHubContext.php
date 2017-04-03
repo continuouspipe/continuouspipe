@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\River\Guzzle\MatchingHandler;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
@@ -242,7 +243,8 @@ class GitHubContext implements CodeRepositoryContext
                 'docker-php-example',
                 'https://github.com/sroze/docker-php-example',
                 false,
-                $identifier ?: 37856553
+                $identifier ?: 37856553,
+                'master'
             )
         );
 
@@ -284,6 +286,33 @@ class GitHubContext implements CodeRepositoryContext
                     200,
                     ['Content-Type' => 'application/json'],
                     json_encode(['content' => base64_encode($contents)])
+                );
+            }
+        });
+    }
+
+
+    /**
+     * @Given the changes between the reference :base and :head are:
+     */
+    public function theChangesBetweenTheReferenceAndAre($base, $head, TableNode $table)
+    {
+        $compareBranches = \GuzzleHttp\json_decode($this->readFixture('compare-branches.json'), true);
+        $compareBranches['files'] = [];
+
+        foreach ($table->getHash() as $row) {
+            $compareBranches['files'][] = [
+                'filename' => $row['filename'],
+                'status' => $row['status'],
+            ];
+        }
+
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod) use ($base, $head, $compareBranches) {
+            if (in_array($httpMethod, ['GET']) && preg_match('#repos/([^/]+)/([^/]+)/compare/'.$base.'...'.$head.'$#', $path)) {
+                return new \Guzzle\Http\Message\Response(
+                    200,
+                    ['Content-Type' => 'application/json'],
+                    json_encode($compareBranches)
                 );
             }
         });

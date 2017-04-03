@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Pipeline;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Filter\CodeChanges\CodeChangesResolver;
 use ContinuousPipe\River\Filter\ContextFactory;
 use ContinuousPipe\River\Filter\Filter;
 use ContinuousPipe\River\Filter\FilterException;
@@ -42,6 +43,7 @@ final class Pipeline
     }
 
     /**
+     * @param CodeChangesResolver $codeChangesResolver
      * @param ContextFactory $contextFactory
      * @param UuidInterface $flowUuid
      * @param CodeReference $codeReference
@@ -50,15 +52,20 @@ final class Pipeline
      *
      * @return bool
      */
-    public function matchesCondition(ContextFactory $contextFactory, UuidInterface $flowUuid, CodeReference $codeReference) : bool
+    public function matchesCondition(CodeChangesResolver $codeChangesResolver, ContextFactory $contextFactory, UuidInterface $flowUuid, CodeReference $codeReference) : bool
     {
         if (!isset($this->configuration['condition'])) {
             return true;
         }
 
-        return (new Filter($this->configuration['condition']))->evaluates(
+        $filter = new Filter(
+            $codeChangesResolver,
+            $flowUuid,
+            $codeReference,
             $contextFactory->create($flowUuid, $codeReference)->asArray()
         );
+
+        return $filter->evaluates($this->configuration['condition']);
     }
 
     public function getUuid(): UuidInterface
