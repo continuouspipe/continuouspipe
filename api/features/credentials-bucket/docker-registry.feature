@@ -19,6 +19,15 @@ Feature:
       | docker.io     | foo      | bar      |
     Then I should receive a bad request error
 
+  Scenario: Cannot create another Docker Registry with the same serverAddress
+    Given I have the following docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000":
+      | serverAddress | username | password | email                 |
+      | docker.io     | foo      | bar      | samuel.roze@gmail.com |
+    When I create a new docker registry with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | serverAddress | username | password | email                 |
+      | docker.io     | foo2     | bar2     | samuel.roze2@gmail.com|
+    Then the new credentials should not have been saved successfully
+
   @smoke
   Scenario: I can list the Docker Registry credentials of a bucket
     Given I have the following docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000":

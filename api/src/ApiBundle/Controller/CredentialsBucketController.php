@@ -73,6 +73,24 @@ class CredentialsBucketController
             return FOSRestView::create($violations, 400);
         }
 
+        // basic protection against adding same server address twice
+        foreach ($bucket->getDockerRegistries() as $dockerRegistry) {
+            if ($dockerRegistry->getServerAddress() == $credentials->getServerAddress()) {
+                return FOSRestView::create(new ConstraintViolationList([
+                    new ConstraintViolation(
+                        'A credential with this registry type/address already exists in this project',
+                        'The credential for registry {serverAddress} already exists in this project',
+                        [
+                            'serverAddress' => $credentials->getServerAddress(),
+                        ],
+                        $bucket,
+                        'serverAddress',
+                        $credentials->getServerAddress()
+                    ),
+                ]), 400);
+            }
+        }
+
         $bucket->getDockerRegistries()->add($credentials);
 
         $this->bucketRepository->save($bucket);
