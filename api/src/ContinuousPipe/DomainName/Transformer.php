@@ -15,7 +15,7 @@ class Transformer
         }
 
         $shortenToLength = $maxLength - self::HOST_HASH_LENGTH;
-        $shortenedPrefix = mb_substr($hostPrefix, 0, $shortenToLength);
+        $shortenedPrefix = rtrim(mb_substr($hostPrefix, 0, $shortenToLength), '-');
         $hash = mb_substr(md5($hostPrefix), 0, self::HOST_HASH_LENGTH - 1);
 
         return $shortenedPrefix . '-' . $hash;

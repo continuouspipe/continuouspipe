@@ -307,7 +307,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "feature-my-very--c5743d6c37-certeo.inviqa-001.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "feature-my-very-c5743d6c37-certeo.inviqa-001.continuouspipe.net"
 
   Scenario: The host_suffix cannot be too long
     When a tide is started for the branch "feature/new-branch-name" with the following configuration:
