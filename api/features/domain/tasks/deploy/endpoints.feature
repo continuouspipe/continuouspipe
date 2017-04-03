@@ -229,7 +229,7 @@ Feature:
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-certeo.inviqa-001.continuouspipe.net"
 
-  Scenario: If the branch name contains non valid characters, the host name should be slugified
+  Scenario: If the branch name contains non valid characters, the host name can be slugified
     When a tide is started for the branch "feature/123-foo-bar" with the following configuration:
     """
     tasks:
@@ -244,7 +244,7 @@ Feature:
                                 ingress:
                                     class: nginx
                                     host:
-                                        expression: 'code_reference.branch ~ "-certeo.inviqa-001.continuouspipe.net"'
+                                        expression: 'slugify(code_reference.branch) ~ "-certeo.inviqa-001.continuouspipe.net"'
 
                         specification:
                             source:
@@ -256,7 +256,7 @@ Feature:
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an ingress with the host "feature-123-foo-bar-certeo.inviqa-001.continuouspipe.net"
 
-  Scenario: If the branch name is too long, the host name should be partially hashed
+  Scenario: If the branch name is too long, the host name can be hashed with a custom function
     When a tide is started for the branch "my-very-long-shiny-new-feature-branch-name" with the following configuration:
     """
     tasks:
@@ -271,7 +271,7 @@ Feature:
                                 ingress:
                                     class: nginx
                                     host:
-                                        expression: 'code_reference.branch ~ "-certeo.inviqa-001.continuouspipe.net"'
+                                        expression: 'hash_long_domain_prefix(code_reference.branch, 27) ~ "-certeo.inviqa-001.continuouspipe.net"'
 
                         specification:
                             source:
@@ -281,7 +281,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "635716ef82-ture-branch-name-certeo.inviqa-001.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "my-very-long-shi-02b27a5635-certeo.inviqa-001.continuouspipe.net"
 
 
   Scenario: Add the CloudFlare backend manually
