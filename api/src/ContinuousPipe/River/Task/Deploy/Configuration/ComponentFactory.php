@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Task\Deploy\Configuration;
 
-use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Extension;
 use ContinuousPipe\River\Flow\Variable\FlowVariableResolver;
@@ -13,8 +12,7 @@ use JMS\Serializer\SerializerInterface;
 
 class ComponentFactory
 {
-    const HOST_MAX_LENGTH = 64;
-    const HOST_HASH_LENGTH = 10;
+    const MAX_INGRESS_HOST_LENGTH = 64;
     /**
      * @var SerializerInterface
      */
@@ -82,6 +80,12 @@ class ComponentFactory
 
         // Resolve hosts expression
         $configuration['endpoints'] = array_map(function (array $endpointConfiguration) use ($context) {
+
+            if (isset($endpointConfiguration['ingress']['host_suffix'])) {
+                $endpointConfiguration['ingress']['host']['expression'] =
+                    $this->generateHostExpression($endpointConfiguration['ingress']['host_suffix']);
+            }
+
             if (isset($endpointConfiguration['ingress']['host'])) {
                 $endpointConfiguration['ingress']['rules'] = [
                     $this->transformIngressHostIntoRule($context, $endpointConfiguration['ingress']['host']),
@@ -163,4 +167,12 @@ class ComponentFactory
         ];
     }
 
+    private function generateHostExpression(string $hostSuffix): string
+    {
+        return sprintf(
+            'hash_long_domain_prefix(slugify(code_reference.branch), %s) ~ "%s"',
+            self::MAX_INGRESS_HOST_LENGTH - mb_strlen($hostSuffix),
+            $hostSuffix
+        );
+    }
 }
