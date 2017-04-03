@@ -41,6 +41,14 @@ class TraceableDeploymentRepository implements DeploymentRepository
     /**
      * {@inheritdoc}
      */
+    public function asyncFindAll()
+    {
+        return $this->decoratedRepository->asyncFindAll();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findOneByName($name)
     {
         return $this->decoratedRepository->findOneByName($name);

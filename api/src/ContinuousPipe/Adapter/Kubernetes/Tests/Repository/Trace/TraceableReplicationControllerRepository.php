@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Repository\ReplicationControllerRepository;
 
@@ -41,6 +42,14 @@ class TraceableReplicationControllerRepository implements ReplicationControllerR
     public function findAll()
     {
         return $this->repository->findAll();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll()
+    {
+        return $this->repository->asyncFindAll();
     }
 
     /**

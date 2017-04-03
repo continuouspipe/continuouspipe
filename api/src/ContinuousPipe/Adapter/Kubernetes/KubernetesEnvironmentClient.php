@@ -8,6 +8,7 @@ use ContinuousPipe\Adapter\Events;
 use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Model\Environment;
+use function GuzzleHttp\Promise\unwrap;
 use Kubernetes\Client\Client;
 use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Exception\NamespaceNotFound;
@@ -17,6 +18,7 @@ use Kubernetes\Client\Model\Label;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Kubernetes\Client\Model\NamespaceList;
 
 class KubernetesEnvironmentClient implements EnvironmentClient
 {
@@ -58,13 +60,8 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     public function findAll()
     {
         $namespaces = $this->getNamespaceRepository()->findAll();
-        $environments = [];
 
-        foreach ($namespaces->getNamespaces() as $namespace) {
-            $environments[] = $this->namespaceToEnvironment($namespace);
-        }
-
-        return $environments;
+        return $this->namespacesToEnvironments($namespaces);
     }
 
     /**
@@ -75,9 +72,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
         $namespaceLabels = KeyValueObjectList::fromAssociativeArray($labels, Label::class);
         $namespaces = $this->getNamespaceRepository()->findByLabels($namespaceLabels);
 
-        return array_map(function (KubernetesNamespace $namespace) {
-            return $this->namespaceToEnvironment($namespace);
-        }, $namespaces->getNamespaces());
+        return $this->namespacesToEnvironments($namespaces);
     }
 
     /**
@@ -94,7 +89,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
             ), 400, $e);
         }
 
-        return $this->namespaceToEnvironment($namespace);
+        return $this->namespaceToEnvironment($namespace)->wait();
     }
 
     /**
@@ -130,20 +125,45 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     }
 
     /**
+     * Convert the given namespaces into environments.
+     *
+     * @param NamespaceList $namespaces
+     *
+     * @return Environment[]
+     */
+    private function namespacesToEnvironments(NamespaceList $namespaces)
+    {
+        $environmentPromises = [];
+
+        foreach ($namespaces->getNamespaces() as $namespace) {
+            $environmentPromises[] = $this->namespaceToEnvironment($namespace);
+        }
+
+        return unwrap($environmentPromises);
+    }
+
+    /**
      * @param KubernetesNamespace $namespace
      *
-     * @return Environment
+     * @return PromiseInterface
      */
     private function namespaceToEnvironment(KubernetesNamespace $namespace)
     {
-        $namespaceMetadata = $namespace->getMetadata();
         $namespaceClient = $this->client->getNamespaceClient($namespace);
 
-        return new Environment(
-            $namespaceMetadata->getName(),
-            $namespaceMetadata->getName(),
-            $this->namespaceInspector->getComponents($namespaceClient)
-        );
+        return $this->namespaceInspector->getComponents($namespaceClient)->then(function (array $namespacedComponents) use ($namespace) {
+            $components = array_reduce($namespacedComponents, function (array $components, array $carry) {
+                return array_merge($carry, $components);
+            }, []);
+
+            $namespaceMetadata = $namespace->getMetadata();
+
+            return new Environment(
+                $namespaceMetadata->getName(),
+                $namespaceMetadata->getName(),
+                $components
+            );
+        });
     }
 
     /**

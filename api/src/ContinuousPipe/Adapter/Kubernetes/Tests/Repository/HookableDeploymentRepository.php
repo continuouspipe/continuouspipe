@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Repository\DeploymentRepository;
 
@@ -41,6 +42,14 @@ class HookableDeploymentRepository implements DeploymentRepository
     public function findAll()
     {
         return $this->repository->findAll();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll()
+    {
+        return $this->repository->asyncFindAll();
     }
 
     /**
