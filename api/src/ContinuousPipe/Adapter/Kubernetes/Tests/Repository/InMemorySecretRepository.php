@@ -18,7 +18,7 @@ class InMemorySecretRepository implements SecretRepository
      */
     public function create(Secret $secret)
     {
-        $this->secrets[] = $secret;
+        $this->secrets[$secret->getMetadata()->getName()] = $secret;
 
         return $secret;
     }
