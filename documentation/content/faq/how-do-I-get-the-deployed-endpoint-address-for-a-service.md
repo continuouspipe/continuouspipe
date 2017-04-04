@@ -35,4 +35,4 @@ tasks:
 
 This configuration defines an initial `deploy` task that creates a `backend` service. The second `deploy` task creates a `frontend` service that passes the endpoint address of the `backend` service as an environment variable `BACKEND_ENDPOINT` using the dynamic variable `${SERVICE_BACKEND_PUBLIC_ENDPOINT}` as the value.
 
-Additionally, the value of `CLUSTER`, `IMAGE_PATH_BACKEND` and `IMAGE_PATH_FRONTEND` are being passed in as variables - these need to be set on the [configuration page for the flow]({{< relref "configuring-a-flow.md" >}}) in the ContinuousPipe console.
+Additionally, the value of `CLUSTER`, `IMAGE_PATH_BACKEND` and `IMAGE_PATH_FRONTEND` are being passed in as variables - these need to be set on the [configuration page for the flow]({{< relref "quick-start/configuring-a-flow.md" >}}) in the ContinuousPipe console.

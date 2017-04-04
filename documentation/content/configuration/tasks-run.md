@@ -5,13 +5,13 @@ menu:
     parent: 'configuration'
     weight: 50
 
-weight: 50
+weight: 60
 
 aliases:
     - /configuration/commands/
 ---
 
-The `run` task allows to run commands in containers, in the deployed environment context. That way, you can run your integration tests or your application migrations, for example.
+After deploying you may need to run a series of commands to prepare the deployed container. For instance, you may need to run your integration tests or your application migrations. For this you need to use the `run` task, which is one of the [inbuilt tasks]({{< relref "configuration/tasks.md#inbuilt-tasks" >}}). The `run` task allows you to run commands in containers, inside the deployed environment.
 
 Most of the options are shared with the [`deploy` task]({{< relref "configuration/tasks-deploy.md" >}}):
 

@@ -10,9 +10,9 @@ weight: 40
 aliases:
     - /configuration/deployments/
 ---
-Whether you are using a pre-built image or needed to build an image, you can now deploy it. The `deploy` task is configurable in many ways.
+Whether you are using a pre-built image or needed to build an image, you can now deploy it. For this you need to use the `deploy` task, which is one of the [inbuilt tasks]({{< relref "configuration/tasks.md#inbuilt-tasks" >}}). 
 
-The following example assume that you have at least a `web` and a `database` service configured in your `docker-compose.yml` file.
+The `deploy` task is configurable in many ways. The following examples assume that you have at least a `web` and a `database` service configured in your `docker-compose.yml` file.
 
 ``` yaml
 tasks:
@@ -147,7 +147,7 @@ specification:
          value: ${AUTH_HTTP_HTPASSWD}
 ```
 
-Here the value of `AUTH_HTTP_HTPASSWD` is being passed in as a variable to keep it out of version control, this needs to be set on the [configuration page for the flow]({{< relref "configuring-a-flow.md" >}}) in the ContinuousPipe console.
+Here the value of `AUTH_HTTP_HTPASSWD` is being passed in as a variable to keep it out of version control, this needs to be set on the [configuration page for the flow]({{< relref "quick-start/configuring-a-flow.md" >}}) in the ContinuousPipe console.
 
 ## Conditional Services
 If you need to not deploy some services on a given condition, you can use the `condition` expression:
@@ -216,22 +216,6 @@ deployment_strategy:
         period_seconds: 5
         success_threshold: 1
         failure_threshold: 10
-```
-
-## Manual Approval
-
-A manual approval task can be added to suspend a deployment, pending approval.
-
-Adding the predefined `manual_approval` task will suspend the task sequence until manual approval is given to the tide in the ContinuousPipe console.
-
-``` yaml
-tasks:
-    images:
-        # ...
-    wait_product_owner:
-         manual_approval: ~
-    deployment:
-        # ...
 ```
 
 In this configuration the `images` task will run as normal, but the tide will be suspended when it reaches the `wait_product_owner` task. Once approval has been given the tide will resume and run the `deployment` task.
