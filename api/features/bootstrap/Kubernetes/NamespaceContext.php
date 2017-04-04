@@ -5,10 +5,12 @@ namespace Kubernetes;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Adapter\Kubernetes\Event\NamespaceCreated;
 use ContinuousPipe\Adapter\Kubernetes\PrivateImages\SecretFactory;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableNamespaceRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableServiceAccountRepository;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemorySecretRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryServiceAccountRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableSecretRepository;
@@ -79,6 +81,10 @@ class NamespaceContext implements Context
      * @var HookableNamespaceRepository
      */
     private $hookableNamespaceRepository;
+    /**
+     * @var InMemorySecretRepository
+     */
+    private $inMemorySecretRepository;
 
     /**
      * @param TraceableNamespaceRepository $namespaceRepository
@@ -99,6 +105,7 @@ class NamespaceContext implements Context
         LoggerFactory $loggerFactory,
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         InMemoryServiceAccountRepository $inMemoryServiceAccountRepository,
+        InMemorySecretRepository $inMemorySecretRepository,
         HookableServiceAccountRepository $hookableServiceAccountRepository,
         HookableNamespaceRepository $hookableNamespaceRepository
     )
@@ -112,6 +119,7 @@ class NamespaceContext implements Context
         $this->inMemoryServiceAccountRepository = $inMemoryServiceAccountRepository;
         $this->hookableServiceAccountRepository = $hookableServiceAccountRepository;
         $this->hookableNamespaceRepository = $hookableNamespaceRepository;
+        $this->inMemorySecretRepository = $inMemorySecretRepository;
     }
 
     /**
@@ -290,6 +298,66 @@ class NamespaceContext implements Context
                 'No secret named "%s" found is list of created secrets',
                 $name
             ));
+        }
+    }
+
+    /**
+     * @Then the secret :name should not be created
+     */
+    public function theSecretShouldNotBeCreated($name)
+    {
+        $matchingSecrets = array_filter($this->secretRepository->getCreated(), function(Secret $secret) use ($name) {
+            return $secret->getMetadata()->getName() == $name;
+        });
+
+        if (count($matchingSecrets) != 0) {
+            throw new \RuntimeException(sprintf(
+                'Found %d matching secrets in the list of created secrets',
+                count($matchingSecrets)
+            ));
+        }
+    }
+
+    /**
+     * @Given the secret of type :type named :name already exists with the following data:
+     */
+    public function theSecretAlreadyExists($type, $name, TableNode $table)
+    {
+        $this->inMemorySecretRepository->create(new Secret(
+            new ObjectMetadata($name),
+            $table->getRowsHash(),
+            $type
+        ));
+    }
+
+    /**
+     * @Then the secret :name should not be updated
+     */
+    public function theSecretShouldNotBeUpdated($name)
+    {
+        $matchingSecrets = array_filter($this->secretRepository->getUpdated(), function(Secret $secret) use ($name) {
+            return $secret->getMetadata()->getName() == $name;
+        });
+
+        if (count($matchingSecrets) != 0) {
+            throw new \RuntimeException(sprintf(
+                '%d secrets found is list of updated secrets',
+                count($matchingSecrets)
+            ));
+        }
+    }
+
+    /**
+     * @Then the secret :name should be updated
+     */
+    public function theSecretShouldBeUpdated($name)
+    {
+        $matchingSecrets = array_filter($this->secretRepository->getUpdated(), function(Secret $secret) use ($name) {
+            return $secret->getMetadata()->getName() == $name;
+        });
+
+        if (count($matchingSecrets) == 0) {
+            throw new \RuntimeException('No matching secret found');
         }
     }
 

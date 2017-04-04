@@ -52,6 +52,7 @@ Feature:
     And the ingress named "https" should be created
     And the ingress named "https" should have 1 SSL certificate
     And the deployment should contain the endpoint "app.my.dns"
+    And the secret "https-continuous-pipe" should be created
 
   Scenario: Creates an ingress with the "ingress" type
     Given the ingress "www" will be created with the public DNS address "app.my.dns"
@@ -346,3 +347,78 @@ Feature:
     And the ingress named "www" should have the hostname "app-www.continuouspipe.net"
     And the ingress named "www" should have the backend service "www" on port "443"
     And the ingress named "www" should have a SSL certificate for the host "app-www.continuouspipe.net"
+
+  Scenario: Do not update secrets if the data is the same
+    Given the ingress "https" will be created with the public DNS address "app.my.dns"
+    And the secret of type "Opaque" named "https-continuous-pipe" already exists with the following data:
+      | tls.crt | ... |
+      | tls.key | ... |
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "https",
+            "ssl_certificates": [
+              {"name": "continuous-pipe", "cert": "...", "key": "..."}
+            ]
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the secret "https-continuous-pipe" should not be updated
+    And the secret "https-continuous-pipe" should not be created
+
+  Scenario: Updates the secrets if the data changed
+    Given the ingress "https" will be created with the public DNS address "app.my.dns"
+    And the secret of type "Opaque" named "https-continuous-pipe" already exists with the following data:
+      | tls.crt | ... |
+      | tls.key | ... |
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "https",
+            "ssl_certificates": [
+              {"name": "continuous-pipe", "cert": "NEW", "key": "NEW"}
+            ]
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the secret "https-continuous-pipe" should be updated
