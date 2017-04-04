@@ -225,4 +225,16 @@ class IngressContext implements Context
             return $ingress;
         });
     }
+
+    /**
+     * @Then the ingress named :name should not have a backend service
+     */
+    public function theIngressNamedShouldNotHaveABackendService($name)
+    {
+        $ingress = $this->ingressRepository->findOneByName($name);
+
+        if ($ingress->getSpecification()->getBackend() !== null) {
+            throw new \RuntimeException('A backend was found for the ingress');
+        }
+    }
 }

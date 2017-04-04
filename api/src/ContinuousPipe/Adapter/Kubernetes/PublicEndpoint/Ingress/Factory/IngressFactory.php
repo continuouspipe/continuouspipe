@@ -175,7 +175,7 @@ class IngressFactory implements EndpointFactory
                 $annotations
             ),
             new IngressSpecification(
-                null,
+                count($rules) > 0 ? null: $ingressBackend,
                 $tlsCertificates,
                 array_map(function (IngressRule $rule) use ($ingressBackend) {
                     if (null === ($http = $rule->getHttp())) {

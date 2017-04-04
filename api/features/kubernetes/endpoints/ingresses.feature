@@ -216,7 +216,7 @@ Feature:
     And the service "www" should have the type "ClusterIP"
     And the ingress named "www" should have the hostname "app-www.continuouspipe.net"
     And the ingress named "www" should have the class "nginx"
-    And the ingress named "www" should have the backend service "www" on port "80"
+    And the ingress named "www" should not have a backend service
     And the ingress named "www" should not be using secure backends
 
   Scenario: It returns the ingress hosts in the endpoints
@@ -301,7 +301,7 @@ Feature:
     When I send the built deployment request
     Then the ingress named "www" should be created
     And the ingress named "www" should have the hostname "app-www.continuouspipe.net"
-    And the ingress named "www" should have the backend service "www" on port "443"
+    And the ingress named "www" should not have a backend service
     And the ingress named "www" should be using secure backends
 
   Scenario: The ingress should use the provided SSL certificates
@@ -345,7 +345,7 @@ Feature:
     When I send the built deployment request
     Then the ingress named "www" should be created
     And the ingress named "www" should have the hostname "app-www.continuouspipe.net"
-    And the ingress named "www" should have the backend service "www" on port "443"
+    And the ingress named "www" should not have a backend service
     And the ingress named "www" should have a SSL certificate for the host "app-www.continuouspipe.net"
 
   Scenario: Do not update secrets if the data is the same
