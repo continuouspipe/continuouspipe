@@ -12,12 +12,8 @@ use ContinuousPipe\Model\Component\Endpoint;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Security\Encryption\Vault;
-use Kubernetes\Client\Exception\Exception;
-use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\IngressRule;
-use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\KubernetesObject;
-use Kubernetes\Client\Model\Service;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -81,10 +77,6 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
 
         if (null !== $cloudFlareZone->getHostname()) {
             $records = [$cloudFlareZone->getHostname()];
-        } elseif (null !== $cloudFlareZone->getRecordSuffix()) {
-            $records = [
-                $deploymentContext->getEnvironment()->getName() . $cloudFlareZone->getRecordSuffix(),
-            ];
         } elseif (null !== $endpointConfiguration->getIngress() && 0 !== count($rules = $endpointConfiguration->getIngress()->getRules())) {
             $records = array_map(function (IngressRule $ingressRule) {
                 return $ingressRule->getHost();

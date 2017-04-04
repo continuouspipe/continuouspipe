@@ -40,7 +40,7 @@ Feature:
             "name": "http",
             "cloud_flare_zone": {
               "zone_identifier": "1234531235",
-              "record_suffix": ".example.com",
+              "hostname": "master.example.com",
               "authentication": {
                 "email": "samuel@example.com",
                 "api_key": "foobar"
@@ -84,7 +84,7 @@ Feature:
             "name": "http",
             "cloud_flare_zone": {
               "zone_identifier": "1234531235qwerty",
-              "record_suffix": "-myapp.example.com",
+              "hostname": "master-myapp.example.com",
               "authentication": {
                 "email": "samuel@example.com",
                 "api_key": "foobar"
@@ -130,7 +130,7 @@ Feature:
             "name": "http",
             "cloud_flare_zone": {
               "zone_identifier": "1234531235qwerty",
-              "record_suffix": "-myapp.example.com",
+              "hostname": "master-myapp.example.com",
               "authentication": {
                 "email": "samuel@example.com",
                 "api_key": "foobar"
@@ -177,7 +177,7 @@ Feature:
             "name": "http",
             "cloud_flare_zone": {
               "zone_identifier": "1234531235qwerty",
-              "record_suffix": "-myapp.example.com",
+              "hostname": "master-myapp.example.com",
               "authentication": {
                 "email": "samuel@example.com",
                 "api_key": "foobar"
@@ -222,7 +222,7 @@ Feature:
             "name": "http",
             "cloud_flare_zone": {
               "zone_identifier": "1234531235qwerty",
-              "record_suffix": "-myapp.example.com",
+              "hostname": "master-myapp.example.com",
               "authentication": {
                 "email": "samuel@example.com",
                 "api_key": "foobar"
@@ -279,7 +279,7 @@ Feature:
             "type": "ingress",
             "cloud_flare_zone": {
               "zone_identifier": "1234531235qwerty",
-              "record_suffix": "-myapp.example.com",
+              "hostname": "master-myapp.example.com",
               "authentication": {
                 "email": "samuel@example.com",
                 "api_key": "foobar"
@@ -320,7 +320,7 @@ Feature:
             "name": "http",
             "cloud_flare_zone": {
               "zone_identifier": "1234531235qwerty",
-              "record_suffix": "-myapp.example.com",
+              "hostname": "master-myapp.example.com",
               "proxied": true,
               "authentication": {
                 "email": "samuel@example.com",
@@ -415,7 +415,7 @@ Feature:
             "name": "http",
             "cloud_flare_zone": {
               "zone_identifier": "1234531235qwerty",
-              "record_suffix": "-myapp.example.com",
+              "hostname": "master-myapp.example.com",
               "backend_address": "google.com",
               "authentication": {
                 "email": "samuel@example.com",
@@ -434,47 +434,3 @@ Feature:
       | name              | value                    |
       | record_name       | master-myapp.example.com |
 
-  Scenario: It uses the hostname for the A zone in CloudFlare
-    Given the service "http" will be created with the public IP "1.2.3.4"
-    And the components specification are:
-    """
-    [
-      {
-        "name": "app",
-        "identifier": "app",
-        "specification": {
-          "source": {
-            "image": "sroze\/php-example"
-          },
-          "scalability": {
-            "enabled": true,
-            "number_of_replicas": 1
-          },
-          "ports": [
-            {"identifier": "http", "port": 80, "protocol": "TCP"}
-          ]
-        },
-        "endpoints": [
-          {
-            "name": "http",
-            "cloud_flare_zone": {
-              "zone_identifier": "1234531235",
-              "record_suffix": ".example.com",
-              "hostname": "a-specific-hostname.example.com",
-              "authentication": {
-                "email": "samuel@example.com",
-                "api_key": "foobar"
-              }
-            }
-          }
-        ]
-      }
-    ]
-    """
-    When I send the built deployment request
-    Then the service "http" should be created
-    And the CloudFlare zone "a-specific-hostname.example.com" should have been created with the type A and the address "1.2.3.4"
-    And the annotation "com.continuouspipe.io.cloudflare.records" of the service "http" should contain an entry the following keys in its JSON:
-      | name              | value                           |
-      | record_name       | a-specific-hostname.example.com |
-      | record_identifier | 1234                            |
