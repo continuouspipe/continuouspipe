@@ -79,7 +79,9 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
             return $publicEndpoint;
         }
 
-        if (null !== $cloudFlareZone->getRecordSuffix()) {
+        if (null !== $cloudFlareZone->getHostname()) {
+            $records = [$cloudFlareZone->getHostname()];
+        } elseif (null !== $cloudFlareZone->getRecordSuffix()) {
             $records = [
                 $deploymentContext->getEnvironment()->getName() . $cloudFlareZone->getRecordSuffix(),
             ];
