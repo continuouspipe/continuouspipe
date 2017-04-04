@@ -151,11 +151,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
     {
         $namespaceClient = $this->client->getNamespaceClient($namespace);
 
-        return $this->namespaceInspector->getComponents($namespaceClient)->then(function (array $namespacedComponents) use ($namespace) {
-            $components = array_reduce($namespacedComponents, function (array $components, array $carry) {
-                return array_merge($carry, $components);
-            }, []);
-
+        return $this->namespaceInspector->getComponents($namespaceClient)->then(function (array $components) use ($namespace) {
             $namespaceMetadata = $namespace->getMetadata();
 
             return new Environment(

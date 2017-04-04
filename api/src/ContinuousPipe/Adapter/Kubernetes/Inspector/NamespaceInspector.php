@@ -30,31 +30,31 @@ class NamespaceInspector
      */
     public function getComponents(NamespaceClient $namespaceClient)
     {
-        $self = $this;
-
         return all([
-            $namespaceClient->getReplicationControllerRepository()->asyncFindAll()->then(function ($replicationControllers) use ($self, $namespaceClient) {
+            $namespaceClient->getReplicationControllerRepository()->asyncFindAll()->then(function ($replicationControllers) use ($namespaceClient) {
                 $components = [];
                 foreach ($replicationControllers as $replicationController) {
                     try {
-                        $components[] = $self->reverseComponentTransformer->getComponentFromReplicationController($namespaceClient, $replicationController);
+                        $components[] = $this->reverseComponentTransformer->getComponentFromReplicationController($namespaceClient, $replicationController);
                     } catch (\InvalidArgumentException $e) {
                         continue;
                     }
                 }
                 return $components;
             }),
-            $namespaceClient->getDeploymentRepository()->asyncFindAll()->then(function ($deployments) use ($self, $namespaceClient) {
+            $namespaceClient->getDeploymentRepository()->asyncFindAll()->then(function ($deployments) use ($namespaceClient) {
                 $components = [];
                 foreach ($deployments as $deployment) {
                     try {
-                        $components[] = $self->reverseComponentTransformer->getComponentFromDeployment($namespaceClient, $deployment);
+                        $components[] = $this->reverseComponentTransformer->getComponentFromDeployment($namespaceClient, $deployment);
                     } catch (\InvalidArgumentException $e) {
                         continue;
                     }
                 }
                 return $components;
             })
-        ]);
+        ])->then(function (array $repoComponents) {
+            return call_user_func_array('array_merge', $repoComponents);
+        });
     }
 }
