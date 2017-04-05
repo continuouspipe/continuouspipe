@@ -434,3 +434,83 @@ Feature:
       | name              | value                    |
       | record_name       | master-myapp.example.com |
 
+  Scenario: It creates an A zone in CloudFlare using the record suffix and environment name
+    Given the service "http" will be created with the public IP "1.2.3.4"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "cloud_flare_zone": {
+              "zone_identifier": "1234531235",
+              "record_suffix": ".example.com",
+              "authentication": {
+                "email": "samuel@example.com",
+                "api_key": "foobar"
+              }
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the service "http" should be created
+    And the CloudFlare zone "master.example.com" should have been created with the type A and the address "1.2.3.4"
+
+  Scenario: It creates an A zone in CloudFlare using the hostname when hostname and record suffix provided
+    Given the service "http" will be created with the public IP "1.2.3.4"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "cloud_flare_zone": {
+              "zone_identifier": "1234531235",
+              "hostname": "master-myapp.example.com",
+              "record_suffix": ".example.com",
+              "authentication": {
+                "email": "samuel@example.com",
+                "api_key": "foobar"
+              }
+            }
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the service "http" should be created
+    And the CloudFlare zone "master-myapp.example.com" should have been created with the type A and the address "1.2.3.4"
