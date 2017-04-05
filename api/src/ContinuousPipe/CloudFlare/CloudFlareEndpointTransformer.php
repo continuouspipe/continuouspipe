@@ -12,12 +12,8 @@ use ContinuousPipe\Model\Component\Endpoint;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Security\Encryption\Vault;
-use Kubernetes\Client\Exception\Exception;
-use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\IngressRule;
-use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\KubernetesObject;
-use Kubernetes\Client\Model\Service;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
@@ -79,17 +75,7 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
             return $publicEndpoint;
         }
 
-        if (null !== $cloudFlareZone->getRecordSuffix()) {
-            $records = [
-                $deploymentContext->getEnvironment()->getName() . $cloudFlareZone->getRecordSuffix(),
-            ];
-        } elseif (null !== $endpointConfiguration->getIngress() && 0 !== count($rules = $endpointConfiguration->getIngress()->getRules())) {
-            $records = array_map(function (IngressRule $ingressRule) {
-                return $ingressRule->getHost();
-            }, $rules);
-        } else {
-            throw new EndpointException('Can\'t find which DNS record to create. You can set the `record_suffix` or some ingress hosts.');
-        }
+        $records = $this->getRecordsFromConfig($deploymentContext, $endpointConfiguration, $cloudFlareZone);
 
         if (null === ($recordAddress = $cloudFlareZone->getBackendAddress())) {
             $recordAddress = $publicEndpoint->getAddress();
@@ -164,5 +150,51 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
         }
 
         return 'CNAME';
+    }
+
+    /**
+     * @param DeploymentContext $deploymentContext
+     * @param Endpoint $endpointConfiguration
+     * @param $cloudFlareZone
+     * @return array
+     */
+    private function getRecordsFromConfig(
+        DeploymentContext $deploymentContext,
+        Endpoint $endpointConfiguration,
+        Endpoint\CloudFlareZone $cloudFlareZone
+    ) {
+        if (null !== $cloudFlareZone->getHostname()) {
+            return [$cloudFlareZone->getHostname()];
+        } 
+        
+        if (null !== $cloudFlareZone->getRecordSuffix()) {
+            return [
+                $deploymentContext->getEnvironment()->getName() . $cloudFlareZone->getRecordSuffix(),
+            ];
+        }
+        
+        if ($this->ingressHasRules($endpointConfiguration)) {
+            return array_map(
+                function (IngressRule $ingressRule) {
+                    return $ingressRule->getHost();
+                },
+                $endpointConfiguration->getIngress()->getRules()
+            );
+        }
+        
+        throw new EndpointException(
+            'Can\'t find which DNS record to create. You can set the `record_suffix` or some ingress hosts.'
+        );
+    }
+
+    /**
+     * @param Endpoint $endpointConfiguration
+     * @return bool
+     */
+    private function ingressHasRules(Endpoint $endpointConfiguration)
+    {
+        return null !== $endpointConfiguration->getIngress() && 0 !== count(
+            $endpointConfiguration->getIngress()->getRules()
+        );
     }
 }
