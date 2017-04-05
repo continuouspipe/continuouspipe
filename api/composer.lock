@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "41dd2825b814da52d5c1c5e6e3b00cc9",
+    "content-hash": "0e2af69145e75f21b3fa07daf39507b5",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -281,16 +281,16 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "dev-feature/add-full-host-to-cloudfare",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
-                "reference": "b62905baff3dffc5c06d0549acbc06b32e720639"
+                "reference": "37538f9afd6d111d6c7159ff559ce6ba9caa1693"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/b62905baff3dffc5c06d0549acbc06b32e720639",
-                "reference": "b62905baff3dffc5c06d0549acbc06b32e720639",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/37538f9afd6d111d6c7159ff559ce6ba9caa1693",
+                "reference": "37538f9afd6d111d6c7159ff559ce6ba9caa1693",
                 "shasum": ""
             },
             "require-dev": {
@@ -304,10 +304,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/model/tree/feature/add-full-host-to-cloudfare",
+                "source": "https://github.com/continuouspipe/model/tree/2.4.0",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2017-04-04 09:04:00"
+            "time": "2017-04-05T08:32:19+00:00"
         },
         {
             "name": "continuous-pipe/platform-bundle",
@@ -8323,7 +8323,6 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
-        "continuous-pipe/model": 20,
         "continuous-pipe/worker-bundle": 20
     },
     "prefer-stable": false,
