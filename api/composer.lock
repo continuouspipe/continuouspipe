@@ -285,12 +285,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
-                "reference": "636bcc2fed9ff7b1aec3d9696c3e08194b665437"
+                "reference": "b62905baff3dffc5c06d0549acbc06b32e720639"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/636bcc2fed9ff7b1aec3d9696c3e08194b665437",
-                "reference": "636bcc2fed9ff7b1aec3d9696c3e08194b665437",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/b62905baff3dffc5c06d0549acbc06b32e720639",
+                "reference": "b62905baff3dffc5c06d0549acbc06b32e720639",
                 "shasum": ""
             },
             "require-dev": {
@@ -307,7 +307,7 @@
                 "source": "https://github.com/continuouspipe/model/tree/feature/add-full-host-to-cloudfare",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2017-04-04 14:09:35"
+            "time": "2017-04-04 09:04:00"
         },
         {
             "name": "continuous-pipe/platform-bundle",
