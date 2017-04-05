@@ -302,6 +302,7 @@ Feature:
     Then the ingress named "www" should be created
     And the ingress named "www" should have the hostname "app-www.continuouspipe.net"
     And the ingress named "www" should not have a backend service
+    And the ingress named "www" should have the backend service "www" on port "443" behind the rule "app-www.continuouspipe.net"
     And the ingress named "www" should be using secure backends
 
   Scenario: The ingress should use the provided SSL certificates

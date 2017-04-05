@@ -9,6 +9,8 @@ use ContinuousPipe\Pipe\Environment\PublicEndpointPort;
 use ContinuousPipe\Pipe\Promise\PromiseBuilder;
 use JMS\Serializer\SerializerInterface;
 use Kubernetes\Client\Model\Ingress;
+use Kubernetes\Client\Model\IngressHttpRulePath;
+use Kubernetes\Client\Model\IngressRule;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\LoadBalancerStatus;
 use Kubernetes\Client\Model\Service;
@@ -48,13 +50,18 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
 
     /**
      * @param DeploymentClientFactory $clientFactory
-     * @param LoggerFactory           $loggerFactory
-     * @param SerializerInterface     $serializer
-     * @param int                     $endpointTimeout
-     * @param int                     $endpointInterval
+     * @param LoggerFactory $loggerFactory
+     * @param SerializerInterface $serializer
+     * @param int $endpointTimeout
+     * @param int $endpointInterval
      */
-    public function __construct(DeploymentClientFactory $clientFactory, LoggerFactory $loggerFactory, SerializerInterface $serializer, int $endpointTimeout, int $endpointInterval)
-    {
+    public function __construct(
+        DeploymentClientFactory $clientFactory,
+        LoggerFactory $loggerFactory,
+        SerializerInterface $serializer,
+        int $endpointTimeout,
+        int $endpointInterval
+    ) {
         $this->clientFactory = $clientFactory;
         $this->loggerFactory = $loggerFactory;
         $this->serializer = $serializer;
@@ -64,60 +71,74 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
 
     /**
      * @param DeploymentContext $context
-     * @param KubernetesObject  $object
+     * @param KubernetesObject $object
      *
      * @return React\Promise\PromiseInterface
      *
      * @throws EndpointNotFound
      */
-    public function waitEndpoints(React\EventLoop\LoopInterface $loop, DeploymentContext $context, KubernetesObject $object)
-    {
+    public function waitEndpoints(
+        React\EventLoop\LoopInterface $loop,
+        DeploymentContext $context,
+        KubernetesObject $object
+    ) {
         $objectName = $object->getMetadata()->getName();
-        $logger = $this->loggerFactory->from($context->getLog())->child(new Text('Waiting public endpoint of service '.$objectName));
+        $logger = $this->loggerFactory->from($context->getLog())->child(
+            new Text('Waiting public endpoint of service ' . $objectName)
+        );
         $client = $this->clientFactory->get($context);
 
         $logger->updateStatus(Log::RUNNING);
 
-        return $this->waitPublicEndpoint($loop, $client, $object, $logger)->then(function (PublicEndpoint $endpoint) use ($logger) {
-            $logger->updateStatus(Log::SUCCESS);
+        return $this->waitPublicEndpoint($loop, $client, $object, $logger)->then(
+            function (PublicEndpoint $endpoint) use ($logger) {
+                $logger->updateStatus(Log::SUCCESS);
 
-            return [
-                $endpoint,
-            ];
-        }, function (EndpointNotFound $e) use ($logger) {
-            $logger->updateStatus(Log::FAILURE);
+                return [
+                    $endpoint,
+                ];
+            },
+            function (EndpointNotFound $e) use ($logger) {
+                $logger->updateStatus(Log::FAILURE);
 
-            throw $e;
-        });
+                throw $e;
+            }
+        );
     }
 
     /**
-     * @param NamespaceClient  $namespaceClient
+     * @param NamespaceClient $namespaceClient
      * @param KubernetesObject $object
-     * @param Logger           $logger
+     * @param Logger $logger
      *
      * @return React\Promise\PromiseInterface
      */
-    private function waitPublicEndpoint(React\EventLoop\LoopInterface $loop, NamespaceClient $namespaceClient, KubernetesObject $object, Logger $logger)
-    {
+    private function waitPublicEndpoint(
+        React\EventLoop\LoopInterface $loop,
+        NamespaceClient $namespaceClient,
+        KubernetesObject $object,
+        Logger $logger
+    ) {
         $statusLogger = $logger->child(new Text('No public endpoint found yet.'));
 
         // Get endpoint status
         $publicEndpointStatusPromise = (new PromiseBuilder($loop))
-            ->retry($this->endpointInterval, function (React\Promise\Deferred $deferred) use ($namespaceClient, $object, $statusLogger) {
-                try {
-                    $endpoint = $this->getPublicEndpoint($namespaceClient, $object);
+            ->retry(
+                $this->endpointInterval,
+                function (React\Promise\Deferred $deferred) use ($namespaceClient, $object, $statusLogger) {
+                    try {
+                        $endpoint = $this->getPublicEndpoint($namespaceClient, $object);
 
-                    $statusLogger->update(new Text('Found endpoint: '.$endpoint->getAddress()));
+                        $statusLogger->update(new Text('Found endpoint: ' . $endpoint->getAddress()));
 
-                    $deferred->resolve($endpoint);
-                } catch (EndpointNotFound $e) {
-                    $statusLogger->update(new Text($e->getMessage()));
+                        $deferred->resolve($endpoint);
+                    } catch (EndpointNotFound $e) {
+                        $statusLogger->update(new Text($e->getMessage()));
+                    }
                 }
-            })
+            )
             ->withTimeout($this->endpointTimeout)
-            ->getPromise()
-        ;
+            ->getPromise();
 
         // Get objects' events
         $eventsLogger = $logger->child(new Complex('events'));
@@ -125,32 +146,39 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
             $eventList = $namespaceClient->getEventRepository()->findByObject($object);
 
             $events = $eventList->getEvents();
-            $eventsLogger->update(new Complex('events', [
-                'events' => json_decode($this->serializer->serialize($events, 'json'), true),
-            ]));
+            $eventsLogger->update(
+                new Complex(
+                    'events', [
+                        'events' => json_decode($this->serializer->serialize($events, 'json'), true),
+                    ]
+                )
+            );
         };
 
         $timer = $loop->addPeriodicTimer($this->endpointInterval, $updateEvents);
 
-        return $publicEndpointStatusPromise->then(function (PublicEndpoint $endpoint) use ($timer, $updateEvents) {
-            $timer->cancel();
-            $updateEvents();
+        return $publicEndpointStatusPromise->then(
+            function (PublicEndpoint $endpoint) use ($timer, $updateEvents) {
+                $timer->cancel();
+                $updateEvents();
 
-            return $endpoint;
-        }, function (\Throwable $reason) use ($timer, $updateEvents) {
-            $timer->cancel();
-            $updateEvents();
+                return $endpoint;
+            },
+            function (\Throwable $reason) use ($timer, $updateEvents) {
+                $timer->cancel();
+                $updateEvents();
 
-            if ($reason instanceof React\Promise\Timer\TimeoutException) {
-                $reason = new EndpointNotFound('Endpoint still not found. Timed-out.', $reason->getCode(), $reason);
+                if ($reason instanceof React\Promise\Timer\TimeoutException) {
+                    $reason = new EndpointNotFound('Endpoint still not found. Timed-out.', $reason->getCode(), $reason);
+                }
+
+                throw $reason;
             }
-
-            throw $reason;
-        });
+        );
     }
 
     /**
-     * @param NamespaceClient  $namespaceClient
+     * @param NamespaceClient $namespaceClient
      * @param KubernetesObject $object
      *
      * @return PublicEndpoint
@@ -184,7 +212,7 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
     }
 
     /**
-     * @param NamespaceClient  $namespaceClient
+     * @param NamespaceClient $namespaceClient
      * @param KubernetesObject $object
      *
      * @return LoadBalancerStatus|null
@@ -217,22 +245,45 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
      */
     private function getPorts(KubernetesObject $object)
     {
+        $portFromIngress = function (int $port) {
+            return PublicEndpointPort::TCP($port);
+        };
+
+        $portFromService = function (ServicePort $servicePort) {
+            return new PublicEndpointPort($servicePort->getPort(), $servicePort->getProtocol());
+        };
+
         if ($object instanceof Service) {
-            return array_map(function (ServicePort $servicePort) {
-                return new PublicEndpointPort(
-                    $servicePort->getPort(),
-                    $servicePort->getProtocol()
-                );
-            }, $object->getSpecification()->getPorts());
-        } elseif ($object instanceof Ingress) {
-            return [
-                new PublicEndpointPort(
-                    $object->getSpecification()->getBackend()->getServicePort(),
-                    PublicEndpointPort::PROTOCOL_TCP
-                ),
-            ];
+            return array_map($portFromService, $object->getSpecification()->getPorts());
         }
 
-        throw new EndpointNotFound('Unable to get the exposed ports from the '.get_class($object));
+        if ($object instanceof Ingress) {
+            return array_map($portFromIngress, $this->getIngressPorts($object));
+        }
+
+        throw new EndpointNotFound('Unable to get the exposed ports from the ' . get_class($object));
+    }
+
+    /**
+     * @param Ingress $ingress
+     * @return \int[]
+     */
+    private function getIngressPorts(Ingress $ingress)
+    {
+        if (null !== $ingress->getSpecification()->getBackend()) {
+            return [$ingress->getSpecification()->getBackend()->getServicePort()];
+        }
+
+        $portFromPath = function (IngressHttpRulePath $path) {
+            return $path->getBackend()->getServicePort();
+        };
+
+        $portsFromRules = function (IngressRule $rule) use ($portFromPath) {
+            return array_map($portFromPath, $rule->getHttp()->getPaths());
+        };
+
+        $ports = array_map($portsFromRules, $ingress->getSpecification()->getRules());
+
+        return array_unique(array_merge(...$ports));
     }
 }
