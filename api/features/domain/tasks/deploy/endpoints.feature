@@ -229,7 +229,7 @@ Feature:
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-certeo.inviqa-001.continuouspipe.net"
 
-  Scenario: If the branch name contains non valid characters, the host name can be slugified
+  Scenario: If the branch name contains non valid characters, the ingress host name can be slugified
     When a tide is started for the branch "feature/123-foo-bar" with the following configuration:
     """
     tasks:
@@ -422,3 +422,151 @@ Feature:
     """
     Then the tide should be failed
     And a log containing 'The expression provided ("certeo.inviqa-001.continuouspipe.net") is not valid' should be created
+
+  Scenario: The hostname is generated for cloudflare
+    When a tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    record_suffix: .example.com
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "master.example.com"
+
+  Scenario: Create cloudflare dns configuration with host expression
+    When a tide is started with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    host:
+                                        expression: 'code_reference.branch ~ ".certeo.inviqa-001.continuouspipe.net"'
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "master.certeo.inviqa-001.continuouspipe.net"
+
+  Scenario: Create cloudflare dns configuration with slugified host expression
+    When a tide is started for the branch "feature/123-foo-bar" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    host:
+                                        expression: 'slugify(code_reference.branch) ~ "-certeo.inviqa-001.continuouspipe.net"'
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "feature-123-foo-bar-certeo.inviqa-001.continuouspipe.net"
+
+  Scenario: Create cloudflare dns configuration with hashed host expression
+    When a tide is started for the branch "my-very-long-shiny-new-feature-branch-name" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    host:
+                                        expression: 'hash_long_domain_prefix(code_reference.branch, 27) ~ "-certeo.inviqa-001.continuouspipe.net"'
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "my-very-long-shi-02b27a5635-certeo.inviqa-001.continuouspipe.net"
+
+  Scenario: The host_suffix key can be used to simplify slugifying and shortening CloudFlare hostnames
+    When a tide is started for the branch "feature/my-very-long-shiny-new-branch-name" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    record_suffix: "-certeo.inviqa-001.continuouspipe.net"
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "feature-my-very-c5743d6c37-certeo.inviqa-001.continuouspipe.net"

@@ -386,6 +386,21 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with a CloudFlare DNS zone configuration with hostname :hostname
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithACloudflareDnsZoneConfigurationWithHostname($endpointName, $name, $hostname)
+    {
+        $configuration = $this->theEndpointOfTheComponentShouldBeDeployedWithACloudflareDnsZoneConfiguration($endpointName, $name);
+
+        if ($configuration->getHostname() != $hostname) {
+            throw new \RuntimeException(sprintf(
+                'Found "%s" hostname instead',
+                $configuration->getHostname()
+            ));
+        }
+    }
+
+    /**
      * @Then the endpoint :endpointName of the component :name should be deployed with a proxied CloudFlare DNS zone configuration
      */
     public function theEndpointOfTheComponentShouldBeDeployedWithAProxiedCloudflareDnsZoneConfiguration($endpointName, $name)

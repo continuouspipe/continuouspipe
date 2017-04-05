@@ -13,7 +13,7 @@ use JMS\Serializer\SerializerInterface;
 
 class ComponentFactory
 {
-    const MAX_INGRESS_HOST_LENGTH = 64;
+    const MAX_HOST_LENGTH = 64;
     /**
      * @var SerializerInterface
      */
@@ -83,19 +83,9 @@ class ComponentFactory
         $configuration['endpoints'] = array_map(function (array $endpointConfiguration) use ($context) {
 
             $this->checkIngressConfiguration($endpointConfiguration);
+            $this->checkCloudFlareConfiguration($endpointConfiguration);
 
-            if (isset($endpointConfiguration['ingress']['host_suffix'])) {
-                $endpointConfiguration['ingress']['host']['expression'] =
-                    $this->generateHostExpression($endpointConfiguration['ingress']['host_suffix']);
-            }
-
-            if (isset($endpointConfiguration['ingress']['host'])) {
-                $endpointConfiguration['ingress']['rules'] = [
-                    $this->transformIngressHostIntoRule($context, $endpointConfiguration['ingress']['host']),
-                ];
-            }
-
-            return $endpointConfiguration;
+            return $this->addCloudFlareHost($this->addIngressHost($endpointConfiguration, $context), $context);
         }, $configuration['endpoints']);
 
         $jsonEncodedEndpoints = json_encode($configuration['endpoints']);
@@ -150,38 +140,10 @@ class ComponentFactory
         );
     }
 
-    private function transformIngressHostIntoRule(TaskContext $context, array $hostConfiguration)
-    {
-        if (!isset($hostConfiguration['expression'])) {
-            throw new TideGenerationException('The ingress host needs an expression');
-        }
-
-        try {
-            $resolvedHostname = $this->flowVariableResolver->resolveExpression(
-                $hostConfiguration['expression'],
-                $this->flowVariableResolver->createContext($context->getFlowUuid(), $context->getCodeReference())
-            );
-        } catch (TideConfigurationException $e) {
-            throw new TideGenerationException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        return [
-            'host' => $resolvedHostname,
-        ];
-    }
-
-    private function generateHostExpression(string $hostSuffix): string
-    {
-        return sprintf(
-            'hash_long_domain_prefix(slugify(code_reference.branch), %s) ~ "%s"',
-            self::MAX_INGRESS_HOST_LENGTH - mb_strlen($hostSuffix),
-            $hostSuffix
-        );
-    }
-
     /**
      * @param array $endpointConfiguration
      * @return array
+     * @throws TideGenerationException
      */
     private function checkIngressConfiguration(array $endpointConfiguration)
     {
@@ -190,9 +152,8 @@ class ComponentFactory
         }
 
         if (isset($endpointConfiguration['ingress']['host_suffix'])) {
-            $maxSuffixLength = self::MAX_INGRESS_HOST_LENGTH - Transformer::HOST_HASH_LENGTH;
-            if (mb_strlen($endpointConfiguration['ingress']['host_suffix']) > $maxSuffixLength) {
-                throw new TideGenerationException("The ingress host_suffix cannot be more than $maxSuffixLength characters long");
+            if (mb_strlen($endpointConfiguration['ingress']['host_suffix']) > $this->maxSuffixLength()) {
+                throw new TideGenerationException(sprintf('The ingress host_suffix cannot be more than %s characters long', $this->maxSuffixLength()));
             }
             return;
         }
@@ -202,5 +163,115 @@ class ComponentFactory
         }
 
         throw new TideGenerationException('The ingress needs a host_suffix or a host expression');
+    }
+
+    /**
+     * @param array $endpointConfiguration
+     * @return array
+     * @throws TideGenerationException
+     */
+    private function checkCloudFlareConfiguration(array $endpointConfiguration)
+    {
+        if (!isset($endpointConfiguration['cloud_flare_zone'])) {
+            return;
+        }
+
+        if (isset($endpointConfiguration['cloud_flare_zone']['record_suffix'])) {
+            if (mb_strlen($endpointConfiguration['cloud_flare_zone']['record_suffix']) > $this->maxSuffixLength()) {
+                throw new TideGenerationException(sprintf('The cloud_flare_zone record_suffix cannot be more than %s characters long', $this->maxSuffixLength()));
+            }
+            return;
+        }
+
+        if (isset($endpointConfiguration['cloud_flare_zone']['host']['expression'])) {
+            return;
+        }
+
+        if (isset($endpointConfiguration['ingress'])) {
+            return;
+        }
+
+        throw new TideGenerationException('The cloud_flare_zone needs a record_suffix or a host expression');
+    }
+
+    /**
+     * @param array $endpointConfiguration
+     * @param TaskContext $context
+     * @return array
+     * @throws TideGenerationException
+     */
+    function addIngressHost(array $endpointConfiguration, TaskContext $context)
+    {
+        if (isset($endpointConfiguration['ingress']['host_suffix'])) {
+            $endpointConfiguration['ingress']['host']['expression'] =
+                $this->generateHostExpression($endpointConfiguration['ingress']['host_suffix']);
+        }
+
+        if (isset($endpointConfiguration['ingress']['host'])) {
+            $endpointConfiguration['ingress']['rules'] =
+                [['host' => $this->resolveHostname($context, $endpointConfiguration['ingress']['host'])]];
+        }
+
+        return $endpointConfiguration;
+    }
+
+    /**
+     * @param array $endpointConfiguration
+     * @param TaskContext $context
+     * @return array
+     * @throws TideGenerationException
+     */
+    function addCloudFlareHost(array $endpointConfiguration, TaskContext $context)
+    {
+        if (isset($endpointConfiguration['cloud_flare_zone']['record_suffix'])) {
+            $endpointConfiguration['cloud_flare_zone']['host']['expression'] =
+                $this->generateHostExpression($endpointConfiguration['cloud_flare_zone']['record_suffix']);
+        }
+
+        if (isset($endpointConfiguration['cloud_flare_zone']['host'])) {
+            $endpointConfiguration['cloud_flare_zone']['hostname'] =
+                $this->resolveHostname($context, $endpointConfiguration['cloud_flare_zone']['host']);
+        }
+
+        return $endpointConfiguration;
+    }
+
+    /**
+     * @param TaskContext $context
+     * @param array $hostConfiguration
+     * @return mixed
+     * @throws TideGenerationException
+     */
+    private function resolveHostname(TaskContext $context, array $hostConfiguration)
+    {
+        try {
+            return $this->flowVariableResolver->resolveExpression(
+                $hostConfiguration['expression'],
+                $this->flowVariableResolver->createContext($context->getFlowUuid(), $context->getCodeReference())
+            );
+        } catch (TideConfigurationException $e) {
+            throw new TideGenerationException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @param string $hostSuffix
+     * @return string
+     */
+    private function generateHostExpression(string $hostSuffix): string
+    {
+        return sprintf(
+            'hash_long_domain_prefix(slugify(code_reference.branch), %s) ~ "%s"',
+            self::MAX_HOST_LENGTH - mb_strlen($hostSuffix),
+            $hostSuffix
+        );
+    }
+
+    /**
+     * @return int
+     */
+    private function maxSuffixLength()
+    {
+        return self::MAX_HOST_LENGTH - Transformer::HOST_HASH_LENGTH;
     }
 }
