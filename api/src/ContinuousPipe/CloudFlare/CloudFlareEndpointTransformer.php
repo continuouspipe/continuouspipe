@@ -165,7 +165,7 @@ class CloudFlareEndpointTransformer implements PublicEndpointTransformer
     ) {
         if (null !== $cloudFlareZone->getHostname()) {
             return [$cloudFlareZone->getHostname()];
-        } 
+        }
         
         if (null !== $cloudFlareZone->getRecordSuffix()) {
             return [

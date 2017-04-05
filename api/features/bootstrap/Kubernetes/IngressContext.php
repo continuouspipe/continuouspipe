@@ -3,14 +3,21 @@
 namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableIngressRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableIngressRepository;
 use Kubernetes\Client\Model\Ingress;
+use Kubernetes\Client\Model\IngressBackend;
+use Kubernetes\Client\Model\IngressHttpRule;
 use Kubernetes\Client\Model\IngressHttpRulePath;
 use Kubernetes\Client\Model\IngressRule;
+use Kubernetes\Client\Model\IngressSpecification;
 use Kubernetes\Client\Model\IngressStatus;
+use Kubernetes\Client\Model\KeyValueObjectList;
+use Kubernetes\Client\Model\Label;
 use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\LoadBalancerStatus;
+use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Repository\IngressRepository;
 
 class IngressContext implements Context
@@ -205,6 +212,29 @@ class IngressContext implements Context
     public function theIngressWillBeCreatedWithThePublicIp($name, $ip)
     {
         $this->theIngressWillBeCreatedWithTheStatus($name, new LoadBalancerIngress($ip));
+    }
+
+    /**
+     * @Given there is an ingress :name with the hostname :hostname in the first rule with the following labels:
+     */
+    public function thereIsAnIngressWithTheHostnameInTheFirstRule($name, $hostname, TableNode $table)
+    {
+        $labels = array_map(function(array $row) {
+            return new Label($row['name'], $row['value']);
+        }, $table->getHash());
+
+        $this->ingressRepository->create(new Ingress(
+            new ObjectMetadata($name, new KeyValueObjectList($labels)),
+            new IngressSpecification(
+                null,
+                [],
+                [
+                    new IngressRule($hostname, new IngressHttpRule([
+                        new IngressHttpRulePath(new IngressBackend('app', 80)),
+                    ]))
+                ]
+            )
+        ));
     }
 
     /**

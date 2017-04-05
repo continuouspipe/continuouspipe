@@ -144,6 +144,7 @@ class NamespaceContext implements Context
 
     /**
      * @Given I have a namespace :name
+     * @Given there is a namespace :name
      */
     public function iHaveANamespace($name)
     {

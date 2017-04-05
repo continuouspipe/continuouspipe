@@ -27,7 +27,8 @@ class PublicEndpointPort
         $this->protocol = $protocol;
     }
     
-    public static function TCP(int $number) {
+    public static function TCP(int $number)
+    {
         return new self($number, self::PROTOCOL_TCP);
     }
 

@@ -34,14 +34,16 @@
         <service id="kubernetes.reverse_transformer.component" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ComponentTransformer">
             <argument type="service" id="kubernetes.reverse_transformer.component_public_endpoint_resolver"/>
         </service>
+
         <service id="kubernetes.reverse_transformer.chained_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ChainedComponentPublicEndpointResolver">
             <argument type="collection">
                 <argument type="service" id="pipe.cloud_flare.component_public_endpoint_resolver"/>
-                <argument type="service" id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver"/>
+                <argument type="service" id="kubernetes.reverse_transformer.ingress.ingress_public_endpoint_resolver" />
+                <argument type="service" id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver" />
             </argument>
         </service>
         <service id="kubernetes.reverse_transformer.component_public_endpoint_resolver" alias="kubernetes.reverse_transformer.chained_component_public_endpoint_resolver" />
-
+        <service id="kubernetes.reverse_transformer.ingress.ingress_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\Ingress\IngressEndpointResolver" />
         <service id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\DefaultComponentPublicEndpointResolver">
             <argument type="service" id="logger" />
         </service>
