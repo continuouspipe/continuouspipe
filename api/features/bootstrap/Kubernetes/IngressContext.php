@@ -6,6 +6,8 @@ use Behat\Behat\Context\Context;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableIngressRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableIngressRepository;
 use Kubernetes\Client\Model\Ingress;
+use Kubernetes\Client\Model\IngressHttpRulePath;
+use Kubernetes\Client\Model\IngressRule;
 use Kubernetes\Client\Model\IngressStatus;
 use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\LoadBalancerStatus;
@@ -224,5 +226,54 @@ class IngressContext implements Context
 
             return $ingress;
         });
+    }
+
+    /**
+     * @Then the ingress named :name should not have a backend service
+     */
+    public function theIngressNamedShouldNotHaveABackendService($name)
+    {
+        $ingress = $this->ingressRepository->findOneByName($name);
+
+        if ($ingress->getSpecification()->getBackend() !== null) {
+            throw new \RuntimeException('A backend was found for the ingress');
+        }
+    }
+
+    /**
+     * @Then the ingress named :name should have the backend service :service on port :port behind the rule :rule
+     */
+    public function theIngressNamedShouldHaveTheBackendServiceOnPortBehindTheRule($name, $service, $port, $rule)
+    {
+        $hostFromRule = function (IngressRule $rule) {
+            return $rule->getHost();
+        };
+
+        $pathsFromRule = function (IngressRule $rule) {
+            return $rule->getHttp()->getPaths();
+        };
+
+        $backendFromPath = function(IngressHttpRulePath $path) {
+            return [$path->getBackend()->getServiceName(), $path->getBackend()->getServicePort()];
+        };
+
+        $rules = $this->ingressRepository->findOneByName($name)->getSpecification()->getRules();
+
+        $processedRules = array_combine(
+            array_map($hostFromRule, $rules),
+            array_map($pathsFromRule, $rules)
+        );
+        
+        if (!isset($processedRules[$rule])) {
+            throw new \RuntimeException('Ingress has no rule '.$rule);
+        }
+
+        $backends = array_map($backendFromPath, $processedRules[$rule]);
+
+        if (!in_array([$service, $port], $backends)) {
+            throw new \RuntimeException(sprintf(
+                'Ingress has no backend service %s on port %s behind the rule %s', $service, $port, $rule
+            ));
+        }
     }
 }
