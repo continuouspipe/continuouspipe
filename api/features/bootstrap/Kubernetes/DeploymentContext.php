@@ -4,7 +4,12 @@ namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableDeploymentRepository;
+use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\Deployment;
+use Kubernetes\Client\Model\DeploymentSpecification;
+use Kubernetes\Client\Model\ObjectMetadata;
+use Kubernetes\Client\Model\PodSpecification;
+use Kubernetes\Client\Model\PodTemplateSpecification;
 use Kubernetes\Client\Repository\DeploymentRepository;
 
 class DeploymentContext implements Context
@@ -26,6 +31,24 @@ class DeploymentContext implements Context
     {
         $this->traceableDeploymentRepository = $traceableDeploymentRepository;
         $this->deploymentRepository = $deploymentRepository;
+    }
+
+    /**
+     * @Given there is a deployment :name for the image :imageName
+     */
+    public function thereIsADeploymentForTheImage($name, $imageName)
+    {
+        $this->deploymentRepository->create(new Deployment(
+            new ObjectMetadata($name),
+            new DeploymentSpecification(
+                new PodTemplateSpecification(
+                    new ObjectMetadata($name),
+                    new PodSpecification([
+                        new Container($name, $imageName),
+                    ])
+                )
+            )
+        ));
     }
 
     /**
