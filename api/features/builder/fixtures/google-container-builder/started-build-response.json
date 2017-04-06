@@ -1,0 +1,41 @@
+{
+  "name": "operations/build/continuous-pipe-1042/NGRhNTcyZDYtYzRlYi00MjYxLTkwMDktMWRlNDEzNDkzOGYx",
+  "metadata": {
+    "@type": "type.googleapis.com/google.devtools.cloudbuild.v1.BuildOperationMetadata",
+    "build": {
+      "id": "4da572d6-c4eb-4261-9009-1de4134938f1",
+      "status": "QUEUED",
+      "source": {
+        "storageSource": {
+          "bucket": "storage-for-container-builder-production",
+          "object": "58c70398a2462.tar"
+        }
+      },
+      "createTime": "2017-03-13T20:40:12.320907802Z",
+      "steps": [
+        {
+          "name": "gcr.io/cloud-builders/docker",
+          "args": [
+            "build",
+            "-t",
+            "gcr.io/continuous-pipe-1042/58c70398a2462.tar",
+            "."
+          ]
+        }
+      ],
+      "timeout": "600s",
+      "images": [
+        "gcr.io/continuous-pipe-1042/58c70398a2462.tar"
+      ],
+      "projectId": "continuous-pipe-1042",
+      "sourceProvenance": {
+        "resolvedStorageSource": {
+          "bucket": "storage-for-container-builder-production",
+          "object": "58c70398a2462.tar",
+          "generation": "1489437609550610"
+        }
+      },
+      "logUrl": "https://console.developers.google.com/logs/viewer?resource=build&project=continuous-pipe-1042&filters=text:4da572d6-c4eb-4261-9009-1de4134938f1"
+    }
+  }
+}
