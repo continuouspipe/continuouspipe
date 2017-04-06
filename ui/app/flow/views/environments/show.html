@@ -1,0 +1,18 @@
+<!--<md-toolbar class="status-container">-->
+    <!--<div class="md-toolbar-tools">-->
+        <!--<div class="status" flex>-->
+            <!--<h2>{{ environment.identifier }}</h2>-->
+        <!--</div>-->
+        <!--<div ng-show="summary.deployed_services" class="relations">-->
+          <!--<md-button ng-repeat="(serviceName, service) in summary.deployed_services"-->
+                     <!--class="md-raised md-primary"-->
+                     <!--ng-if="service.public_endpoint"-->
+                     <!--ng-click="openEndpoint(service.public_endpoint)">-->
+              <!--Open <code>{{ serviceName }}</code>-->
+          <!--</md-button>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</md-toolbar>-->
+<md-content flex id="content" class="card-grid env-container">
+    <iframe ng-src="{{ url }}" class="env__frame"></iframe>
+</md-content>

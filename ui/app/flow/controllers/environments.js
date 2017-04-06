@@ -96,4 +96,13 @@ angular.module('continuousPipeRiver')
             });
         };
     })
+    .controller('EnvironmentPreviewController', function($scope, environment, $sce) {
+        $scope.environment = environment;
+
+        environment.components.forEach(function(component) {
+            if (component.status.public_endpoints.length > 0) {
+                $scope.url = $sce.trustAsResourceUrl('http://' + component.status.public_endpoints[0]);
+            }
+        });
+    });
 ;

@@ -16,7 +16,7 @@
                         <i class="material-icons" ng-show="environment.expanded">expand_more</i>
                     </md-icon>
                 </md-card-avatar>
-                <md-card-header-text>
+                <md-card-header-text ui-sref="flow.environment-preview({identifier: environment.identifier})">
                     <span class="md-title">{{ environment.identifier }}</span>
                     <span class="md-subhead">Status: <span class="status-text" ng-class="{'status-success': environment.status == 'healthy', 'status-failure': environment.status == 'unhealthy', 'status-running': environment.status === 'unknown'}">{{ environment.status }}</span></span>
                 </md-card-header-text>

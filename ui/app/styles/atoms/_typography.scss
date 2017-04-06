@@ -1,0 +1,10 @@
+.list {
+    &__unstyled {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    &__inline {
+        display: inline-block;
+    }
+}
