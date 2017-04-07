@@ -88,4 +88,5 @@ main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
 }
 figure {
     margin-top: 1.5em;
+    text-align: center;
 }
