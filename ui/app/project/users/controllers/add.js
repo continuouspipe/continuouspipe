@@ -26,7 +26,7 @@ angular.module('continuousPipeRiver')
 
                 swal({
                     title: "Do you want to invite this user?",
-                    text: "The user '"+membership.user.username+"' is not found. Do you want us to send him an invitation email for your project?",
+                    text: "Do you want us to send '"+membership.user.username+"' an invitation email for your project?",
                     type: "info",
                     showCancelButton: true,
                     confirmButtonText: "Yes, invite!",
