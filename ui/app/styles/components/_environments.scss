@@ -27,6 +27,7 @@
         position: relative;
         padding-left: 20px;
         font-size: 14px;
+        text-align: left;
 
         &:before {
             content: "\00B7";
@@ -35,7 +36,6 @@
             position: absolute;
             top: 50%;
             left: 0;
-            transform: translateY(-50%);
         }
 
         &.healthy {
