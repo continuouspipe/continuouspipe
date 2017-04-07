@@ -44,3 +44,7 @@ The following diagram shows how a tide can be triggered. Additionally, it shows 
 The following diagram shows an alternative configuration using [pipeline filters]({{< relref "configuration/pipelines.md" >}}):
 
 {{< figure src="/images/basics/cp-tide-triggers-pipeline.svg" class="tide-triggers-pipeline" >}}
+
+{{< note title="Note" >}}
+It is also possible to add filters to tasks when using pipelines. This creates unnecessary complexity however, so is not recommended.
+{{< /note >}}
