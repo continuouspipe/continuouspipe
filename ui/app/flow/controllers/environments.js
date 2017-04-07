@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, TideRepository, EnvironmentRepository, EndpointOpener, RemoteShellOpener, flow) {
+    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, $componentLogDialog, TideRepository, EnvironmentRepository, EndpointOpener, RemoteShellOpener, flow) {
         $scope.flow = flow;
 
         var getEnvironmentStatus = function(environment) {
@@ -76,6 +76,24 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.liveStreamComponent = function(environment, component) {
+            $componentLogDialog.open(flow, environment, component);
+        };
+    })
+    .controller('EnvironmentPreviewController', function($scope, $componentLogDialog, environment, flow, $sce) {
+        $scope.environment = environment;
+
+        environment.components.forEach(function(component) {
+            if (component.status.public_endpoints.length > 0) {
+                $scope.url = $sce.trustAsResourceUrl('http://' + component.status.public_endpoints[0]);
+            }
+        });
+
+        $scope.liveStreamComponent = function(environment, component) {
+            $componentLogDialog.open(flow, environment, component);
+        };
+    })
+    .service('$componentLogDialog', function($mdDialog) {
+        this.open = function(flow, environment, component) {
             var dialogScope = $scope.$new();
             dialogScope.environment = environment;
             dialogScope.component = component;
@@ -96,13 +114,4 @@ angular.module('continuousPipeRiver')
             });
         };
     })
-    .controller('EnvironmentPreviewController', function($scope, environment, $sce) {
-        $scope.environment = environment;
-
-        environment.components.forEach(function(component) {
-            if (component.status.public_endpoints.length > 0) {
-                $scope.url = $sce.trustAsResourceUrl('http://' + component.status.public_endpoints[0]);
-            }
-        });
-    });
 ;
