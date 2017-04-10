@@ -63,6 +63,8 @@
             <argument>%google_container_builder_project%</argument>
             <argument>%google_container_builder_source_bucket%</argument>
             <argument>%google_container_builder_service_account_path%</argument>
+            <argument type="service" id="log_stream.logger_factory"/>
+            <argument type="service" id="logger"/>
         </service>
     </services>
 </container>
