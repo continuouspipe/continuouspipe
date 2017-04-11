@@ -133,8 +133,6 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
                     }
 
                 } catch (\Exception $e) {
-                    echo 'EXCEPTION';
-                    echo $e->getMessage();
                 }
 
                 if ($startTime + (30 * 60) < time()) {
@@ -169,9 +167,6 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
     private function basicLogger(Logger $logger)
     {
         return function(array $log) use ($logger) {
-            echo $log['textPayload'];
-            echo "\n";
-
             if ($log['textPayload'] != self::BOUNDARY.':LOGIN'
                 && $log['textPayload'] != self::BOUNDARY.':PUSH'
                 && $log['textPayload'] != 'Login Succeeded'
@@ -184,9 +179,6 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
     private function nullLogger()
     {
         return function (array $log) {
-            echo $log['textPayload'];
-            echo "\n";
-
             return;
         };
     }
