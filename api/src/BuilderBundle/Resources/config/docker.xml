@@ -34,8 +34,7 @@
         </service>
 
         <service id="builder.docker_image_reader" alias="builder.docker.client.http" />
-        <!-- Google Container Builder -->
-        <!-- <service id="builder.docker.client" alias="builder.docker.client.http" /> -->
+        <service id="builder.docker.client" alias="builder.docker.client.facade_map" />
 
         <service id="builder.docker.client.retry_decorator"
                  class="ContinuousPipe\Builder\Docker\Retry\RetryClientDecorator"
@@ -49,6 +48,14 @@
                  class="ContinuousPipe\Builder\Docker\Validation\EnsureDockerfileExistsClientDecorator"
                  decorates="builder.docker.client">
             <argument type="service" id="builder.docker.client.validation.ensure_docker_file_exists.inner" />
+        </service>
+
+        <service id="builder.docker.client.facade_map"
+                 class="ContinuousPipe\Builder\Docker\FacadeMap">
+            <argument type="collection">
+                <argument key="docker" type="service" id="builder.docker.client.logged_http"/>
+                <argument key="gcb" type="service" id="builder.docker.client.gcb"/>
+            </argument>
         </service>
     </services>
 </container>

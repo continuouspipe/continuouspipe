@@ -200,4 +200,12 @@ class BuildStepConfiguration
 
         return $step;
     }
+
+    public function withReadArtifacts(array $readArtifacts)
+    {
+        $step = clone $this;
+        $step->readArtifacts = $readArtifacts;
+
+        return $step;
+    }
 }

@@ -5,12 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-       <!-- <service id="builder.docker.logged_client"
-                 class="ContinuousPipe\Builder\Logging\Docker\LoggedDockerClient"
-                 decorates="builder.docker.client">
-            <argument type="service" id="builder.docker.logged_client.inner" />
+       <service id="builder.docker.client.logged_http"
+                 class="ContinuousPipe\Builder\Logging\Docker\LoggedDockerClient">
+            <argument type="service" id="builder.docker.client.http" />
             <argument type="service" id="log_stream.logger_factory" />
-        </service>-->
+        </service>
 
         <service id="builder.logging.display_the_steps_errors" class="ContinuousPipe\Builder\Logging\DisplayTheErrors">
             <argument type="service" id="log_stream.logger_factory" />

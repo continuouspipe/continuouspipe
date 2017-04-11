@@ -4,3 +4,5 @@ ContinuousPipe\Builder\Request\BuildRequest:
             - NotBlank: ~
         steps:
             - Valid: ~
+        engine:
+           - Choice: { choices: [docker, gcb], message: Choose a valid engine. }

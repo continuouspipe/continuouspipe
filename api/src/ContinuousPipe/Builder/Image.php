@@ -38,4 +38,9 @@ class Image
     {
         return $this->tag;
     }
+
+    public function withTag(string $tag)
+    {
+        return new self($this->name, $tag);
+    }
 }

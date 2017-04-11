@@ -6,6 +6,7 @@ use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Context;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Logging;
+use ContinuousPipe\Builder\LogStreamLogging;
 use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Repository;
 use Ramsey\Uuid\Uuid;
@@ -32,6 +33,11 @@ class BuildRequest
      */
     private $steps;
 
+    /**
+     * @var string
+     */
+    private $engine;
+    
     /**
      * @deprecated Should use the `steps` instead.
      *
@@ -89,6 +95,14 @@ class BuildRequest
     public function getCredentialsBucket()
     {
         return $this->credentialsBucket;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEngine()
+    {
+        return $this->engine;
     }
 
     /**
@@ -156,4 +170,13 @@ class BuildRequest
     {
         return $this->environment;
     }
+
+    public function withParentLogIdentifier(string $parentLogIdentifier) : BuildRequest
+    {
+        $request = clone $this;
+        $request->logging = Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLogIdentifier));
+        
+        return $request;
+    }
+
 }

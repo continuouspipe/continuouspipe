@@ -56,7 +56,7 @@
             <factory service="builder.google_container_builder.http_client_factory" method="create" />
         </service>
 
-        <service id="builder.docker.client" class="ContinuousPipe\Builder\GoogleContainerBuilder\ContainerBuilderAsDockerFacade">
+        <service id="builder.docker.client.gcb" class="ContinuousPipe\Builder\GoogleContainerBuilder\ContainerBuilderAsDockerFacade">
             <argument type="service" id="builder.google_container_builder.http_client" />
             <argument type="service" id="builder.google_container_builder.artifacts_manager" />
             <argument type="service" id="builder.docker_file_resolver" />

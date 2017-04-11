@@ -23,6 +23,7 @@ use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Docker\DockerFacade;
 use ContinuousPipe\Builder\Docker\DockerImageReader;
 use ContinuousPipe\Builder\Docker\PushContext;
+use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Events\Capabilities\ApplyEventCapability;
 use ContinuousPipe\Events\Capabilities\RaiseEventCapability;
@@ -125,7 +126,8 @@ class BuildStep
                         $this->configuration->getContext(),
                         $this->configuration->getEnvironment(),
                         $this->configuration->getDockerRegistries(),
-                        $image
+                        $image,
+                        Engine::fromBuildIdentifier($this->buildIdentifier)
                     ),
                     $this->codeArchive
                 )
@@ -147,7 +149,8 @@ class BuildStep
             $dockerFacade->push(
                 new PushContext(
                     $this->configuration->getLogStreamIdentifier(),
-                    $this->configuration->getImageRegistryCredentials()
+                    $this->configuration->getImageRegistryCredentials(),
+                    Engine::fromBuildIdentifier($this->buildIdentifier)
                 ),
                 $this->image
             );

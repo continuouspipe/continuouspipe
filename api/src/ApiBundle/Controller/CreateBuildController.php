@@ -4,11 +4,14 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
+use ContinuousPipe\Builder\Artifact;
+use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Request\BuildRequestException;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\View\BuildViewRepository;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Events\Transaction\TransactionManager;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -88,10 +91,54 @@ class CreateBuildController
             ], 400);
         }
 
-        $build = $this->buildFactory->fromRequest($request);
+        if (null === ($engine = $request->getEngine())) {
+            $referenceBuild =  $this->createBuild($request, 'docker');
+            $this->createHiddenGcbBuild($request);
+        } else {
+            $referenceBuild =  $this->createBuild($request, $engine);
+        }
 
-        $this->commandBus->handle(new StartBuild($build->getIdentifier()));
+        $this->commandBus->handle(new StartBuild($referenceBuild->getIdentifier()));
 
-        return $this->buildViewRepository->find($build->getIdentifier());
+        return $this->buildViewRepository->find($referenceBuild->getIdentifier());
+    }
+
+    /**
+     * @param BuildRequest $request
+     */
+    private function createHiddenGcbBuild(BuildRequest $request)
+    {
+        $request = $request->withSteps(array_map(
+            function (BuildStepConfiguration $step) {
+                return $step->withReadArtifacts(
+                    array_map(
+                        function (Artifact $artifact) {
+                            return new Artifact($artifact->getIdentifier() . '-gcb', $artifact->getPath());
+                        },
+                        $step->getReadArtifacts()
+                    )
+                )->withImage(
+                    $step->getImage()->withTag($step->getImage()->getTag() . '-gcb')
+                )->withLogStreamIdentifier($step->getLogStreamIdentifier() . '/gcb');
+            },
+            $request->getSteps()
+        ));
+
+        $request = $request->withParentLogIdentifier(
+            $request->getLogging()->getLogStream()->getParentLogIdentifier() . '/gcb'
+        );
+
+        $gcbBuild = $this->createBuild($request, 'gcb');
+
+        $this->commandBus->handle(new StartBuild($gcbBuild->getIdentifier()));
+    }
+
+    /**
+     * @param BuildRequest $request
+     * @return \ContinuousPipe\Builder\Aggregate\Build
+     */
+    private function createBuild(BuildRequest $request, $engine)
+    {
+        return $this->buildFactory->fromRequest($request, Uuid::uuid4()->toString() . '--' . $engine);
     }
 }
