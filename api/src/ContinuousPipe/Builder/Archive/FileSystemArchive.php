@@ -64,7 +64,7 @@ class FileSystemArchive extends Context implements Archive
      *
      * @return resource
      */
-    public function read(string $format = self::FORMAT_TAR)
+    public function read($format = self::FORMAT_TAR)
     {
         if (null === $format) {
             return parent::read();
