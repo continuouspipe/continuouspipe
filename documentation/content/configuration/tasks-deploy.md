@@ -186,7 +186,7 @@ specification:
 ```
 
 ## Health-checks
-Health-checks (also called probes) help to identify when a container is ready during a deployment and when a container is still alive when deployed.
+Health-checks (also called probes) help to identify when a container is ready during a deployment and when a container is still alive when deployed:
 
 ``` yaml
 deployment_strategy:
@@ -203,7 +203,7 @@ deployment_strategy:
         path: /healthz
 ```
 
-Sometimes your container won't be listening on the relevant port by the time the readiness probe runs but you will still want to check that it is functioning. A good idea would be to check that a file can be created in a directory such as /tmp.
+Sometimes your container won't be listening on the relevant port by the time the readiness probe runs but you will still want to check that it is functioning. A good idea would be to check that a file can be created in a directory such as /tmp:
 
 ``` yaml
 deployment_strategy:
@@ -217,8 +217,6 @@ deployment_strategy:
         success_threshold: 1
         failure_threshold: 10
 ```
-
-In this configuration the `images` task will run as normal, but the tide will be suspended when it reaches the `wait_product_owner` task. Once approval has been given the tide will resume and run the `deployment` task.
 
 ## Retrieving Deployed Endpoint Addresses
 
