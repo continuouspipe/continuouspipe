@@ -21,3 +21,7 @@ The `pods` command will lists the pods available for the environment
 ```
 cp-remote pods --environment example-remote-branch feature-my-shiny-new-work
 ```
+
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-pods.svg" class="remote-development" >}}

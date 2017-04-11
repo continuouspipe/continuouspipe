@@ -16,14 +16,18 @@ cp-remote push #alias
 cp-remote pu #alias
 ```
 
-The `sync` which will sync files and folders to the remote container.
+The `sync` command will sync files and folders to the remote container.
 
 To specify a specific remote project path use the `--remote-project-path` flag
 ```
 cp-remote sync --remote-project-path /public/sub-folder/
 ```
 
-### Argument List:
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-push.svg" class="remote-development" >}}
+
+## Argument List:
 
 Argument | Alias | Default | Description
 ---------|-------|---------|------------

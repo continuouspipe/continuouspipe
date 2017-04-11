@@ -27,7 +27,11 @@ The `init` command will use the default Git remote name `origin` to create a Con
 cp-remote init [token] --remote-name=foo
 ```
 
-### Interactive Mode
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-init.svg" class="remote-development" >}}
+
+## Interactive Mode
 
 Sometimes you may want to connect to an environment that's not set up as a remote environment, e.g. an environment created for a pull request. You can do this using interactive mode. 
 
@@ -53,3 +57,7 @@ If you want to change the stored username and API key, use the `--reset` flag:
 ```
 cp-remote init --interactive --reset
 ```
+
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-init-interactive.svg" class="remote-development" >}}

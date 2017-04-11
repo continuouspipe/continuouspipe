@@ -14,3 +14,7 @@ cp-remote destroy
 ```
 
 The `destroy` command will delete the remote branch used for your remote environment. ContinuousPipe will then remove the environment.
+
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-destroy.svg" class="remote-development" >}}

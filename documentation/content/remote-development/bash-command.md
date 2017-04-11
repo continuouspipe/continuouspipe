@@ -20,7 +20,11 @@ This will remotely connect to a bash session on the default container specified 
 cp-remote bash -s web
 ```
 
-### Interactive Mode
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-bash.svg" class="remote-development" >}}
+
+## Interactive Mode
 
 Interactive mode allows you to connect directly to an environment that is not set up as a remote environment.
 
@@ -44,3 +48,7 @@ If you have not previously run interactive mode with any command, the first time
 {{< note title="Note" >}}
 If you need to reset the stored username and API key, you need to run the [init command]({{< relref "remote-development/init-command.md#interactive-mode" >}}) with the `--reset` flag.
 {{< /note >}}
+
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-bash-interactive.svg" class="remote-development" >}}

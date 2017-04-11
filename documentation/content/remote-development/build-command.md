@@ -20,3 +20,7 @@ The `build` command will push changes the branch you have checked out locally to
 ### Rebuilding the Remote Environment
 
 The `build` command is also used to rebuild your remote environment. Assuming you are on the same branch used to create the new remote environment the command will force push the branch which will make ContinuousPipe rebuild the environment. If there has been no commit since the last build an empty commit is automatically made to force the rebuild.
+
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-build.svg" class="remote-development" >}}
