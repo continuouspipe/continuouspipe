@@ -11,7 +11,7 @@ weight: 11
 
 ## System Overview
 
-{{< figure src="/images/basics/cp-system-overview.png" class="diagram system-overview" >}}
+{{< figure src="/images/basics/cp-system-overview.svg" class="diagram system-overview" >}}
 
 ## Technology
 ### Code Repository
@@ -33,4 +33,18 @@ A flow is used to define a code repository. Typically a single flow is all that 
 ### Tide
 A tide is an execution of a flow. Typically this will be triggered when a branch is pushed to a code repository although it can also be triggered manually. The result of a tide is a working environment, ready to test.
 
+#### Tide Triggers with Task Filters
 
+The following diagram shows how a tide can be triggered. Additionally, it shows how [task filters]({{< relref "configuration/tasks.md#filters" >}}) can affect the execution of the tide:
+
+{{< figure src="/images/basics/cp-tide-triggers-default.svg" class="tide-triggers-default" >}}
+
+#### Tide Triggers with Pipeline Filters
+
+The following diagram shows an alternative configuration using [pipeline filters]({{< relref "configuration/pipelines.md" >}}):
+
+{{< figure src="/images/basics/cp-tide-triggers-pipeline.svg" class="tide-triggers-pipeline" >}}
+
+{{< note title="Note" >}}
+It is also possible to add filters to tasks when using pipelines. This creates unnecessary complexity however, so is not recommended.
+{{< /note >}}

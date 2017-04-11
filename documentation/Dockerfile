@@ -6,7 +6,7 @@ RUN apt-get -qq update \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Download and install hugo
-ENV HUGO_VERSION 0.18.1
+ENV HUGO_VERSION 0.18
 ENV HUGO_BINARY hugo_${HUGO_VERSION}-64bit.deb
 
 ADD https://github.com/spf13/hugo/releases/download/v${HUGO_VERSION}/${HUGO_BINARY} /tmp/hugo.deb
@@ -22,4 +22,7 @@ COPY . /app
 # Build the documentation
 RUN rm -rf themes/hugo-material-docs \
   && git clone https://github.com/digitalcraftsman/hugo-material-docs themes/hugo-material-docs \
+  && cd themes/hugo-material-docs \
+  && git checkout 194c497216c8389e02e9719381168a668a0ffb05 \
+  && cd ../../ \
   && hugo -d /usr/share/nginx/html/

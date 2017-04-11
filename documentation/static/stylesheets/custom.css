@@ -60,7 +60,7 @@ main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
     padding: 0;
 }
 
-.article h2, .article h3 {
+.article h2, .article h3, .article h4 {
     font-weight: 700;
 }
 
@@ -73,6 +73,12 @@ main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
     color: #5677fc;
 }
 
+.article h4 {
+    font-size: 14px;
+    color: #5677fc;
+    font-style: normal;
+}
+
 .admonition a {
     color: initial !important;
 }
@@ -82,4 +88,5 @@ main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
 }
 figure {
     margin-top: 1.5em;
+    text-align: center;
 }
