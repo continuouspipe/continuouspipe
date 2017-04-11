@@ -34,8 +34,7 @@ Feature:
           "address": "https://example.com"
         }
       },
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
-      "engine": "docker"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
     }
     """
     Then the build should be successful
@@ -65,8 +64,7 @@ Feature:
           "address": "https://example.com"
         }
       },
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
-      "engine": "docker"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
     }
     """
     Then the build should be successful
@@ -96,8 +94,7 @@ Feature:
           "address": "https://example.com"
         }
       },
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
-      "engine": "docker"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
     }
     """
     Then the build should be failed
@@ -126,8 +123,7 @@ Feature:
           "address": "https://example.com"
         }
       },
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
-      "engine": "docker"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
     }
     """
     Then the build should be successful
