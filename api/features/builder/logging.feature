@@ -28,7 +28,8 @@ Feature:
           }
         }
       ],
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker"
     }
     """
     Then a log containing "This specific thing went wrong" should be created

@@ -17,6 +17,7 @@ Feature:
     """
     {
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker",
       "steps": [
         {
           "repository": {
@@ -67,6 +68,7 @@ Feature:
     """
     {
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker",
       "steps": [
         {
           "repository": {
@@ -93,6 +95,7 @@ Feature:
     """
     {
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker",
       "steps": [
         {
           "repository": {
@@ -116,6 +119,7 @@ Feature:
     """
     {
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker",
       "steps": [
         {
           "repository": {
@@ -147,6 +151,7 @@ Feature:
     """
     {
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker",
       "steps": [
         {
           "repository": {
@@ -171,6 +176,7 @@ Feature:
     """
     {
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker",
       "steps": [
         {
           "repository": {
@@ -203,6 +209,7 @@ Feature:
     """
     {
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker",
       "steps": [
         {
           "repository": {
@@ -227,6 +234,7 @@ Feature:
     """
     {
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker",
       "steps": [
         {
           "repository": {

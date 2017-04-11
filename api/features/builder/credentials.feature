@@ -30,7 +30,8 @@ Feature:
           }
         }
       ],
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker"
     }
     """
     Then the build should be successful

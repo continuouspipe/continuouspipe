@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Builder\Docker\DockerFacade;
 use ContinuousPipe\Builder\Docker\PushContext;
+use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
 use LogStream\EmptyLogger;
@@ -45,7 +46,8 @@ class DockerContext implements Context
             $this->client->push(
                 new PushContext(
                     '',
-                    RegistryCredentials::fromAuthenticationString('')
+                    RegistryCredentials::fromAuthenticationString(''),
+                    new Engine('docker')
                 ),
                 new Image('name', 'tag')
             );

@@ -29,7 +29,8 @@ Feature:
           }
         }
       ],
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker"
     }
     """
     Then the build should be successful
@@ -52,7 +53,8 @@ Feature:
           }
         }
       ],
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker"
     }
     """
     Then the build should be errored
@@ -72,7 +74,8 @@ Feature:
         "address": "fixtures://php-example",
         "branch": "747850e8c821a443a7b5cee28a48581069049739"
       },
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker"
     }
     """
     Then the build should be successful
@@ -91,7 +94,8 @@ Feature:
         "address": "fixtures://php-example",
         "branch": "747850e8c821a443a7b5cee28a48581069049739"
       },
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker"
     }
     """
     Then the request should be refused with a 400 status code
@@ -123,7 +127,8 @@ Feature:
           }
         }
       ],
-      "credentialsBucket": "00000000-0000-0000-0000-000000000000"
+      "credentialsBucket": "00000000-0000-0000-0000-000000000000",
+      "engine": "docker"
     }
     """
     And the build "00000000-0000-0000-0000-000000000000" was started
