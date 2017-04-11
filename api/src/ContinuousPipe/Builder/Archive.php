@@ -7,6 +7,9 @@ use Docker\Context\ContextInterface;
 
 interface Archive extends ContextInterface
 {
+    const TAR = 'tar';
+    const TAG_GZ = 'targz';
+
     /**
      * Delete the archive.
      */

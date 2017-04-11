@@ -34,7 +34,8 @@
         </service>
 
         <service id="builder.docker_image_reader" alias="builder.docker.client.http" />
-        <service id="builder.docker.client" alias="builder.docker.client.http" />
+        <!-- Google Container Builder -->
+        <!-- <service id="builder.docker.client" alias="builder.docker.client.http" /> -->
 
         <service id="builder.docker.client.retry_decorator"
                  class="ContinuousPipe\Builder\Docker\Retry\RetryClientDecorator"

@@ -24,7 +24,7 @@ class Artifact
      */
     private $name;
 
-    public function __construct(string $identifier, string $path, bool $persistent = false, string $name = null)
+    public function __construct(string $identifier, string $path = '/', bool $persistent = false, string $name = null)
     {
         $this->identifier = $identifier;
         $this->path = $path;
