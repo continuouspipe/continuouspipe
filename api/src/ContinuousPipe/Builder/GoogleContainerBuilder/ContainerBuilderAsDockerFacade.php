@@ -119,7 +119,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
             $closureLogger = $this->nullLogger();
             $startTime = time();
             while (false === $completed) {
-                if (true === $this->checkBuildStatus($buildIdentifier, $outerLogger)) {
+                if (true === $this->checkBuildStatus($buildIdentifier, $outerLogger, $context)) {
                     return $context->getImage();
                 }
 
@@ -131,8 +131,8 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
                         list($closureLogger, $outerLogger) = $this->log($context, $log, $closureLogger, $buildLogger, $outerLogger);
                         $lastLog = $log;
                     }
-
                 } catch (\Exception $e) {
+                    //Catches errors from requesting the logs and moves onto next request
                 }
 
                 if ($startTime + (30 * 60) < time()) {
@@ -166,7 +166,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
 
     private function basicLogger(Logger $logger)
     {
-        return function(array $log) use ($logger) {
+        return function (array $log) use ($logger) {
             if ($log['textPayload'] != self::BOUNDARY.':LOGIN'
                 && $log['textPayload'] != self::BOUNDARY.':PUSH'
                 && $log['textPayload'] != 'Login Succeeded'
@@ -178,7 +178,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
 
     private function nullLogger()
     {
-        return function (array $log) {
+        return function () {
             return;
         };
     }
@@ -365,7 +365,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
      * @return bool
      * @throws DockerException
      */
-    private function checkBuildStatus($buildIdentifier, $outerLogger)
+    private function checkBuildStatus($buildIdentifier, $outerLogger, $context)
     {
         $response = $this->httpClient->request(
             'get',
@@ -379,7 +379,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
         } elseif (in_array($status, ['FAILURE', 'INTERNAL_ERROR', 'TIMEOUT', 'CANCELLED'])) {
             $this->logger->notice('An error appeared while building the Docker image', [
                 'context' => $context,
-                'exception' => $e,
+                'status' => $status
             ]);
             throw new DockerException(
                 isset($json['statusDetail']) ? $status . ': ' . $json['statusDetail'] : $status
