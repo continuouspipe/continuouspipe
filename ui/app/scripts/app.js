@@ -26,7 +26,8 @@ angular
         'ui.ace',
         'yaru22.angular-timeago',
         'firebase',
-        'RecursionHelper'
+        'RecursionHelper',
+        'angularResizable'
     ])
     .config(function ($urlRouterProvider, $breadcrumbProvider, $locationProvider, $mdThemingProvider, AnalyticsProvider) {
         $urlRouterProvider.otherwise('/');

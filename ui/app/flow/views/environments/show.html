@@ -1,3 +1,4 @@
-<md-content flex id="content" class="card-grid env-container">
+<div resizable r-directions="['bottom']" r-flex="true" flex>
     <iframe ng-src="{{ url }}" class="env__frame"></iframe>
-</md-content>
+</div>
+<components-logs ng-if="environment && component" environment="environment" component="component"></components-logs>

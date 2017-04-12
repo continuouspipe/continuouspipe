@@ -6,8 +6,9 @@ angular.module('continuousPipeRiver')
 	    	$mdDialog.cancel();
 	    };
 	})
-    .controller('LogsComponentDialogController', function($scope, $mdDialog) {
+    .controller('LogsComponentDialogController', function($scope, $mdDialog, $rootScope) {
         $scope.close = function() {
+            $rootScope.$emit('closeComponentLogs');
             $mdDialog.cancel();
         };
 

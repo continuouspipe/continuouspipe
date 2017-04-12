@@ -79,7 +79,7 @@ angular.module('continuousPipeRiver')
             $componentLogDialog.open(flow, environment, component);
         };
     })
-    .controller('EnvironmentPreviewController', function($scope, $componentLogDialog, environment, flow, $sce) {
+    .controller('EnvironmentPreviewController', function($rootScope, $scope, $componentLogDialog, environment, flow, $sce) {
         $scope.environment = environment;
 
         environment.components.forEach(function(component) {
@@ -89,8 +89,27 @@ angular.module('continuousPipeRiver')
         });
 
         $scope.liveStreamComponent = function(environment, component) {
-            $componentLogDialog.open(flow, environment, component);
+            $rootScope.$emit('openComponentLogs', component);
         };
+
+        $rootScope.$on('openComponentLogs', function(event, component) {
+            $scope.component = component;
+        });
+
+        $rootScope.$on('closeComponentLogs', function() {
+            $scope.component = null;
+        });
+    })
+    .directive('componentsLogs', function() {
+        return {
+            restrict: 'E',
+            scope: {
+                environment: '=',
+                component: '='
+            },
+            controller: 'LogsComponentDialogController',
+            templateUrl: 'flow/views/environments/inline/component.html'
+        }
     })
     .service('$componentLogDialog', function($mdDialog) {
         this.open = function(flow, environment, component) {
