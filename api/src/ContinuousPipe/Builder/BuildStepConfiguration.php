@@ -58,6 +58,11 @@ class BuildStepConfiguration
     private $writeArtifacts;
 
     /**
+     * @var Engine
+     */
+    private $engine;
+
+    /**
      * @return Repository|null
      */
     public function getRepository()
@@ -137,6 +142,14 @@ class BuildStepConfiguration
         return $this->writeArtifacts ?: [];
     }
 
+    /**
+     * @return Engine
+     */
+    public function getEngine(): Engine
+    {
+        return $this->engine ?: Engine::default();
+    }
+
     public function withArchiveSource(ArchiveSource $archive = null) : BuildStepConfiguration
     {
         $step = clone $this;
@@ -205,6 +218,14 @@ class BuildStepConfiguration
     {
         $step = clone $this;
         $step->readArtifacts = $readArtifacts;
+
+        return $step;
+    }
+
+    public function withEngine(Engine $engine)
+    {
+        $step = clone $this;
+        $step->engine = $engine;
 
         return $step;
     }

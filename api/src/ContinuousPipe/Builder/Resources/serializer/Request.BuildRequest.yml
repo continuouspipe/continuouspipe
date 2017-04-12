@@ -20,4 +20,4 @@ ContinuousPipe\Builder\Request\BuildRequest:
         environment:
             type: array<string, string>
         engine:
-            type: string
+            type: ContinuousPipe\Builder\Engine

@@ -5,6 +5,8 @@ namespace ContinuousPipe\Builder;
 class Engine
 {
     const TYPES = ['docker', 'gcb'];
+    const DEFAULT = 'docker';
+    
     /**
      * @var string
      */
@@ -18,15 +20,10 @@ class Engine
 
         $this->type = $type;
     }
-
-    public static function fromBuildIdentifier(string $buildIdentifier)
+    
+    public static function default()
     {
-        $parts = explode('--', $buildIdentifier);
-        try {
-            return isset($parts[1]) ? new self($parts[1]) : new self('docker');    
-        } catch (\InvalidArgumentException $e) {
-            return new self('docker');    
-        }
+        return new self(self::DEFAULT);
     }
 
     /**

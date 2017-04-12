@@ -4,6 +4,7 @@ namespace ContinuousPipe\Builder\Request;
 
 use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Context;
+use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Logging;
 use ContinuousPipe\Builder\LogStreamLogging;
@@ -37,7 +38,7 @@ class BuildRequest
      * @var string
      */
     private $engine;
-    
+
     /**
      * @deprecated Should use the `steps` instead.
      *
@@ -98,7 +99,7 @@ class BuildRequest
     }
 
     /**
-     * @return string
+     * @return Engine|null
      */
     public function getEngine()
     {
@@ -175,8 +176,20 @@ class BuildRequest
     {
         $request = clone $this;
         $request->logging = Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLogIdentifier));
-        
+
         return $request;
     }
 
+    public function withEngine(Engine $engine)
+    {
+        $request = clone $this;
+        $request->engine = $engine;
+        $request->withSteps(
+            array_map(function(BuildStepConfiguration $step) use ($engine) {
+                return $step->withEngine($engine);
+            }, $request->getSteps())
+        );
+
+        return $request;
+    }
 }

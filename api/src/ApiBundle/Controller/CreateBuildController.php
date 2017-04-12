@@ -6,6 +6,7 @@ use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\BuildStepConfiguration;
+use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestException;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
@@ -93,10 +94,10 @@ class CreateBuildController
         }
 
         if (null === ($engine = $request->getEngine())) {
-            $referenceBuild = $this->createBuild($request, 'docker');
+            $referenceBuild = $this->buildFactory->fromRequest($request->withEngine(new Engine('docker')));
             $this->createHiddenGcbBuild($request);
         } else {
-            $referenceBuild = $this->createBuild($request, $engine);
+            $referenceBuild = $this->buildFactory->fromRequest($request);
         }
 
         $this->commandBus->handle(new StartBuild($referenceBuild->getIdentifier()));
@@ -158,17 +159,8 @@ class CreateBuildController
             }
         }
 
-        $gcbBuild = $this->createBuild($request, 'gcb');
+        $gcbBuild = $this->buildFactory->fromRequest($request->withEngine(new Engine('gcb')));
 
         $this->commandBus->handle(new StartBuild($gcbBuild->getIdentifier()));
-    }
-
-    /**
-     * @param BuildRequest $request
-     * @return \ContinuousPipe\Builder\Aggregate\Build
-     */
-    private function createBuild(BuildRequest $request, $engine)
-    {
-        return $this->buildFactory->fromRequest($request, Uuid::uuid4()->toString() . '--' . $engine);
     }
 }

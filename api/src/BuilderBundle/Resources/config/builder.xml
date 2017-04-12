@@ -7,6 +7,7 @@
     <services>
         <!-- Build requests -->
         <service id="builder.request_transformer.non_steps_bc_layer" class="ContinuousPipe\Builder\Request\Transformers\PreviousStepsBackwardCompatibilityTransformer" />
+        <service id="builder.request_transformer.engine_into_steps" class="ContinuousPipe\Builder\Request\Transformers\EngineIntoStepsTransformer" />
         <service id="builder.request_transformer.add_default_context" class="ContinuousPipe\Builder\Request\Transformers\AddDefaultContext" />
         <service id="builder.request_transformer.replace_github_repository_by_archive" class="ContinuousPipe\Builder\GitHub\BuildRequestTransformer\ReplaceTheGitHubRepositoryByAnArchive">
             <argument type="service" id="logger" />
@@ -27,6 +28,7 @@
                 <argument type="service" id="builder.request_transformer.dispatch_log_stream_identifier" />
                 <argument type="service" id="builder.request_transformer.find_image_registry_credentials" />
                 <argument type="service" id="builder.request_transformer.load_docker_registries" />
+                <argument type="service" id="builder.request_transformer.engine_into_steps" />
             </argument>
         </service>
 
