@@ -62,7 +62,7 @@ class FileSystemArchive extends Context implements Archive
      *
      * @param string $format
      *
-     * @return resource
+     * @return resource|string
      */
     public function read($format = self::FORMAT_TAR)
     {

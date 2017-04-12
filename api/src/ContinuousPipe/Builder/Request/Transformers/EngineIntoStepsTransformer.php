@@ -15,12 +15,12 @@ class EngineIntoStepsTransformer implements BuildRequestTransformer
     {
         $engine = $request->getEngine();
         
-        if(!isset($engine)) {
+        if (!isset($engine)) {
             return $request;
         }
         
         return $request->withSteps(
-            array_map(function(BuildStepConfiguration $step) use ($engine) {
+            array_map(function (BuildStepConfiguration $step) use ($engine) {
                 return $step->withEngine($engine);
             }, $request->getSteps())
         );

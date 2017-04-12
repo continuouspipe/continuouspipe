@@ -35,7 +35,7 @@ class BuildRequest
     private $steps;
 
     /**
-     * @var string
+     * @var Engine
      */
     private $engine;
 
@@ -182,10 +182,11 @@ class BuildRequest
 
     public function withEngine(Engine $engine)
     {
+        
         $request = clone $this;
         $request->engine = $engine;
         $request->withSteps(
-            array_map(function(BuildStepConfiguration $step) use ($engine) {
+            array_map(function (BuildStepConfiguration $step) use ($engine) {
                 return $step->withEngine($engine);
             }, $request->getSteps())
         );

@@ -147,7 +147,7 @@ class BuildStepConfiguration
      */
     public function getEngine(): Engine
     {
-        return $this->engine ?: Engine::default();
+        return $this->engine ?: Engine::withDefault();
     }
 
     public function withArchiveSource(ArchiveSource $archive = null) : BuildStepConfiguration

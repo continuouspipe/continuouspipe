@@ -21,7 +21,7 @@ class Engine
         $this->type = $type;
     }
     
-    public static function default()
+    public static function withDefault()
     {
         return new self(self::DEFAULT);
     }
