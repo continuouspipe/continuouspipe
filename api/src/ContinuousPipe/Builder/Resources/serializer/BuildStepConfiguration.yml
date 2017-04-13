@@ -20,3 +20,5 @@ ContinuousPipe\Builder\BuildStepConfiguration:
             type: array<ContinuousPipe\Builder\Artifact>
         writeArtifacts:
             type: array<ContinuousPipe\Builder\Artifact>
+        engine:
+            type: ContinuousPipe\Builder\Engine
