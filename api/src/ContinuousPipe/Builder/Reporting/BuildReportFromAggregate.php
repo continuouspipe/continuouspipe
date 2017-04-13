@@ -95,13 +95,12 @@ class BuildReportFromAggregate implements ReportBuilder
         return $artifacts;
     }
 
-    /**
-     * @param BuildRequest $request
-     * @return string
-     * @internal param $build
-     */
-    private function getEngine(BuildRequest $request)
+    private function getEngine(BuildRequest $request) : string
     {
-        return isset($request->getSteps()[0]) ? $request->getSteps()[0]->getEngine() : '';
+        if (null === ($engine = $request->getEngine())) {
+            return 'null';
+        }
+
+        return $engine->getType();
     }
 }

@@ -111,7 +111,7 @@ class BuildRequest
      */
     public function getSteps()
     {
-        return $this->steps;
+        return $this->steps ?: [];
     }
 
     public function withSteps(array $steps) : BuildRequest
@@ -182,14 +182,8 @@ class BuildRequest
 
     public function withEngine(Engine $engine)
     {
-        
         $request = clone $this;
         $request->engine = $engine;
-        $request->withSteps(
-            array_map(function (BuildStepConfiguration $step) use ($engine) {
-                return $step->withEngine($engine);
-            }, $request->getSteps())
-        );
 
         return $request;
     }

@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Controller;
 
+use ContinuousPipe\Builder\Aggregate\Build;
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
 use ContinuousPipe\Builder\Artifact;
@@ -80,35 +81,29 @@ class CreateBuildController
             return \FOS\RestBundle\View\View::create($violations->get(0), 400);
         }
 
-        try {
-            $request = $this->buildRequestTransformer->transform($request);
-        } catch (BuildRequestException $e) {
-            return new JsonResponse(
-                [
-                    'error' => [
-                        'message' => $e->getMessage(),
-                        'code' => $e->getCode(),
-                    ],
-                ], 400
-            );
+        if (null === $request->getEngine()) {
+            $this->createAndStartBuild($this->createHiddenGcbBuild($request));
+
+            $request = $request->withEngine(new Engine('docker'));
         }
 
-        if (null === ($engine = $request->getEngine())) {
-            $referenceBuild = $this->buildFactory->fromRequest($request->withEngine(new Engine('docker')));
-            $this->createHiddenGcbBuild($request);
-        } else {
-            $referenceBuild = $this->buildFactory->fromRequest($request);
-        }
+        $build = $this->createAndStartBuild($request);
 
-        $this->commandBus->handle(new StartBuild($referenceBuild->getIdentifier()));
-
-        return $this->buildViewRepository->find($referenceBuild->getIdentifier());
+        return $this->buildViewRepository->find($build->getIdentifier());
     }
 
-    /**
-     * @param BuildRequest $request
-     */
-    private function createHiddenGcbBuild(BuildRequest $request)
+    private function createAndStartBuild(BuildRequest $request) : Build
+    {
+        $build = $this->buildFactory->fromRequest(
+            $this->buildRequestTransformer->transform($request)
+        );
+
+        $this->commandBus->handle(new StartBuild($build->getIdentifier()));
+
+        return $build;
+    }
+
+    private function createHiddenGcbBuild(BuildRequest $request) : BuildRequest
     {
         $updateArtifactPath = function (BuildStepConfiguration $step) {
             return array_map(
@@ -131,7 +126,7 @@ class CreateBuildController
         $updateLogStreamIdentifier = function (BuildStepConfiguration $step) {
             $logStreamIdentifier = $step->getLogStreamIdentifier();
             if (!isset($logStreamIdentifier)) {
-                return null;
+                return '';
             }
 
             return $logStreamIdentifier . '/gcb';
@@ -149,18 +144,13 @@ class CreateBuildController
             )
         );
 
-        $logging = $request->getLogging();
-        if (isset($logging)) {
-            $logStream = $logging->getLogStream();
-            if (isset($logStream)) {
-                $request = $request->withParentLogIdentifier(
-                    $logStream->getParentLogIdentifier() . '/gcb'
-                );
-            }
+        ;
+        if (null !== ($logging = $request->getLogging()) && null !== ($logStream = $logging->getLogStream())) {
+            $request = $request->withParentLogIdentifier(
+                $logStream->getParentLogIdentifier() . '/gcb'
+            );
         }
 
-        $gcbBuild = $this->buildFactory->fromRequest($request->withEngine(new Engine('gcb')));
-
-        $this->commandBus->handle(new StartBuild($gcbBuild->getIdentifier()));
+        return $request->withEngine(new Engine('gcb'));
     }
 }
