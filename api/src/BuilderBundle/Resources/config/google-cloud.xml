@@ -20,9 +20,7 @@
 
         <!-- Google Container Builder -->
         <service id="builder.google_container_builder.artifacts_manager" class="ContinuousPipe\Builder\Artifact\GoogleCloudStorage\GoogleCloudStorageArtifactManager">
-            <argument>%google_storage_project_id%</argument>
-            <argument>%google_storage_key_file_path%</argument>
-            <argument>%google_container_builder_source_bucket%</argument>
+            <argument type="service" id="builder.artifact_manager.google_cloud_storage.bucket_resolver" />
         </service>
 
         <service id="builder.google_container_builder.credentials.service_account_fetcher_factory" class="ContinuousPipe\Builder\GoogleContainerBuilder\Credentials\ServiceAccountAuthTokenFetcherFactory">
