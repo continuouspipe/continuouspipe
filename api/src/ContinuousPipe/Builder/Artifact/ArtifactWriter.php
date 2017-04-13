@@ -12,8 +12,9 @@ interface ArtifactWriter
      *
      * @param Archive  $source
      * @param Artifact $artifact
+     * @param string   $format
      *
      * @throws ArtifactException
      */
-    public function write(Archive $source, Artifact $artifact);
+    public function write(Archive $source, Artifact $artifact, string $format = null);
 }

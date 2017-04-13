@@ -58,6 +58,35 @@ class FileSystemArchive extends Context implements Archive
     }
 
     /**
+     * Read the archive, with a given format.
+     *
+     * @param string $format
+     *
+     * @return resource|string
+     */
+    public function read($format = self::FORMAT_TAR)
+    {
+        if (null === $format) {
+            return parent::read();
+        }
+
+        if ($format == self::TAR) {
+            $options = 'c';
+        } else if ($format == self::TAG_GZ) {
+            $options = 'cz';
+        } else {
+            throw new \InvalidArgumentException(sprintf('The format "%s" is not supported'));
+        }
+
+        if (!is_resource($this->fileSystemProcess)) {
+            $this->fileSystemProcess = proc_open("/usr/bin/env tar ".$options." .", [["pipe", "r"], ["pipe", "w"], ["pipe", "w"]], $pipes, $this->getDirectory());
+            $this->fileSystemStream = $pipes[1];
+        }
+
+        return $this->fileSystemStream;
+    }
+
+    /**
      * Delete the archive.
      */
     public function delete()

@@ -19,3 +19,5 @@ ContinuousPipe\Builder\Request\BuildRequest:
             type: ContinuousPipe\Builder\Context
         environment:
             type: array<string, string>
+        engine:
+            type: ContinuousPipe\Builder\Engine

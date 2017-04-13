@@ -5,6 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <!-- Google Cloud Storage -->
         <service id="builder.artifact_manager.google_cloud_storage.bucket_resolver" class="ContinuousPipe\Builder\Artifact\GoogleCloudStorage\BucketResolver">
             <argument>%google_storage_project_id%</argument>
             <argument>%google_storage_key_file_path%</argument>
@@ -16,5 +17,54 @@
         <service id="builder.artifact_reader" alias="builder.artifact_manager.file_system" />
         <service id="builder.artifact_writer" alias="builder.artifact_manager.file_system" />
         <service id="builder.artifact_remover" alias="builder.artifact_manager.file_system" />
+
+        <!-- Google Container Builder -->
+        <service id="builder.google_container_builder.artifacts_manager" class="ContinuousPipe\Builder\Artifact\GoogleCloudStorage\GoogleCloudStorageArtifactManager">
+            <argument>%google_storage_project_id%</argument>
+            <argument>%google_storage_key_file_path%</argument>
+            <argument>%google_container_builder_source_bucket%</argument>
+        </service>
+
+        <service id="builder.google_container_builder.credentials.service_account_fetcher_factory" class="ContinuousPipe\Builder\GoogleContainerBuilder\Credentials\ServiceAccountAuthTokenFetcherFactory">
+            <argument>%google_container_builder_service_account_path%</argument>
+        </service>
+
+        <service id="builder.google_container_builder.http_client.auth_token_fetcher" class="Google\Auth\FetchAuthTokenCache">
+            <factory service="builder.google_container_builder.credentials.service_account_fetcher_factory" method="create" />
+        </service>
+
+        <!--
+
+          Do not cache the access token just yet.
+
+        <service id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached"
+                 class="ContinuousPipe\Builder\GoogleContainerBuilder\Credentials\Cache\CachedAuthTokenFetcher"
+                 decorates="builder.google_container_builder.http_client.auth_token_fetcher"
+                 decoration-priority="5">
+            <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached.inner" />
+            <argument type="service" id="river.predis_cache" />
+            <argument type="service" id="logger" />
+        </service>
+        -->
+
+        <service id="builder.google_container_builder.http_client_factory" class="ContinuousPipe\Builder\GoogleContainerBuilder\Credentials\GuzzleHttpClientFactory">
+            <argument type="service" id="builder.google_container_builder.http_client.auth_token_fetcher" />
+            <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
+        </service>
+
+        <service id="builder.google_container_builder.http_client" class="GuzzleHttp\Client">
+            <factory service="builder.google_container_builder.http_client_factory" method="create" />
+        </service>
+
+        <service id="builder.docker.client.gcb" class="ContinuousPipe\Builder\GoogleContainerBuilder\ContainerBuilderAsDockerFacade">
+            <argument type="service" id="builder.google_container_builder.http_client" />
+            <argument type="service" id="builder.google_container_builder.artifacts_manager" />
+            <argument type="service" id="builder.docker_file_resolver" />
+            <argument>%google_container_builder_project%</argument>
+            <argument>%google_container_builder_source_bucket%</argument>
+            <argument>%google_container_builder_service_account_path%</argument>
+            <argument type="service" id="log_stream.logger_factory"/>
+            <argument type="service" id="logger"/>
+        </service>
     </services>
 </container>

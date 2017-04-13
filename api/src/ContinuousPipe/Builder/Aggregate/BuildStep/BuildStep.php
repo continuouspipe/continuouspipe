@@ -8,7 +8,6 @@ use ContinuousPipe\Builder\Aggregate\BuildStep\Event\ReadArtifacts;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFinished;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\WroteArtifacts;
-use ContinuousPipe\Builder\Aggregate\Event\BuildFinished;
 use ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepStarted;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\ArchiveBuilder;
@@ -18,7 +17,6 @@ use ContinuousPipe\Builder\Artifact\ArtifactReader;
 use ContinuousPipe\Builder\Artifact\ArtifactWriter;
 use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Docker\BuildContext;
-use ContinuousPipe\Builder\Docker\CredentialsRepository;
 use ContinuousPipe\Builder\Docker\DockerException;
 use ContinuousPipe\Builder\Docker\DockerFacade;
 use ContinuousPipe\Builder\Docker\DockerImageReader;
@@ -26,7 +24,6 @@ use ContinuousPipe\Builder\Docker\PushContext;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Events\Capabilities\ApplyEventCapability;
 use ContinuousPipe\Events\Capabilities\RaiseEventCapability;
-use ContinuousPipe\Security\Credentials\BucketRepository;
 use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
@@ -125,7 +122,8 @@ class BuildStep
                         $this->configuration->getContext(),
                         $this->configuration->getEnvironment(),
                         $this->configuration->getDockerRegistries(),
-                        $image
+                        $image,
+                        $this->configuration->getEngine()
                     ),
                     $this->codeArchive
                 )
@@ -147,7 +145,8 @@ class BuildStep
             $dockerFacade->push(
                 new PushContext(
                     $this->configuration->getLogStreamIdentifier(),
-                    $this->configuration->getImageRegistryCredentials()
+                    $this->configuration->getImageRegistryCredentials(),
+                    $this->configuration->getEngine()
                 ),
                 $this->image
             );

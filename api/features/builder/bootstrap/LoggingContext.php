@@ -180,7 +180,7 @@ class LoggingContext implements Context
         foreach ($logs as $created) {
             $serialized = $created->getNode()->jsonSerialize();
 
-            if ($serialized['type'] == 'text' && false !== strpos($serialized['contents'], $text)) {
+            if ($serialized['type'] == 'text' && isset($serialized['contents']) && false !== strpos($serialized['contents'], $text)) {
                 $list[] = $created;
             }
         }

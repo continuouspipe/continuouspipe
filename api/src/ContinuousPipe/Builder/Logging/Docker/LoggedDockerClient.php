@@ -45,7 +45,7 @@ class LoggedDockerClient implements DockerFacade
     public function build(BuildContext $context, Archive $archive) : Image
     {
         $title = $context->getImage() === null
-            ? 'TODO identify the message'
+            ? 'Building Docker image'
             : sprintf('Building Docker image <code>%s</code>', $this->getImageName($context->getImage()));
 
         return $this->wraps(

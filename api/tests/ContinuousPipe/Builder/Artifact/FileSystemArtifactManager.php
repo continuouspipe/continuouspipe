@@ -37,12 +37,12 @@ class FileSystemArtifactManager implements ArtifactReader, ArtifactWriter, Artif
     /**
      * {@inheritdoc}
      */
-    public function write(Archive $source, Artifact $artifact)
+    public function write(Archive $source, Artifact $artifact, string $format = null)
     {
         $artifactStream = fopen($this->getArtifactPath($artifact), 'w');
 
         try {
-            if (false === stream_copy_to_stream($source->read(), $artifactStream)) {
+            if (false === stream_copy_to_stream($source->read($format), $artifactStream)) {
                 throw new ArtifactException('Something went wrong while copying stream to file');
             }
         } finally {

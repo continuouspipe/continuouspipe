@@ -45,7 +45,8 @@ class BuildReportFromAggregate implements ReportBuilder
                 'write' => [
                     'count' => count($this->getWriteArtifacts($build->getRequest()))
                 ]
-            ]
+            ],
+            'engine' => $this->getEngine($build->getRequest())
         ];
     }
 
@@ -92,5 +93,15 @@ class BuildReportFromAggregate implements ReportBuilder
         }
 
         return $artifacts;
+    }
+
+    /**
+     * @param BuildRequest $request
+     * @return string
+     * @internal param $build
+     */
+    private function getEngine(BuildRequest $request)
+    {
+        return isset($request->getSteps()[0]) ? $request->getSteps()[0]->getEngine() : '';
     }
 }

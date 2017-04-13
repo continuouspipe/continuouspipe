@@ -5,14 +5,11 @@ namespace ContinuousPipe\Builder\Artifact\GoogleCloudStorage;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Artifact\ArtifactException;
-use ContinuousPipe\Builder\Artifact\ArtifactReader;
-use ContinuousPipe\Builder\Artifact\ArtifactWriter;
-use ContinuousPipe\Builder\Artifact\ArtifactRemover;
 use Google\Cloud\Exception\GoogleException;
 use Google\Cloud\Exception\NotFoundException;
 use GuzzleHttp\Psr7\StreamWrapper;
 
-class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReader, ArtifactRemover
+class GoogleCloudStorageArtifactManager implements Artifact\ArtifactManager
 {
     /**
      * @var BucketResolver
@@ -48,7 +45,7 @@ class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReade
     /**
      * {@inheritdoc}
      */
-    public function write(Archive $source, Artifact $artifact)
+    public function write(Archive $source, Artifact $artifact, string $format = null)
     {
         $bucket = $this->bucketResolver->resolve();
 
@@ -60,7 +57,7 @@ class GoogleCloudStorageArtifactManager implements ArtifactWriter, ArtifactReade
         }
 
         try {
-            $bucket->upload($source->read(), [
+            $bucket->upload($source->read($format), [
                 'resumable' => false,
                 'validate' => false,
                 'predefinedAcl' => 'projectPrivate',

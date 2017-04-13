@@ -4,14 +4,17 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
+use ContinuousPipe\Builder\Artifact;
+use ContinuousPipe\Builder\BuildStepConfiguration;
+use ContinuousPipe\Builder\Engine;
+use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestException;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\View\BuildViewRepository;
-use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\Events\Transaction\TransactionManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
+use Ramsey\Uuid\Uuid;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -80,18 +83,84 @@ class CreateBuildController
         try {
             $request = $this->buildRequestTransformer->transform($request);
         } catch (BuildRequestException $e) {
-            return new JsonResponse([
-                'error' => [
-                    'message' => $e->getMessage(),
-                    'code' => $e->getCode(),
-                ],
-            ], 400);
+            return new JsonResponse(
+                [
+                    'error' => [
+                        'message' => $e->getMessage(),
+                        'code' => $e->getCode(),
+                    ],
+                ], 400
+            );
         }
 
-        $build = $this->buildFactory->fromRequest($request);
+        if (null === ($engine = $request->getEngine())) {
+            $referenceBuild = $this->buildFactory->fromRequest($request->withEngine(new Engine('docker')));
+            $this->createHiddenGcbBuild($request);
+        } else {
+            $referenceBuild = $this->buildFactory->fromRequest($request);
+        }
 
-        $this->commandBus->handle(new StartBuild($build->getIdentifier()));
+        $this->commandBus->handle(new StartBuild($referenceBuild->getIdentifier()));
 
-        return $this->buildViewRepository->find($build->getIdentifier());
+        return $this->buildViewRepository->find($referenceBuild->getIdentifier());
+    }
+
+    /**
+     * @param BuildRequest $request
+     */
+    private function createHiddenGcbBuild(BuildRequest $request)
+    {
+        $updateArtifactPath = function (BuildStepConfiguration $step) {
+            return array_map(
+                function (Artifact $artifact) {
+                    return new Artifact($artifact->getIdentifier() . '-gcb', $artifact->getPath());
+                },
+                $step->getReadArtifacts()
+            );
+        };
+
+        $updateImagePath = function (BuildStepConfiguration $step) {
+            $image = $step->getImage();
+            if (!isset($image)) {
+                return null;
+            }
+
+            return $image->withTag($image->getTag() . '-gcb');
+        };
+
+        $updateLogStreamIdentifier = function (BuildStepConfiguration $step) {
+            $logStreamIdentifier = $step->getLogStreamIdentifier();
+            if (!isset($logStreamIdentifier)) {
+                return null;
+            }
+
+            return $logStreamIdentifier . '/gcb';
+        };
+
+        $request = $request->withSteps(
+            array_map(
+                function (BuildStepConfiguration $step) use ($updateArtifactPath, $updateImagePath, $updateLogStreamIdentifier) {
+                    return $step
+                        ->withReadArtifacts($updateArtifactPath($step))
+                        ->withLogStreamIdentifier($updateLogStreamIdentifier($step))
+                        ->withImage($updateImagePath($step));
+                },
+                $request->getSteps()
+            )
+        );
+
+        $logging = $request->getLogging();
+        if (isset($logging)) {
+            $logStream = $logging->getLogStream();
+            if (isset($logStream)) {
+                $request = $request->withParentLogIdentifier(
+                    $logStream->getParentLogIdentifier() . '/gcb'
+                );
+            }
+        }
+
+        $gcbBuild = $this->buildFactory->fromRequest($request->withEngine(new Engine('gcb')));
+
+        $this->commandBus->handle(new StartBuild($gcbBuild->getIdentifier()));
     }
 }

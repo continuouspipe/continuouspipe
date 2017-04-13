@@ -17,7 +17,7 @@ class TraceableClient implements Client
     /**
      * @var Log[]
      */
-    private $created;
+    private $created = [];
 
     /**
      * @var Log[]

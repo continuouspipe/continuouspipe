@@ -8,5 +8,9 @@
         <service id="builder.docker.client.traceable" class="ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient" decorates="builder.docker.client">
             <argument type="service" id="builder.docker.client.traceable.inner" />
         </service>
+
+        <service id="builder.docker.client.gcb_mock" class="ContinuousPipe\Builder\Tests\Docker\GCBFacade" decorates="builder.docker.client.gcb">
+            <argument type="service" id="builder.docker.client.gcb_mock.inner" />
+        </service>
     </services>
 </container>

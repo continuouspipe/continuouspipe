@@ -3,6 +3,7 @@
 namespace ContinuousPipe\Builder\Docker;
 
 use ContinuousPipe\Builder\Context;
+use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use Ramsey\Uuid\UuidInterface;
@@ -17,13 +18,19 @@ class BuildContext extends DockerContext
      * @var DockerRegistry[]
      */
     private $dockerRegistries;
+    
+    /**
+     * @var Engine
+     */
+    private $engine;
 
     public function __construct(
         string $logStreamIdentifier,
         Context $context,
         array $environment,
         array $dockerRegistries,
-        Image $image
+        Image $image,
+        Engine $engine
     ) {
         parent::__construct($logStreamIdentifier);
 
@@ -31,6 +38,7 @@ class BuildContext extends DockerContext
         $this->environment = $environment;
         $this->dockerRegistries = $dockerRegistries;
         $this->image = $image;
+        $this->engine = $engine;
     }
 
     /**
@@ -57,5 +65,10 @@ class BuildContext extends DockerContext
     public function getDockerRegistries() : array
     {
         return $this->dockerRegistries;
+    }
+
+    public function getEngine()
+    {
+        return $this->engine;
     }
 }
