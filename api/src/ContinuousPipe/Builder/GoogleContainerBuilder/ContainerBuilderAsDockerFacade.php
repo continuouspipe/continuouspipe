@@ -299,9 +299,9 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
         return $dockerCommandArguments;
     }
 
-    private function requestBuild(BuildContext $context, $sourceArtifact) : string
+    private function requestBuild(BuildContext $context, Artifact $sourceArtifact) : string
     {
-        $dockerImageName = 'docker.io/sroze/foo-bar';
+        $dockerImageName = $this->getImageName($context->getImage());
         $response = $this->httpClient->request(
             'post',
             'https://cloudbuild.googleapis.com/v1/projects/' . $this->projectId . '/builds',
