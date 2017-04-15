@@ -155,11 +155,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
         //throw new DockerException('Unable to push, not supported yet!');
     }
 
-    /**
-     * @param $image
-     * @return string
-     */
-    private function getImageName($image)
+    private function getImageName(Image $image) : string
     {
         return $image->getName() . ':' . $image->getTag();
     }
@@ -233,45 +229,33 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
         return $filter;
     }
 
-    /**
-     * @param Archive $archive
-     * @return array
-     * @throws DockerException
-     */
-    private function writeSourceArtifact(Archive $archive)
+    private function writeSourceArtifact(Archive $archive) : Artifact
     {
         $sourceArtifact = new Artifact(uniqid() . '.tar.gz');
 
         try {
             $this->artifactManager->write($archive, $sourceArtifact, Archive::TAG_GZ);
-            return $sourceArtifact;
         } catch (Artifact\ArtifactException $e) {
             throw new DockerException('Something went wrong while pushing the source artifact', $e->getCode(), $e);
         }
+
+        return $sourceArtifact;
     }
 
-    /**
-     * @param BuildContext $context
-     * @return Logger
-     */
-    private function getBuildOuterLogger(BuildContext $context)
+    private function getBuildOuterLogger(BuildContext $context) : Logger
     {
         $mainLogger = $this->loggerFactory->fromId($context->getLogStreamIdentifier());
-        $buildOuterLogger = $mainLogger->child(
+
+        return $mainLogger->child(
             new Text(
                 $context->getImage() === null
                     ? 'Building Docker image'
                     : sprintf('Building Docker image <code>%s</code>', $this->getImageName($context->getImage()))
             )
         )->updateStatus(Log::RUNNING);
-        return $buildOuterLogger;
     }
 
-    /**
-     * @param BuildContext $context
-     * @return string
-     */
-    private function dockerRegistryCredentials(BuildContext $context)
+    private function dockerRegistryCredentials(BuildContext $context) : string
     {
         return base64_encode(
             \GuzzleHttp\json_encode(
@@ -293,12 +277,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
         );
     }
 
-    /**
-     * @param BuildContext $context
-     * @param $dockerImageName
-     * @return array
-     */
-    private function dockerCommandArguments(BuildContext $context, $dockerImageName)
+    private function dockerCommandArguments(BuildContext $context, string $dockerImageName) : array
     {
         $dockerCommandArguments = [
             'build',
@@ -316,15 +295,11 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
         }
 
         $dockerCommandArguments[] = '.';
+
         return $dockerCommandArguments;
     }
 
-    /**
-     * @param BuildContext $context
-     * @param $sourceArtifact
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    private function requestBuild(BuildContext $context, $sourceArtifact)
+    private function requestBuild(BuildContext $context, $sourceArtifact) : string
     {
         $dockerImageName = 'docker.io/sroze/foo-bar';
         $response = $this->httpClient->request(
@@ -365,7 +340,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
      * @return bool
      * @throws DockerException
      */
-    private function checkBuildStatus($buildIdentifier, $outerLogger, $context)
+    private function checkBuildStatus(string $buildIdentifier, Logger $outerLogger, $context)
     {
         $response = $this->httpClient->request(
             'get',
