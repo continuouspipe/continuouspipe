@@ -19,8 +19,8 @@ import (
 
 // CreateBuildContext will create the Docker build context from the current directory,
 // based on the manifest configuration.
-func CreateBuildContext(manifest Manifest) (io.ReadCloser, error) {
-    contextDir, relDockerfile, err := builder.GetContextFromLocalDir(".", manifest.DockerfilePath)
+func CreateBuildContext(step ManifestStep) (io.ReadCloser, error) {
+    contextDir, relDockerfile, err := builder.GetContextFromLocalDir(step.BuildDirectory, step.DockerfilePath)
 
     // And canonicalize dockerfile name to a platform-independent one
     relDockerfile, err = archive.CanonicalTarNameForPath(relDockerfile)
@@ -96,8 +96,8 @@ func ReadDockerResponse(responseBody io.ReadCloser) error {
 }
 
 // CreatePushRegistryAuth will create the auth registry string required by the push image configuration.
-func CreatePushRegistryAuth(manifest Manifest) (string, error) {
-    ref, err := reference.ParseNamed(manifest.Name)
+func CreatePushRegistryAuth(manifest Manifest, imageName string) (string, error) {
+    ref, err := reference.ParseNamed(imageName)
     if err != nil {
         return "", err
     }
@@ -106,7 +106,6 @@ func CreatePushRegistryAuth(manifest Manifest) (string, error) {
     if !found {
         return "", fmt.Errorf("No authentication configuration found for the registry \"%s\"", ref.Hostname())
     }
-
 
     buf, err := json.Marshal(authConfig)
     if err != nil {

@@ -1,3 +1,5 @@
 /vendor
 /bin/*
 !/bin/.gitkeep
+/var/*
+!var/.gitkeep

@@ -1,9 +1,11 @@
-hash: d83a8c96bbfae2092319fd910e0b0457fb7482278fbc25a9e3b3fc6aa90d45cc
-updated: 2017-04-16T14:42:58.608250448+01:00
+hash: cee99d0551b013c42c4e544aa71c03ed34bd90b97e53e448c290bedd9e2b80b6
+updated: 2017-04-16T19:34:04.427068485+01:00
 imports:
 - name: cloud.google.com/go
   version: 2e6a95edb1071d750f6d7db777bf66cd2997af6c
   subpackages:
+  - internal
+  - internal/optional
   - storage
 - name: github.com/Azure/go-ansiterm
   version: fa152c58bc15761d0200cb75fe958b89a9d4888e
@@ -15,14 +17,6 @@ imports:
   - context
   - digest
   - reference
-  - registry/api/errcode
-  - registry/api/v2
-  - registry/client
-  - registry/client/auth
-  - registry/client/auth/challenge
-  - registry/client/transport
-  - registry/storage/cache
-  - registry/storage/cache/memory
   - uuid
 - name: github.com/docker/docker
   version: 175f1829377413b1887a0c38232b1cda975fd71c
@@ -34,19 +28,16 @@ imports:
   - image
   - image/v1
   - layer
-  - opts
   - pkg/archive
   - pkg/chrootarchive
   - pkg/fileutils
   - pkg/gitutils
-  - pkg/homedir
   - pkg/httputils
   - pkg/idtools
   - pkg/ioutils
   - pkg/jsonlog
   - pkg/jsonmessage
   - pkg/longpath
-  - pkg/mflag
   - pkg/mount
   - pkg/plugins
   - pkg/plugins/transport
@@ -64,7 +55,6 @@ imports:
   - pkg/term/windows
   - pkg/urlutil
   - reference
-  - registry
 - name: github.com/docker/engine-api
   version: 3d1601b9d2436a70b0dfc045a23f6503d19195df
   subpackages:
@@ -90,6 +80,12 @@ imports:
   - tlsconfig
 - name: github.com/docker/go-units
   version: 0dadbb0345b35ec7ef35e228dabb8de89a65bf52
+- name: github.com/golang/protobuf
+  version: 8d92cf5fc15a4382f8964b08e1f42a75c0591aa3
+  subpackages:
+  - proto
+- name: github.com/googleapis/gax-go
+  version: 9af46dd5a1713e8b5cd71106287eba3cefdde50b
 - name: github.com/gorilla/context
   version: 14f550f51af52180c2eefed15e5fd18d63c0a64a
 - name: github.com/gorilla/mux
@@ -114,10 +110,70 @@ imports:
   version: 4876518f9e71663000c348837735820161a42df7
   subpackages:
   - context
+  - context/ctxhttp
+  - http2
+  - http2/hpack
+  - internal/timeseries
   - proxy
+  - trace
+- name: golang.org/x/oauth2
+  version: 045497edb6234273d67dbc25da3f2ddbc4c4cacf
+  subpackages:
+  - google
+  - internal
+  - jws
+  - jwt
 - name: golang.org/x/sys
   version: 8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9
   subpackages:
   - unix
   - windows
+- name: google.golang.org/api
+  version: 650535c7d6201e8304c92f38c922a9a3a36c6877
+  subpackages:
+  - gensupport
+  - googleapi
+  - googleapi/internal/uritemplates
+  - googleapi/transport
+  - internal
+  - iterator
+  - option
+  - storage/v1
+  - transport
+- name: google.golang.org/appengine
+  version: 12d5545dc1cfa6047a286d5e853841b6471f4c19
+  subpackages:
+  - internal
+  - internal/app_identity
+  - internal/base
+  - internal/datastore
+  - internal/log
+  - internal/modules
+  - internal/remote_api
+  - internal/socket
+  - internal/urlfetch
+  - socket
+  - urlfetch
+- name: google.golang.org/cloud
+  version: 975617b05ea8a58727e6c1a06b6161ff4185a9f2
+  subpackages:
+  - compute/metadata
+  - internal
+  - internal/opts
+  - storage
+- name: google.golang.org/grpc
+  version: 8050b9cbc271307e5a716a9d782803d09b0d6f2d
+  subpackages:
+  - codes
+  - credentials
+  - credentials/oauth
+  - grpclog
+  - internal
+  - keepalive
+  - metadata
+  - naming
+  - peer
+  - stats
+  - tap
+  - transport
 testImports: []

@@ -21,3 +21,8 @@ import:
   - tar/asm
 - package: github.com/docker/go-connections
   version: v0.2.1
+- package: github.com/googleapis/gax-go
+- package: google.golang.org/grpc
+  version: v1.2.1
+- package: google.golang.org/api
+  version: 650535c7d6201e8304c92f38c922a9a3a36c6877
