@@ -64,6 +64,13 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
     private $logger;
 
     /**
+     * The maximum allowed build time, in seconds.
+     *
+     * @var int
+     */
+    private $maximumAllowedBuildTime = 3600;
+
+    /**
      * ContainerBuilderAsDockerFacade constructor.
      * @param ClientInterface $httpClient
      * @param ArtifactManager $artifactManager
@@ -150,7 +157,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
                     //Catches errors from requesting the logs and moves onto next request
                 }
 
-                if ($startTime + 3600 < time()) {
+                if ($startTime + $this->maximumAllowedBuildTime < time()) {
                     throw new DockerException('Build took longer than 60 minutes!');
                 }
                 sleep(10);
@@ -304,7 +311,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
                                 'name' => 'quay.io/continuouspipe/cloud-builder:v2',
                             ]
                         ],
-                        'timeout' => '1800s',
+                        'timeout' => ((string) $this->maximumAllowedBuildTime).'s',
                     ]
                 ]
             );
