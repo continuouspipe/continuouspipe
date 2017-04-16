@@ -14,6 +14,7 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use Google\Cloud\ServiceBuilder;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ClientException;
 use LogStream\Log;
 use LogStream\Logger;
 use LogStream\LoggerFactory;
@@ -74,13 +75,13 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
      * @param LoggerInterface $logger
      */
     public function __construct(
-        ClientInterface $httpClient, 
-        ArtifactManager $artifactManager, 
-        DockerfileResolver $dockerfileResolver, 
-        string $projectId, 
-        string $artifactBucket, 
-        string $serviceAccountPath, 
-        LoggerFactory $loggerFactory, 
+        ClientInterface $httpClient,
+        ArtifactManager $artifactManager,
+        DockerfileResolver $dockerfileResolver,
+        string $projectId,
+        string $artifactBucket,
+        string $serviceAccountPath,
+        LoggerFactory $loggerFactory,
         LoggerInterface $logger
     ) {
         $this->httpClient = $httpClient;
@@ -102,16 +103,30 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
         $buildLogger = $outerLogger->child(new Raw());
 
         try {
+            // Create the build manifest
+            $manifest = [
+                'name' => $this->getImageName($context->getImage()),
+                'log_boundary' => self::BOUNDARY,
+                'docker_file_path' =>  $this->dockerfileResolver->getFilePath($context->getContext()),
+            ];
+
+            if (!empty($buildArgs = $context->getEnvironment())) {
+                $manifest['build_args'] = $buildArgs;
+            }
+
+            if (!empty($authConfigs = $this->dockerRegistryAuthConfigs($context))) {
+                $manifest['auth_configs'] = $authConfigs;
+            }
+
+            $archive->writeFile('continuouspipe.build-manifest.json', \GuzzleHttp\json_encode($manifest));
+
             $sourceArtifact = $this->writeSourceArtifact($archive);
+            $buildIdentifier = $this->requestBuild($sourceArtifact);
 
-            $buildIdentifier = $this->requestBuild($context, $sourceArtifact);
-
-            $serviceBuilder = new ServiceBuilder(
-                [
-                    'projectId' => $this->projectId,
-                    'keyFilePath' => $this->serviceAccountPath,
-                ]
-            );
+            $serviceBuilder = new ServiceBuilder([
+                'projectId' => $this->projectId,
+                'keyFilePath' => $this->serviceAccountPath,
+            ]);
 
             $completed = false;
             $lastLog = null;
@@ -135,8 +150,8 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
                     //Catches errors from requesting the logs and moves onto next request
                 }
 
-                if ($startTime + (30 * 60) < time()) {
-                    throw new DockerException('Build took longer than 30 minutes!');
+                if ($startTime + 3600 < time()) {
+                    throw new DockerException('Build took longer than 60 minutes!');
                 }
                 sleep(10);
             }
@@ -163,7 +178,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
     private function basicLogger(Logger $logger)
     {
         return function (array $log) use ($logger) {
-            if ($log['textPayload'] != self::BOUNDARY.':LOGIN'
+            if ($log['textPayload'] != self::BOUNDARY.':START'
                 && $log['textPayload'] != self::BOUNDARY.':PUSH'
                 && $log['textPayload'] != 'Login Succeeded'
                 && $log['textPayload'] != self::BOUNDARY.':BUILD') {
@@ -192,7 +207,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
         if (isset($log['textPayload'])) {
             $closureLogger($log);
 
-            if (in_array($log['textPayload'], [self::BOUNDARY . ':LOGIN', self::BOUNDARY . ':BUILD'])) {
+            if (in_array($log['textPayload'], [self::BOUNDARY . ':START', self::BOUNDARY . ':BUILD'])) {
                 $closureLogger = $this->basicLogger($buildLogger);
             }
 
@@ -255,78 +270,46 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
         )->updateStatus(Log::RUNNING);
     }
 
-    private function dockerRegistryCredentials(BuildContext $context) : string
+    private function dockerRegistryAuthConfigs(BuildContext $context) : array
     {
-        return base64_encode(
-            \GuzzleHttp\json_encode(
-                array_map(
-                    function (DockerRegistry $dockerRegistry) {
-                        if ('docker.io' == ($serverAddress = $dockerRegistry->getServerAddress())) {
-                            $serverAddress = 'https://index.docker.io/v1/';
-                        }
+        $authConfigs = [];
 
-                        return [
-                            'serveraddress' => $serverAddress,
-                            'username' => $dockerRegistry->getUsername(),
-                            'password' => $dockerRegistry->getPassword(),
-                        ];
-                    },
-                    $context->getDockerRegistries()
-                )
-            )
-        );
-    }
-
-    private function dockerCommandArguments(BuildContext $context, string $dockerImageName) : array
-    {
-        $dockerCommandArguments = [
-            'build',
-            '-t',
-            $dockerImageName,
-            '--file',
-            $this->dockerfileResolver->getFilePath($context->getContext()),
-            '--pull'
-        ];
-
-        // Add build arguments
-        foreach ($context->getEnvironment() as $argumentName => $argumentValue) {
-            $dockerCommandArguments[] = '--build-arg';
-            $dockerCommandArguments[] = $argumentName . '=' . $argumentValue;
+        foreach ($context->getDockerRegistries() as $dockerRegistry) {
+            $authConfigs[$dockerRegistry->getServerAddress()] = [
+                'username' => $dockerRegistry->getUsername(),
+                'password' => $dockerRegistry->getPassword(),
+                'email' => $dockerRegistry->getEmail(),
+            ];
         }
 
-        $dockerCommandArguments[] = '.';
-
-        return $dockerCommandArguments;
+        return $authConfigs;
     }
 
-    private function requestBuild(BuildContext $context, Artifact $sourceArtifact) : string
+    private function requestBuild(Artifact $sourceArtifact) : string
     {
-        $dockerImageName = $this->getImageName($context->getImage());
-        $response = $this->httpClient->request(
-            'post',
-            'https://cloudbuild.googleapis.com/v1/projects/' . $this->projectId . '/builds',
-            [
-                'json' => [
-                    'source' => [
-                        'storageSource' => [
-                            'bucket' => $this->artifactBucket,
-                            'object' => $sourceArtifact->getIdentifier(),
-                        ]
-                    ],
-                    'steps' => [
-                        [
-                            'name' => 'quay.io/continuouspipe/cloud-builder:v1',
-                            'env' => [
-                                'DOCKER_REGISTRY_CONFIG=' . $this->dockerRegistryCredentials($context),
-                                'PUSH_DOCKER_IMAGE=' . $dockerImageName,
-                                'BOUNDARY_STRING=' . self::BOUNDARY
-                            ],
-                            'args' => $this->dockerCommandArguments($context, $dockerImageName),
-                        ]
-                    ],
+        try {
+            $response = $this->httpClient->request(
+                'post',
+                'https://cloudbuild.googleapis.com/v1/projects/' . $this->projectId . '/builds',
+                [
+                    'json' => [
+                        'source' => [
+                            'storageSource' => [
+                                'bucket' => $this->artifactBucket,
+                                'object' => $sourceArtifact->getIdentifier(),
+                            ]
+                        ],
+                        'steps' => [
+                            [
+                                'name' => 'quay.io/continuouspipe/cloud-builder:v2',
+                            ]
+                        ],
+                    ]
                 ]
-            ]
-        );
+            );
+        } catch (ClientException $e) {
+            throw new DockerException('The build was not successfully started', $e->getCode(), $e);
+        }
 
         $json = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
         $buildIdentifier = $json['metadata']['build']['id'];

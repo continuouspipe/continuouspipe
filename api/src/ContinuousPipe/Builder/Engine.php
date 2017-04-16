@@ -33,5 +33,4 @@ class Engine
     {
         return $this->type;
     }
-
 }

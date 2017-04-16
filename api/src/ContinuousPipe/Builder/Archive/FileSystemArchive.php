@@ -72,7 +72,7 @@ class FileSystemArchive extends Context implements Archive
 
         if ($format == self::TAR) {
             $options = 'c';
-        } else if ($format == self::TAG_GZ) {
+        } elseif ($format == self::TAG_GZ) {
             $options = 'cz';
         } else {
             throw new \InvalidArgumentException(sprintf('The format "%s" is not supported'));
@@ -112,6 +112,16 @@ class FileSystemArchive extends Context implements Archive
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function writeFile(string $path, string $contents)
+    {
+        if (false === file_put_contents($this->getDirectory().DIRECTORY_SEPARATOR.$path, $contents)) {
+            throw new ArchiveException(sprintf('Unable to write file "%s"', $path));
+        }
+    }
+
+    /**
      * @param string $path
      * @param resource $stream
      *
@@ -125,7 +135,7 @@ class FileSystemArchive extends Context implements Archive
             ['pipe', 'w'], // stderr
         ];
 
-        $targetPath = $this->getDirectory().$path;
+        $targetPath = $this->getDirectory().DIRECTORY_SEPARATOR.$path;
         if (!file_exists($targetPath)) {
             mkdir($targetPath, 0777, true);
         }
