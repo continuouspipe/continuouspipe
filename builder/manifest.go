@@ -1,7 +1,7 @@
 package builder
 
 import (
-    "github.com/docker/docker/api/types"
+    "github.com/docker/engine-api/types"
     "io/ioutil"
     "encoding/json"
 )
@@ -10,10 +10,9 @@ import (
 type Manifest struct {
     AuthConfigs    map[string]types.AuthConfig `json:"auth_configs"`
     DockerfilePath string                      `json:"docker_file_path"`
-    BuildArgs      map[string]*string          `json:"build_args"`
+    BuildArgs      map[string]string           `json:"build_args"`
     Name           string                      `json:"name"`
     LogBoundary    string                      `json:"log_boundary"`
-    Squash         bool                        `json:"squash"`
 }
 
 // ReadManifest reads the manifest from a file

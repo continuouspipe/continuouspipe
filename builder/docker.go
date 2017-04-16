@@ -1,8 +1,6 @@
 package builder
 
 import (
-    "github.com/docker/docker/builder"
-    "github.com/docker/docker/builder/dockerignore"
     "github.com/docker/docker/pkg/archive"
     "github.com/docker/docker/pkg/fileutils"
     "github.com/pkg/errors"
@@ -10,12 +8,13 @@ import (
     "path/filepath"
     "io"
     "fmt"
-    "github.com/docker/docker/cli"
     "github.com/docker/docker/pkg/term"
-    "github.com/docker/docker/cli/command"
     "github.com/docker/docker/pkg/jsonmessage"
     "github.com/docker/docker/reference"
-    "github.com/docker/docker/registry"
+    "github.com/docker/docker/builder"
+    "github.com/docker/docker/builder/dockerignore"
+    "encoding/base64"
+    "encoding/json"
 )
 
 // CreateBuildContext will create the Docker build context from the current directory,
@@ -75,8 +74,9 @@ func ReadDockerResponse(responseBody io.ReadCloser) error {
 
     _, stdout, _ := term.StdStreams()
 
-    out := command.NewOutStream(stdout)
-    err := jsonmessage.DisplayJSONMessagesStream(responseBody, out, out.FD(), out.IsTerminal(), nil)
+    stdoutFileDescription, stdOutIsTerminal := term.GetFdInfo(stdout)
+
+    err := jsonmessage.DisplayJSONMessagesStream(responseBody, stdout, stdoutFileDescription, stdOutIsTerminal, nil)
     if err != nil {
         if jerr, ok := err.(*jsonmessage.JSONError); ok {
             // If no error code is set, default to 1
@@ -86,7 +86,7 @@ func ReadDockerResponse(responseBody io.ReadCloser) error {
 
             fmt.Println(jerr.Code, ": ", jerr.Message)
 
-            return cli.StatusError{Status: jerr.Message, StatusCode: jerr.Code}
+            return fmt.Errorf("%s [%d]", jerr.Message, jerr.Code)
         }
 
         return err
@@ -102,20 +102,16 @@ func CreatePushRegistryAuth(manifest Manifest) (string, error) {
         return "", err
     }
 
-    repoInfo, err := registry.ParseRepositoryInfo(ref)
-    if err != nil {
-        return "", err
-    }
-
-    authConfig, found := manifest.AuthConfigs[repoInfo.Index.Name];
+    authConfig, found := manifest.AuthConfigs[ref.Hostname()];
     if !found {
-        return "", fmt.Errorf("No authentication configuration found for the registry \"%s\"", repoInfo.Index.Name)
+        return "", fmt.Errorf("No authentication configuration found for the registry \"%s\"", ref.Hostname())
     }
 
-    encodedAuth, err := command.EncodeAuthToBase64(authConfig)
+
+    buf, err := json.Marshal(authConfig)
     if err != nil {
         return "", err
     }
 
-    return encodedAuth, nil
+    return base64.URLEncoding.EncodeToString(buf), nil
 }

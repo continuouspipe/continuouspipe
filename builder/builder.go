@@ -3,8 +3,8 @@ package builder
 import (
     "golang.org/x/net/context"
 
-    "github.com/docker/docker/client"
-    "github.com/docker/docker/api/types"
+    "github.com/docker/engine-api/client"
+    "github.com/docker/engine-api/types"
 )
 
 // Builder is a object used to manipulate builds
@@ -36,7 +36,6 @@ func (b Builder) Build(manifest Manifest) error {
     response, err := b.DockerClient.ImageBuild(ctx, buildCtx, types.ImageBuildOptions{
         Tags: []string{manifest.Name},
         Dockerfile: manifest.DockerfilePath,
-        Squash: manifest.Squash,
         AuthConfigs: manifest.AuthConfigs,
         BuildArgs: manifest.BuildArgs,
     })
@@ -65,4 +64,12 @@ func (b Builder) Push(manifest Manifest) error {
     }
 
     return ReadDockerResponse(response)
+}
+
+func (b Builder) Check() error {
+    ctx := context.Background()
+
+    _, err := b.DockerClient.Info(ctx)
+
+    return err
 }

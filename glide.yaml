@@ -1,8 +1,23 @@
 package: github.com/continuouspipe/cloud-builder
 import:
 - package: github.com/docker/docker
-  version: 1.13.x
+  version: 1.12.x
+- package: github.com/docker/engine-api
+  version: 0.4.0
+- package: github.com/docker/distribution
+  version: v2.6.0
 - package: cloud.google.com/go
   version: ~0.7.0
   subpackages:
   - storage
+- package: github.com/opencontainers/runc
+  version: ^1.0.0-rc3
+  subpackages:
+  - libcontainer/user
+- package: github.com/vbatts/tar-split
+  version: ^0.10.1
+  subpackages:
+  - tar/storage
+  - tar/asm
+- package: github.com/docker/go-connections
+  version: v0.2.1

@@ -12,13 +12,23 @@ func main() {
     manifestFilePath := flag.String("manifest", "continuouspipe.build-manifest.json", "the build manifest to be used to build")
     flag.Parse()
 
-    manifest, err := builder.ReadManifest(*manifestFilePath)
+    b, err := builder.NewBuilder()
     if err != nil {
         fmt.Println(err)
         os.Exit(1)
     }
 
-    b, err := builder.NewBuilder()
+    args := flag.Args()
+    if len(args) > 0 && args[0] == "check" {
+        if err = b.Check(); err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
+
+        os.Exit(0)
+    }
+
+    manifest, err := builder.ReadManifest(*manifestFilePath)
     if err != nil {
         fmt.Println(err)
         os.Exit(1)
