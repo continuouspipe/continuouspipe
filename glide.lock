@@ -1,5 +1,5 @@
-hash: cee99d0551b013c42c4e544aa71c03ed34bd90b97e53e448c290bedd9e2b80b6
-updated: 2017-04-16T19:34:04.427068485+01:00
+hash: 1bac585a549107363020226e3719b922e6505dbb6399f451c2f62c5ca2c32b45
+updated: 2017-04-16T21:54:33.132965377+01:00
 imports:
 - name: cloud.google.com/go
   version: 2e6a95edb1071d750f6d7db777bf66cd2997af6c
@@ -106,6 +106,10 @@ imports:
   - archive/tar
   - tar/asm
   - tar/storage
+- name: github.com/zabawaba99/firego
+  version: 2075c57adaabcc7836dca7c123170823b0de6a02
+  subpackages:
+  - sync
 - name: golang.org/x/net
   version: 4876518f9e71663000c348837735820161a42df7
   subpackages:
@@ -159,8 +163,6 @@ imports:
   subpackages:
   - compute/metadata
   - internal
-  - internal/opts
-  - storage
 - name: google.golang.org/grpc
   version: 8050b9cbc271307e5a716a9d782803d09b0d6f2d
   subpackages:
@@ -176,4 +178,6 @@ imports:
   - stats
   - tap
   - transport
+- name: gopkg.in/zabawaba99/firego.v1
+  version: 2075c57adaabcc7836dca7c123170823b0de6a02
 testImports: []

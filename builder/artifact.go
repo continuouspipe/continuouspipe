@@ -5,6 +5,7 @@ import (
     "cloud.google.com/go/storage"
     "golang.org/x/net/context"
     "github.com/docker/docker/pkg/archive"
+    "os"
 )
 
 // Artifact is something that will be shared across steps or builds
@@ -42,6 +43,10 @@ func (m GoogleCloudStorageArtifactManager) ReadTo(artifact Artifact, destination
 
     defer reader.Close()
 
+    if err = os.MkdirAll(destination, 0777); err != nil {
+        return err
+    }
+
     return archive.Untar(reader, destination, &archive.TarOptions{
         // Compression: archive.Gzip,
         NoLchown: true,
@@ -52,6 +57,10 @@ func (m GoogleCloudStorageArtifactManager) WriteFrom(artifact Artifact, reader i
     ctx := context.Background()
 
     objectName := GetArtifactObjectName(artifact)
+
+    // Delete if already exists
+    m.storageClient.Bucket(m.bucketName).Object(objectName).Delete(ctx)
+
     writer := m.storageClient.Bucket(m.bucketName).Object(objectName).NewWriter(ctx)
 
     _, err := io.Copy(writer, reader)

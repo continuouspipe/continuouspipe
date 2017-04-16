@@ -8,14 +8,15 @@ import (
     "github.com/docker/engine-api/types"
     "github.com/docker/engine-api/types/container"
     "github.com/docker/engine-api/types/network"
+    "io"
 )
 
 // StepRunner is responsible of running a step
 type StepRunner interface {
     ReadArtifact(step ManifestStep, artifact Artifact) error
     WriteArtifact(step ManifestStep, builtImage string, artifact Artifact) error
-    BuildImage(manifest Manifest, step ManifestStep) (string, error)
-    PushImage(manifest Manifest, step ManifestStep) error
+    BuildImage(manifest Manifest, step ManifestStep, output io.Writer) (string, error)
+    PushImage(manifest Manifest, step ManifestStep, output io.Writer) error
 
     CleanUpWroteArtifacts(step ManifestStep) error
     CleanUpReadArtifacts(step ManifestStep) error
@@ -97,7 +98,7 @@ func (sr DockerStepRunner) WriteArtifact(step ManifestStep, builtImage string, a
     return sr.artifactManager.WriteFrom(artifact, reader)
 }
 
-func (sr DockerStepRunner) BuildImage(manifest Manifest, step ManifestStep) (string, error) {
+func (sr DockerStepRunner) BuildImage(manifest Manifest, step ManifestStep, output io.Writer) (string, error) {
     ctx := context.Background()
 
     buildCtx, err := CreateBuildContext(step)
@@ -121,10 +122,10 @@ func (sr DockerStepRunner) BuildImage(manifest Manifest, step ManifestStep) (str
         return "", err
     }
 
-    return step.ImageName, ReadDockerResponse(response.Body)
+    return step.ImageName, ReadDockerResponse(response.Body, output)
 }
 
-func (sr DockerStepRunner) PushImage(manifest Manifest, step ManifestStep) error {
+func (sr DockerStepRunner) PushImage(manifest Manifest, step ManifestStep, output io.Writer) error {
     ctx := context.Background()
     authConfig, err := CreatePushRegistryAuth(manifest, step.ImageName)
     if err != nil {
@@ -139,7 +140,7 @@ func (sr DockerStepRunner) PushImage(manifest Manifest, step ManifestStep) error
         return err
     }
 
-    return ReadDockerResponse(response)
+    return ReadDockerResponse(response, output)
 }
 
 func GetLocalArtifactTarget(step ManifestStep, artifact Artifact) string {

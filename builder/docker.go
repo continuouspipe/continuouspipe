@@ -69,14 +69,12 @@ func CreateBuildContext(step ManifestStep) (io.ReadCloser, error) {
 
 // ReadDockerResponse will read a display to the UI the responses coming from the
 // docker daemon.
-func ReadDockerResponse(responseBody io.ReadCloser) error {
+func ReadDockerResponse(responseBody io.ReadCloser, output io.Writer) error {
     defer responseBody.Close()
 
-    _, stdout, _ := term.StdStreams()
+    outputFileDescriptor, outputIsTerminal := term.GetFdInfo(output)
 
-    stdoutFileDescription, stdOutIsTerminal := term.GetFdInfo(stdout)
-
-    err := jsonmessage.DisplayJSONMessagesStream(responseBody, stdout, stdoutFileDescription, stdOutIsTerminal, nil)
+    err := jsonmessage.DisplayJSONMessagesStream(responseBody, output, outputFileDescriptor, outputIsTerminal, nil)
     if err != nil {
         if jerr, ok := err.(*jsonmessage.JSONError); ok {
             // If no error code is set, default to 1

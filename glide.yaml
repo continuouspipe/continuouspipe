@@ -26,3 +26,4 @@ import:
   version: v1.2.1
 - package: google.golang.org/api
   version: 650535c7d6201e8304c92f38c922a9a3a36c6877
+- package: github.com/zabawaba99/firego

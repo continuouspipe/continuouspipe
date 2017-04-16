@@ -15,6 +15,9 @@ import (
 func main() {
     manifestFilePath := flag.String("manifest", "continuouspipe.build-manifest.json", "the build manifest to be used to build")
     googleServiceAccountFilePath := flag.String("service-account-file-path", "", "the path of the service account to use, if any")
+    firebaseServiceAccountFilePath := flag.String("firebase-service-account-file-path", "", "the path of the service account to use, if any")
+    firebaseDatabaseUrl := flag.String("firebase-database-url", "", "URL of the firebase database")
+
     flag.Parse()
 
     manifest, err := builder.ReadManifest(*manifestFilePath)
@@ -37,6 +40,21 @@ func main() {
         }
 
         os.Exit(0)
+    }
+
+    // Add the firebase logging decorator if requested
+    if "" != manifest.FirebaseParentLog {
+        stepRunner, err = builder.NewFirebaseLoggedStepRunner(
+            stepRunner,
+            *firebaseServiceAccountFilePath,
+            *firebaseDatabaseUrl,
+            manifest.FirebaseParentLog,
+        )
+
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
     }
 
     buildRunner := builder.NewBuildRunner(stepRunner)

@@ -3,6 +3,7 @@ package builder
 import (
     "fmt"
     "strconv"
+    "github.com/docker/docker/pkg/term"
 )
 
 // BuildRunner is a step runner
@@ -41,6 +42,8 @@ func (r BuildRunner) Run(manifest Manifest) error {
 }
 
 func (r BuildRunner) runStep(manifest Manifest, step ManifestStep) error {
+    _, stdout, _ := term.StdStreams()
+
     for _, artifact := range step.ReadArtifacts {
         Display(manifest, fmt.Sprintf("Reading artifact \"%s\"", artifact.Name))
         if err := r.stepRunner.ReadArtifact(step, artifact); err != nil {
@@ -49,7 +52,7 @@ func (r BuildRunner) runStep(manifest Manifest, step ManifestStep) error {
     }
 
     Display(manifest, fmt.Sprintf("Building Docker image %s", ImageNameForDisplay(step)))
-    builtImage, err := r.stepRunner.BuildImage(manifest, step)
+    builtImage, err := r.stepRunner.BuildImage(manifest, step, stdout)
     if err != nil {
         return err
     }
@@ -57,7 +60,7 @@ func (r BuildRunner) runStep(manifest Manifest, step ManifestStep) error {
     if step.ImageName != "" {
         Display(manifest, fmt.Sprintf("Pushing Docker image %s", ImageNameForDisplay(step)))
 
-        if err = r.stepRunner.PushImage(manifest, step); err != nil {
+        if err = r.stepRunner.PushImage(manifest, step, stdout); err != nil {
             return err
         }
     }
@@ -81,7 +84,7 @@ func ImageNameForDisplay(step ManifestStep) string {
         return "for step #"+strconv.Itoa(step.Number)
     }
 
-    return "\""+step.ImageName+"\""
+    return "<code>"+step.ImageName+"</code>"
 }
 
 func Display(manifest Manifest, title string) {

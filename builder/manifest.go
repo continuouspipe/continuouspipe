@@ -8,10 +8,11 @@ import (
 
 // Manifest represents the manifest file used to configure the build
 type Manifest struct {
-    AuthConfigs     map[string]types.AuthConfig `json:"auth_configs"`
-    LogBoundary     string                      `json:"log_boundary"`
-    ArtifactsBucket string                      `json:"artifacts_bucket"`
-    Steps           []ManifestStep              `json:"steps"`
+    AuthConfigs       map[string]types.AuthConfig `json:"auth_configs"`
+    LogBoundary       string                      `json:"log_boundary"`
+    ArtifactsBucket   string                      `json:"artifacts_bucket"`
+    Steps             []ManifestStep              `json:"steps"`
+    FirebaseParentLog string                      `json:"firebase_parent_log"`
 }
 
 // ManifestStep is a step in the manifest
