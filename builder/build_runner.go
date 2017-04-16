@@ -47,7 +47,10 @@ func (r BuildRunner) runStep(manifest Manifest, step ManifestStep) error {
     for _, artifact := range step.ReadArtifacts {
         Display(manifest, fmt.Sprintf("Reading artifact \"%s\"", artifact.Name))
         if err := r.stepRunner.ReadArtifact(step, artifact); err != nil {
-            return err
+            if !artifact.Persistent {
+                // Ignore a read problem if the artifact is a persistent artifact
+                return err
+            }
         }
     }
 

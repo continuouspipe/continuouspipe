@@ -1,6 +1,5 @@
 IMAGE_NAME=quay.io/continuouspipe/cloud-builder
-TAG=v2
-
+TAG=v3
 
 build:
 	env GOOS=linux GOARCH=amd64 go build -o ./bin/cloud-builder-linux-amd64 github.com/continuouspipe/cloud-builder

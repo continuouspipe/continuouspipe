@@ -48,7 +48,6 @@ func (m GoogleCloudStorageArtifactManager) ReadTo(artifact Artifact, destination
     }
 
     return archive.Untar(reader, destination, &archive.TarOptions{
-        // Compression: archive.Gzip,
         NoLchown: true,
     })
 }
