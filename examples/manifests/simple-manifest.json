@@ -1,0 +1,15 @@
+{
+    "name": "docker.io/sroze/php-example:foobar",
+    "log_boundary": "1234567890qwerty",
+    "docker_file_path": "Dockerfile",
+    "build_args": {
+        "GITHUB_TOKEN": "foobar"
+    },
+    "auth_configs": {
+        "quay.io": {
+            "username": "sroze",
+            "password": "OBFUSCATED",
+            "email": "samuel.roze@gmail.com"
+        }
+    }
+}
