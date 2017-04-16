@@ -26,6 +26,16 @@ interface Archive extends ContextInterface
     public function write(string $path, Archive $archive);
 
     /**
+     * Write the file at the given path.
+     *
+     * @param string $path
+     * @param string $contents
+     *
+     * @throws ArchiveException
+     */
+    public function writeFile(string $path, string $contents);
+
+    /**
      * Returns true if the given file or folder exists.
      *
      * @param string $path

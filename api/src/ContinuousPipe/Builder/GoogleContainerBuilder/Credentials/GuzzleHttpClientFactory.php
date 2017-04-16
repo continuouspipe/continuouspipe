@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\Builder\GoogleContainerBuilder\Credentials;
 
-
 use Google\Auth\FetchAuthTokenInterface;
 use Google\Auth\Middleware\AuthTokenMiddleware;
 use GuzzleHttp\Client;
