@@ -23,7 +23,7 @@ func main() {
         os.Exit(1)
     }
 
-    runner, err := NewRunner(manifest, *googleServiceAccountFilePath)
+    stepRunner, err := NewStepRunner(manifest, *googleServiceAccountFilePath)
     if err != nil {
         fmt.Println(err)
         os.Exit(1)
@@ -31,7 +31,7 @@ func main() {
 
     args := flag.Args()
     if len(args) > 0 && args[0] == "check" {
-        if err = runner.Check(); err != nil {
+        if err = stepRunner.Check(); err != nil {
             fmt.Println(err)
             os.Exit(1)
         }
@@ -39,24 +39,8 @@ func main() {
         os.Exit(0)
     }
 
-    for number, step := range manifest.Steps {
-        step.Number = number + 1
-
-        if "" == step.BuildDirectory {
-            step.BuildDirectory = "."
-        }
-        if "" == step.DockerfilePath {
-            step.DockerfilePath = "Dockerfile"
-        }
-
-        if err = runner.Run(manifest, step); err != nil {
-            break
-        }
-    }
-
-    for _, step := range manifest.Steps {
-        runner.CleanUp(step)
-    }
+    buildRunner := builder.NewBuildRunner(stepRunner)
+    err = buildRunner.Run(manifest)
 
     if err != nil {
         fmt.Println(err)
@@ -66,7 +50,7 @@ func main() {
     fmt.Println(manifest.LogBoundary+"::END")
 }
 
-func NewRunner (manifest builder.Manifest, googleServiceAccountFilePath string) (builder.StepRunner, error) {
+func NewStepRunner (manifest builder.Manifest, googleServiceAccountFilePath string) (builder.StepRunner, error) {
     docker, err := client.NewEnvClient()
     if err != nil {
         return nil, err

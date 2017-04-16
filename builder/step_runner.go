@@ -7,15 +7,19 @@ import (
     "github.com/docker/engine-api/client"
     "github.com/docker/engine-api/types"
     "github.com/docker/engine-api/types/container"
-    "fmt"
     "github.com/docker/engine-api/types/network"
-    "strconv"
 )
 
 // StepRunner is responsible of running a step
 type StepRunner interface {
-    Run(manifest Manifest, step ManifestStep) error
-    CleanUp(step ManifestStep) error
+    ReadArtifact(step ManifestStep, artifact Artifact) error
+    WriteArtifact(step ManifestStep, builtImage string, artifact Artifact) error
+    BuildImage(manifest Manifest, step ManifestStep) (string, error)
+    PushImage(manifest Manifest, step ManifestStep) error
+
+    CleanUpWroteArtifacts(step ManifestStep) error
+    CleanUpReadArtifacts(step ManifestStep) error
+
     Check() error
 }
 
@@ -33,42 +37,7 @@ func NewDockerStepRunner(client *client.Client, artifactManager ArtifactManager)
     }, nil
 }
 
-// Run will run the given step
-func (sr *DockerStepRunner) Run(manifest Manifest, step ManifestStep) error {
-    for _, artifact := range step.ReadArtifacts {
-        Display(manifest, fmt.Sprintf("Reading artifact \"%s\"", artifact.Name))
-        if err := sr.readArtifact(step, artifact); err != nil {
-            return err
-        }
-    }
-
-    Display(manifest, fmt.Sprintf("Building Docker image %s", ImageNameForDisplay(step)))
-    builtImage, err := sr.buildImage(manifest, step)
-    if err != nil {
-        return err
-    }
-
-    if step.ImageName != "" {
-        Display(manifest, fmt.Sprintf("Pushing Docker image %s", ImageNameForDisplay(step)))
-
-        if err = sr.pushImage(manifest, step); err != nil {
-            return err
-        }
-    }
-
-    for _, artifact := range step.WriteArtifacts {
-        Display(manifest, fmt.Sprintf("Writing artifact \"%s\"", artifact.Name))
-        if err := sr.writeArtifact(step, builtImage, artifact); err != nil {
-            return err
-        }
-    }
-
-    Display(manifest, "DONE")
-
-    return nil
-}
-
-func (sr *DockerStepRunner) CleanUp(step ManifestStep) error {
+func (sr *DockerStepRunner) CleanUpReadArtifacts(step ManifestStep) error {
     for _, artifact := range step.ReadArtifacts {
         downloadedPath := GetLocalArtifactTarget(step, artifact)
 
@@ -77,6 +46,10 @@ func (sr *DockerStepRunner) CleanUp(step ManifestStep) error {
         }
     }
 
+    return nil
+}
+
+func (sr *DockerStepRunner) CleanUpWroteArtifacts(step ManifestStep) error {
     for _, artifact := range step.WriteArtifacts {
         if !artifact.Persistent {
             sr.artifactManager.Remove(artifact)
@@ -94,11 +67,11 @@ func (sr *DockerStepRunner) Check() error {
     return err
 }
 
-func (sr DockerStepRunner) readArtifact(step ManifestStep, artifact Artifact) error {
+func (sr DockerStepRunner) ReadArtifact(step ManifestStep, artifact Artifact) error {
     return sr.artifactManager.ReadTo(artifact, GetLocalArtifactTarget(step, artifact))
 }
 
-func (sr DockerStepRunner) writeArtifact(step ManifestStep, builtImage string, artifact Artifact) error {
+func (sr DockerStepRunner) WriteArtifact(step ManifestStep, builtImage string, artifact Artifact) error {
     ctx := context.Background()
 
     response, err := sr.dockerClient.ContainerCreate(
@@ -124,7 +97,7 @@ func (sr DockerStepRunner) writeArtifact(step ManifestStep, builtImage string, a
     return sr.artifactManager.WriteFrom(artifact, reader)
 }
 
-func (sr DockerStepRunner) buildImage(manifest Manifest, step ManifestStep) (string, error) {
+func (sr DockerStepRunner) BuildImage(manifest Manifest, step ManifestStep) (string, error) {
     ctx := context.Background()
 
     buildCtx, err := CreateBuildContext(step)
@@ -151,7 +124,7 @@ func (sr DockerStepRunner) buildImage(manifest Manifest, step ManifestStep) (str
     return step.ImageName, ReadDockerResponse(response.Body)
 }
 
-func (sr DockerStepRunner) pushImage(manifest Manifest, step ManifestStep) error {
+func (sr DockerStepRunner) PushImage(manifest Manifest, step ManifestStep) error {
     ctx := context.Background()
     authConfig, err := CreatePushRegistryAuth(manifest, step.ImageName)
     if err != nil {
@@ -171,16 +144,4 @@ func (sr DockerStepRunner) pushImage(manifest Manifest, step ManifestStep) error
 
 func GetLocalArtifactTarget(step ManifestStep, artifact Artifact) string {
     return step.BuildDirectory+string(os.PathSeparator)+artifact.Path
-}
-
-func ImageNameForDisplay(step ManifestStep) string {
-    if "" == step.ImageName {
-        return "for step #"+strconv.Itoa(step.Number)
-    }
-
-    return "\""+step.ImageName+"\""
-}
-
-func Display(manifest Manifest, title string) {
-    fmt.Println(manifest.LogBoundary+"::"+title)
 }

@@ -5,7 +5,6 @@ import (
     "cloud.google.com/go/storage"
     "golang.org/x/net/context"
     "github.com/docker/docker/pkg/archive"
-    "fmt"
 )
 
 // Artifact is something that will be shared across steps or builds
