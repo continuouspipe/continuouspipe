@@ -304,6 +304,7 @@ class ContainerBuilderAsDockerFacade implements DockerFacade
                                 'name' => 'quay.io/continuouspipe/cloud-builder:v2',
                             ]
                         ],
+                        'timeout' => '1800s',
                     ]
                 ]
             );
