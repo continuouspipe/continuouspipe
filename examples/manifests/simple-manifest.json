@@ -1,5 +1,12 @@
 {
     "log_boundary": "1234567890qwerty",
+    "artifacts_configuration": {
+        "bucket_name": "builder-artifacts"
+    },
+    "firebase_logging_configuration": {
+        "parent_log": "logs/-KhvbrR9AhJBN9TcJaGU/children/-KhvdJP4VXrzhh3wzLQs",
+        "database_url": "https://continuous-pipe.firebaseio.com"
+    },
     "auth_configs": {
         "quay.io": {
             "username": "sroze",

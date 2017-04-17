@@ -4,9 +4,9 @@ import (
     "github.com/zabawaba99/firego"
     "golang.org/x/oauth2/google"
     "golang.org/x/oauth2"
-    "io/ioutil"
     "fmt"
     "io"
+    "k8s.io/kubernetes/pkg/util/json"
 )
 
 type FirebaseLoggedStepRunner struct {
@@ -15,14 +15,14 @@ type FirebaseLoggedStepRunner struct {
     parentPath string
 }
 
-func NewFirebaseLoggedStepRunner(stepRunner StepRunner, serviceAccountFilePath string, databaseUrl string, parentPath string) (*FirebaseLoggedStepRunner, error) {
-    serviceAccountFilePathDescriptor, err := ioutil.ReadFile(serviceAccountFilePath)
+func NewFirebaseLoggedStepRunner(stepRunner StepRunner, loggingConfiguration FirebaseLoggingConfiguration) (*FirebaseLoggedStepRunner, error) {
+    serviceAccount, err := json.Marshal(loggingConfiguration.ServiceAccount)
     if err != nil {
         return nil, err
     }
 
     conf, err := google.JWTConfigFromJSON(
-        serviceAccountFilePathDescriptor,
+        serviceAccount,
         "https://www.googleapis.com/auth/userinfo.email",
         "https://www.googleapis.com/auth/firebase.database",
     )
@@ -33,8 +33,8 @@ func NewFirebaseLoggedStepRunner(stepRunner StepRunner, serviceAccountFilePath s
 
     return &FirebaseLoggedStepRunner{
         stepRunner: stepRunner,
-        firebaseClient: firego.New(databaseUrl, conf.Client(oauth2.NoContext)),
-        parentPath: parentPath,
+        firebaseClient: firego.New(loggingConfiguration.DatabaseUrl, conf.Client(oauth2.NoContext)),
+        parentPath: loggingConfiguration.ParentLog,
     }, nil
 }
 
