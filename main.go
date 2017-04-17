@@ -17,6 +17,7 @@ func main() {
     googleServiceAccountFilePath := flag.String("service-account-file-path", "", "the path of the service account to use, if any")
     firebaseServiceAccountFilePath := flag.String("firebase-service-account-file-path", "", "the path of the service account to use, if any")
     firebaseDatabaseUrl := flag.String("firebase-database-url", "", "URL of the firebase database")
+    deleteManifestFile := flag.Bool("delete-namifest", false, "Delete the manifest after reading")
 
     flag.Parse()
 
@@ -24,6 +25,12 @@ func main() {
     if err != nil {
         fmt.Println(err)
         os.Exit(1)
+    }
+
+    if *deleteManifestFile {
+        if err := os.Remove(*manifestFilePath); err != nil {
+            fmt.Println(err)
+        }
     }
 
     stepRunner, err := NewStepRunner(manifest, *googleServiceAccountFilePath)
