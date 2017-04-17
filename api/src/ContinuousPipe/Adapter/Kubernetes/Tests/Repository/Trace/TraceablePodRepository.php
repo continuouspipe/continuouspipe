@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Repository\PodRepository;
@@ -83,6 +84,14 @@ class TraceablePodRepository implements PodRepository
     public function findByLabels(array $labels)
     {
         return $this->repository->findByLabels($labels);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll() : PromiseInterface
+    {
+        return $this->repository->asyncFindAll();
     }
 
     /**

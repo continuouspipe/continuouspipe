@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressList;
 use Kubernetes\Client\Model\KeyValueObjectList;
@@ -25,6 +26,18 @@ class HookableIngressRepository implements IngressRepository
     public function __construct(IngressRepository $decoratedRepository)
     {
         $this->decoratedRepository = $decoratedRepository;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll() : PromiseInterface
+    {
+        return $this->decoratedRepository->asyncFindAll()->then(function (IngressList $ingressList) {
+            return IngressList::fromIngresses(array_map(function (Ingress $ingress) {
+                return $this->applyHooks($ingress);
+            }, $ingressList->getIngresses()));
+        });
     }
 
     /**

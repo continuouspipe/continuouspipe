@@ -2,10 +2,9 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer;
 
-use ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ComponentPublicEndpointResolver;
+use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceSnapshot;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Status;
-use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\Deployment;
@@ -15,7 +14,6 @@ use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServiceSpecification;
-use Kubernetes\Client\NamespaceClient;
 
 class ComponentTransformer
 {
@@ -24,54 +22,41 @@ class ComponentTransformer
      */
     private $resolver;
 
+    /**
+     * @param ComponentPublicEndpointResolver $resolver
+     */
     public function __construct(ComponentPublicEndpointResolver $resolver)
     {
         $this->resolver = $resolver;
     }
 
     /**
-     * @param NamespaceClient       $namespaceClient
-     * @param ReplicationController $replicationController
+     * @param NamespaceSnapshot $snapshot
      *
-     * @throws \InvalidArgumentException
-     *
-     * @return Component
+     * @return Component[]
      */
-    public function getComponentFromReplicationController(NamespaceClient $namespaceClient, ReplicationController $replicationController)
+    public function componentsFromSnapshot(NamespaceSnapshot $snapshot) : array
     {
-        $replicationControllerName = $replicationController->getMetadata()->getName();
-        $containers = $replicationController->getSpecification()->getPodTemplateSpecification()->getPodSpecification()->getContainers();
-        if (0 == count($containers)) {
-            throw new \InvalidArgumentException('The pod specification should have at least one container');
-        }
-
-        return new Component(
-            $replicationControllerName,
-            $replicationControllerName,
-            new Component\Specification(
-                $this->getComponentSource($containers[0]),
-                $this->getComponentAccessibility($namespaceClient, $replicationController->getMetadata()->getName()),
-                new Component\Scalability(true, $replicationController->getSpecification()->getReplicas())
-            ),
-            [],
-            [],
-            $this->getComponentStatus($namespaceClient, $replicationController),
-            new Component\DeploymentStrategy(null, null, false, false)
-        );
+        return array_map(function (KubernetesObject $object) use ($snapshot) {
+            return $this->componentFromObject($snapshot, $object);
+        }, array_merge(
+            $snapshot->getDeployments()->getDeployments(),
+            $snapshot->getReplicationControllers()->getReplicationControllers()
+        ));
     }
 
     /**
-     * @param NamespaceClient $namespaceClient
-     * @param Deployment      $deployment
+     * @param NamespaceSnapshot                $snapshot
+     * @param ReplicationController|Deployment $object
      *
      * @return Component
      */
-    public function getComponentFromDeployment(NamespaceClient $namespaceClient, Deployment $deployment)
+    private function componentFromObject(NamespaceSnapshot $snapshot, KubernetesObject $object) : Component
     {
-        $name = $deployment->getMetadata()->getName();
-        $replicas = $deployment->getSpecification()->getReplicas();
+        $name = $object->getMetadata()->getName();
+        $replicas = $object->getSpecification()->getReplicas();
 
-        $containers = $deployment->getSpecification()->getTemplate()->getPodSpecification()->getContainers();
+        $containers = $this->getContainers($object);
         if (0 === count($containers)) {
             throw new \InvalidArgumentException('No container found in deployment\'s specification');
         }
@@ -81,12 +66,12 @@ class ComponentTransformer
             $name,
             new Component\Specification(
                 $this->getComponentSource($containers[0]),
-                $this->getComponentAccessibility($namespaceClient, $name),
+                $this->getComponentAccessibility($snapshot, $name),
                 new Component\Scalability(true, $replicas)
             ),
             [],
             [],
-            $this->getComponentStatus($namespaceClient, $deployment),
+            $this->getComponentStatus($snapshot, $object),
             new Component\DeploymentStrategy(null, null, false, false)
         );
     }
@@ -110,42 +95,40 @@ class ComponentTransformer
     }
 
     /**
-     * @param NamespaceClient $namespaceClient
+     * @param NamespaceSnapshot $snapshot
      * @param string          $serviceName
      *
      * @return Component\Accessibility
      */
-    private function getComponentAccessibility(NamespaceClient $namespaceClient, $serviceName)
+    private function getComponentAccessibility(NamespaceSnapshot $snapshot, $serviceName)
     {
-        try {
-            $service = $namespaceClient->getServiceRepository()->findOneByName($serviceName);
-
-            $externalService = $service->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER;
-
-            return new Component\Accessibility(true, $externalService);
-        } catch (ServiceNotFound $e) {
+        if ($service = $this->findOneByName($snapshot->getServices(), $serviceName)) {
+            return new Component\Accessibility(
+                true,
+                $service->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER
+            );
+        } else {
             return new Component\Accessibility(false, false);
         }
     }
 
     /**
-     * @param NamespaceClient  $namespaceClient
-     * @param KubernetesObject $object
+     * @param NamespaceSnapshot $snapshot
+     * @param KubernetesObject  $object
      *
      * @return Component\Status
      */
-    private function getComponentStatus(NamespaceClient $namespaceClient, KubernetesObject $object)
+    private function getComponentStatus(NamespaceSnapshot $snapshot, KubernetesObject $object)
     {
         if ($object instanceof ReplicationController) {
-            $pods = $namespaceClient->getPodRepository()->findByReplicationController($object)->getPods();
+            $labels = $object->getSpecification()->getSelector();
         } elseif ($object instanceof Deployment) {
-            $pods = $namespaceClient->getPodRepository()->findByLabels(
-                $object->getSpecification()->getSelector()->getMatchLabels()
-            )->getPods();
+            $labels = $object->getSpecification()->getSelector()->getMatchLabels();
         } else {
             throw new \InvalidArgumentException(sprintf('Unable to get status from object %s', get_class($object)));
         }
 
+        $pods = $this->findByLabels($snapshot->getPods(), $labels);
         $componentName = $object->getMetadata()->getName();
         $replicas = $object->getSpecification()->getReplicas();
         $healthyPods = $this->filterHealthyPods($pods);
@@ -160,22 +143,22 @@ class ComponentTransformer
 
         return new Component\Status(
             $status,
-            $this->getComponentPublicEndpoints($namespaceClient, $componentName),
+            $this->getComponentPublicEndpoints($snapshot, $componentName),
             $this->getContainerStatuses($pods)
         );
     }
 
     /**
-     * @param NamespaceClient $namespaceClient
+     * @param NamespaceSnapshot $snapshot
      * @param string          $componentName
      *
      * @return array
      */
-    private function getComponentPublicEndpoints(NamespaceClient $namespaceClient, $componentName)
+    private function getComponentPublicEndpoints(NamespaceSnapshot $snapshot, $componentName)
     {
         $publicEndpoints = [];
 
-        foreach ($this->getServicesAndIngresses($namespaceClient, $componentName) as $serviceOrIngress) {
+        foreach ($this->getServicesAndIngresses($snapshot, $componentName) as $serviceOrIngress) {
             $publicEndpoints = array_merge($publicEndpoints, $this->resolver->resolve($serviceOrIngress));
         }
 
@@ -233,20 +216,79 @@ class ComponentTransformer
     }
 
     /**
-     * @param NamespaceClient $namespaceClient
-     * @param string          $componentName
+     * @param NamespaceSnapshot $snapshot
+     * @param string            $componentName
      *
      * @return Service[]|Ingress[]|null[]
      */
-    private function getServicesAndIngresses(NamespaceClient $namespaceClient, $componentName)
+    private function getServicesAndIngresses(NamespaceSnapshot $snapshot, $componentName)
     {
         $labels = [
             'component-identifier' => $componentName,
         ];
 
         return array_merge(
-            $namespaceClient->getServiceRepository()->findByLabels($labels)->getServices(),
-            $namespaceClient->getIngressRepository()->findByLabels($labels)->getIngresses()
+            $this->findByLabels($snapshot->getServices(), $labels),
+            $this->findByLabels($snapshot->getIngresses(), $labels)
         );
+    }
+
+    /**
+     * @param KubernetesObject[]|\Traversable $list
+     * @param string $name
+     *
+     * @return KubernetesObject|null
+     */
+    private function findOneByName(\Traversable $list, string $name)
+    {
+        foreach ($list as $object) {
+            if ($object->getMetadata()->getName() == $name) {
+                return $object;
+            }
+        }
+
+        return null;
+    }
+
+    private function findByLabels(\Traversable $list, array $labels) : array
+    {
+        $matchingObjects = [];
+
+        foreach ($list as $object) {
+            if ($this->hasLabels($object, $labels)) {
+                $matchingObjects[] = $object;
+            }
+        }
+
+        return $matchingObjects;
+    }
+
+    private function hasLabels(KubernetesObject $object, array $labels) : bool
+    {
+        $objectLabels = $object->getMetadata()->getLabelsAsAssociativeArray();
+
+        foreach ($labels as $key => $value) {
+            if (!array_key_exists($key, $objectLabels) || $objectLabels[$key] != $value) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param KubernetesObject $object
+     *
+     * @return Container[]
+     */
+    private function getContainers(KubernetesObject $object) : array
+    {
+        if ($object instanceof ReplicationController) {
+            return $object->getSpecification()->getPodTemplateSpecification()->getPodSpecification()->getContainers();
+        } elseif ($object instanceof Deployment) {
+            return $object->getSpecification()->getTemplate()->getPodSpecification()->getContainers();
+        }
+
+        return [];
     }
 }

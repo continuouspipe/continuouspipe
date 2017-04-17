@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServiceList;
@@ -33,6 +34,22 @@ class HookableServiceRepository implements ServiceRepository
     public function findAll()
     {
         return $this->repository->findAll();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll() : PromiseInterface
+    {
+        return $this->repository->asyncFindAll()->then(function (ServiceList $serviceList) {
+            return ServiceList::fromServices(array_map(function (Service $service) {
+                foreach ($this->findOneByNameHooks as $hook) {
+                    $service = $hook($service);
+                }
+
+                return $service;
+            }, $serviceList->getServices()));
+        });
     }
 
     /**

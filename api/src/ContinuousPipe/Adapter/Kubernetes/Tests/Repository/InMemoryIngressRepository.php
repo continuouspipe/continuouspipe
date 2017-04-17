@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Exception\IngressNotFound;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressList;
@@ -14,6 +15,14 @@ class InMemoryIngressRepository implements IngressRepository
      * @var Ingress[]
      */
     private $ingresses = [];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll() : PromiseInterface
+    {
+        return \GuzzleHttp\Promise\promise_for(IngressList::fromIngresses($this->ingresses));
+    }
 
     /**
      * {@inheritdoc}
