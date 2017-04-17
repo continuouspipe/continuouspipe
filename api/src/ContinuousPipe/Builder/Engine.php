@@ -4,8 +4,13 @@ namespace ContinuousPipe\Builder;
 
 class Engine
 {
-    const TYPES = ['docker', 'gcb'];
-    const DEFAULT = 'docker';
+    const DOCKER = 'docker';
+    const GOOGLE_CONTAINER_BUILDER = 'gcb';
+
+    const TYPES = [
+        self::DOCKER,
+        self::GOOGLE_CONTAINER_BUILDER,
+    ];
     
     /**
      * @var string
@@ -23,7 +28,7 @@ class Engine
     
     public static function withDefault()
     {
-        return new self(self::DEFAULT);
+        return new self(self::DOCKER);
     }
 
     /**
