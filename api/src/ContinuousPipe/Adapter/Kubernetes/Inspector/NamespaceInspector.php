@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Inspector;
 
-use ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ComponentTransformer;
+use ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ComponentTransformer;
 use ContinuousPipe\Model\Component;
 use function GuzzleHttp\Promise\all;
 use GuzzleHttp\Promise\PromiseInterface;
@@ -30,31 +30,27 @@ class NamespaceInspector
      */
     public function getComponents(NamespaceClient $namespaceClient)
     {
+        return $this->snapshot($namespaceClient)->then(function (NamespaceSnapshot $snapshot) {
+            return $this->reverseComponentTransformer->componentsFromSnapshot($snapshot);
+        });
+    }
+
+    private function snapshot(NamespaceClient $namespaceClient) : PromiseInterface
+    {
         return all([
-            $namespaceClient->getReplicationControllerRepository()->asyncFindAll()->then(function ($replicationControllers) use ($namespaceClient) {
-                $components = [];
-                foreach ($replicationControllers as $replicationController) {
-                    try {
-                        $components[] = $this->reverseComponentTransformer->getComponentFromReplicationController($namespaceClient, $replicationController);
-                    } catch (\InvalidArgumentException $e) {
-                        continue;
-                    }
-                }
-                return $components;
-            }),
-            $namespaceClient->getDeploymentRepository()->asyncFindAll()->then(function ($deployments) use ($namespaceClient) {
-                $components = [];
-                foreach ($deployments as $deployment) {
-                    try {
-                        $components[] = $this->reverseComponentTransformer->getComponentFromDeployment($namespaceClient, $deployment);
-                    } catch (\InvalidArgumentException $e) {
-                        continue;
-                    }
-                }
-                return $components;
-            })
-        ])->then(function (array $repoComponents) {
-            return call_user_func_array('array_merge', $repoComponents);
+            'deployments' => $namespaceClient->getDeploymentRepository()->asyncFindAll(),
+            'replication_controllers' => $namespaceClient->getReplicationControllerRepository()->asyncFindAll(),
+            'services' => $namespaceClient->getServiceRepository()->asyncFindAll(),
+            'ingresses' => $namespaceClient->getIngressRepository()->asyncFindAll(),
+            'pods' => $namespaceClient->getPodRepository()->asyncFindAll(),
+        ])->then(function (array $objects) {
+            return new NamespaceSnapshot(
+                $objects['deployments'],
+                $objects['replication_controllers'],
+                $objects['services'],
+                $objects['ingresses'],
+                $objects['pods']
+            );
         });
     }
 }

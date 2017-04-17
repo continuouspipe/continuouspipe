@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Repository\ServiceRepository;
@@ -42,6 +43,14 @@ class TraceableServiceRepository implements ServiceRepository
     public function findAll()
     {
         return $this->repository->findAll();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll() : PromiseInterface
+    {
+        return $this->repository->asyncFindAll();
     }
 
     /**

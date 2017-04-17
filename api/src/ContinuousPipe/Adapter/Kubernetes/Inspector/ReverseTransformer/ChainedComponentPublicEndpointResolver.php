@@ -1,7 +1,8 @@
 <?php
 
-namespace ContinuousPipe\Adapter\Kubernetes\ReverseTransformer;
+namespace ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer;
 
+use ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ComponentPublicEndpointResolver;
 use Kubernetes\Client\Model\KubernetesObject;
 
 class ChainedComponentPublicEndpointResolver implements ComponentPublicEndpointResolver

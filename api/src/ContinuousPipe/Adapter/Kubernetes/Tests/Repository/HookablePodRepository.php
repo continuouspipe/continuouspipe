@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\ReplicationController;
 use Kubernetes\Client\Repository\PodRepository;
@@ -47,6 +48,14 @@ class HookablePodRepository implements PodRepository
     public function findAll()
     {
         return $this->repository->findAll();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll() : PromiseInterface
+    {
+        return $this->repository->asyncFindAll();
     }
 
     /**

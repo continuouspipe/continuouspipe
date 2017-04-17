@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Repository\IngressRepository;
@@ -29,6 +30,14 @@ class TraceableIngressRepository implements IngressRepository
     public function __construct(IngressRepository $decoratedRepository)
     {
         $this->decoratedRepository = $decoratedRepository;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll() : PromiseInterface
+    {
+        return $this->decoratedRepository->asyncFindAll();
     }
 
     /**

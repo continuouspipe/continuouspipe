@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Exception\PodNotFound;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodList;
@@ -26,6 +27,14 @@ class InMemoryPodRepository implements PodRepository
     public function findAll()
     {
         return PodList::fromPods($this->pods);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll() : PromiseInterface
+    {
+        return \GuzzleHttp\Promise\promise_for($this->findAll());
     }
 
     /**

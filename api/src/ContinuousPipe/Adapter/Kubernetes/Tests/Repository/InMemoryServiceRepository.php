@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests\Repository;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Kubernetes\Client\Exception\ServiceNotFound;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\Service;
@@ -21,6 +22,14 @@ class InMemoryServiceRepository implements ServiceRepository
     public function findAll()
     {
         return ServiceList::fromServices($this->services);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function asyncFindAll() : PromiseInterface
+    {
+        return \GuzzleHttp\Promise\promise_for($this->findAll());
     }
 
     /**
