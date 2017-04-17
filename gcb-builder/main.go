@@ -1,7 +1,7 @@
 package main
 
 import (
-    "github.com/continuouspipe/cloud-builder/builder"
+    "github.com/continuouspipe/continuouspipe/gcb-builder/builder"
 
     "flag"
     "fmt"

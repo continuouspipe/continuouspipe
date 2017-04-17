@@ -1,13 +1,8 @@
-# ContinuousPipe Google Container Builder
+# ContinuousPipe
 
-This Google Container builder is used by ContinuousPipe, in order to build the Docker images.
+This repository contains ContinuousPipe's services written in Go.
 
-## Usage
+## Services
 
-```
-go run main.go
-```
-
-## How is it working
-
+- [GCB Builder](gcb-builder/), the cloud builder used to build Docker images on Google Container Builder.
 
