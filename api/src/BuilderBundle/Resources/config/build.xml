@@ -50,6 +50,7 @@
         <service id="builder.build_saga" class="ContinuousPipe\Builder\Aggregate\BuildSaga">
             <argument type="service" id="builder.build.transaction_manager" />
             <argument type="service" id="builder.artifact_remover" />
+            <argument type="service" id="builder.google_container_builder" />
             <argument type="service" id="logger" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildStarted" />
@@ -57,6 +58,7 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFailed" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFinished" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildFinished" />
         </service>
 
         <!-- Command handler -->

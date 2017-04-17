@@ -2,6 +2,6 @@
 
 namespace ContinuousPipe\Builder\Archive;
 
-class ArchiveCreationException extends \Exception
+class ArchiveCreationException extends ArchiveException
 {
 }

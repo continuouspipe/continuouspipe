@@ -59,15 +59,36 @@
             <factory service="builder.google_container_builder.http_client_factory" method="create" />
         </service>
 
-        <service id="builder.docker.client.gcb" class="ContinuousPipe\Builder\GoogleContainerBuilder\ContainerBuilderAsDockerFacade">
-            <argument type="service" id="builder.google_container_builder.http_client" />
-            <argument type="service" id="builder.google_container_builder.artifacts_manager" />
+        <service id="builder.google_container_builder.manifest_factory" class="ContinuousPipe\Builder\GoogleContainerBuilder\ManifestFactory">
             <argument type="service" id="builder.docker_file_resolver" />
+            <argument>%google_storage_bucket%</argument>
+            <argument>%google_storage_key_file_path%</argument>
+            <argument>%firebase_database_url%</argument>
+            <argument>%firebase_service_account_path%</argument>
+        </service>
+
+        <service id="builder.google_container_builder" class="ContinuousPipe\Builder\GoogleContainerBuilder\HttpGoogleContainerBuildClient">
+            <argument type="service" id="builder.archive_builder" />
+            <argument type="service" id="builder.google_container_builder.artifacts_manager" />
+            <argument type="service" id="builder.google_container_builder.http_client" />
+            <argument type="service" id="builder.google_container_builder.manifest_factory" />
             <argument>%google_container_builder_project%</argument>
             <argument>%google_container_builder_source_bucket%</argument>
-            <argument>%google_container_builder_service_account_path%</argument>
-            <argument type="service" id="log_stream.logger_factory"/>
-            <argument type="service" id="logger"/>
+        </service>
+
+        <!-- Handler & Listeners -->
+        <service id="builder.google_container_builder.handler.fetch_gc_build_status" class="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\CommandHandler\FetchGCBuildStatusHandler">
+            <argument type="service" id="builder.google_container_builder" />
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="command_bus" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Command\FetchGCBuildStatus" />
+        </service>
+
+        <service id="builder.google_container_builder.listener.fetch_status_when_gc_build_started" class="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\EventListener\FetchStatusWhenGCBuildStarted">
+            <argument type="service" id="command_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildStarted" />
         </service>
     </services>
 </container>

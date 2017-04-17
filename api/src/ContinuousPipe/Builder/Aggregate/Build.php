@@ -11,7 +11,11 @@ use ContinuousPipe\Builder\Aggregate\Event\BuildFinished;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStarted;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStepFinished;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStepStarted;
+use ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildFinished;
+use ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildStarted;
 use ContinuousPipe\Builder\Artifact;
+use ContinuousPipe\Builder\Engine;
+use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuilderClient;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Events\Aggregate;
 use ContinuousPipe\Events\Capabilities\ApplyEventCapability;
@@ -69,6 +73,25 @@ class Build implements Aggregate
         return $build;
     }
 
+    public function startWithGoogleContainerBuilder(GoogleContainerBuilderClient $client)
+    {
+        $build = $client->createFromRequest($this);
+
+        $this->raiseAndApply(new GCBuildStarted(
+            $this->identifier,
+            $build
+        ));
+    }
+
+    public function googleContainerBuildFinished(GCBuildFinished $event)
+    {
+        if ($event->getStatus()->isSuccessful()) {
+            $this->raiseAndApply(new BuildFinished($this->identifier));
+        } else {
+            $this->fail();
+        }
+    }
+
     public function start()
     {
         $this->raiseAndApply(new BuildStarted($this->identifier));
@@ -121,6 +144,17 @@ class Build implements Aggregate
 
         $this->nextStep();
     }
+
+    public function isEngine(string $engine) : bool
+    {
+        return $this->request->getEngine() == new Engine($engine);
+    }
+
+    private function applyGCBuildStarted(GCBuildStarted $event)
+    {}
+
+    private function applyGCBuildFinished(GCBuildFinished $event)
+    {}
 
     private function applyBuildStepStarted(BuildStepStarted $started)
     {

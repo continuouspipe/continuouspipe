@@ -8,7 +8,10 @@ use ContinuousPipe\Builder\Aggregate\Event\BuildEvent;
 use ContinuousPipe\Builder\Aggregate\Event\BuildFailed;
 use ContinuousPipe\Builder\Aggregate\Event\BuildFinished;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStarted;
+use ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildFinished;
 use ContinuousPipe\Builder\Artifact\ArtifactRemover;
+use ContinuousPipe\Builder\Engine;
+use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuilderClient;
 use ContinuousPipe\Events\Transaction\TransactionManager;
 use Psr\Log\LoggerInterface;
 
@@ -23,6 +26,10 @@ class BuildSaga
      */
     private $artifactRemover;
     /**
+     * @var GoogleContainerBuilderClient
+     */
+    private $googleContainerBuilderClient;
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -30,10 +37,12 @@ class BuildSaga
     public function __construct(
         TransactionManager $transactionManager,
         ArtifactRemover $artifactRemover,
+        GoogleContainerBuilderClient $googleContainerBuilderClient,
         LoggerInterface $logger
     ) {
         $this->transactionManager = $transactionManager;
         $this->artifactRemover = $artifactRemover;
+        $this->googleContainerBuilderClient = $googleContainerBuilderClient;
         $this->logger = $logger;
     }
 
@@ -47,14 +56,22 @@ class BuildSaga
         }
 
         $this->transactionManager->apply($event->getBuildIdentifier(), function (Build $build) use ($event) {
-            if ($event instanceof StepFailed) {
-                $build->fail();
-            } elseif ($event instanceof BuildStarted) {
-                $build->nextStep();
-            } elseif ($event instanceof StepFinished) {
-                $build->stepFinished($event);
-            } elseif ($event instanceof BuildFinished || $event instanceof BuildFailed) {
-                $build->cleanUp($this->artifactRemover, $this->logger);
+            if ($build->isEngine(Engine::GOOGLE_CONTAINER_BUILDER)) {
+                if ($event instanceof BuildStarted) {
+                    $build->startWithGoogleContainerBuilder($this->googleContainerBuilderClient);
+                } elseif ($event instanceof GCBuildFinished) {
+                    $build->googleContainerBuildFinished($event);
+                }
+            } else {
+                if ($event instanceof StepFailed) {
+                    $build->fail();
+                } elseif ($event instanceof BuildStarted) {
+                    $build->nextStep();
+                } elseif ($event instanceof StepFinished) {
+                    $build->stepFinished($event);
+                } elseif ($event instanceof BuildFinished || $event instanceof BuildFailed) {
+                    $build->cleanUp($this->artifactRemover, $this->logger);
+                }
             }
         });
     }

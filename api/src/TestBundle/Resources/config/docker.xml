@@ -9,8 +9,6 @@
             <argument type="service" id="builder.docker.client.traceable.inner" />
         </service>
 
-        <service id="builder.docker.client.gcb_mock" class="ContinuousPipe\Builder\Tests\Docker\GCBFacade" decorates="builder.docker.client.gcb">
-            <argument type="service" id="builder.docker.client.gcb_mock.inner" />
-        </service>
+        <service id="builder.google_container_builder" class="ContinuousPipe\Builder\GoogleContainerBuilder\SuccessfulInMemoryBuilder" />
     </services>
 </container>
