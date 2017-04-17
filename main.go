@@ -21,7 +21,7 @@ func main() {
     manifestFilePath := flag.String("manifest", "continuouspipe.build-manifest.json", "the build manifest to be used to build")
     googleServiceAccountFilePath := flag.String("service-account-file-path", "", "the path of the service account to use, if any")
     firebaseServiceAccountFilePath := flag.String("firebase-service-account-file-path", "", "the path of the service account to use, if any")
-    deleteManifestFile := flag.Bool("delete-namifest", false, "Delete the manifest after reading")
+    deleteManifestFile := flag.Bool("delete-manifest", false, "Delete the manifest after reading")
 
     flag.Parse()
 
