@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\Ingress;
 
-use ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ComponentPublicEndpointResolver;
+use ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ComponentPublicEndpointResolver;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressRule;
 use Kubernetes\Client\Model\KubernetesObject;

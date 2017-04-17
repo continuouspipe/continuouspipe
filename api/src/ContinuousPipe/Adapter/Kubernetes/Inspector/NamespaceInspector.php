@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Inspector;
 
-use ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ComponentTransformer;
+use ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ComponentTransformer;
 use ContinuousPipe\Model\Component;
 use function GuzzleHttp\Promise\all;
 use GuzzleHttp\Promise\PromiseInterface;

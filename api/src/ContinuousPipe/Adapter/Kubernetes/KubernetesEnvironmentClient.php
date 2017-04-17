@@ -8,6 +8,7 @@ use ContinuousPipe\Adapter\Events;
 use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Model\Environment;
+use GuzzleHttp\Promise\PromiseInterface;
 use function GuzzleHttp\Promise\unwrap;
 use Kubernetes\Client\Client;
 use Kubernetes\Client\Exception\ClientError;

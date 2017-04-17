@@ -1,7 +1,8 @@
 <?php
 
-namespace ContinuousPipe\Adapter\Kubernetes\ReverseTransformer;
+namespace ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer;
 
+use ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ComponentPublicEndpointResolver;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Status;
 use Kubernetes\Client\Exception\ServiceNotFound;

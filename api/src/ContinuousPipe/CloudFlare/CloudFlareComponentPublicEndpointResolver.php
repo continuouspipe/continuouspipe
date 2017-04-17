@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\CloudFlare;
 
-use ContinuousPipe\Adapter\Kubernetes\ReverseTransformer\ComponentPublicEndpointResolver;
+use ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ComponentPublicEndpointResolver;
 use Kubernetes\Client\Model\KubernetesObject;
 use Psr\Log\LoggerInterface;
 
