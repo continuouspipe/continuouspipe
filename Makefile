@@ -1,6 +1,8 @@
 IMAGE_NAME=quay.io/continuouspipe/cloud-builder
 TAG=v3
 
+all: build push
+
 build:
 	env GOOS=linux GOARCH=amd64 go build -o ./bin/cloud-builder-linux-amd64 github.com/continuouspipe/cloud-builder
 	docker build -t $(IMAGE_NAME):$(TAG) .
