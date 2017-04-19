@@ -29,7 +29,11 @@ To specify a specific remote project path use the `--remote-project-path` flag
 cp-remote fetch --remote-project-path /public/sub-folder/
 ```
 
-### Ignoring Files
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-fetch.svg" class="remote-development" >}}
+
+## Ignoring Files
 
 You can use `.cp-remote-ignore` to [ignore files and directories when syncing]({{< relref "remote-development/advanced-setup.md#ignoring-files-directories-when-syncing" >}}).
 
@@ -38,7 +42,7 @@ This behaviour can be overridden for the `fetch` command by adding a `.cp-remote
 - To exclude use: `- /path/to/folder1/`
 - To include use: `+ /path/to/folder2/`
 
-### Sync Threshold
+## Sync Threshold
 
 By default the client will synchronise file changes individually up to a certain limit, which by default is 10. Above that threshold a full code scan for changes will be made, which could potentially be slower. If you are editing a large number of files, you should consider upping the default minimum threshold using the `--individual-file-sync-threshold` flag:
 
@@ -46,7 +50,7 @@ By default the client will synchronise file changes individually up to a certain
 cp-remote fetch --individual-file-sync-threshold=20
 ```
 
-### Argument List:
+## Argument List:
 
 Argument | Alias | Default | Description
 ---------|-------|---------|------------

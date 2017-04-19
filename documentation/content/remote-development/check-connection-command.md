@@ -21,3 +21,7 @@ The `checkconnection` command can be used to check that the connection details f
 ```
 cp-remote checkconnection --environment example-remote-branch feature-my-shiny-new-work
 ```
+
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-pods.svg" class="remote-development" >}}

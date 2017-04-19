@@ -15,7 +15,11 @@ cp-remote logs
 
 Print the logs for a container in a pod.
 
-### Argument List:
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-logs.svg" class="remote-development" >}}
+
+## Argument List:
 
 Argument | Alias | Default | Description
 ---------|-------|---------|------------

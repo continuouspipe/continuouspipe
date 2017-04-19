@@ -14,9 +14,9 @@ cp-remote watch
 cp-remote wa # alias
 ```
 
-The `watch` command will sync changes you make locally to a container that's part of the remote environment. This will use the default container specified during setup but you can specify another container to sync with.
+The `watch` command will sync changes you make locally to a container that's part of the remote environment. 
 
-For example, if the service you want to sync to is web:
+This will use the default container specified during setup but you can specify another container to sync with. For example, if the service you want to sync to is web:
 
 ```
 cp-remote watch -s web
@@ -30,7 +30,12 @@ To watch a specific remote project path use the `--remote-project-path` flag:
 cp-remote watch --remote-project-path= /app/sub-folder/
 ```
 
-### Sync Threshold
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-watch.svg" class="remote-development" >}}
+
+
+## Sync Threshold
 
 By default the client will synchronise file changes individually up to a certain limit, which by default is 10. Above that threshold a full code scan for changes will be made, which could potentially be slower. If you are editing a large number of files, you should consider upping the default minimum threshold using the `--individual-file-sync-threshold` flag:
 
@@ -38,7 +43,7 @@ By default the client will synchronise file changes individually up to a certain
 cp-remote watch --individual-file-sync-threshold=20
 ```
 
-### Argument List:
+## Argument List:
 
 Argument | Alias | Default | Description
 ---------|-------|---------|------------

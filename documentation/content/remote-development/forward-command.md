@@ -39,3 +39,7 @@ cp-remote forward -s db 3306 6379
 ```
 
 This will forward both ports 3306 and 6379 to the same port in the local environment.
+
+***
+
+{{< figure src="/images/remote-development/cp-remote-development-forward.svg" class="remote-development" >}}
