@@ -35,7 +35,7 @@ brew install continuouspipe/tools/cp-remote
 Otherwise you can install it manually via:
 
 ```
-sudo curl https://continuouspipe.github.io/remote-environment-client/latest/darwin-amd64/cp-remote.tar.gz > cp-remote.tar.gz
+sudo curl https://inviqa-cp-remote-client-environment.s3-eu-west-1.amazonaws.com/latest/darwin-amd64/cp-remote.tar.gz > cp-remote.tar.gz
 tar -xzvf cp-remote.tar.gz;
 mv cp-remote /usr/local/bin/cp-remote
 ```
@@ -45,7 +45,7 @@ mv cp-remote /usr/local/bin/cp-remote
 ### Linux (64-bit):
 
 ```
-sudo curl https://continuouspipe.github.io/remote-environment-client/latest/linux-amd64/cp-remote.tar.gz > cp-remote.tar.gz
+sudo curl https://inviqa-cp-remote-client-environment.s3-eu-west-1.amazonaws.com/latest/linux-amd64/cp-remote.tar.gz > cp-remote.tar.gz
 tar -xzvf cp-remote.tar.gz;
 mv cp-remote /usr/local/bin/cp-remote
 ```
@@ -53,7 +53,7 @@ mv cp-remote /usr/local/bin/cp-remote
 ### Linux (32-bit):
 
 ```
-sudo curl https://continuouspipe.github.io/remote-environment-client/latest/linux-386/cp-remote.tar.gz > cp-remote.tar.gz
+sudo curl https://inviqa-cp-remote-client-environment.s3-eu-west-1.amazonaws.com/latest/linux-386/cp-remote.tar.gz > cp-remote.tar.gz
 tar -xzvf cp-remote.tar.gz;
 mv cp-remote /usr/local/bin/cp-remote
 ```
@@ -62,12 +62,12 @@ mv cp-remote /usr/local/bin/cp-remote
 
 ### Windows (64-bit):
 
-* Download https://continuouspipe.github.io/remote-environment-client/latest/windows-amd64/cp-remote.zip
+* Download https://inviqa-cp-remote-client-environment.s3-eu-west-1.amazonaws.com/latest/windows-amd64/cp-remote.zip
 * Extract `cp-remote.zip`
 * Move `cp-remote.exe` into your project folder
 
 ### Windows (32-bit):
-* Download https://continuouspipe.github.io/remote-environment-client/latest/windows-386/cp-remote.zip
+* Download https://inviqa-cp-remote-client-environment.s3-eu-west-1.amazonaws.com/latest/windows-386/cp-remote.zip
 * Extract `cp-remote.zip`
 * Move `cp-remote.exe` into your project folder
 
