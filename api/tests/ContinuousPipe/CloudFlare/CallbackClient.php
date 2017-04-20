@@ -4,8 +4,10 @@ namespace ContinuousPipe\CloudFlare;
 
 use ContinuousPipe\Model\Component\Endpoint\CloudFlareAuthentication;
 
-class NullClient implements CloudFlareClient
+class CallbackClient implements CloudFlareClient
 {
+    private $deleteCallback;
+
     /**
      * {@inheritdoc}
      */
@@ -19,5 +21,16 @@ class NullClient implements CloudFlareClient
      */
     public function deleteRecord(string $zone, CloudFlareAuthentication $authentication, string $recordIdentifier)
     {
+        if (null === $this->deleteCallback) {
+            return;
+        }
+
+        $callback = $this->deleteCallback;
+        $callback($zone, $authentication, $recordIdentifier);
+    }
+
+    public function setDeleteCallback($deleteCallback)
+    {
+        $this->deleteCallback = $deleteCallback;
     }
 }

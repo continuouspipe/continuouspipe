@@ -1,6 +1,9 @@
 <?php
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
+use ContinuousPipe\CloudFlare\CloudFlareException;
+use ContinuousPipe\CloudFlare\CallbackClient;
 use ContinuousPipe\CloudFlare\TraceableCloudFlareClient;
 use ContinuousPipe\CloudFlare\ZoneRecord;
 
@@ -10,13 +13,19 @@ class CloudFlareContext implements Context
      * @var TraceableCloudFlareClient
      */
     private $traceableCloudFlareClient;
+    /**
+     * @var CallbackClient
+     */
+    private $callbackClient;
 
     /**
      * @param TraceableCloudFlareClient $traceableCloudFlareClient
+     * @param CallbackClient $callbackClient
      */
-    public function __construct(TraceableCloudFlareClient $traceableCloudFlareClient)
+    public function __construct(TraceableCloudFlareClient $traceableCloudFlareClient, CallbackClient $callbackClient)
     {
         $this->traceableCloudFlareClient = $traceableCloudFlareClient;
+        $this->callbackClient = $callbackClient;
     }
 
     /**
@@ -67,5 +76,15 @@ class CloudFlareContext implements Context
         if (count($matchingRecords) == 0) {
             throw new \RuntimeException('No matching deleted record found');
         }
+    }
+
+    /**
+     * @When deleting the CloudFlare record fails
+     */
+    public function deletingTheCloudflareRecordFails()
+    {
+        $this->callbackClient->setDeleteCallback(function() {
+            throw new CloudFlareException('You do not have permission to perform this request');
+        });
     }
 }
