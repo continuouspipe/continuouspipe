@@ -129,5 +129,5 @@ Feature:
     Then the build should be successful
     And I should see the metrics published as below:
       | metric                             | value |
-      | builder.outgoing.notifier.success  | 2     |
+      | builder.outgoing.notifier.success  | 1     |
       | builder.outgoing.notifier.failure  | 3     |
