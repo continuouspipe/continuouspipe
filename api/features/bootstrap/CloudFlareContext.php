@@ -87,4 +87,18 @@ class CloudFlareContext implements Context
             throw new CloudFlareException('You do not have permission to perform this request');
         });
     }
+
+    /**
+     * @Then the CloudFlare record :record of the zone :zone was not deleted
+     */
+    public function theCloudflareRecordOfTheZoneWasNotDeleted($record, $zone)
+    {
+        $matchingRecords = array_filter($this->traceableCloudFlareClient->getDeletedRecords(), function(string $deletedRecord) use ($record) {
+            return $deletedRecord == $record;
+        });
+
+        if (count($matchingRecords) > 0) {
+            throw new \RuntimeException('The record was deleted');
+        }
+    }
 }

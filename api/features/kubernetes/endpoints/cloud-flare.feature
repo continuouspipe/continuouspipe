@@ -252,6 +252,7 @@ Feature:
     And deleting the CloudFlare record fails
     When I delete the environment named "app" of the cluster "my-cluster" of the team "my-team"
     Then the namespace should be deleted successfully
+    But the CloudFlare record "1234" of the zone "9876" was not deleted
 
   Scenario: It removes the CF record when the environment is deleted
     Given I have a namespace "app"
