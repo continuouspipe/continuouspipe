@@ -249,8 +249,8 @@ Feature:
     """
     {"api_key":"1234","email":"my@example.com"}
     """
-    When I delete the environment named "app" of the cluster "my-cluster" of the team "my-team"
     And deleting the CloudFlare record fails
+    When I delete the environment named "app" of the cluster "my-cluster" of the team "my-team"
     Then the namespace should be deleted successfully
 
   Scenario: It removes the CF record when the environment is deleted
