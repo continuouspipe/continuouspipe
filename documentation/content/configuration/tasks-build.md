@@ -28,6 +28,10 @@ You can obviously use any other image name as long as it contains the Docker reg
 
 ContinuousPipe is getting parameters from your `docker-compose.yml` file. The `image` is the only required value if you have such a Docker Compose file.
 
+{{< warning title="Warning" >}}
+Always think carefully before pushing your images to a public Docker repository. If you are using a private Git repository or your build contains secrets (e.g. Github token, database passwords) then you need to ensure that you use a private Docker repository such as [Quay](https://quay.io/).
+{{< /warning >}}
+
 ## Naming Strategy
 At the moment, there are two naming strategies: the default one being the `sha1` strategy, which basically builds a tag per commit SHA1. If you require it you can instead use the `branch` strategy, which will create a tag per branch.
 
