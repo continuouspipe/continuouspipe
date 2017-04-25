@@ -29,7 +29,7 @@ You can obviously use any other image name as long as it contains the Docker reg
 ContinuousPipe is getting parameters from your `docker-compose.yml` file. The `image` is the only required value if you have such a Docker Compose file.
 
 {{< warning title="Warning" >}}
-Always think carefully before pushing your images to a public Docker repository. If you are using a private Git repository or your build contains secrets (e.g. Github token, database passwords) then you need to ensure that you use a private Docker repository. [Docker Hub](https://hub.docker.com/billing-plans/) and [Quay.io](https://quay.io/plans/) both offer private repositories.
+Always think carefully before pushing your images to a public Docker repository. If you are using a private Git repository or your build contains secrets (e.g. Github token, database passwords) then you need to ensure that you use a private Docker repository. [Docker Hub](https://hub.docker.com/billing-plans/) and [Quay.io](https://quay.io/plans/) both offer private repositories as part of their subscription plans.
 {{< /warning >}}
 
 ## Naming Strategy
