@@ -134,6 +134,8 @@ endpoints:
                 key: ${WILDCARD_SSL_KEY}
 ```
 
+The documentation on [endpoints]({{< relref="configuration/endpoints.md" >}}) gives more details on how to use Ingress and SSL.
+
 ## Basic HTTP Authentication
 
 If you are using one of the [ContinuousPipe images]({{< relref "faq/what-are-the-continuous-pipe-images.md" >}}) for [Apache](https://github.com/continuouspipe/dockerfiles/tree/master/php-apache#basic-authentication) or [Nginx](https://github.com/continuouspipe/dockerfiles/tree/master/php-nginx#basic-authentication) then you can enable basic auth using environment variables:
