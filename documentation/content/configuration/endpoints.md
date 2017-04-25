@@ -57,9 +57,9 @@ Using the [Nginx Ingress controller](https://github.com/kubernetes/ingress/tree/
 
 ### Installation
 
-ContinuousPipe currently provides no way to create the Nginx Ingress controller - this needs to be done as a manual step when setting up your Kubernetes cluster. Once the Ingress is deployed, it will be assigned an IP address from a random pool, which will then be static for the lifetime of the Ingress.
+ContinuousPipe currently provides no way to create the Nginx Ingress controller - this needs to be done as a manual step when setting up your Kubernetes cluster. Once the Ingress is deployed, it will be assigned an IP address from a random pool, which will then be static for the lifetime of the Ingress. The IP address of the manually deployed Ingress then needs to be set up in a DNS rule so that it is associated with your domain, unless you are using [Cloudflare integration](#nginx-ingress-with-cloudflare-ssl).
 
-In order to use the Nginx Ingress, the IP address of the manually deployed Ingress then needs to be set up in a DNS rule so that it is associated with your domain. This will need to be a wildcard DNS rule to support the ContinuousPipe host suffix functionality, which creates a domain name dynamically by concatenating a host suffix with the deployed branch name.
+**Instructions for deploying the Ingress and retrieving the IP address for use in DNS are available here:** https://github.com/continuouspipe/nginx-ingress-controller.
 
 ### ContinuousPipe Modifications
 
@@ -93,7 +93,9 @@ As you can see, the setup is quite straight forward. Within `endpoints`, the Ing
 Additionally, port 80 is exposed, so traffic will just use HTTP.
 
 {{< note title="Note" >}}
-You will need to set up a DNS rule associating the Ingress IP address with your domain name for this example to work.
+You will need to set up a wildcard DNS rule associating the Ingress IP address with your domain name for this example to work.
+
+e.g. `123.123.123.123 *example-with-no-ssl.yourdomain.com`
 {{< /note >}}
 
 ### Nginx Ingress With Own SSL
@@ -132,6 +134,8 @@ In addition to port 80, port 443 is also exposed. This is needed to let Continuo
 
 {{< note title="Note" >}}
 You will need to set up a DNS rule associating the Ingress IP address with your domain name for this example to work.
+
+e.g. `123.123.123.123 example-with-ssl.yourdomain.com`
 {{< /note >}}
 
 ### Nginx Ingress With Wildcard SSL
@@ -161,7 +165,9 @@ tasks:
 This is similar to the previous configuration, but omits the `ssl_certificates`. However, as port 443 is still exposed ContinuousPipe will still set up SSL using wildcard certificates. This behaviour is distinct to the ContinuousPipe adaptation of the Nginx Ingress controller - the default Nginx Ingress controller would not set up SSL in this scenario.
 
 {{< note title="Note" >}}
-You will need to set up a DNS rule associating the Ingress IP address with your domain name for this example to work.
+You will need to set up a wildcard DNS rule associating the Ingress IP address with your domain name for this example to work.
+
+e.g. `123.123.123.123 *example-with-wildcard-ssl.yourdomain.com`
 {{< /note >}}
 
 ### Nginx Ingress With Cloudflare SSL
