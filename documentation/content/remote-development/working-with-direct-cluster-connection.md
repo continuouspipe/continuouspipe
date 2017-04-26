@@ -3,9 +3,9 @@ title: Working with a Direct Connection to the Cluster
 menu:
   main:
     parent: 'remote-development'
-    weight: 150
+    weight: 12
 
-weight: 150
+weight: 12
 ---
 ## Working with a Direct Connection to the Cluster
 

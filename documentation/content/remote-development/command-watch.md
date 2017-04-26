@@ -1,11 +1,14 @@
 ---
-title: Watch Command
+title: "Command: Watch"
 menu:
   main:
     parent: 'remote-development'
     weight: 40
 
 weight: 40
+
+aliases:
+    - /remote-development/watch-command/
 ---
 ## Using the Watch Command
 

@@ -3,9 +3,9 @@ title: Advanced Setup
 menu:
   main:
     parent: 'remote-development'
-    weight: 160
+    weight: 13
 
-weight: 160
+weight: 13
 ---
 ## Usage Logging
 

@@ -1,11 +1,14 @@
 ---
-title: Logs Command
+title: "Command: Logs"
 menu:
   main:
     parent: 'remote-development'
     weight: 30
 
 weight: 30
+
+aliases:
+    - /remote-development/logs-command/
 ---
 ## Using the Logs Command
 

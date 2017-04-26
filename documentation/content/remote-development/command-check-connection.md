@@ -1,11 +1,14 @@
 ---
-title: Check Connection Command
+title: "Command: Check Connection"
 menu:
   main:
     parent: 'remote-development'
     weight: 130
 
 weight: 130
+
+aliases:
+    - /remote-development/check-connection-command/
 ---
 ## Using the Check Connection Command
 

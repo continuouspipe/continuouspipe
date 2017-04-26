@@ -1,11 +1,14 @@
 ---
-title: Forward Command
+title: "Command: Forward"
 menu:
   main:
     parent: 'remote-development'
     weight: 100
 
 weight: 100
+
+aliases:
+    - /remote-development/forward-command/
 ---
 ## Using the Forward Command
 

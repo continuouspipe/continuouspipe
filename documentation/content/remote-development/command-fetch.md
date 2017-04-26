@@ -1,11 +1,14 @@
 ---
-title: Fetch Command
+title: "Command: Fetch"
 menu:
   main:
     parent: 'remote-development'
     weight: 70
 
 weight: 70
+
+aliases:
+    - /remote-development/fetch-command/
 ---
 ## Using the Fetch Command
 

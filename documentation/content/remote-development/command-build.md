@@ -1,11 +1,14 @@
 ---
-title: Build Command
+title: "Command: Build"
 menu:
   main:
     parent: 'remote-development'
     weight: 30
 
 weight: 30
+
+aliases:
+    - /remote-development/build-command/
 ---
 ## Using the Build Command
 

@@ -1,11 +1,14 @@
 ---
-title: Destroy Command
+title: "Command: Destroy"
 menu:
   main:
     parent: 'remote-development'
     weight: 110
 
 weight: 110
+
+aliases:
+    - /remote-development/destroy-command/
 ---
 ## Using the Destroy Command
 

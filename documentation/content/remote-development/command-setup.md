@@ -1,11 +1,14 @@
 ---
-title: Setup Command
+title: "Command: Setup"
 menu:
   main:
     parent: 'remote-development'
     weight: 20
 
 weight: 20
+
+aliases:
+    - /remote-development/setup-command/
 ---
 ## Using the Setup Command
 
