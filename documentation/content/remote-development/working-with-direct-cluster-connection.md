@@ -7,7 +7,6 @@ menu:
 
 weight: 12
 ---
-## Working with a Direct Connection to the Cluster
 
 Edit the `.cp-remote-settings.yml` local configuration file, set `kube-proxy-enabled` to `false` and add the cluster ip, username and password.
 

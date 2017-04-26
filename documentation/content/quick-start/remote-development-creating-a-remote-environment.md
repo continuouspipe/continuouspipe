@@ -19,6 +19,6 @@ You will then see a screen prompting you to create a token. Before you generate 
 
 ![](/images/quick-start/flow-dev-environments-environment-no-token.png)
 
-You will then see a screen displaying a token. This needs to be copied for use with the remote development tool [init command]({{< relref "remote-development/init-command.md" >}}).
+You will then see a screen displaying a token. This needs to be copied for use with the remote development tool [init command]({{< relref "remote-development/command-init.md" >}}).
 
 ![](/images/quick-start/flow-dev-environments-environment-not-started.png)

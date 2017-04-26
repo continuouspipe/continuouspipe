@@ -13,5 +13,5 @@ aliases:
 ## Using the Setup Command
 
 {{< warning title="Warning" >}}
-The `setup` command is now obsolete. It has been replaced with the [init]({{< relref "init-command.md" >}}) command.
+The `setup` command is now obsolete. It has been replaced with the [init]({{< relref "remote-development/command-init.md" >}}) command.
 {{< /warning >}}
