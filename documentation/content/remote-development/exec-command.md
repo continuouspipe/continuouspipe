@@ -33,14 +33,14 @@ If you have not previously run interactive mode with any command, you will first
 
 You can then use interactive mode by using the `--interactive` or `-i` flags. You will also need to supply the following flags:
 
-- `--environment` or `-e` - the environment identifier
+- `--kube-environment-name` or `-e` - the environment identifier
 - `--service` or `-s` - the service name
 - `--flow-id` or `-f` - the flow identifier
 
 The full command looks like this:
 
 ```
-cp-remote exec --interactive --environment php-example-cpdev-foo --service web --flow-id 1268cc54-0c360641bb54 -- /bin/sh
+cp-remote exec --interactive --kube-environment-name php-example-cpdev-foo --service web --flow-id 1268cc54-0c360641bb54 -- /bin/sh
 cp-remote exec -i -e php-example-cpdev-foo -s web -f 1268cc54-0c360641bb54 -- /bin/sh
 ```
 
@@ -53,3 +53,20 @@ If you need to reset the stored username and API key, you need to run the [init 
 ***
 
 {{< figure src="/images/remote-development/cp-remote-development-exec-interactive.svg" class="remote-development" >}}
+
+## Command Reference
+
+### Options:
+
+Option | Alias | Default | Description
+-------|-------|---------|------------
+`--config`                |      |       | Local config file. Default is `.cp-remote-settings.yml` within working directory.
+`--flow-id`               |      |       | The flow identifier.
+`--kube-environment-name` | `-e` |       | The full remote environment name (e.g. project-key-git-branch).
+`--service`               | `-s` | web   | The service to use (e.g. web, mysql).
+
+### Flags:
+
+Flag | Alias | Description
+-----|-------|------------
+`--interactive` | `-i` | Use interactive mode. Interactive mode allows you specify a ContinuousPipe username and api key to run commands without a token. Interactive mode requires the flags `--kube-environment-name`, `--service` and  `--flow-id` to be specified.

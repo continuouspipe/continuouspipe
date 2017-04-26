@@ -61,3 +61,26 @@ cp-remote init --interactive --reset
 ***
 
 {{< figure src="/images/remote-development/cp-remote-development-init-interactive.svg" class="remote-development" >}}
+
+
+## Command Reference
+
+### Arguments:
+
+Argument | Default | Description
+---------|---------|------------
+`token`  |         | Initialization token. Only needs supplying for first run.
+
+### Options:
+
+Option | Alias | Default | Description
+-------|-------|---------|------------
+`--config`      | |        | Local config file. Default is `.cp-remote-settings.yml` within working directory.
+`--remote-name` | | origin | Remote name of Git repository.
+
+### Flags:
+
+Flag | Alias | Description
+-----|-------|------------
+`--interactive` | `-i` | Use interactive mode. Interactive mode allows you specify a ContinuousPipe username and api key to run commands without a token.
+`--reset`       | `-r` | Start any partial initializations from the beginning.
