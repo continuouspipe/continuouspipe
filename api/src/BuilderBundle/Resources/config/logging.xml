@@ -36,6 +36,7 @@
         <service id="builder.reporting.publisher" class="ContinuousPipe\Builder\Reporting\ElasticSearch\ElasticSearchReportPublisher">
             <argument>%reports_elastic_search_index_name%</argument>
             <argument>%reports_elastic_search_host%</argument>
+            <argument>%reports_elastic_search_use_ssl_verification%</argument>
             <argument>%reports_elastic_search_api_key%</argument>
         </service>
 

@@ -19,12 +19,12 @@ class ElasticSearchReportPublisher implements ReportPublisher
      */
     private $indexName;
 
-    public function __construct(string $indexName, string $elasticSearchHostname = null, string $apiKey = null)
+    public function __construct(string $indexName, string $elasticSearchHostname = null, bool $useSSLVerification = true, string $apiKey = null)
     {
         $this->indexName = $indexName;
 
         if (null !== $elasticSearchHostname) {
-            $this->client = $this->createClient($elasticSearchHostname, $apiKey);
+            $this->client = $this->createClient($elasticSearchHostname, $useSSLVerification, $apiKey);
         }
     }
 
@@ -74,7 +74,7 @@ class ElasticSearchReportPublisher implements ReportPublisher
         }
     }
 
-    private function createClient($elasticSearchHostname, $apiKey) : Client
+    private function createClient(string $elasticSearchHostname, bool $useSSLVerification, string $apiKey) : Client
     {
         $apiKeyHandler = function (callable $next, string $apiKey) {
             return function (array $request) use ($next, $apiKey) {
@@ -116,6 +116,7 @@ class ElasticSearchReportPublisher implements ReportPublisher
             ->setHosts([
                 $hostNameTransformer($elasticSearchHostname),
             ])
+            ->setSSLVerification($useSSLVerification)
             ->build()
         ;
     }
