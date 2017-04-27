@@ -47,3 +47,10 @@ Feature:
     When I create a build "00000000-0000-0000-0000-000000000000"
     And I start the build "00000000-0000-0000-0000-000000000000"
     Then the report should be published to elasticsearch
+
+  @elasticsearch_secure
+  Scenario: Reports should be published to elasticsearch securely
+    Given I have configured elasticsearch to be talked to via SSL
+    When I create a build "00000000-0000-0000-0000-000000000000"
+    And I start the build "00000000-0000-0000-0000-000000000000"
+    Then the report should be published to elasticsearch
