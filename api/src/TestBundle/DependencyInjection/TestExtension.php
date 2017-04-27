@@ -22,9 +22,7 @@ class TestExtension extends Extension
             $loader->load('integration/google-cloud.xml');
         }
 
-        if ($environment === 'elasticsearch') {
-            $loader->load('elasticsearch/reporting.xml');
-        } else {
+        if (!in_array($environment, ['test_elasticsearch', 'test_elasticsearch_secure'])) {
             $loader->load('reporting.xml');
         }
 
