@@ -28,6 +28,8 @@ weight: 170
 
 * Fix in the logic that determines the target pod - it was not filtering by running status.
 
+* Fix in `watch` on linux and windows - root project directory was being skipped by the watcher
+
 ## Other Changes
 
 * `checkupdates`, `ckup` will now fetch updates from an AWS S3 bucket, giving faster download speed.
