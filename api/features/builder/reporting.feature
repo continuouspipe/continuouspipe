@@ -40,3 +40,10 @@ Feature:
     When I create a build "00000000-0000-0000-0000-000000000000"
     And I start the build "00000000-0000-0000-0000-000000000000"
     Then the published report should contain the key "engine"
+
+  @elasticsearch
+  Scenario: Reports should be published to elasticsearch
+    Given I have configured elasticsearch
+    When I create a build "00000000-0000-0000-0000-000000000000"
+    And I start the build "00000000-0000-0000-0000-000000000000"
+    Then the report should be published to elasticsearch
