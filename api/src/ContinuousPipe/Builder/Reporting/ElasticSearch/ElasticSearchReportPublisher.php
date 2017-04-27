@@ -93,12 +93,28 @@ class ElasticSearchReportPublisher implements ReportPublisher
             };
         };
 
+        $hostNameTransformer = function (string $hostname) {
+            $parsed = parse_url($hostname);
+            if (!$parsed) {
+                return $hostname;
+            }
+
+            $port = $parsed['port'];
+            $port = $parsed['scheme'] == 'https' && empty($port) ? 443 : null;
+            $parsed = array_filter([
+                'scheme' => $parsed['scheme'],
+                'host' => $parsed['host'],
+                'port' => $port
+            ]);
+            return $parsed ?: $hostname;
+        };
+
         return ClientBuilder::create()
             ->setHandler(
                 $apiKeyHandler(ClientBuilder::defaultHandler(), $apiKey)
             )
             ->setHosts([
-                $elasticSearchHostname,
+                $hostNameTransformer($elasticSearchHostname),
             ])
             ->build()
         ;
