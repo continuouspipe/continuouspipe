@@ -19,12 +19,12 @@ class ElasticSearchReportPublisher implements ReportPublisher
      */
     private $indexName;
 
-    public function __construct(string $indexName, string $elasticSearchHostname = null, string $apiKey = null)
+    public function __construct(string $indexName, string $elasticSearchHostname = null, bool $useSSLVerification = true, string $apiKey = null)
     {
         $this->indexName = $indexName;
 
         if (null !== $elasticSearchHostname) {
-            $this->client = $this->createClient($elasticSearchHostname, $apiKey);
+            $this->client = $this->createClient($elasticSearchHostname, $useSSLVerification, $apiKey);
         }
     }
 
@@ -74,7 +74,7 @@ class ElasticSearchReportPublisher implements ReportPublisher
         }
     }
 
-    private function createClient($elasticSearchHostname, $apiKey) : Client
+    private function createClient(string $elasticSearchHostname, bool $useSSLVerification, string $apiKey) : Client
     {
         $apiKeyHandler = function (callable $next, string $apiKey) {
             return function (array $request) use ($next, $apiKey) {
@@ -93,13 +93,30 @@ class ElasticSearchReportPublisher implements ReportPublisher
             };
         };
 
+        $hostNameTransformer = function (string $hostname) {
+            $parsed = parse_url($hostname);
+            if (!$parsed) {
+                return $hostname;
+            }
+
+            $port = $parsed['port'];
+            $port = $parsed['scheme'] == 'https' && empty($port) ? 443 : null;
+            $parsed = array_filter([
+                'scheme' => $parsed['scheme'],
+                'host' => $parsed['host'],
+                'port' => $port
+            ]);
+            return $parsed ?: $hostname;
+        };
+
         return ClientBuilder::create()
             ->setHandler(
                 $apiKeyHandler(ClientBuilder::defaultHandler(), $apiKey)
             )
             ->setHosts([
-                $elasticSearchHostname,
+                $hostNameTransformer($elasticSearchHostname),
             ])
+            ->setSSLVerification($useSSLVerification)
             ->build()
         ;
     }
