@@ -13,6 +13,8 @@ use ContinuousPipe\Builder\Request\BuildRequestException;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\View\BuildViewRepository;
 use FOS\RestBundle\Controller\Annotations\View;
+use Inviqa\LaunchDarklyBundle\Client\ExplicitUser\StaticClient;
+use LaunchDarkly\LDUser;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -82,7 +84,10 @@ class CreateBuildController
         }
 
         if (null === $request->getEngine()) {
-            //$this->createAndStartBuild($this->createHiddenGcbBuild($request));
+            $userKey = $this->getUserKey($request);
+            if (StaticClient::variation('run-hidden-gcb-build', new LDUser($userKey), false)) {
+                $this->createAndStartBuild($this->createHiddenGcbBuild($request));
+            }
 
             $request = $request->withEngine(new Engine('docker'));
         }
@@ -152,5 +157,25 @@ class CreateBuildController
         }
 
         return $request->withEngine(new Engine('gcb'));
+    }
+
+    private function getUserKey(BuildRequest $request)
+    {
+        $steps = $request->getSteps();
+        if (!isset($steps[0])) {
+            return 'builder';
+        }
+
+        $image = $steps[0]->getImage();
+        if (!isset($image)) {
+            return 'builder';
+        }
+
+        $imageName = $image->getName();
+        if (!isset($imageName)) {
+            return 'builder';
+        }
+
+        return $imageName;
     }
 }
