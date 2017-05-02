@@ -54,7 +54,22 @@ class LoggingContext implements Context
     }
 
     /**
+     * @Given I have configured elasticsearch
+     */
+    public function iHaveConfiguredElasticsearch()
+    {
+    }
+
+    /**
+     * @Given I have configured elasticsearch to be talked to via SSL
+     */
+    public function iHaveConfiguredElasticsearchToBeTalkedToViaSSL()
+    {
+    }
+
+    /**
      * @Then a report should be published
+     * @Then the report should be published to elasticsearch
      */
     public function aReportShouldBePublished()
     {
