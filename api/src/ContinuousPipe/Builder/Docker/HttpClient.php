@@ -253,7 +253,7 @@ class HttpClient implements DockerFacade, DockerImageReader
             ]);
         } catch (RequestException $e) {
             if ($e->getCode() == 404) {
-                $message = 'The path "%s" is not found in the Docker container';
+                $message = sprintf('The path "%s" is not found in the Docker container', $path);
             } else {
                 $message = 'Unable to read the artifact from the container: '.$e->getMessage();
             }
