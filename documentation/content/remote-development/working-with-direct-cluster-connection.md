@@ -3,11 +3,10 @@ title: Working with a Direct Connection to the Cluster
 menu:
   main:
     parent: 'remote-development'
-    weight: 150
+    weight: 12
 
-weight: 150
+weight: 12
 ---
-## Working with a Direct Connection to the Cluster
 
 Edit the `.cp-remote-settings.yml` local configuration file, set `kube-proxy-enabled` to `false` and add the cluster ip, username and password.
 

@@ -1,11 +1,14 @@
 ---
-title: Init Command
+title: "Command: Init"
 menu:
   main:
     parent: 'remote-development'
     weight: 20
 
 weight: 20
+
+aliases:
+    - /remote-development/init-command/
 ---
 ## Using the Init Command
 
@@ -33,24 +36,18 @@ cp-remote init [token] --remote-name=foo
 
 ## Interactive Mode
 
-Sometimes you may want to connect to an environment that's not set up as a remote environment, e.g. an environment created for a pull request. You can do this using interactive mode. 
+{{< note title="Note" >}}
+You can read a full explanation of interactive mode, including how to get an API key and what arguments are available [here]({{< relref "remote-development/working-with-different-environments.md#interactive-mode" >}}).
+{{< /note >}}
 
-You will first need to generate a [ContinuousPipe API key](https://authenticator.continuouspipe.io/account/api-keys).
+Sometimes you may want to connect to an environment that’s not set up as a remote environment, e.g. an environment created for a pull request. You can do this using interactive mode.
 
-You can then use interactive mode by using the `--interactive` or `-i` flags.
+You can use interactive mode with `init` by using the `--interactive` or `-i` flags.
 
 ```
 cp-remote init --interactive
 cp-remote init -i
 ```
-
-The first time you run this, you will be asked to enter your ContinuousPipe username and the ContinuousPipe API key you generated. They are then stored in a global configuration file `~/.cp-remote/config.yml` (on linux/osx) `C:\Users\{YourUserName}\.cp-remote\config.yml` (on windows), so you won't need to enter them again.  
-
-You will then be able to run the `bash` and `exec` command within the interactive mode. 
-
-{{< note title="Note" >}}
-The [bash command]({{< relref "remote-development/bash-command.md" >}}) and [exec command]({{< relref "remote-development/exec-command.md" >}}) can also be run in interactive mode directly without having to run `cp-remote init -i` first.
-{{< /note >}}
 
 If you want to change the stored username and API key, use the `--reset` flag:
 
@@ -61,3 +58,26 @@ cp-remote init --interactive --reset
 ***
 
 {{< figure src="/images/remote-development/cp-remote-development-init-interactive.svg" class="remote-development" >}}
+
+
+## Command Reference
+
+### Arguments:
+
+Argument | Default | Description
+---------|---------|------------
+`token`  |         | Initialization token. Only needs supplying for first run.
+
+### Options:
+
+Option | Alias | Default | Description
+-------|-------|---------|------------
+`--config`      | |        | Local config file. Default is `.cp-remote-settings.yml` within working directory.
+`--remote-name` | | origin | Remote name of Git repository.
+
+### Flags:
+
+Flag | Alias | Description
+-----|-------|------------
+`--interactive` | `-i` | Use interactive mode. Interactive mode allows you specify a ContinuousPipe username and API key to run commands without a token.
+`--reset`       | `-r` | Start any partial initializations from the beginning.

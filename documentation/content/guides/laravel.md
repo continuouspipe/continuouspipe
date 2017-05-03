@@ -627,7 +627,7 @@ Now that we have `cp-remote` installed, we are ready to setup our remote environ
 $ cp-remote setup
 ```
 
-You will now be asked a series of questions that relate to how you have configured ContinuousPipe and your cluster details. Please refer to the [remote development setup instructions]({{< relref "remote-development/setup-command.md" >}}) for more information.
+You will now be asked a series of questions that relate to how you have configured ContinuousPipe and your cluster details. Please refer to the [remote development setup instructions]({{< relref "remote-development/command-setup.md" >}}) for more information.
 
 ### Build the environment
 

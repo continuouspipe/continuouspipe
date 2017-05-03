@@ -1,11 +1,14 @@
 ---
-title: Destroy Command
+title: "Command: Destroy"
 menu:
   main:
     parent: 'remote-development'
     weight: 110
 
 weight: 110
+
+aliases:
+    - /remote-development/destroy-command/
 ---
 ## Using the Destroy Command
 
@@ -18,3 +21,11 @@ The `destroy` command will delete the remote branch used for your remote environ
 ***
 
 {{< figure src="/images/remote-development/cp-remote-development-destroy.svg" class="remote-development" >}}
+
+## Command Reference
+
+### Options:
+
+Option | Alias | Default | Description
+-------|-------|---------|------------
+`--config` | | | Local config file. Default is `.cp-remote-settings.yml` within working directory.

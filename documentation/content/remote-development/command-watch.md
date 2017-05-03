@@ -1,11 +1,14 @@
 ---
-title: Watch Command
+title: "Command: Watch"
 menu:
   main:
     parent: 'remote-development'
     weight: 40
 
 weight: 40
+
+aliases:
+    - /remote-development/watch-command/
 ---
 ## Using the Watch Command
 
@@ -43,16 +46,24 @@ By default the client will synchronise file changes individually up to a certain
 cp-remote watch --individual-file-sync-threshold=20
 ```
 
-## Argument List:
+## Command Reference
 
-Argument | Alias | Default | Description
----------|-------|---------|------------
-`--delete`                         |      |       | Delete extraneous files from destination directories
-`--dry-run`                        |      |       | Show what will be transferred without executing
+### Options:
+
+Option | Alias | Default | Description
+-------|-------|---------|------------
+`--config`                         |      |       | Local config file. Default is `.cp-remote-settings.yml` within working directory.
 `--individual-file-sync-threshold` | `-t` | 10    | Above this threshold a full code scan for file changes will be made rather than syncing individual files
-`--kube-environment-name`          | `-e` |       | The full remote environment name (e.g. project-key-git-branch)
+`--kube-environment-name`          | `-e` |       | The full remote environment name (e.g. project-key-git-branch).
 `--latency`                        | `-l` | 500   | Sync latency / speed in milli-seconds
-`--remote-project-path`            | `-a` | /app/ | The absolute path to the remote project folder
-`--rsync-verbose`                  |      |       | Run rsync in verbose mode for debugging
-`--service`                        | `-s` |       | The service to use (e.g. web, mysql)
-`--yes`                            | `-y` |       | Skip warning
+`--remote-project-path`            | `-a` | /app/ | The absolute path to the remote project folder.
+`--service`                        | `-s` | web   | The service to use (e.g. web, mysql).
+
+### Flags:
+
+Flag | Alias | Description
+-----|-------|------------
+`--delete`        |      | Delete extraneous files from destination directories.
+`--dry-run`       |      | Show what will be transferred without executing.
+`--rsync-verbose` |      | Run rsync in verbose mode for debugging.
+`--yes`           | `-y` | Skip warning.

@@ -29,7 +29,7 @@ Opening the endpoint will reveal the application in its default state.
 
 ![](/images/quick-start/flow-dev-environments-environment-view-endpoint.png)
 
-With the tide up and running, it can now be used for remote development. This is done by running the remote development tool [watch command]({{< relref "remote-development/watch-command.md" >}}), which runs in the background, detecting file changes and synchronising them with the remote environment. 
+With the tide up and running, it can now be used for remote development. This is done by running the remote development tool [watch command]({{< relref "remote-development/command-watch.md" >}}), which runs in the background, detecting file changes and synchronising them with the remote environment. 
 
 ```bash
 cp-remote watch

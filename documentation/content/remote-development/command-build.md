@@ -1,11 +1,14 @@
 ---
-title: Build Command
+title: "Command: Build"
 menu:
   main:
     parent: 'remote-development'
     weight: 30
 
 weight: 30
+
+aliases:
+    - /remote-development/build-command/
 ---
 ## Using the Build Command
 
@@ -24,3 +27,11 @@ The `build` command is also used to rebuild your remote environment. Assuming yo
 ***
 
 {{< figure src="/images/remote-development/cp-remote-development-build.svg" class="remote-development" >}}
+
+## Command Reference
+
+### Options:
+
+Option | Alias | Default | Description
+-------|-------|---------|------------
+`--config` | | | Local config file. Default is `.cp-remote-settings.yml` within working directory.
