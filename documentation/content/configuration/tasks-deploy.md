@@ -185,6 +185,21 @@ specification:
             memory: 500Mi
 ```
 
+## Replicas and Redundancy 
+
+{{< note title="Note" >}}
+For background, a pod comprises a Kubernetes service and container(s). A replica is copy of a pod running on a different node, where a node is a worker machine within a cluster.
+{{< /note >}}
+
+By default a pod is configured to have a single replica. You may want to provide redundancy for a pod across multiple nodes to make your application more resilient. This can be done by increasing the number of replicas:
+
+``` yaml
+specification:
+    scalability:
+        enabled: true
+        number_of_replicas: 5
+```
+
 ## Health-checks
 Health-checks (also called probes) help to identify when a container is ready during a deployment and when a container is still alive when deployed:
 
