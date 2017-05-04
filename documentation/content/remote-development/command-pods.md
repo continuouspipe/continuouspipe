@@ -3,9 +3,9 @@ title: "Command: Pods"
 menu:
   main:
     parent: 'remote-development'
-    weight: 120
+    weight: 110
 
-weight: 120
+weight: 110
 
 aliases:
     - /remote-development/pods-command/

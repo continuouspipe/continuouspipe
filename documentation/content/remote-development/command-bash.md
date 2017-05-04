@@ -3,9 +3,9 @@ title: "Command: Bash"
 menu:
   main:
     parent: 'remote-development'
-    weight: 50
+    weight: 40
 
-weight: 50
+weight: 40
 
 aliases:
     - /remote-development/bash-command/
@@ -59,6 +59,6 @@ Option | Alias | Default | Description
 
 ### Flags:
 
-Flag | Alias | Description
------|-------|------------
-`--interactive` | `-i` | Use interactive mode. Interactive mode allows you specify a ContinuousPipe username and API key to run commands without a token. Interactive mode requires the flags `--kube-environment-name`, `--service` and  `--flow-id` to be specified.
+Flag | Alias | Default | Description
+-----|-------|---------|------------
+`--interactive` | `-i` | false | Use interactive mode. Interactive mode allows you specify a ContinuousPipe username and API key to run commands without a token. Interactive mode requires the flags `--kube-environment-name`, `--service` and  `--flow-id` to be specified.

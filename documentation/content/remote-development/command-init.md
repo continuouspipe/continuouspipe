@@ -77,7 +77,7 @@ Option | Alias | Default | Description
 
 ### Flags:
 
-Flag | Alias | Description
------|-------|------------
-`--interactive` | `-i` | Use interactive mode. Interactive mode allows you specify a ContinuousPipe username and API key to run commands without a token.
-`--reset`       | `-r` | Start any partial initializations from the beginning.
+Flag | Alias | Default | Description
+-----|-------|---------|------------
+`--interactive` | `-i` | false | Use interactive mode. Interactive mode allows you specify a ContinuousPipe username and API key to run commands without a token.
+`--reset`       | `-r` | false | Start any partial initializations from the beginning.
