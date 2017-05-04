@@ -34,7 +34,7 @@ variables:
 
     - name: BUILDER_URL
       condition: code_reference.branch != 'production'
-      value: https://eu--west1--b-builder--staging-continuouspipe-io-arbp8o5f7a1t.runscope.net
+      value: https://builder-staging.continuouspipe.io
     - name: AUTHENTICATOR_URL
       condition: code_reference.branch != 'production'
       value: https://authenticator-staging.continuouspipe.io
