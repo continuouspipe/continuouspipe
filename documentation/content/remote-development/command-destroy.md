@@ -3,9 +3,9 @@ title: "Command: Destroy"
 menu:
   main:
     parent: 'remote-development'
-    weight: 110
+    weight: 130
 
-weight: 110
+weight: 130
 
 aliases:
     - /remote-development/destroy-command/

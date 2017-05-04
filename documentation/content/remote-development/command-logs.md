@@ -36,8 +36,8 @@ Option | Alias | Default | Description
 
 ### Flags:
 
-Flag | Alias | Description
------|-------|------------
-`--follow`      | `-f` | Logs will be streamed.
-`--previous`    | `-p` | Print the logs for the previous instance of the container if a pod exists.
+Flag | Alias | Default | Description
+-----|-------|---------|------------
+`--follow`      | `-f` | false | Logs will be streamed.
+`--previous`    | `-p` | false | Print the logs for the previous instance of the container if a pod exists.
 

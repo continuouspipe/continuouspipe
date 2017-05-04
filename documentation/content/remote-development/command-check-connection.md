@@ -3,9 +3,9 @@ title: "Command: Check Connection"
 menu:
   main:
     parent: 'remote-development'
-    weight: 130
+    weight: 120
 
-weight: 130
+weight: 120
 
 aliases:
     - /remote-development/check-connection-command/

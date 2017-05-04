@@ -16,7 +16,11 @@ Sometimes you may want to use `cp-remote` to access an environment that you did 
 
 ## When You Have An Existing Environment Built Using a Token {#token-mode}
 
-If you have already set up a remote development environment using a token, you can use the `--kube-environment-name|-e` option to run commands against a different environment than the one specified during setup. 
+If you have already set up a remote development environment using a token, you can use the `--kube-environment-name|-e` option to run commands against a different environment than the one specified during setup.
+
+{{< note title="Note" >}} 
+The environment must be on the same cluster as the token built environment to use the `--kube-environment-name` option.
+{{< /note >}}
 
 The commands you can use with a token setup and the `--kube-environment-name` option are:
 

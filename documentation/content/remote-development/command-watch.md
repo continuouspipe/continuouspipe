@@ -3,9 +3,9 @@ title: "Command: Watch"
 menu:
   main:
     parent: 'remote-development'
-    weight: 40
+    weight: 60
 
-weight: 40
+weight: 60
 
 aliases:
     - /remote-development/watch-command/
@@ -61,9 +61,9 @@ Option | Alias | Default | Description
 
 ### Flags:
 
-Flag | Alias | Description
------|-------|------------
-`--delete`        |      | Delete extraneous files from destination directories.
-`--dry-run`       |      | Show what will be transferred without executing.
-`--rsync-verbose` |      | Run rsync in verbose mode for debugging.
-`--yes`           | `-y` | Skip warning.
+Flag | Alias | Default | Description
+-----|-------|---------|------------
+`--delete`        |      | false | Delete extraneous files from destination directories.
+`--dry-run`       |      | false | Show what will be transferred without executing.
+`--rsync-verbose` |      | false | Run rsync in verbose mode for debugging.
+`--yes`           | `-y` | false | Skip warning.

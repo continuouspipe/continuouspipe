@@ -67,7 +67,7 @@ Option | Alias | Default | Description
 
 ### Flags:
 
-Flag | Alias | Description
------|-------|------------
-`--dry-run`       |      | Show what will be transferred without executing.
-`--rsync-verbose` |      | Run rsync in verbose mode for debugging.
+Flag | Alias | Default | Description
+-----|-------|---------|------------
+`--dry-run`       |      | false | Show what will be transferred without executing.
+`--rsync-verbose` |      | false | Run rsync in verbose mode for debugging.

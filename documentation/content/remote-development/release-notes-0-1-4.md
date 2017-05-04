@@ -14,6 +14,6 @@ weight: 170
 
 ## Bug Fixes
 
-* Fix for default service not being applied
+* Fix for default service not being applied.
 
-* Fix for filtering pod by running status
+* Fix for filtering pod by running status.
