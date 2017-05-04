@@ -23,6 +23,6 @@ class Transformer
 
     public function slugify(string $hostname)
     {
-        return (new Slugify(['regexp' => '/([^A-Za-z0-9\.]|-)+/']))->slugify($hostname);
+        return (new Slugify())->slugify($hostname);
     }
 }
