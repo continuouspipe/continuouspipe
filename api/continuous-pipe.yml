@@ -27,7 +27,7 @@ variables:
       value: https://ui.continuouspipe.io
     - name: RIVER_HOST
       condition: code_reference.branch == 'production'
-      value: river-continuouspipe-io-8h5eecqzu4bp.runscope.net
+      value: river.continuouspipe.io
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch == 'production'
       value: rabbitmq.stack-production.svc.cluster.local
@@ -46,7 +46,7 @@ variables:
       value: https://ui-staging.continuouspipe.io
     - name: RIVER_HOST
       condition: code_reference.branch != 'production'
-      value: river--staging-continuouspipe-io-8h5eecqzu4bp.runscope.net
+      value: river-staging.continuouspipe.io
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch != 'production'
       value: rabbitmq.stack-master.svc.cluster.local
