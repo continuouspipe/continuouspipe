@@ -16,6 +16,8 @@ Artifacts are a ContinuousPipe feature that can be used to solve the problems of
 
 These problems are addressed by introducing build steps to create separate images, and then using artifacts to copy files and folders from an initial build image to a secondary build image. 
 
+![](/images/configuration/multi-step-building.png)
+
 For example, you might create an initial build image containing a GitHub access token to pull the contents of a private Git repository, then create a secondary build image and copy the code across. The secondary image would only contain the code and none of the access credentials.
 
 Similarly you might create an initial build image that uses Grunt to build your frontend code, which would need a combination of Ruby, Ruby gems, npm and npm modules to build the code. However, the secondary image would not require these tools once the code was copied across so would be much smaller.
@@ -135,11 +137,10 @@ The following is a minimal example Docker file to demonstrate the interaction be
 ```
 FROM nginx
 
-COPY . /usr/share/nginx/html
 COPY ./built-files /usr/share/nginx/html
 ```
 
-This uses the Docker [COPY instruction](https://docs.docker.com/engine/reference/builder/#copy) to import files into the image, copying them to the web server directory. The first COPY instruction imports code from the project repository as normal. The second COPY instruction imports any files shared in the artifact by referencing the path specified in the read artifact prefixed by a full stop i.e "./built-files". In this case there is just one file in the artifact, which will be copied from "./built-files/test.txt" to "/usr/share/nginx/html/test.txt".
+This uses the Docker [COPY instruction](https://docs.docker.com/engine/reference/builder/#copy) to import files into the image, copying them to the web server directory. It imports any files shared in the artifact by referencing the path specified in the read artifact prefixed by a full stop i.e "./built-files". In this case there is just one file in the artifact, which will be copied from "./built-files/test.txt" to "/usr/share/nginx/html/test.txt".
 
 ## Using Artifacts With Secrets
 
@@ -172,7 +173,7 @@ The following is an example Docker file to demonstrate how the `GITHUB_TOKEN` wi
 
 > **Buildfile**
 ```
-FROM nginx
+FROM quay.io/continuouspipe/symfony-php7.1-nginx:stable
 
 ARG GITHUB_TOKEN=
 
