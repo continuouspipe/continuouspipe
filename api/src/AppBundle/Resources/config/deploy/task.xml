@@ -47,7 +47,7 @@
             <argument type="service" id="router" />
             <argument type="service" id="river.pipe.target_environment_factory" />
             <argument>%river_host%</argument>
-            <argument>%use_ssl%%</argument>
+            <argument>%use_ssl%</argument>
         </service>
 
         <service id="river.task.deploy.deployment_request_factory.enhanced"
