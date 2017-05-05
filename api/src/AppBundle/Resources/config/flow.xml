@@ -23,7 +23,14 @@
             <argument>%event_store_host%</argument>
         </service>
 
-        <service id="river.event_store" alias="river.event_store.http_adapter" />
+        <service id="river.event_store.events_adapter" class="ContinuousPipe\River\EventStore\ContinuousPipeEventsAdapter">
+            <argument type="service" id="app.event_store"/>
+        </service>
+
+        <service id="river.event_store" class="ContinuousPipe\River\EventStore\FallbackToNonEmptyEventStore">
+            <argument type="service" id="river.event_store.events_adapter" />
+            <argument type="service" id="river.event_store.http_adapter" />
+        </service>
 
         <service id="river.repository.flow.event_based" class="ContinuousPipe\River\Flow\EventBasedFlowRepository">
             <argument type="service" id="river.event_store.http_adapter" />
@@ -79,6 +86,13 @@
             <argument type="service" id="river.repository.flow.deprecated.doctrine" />
             <argument type="service" id="river.repository.flow.event_based" />
             <argument type="service" id="event_bus" />
+        </service>
+
+        <service id="river.flow.migrations.events_migrator" class="ContinuousPipe\River\Migrations\GetEventStoreToSQLStore\FlowEventsMigrator">
+            <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository.from_aggregate"/>
+            <argument type="service" id="river.event_store.http_adapter"/>
+            <argument type="service" id="river.event_store.events_adapter" />
         </service>
 
         <service id="river.flow.configuration.missing_variables.configuration_resolver" class="ContinuousPipe\River\Flow\MissingVariables\ConfigurationMissingVariableResolver">
