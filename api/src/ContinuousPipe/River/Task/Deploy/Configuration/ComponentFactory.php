@@ -81,7 +81,6 @@ class ComponentFactory
 
         // Resolve hosts expression
         $configuration['endpoints'] = array_map(function (array $endpointConfiguration) use ($context) {
-
             $this->checkIngressConfiguration($endpointConfiguration);
             $this->checkCloudFlareConfiguration($endpointConfiguration);
 
@@ -200,7 +199,7 @@ class ComponentFactory
      * @return array
      * @throws TideGenerationException
      */
-    function addIngressHost(array $endpointConfiguration, TaskContext $context)
+    public function addIngressHost(array $endpointConfiguration, TaskContext $context)
     {
         if (isset($endpointConfiguration['ingress']['host_suffix'])) {
             $endpointConfiguration['ingress']['host']['expression'] =
@@ -221,7 +220,7 @@ class ComponentFactory
      * @return array
      * @throws TideGenerationException
      */
-    function addCloudFlareHost(array $endpointConfiguration, TaskContext $context)
+    public function addCloudFlareHost(array $endpointConfiguration, TaskContext $context)
     {
         if (isset($endpointConfiguration['cloud_flare_zone']['record_suffix'])) {
             $endpointConfiguration['cloud_flare_zone']['host']['expression'] =
