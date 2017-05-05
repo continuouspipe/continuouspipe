@@ -31,9 +31,14 @@ class ManifestFactory
      * @var string
      */
     private $firebaseServiceAccountFilePath;
+    /**
+     * @var string
+     */
+    private $buildCompleteEndpoint;
 
     public function __construct(
         DockerfileResolver $dockerfileResolver,
+        string $buildCompleteEndpoint,
         string $artifactsBucketName,
         string $artifactsServiceAccountFilePath,
         string $firebaseDatabaseUrl,
@@ -44,6 +49,7 @@ class ManifestFactory
         $this->artifactsServiceAccountFilePath = $artifactsServiceAccountFilePath;
         $this->firebaseDatabaseUrl = $firebaseDatabaseUrl;
         $this->firebaseServiceAccountFilePath = $firebaseServiceAccountFilePath;
+        $this->buildCompleteEndpoint = $buildCompleteEndpoint;
     }
 
     public function create(Build $build) : array
@@ -52,6 +58,7 @@ class ManifestFactory
 
         return [
             'log_boundary' => $build->getIdentifier(),
+            'build_complete_endpoint' => $this->buildCompleteEndpoint,
             'artifacts_configuration' => [
                 'bucket_name' => $this->artifactsBucketName,
                 'service_account' => \GuzzleHttp\json_decode(file_get_contents($this->artifactsServiceAccountFilePath), true),

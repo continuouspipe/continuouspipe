@@ -1,0 +1,6 @@
+ContinuousPipe\Builder\Request\CompleteBuildRequest:
+    properties:
+        buildId:
+            type: Ramsey\Uuid\Uuid
+        status:
+            type: ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuildStatus

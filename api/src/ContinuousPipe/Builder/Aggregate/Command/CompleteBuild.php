@@ -1,13 +1,20 @@
 <?php
 
-namespace ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event;
+namespace ContinuousPipe\Builder\Aggregate\Command;
 
-use ContinuousPipe\Builder\Aggregate\Event\BuildEvent;
 use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuildStatus;
+use ContinuousPipe\Message\Message;
 use JMS\Serializer\Annotation as JMS;
 
-class GCBuildFinished extends BuildEvent
+class CompleteBuild implements Message
 {
+    /**
+     * @JMS\Type("string")
+     *
+     * @var string
+     */
+    private $buildIdentifier;
+
     /**
      * @JMS\Type("ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuildStatus")
      *
@@ -17,20 +24,23 @@ class GCBuildFinished extends BuildEvent
 
     /**
      * @param string $buildIdentifier
-     * @param GoogleContainerBuildStatus $status
      */
-    public function __construct(string $buildIdentifier, GoogleContainerBuildStatus $status)
+    public function __construct(string $buildIdentifier)
     {
-        parent::__construct($buildIdentifier);
-
-        $this->status = $status;
+        $this->buildIdentifier = $buildIdentifier;
     }
 
     /**
-     * @return GoogleContainerBuildStatus
+     * @return string
      */
+    public function getBuildIdentifier(): string
+    {
+        return $this->buildIdentifier;
+    }
+
     public function getStatus(): GoogleContainerBuildStatus
     {
         return $this->status;
     }
+    
 }
