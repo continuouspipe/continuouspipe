@@ -2,17 +2,17 @@
 
 namespace ContinuousPipe\River\Recover\TimedOutTides\EventListener;
 
-use ContinuousPipe\River\CommandBus\DelayedCommandBus;
 use ContinuousPipe\River\Event\TideStarted;
 use ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand;
 use ContinuousPipe\River\View\TideRepository;
+use SimpleBus\Message\Bus\MessageBus;
 
 class QueueSpotTimedOutWhenTideStartedListener
 {
     /**
-     * @var DelayedCommandBus
+     * @var MessageBus
      */
-    private $delayedCommandBus;
+    private $commandBus;
 
     /**
      * @var TideRepository
@@ -25,13 +25,13 @@ class QueueSpotTimedOutWhenTideStartedListener
     private $tideTimeout;
 
     /**
-     * @param DelayedCommandBus $delayedCommandBus
+     * @param MessageBus $commandBus
      * @param TideRepository    $tideRepository
      * @param int               $tideTimeout
      */
-    public function __construct(DelayedCommandBus $delayedCommandBus, TideRepository $tideRepository, $tideTimeout)
+    public function __construct(MessageBus $commandBus, TideRepository $tideRepository, $tideTimeout)
     {
-        $this->delayedCommandBus = $delayedCommandBus;
+        $this->commandBus = $commandBus;
         $this->tideRepository = $tideRepository;
         $this->tideTimeout = $tideTimeout;
     }
@@ -43,9 +43,9 @@ class QueueSpotTimedOutWhenTideStartedListener
     {
         $tide = $this->tideRepository->find($event->getTideUuid());
 
-        $this->delayedCommandBus->publish(
-            new SpotTimedOutTidesCommand($tide->getFlowUuid()),
-            $this->tideTimeout
-        );
+        $this->commandBus->handle(new SpotTimedOutTidesCommand(
+            $tide->getFlowUuid(),
+            (new \DateTime())->add(new \DateInterval('PT'.$this->tideTimeout.'S'))
+        ));
     }
 }
