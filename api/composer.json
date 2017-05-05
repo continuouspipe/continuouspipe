@@ -56,7 +56,8 @@
         "lcobucci/jwt": "^3.2",
         "continuous-pipe/platform-bundle": "~1.0.0",
         "continuous-pipe/events": "~0.2.0",
-        "sroze/kubernetes-client": "~1.7.1"
+        "sroze/kubernetes-client": "~1.7.1",
+        "continuous-pipe/message": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -140,6 +141,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/continuouspipe/PlatformBundle"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/continuouspipe/message"
         },
         {
             "type": "vcs",
