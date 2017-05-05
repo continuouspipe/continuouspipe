@@ -55,7 +55,7 @@
         "google/apiclient": "^2.1",
         "lcobucci/jwt": "^3.2",
         "continuous-pipe/platform-bundle": "~1.0.0",
-        "continuous-pipe/events": "~0.1.0",
+        "continuous-pipe/events": "~0.2.0",
         "sroze/kubernetes-client": "~1.7.1"
     },
     "require-dev": {
