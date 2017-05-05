@@ -10,6 +10,7 @@ use FOS\RestBundle\Controller\Annotations\View;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -48,7 +49,7 @@ class CompleteBuildController
     }
 
     /**
-     * @Route("/complete", methods={"POST"})
+     * @Route("/complete", methods={"POST"}, name="complete_build")
      * @ParamConverter("request", converter="complete_build_request")
      * @View
      */
@@ -61,7 +62,9 @@ class CompleteBuildController
 
         $this->commandBus->handle(new CompleteBuild($request->getBuildId(), $request->getStatus()));
 
-        return $this->buildViewRepository->find($request->getBuildId());
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
 }
+
+

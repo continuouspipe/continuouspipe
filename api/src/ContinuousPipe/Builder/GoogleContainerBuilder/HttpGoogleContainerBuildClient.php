@@ -69,9 +69,11 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
     {
         try {
             $sourceArchive = $this->archiveBuilder->createArchive($build->getRequest()->getSteps()[0]);
-            $sourceArchive->writeFile('continuouspipe.build-manifest.json', \GuzzleHttp\json_encode(
+            $mani = \GuzzleHttp\json_encode(
                 $this->manifestFactory->create($build)
-            ));
+            );
+            var_dump($mani);exit;
+            $sourceArchive->writeFile('continuouspipe.build-manifest.json', $mani);
         } catch (Archive\ArchiveException $e) {
             throw new GoogleContainerBuilderException('Something went wrong while creating the source archive', $e->getCode(), $e);
         }

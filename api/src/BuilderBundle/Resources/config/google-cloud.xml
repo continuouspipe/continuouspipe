@@ -61,7 +61,7 @@
 
         <service id="builder.google_container_builder.manifest_factory" class="ContinuousPipe\Builder\GoogleContainerBuilder\ManifestFactory">
             <argument type="service" id="builder.docker_file_resolver" />
-            <argument>%build_complete_endpoint%</argument>
+            <argument type="service" id="router" />
             <argument>%google_storage_bucket%</argument>
             <argument>%google_storage_key_file_path%</argument>
             <argument>%firebase_database_url%</argument>

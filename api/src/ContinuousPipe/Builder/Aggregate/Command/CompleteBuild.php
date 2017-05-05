@@ -24,10 +24,12 @@ class CompleteBuild implements Message
 
     /**
      * @param string $buildIdentifier
+     * @param GoogleContainerBuildStatus $status
      */
-    public function __construct(string $buildIdentifier)
+    public function __construct(string $buildIdentifier, GoogleContainerBuildStatus $status)
     {
         $this->buildIdentifier = $buildIdentifier;
+        $this->status = $status;
     }
 
     /**
