@@ -29,10 +29,5 @@
             <tag name="request.param_converter" priority="0" converter="build_request" />
         </service>
 
-        <service id="builder.request.complete_build_request_param_converter" class="ApiBundle\Request\ParamConverter\CompleteBuildRequestParamConverter">
-            <argument type="service" id="jms_serializer" />
-
-            <tag name="request.param_converter" priority="0" converter="complete_build_request" />
-        </service>
     </services>
 </container>

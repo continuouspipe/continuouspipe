@@ -1,6 +1,0 @@
-ContinuousPipe\Builder\Request\CompleteBuildRequest:
-    properties:
-        buildId:
-            type: string
-        status:
-            type: ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuildStatus
