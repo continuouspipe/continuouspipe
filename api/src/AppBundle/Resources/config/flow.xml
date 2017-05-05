@@ -34,7 +34,7 @@
         </service>
 
         <service id="river.repository.flow.event_based" class="ContinuousPipe\River\Flow\EventBasedFlowRepository">
-            <argument type="service" id="river.event_store.http_adapter" />
+            <argument type="service" id="river.event_store" />
         </service>
 
         <service id="river.repository.flow" alias="river.repository.flow.event_based" />
