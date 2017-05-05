@@ -1,5 +1,5 @@
 IMAGE_NAME=quay.io/continuouspipe/cloud-builder
-TAG=v3
+TAG=v4
 
 all: build push
 

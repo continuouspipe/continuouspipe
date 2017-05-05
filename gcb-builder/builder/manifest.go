@@ -31,6 +31,7 @@ type Manifest struct {
 
     ArtifactsConfiguration       ArtifactsConfiguration       `json:"artifacts_configuration"`
     FirebaseLoggingConfiguration FirebaseLoggingConfiguration `json:"firebase_logging_configuration"`
+    BuildCompleteEndpoint        string                       `json:"build_complete_endpoint"`
 }
 
 // ManifestStep is a step in the manifest
