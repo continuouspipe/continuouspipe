@@ -128,3 +128,29 @@ Feature:
     When a tide is started for the branch "foo"
     And the build task succeed
     Then the deploy task should be started
+
+  Scenario: Filtering on pull request's labels
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        images:
+            build: ~
+
+        environment:
+            deploy:
+                cluster: foo
+                services:
+                    mysql:
+                        specification:
+                            source:
+                                image: mysql
+
+            filter:
+                expression: "'wip' not in pull_request.labels"
+    """
+    #And the pull request #1 have the label "wip"
+    When the pull request #1 is unlabeled
+    And the tide starts
+    Then the tide should be created
+    And the build task succeed
+    And the deploy task should be started

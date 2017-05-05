@@ -117,6 +117,8 @@ class GitHubWebHookHandler
             $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $pullRequest));
         } elseif ($event->getAction() == PullRequestEvent::ACTION_LABELED) {
             $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $pullRequest));
+        } elseif ($event->getAction() == PullRequestEvent::ACTION_UNLABELED) {
+            $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $pullRequest));
         }
     }
 
