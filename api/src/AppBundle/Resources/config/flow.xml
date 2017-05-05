@@ -30,6 +30,7 @@
         <service id="river.event_store" class="ContinuousPipe\River\EventStore\FallbackToNonEmptyEventStore">
             <argument type="service" id="river.event_store.events_adapter" />
             <argument type="service" id="river.event_store.http_adapter" />
+            <argument type="service" id="logger" />
         </service>
 
         <service id="river.repository.flow.event_based" class="ContinuousPipe\River\Flow\EventBasedFlowRepository">
