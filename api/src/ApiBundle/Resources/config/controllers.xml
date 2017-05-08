@@ -17,10 +17,17 @@
             <argument type="service" id="builder.request_transformer" />
         </service>
 
+        <service id="api.controller.complete_build" class="ApiBundle\Controller\CompleteBuildController">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="builder.view.build_repository" />
+        </service>
+
         <service id="builder.request.build_request_param_converter" class="ApiBundle\Request\ParamConverter\BuildRequestParamConverter">
             <argument type="service" id="jms_serializer" />
 
             <tag name="request.param_converter" priority="0" converter="build_request" />
         </service>
+
     </services>
 </container>

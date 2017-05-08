@@ -8,6 +8,7 @@ use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Docker\DockerfileResolver;
 use ContinuousPipe\Builder\Logging;
 use ContinuousPipe\Builder\Request\BuildRequest;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ManifestFactory
 {
@@ -31,15 +32,21 @@ class ManifestFactory
      * @var string
      */
     private $firebaseServiceAccountFilePath;
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGenerator;
 
     public function __construct(
         DockerfileResolver $dockerfileResolver,
+        UrlGeneratorInterface $urlGenerator,
         string $artifactsBucketName,
         string $artifactsServiceAccountFilePath,
         string $firebaseDatabaseUrl,
         string $firebaseServiceAccountFilePath
     ) {
         $this->dockerfileResolver = $dockerfileResolver;
+        $this->urlGenerator = $urlGenerator;
         $this->artifactsBucketName = $artifactsBucketName;
         $this->artifactsServiceAccountFilePath = $artifactsServiceAccountFilePath;
         $this->firebaseDatabaseUrl = $firebaseDatabaseUrl;
@@ -52,6 +59,7 @@ class ManifestFactory
 
         return [
             'log_boundary' => $build->getIdentifier(),
+            'build_complete_endpoint' => $this->urlGenerator->generate('complete_build', ['id' => $build->getIdentifier()], UrlGeneratorInterface::ABSOLUTE_URL),
             'artifacts_configuration' => [
                 'bucket_name' => $this->artifactsBucketName,
                 'service_account' => \GuzzleHttp\json_decode(file_get_contents($this->artifactsServiceAccountFilePath), true),
