@@ -69,9 +69,10 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
     {
         try {
             $sourceArchive = $this->archiveBuilder->createArchive($build->getRequest()->getSteps()[0]);
-            $sourceArchive->writeFile('continuouspipe.build-manifest.json', \GuzzleHttp\json_encode(
+            $mani = \GuzzleHttp\json_encode(
                 $this->manifestFactory->create($build)
-            ));
+            );
+            $sourceArchive->writeFile('continuouspipe.build-manifest.json', $mani);
         } catch (Archive\ArchiveException $e) {
             throw new GoogleContainerBuilderException('Something went wrong while creating the source archive', $e->getCode(), $e);
         }
@@ -98,7 +99,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
                         ],
                         'steps' => [
                             [
-                                'name' => 'quay.io/continuouspipe/cloud-builder:v3',
+                                'name' => 'quay.io/continuouspipe/cloud-builder:v4',
                                 'args' => [
                                     // Delete the manifest file once read
                                     '-delete-manifest',
@@ -149,9 +150,6 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
             throw new GoogleContainerBuilderException('The response from GCB was not understandable', $e->getCode(), $e);
         }
 
-        return new GoogleContainerBuildStatus(
-            $json['status'],
-            isset($json['statusDetail']) ? $json['statusDetail'] : ''
-        );
+        return new GoogleContainerBuildStatus($json['status']);
     }
 }

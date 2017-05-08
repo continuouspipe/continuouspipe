@@ -14,20 +14,11 @@ class GoogleContainerBuildStatus
     private $status;
 
     /**
-     * @JMS\Type("string")
-     *
-     * @var string
-     */
-    private $reason;
-
-    /**
      * @param string $status
-     * @param string $reason
      */
-    public function __construct(string $status, string $reason)
+    public function __construct(string $status)
     {
         $this->status = $status;
-        $this->reason = $reason;
     }
 
     public function isSuccessful() : bool

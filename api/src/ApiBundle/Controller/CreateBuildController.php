@@ -9,17 +9,14 @@ use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\Builder\Request\BuildRequestException;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\View\BuildViewRepository;
 use FOS\RestBundle\Controller\Annotations\View;
 use Inviqa\LaunchDarklyBundle\Client\ExplicitUser\StaticClient;
 use LaunchDarkly\LDUser;
-use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use SimpleBus\Message\Bus\MessageBus;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -83,8 +80,11 @@ class CreateBuildController
             return \FOS\RestBundle\View\View::create($violations->get(0), 400);
         }
 
+        $userKey = $this->getUserKey($request);
+        if (StaticClient::variation('main-gcb-build', new LDUser($userKey), false)) {
+            $request = $request->withEngine(new Engine('gcb'));
+        }
         if (null === $request->getEngine()) {
-            $userKey = $this->getUserKey($request);
             if (StaticClient::variation('run-hidden-gcb-build', new LDUser($userKey), false)) {
                 $this->createAndStartBuild($this->createHiddenGcbBuild($request));
             }
