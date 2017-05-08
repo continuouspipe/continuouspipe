@@ -33,7 +33,7 @@ class ManifestFactory
      */
     private $firebaseServiceAccountFilePath;
     /**
-     * @var UrlGenerator
+     * @var UrlGeneratorInterface
      */
     private $urlGenerator;
 

@@ -150,9 +150,6 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
             throw new GoogleContainerBuilderException('The response from GCB was not understandable', $e->getCode(), $e);
         }
 
-        return new GoogleContainerBuildStatus(
-            $json['status'],
-            isset($json['statusDetail']) ? $json['statusDetail'] : ''
-        );
+        return new GoogleContainerBuildStatus($json['status']);
     }
 }
