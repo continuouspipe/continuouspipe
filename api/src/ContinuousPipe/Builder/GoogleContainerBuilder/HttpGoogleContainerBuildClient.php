@@ -99,7 +99,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
                         ],
                         'steps' => [
                             [
-                                'name' => 'quay.io/continuouspipe/cloud-builder:v3',
+                                'name' => 'quay.io/continuouspipe/cloud-builder:v4',
                                 'args' => [
                                     // Delete the manifest file once read
                                     '-delete-manifest',
