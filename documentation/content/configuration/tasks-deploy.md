@@ -188,10 +188,10 @@ specification:
 ## Replicas and Redundancy 
 
 {{< note title="Note" >}}
-For background, a pod comprises a Kubernetes service and container(s). A replica is copy of a pod running on a different node, where a node is a worker machine within a cluster.
+A replica is copy of a service (as defined in your `docker-compose.yml` file) running in the cluster.
 {{< /note >}}
 
-By default a pod is configured to have a single replica. You may want to provide redundancy for a pod across multiple nodes to make your application more resilient. This can be done by increasing the number of replicas:
+By default a service is configured to have a single replica. You may want to provide redundancy for a service across multiple nodes to make your application more resilient. This can be done by increasing the number of replicas:
 
 ``` yaml
 specification:
