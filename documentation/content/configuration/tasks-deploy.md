@@ -141,7 +141,8 @@ If you are using one of the [ContinuousPipe images]({{< relref "faq/what-are-the
 ``` yaml
 specification:
    environment_variables:
-       - name: AUTH_HTTP_ENABLED
+       - name: AUTH_HTTP_
+       
          value: true
        - name: AUTH_HTTP_HTPASSWD
          value: ${AUTH_HTTP_HTPASSWD}
@@ -196,9 +197,18 @@ By default a service is configured to have a single replica. You may want to pro
 ``` yaml
 specification:
     scalability:
-        enabled: true
         number_of_replicas: 5
 ```
+
+{{< note title="Note" > }}
+By default, your service will be transformed to a Kubernetes Deployment object that will create a Pod object. If you would like to only create the Pod object (which we wouldn't recommend), you can use this configuration:
+
+```yaml
+specification:
+    scalability:
+        enabled: false
+```
+{{< /note >}}
 
 ## Health-checks
 Health-checks (also called probes) help to identify when a container is ready during a deployment and when a container is still alive when deployed:
