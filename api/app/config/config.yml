@@ -215,16 +215,11 @@ old_sound_rabbit_mq:
             connection:       stack
             exchange_options: { name: user_activities, type: fanout }
 
-simple_bus_rabbit_mq_bundle_bridge:
-    commands:
-        # this producer service is defined by OldSoundRabbitMqBundle,
-        # its name is old_sound_rabbit_mq.%producer_name%_producer
-        producer_service_id: old_sound_rabbit_mq.asynchronous_commands_producer
-
 simple_bus_asynchronous:
     object_serializer_service_id: river.jms_serializer.object_serializer
     commands:
         logging: ~
+        publisher_service_id: continuouspipe.message.simple_bus.producer
 
 csa_guzzle:
     profiler: %kernel.debug%
@@ -366,3 +361,6 @@ worker:
     service: simple_bus.rabbit_mq_bundle_bridge.commands_consumer
     tideways:
         api_key: %tideways_api_key%
+
+message:
+    driver: google-pub-sub

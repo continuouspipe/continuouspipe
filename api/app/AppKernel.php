@@ -30,6 +30,7 @@ class AppKernel extends Kernel
             new ContinuousPipe\WorkerBundle\WorkerBundle(),
             new ContinuousPipe\PlatformBundle\ContinuousPipePlatformBundle(),
             new ContinuousPipe\DevelopmentEnvironmentBundle\DevelopmentEnvironmentBundle(),
+            new ContinuousPipe\MessageBundle\MessageBundle(),
             new LogStream\LogStreamBundle(),
             new AdminBundle\AdminBundle(),
             new AppBundle\AppBundle(),
@@ -43,7 +44,6 @@ class AppKernel extends Kernel
         $bundles[] = new SimpleBus\SymfonyBridge\SimpleBusEventBusBundle();
         $bundles[] = new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle();
         $bundles[] = new SimpleBus\AsynchronousBundle\SimpleBusAsynchronousBundle();
-        $bundles[] = new SimpleBus\RabbitMQBundleBridge\SimpleBusRabbitMQBundleBridgeBundle();
         $bundles[] = new SimpleBus\JMSSerializerBundleBridge\SimpleBusJMSSerializerBundleBridgeBundle();
         $bundles[] = new Csa\Bundle\GuzzleBundle\CsaGuzzleBundle();
 
