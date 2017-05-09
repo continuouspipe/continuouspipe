@@ -522,6 +522,18 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @When the pull request #:number is unlabeled
+     */
+    public function thePullRequestIsUnlabeled($number)
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
+        $contents['number'] = $number;
+        $contents['action'] = 'unlabeled';
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
      * @When the pull request #:number is labeled with head :branch and the commit :sha
      */
     public function thePullRequestIsLabeledWithHeadAndTheCommand($number, $branch, $sha)
