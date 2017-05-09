@@ -16,7 +16,7 @@ Feature:
     And the pods of the replication controllers will be created successfully and running
 
   Scenario: It proxies through the created endpoint
-    Given the service "http" will be   created with the public IP "1.2.3.4"
+    Given the service "http" will be created with the public IP "1.2.3.4"
     And the created HttpLabs stack will have the UUID "00000000-0000-0000-0000-000000000000" and the URL address "https://foo-bar.httplabs.io"
     And the components specification are:
     """

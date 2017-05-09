@@ -50,52 +50,15 @@ class IngressFactory implements EndpointFactory
 
         // The `LoadBalancer` service is enough.
         if ($serviceType === ServiceSpecification::TYPE_LOAD_BALANCER) {
-            return [
-                $service,
-            ];
+            return [$service,];
         }
         if ($ingressType == 'internal') {
-            $service->getMetadata()->getLabelList()->add(
-                new Label('internal-endpoint', 'true')
-            );
+            $this->addLabelToService($service, 'internal-endpoint', 'true');
 
-            return [
-                $service
-            ];
+            return [$service];
         }
 
-        if (null === ($endpointIngress = $endpoint->getIngress())) {
-            $endpointIngress = new Endpoint\EndpointIngress(null, []);
-        }
-
-        $service->getMetadata()->getLabelList()->add(
-            new Label('source-of-ingress', $endpoint->getName())
-        );
-
-        $sslCertificatesSecrets = array_map(
-            function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
-                return $this->createSslCertificateSecret($endpoint, $sslCertificate);
-            },
-            $endpoint->getSslCertificates()
-        );
-
-        $ingress = $this->createIngress(
-            $component,
-            $service,
-            $endpointIngress->getClass(),
-            array_map(
-                function (Secret $secret) use ($endpointIngress) {
-                    return new IngressTls(
-                        $secret->getMetadata()->getName(),
-                        $this->getHostsFromRules($endpointIngress->getRules())
-                    );
-                },
-                $sslCertificatesSecrets
-            ),
-            $endpointIngress->getRules()
-        );
-
-        return array_merge($sslCertificatesSecrets, [$service, $ingress]);
+        return $this->getIngress($component, $endpoint, $service);
     }
 
     /**
@@ -127,9 +90,8 @@ class IngressFactory implements EndpointFactory
             $labels,
             KeyValueObjectList::fromAssociativeArray($endpoint->getAnnotations(), Annotation::class)
         );
-        $service = new Service($objectMetadata, $serviceSpecification);
 
-        return $service;
+        return new Service($objectMetadata, $serviceSpecification);
     }
 
     /**
@@ -177,25 +139,7 @@ class IngressFactory implements EndpointFactory
             $annotations->add(new Annotation('kubernetes.io/ingress.class', $class));
         }
 
-        $portNumbers = array_map(
-            function (ServicePort $port) {
-                return (int) $port->getPort();
-            },
-            $service->getSpecification()->getPorts()
-        );
-
-        $exposedPort = current($portNumbers);
-        if (in_array(443, $portNumbers)) {
-            $exposedPort = 443;
-            $annotations->add(new Annotation('ingress.kubernetes.io/secure-backends', 'true'));
-        } elseif (in_array(80, $portNumbers)) {
-            $exposedPort = 80;
-        }
-
-        $ingressBackend = new IngressBackend(
-            $service->getMetadata()->getName(),
-            $exposedPort
-        );
+        $ingressBackend = $this->getIngressBackend($service, $annotations);
 
         return new Ingress(
             new ObjectMetadata(
@@ -259,9 +203,13 @@ class IngressFactory implements EndpointFactory
     {
         if ($ingressType == 'NodePort') {
             return ServiceSpecification::TYPE_NODE_PORT;
-        } elseif ($ingressType == 'internal') {
+        }
+
+        if ($ingressType == 'internal') {
             return ServiceSpecification::TYPE_CLUSTER_IP;
-        } elseif ($ingressType != 'ingress') {
+        }
+
+        if ($ingressType != 'ingress') {
             return ServiceSpecification::TYPE_LOAD_BALANCER;
         }
 
@@ -281,5 +229,120 @@ class IngressFactory implements EndpointFactory
     private function classHasToBeNodePort(string $class) : bool
     {
         return in_array($class, ['gce']);
+    }
+
+    /**
+     * @param Endpoint $endpoint
+     * @return array
+     */
+    private function getSslCertificatesSecrets(Endpoint $endpoint)
+    {
+        return array_map(
+            function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
+                return $this->createSslCertificateSecret($endpoint, $sslCertificate);
+            },
+            $endpoint->getSslCertificates()
+        );
+    }
+
+    /**
+     * @param $endpointIngress
+     * @param $sslCertificatesSecrets
+     * @return array
+     */
+    private function getTlsCertificates($endpointIngress, $sslCertificatesSecrets)
+    {
+        return array_map(
+            function (Secret $secret) use ($endpointIngress) {
+                return new IngressTls(
+                    $secret->getMetadata()->getName(),
+                    $this->getHostsFromRules($endpointIngress->getRules())
+                );
+            },
+            $sslCertificatesSecrets
+        );
+    }
+
+    /**
+     * @param $service
+     * @param $labelName
+     * @param $labelValue
+     */
+    private function addLabelToService($service, $labelName, $labelValue)
+    {
+        $service->getMetadata()->getLabelList()->add(
+            new Label($labelName, $labelValue)
+        );
+    }
+
+    /**
+     * @param Component $component
+     * @param Endpoint $endpoint
+     * @param $service
+     * @return array
+     */
+    private function getIngress(Component $component, Endpoint $endpoint, $service)
+    {
+        if (null === ($endpointIngress = $endpoint->getIngress())) {
+            $endpointIngress = new Endpoint\EndpointIngress(null, []);
+        }
+
+        $this->addLabelToService($service, 'source-of-ingress', $endpoint->getName());
+
+        $sslCertificatesSecrets = $this->getSslCertificatesSecrets($endpoint);
+
+        $ingress = $this->createIngress(
+            $component,
+            $service,
+            $endpointIngress->getClass(),
+            $this->getTlsCertificates($endpointIngress, $sslCertificatesSecrets),
+            $endpointIngress->getRules()
+        );
+
+        return array_merge($sslCertificatesSecrets, [$service, $ingress]);
+    }
+
+    /**
+     * @param Service $service
+     * @return array
+     */
+    private function getPortNumbers(Service $service)
+    {
+        return array_map(
+            function (ServicePort $port) {
+                return (int) $port->getPort();
+            },
+            $service->getSpecification()->getPorts()
+        );
+    }
+
+    /**
+     * @param $portNumbers
+     * @param $annotations
+     * @return int|mixed
+     */
+    private function getExposedPort($portNumbers, $annotations)
+    {
+        $exposedPort = current($portNumbers);
+        if (in_array(443, $portNumbers)) {
+            $annotations->add(new Annotation('ingress.kubernetes.io/secure-backends', 'true'));
+            return 443;
+        } elseif (in_array(80, $portNumbers)) {
+            return 80;
+        }
+        return $exposedPort;
+    }
+
+    /**
+     * @param Service $service
+     * @param $annotations
+     * @return IngressBackend
+     */
+    private function getIngressBackend(Service $service, $annotations)
+    {
+        return new IngressBackend(
+            $service->getMetadata()->getName(),
+            $this->getExposedPort($this->getPortNumbers($service), $annotations)
+        );
     }
 }
