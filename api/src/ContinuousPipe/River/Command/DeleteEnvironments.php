@@ -2,12 +2,13 @@
 
 namespace ContinuousPipe\River\Command;
 
+use ContinuousPipe\Message\Delay\DelayedMessage;
 use ContinuousPipe\River\CodeReference;
 use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\UuidInterface;
 
-class DeleteEnvironments implements FlowCommand
+class DeleteEnvironments implements FlowCommand, DelayedMessage
 {
     /**
      * @JMS\Type("Ramsey\Uuid\Uuid")
@@ -24,13 +25,17 @@ class DeleteEnvironments implements FlowCommand
     private $codeReference;
 
     /**
-     * @param Uuid          $flowUuid
-     * @param CodeReference $codeReference
+     * @JMS\Type("DateTime")
+     *
+     * @var \DateTimeInterface
      */
-    public function __construct(Uuid $flowUuid, CodeReference $codeReference)
+    private $runAt;
+
+    public function __construct(Uuid $flowUuid, CodeReference $codeReference, \DateTimeInterface $runAt = null)
     {
         $this->flowUuid = $flowUuid;
         $this->codeReference = $codeReference;
+        $this->runAt = $runAt;
     }
 
     public function getFlowUuid(): UuidInterface
@@ -44,5 +49,13 @@ class DeleteEnvironments implements FlowCommand
     public function getCodeReference(): CodeReference
     {
         return $this->codeReference;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function runAt(): \DateTimeInterface
+    {
+        return $this->runAt ?: new \DateTime('yesterday');
     }
 }

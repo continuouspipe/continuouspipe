@@ -2,10 +2,11 @@
 
 namespace ContinuousPipe\River\LogStream\ArchiveLogs\Command;
 
+use ContinuousPipe\Message\Delay\DelayedMessage;
 use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
-class ArchiveTideCommand
+class ArchiveTideCommand implements DelayedMessage
 {
     /**
      * @JMS\Type("Ramsey\Uuid\Uuid")
@@ -22,13 +23,17 @@ class ArchiveTideCommand
     private $logId;
 
     /**
-     * @param Uuid   $tideUuid
-     * @param string $logId
+     * @JMS\Type("DateTime")
+     *
+     * @var \DateTimeInterface
      */
-    public function __construct(Uuid $tideUuid, string $logId)
+    private $runAt;
+
+    public function __construct(Uuid $tideUuid, string $logId, \DateTimeInterface $runAt = null)
     {
         $this->tideUuid = $tideUuid;
         $this->logId = $logId;
+        $this->runAt = $runAt;
     }
 
     /**
@@ -45,5 +50,13 @@ class ArchiveTideCommand
     public function getLogId()
     {
         return $this->logId;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function runAt(): \DateTimeInterface
+    {
+        return $this->runAt ?: new \DateTime('yesterday');
     }
 }

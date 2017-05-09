@@ -19,9 +19,10 @@ default:
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
-                    - @river.queue.delayed_command_bus.traced
+                    - @continuouspipe.message.default.message_producer.traced
                     - @river.time_resolver.predictable
                     - @river.repository.tide
+                    - @continuouspipe.message.default.message_producer.delayed_messages_buffer
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -153,9 +154,10 @@ default:
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
-                    - @river.queue.delayed_command_bus.traced
+                    - @continuouspipe.message.default.message_producer.traced
                     - @river.time_resolver.predictable
                     - @river.repository.tide
+                    - @continuouspipe.message.default.message_producer.delayed_messages_buffer
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -250,9 +252,10 @@ default:
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
-                    - @river.queue.delayed_command_bus.traced
+                    - @continuouspipe.message.default.message_producer.traced
                     - @river.time_resolver.predictable
                     - @river.repository.tide
+                    - @continuouspipe.message.default.message_producer.delayed_messages_buffer
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -351,9 +354,10 @@ smoke:
                     - @river.tide_factory
                     - @river.view.tide_repository
                     - @kernel
-                    - @river.queue.delayed_command_bus.traced
+                    - @continuouspipe.message.default.message_producer.traced
                     - @river.time_resolver.predictable
                     - @river.repository.tide
+                    - @continuouspipe.message.default.message_producer.delayed_messages_buffer
                 - GitHubContext:
                     - @kernel
                     - @river.notifications.notifier.github.commit_status.traceable

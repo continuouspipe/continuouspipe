@@ -2,10 +2,10 @@
 
 namespace ContinuousPipe\River\Tide\Concurrency;
 
-use ContinuousPipe\River\CommandBus\DelayedCommandBus;
 use ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
+use SimpleBus\Message\Bus\MessageBus;
 
 class ViewRepositoryBasedConcurrencyManager implements TideConcurrencyManager
 {
@@ -15,9 +15,9 @@ class ViewRepositoryBasedConcurrencyManager implements TideConcurrencyManager
     private $tideRepository;
 
     /**
-     * @var DelayedCommandBus
+     * @var MessageBus
      */
-    private $delayedCommandBus;
+    private $commandBus;
 
     /**
      * @var int
@@ -26,13 +26,13 @@ class ViewRepositoryBasedConcurrencyManager implements TideConcurrencyManager
 
     /**
      * @param TideRepository    $tideRepository
-     * @param DelayedCommandBus $delayedCommandBus
+     * @param MessageBus $commandBus
      * @param int               $retryStartInterval
      */
-    public function __construct(TideRepository $tideRepository, DelayedCommandBus $delayedCommandBus, $retryStartInterval = 60000)
+    public function __construct(TideRepository $tideRepository, MessageBus $commandBus, $retryStartInterval = 60000)
     {
         $this->tideRepository = $tideRepository;
-        $this->delayedCommandBus = $delayedCommandBus;
+        $this->commandBus = $commandBus;
         $this->retryStartInterval = $retryStartInterval;
     }
 
@@ -54,9 +54,10 @@ class ViewRepositoryBasedConcurrencyManager implements TideConcurrencyManager
      */
     public function postPoneTideStart(Tide $tide)
     {
-        $this->delayedCommandBus->publish(
-            new RunPendingTidesCommand($tide->getFlowUuid(), $tide->getCodeReference()->getBranch()),
-            $this->retryStartInterval
-        );
+        $this->commandBus->handle(new RunPendingTidesCommand(
+            $tide->getFlowUuid(),
+            $tide->getCodeReference()->getBranch(),
+            (new \DateTime())->add(new \DateInterval('PT'.$this->retryStartInterval.'S'))
+        ));
     }
 }
