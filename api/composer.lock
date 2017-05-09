@@ -285,12 +285,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/message.git",
-                "reference": "1cb753b0678f96c3b94f225c528a351737d0fe0c"
+                "reference": "485e99d12005287f7e0c61e042342d2476380101"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/1cb753b0678f96c3b94f225c528a351737d0fe0c",
-                "reference": "1cb753b0678f96c3b94f225c528a351737d0fe0c",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/485e99d12005287f7e0c61e042342d2476380101",
+                "reference": "485e99d12005287f7e0c61e042342d2476380101",
                 "shasum": ""
             },
             "require": {
@@ -307,7 +307,7 @@
                 "source": "https://github.com/continuouspipe/message/tree/add-transactions-and-delayed-messages",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2017-05-09 08:33:54"
+            "time": "2017-05-09 08:42:37"
         },
         {
             "name": "continuous-pipe/model",
