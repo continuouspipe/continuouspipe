@@ -23,7 +23,8 @@ class PublicEndpointObjectVoter
         if ($object instanceof Ingress) {
             return true;
         } elseif ($object instanceof Service) {
-            return $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER;
+            return $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER ||
+                    $object->getMetadata()->getLabelList()->hasKey('internal-endpoint');
         }
 
         return false;

@@ -7,7 +7,6 @@ use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointFactory;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\TransformationException;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Component\Endpoint;
-use ContinuousPipe\Pipe\Environment\PublicEndpointPort;
 use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressBackend;
@@ -55,6 +54,15 @@ class IngressFactory implements EndpointFactory
                 $service,
             ];
         }
+        if ($ingressType == 'internal') {
+            $service->getMetadata()->getLabelList()->add(
+                new Label('internal-endpoint', 'true')
+            );
+
+            return [
+                $service
+            ];
+        }
 
         if (null === ($endpointIngress = $endpoint->getIngress())) {
             $endpointIngress = new Endpoint\EndpointIngress(null, []);
@@ -64,20 +72,26 @@ class IngressFactory implements EndpointFactory
             new Label('source-of-ingress', $endpoint->getName())
         );
 
-        $sslCertificatesSecrets = array_map(function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
-            return $this->createSslCertificateSecret($endpoint, $sslCertificate);
-        }, $endpoint->getSslCertificates());
+        $sslCertificatesSecrets = array_map(
+            function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
+                return $this->createSslCertificateSecret($endpoint, $sslCertificate);
+            },
+            $endpoint->getSslCertificates()
+        );
 
         $ingress = $this->createIngress(
             $component,
             $service,
             $endpointIngress->getClass(),
-            array_map(function (Secret $secret) use ($endpointIngress) {
-                return new IngressTls(
-                    $secret->getMetadata()->getName(),
-                    $this->getHostsFromRules($endpointIngress->getRules())
-                );
-            }, $sslCertificatesSecrets),
+            array_map(
+                function (Secret $secret) use ($endpointIngress) {
+                    return new IngressTls(
+                        $secret->getMetadata()->getName(),
+                        $this->getHostsFromRules($endpointIngress->getRules())
+                    );
+                },
+                $sslCertificatesSecrets
+            ),
             $endpointIngress->getRules()
         );
 
@@ -86,8 +100,8 @@ class IngressFactory implements EndpointFactory
 
     /**
      * @param Component $component
-     * @param Endpoint  $endpoint
-     * @param string    $type
+     * @param Endpoint $endpoint
+     * @param string $type
      *
      * @return Service
      *
@@ -95,9 +109,12 @@ class IngressFactory implements EndpointFactory
      */
     private function createService(Component $component, Endpoint $endpoint, string $type)
     {
-        $ports = array_map(function (Component\Port $port) {
-            return new ServicePort($port->getIdentifier(), $port->getPort(), $port->getProtocol());
-        }, $component->getSpecification()->getPorts());
+        $ports = array_map(
+            function (Component\Port $port) {
+                return new ServicePort($port->getIdentifier(), $port->getPort(), $port->getProtocol());
+            },
+            $component->getSpecification()->getPorts()
+        );
 
         if (count($ports) == 0) {
             throw new TransformationException('The component should expose at least one port');
@@ -105,14 +122,18 @@ class IngressFactory implements EndpointFactory
 
         $labels = $this->namingStrategy->getLabelsByComponent($component);
         $serviceSpecification = new ServiceSpecification($labels->toAssociativeArray(), $ports, $type);
-        $objectMetadata = new ObjectMetadata($endpoint->getName(), $labels, KeyValueObjectList::fromAssociativeArray($endpoint->getAnnotations(), Annotation::class));
+        $objectMetadata = new ObjectMetadata(
+            $endpoint->getName(),
+            $labels,
+            KeyValueObjectList::fromAssociativeArray($endpoint->getAnnotations(), Annotation::class)
+        );
         $service = new Service($objectMetadata, $serviceSpecification);
 
         return $service;
     }
 
     /**
-     * @param Endpoint                $endpoint
+     * @param Endpoint $endpoint
      * @param Endpoint\SslCertificate $sslCertificate
      *
      * @return Secret
@@ -140,8 +161,13 @@ class IngressFactory implements EndpointFactory
      *
      * @return Ingress
      */
-    private function createIngress(Component $component, Service $service, string $class = null, array $tlsCertificates = [], array $rules = [])
-    {
+    private function createIngress(
+        Component $component,
+        Service $service,
+        string $class = null,
+        array $tlsCertificates = [],
+        array $rules = []
+    ) {
         $labels = $this->namingStrategy->getLabelsByComponent($component);
         $labels->add(new Label('service-type', $service->getSpecification()->getType()));
 
@@ -151,9 +177,12 @@ class IngressFactory implements EndpointFactory
             $annotations->add(new Annotation('kubernetes.io/ingress.class', $class));
         }
 
-        $portNumbers = array_map(function (ServicePort $port) {
-            return (int) $port->getPort();
-        }, $service->getSpecification()->getPorts());
+        $portNumbers = array_map(
+            function (ServicePort $port) {
+                return (int) $port->getPort();
+            },
+            $service->getSpecification()->getPorts()
+        );
 
         $exposedPort = current($portNumbers);
         if (in_array(443, $portNumbers)) {
@@ -175,23 +204,29 @@ class IngressFactory implements EndpointFactory
                 $annotations
             ),
             new IngressSpecification(
-                count($rules) > 0 ? null: $ingressBackend,
+                count($rules) > 0 ? null : $ingressBackend,
                 $tlsCertificates,
-                array_map(function (IngressRule $rule) use ($ingressBackend) {
-                    if (null === ($http = $rule->getHttp())) {
-                        $http = new IngressHttpRule([
-                            new IngressHttpRulePath($ingressBackend),
-                        ]);
-                    }
+                array_map(
+                    function (IngressRule $rule) use ($ingressBackend) {
+                        if (null === ($http = $rule->getHttp())) {
+                            $http = new IngressHttpRule(
+                                [
+                                    new IngressHttpRulePath($ingressBackend),
+                                ]
+                            );
+                        }
 
-                    return new IngressRule(
-                        $rule->getHost(),
-                        $http
-                    );
-                }, $rules)
+                        return new IngressRule(
+                            $rule->getHost(),
+                            $http
+                        );
+                    },
+                    $rules
+                )
             )
         );
     }
+
     /**
      * @param IngressRule[] $rules
      *
@@ -199,9 +234,12 @@ class IngressFactory implements EndpointFactory
      */
     private function getHostsFromRules(array $rules) : array
     {
-        return array_map(function (IngressRule $rule) {
-            return $rule->getHost();
-        }, $rules);
+        return array_map(
+            function (IngressRule $rule) {
+                return $rule->getHost();
+            },
+            $rules
+        );
     }
 
     private function getIngressType(Endpoint $endpoint): string
@@ -221,6 +259,8 @@ class IngressFactory implements EndpointFactory
     {
         if ($ingressType == 'NodePort') {
             return ServiceSpecification::TYPE_NODE_PORT;
+        } elseif ($ingressType == 'internal') {
+            return ServiceSpecification::TYPE_CLUSTER_IP;
         } elseif ($ingressType != 'ingress') {
             return ServiceSpecification::TYPE_LOAD_BALANCER;
         }

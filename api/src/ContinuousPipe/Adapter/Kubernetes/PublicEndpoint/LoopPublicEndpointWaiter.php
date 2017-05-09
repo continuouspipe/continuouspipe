@@ -187,16 +187,28 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
      */
     private function getPublicEndpoint(NamespaceClient $namespaceClient, KubernetesObject $object)
     {
-        $loadBalancer = $this->getLoadBalancerStatus($namespaceClient, $object);
         $name = $object->getMetadata()->getName();
+        $ports = $this->getPorts($object);
+
+        if ($object instanceof Service && $object->getMetadata()->getLabelList()->hasKey('internal-endpoint')) {
+            return new PublicEndpoint(
+                $name,
+                sprintf(
+                    '%s.%s.cluster.svc.local',
+                    $object->getMetadata()->getName(),
+                    $namespaceClient->getNamespace()->getMetadata()->getName()
+                ),
+                $ports
+            );
+        }
+
+        $loadBalancer = $this->getLoadBalancerStatus($namespaceClient, $object);
 
         if (null === $loadBalancer) {
             throw new EndpointNotFound('No load balancer found');
         } elseif (0 === (count($ingresses = $loadBalancer->getIngresses()))) {
             throw new EndpointNotFound('No ingress found');
         }
-
-        $ports = $this->getPorts($object);
 
         foreach ($ingresses as $ingress) {
             if ($hostname = $ingress->getHostname()) {
