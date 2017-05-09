@@ -85,7 +85,11 @@ angular.module('continuousPipeRiver')
                     environment: function($stateParams, EnvironmentRepository, flow) {
                         return EnvironmentRepository.findByFlow(flow).then(function(environments) {
                             for (var key in environments) {
-                                if (environments[key].identifier == $stateParams.identifier) {
+                                if (!environments.hasOwnProperty(key)) {
+                                    continue;
+                                }
+
+                                if (environments[key].identifier === $stateParams.identifier) {
                                     return environments[key];
                                 }
                             }

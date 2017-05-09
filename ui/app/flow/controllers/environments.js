@@ -76,16 +76,25 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.liveStreamComponent = function(environment, component) {
-            $componentLogDialog.open(flow, environment, component);
+            $componentLogDialog.open($scope, flow, environment, component);
         };
     })
     .controller('EnvironmentPreviewController', function($rootScope, $scope, $componentLogDialog, environment, flow, $sce) {
         $scope.environment = environment;
+        $scope.pointer = true;
 
         environment.components.forEach(function(component) {
             if (component.status.public_endpoints.length > 0) {
                 $scope.url = $sce.trustAsResourceUrl('http://' + component.status.public_endpoints[0]);
             }
+        });
+
+        $scope.$on("angular-resizable.resizeStart", function(e, a) {
+            $scope.pointer = false;
+        });
+
+        $scope.$on("angular-resizable.resizeEnd", function(e, a) {
+            $scope.pointer = true;
         });
 
         $scope.liveStreamComponent = function(environment, component) {
@@ -112,7 +121,7 @@ angular.module('continuousPipeRiver')
         }
     })
     .service('$componentLogDialog', function($mdDialog) {
-        this.open = function(flow, environment, component) {
+        this.open = function($scope, flow, environment, component) {
             var dialogScope = $scope.$new();
             dialogScope.environment = environment;
             dialogScope.component = component;

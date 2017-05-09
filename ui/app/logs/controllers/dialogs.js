@@ -12,7 +12,7 @@ angular.module('continuousPipeRiver')
             $mdDialog.cancel();
         };
 
-        if ($scope.component.status.containers.length == 1) {
+        if ($scope.component.status.containers.length === 1) {
             $scope.selectedPod = $scope.component.status.containers[0];
         }
     });
