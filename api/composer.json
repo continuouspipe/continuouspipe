@@ -57,7 +57,7 @@
         "continuous-pipe/platform-bundle": "~1.0.0",
         "continuous-pipe/events": "~0.2.0",
         "sroze/kubernetes-client": "~1.7.1",
-        "continuous-pipe/message": "dev-master"
+        "continuous-pipe/message": "dev-add-transactions-and-delayed-messages"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -121,7 +121,9 @@
                 "github_secret": "GITHUB_SECRET",
                 "authenticator_api_key": "AUTHENTICATOR_API_KEY",
                 "admin_password": "ADMIN_PASSWORD",
-                "hosted_graphite_api_key": "HOSTED_GRAPHITE_API_KEY"
+                "hosted_graphite_api_key": "HOSTED_GRAPHITE_API_KEY",
+                "google_pub_sub_topic": "GOOGLE_PUB_SUB_TOPIC",
+                "google_pub_sub_subscription_name": "GOOGLE_PUB_SUB_SUBSCRIPTION_NAME"
             }
         }]
     },

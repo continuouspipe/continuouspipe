@@ -31,6 +31,12 @@ variables:
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch == 'production'
       value: rabbitmq.stack-production.svc.cluster.local
+    - name: GOOGLE_PUB_SUB_TOPIC
+      condition: code_reference.branch == 'production'
+      value: projects/continuous-pipe-1042/topics/production-river
+    - name: GOOGLE_PUB_SUB_SUBSCRIPTION_NAME
+      condition: code_reference.branch == 'production'
+      value: projects/continuous-pipe-1042/subscriptions/production-river-worker
 
     - name: BUILDER_URL
       condition: code_reference.branch != 'production'
@@ -50,6 +56,12 @@ variables:
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch != 'production'
       value: rabbitmq.stack-master.svc.cluster.local
+    - name: GOOGLE_PUB_SUB_TOPIC
+      condition: code_reference.branch != 'production'
+      value: projects/continuous-pipe-1042/topics/staging-river
+    - name: GOOGLE_PUB_SUB_SUBSCRIPTION_NAME
+      condition: code_reference.branch != 'production'
+      value: projects/continuous-pipe-1042/subscriptions/staging-river-worker
 
 tasks:
     images:
@@ -145,6 +157,10 @@ tasks:
                               value: ${HOSTED_GRAPHITE_API_KEY}
                             - name: GITHUB_SECRET
                               value: ${GITHUB_SECRET}
+                            - name: GOOGLE_PUB_SUB_TOPIC
+                              value: ${GOOGLE_PUB_SUB_TOPIC}
+                            - name: GOOGLE_PUB_SUB_SUBSCRIPTION_NAME
+                              value: ${GOOGLE_PUB_SUB_SUBSCRIPTION_NAME}
 
                     deployment_strategy:
                         readiness_probe:
