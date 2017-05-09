@@ -189,7 +189,7 @@ specification:
 ## Replicas and Redundancy 
 
 {{< note title="Note" >}}
-A replica is copy of a service (as defined in your `docker-compose.yml` file) running in the cluster.
+A replica is copy of a service (as defined in your `docker-compose.yml` or `continuous-pipe.yml` file) running in the cluster.
 {{< /note >}}
 
 By default a service is configured to have a single replica. You may want to provide redundancy for a service across multiple nodes to make your application more resilient. This can be done by increasing the number of replicas:
@@ -200,15 +200,13 @@ specification:
         number_of_replicas: 5
 ```
 
-{{< note title="Note" > }}
-By default, your service will be transformed to a Kubernetes Deployment object that will create a Pod object. If you would like to only create the Pod object (which we wouldn't recommend), you can use this configuration:
+Upon deployment, your service will be transformed to a Kubernetes [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) object that will create a [Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/) object. If you would like to only create the Pod object (not recommend), you can use this configuration:
 
 ```yaml
 specification:
     scalability:
         enabled: false
 ```
-{{< /note >}}
 
 ## Health-checks
 Health-checks (also called probes) help to identify when a container is ready during a deployment and when a container is still alive when deployed:
