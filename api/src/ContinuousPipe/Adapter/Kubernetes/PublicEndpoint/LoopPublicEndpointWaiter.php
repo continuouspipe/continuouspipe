@@ -190,16 +190,8 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         $name = $object->getMetadata()->getName();
         $ports = $this->getPorts($object);
 
-        if ($object instanceof Service && $object->getMetadata()->getLabelList()->hasKey('internal-endpoint')) {
-            return new PublicEndpoint(
-                $name,
-                sprintf(
-                    '%s.%s.cluster.svc.local',
-                    $object->getMetadata()->getName(),
-                    $namespaceClient->getNamespace()->getMetadata()->getName()
-                ),
-                $ports
-            );
+        if ($this->isInternalEndpoint($object)) {
+            return $this->createInternalPublicEndpoint($namespaceClient, $object, $name, $ports);
         }
 
         $loadBalancer = $this->getLoadBalancerStatus($namespaceClient, $object);
@@ -297,5 +289,38 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         $ports = array_map($portsFromRules, $ingress->getSpecification()->getRules());
 
         return array_unique(array_merge(...$ports));
+    }
+
+    /**
+     * @param KubernetesObject $object
+     * @return bool
+     */
+    private function isInternalEndpoint(KubernetesObject $object)
+    {
+        return $object instanceof Service && $object->getMetadata()->getLabelList()->hasKey('internal-endpoint');
+    }
+
+    /**
+     * @param NamespaceClient $namespaceClient
+     * @param KubernetesObject $object
+     * @param $name
+     * @param $ports
+     * @return PublicEndpoint
+     */
+    private function createInternalPublicEndpoint(
+        NamespaceClient $namespaceClient,
+        KubernetesObject $object,
+        $name,
+        $ports
+    ) {
+        return new PublicEndpoint(
+            $name,
+            sprintf(
+                '%s.%s.cluster.svc.local',
+                $object->getMetadata()->getName(),
+                $namespaceClient->getNamespace()->getMetadata()->getName()
+            ),
+            $ports
+        );
     }
 }
