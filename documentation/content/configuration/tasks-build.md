@@ -56,18 +56,6 @@ If you need to inject token or strings in your build process in order to downloa
 The following example shows how to install PHP private dependencies (using [Composer](http://getcomposer.org/)) using a private GitHub token:
 
 ``` yaml
-# Dockerfile
-
-# ...
-
-ARG GITHUB_TOKEN=
-
-RUN composer config github-oauth.github.com $GITHUB_TOKEN && \
-    composer install -o --no-interaction && \
-    composer clear-cache
-
-# continuous-pipe.yml
-
 tasks:
     images:
         build:
@@ -79,13 +67,25 @@ tasks:
 ```
 
 {{< note title="Note" >}}
-This assume that you have defined the `GITHUB_TOKEN` variable somewhere. You can refer to the [variable section]({{< relref "configuration-files.md#variables" >}}).
+This assumes that you have defined the `GITHUB_TOKEN` variable somewhere. You can refer to the [variable section]({{< relref "configuration-files.md#variables" >}}).
 {{< /note >}}
+
+The following is an example Docker file to demonstrate how the `GITHUB_TOKEN` will be used during the build:
+
+> **Dockerfile**
+```
+# ...
+
+ARG GITHUB_TOKEN=
+
+RUN composer config github-oauth.github.com $GITHUB_TOKEN && \
+    composer install -o --no-interaction && \
+    composer clear-cache
+```
 
 If you want to build multiple services at the same time, you can also provide the build argument per service:
 
 ``` yaml
-# continuous-pipe.yml
 tasks:
     images:
         build:
@@ -102,29 +102,4 @@ tasks:
 
 In order to build small images and/or hide secret values required during the build process, you can use artifacts. These artifacts will allow you to share files or folders between different build steps that use a combination of Dockerfiles, context and build arguments.
 
-![](/images/multi-step-building.png)
-
-``` yaml
-# continuous-pipe.yml
-tasks:
-    images:
-        build:
-            services:
-                ui:
-                    steps:
-                        - docker_file_path: ./Dockerfile-build
-                          environment:
-                            - name: GITHUB_TOKEN
-                              value: ${GITHUB_TOKEN}
-                          write_artifacts:
-                            - name: dist
-                              path: /dist
-                        - docker_file_path: ./Dockerfile
-                          read_artifacts:
-                            - name: dist
-                              path: /dist
-
-    # ...
-```
-
-
+For more information see the [artifacts documentation]({{< relref "configuration/artifacts.md" >}}).
