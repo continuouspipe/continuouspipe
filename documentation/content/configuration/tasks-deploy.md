@@ -141,7 +141,8 @@ If you are using one of the [ContinuousPipe images]({{< relref "faq/what-are-the
 ``` yaml
 specification:
    environment_variables:
-       - name: AUTH_HTTP_ENABLED
+       - name: AUTH_HTTP_
+       
          value: true
        - name: AUTH_HTTP_HTPASSWD
          value: ${AUTH_HTTP_HTPASSWD}
@@ -183,6 +184,28 @@ specification:
         limits:
             cpu: 500m
             memory: 500Mi
+```
+
+## Replicas and Redundancy 
+
+{{< note title="Note" >}}
+A replica is copy of a service (as defined in your `docker-compose.yml` or `continuous-pipe.yml` file) running in the cluster.
+{{< /note >}}
+
+By default a service is configured to have a single replica. You may want to provide redundancy for a service across multiple nodes to make your application more resilient. This can be done by increasing the number of replicas:
+
+``` yaml
+specification:
+    scalability:
+        number_of_replicas: 5
+```
+
+Upon deployment, your service will be transformed to a Kubernetes [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) object that will create a [Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/) object. If you would like to only create the Pod object (not recommend), you can use this configuration:
+
+```yaml
+specification:
+    scalability:
+        enabled: false
 ```
 
 ## Health-checks
