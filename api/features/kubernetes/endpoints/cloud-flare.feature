@@ -236,6 +236,24 @@ Feature:
     When I send the built deployment request
     Then the CloudFlare zone "master-myapp.example.com" should have been updated with the type A and the address "1.2.3.4"
 
+  Scenario: It removes the environment even if removing CF record fails
+    Given I have a namespace "app"
+    And I have a service "http" with the selector "component-identifier=app" and type "LoadBalancer" with the ports:
+      | name | port | protocol | targetPort |
+      | http | 80   | tcp      | 80         |
+    And the service "http" have the public IP "1.2.3.4"
+    And the service "http" have the following annotations:
+      | name                                     | value                                                                                                                                     |
+      | com.continuouspipe.io.cloudflare.records | [{"record_name":"master-myapp.example.com","record_identifier":"1234","zone_identifier":"9876","encrypted_authentication":"SECRET_AUTH"}] |
+    And the encrypted value "SECRET_AUTH" in the namespace "9876-1234" will be decrypted as the following by the vault:
+    """
+    {"api_key":"1234","email":"my@example.com"}
+    """
+    And deleting the CloudFlare record fails
+    When I delete the environment named "app" of the cluster "my-cluster" of the team "my-team"
+    Then the namespace should be deleted successfully
+    But the CloudFlare record "1234" of the zone "9876" was not deleted
+
   Scenario: It removes the CF record when the environment is deleted
     Given I have a namespace "app"
     And I have a service "http" with the selector "component-identifier=app" and type "LoadBalancer" with the ports:

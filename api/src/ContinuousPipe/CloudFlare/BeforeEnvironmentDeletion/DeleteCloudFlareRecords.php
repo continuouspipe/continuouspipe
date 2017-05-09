@@ -5,6 +5,7 @@ namespace ContinuousPipe\CloudFlare\BeforeEnvironmentDeletion;
 use ContinuousPipe\Adapter\Events;
 use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
 use ContinuousPipe\CloudFlare\CloudFlareClient;
+use ContinuousPipe\CloudFlare\CloudFlareException;
 use ContinuousPipe\CloudFlare\Encryption\EncryptedAuthentication;
 use ContinuousPipe\CloudFlare\Encryption\EncryptionNamespace;
 use ContinuousPipe\Security\Encryption\Vault;
@@ -89,7 +90,17 @@ class DeleteCloudFlareRecords implements EventSubscriberInterface
 
                 $authentication = $encryptedAuthentication->decrypt($record['encrypted_authentication']);
 
-                $this->cloudFlareClient->deleteRecord($record['zone_identifier'], $authentication, $record['record_identifier']);
+                try {
+                    $this->cloudFlareClient->deleteRecord($record['zone_identifier'], $authentication, $record['record_identifier']);
+                } catch (CloudFlareException $e) {
+                    $this->logger->warning(
+                        sprintf(
+                            'The CloudFlare record %s in zone %s could not be deleted',
+                            $record['record_identifier'],
+                            $record['zone_identifier']
+                        ), ['exception' => $e,]
+                    );
+                }
             }
         }
     }
