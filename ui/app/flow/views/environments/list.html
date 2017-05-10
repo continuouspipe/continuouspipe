@@ -33,7 +33,7 @@
                     Remote Shell <code>{{ endpoint.name }}</code>
                 </md-button>
 
-                <md-button class="md-raised environment-card-btn"
+                <md-button class="md-raised md-primary environment-card-btn"
                            ng-repeat="endpoint in environment.endpoints"
                            ng-click="$event.stopPropagation()"
                            ui-sref="flow.environment-preview({identifier: environment.identifier})">
