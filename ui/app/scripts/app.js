@@ -97,6 +97,14 @@ angular
                 custom_launcher_selector: '#contact-us-launcher',
                 hide_default_launcher: true
             });
+
+            window.satismeter({
+                writeKey: "MAY39UHqizidGBSa",
+                userId: user.username,
+                traits: {
+                    email: user.email
+                }
+            });
         });
 
         $http.getError = function (error) {
