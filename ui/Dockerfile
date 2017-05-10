@@ -3,7 +3,7 @@ FROM nginx
 # Install NodeJS
 RUN apt-get update \
  && apt-get install -y curl gnupg \
- && curl -sL https://deb.nodesource.com/setup_5.x | bash - \
+ && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
  && apt-get install -y nodejs build-essential
 
 # Install prerequisites build tools

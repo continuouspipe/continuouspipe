@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, TideRepository, EnvironmentRepository, EndpointOpener, RemoteShellOpener, flow) {
+    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, $componentLogDialog, TideRepository, EnvironmentRepository, EndpointOpener, RemoteShellOpener, flow) {
         $scope.flow = flow;
 
         var getEnvironmentStatus = function(environment) {
@@ -76,6 +76,71 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.liveStreamComponent = function(environment, component) {
+            $componentLogDialog.open($scope, flow, environment, component);
+        };
+    })
+    .controller('EnvironmentPreviewController', function($rootScope, $scope, $componentLogDialog, EndpointOpener, environment, flow, $sce) {
+        $scope.environment = environment;
+        $scope.pointer = true;
+
+        environment.components.forEach(function(component) {
+            if (component.status.public_endpoints.length > 0) {
+                $scope.url = $sce.trustAsResourceUrl('http://' + component.status.public_endpoints[0]);
+            }
+        });
+
+        $scope.openEndpoint = function(endpoint) {
+            EndpointOpener.open(endpoint);
+        };
+
+        $scope.getEnvironmentEndpoints = function(environment) {
+            var endpoints = [];
+
+            environment.components.forEach(function(component) {
+                component.status.public_endpoints.forEach(function(endpoint) {
+                    endpoints.push({
+                        name: component.name,
+                        address: endpoint
+                    });
+                })
+            });
+
+            return endpoints;
+        };
+
+        $scope.$on("angular-resizable.resizeStart", function(e, a) {
+            $scope.pointer = false;
+        });
+
+        $scope.$on("angular-resizable.resizeEnd", function(e, a) {
+            $scope.pointer = true;
+        });
+
+        $scope.liveStreamComponent = function(environment, component) {
+            $rootScope.$emit('openComponentLogs', component);
+        };
+
+        $rootScope.$on('openComponentLogs', function(event, component) {
+            $scope.component = component;
+        });
+
+        $rootScope.$on('closeComponentLogs', function() {
+            $scope.component = null;
+        });
+    })
+    .directive('componentsLogs', function() {
+        return {
+            restrict: 'E',
+            scope: {
+                environment: '=',
+                component: '='
+            },
+            controller: 'LogsComponentDialogController',
+            templateUrl: 'flow/views/environments/inline/component.html'
+        }
+    })
+    .service('$componentLogDialog', function($mdDialog) {
+        this.open = function($scope, flow, environment, component) {
             var dialogScope = $scope.$new();
             dialogScope.environment = environment;
             dialogScope.component = component;

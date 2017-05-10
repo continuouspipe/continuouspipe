@@ -79,6 +79,37 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+            .state('flow.environment-preview', {
+                url: '/environments/:identifier',
+                resolve: {
+                    environment: function($stateParams, EnvironmentRepository, flow) {
+                        return EnvironmentRepository.findByFlow(flow).then(function(environments) {
+                            for (var key in environments) {
+                                if (!environments.hasOwnProperty(key)) {
+                                    continue;
+                                }
+
+                                if (environments[key].identifier === $stateParams.identifier) {
+                                    return environments[key];
+                                }
+                            }
+
+                            throw new Error('Environment not found');
+                        });
+                    }
+                },
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/environments/show.html',
+                        controller: 'EnvironmentPreviewController'
+                    },
+                    'header@': {
+                        templateUrl: 'flow/views/environments/header.html',
+                        controller: 'EnvironmentPreviewController'
+                    }
+                },
+                aside: false
+            })
             .state('flow.configuration', {
                 url: '/configuration',
                 views: {

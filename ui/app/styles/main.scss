@@ -2,8 +2,9 @@
 @import "mixins";
 
 @import "fonts";
-
+@import "atoms/typography";
 @import "components/components";
+@import "components/environments";
 
 .mobile-only {
     @include largeScreen {

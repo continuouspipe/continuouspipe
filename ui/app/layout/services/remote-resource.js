@@ -34,7 +34,7 @@ angular.module('continuousPipeRiver')
                 return result;
             }, function(error) {
                 resource.status = 'error';
-                resource.error = $http.getError(error) || 'An error appeared while loading '+name;
+                resource.error = $http.getError(error) || 'An error occurred while loading '+name;
             });
 
             return promise;

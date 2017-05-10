@@ -23,7 +23,7 @@
 
                 <md-button class="md-raised md-primary environment-card-btn"
                            ng-repeat="endpoint in environment.endpoints"
-                           ng-click="openEndpoint(endpoint)">
+                           ng-click="openEndpoint(endpoint); $event.stopPropagation()">
                     Open <code>{{ endpoint.name }}</code>
                 </md-button>
 
@@ -31,6 +31,13 @@
                            ng-repeat="endpoint in environment.endpoints"
                            ng-click="openRemoteShell(environment, endpoint)">
                     Remote Shell <code>{{ endpoint.name }}</code>
+                </md-button>
+
+                <md-button class="md-raised md-primary environment-card-btn"
+                           ng-repeat="endpoint in environment.endpoints"
+                           ng-click="$event.stopPropagation()"
+                           ui-sref="flow.environment-preview({identifier: environment.identifier})">
+                    Preview <code>{{ endpoint.name }}</code>
                 </md-button>
             </md-card-header>
 
