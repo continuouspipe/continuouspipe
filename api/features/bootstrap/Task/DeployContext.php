@@ -164,9 +164,17 @@ class DeployContext implements Context
      */
     public function theDeploymentFailed()
     {
+        $deployment = $this->getDeploymentStartedEvent()->getDeployment();
+        $failedDeployment = new Deployment(
+            $deployment->getUuid(),
+            $deployment->getRequest(),
+            Deployment::STATUS_FAILURE,
+            $deployment->getPublicEndpoints(),
+            $deployment->getComponentStatuses()
+        );
         $this->eventBus->handle(new DeploymentFailed(
             $this->tideContext->getCurrentTideUuid(),
-            $this->getDeploymentStartedEvent()->getDeployment()
+            $failedDeployment
         ));
     }
 

@@ -47,6 +47,7 @@ class AppExtension extends Extension
         $loader->load('wait/logging.xml');
         $loader->load('manual-approval.xml');
         $loader->load('analytics/keen.xml');
+        $loader->load('analytics/logitio.xml');
         $loader->load('recover/timed-out-tides.xml');
         $loader->load('recover/cancel.xml');
         $loader->load('github/integration.xml');
