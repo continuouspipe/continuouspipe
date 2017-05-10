@@ -79,7 +79,7 @@ angular.module('continuousPipeRiver')
             $componentLogDialog.open($scope, flow, environment, component);
         };
     })
-    .controller('EnvironmentPreviewController', function($rootScope, $scope, $componentLogDialog, environment, flow, $sce) {
+    .controller('EnvironmentPreviewController', function($rootScope, $scope, $componentLogDialog, EndpointOpener, environment, flow, $sce) {
         $scope.environment = environment;
         $scope.pointer = true;
 
@@ -88,6 +88,25 @@ angular.module('continuousPipeRiver')
                 $scope.url = $sce.trustAsResourceUrl('http://' + component.status.public_endpoints[0]);
             }
         });
+
+        $scope.openEndpoint = function(endpoint) {
+            EndpointOpener.open(endpoint);
+        };
+
+        $scope.getEnvironmentEndpoints = function(environment) {
+            var endpoints = [];
+
+            environment.components.forEach(function(component) {
+                component.status.public_endpoints.forEach(function(endpoint) {
+                    endpoints.push({
+                        name: component.name,
+                        address: endpoint
+                    });
+                })
+            });
+
+            return endpoints;
+        };
 
         $scope.$on("angular-resizable.resizeStart", function(e, a) {
             $scope.pointer = false;

@@ -13,9 +13,12 @@
                 <md-button class="env__component" ng-class="component.status.status" ng-click="$mdOpenMenu($event)">
                     {{ component.name }}
                 </md-button>
-                <md-menu-content width="4">
+                <md-menu-content width="4" ng-init="endpoints = getEnvironmentEndpoints(environment)">
                     <md-menu-item>
                         <md-button ng-click="liveStreamComponent(environment, component)">Live-stream Logs</md-button>
+                    </md-menu-item>
+                    <md-menu-item ng-repeat="endpoint in endpoints">
+                        <md-button ng-click="openEndpoint(endpoint)">Open <code>{{ endpoint.name }}</code></md-button>
                     </md-menu-item>
                 </md-menu-content>
             </md-menu>

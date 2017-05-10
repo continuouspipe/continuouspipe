@@ -34,7 +34,7 @@
         md-dialog-content {
             display: flex;
             position: absolute;
-            top: 0;
+            top: 64px;
             right: 0;
             bottom: 0;
             left: 0;
@@ -42,13 +42,19 @@
 
         md-tabs:not(.md-no-tab-content):not(.md-dynamic-height) {
             flex: 1;
-            margin-top: 64px;
             min-height: 0;
         }
 
         md-tab-content > div {
             height: 100%;
             overflow-y: auto;
+        }
+
+        md-dialog-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
     }
 
