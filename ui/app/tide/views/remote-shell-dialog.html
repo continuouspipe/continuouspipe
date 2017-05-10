@@ -1,0 +1,23 @@
+<md-dialog aria-label="Open remote shell ...">
+    <md-dialog-content>
+        <md-content class="md-padding">
+            <h2 class="md-display-1">Open a bash shell in the pod '{{endpoint.name}}'</h2>
+            <p>
+                <code>cp-remote bash -i -e {{environment.identifier}} -s {{endpoint.name}} -f {{environment.flow.uuid}}</code>
+            </p>
+            <h3>
+                If /bin/bash is not available on the pod use
+            </h3>
+            <p>
+                <code>cp-remote exec -i -e {{environment.identifier}} -s {{endpoint.name}} -f {{environment.flow.uuid}} -- /bin/sh</code>
+            </p>
+            <h3>
+                If you have a Remote Development Environment initialised on the same flow, you can omit the --interactive (-i) flag
+            </h3>
+            <p>
+                <code>cp-remote bash -e {{environment.identifier}} -s {{endpoint.name}} -f {{environment.flow.uuid}}</code>
+            </p>
+            <p>
+        </md-content>
+    </md-dialog-content>
+</md-dialog>

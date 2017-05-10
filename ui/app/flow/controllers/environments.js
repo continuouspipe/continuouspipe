@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, TideRepository, EnvironmentRepository, EndpointOpener, flow) {
+    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, TideRepository, EnvironmentRepository, EndpointOpener, RemoteShellOpener, flow) {
         $scope.flow = flow;
 
         var getEnvironmentStatus = function(environment) {
@@ -38,6 +38,7 @@ angular.module('continuousPipeRiver')
                 $scope.environments = environments.map(function(environment) {
                     environment.status = getEnvironmentStatus(environment);
                     environment.endpoints = getEnvironmentEndpoints(environment);
+                    environment.flow = flow;
 
                     return environment;
                 });
@@ -68,6 +69,10 @@ angular.module('continuousPipeRiver')
 
         $scope.openEndpoint = function(endpoint) {
             EndpointOpener.open(endpoint);
+        };
+
+        $scope.openRemoteShell = function(environment, endpoint) {
+            RemoteShellOpener.open(environment, endpoint)
         };
 
         $scope.liveStreamComponent = function(environment, component) {
