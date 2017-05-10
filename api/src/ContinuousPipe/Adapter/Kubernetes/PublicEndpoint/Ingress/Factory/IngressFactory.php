@@ -7,6 +7,7 @@ use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointFactory;
 use ContinuousPipe\Adapter\Kubernetes\Transformer\TransformationException;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Component\Endpoint;
+use ContinuousPipe\Model\Component\Endpoint\SslCertificate;
 use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressBackend;
@@ -70,7 +71,7 @@ class IngressFactory implements EndpointFactory
      *
      * @throws TransformationException
      */
-    private function createService(Component $component, Endpoint $endpoint, string $type)
+    private function createService(Component $component, Endpoint $endpoint, string $type): Service
     {
         $ports = $this->getPorts($component);
 
@@ -172,10 +173,9 @@ class IngressFactory implements EndpointFactory
     }
 
     /**
-     * @param Endpoint $endpoint
-     * @return array
+     * @return SslCertificate[]
      */
-    private function getSslCertificatesSecrets(Endpoint $endpoint)
+    private function getSslCertificatesSecrets(Endpoint $endpoint): array
     {
         return array_map(
             function (Endpoint\SslCertificate $sslCertificate) use ($endpoint) {
@@ -186,11 +186,9 @@ class IngressFactory implements EndpointFactory
     }
 
     /**
-     * @param $endpointIngress
-     * @param $sslCertificatesSecrets
-     * @return array
+     * @return IngressTls[]
      */
-    private function getTlsCertificates($endpointIngress, $sslCertificatesSecrets)
+    private function getTlsCertificates($endpointIngress, $sslCertificatesSecrets): array
     {
         return array_map(
             function (Secret $secret) use ($endpointIngress) {
@@ -203,28 +201,22 @@ class IngressFactory implements EndpointFactory
         );
     }
 
-    /**
-     * @param $service
-     * @param $labelName
-     * @param $labelValue
-     */
-    private function addLabelToService($service, $labelName, $labelValue)
+    private function addLabelToService(Service $service, $labelName, $labelValue): Service
     {
         $service->getMetadata()->getLabelList()->add(
             new Label($labelName, $labelValue)
         );
+
+        return $service;
     }
 
     /**
-     * @param Component $component
-     * @param Endpoint $endpoint
-     * @param $service
      * @return array
      */
-    private function createIngress(Component $component, Endpoint $endpoint, $service)
+    private function createIngress(Component $component, Endpoint $endpoint, Service $service): array
     {
         $endpointIngress = $this->getEndpointIngress($endpoint);
-        $this->addLabelToService($service, 'source-of-ingress', $endpoint->getName());
+        $service = $this->addLabelToService($service, 'source-of-ingress', $endpoint->getName());
 
         $sslCertificatesSecrets = $this->getSslCertificatesSecrets($endpoint);
 
@@ -257,10 +249,9 @@ class IngressFactory implements EndpointFactory
     }
 
     /**
-     * @param Service $service
-     * @return array
+     * @return int[]
      */
-    private function getPortNumbers(Service $service)
+    private function getPortNumbers(Service $service): array
     {
         return array_map(
             function (ServicePort $port) {
@@ -270,12 +261,7 @@ class IngressFactory implements EndpointFactory
         );
     }
 
-    /**
-     * @param $portNumbers
-     * @param $annotations
-     * @return int|mixed
-     */
-    private function getExposedPort($portNumbers, $annotations)
+    private function getExposedPort($portNumbers, $annotations): int
     {
         $exposedPort = current($portNumbers);
         if (in_array(443, $portNumbers)) {
@@ -290,12 +276,7 @@ class IngressFactory implements EndpointFactory
         return $exposedPort;
     }
 
-    /**
-     * @param Service $service
-     * @param $annotations
-     * @return IngressBackend
-     */
-    private function getIngressBackend(Service $service, $annotations)
+    private function getIngressBackend(Service $service, $annotations): IngressBackend
     {
         return new IngressBackend(
             $service->getMetadata()->getName(),
@@ -304,11 +285,9 @@ class IngressFactory implements EndpointFactory
     }
 
     /**
-     * @param array $rules
-     * @param $ingressBackend
-     * @return array
+     * @return IngressRule[]
      */
-    private function createIngressRules(array $rules, $ingressBackend)
+    private function createIngressRules(array $rules, $ingressBackend): array
     {
         return array_map(
             function (IngressRule $rule) use ($ingressBackend) {
@@ -329,11 +308,7 @@ class IngressFactory implements EndpointFactory
         );
     }
 
-    /**
-     * @param Endpoint $endpoint
-     * @return Endpoint\EndpointIngress|null
-     */
-    private function getEndpointIngress(Endpoint $endpoint)
+    private function getEndpointIngress(Endpoint $endpoint): Endpoint\EndpointIngress
     {
         if (null === ($endpointIngress = $endpoint->getIngress())) {
             $endpointIngress = new Endpoint\EndpointIngress(null, []);
@@ -343,10 +318,9 @@ class IngressFactory implements EndpointFactory
     }
 
     /**
-     * @param Component $component
-     * @return array
+     * @return Component\Port[]
      */
-    private function getPorts(Component $component)
+    private function getPorts(Component $component): array
     {
         return array_map(
             function (Component\Port $port) {

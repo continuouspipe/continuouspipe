@@ -31,20 +31,12 @@ class PublicEndpointObjectVoter
         return false;
     }
 
-    /**
-     * @param KubernetesObject $object
-     * @return bool
-     */
-    private function isLoadBalancer(KubernetesObject $object)
+    private function isLoadBalancer(KubernetesObject $object): bool
     {
         return $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER;
     }
 
-    /**
-     * @param KubernetesObject $object
-     * @return bool
-     */
-    private function isInternalEndpoint(KubernetesObject $object)
+    private function isInternalEndpoint(KubernetesObject $object): bool
     {
         return $object->getMetadata()->getLabelList()->hasKey('internal-endpoint');
     }

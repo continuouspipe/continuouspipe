@@ -291,28 +291,17 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         return array_unique(array_merge(...$ports));
     }
 
-    /**
-     * @param KubernetesObject $object
-     * @return bool
-     */
-    private function isInternalEndpoint(KubernetesObject $object)
+    private function isInternalEndpoint(KubernetesObject $object): bool
     {
         return $object instanceof Service && $object->getMetadata()->getLabelList()->hasKey('internal-endpoint');
     }
 
-    /**
-     * @param NamespaceClient $namespaceClient
-     * @param KubernetesObject $object
-     * @param $name
-     * @param $ports
-     * @return PublicEndpoint
-     */
     private function createInternalPublicEndpoint(
         NamespaceClient $namespaceClient,
         KubernetesObject $object,
-        $name,
-        $ports
-    ) {
+        string $name,
+        array $ports
+    ): PublicEndpoint {
         return new PublicEndpoint(
             $name,
             sprintf(
