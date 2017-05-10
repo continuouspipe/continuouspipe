@@ -1,10 +1,9 @@
 <div class="env__frame-container">
     <iframe ng-src="{{ url }}" class="env__frame"></iframe>
-    <div class="env__frame-overlay" ng-if="!pointer"><!-- Prevent pointer events in iframe --></div>
-    <div class="env__frame-overlay"><!-- Prevent pointer events in iframe --></div>
+    <div class="env__frame-overlay" ng-if="!pointer"></div>
 </div>
 
 <!-- @todo: Make class for this: -->
-<div ng-if="environment && component" resizable r-directions="['top']" r-flex="true" style="flex: 0 0 300px; margin-top: 20px; max-height: 50vh">
+<div ng-if="environment && component" resizable r-directions="['top']" r-flex="true" class="env__component-logs">
     <components-logs environment="environment" component="component"></components-logs>
 </div>
