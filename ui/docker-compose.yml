@@ -2,6 +2,7 @@ ui:
   build: .
   volumes:
     - ./app:/app/app
+  # command: /app/serve.sh
   environment:
     - RIVER_API_URL=http://localhost:81/app_dev.php
     - AUTHENTICATOR_API_URL=https://authenticator-staging.continuouspipe.io
