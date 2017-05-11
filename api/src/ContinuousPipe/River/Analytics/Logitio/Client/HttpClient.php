@@ -2,13 +2,13 @@
 
 namespace ContinuousPipe\River\Analytics\Logitio\Client;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 
 class HttpClient implements LogitioClient
 {
     /**
-     * @var Client
+     * @var ClientInterface
      */
     private $client;
 
@@ -25,7 +25,7 @@ class HttpClient implements LogitioClient
      */
     private $logitioApiKey;
 
-    public function __construct(Client $client, LoggerInterface $logger, string $logitioUrl, string  $logitioApiKey)
+    public function __construct(ClientInterface $client, LoggerInterface $logger, string $logitioUrl, string  $logitioApiKey)
     {
         $this->client = $client;
         $this->logger = $logger;

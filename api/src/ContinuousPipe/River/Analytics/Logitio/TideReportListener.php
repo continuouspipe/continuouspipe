@@ -28,7 +28,7 @@ class TideReportListener
      * @var TideRepository
      */
     private $tideRepository;
-    
+
     /**
      * @var EventBusTideRepository
      */
@@ -55,13 +55,7 @@ class TideReportListener
             $tide = $this->eventBusTideRepository->find($event->getTideUuid());
             $tideView = $this->tideRepository->find($event->getTideUuid());
         } catch (TideNotFound $e) {
-            $this->logger->critical(
-                'No tide created event found, unable to create logitio report',
-                [
-                    'tideUuid' => $event->getTideUuid(),
-                    'eventType' => get_class($event),
-                ]
-            );
+            $this->logTideNotFound($event);
 
             return;
         }
@@ -69,7 +63,7 @@ class TideReportListener
         $statusCode = $this->getStatusCode($tide);
         $this->logTideEvent($tide, $statusCode, $tideView);
 
-        foreach($tide->getTasks()->getTasks() as $task) {
+        foreach ($tide->getTasks()->getTasks() as $task) {
             $this->logTaskEvent($tide, $task, $statusCode);
         }
 
@@ -105,17 +99,13 @@ class TideReportListener
     private function logTideEvent(Tide $tide, int $statusCode, TideView $tideView)
     {
         $createdAt = $tideView->getCreationDate();
-        $startedAt = $tideView->getStartDate() ?: $createdAt;
-        $finishedAt = $tideView->getFinishDate() ?: $startedAt;
+        $finishedAt = $tideView->getFinishDate() ?: $tideView->getStartDate() ?: $createdAt;
 
-        $this->logitioClient->addEvent(
-            'tides',
-            [
+        $this->logitioClient->addEvent('tides', [
                 'flow_uuid' => (string) $tide->getFlowUuid(),
                 'username' => $tide->getUser()->getUsername(),
                 'project' => $tide->getTeam()->getName(),
                 'flow_name' => $tide->getCodeReference()->getRepository()->getAddress(),
-                'timestamp' => time(),
                 'tide_uuid' => (string) $tide->getUuid(),
                 'duration' => $finishedAt->getTimestamp() - $createdAt->getTimestamp(),
                 'number_of_tasks' => $tide->getTasks()->count(),
@@ -134,14 +124,27 @@ class TideReportListener
         $this->logitioClient->addEvent(
             'tides_tasks',
             [
+                'username' => $tide->getUser()->getUsername(),
+                'project' => $tide->getTeam()->getName(),
                 'tide_uuid' => (string) $tide->getUuid(),
                 'flow_uuid' => (string) $tide->getFlowUuid(),
                 'task_type' => (string) substr(strrchr(get_class($task), '\\'), 1),
-                //'task_name' => ???,
+                'task_name' => $task->getIdentifier(),
                 'status' => [
                     'code' => $statusCode,
                     'reason' => $task->getStatus()
                 ],
+            ]
+        );
+    }
+
+    private function logTideNotFound(TideEvent $event)
+    {
+        $this->logger->critical(
+            'No tide created event found, unable to create logitio report',
+            [
+                'tideUuid' => $event->getTideUuid(),
+                'eventType' => get_class($event),
             ]
         );
     }
