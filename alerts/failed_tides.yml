@@ -1,0 +1,42 @@
+name: Failed tides
+index: logstash-*
+type: cardinality
+
+# Query
+cardinality_field: "status.code"
+query_key: username,project
+max_cardinality: 4
+timeframe:
+  hours: 2
+
+# Filters
+filter:
+- term:
+    _type: "tides"
+
+# Display
+summary_table_fields:
+- username
+- project
+
+include:
+- "@timestamp"
+- status
+- project
+- username
+- flow_name
+- tide_uuid
+- flow_uuid
+
+# Alert
+alert:
+- "slack"
+- "email"
+
+slack_webhook_url: "https://hooks.slack.com/services/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"
+email:
+- "ops-alerts@continuouspipe.io"
+
+# Misc
+timestamp_format: '%Y-%m-%dT%H:%M:%S.%fZ'
+timestamp_type: 'custom'
