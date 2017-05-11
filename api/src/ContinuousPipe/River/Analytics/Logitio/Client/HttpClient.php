@@ -16,11 +16,21 @@ class HttpClient implements LogitioClient
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var string
+     */
+    private $logitioUrl;
+    /**
+     * @var string
+     */
+    private $logitioApiKey;
 
     public function __construct(Client $client, LoggerInterface $logger, string $logitioUrl, string  $logitioApiKey)
     {
         $this->client = $client;
         $this->logger = $logger;
+        $this->logitioUrl = $logitioUrl;
+        $this->logitioApiKey = $logitioApiKey;
     }
 
     /**
@@ -29,10 +39,10 @@ class HttpClient implements LogitioClient
     public function addEvent($logType, array $event)
     {
         try {
-            $this->client->post('https://api.logit.io/v2', [
+            $this->client->post($this->logitioUrl, [
                 'json' => $event,
                 'headers' => [
-                    'ApiKey' => '56efc8a1-541b-43d2-a157-808b3660b8a5',
+                    'ApiKey' => $this->logitioApiKey,
                     'LogType' => $logType
                 ]
             ]);
