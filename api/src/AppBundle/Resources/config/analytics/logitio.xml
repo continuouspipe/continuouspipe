@@ -38,7 +38,7 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\BuildFailed"/>
         </service>
 
-        <service id="river.analytics.logitio.listener.deploy_task" class="ContinuousPipe\River\Analytics\logitio\TaskListener\DeployTaskListener">
+        <service id="river.analytics.logitio.listener.deploy_task" class="ContinuousPipe\River\Analytics\Logitio\TaskListener\DeployTaskListener">
             <argument type="service" id="river.logitio.client" />
             <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="logger" />
@@ -46,5 +46,17 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed"/>
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful"/>
         </service>
+
+         <service id="river.analytics.logitio.client" class="ContinuousPipe\River\Analytics\Logitio\Client\HttpClient">
+            <argument type="service" id="river.analytics.logitio.guzzle_client" />
+            <argument type="service" id="logger" />
+            <argument>%logitio.url%</argument>
+            <argument>%logitio.api_key%</argument>
+        </service>
+
+        <service id="river.analytics.logitio.guzzle_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+
     </services>
 </container>

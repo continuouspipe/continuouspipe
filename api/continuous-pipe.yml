@@ -161,6 +161,8 @@ tasks:
                               value: ${GOOGLE_PUB_SUB_TOPIC}
                             - name: GOOGLE_PUB_SUB_SUBSCRIPTION_NAME
                               value: ${GOOGLE_PUB_SUB_SUBSCRIPTION_NAME}
+                            - name: LOGITIO_API_KEY
+                              value: ${LOGITIO_API_KEY}
 
                     deployment_strategy:
                         readiness_probe:
