@@ -59,8 +59,7 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
         PublicEndpoint $publicEndpoint,
         Endpoint $endpointConfiguration,
         KubernetesObject $object
-    ): PublicEndpoint
-    {
+    ): PublicEndpoint {
         if (null === ($httpLabsConfiguration = $endpointConfiguration->getHttpLabs())) {
             return $publicEndpoint;
         }
