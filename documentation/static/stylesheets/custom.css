@@ -86,7 +86,12 @@ main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
 .palette-primary-blue .article table th {
     background-color: #5677fc;
 }
+
 figure {
     margin-top: 1.5em;
     text-align: center;
+}
+
+figure.half-width {
+    max-width: 50%;
 }

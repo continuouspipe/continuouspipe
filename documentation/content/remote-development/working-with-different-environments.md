@@ -14,6 +14,30 @@ Sometimes you may want to use `cp-remote` to access an environment that you did 
 * You want to access an environment created by a pull request
 * You want to access an environment built by another developer using their own token
 
+## Finding the Environment Id
+
+Before starting, you will need to find an environment identifier to supply to the `cp-remote` option `--kube-environment-name|-e`. You can find it in the environment tab of a flow at the top of each environment pane: 
+
+{{< figure src="/images/remote-development/environment-id-default.png" class="half-width" >}}
+
+As you can see here the environment id is `86ec932a-2683-11e7-8779-0a580a840466-feature-mynewfeature`. The format is `<project_key>-<branch-name>` where the project key is "86ec932a-2683-11e7-8779-0a580a840466" and branch name is "feature/mynewfeature" and has been [slugified](https://en.wikipedia.org/wiki/Semantic_URL#Slug) to become "feature-mynewfeature".
+
+You may notice that the environment identifier for a project looks much shorter, like this:
+
+{{< figure src="/images/remote-development/environment-id-config.png" class="half-width" >}}
+
+Here the environment id is `sfdemo-feature-mynewfeature`. This is because the default naming behaviour for environments has been changed in the deployment configuration as follows, making the naming format `sfdemo-<branch-name>`:
+
+```
+tasks:
+    # ...
+    deployment:
+        deploy:
+            # ...
+            environment:
+                name: '"sfdemo-" ~ code_reference.branch'
+```
+
 ## When You Have An Existing Environment Built Using a Token {#token-mode}
 
 If you have already set up a remote development environment using a token, you can use the `--kube-environment-name|-e` option to run commands against a different environment than the one specified during setup.
@@ -83,4 +107,3 @@ The [bash command]({{< relref "remote-development/command-bash.md#interactive-mo
 {{< note title="Note" >}}
 If you need to reset the stored username and API key, you need to run the [init command]({{< relref "remote-development/command-init.md#interactive-mode" >}}) with the `--reset` flag.
 {{< /note >}}
-
