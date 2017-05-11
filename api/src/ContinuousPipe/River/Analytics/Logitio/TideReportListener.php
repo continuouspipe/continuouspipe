@@ -60,31 +60,45 @@ class TideReportListener
             return;
         }
 
-        $statusCode = $this->getStatusCode($tide);
-        $this->logTideEvent($tide, $statusCode, $tideView);
+        $this->logTideEvent($tide, $tideView);
 
         foreach ($tide->getTasks()->getTasks() as $task) {
-            $this->logTaskEvent($tide, $task, $statusCode);
+            $this->logTaskEvent($tide, $task);
         }
 
     }
 
-    private function getStatusCode(Tide $tide): int
+    private function getTideStatusCode(Tide $tide): int
     {
-        $status = $tide->getStatus();
-        if ($status == Tide::STATUS_SUCCESS) {
-            return 200;
+        $statusCodes = [
+            Tide::STATUS_SUCCESS => 200,
+            Tide::STATUS_FAILURE => 500,
+            Tide::STATUS_CANCELLED => 400,
+        ];
+
+        if (!isset($statusCodes[$tide->getStatus()])) {
+            return 501;
         }
 
-        if ($status == Tide::STATUS_FAILURE) {
-            return 500;
+        return $statusCodes[$tide->getStatus()];
+    }
+
+    private function getTaskStatusCode(Task $task): int
+    {
+        $statusCodes = [
+            Task::STATUS_SUCCESSFUL => 200,
+            Task::STATUS_SKIPPED => 201,
+            Task::STATUS_PENDING => 300,
+            Task::STATUS_RUNNING => 301,
+            Task::STATUS_CANCELLED => 302,
+            Task::STATUS_FAILED=> 500,
+        ];
+
+        if (!isset($statusCodes[$task->getStatus()])) {
+            return 501;
         }
 
-        if ($status == Tide::STATUS_CANCELLED) {
-            return 400;
-        }
-
-        return 501;
+        return $statusCodes[$task->getStatus()];
     }
 
     private function getStatusReason(Tide $tide): string
@@ -96,7 +110,7 @@ class TideReportListener
         return $tide->getStatus();
     }
 
-    private function logTideEvent(Tide $tide, int $statusCode, TideView $tideView)
+    private function logTideEvent(Tide $tide, TideView $tideView)
     {
         $createdAt = $tideView->getCreationDate();
         $finishedAt = $tideView->getFinishDate() ?: $tideView->getStartDate() ?: $createdAt;
@@ -112,14 +126,14 @@ class TideReportListener
                 'branch_name' => $tide->getCodeReference()->getBranch(),
                 'commit_sha1' => $tide->getCodeReference()->getCommitSha(),
                 'status' => [
-                    'code' => $statusCode,
+                    'code' => $this->getTideStatusCode($tide),
                     'reason' => $this->getStatusReason($tide)
                 ],
             ]
         );
     }
 
-    private function logTaskEvent(Tide $tide, Task $task, int $statusCode)
+    private function logTaskEvent(Tide $tide, Task $task)
     {
         $this->logitioClient->addEvent(
             'tides_tasks',
@@ -131,7 +145,7 @@ class TideReportListener
                 'task_type' => (string) substr(strrchr(get_class($task), '\\'), 1),
                 'task_name' => $task->getIdentifier(),
                 'status' => [
-                    'code' => $statusCode,
+                    'code' => $this->getTaskStatusCode($task),
                     'reason' => $task->getStatus()
                 ],
             ]
