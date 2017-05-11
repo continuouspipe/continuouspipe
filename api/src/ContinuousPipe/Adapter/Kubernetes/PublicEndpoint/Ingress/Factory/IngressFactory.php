@@ -152,19 +152,7 @@ class IngressFactory implements EndpointFactory
             return ServiceSpecification::TYPE_LOAD_BALANCER;
         }
 
-        if (null === ($endpointIngress = $endpoint->getIngress())) {
-            if (count($endpoint->getSslCertificates()) > 0) {
-                return ServiceSpecification::TYPE_CLUSTER_IP;
-            }
-
-            return ServiceSpecification::TYPE_NODE_PORT;
-        }
-
-        if ($this->classHasToBeNodePort($endpointIngress->getClass())) {
-            return ServiceSpecification::TYPE_NODE_PORT;
-        }
-
-        return ServiceSpecification::TYPE_CLUSTER_IP;
+        return $this->getIngressServiceType($endpoint);
     }
 
     private function classHasToBeNodePort(string $class) : bool
@@ -328,5 +316,24 @@ class IngressFactory implements EndpointFactory
             },
             $component->getSpecification()->getPorts()
         );
+    }
+
+    private function getIngressServiceType(Endpoint $endpoint)
+    {
+        $endpointIngress = $endpoint->getIngress();
+        
+        if (null === $endpointIngress && count($endpoint->getSslCertificates()) > 0) {
+            return ServiceSpecification::TYPE_CLUSTER_IP;
+        }
+
+        if (null === $endpointIngress) {
+            return ServiceSpecification::TYPE_NODE_PORT;
+        }
+
+        if ($this->classHasToBeNodePort($endpointIngress->getClass())) {
+            return ServiceSpecification::TYPE_NODE_PORT;
+        }
+
+        return ServiceSpecification::TYPE_CLUSTER_IP;
     }
 }
