@@ -123,7 +123,8 @@
                 "admin_password": "ADMIN_PASSWORD",
                 "hosted_graphite_api_key": "HOSTED_GRAPHITE_API_KEY",
                 "google_pub_sub_topic": "GOOGLE_PUB_SUB_TOPIC",
-                "google_pub_sub_subscription_name": "GOOGLE_PUB_SUB_SUBSCRIPTION_NAME"
+                "google_pub_sub_subscription_name": "GOOGLE_PUB_SUB_SUBSCRIPTION_NAME",
+                "logitio_api_key": "LOGITIO_API_KEY"
             }
         }]
     },

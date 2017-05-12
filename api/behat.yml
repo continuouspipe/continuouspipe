@@ -75,6 +75,7 @@ default:
                     - @kernel
                 - AnalyticsContext:
                     - @river.keen.client.traceable
+                    - @river.logitio.client.traceable
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
                 - Task\WebHookContext:
@@ -206,6 +207,7 @@ default:
                 - TideSummaryContext:
                     - @kernel
                 - AnalyticsContext:
+                    - @river.logitio.client.traceable
                     - @river.keen.client.traceable
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
@@ -304,6 +306,7 @@ default:
                 - TideSummaryContext:
                     - @kernel
                 - AnalyticsContext:
+                    - @river.logitio.client.traceable
                     - @river.keen.client.traceable
                 - NotificationsContext:
                     - @river.notifications.notifier.slack.traceable
