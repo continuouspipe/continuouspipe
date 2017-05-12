@@ -20,8 +20,8 @@
          <service id="river.logitio.client" class="ContinuousPipe\River\Analytics\Logitio\Client\HttpClient">
             <argument type="service" id="river.analytics.logitio.guzzle_client" />
             <argument type="service" id="logger" />
-            <argument>%logitio.url%</argument>
-            <argument>%logitio.api_key%</argument>
+            <argument>%logitio_url%</argument>
+            <argument>%logitio_api_key%</argument>
         </service>
 
         <service id="river.analytics.logitio.guzzle_client" class="GuzzleHttp\Client">
