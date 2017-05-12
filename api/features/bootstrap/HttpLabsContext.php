@@ -60,14 +60,6 @@ class HttpLabsContext implements Context
             ])),
         ]);
 
-        $this->httpLabsHttpHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($uuid, $url) {
-                return $request->getMethod() == 'DELETE' &&
-                preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'$#i', (string) $request->getUri());
-            },
-            'response' => new Response(204),
-        ]);
-
         $this->theHttplabsStackWillBeSuccessfullyConfigured($uuid);
     }
 
@@ -116,6 +108,14 @@ class HttpLabsContext implements Context
             'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
                 'total' => 0,
             ])),
+        ]);
+
+        $this->httpLabsHttpHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($uuid) {
+                return $request->getMethod() == 'DELETE' &&
+                preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'$#i', (string) $request->getUri());
+            },
+            'response' => new Response(204),
         ]);
     }
 
