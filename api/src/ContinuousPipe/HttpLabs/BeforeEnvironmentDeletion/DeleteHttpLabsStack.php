@@ -69,13 +69,11 @@ class DeleteHttpLabsStack implements EventSubscriberInterface
                 $metadata = \GuzzleHttp\json_decode($annotation->getValue(), true);
 
                 $apiKey = "I don't know where to get this from!";
-var_dump('here');
                 $this->httpLabsClient->deleteStack(
                     $apiKey,
                     $metadata['stack_identifier']
                 );
             } catch (\Throwable $e) {
-                var_dump($e->getMessage());
                 $this->logger->warning(
                     'Something went wrong while deleting the HttpLabs stack',
                     [
