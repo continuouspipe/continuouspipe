@@ -4,6 +4,8 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Message\Debug\TracedMessageProducer;
+use ContinuousPipe\Message\Direct\DelayedMessagesBuffer;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\Command\DeleteEnvironments;
@@ -106,10 +108,6 @@ class TideContext implements Context
     private $view;
 
     /**
-     * @var TracedDelayedCommandBus
-     */
-    private $tracedDelayedMessageProducer;
-    /**
      * @var PredictableTimeResolver
      */
     private $predictableTimeResolver;
@@ -117,6 +115,14 @@ class TideContext implements Context
      * @var \ContinuousPipe\River\Repository\TideRepository
      */
     private $tideRepository;
+    /**
+     * @var TracedMessageProducer
+     */
+    private $tracedMessageProducer;
+    /**
+     * @var DelayedMessagesBuffer
+     */
+    private $delayedMessagesBuffer;
 
     public function __construct(
         MessageBus $commandBus,
@@ -125,9 +131,10 @@ class TideContext implements Context
         TideFactory $tideFactory,
         TideRepository $viewTideRepository,
         Kernel $kernel,
-        TracedDelayedCommandBus $tracedDelayedMessageProducer,
+        TracedMessageProducer $tracedMessageProducer,
         PredictableTimeResolver $predictableTimeResolver,
-        \ContinuousPipe\River\Repository\TideRepository $tideRepository
+        \ContinuousPipe\River\Repository\TideRepository $tideRepository,
+        DelayedMessagesBuffer $delayedMessagesBuffer
     ) {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
@@ -135,9 +142,10 @@ class TideContext implements Context
         $this->tideFactory = $tideFactory;
         $this->viewTideRepository = $viewTideRepository;
         $this->kernel = $kernel;
-        $this->tracedDelayedMessageProducer = $tracedDelayedMessageProducer;
         $this->predictableTimeResolver = $predictableTimeResolver;
         $this->tideRepository = $tideRepository;
+        $this->tracedMessageProducer = $tracedMessageProducer;
+        $this->delayedMessagesBuffer = $delayedMessagesBuffer;
     }
 
     /**
@@ -155,6 +163,14 @@ class TideContext implements Context
     public function transformDateTime($value)
     {
         return \DateTime::createFromFormat(\DateTime::ISO8601, $value);
+    }
+
+    /**
+     * @When the delayed messages are received
+     */
+    public function theDelayedMessagesAreReceived()
+    {
+        $this->delayedMessagesBuffer->flushDelayedMessages();
     }
 
     /**
@@ -1124,7 +1140,7 @@ EOF;
      */
     public function theStartOfThePendingTidesOfTheBranchShouldBeDelayed($branch)
     {
-        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $messages = $this->tracedMessageProducer->getProducedMessages();
         $matchingMessages = array_filter($messages, function($message) use ($branch) {
             if (!$message instanceof RunPendingTidesCommand) {
                 return false;
@@ -1143,7 +1159,7 @@ EOF;
      */
     public function theEnvironmentDeletionShouldBePostponed()
     {
-        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $messages = $this->tracedMessageProducer->getProducedMessages();
         $matchingMessages = array_filter($messages, function($message) {
             return $message instanceof DeleteEnvironments;
         });
@@ -1158,7 +1174,7 @@ EOF;
      */
     public function theTideLogArchiveCommandShouldBeDelayed()
     {
-        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $messages = $this->tracedMessageProducer->getProducedMessages();
         $matchingMessages = array_filter($messages, function($message) {
             return $message instanceof ArchiveTideCommand;
         });
@@ -1257,7 +1273,7 @@ EOF;
      */
     public function theSpotTimedOutTidesCommandShouldBeScheduled()
     {
-        $delayedCommands = $this->tracedDelayedMessageProducer->getMessages();
+        $delayedCommands = $this->tracedMessageProducer->getProducedMessages();
         $matchingCommands = array_filter($delayedCommands, function($command) {
             return $command instanceof SpotTimedOutTidesCommand;
         });

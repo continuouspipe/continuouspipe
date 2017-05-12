@@ -36,6 +36,7 @@ Feature:
     And the commit "222222222222222222222222222222222222222" is pushed to the branch "master"
     And the tide for the branch "master" and commit "222222222222222222222222222222222222222" is tentatively started
     When the tide for branch "master" and commit "000000000000000000000000000000000000000" is successful
+    And the delayed messages are received
     Then the tide for the branch "master" and commit "111111111111111111111111111111111111111" should be started
     Then the tide for the branch "master" and commit "222222222222222222222222222222222222222" should not be started
 
@@ -45,4 +46,5 @@ Feature:
     And the commit "111111111111111111111111111111111111111" is pushed to the branch "master"
     And the tide for the branch "master" and commit "111111111111111111111111111111111111111" is tentatively started
     When the tide for branch "master" and commit "000000000000000000000000000000000000000" is cancelled
+    And the delayed messages are received
     Then the tide for the branch "master" and commit "111111111111111111111111111111111111111" should be started

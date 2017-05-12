@@ -13,7 +13,7 @@ api:
         - SENTRY_DSN=http://88f4608cec7f48cfbea4113626266785:ad54b9d69c984fc69e3933a961f434c2@sentry.tools.sroze.io/9
         - RIVER_UI_URL=http://localhost
         - AUTHENTICATOR_URL=https://authenticator-staging.continuouspipe.io
-        - BUILDER_URL=http://eu--west1--b-builder-continuouspipe-io-arbp8o5f7a1t.runscope.net
+        - BUILDER_URL=https://builder.continuouspipe.io
         - PIPE_URL=https://pipe-staging.continuouspipe.io
         - LOGSTREAM_URL=https://api.logstream.continuouspipe.io
         - LOGSTREAM_FRONTEND_URL=http://logstream.continuouspipe.io

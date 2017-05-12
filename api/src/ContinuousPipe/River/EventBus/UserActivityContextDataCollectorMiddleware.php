@@ -7,8 +7,8 @@ use ContinuousPipe\River\Command\FlowCommand;
 use ContinuousPipe\River\Command\TideCommand;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Flow\Event\FlowEvent;
+use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Repository\FlowNotFound;
-use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\UserActivity\UserActivityContext;
@@ -22,7 +22,7 @@ class UserActivityContextDataCollectorMiddleware implements MessageBusMiddleware
     private $context;
 
     /**
-     * @var FlowRepository
+     * @var FlatFlowRepository
      */
     private $flowRepository;
 
@@ -31,7 +31,7 @@ class UserActivityContextDataCollectorMiddleware implements MessageBusMiddleware
      */
     private $tideRepository;
 
-    public function __construct(FlowRepository $flowRepository, TideRepository $tideRepository)
+    public function __construct(FlatFlowRepository $flowRepository, TideRepository $tideRepository)
     {
         $this->context = new UserActivityContext();
         $this->flowRepository = $flowRepository;

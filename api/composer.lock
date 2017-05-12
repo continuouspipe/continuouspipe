@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e2af69145e75f21b3fa07daf39507b5",
+    "content-hash": "8bca5c874fa2ca1dc97fd1b9dac6bef0",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -255,16 +255,16 @@
         },
         {
             "name": "continuous-pipe/events",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/events.git",
-                "reference": "3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9"
+                "reference": "603f3a2c51ed9f68dd2acfb7ea9a1b360add8d49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/events/zipball/3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9",
-                "reference": "3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9",
+                "url": "https://api.github.com/repos/continuouspipe/events/zipball/603f3a2c51ed9f68dd2acfb7ea9a1b360add8d49",
+                "reference": "603f3a2c51ed9f68dd2acfb7ea9a1b360add8d49",
                 "shasum": ""
             },
             "type": "library",
@@ -274,10 +274,40 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/events/tree/master",
+                "source": "https://github.com/continuouspipe/events/tree/0.2.0",
                 "issues": "https://github.com/continuouspipe/events/issues"
             },
-            "time": "2017-02-27T13:57:10+00:00"
+            "time": "2017-03-02T13:13:17+00:00"
+        },
+        {
+            "name": "continuous-pipe/message",
+            "version": "dev-add-transactions-and-delayed-messages",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/message.git",
+                "reference": "485e99d12005287f7e0c61e042342d2476380101"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/485e99d12005287f7e0c61e042342d2476380101",
+                "reference": "485e99d12005287f7e0c61e042342d2476380101",
+                "shasum": ""
+            },
+            "require": {
+                "google/cloud": "^0.20.2",
+                "tolerance/tolerance": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/continuouspipe/message/tree/add-transactions-and-delayed-messages",
+                "issues": "https://github.com/continuouspipe/message/issues"
+            },
+            "time": "2017-05-09 08:42:37"
         },
         {
             "name": "continuous-pipe/model",
@@ -1766,6 +1796,93 @@
                 "oauth2"
             ],
             "time": "2016-11-02T14:59:14+00:00"
+        },
+        {
+            "name": "google/cloud",
+            "version": "v0.20.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/GoogleCloudPlatform/google-cloud-php.git",
+                "reference": "7175deb3c4b07d790a52214ba209986404857d51"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/GoogleCloudPlatform/google-cloud-php/zipball/7175deb3c4b07d790a52214ba209986404857d51",
+                "reference": "7175deb3c4b07d790a52214ba209986404857d51",
+                "shasum": ""
+            },
+            "require": {
+                "google/auth": "^0.11",
+                "guzzlehttp/guzzle": "^5.3|^6.0",
+                "guzzlehttp/psr7": "^1.2",
+                "monolog/monolog": "~1",
+                "php": ">=5.5",
+                "psr/http-message": "1.0.*",
+                "rize/uri-template": "~0.3"
+            },
+            "require-dev": {
+                "erusev/parsedown": "^1.6",
+                "google/gax": "^0.6",
+                "google/proto-client-php": "^0.7",
+                "james-heinrich/getid3": "^1.9",
+                "league/json-guard": "^0.3",
+                "phpdocumentor/reflection": "^3.0",
+                "phpunit/phpunit": "4.8.*",
+                "squizlabs/php_codesniffer": "2.*",
+                "symfony/console": "^3.0",
+                "vierbergenlars/php-semver": "^3.0"
+            },
+            "suggest": {
+                "google/gax": "Required to support gRPC",
+                "google/proto-client-php": "Required to support gRPC",
+                "james-heinrich/getid3": "Allows the Google Cloud Speech client to determine sample rate and encoding of audio inputs"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Google\\Cloud\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "John Pedrie",
+                    "email": "john@pedrie.com"
+                },
+                {
+                    "name": "Dave Supplee",
+                    "email": "dwsupplee@gmail.com"
+                }
+            ],
+            "description": "Google Cloud Client Library",
+            "homepage": "http://github.com/GoogleCloudPlatform/google-cloud-php",
+            "keywords": [
+                "big query",
+                "bigquery",
+                "cloud",
+                "datastore",
+                "gcs",
+                "google",
+                "google api",
+                "google api client",
+                "google apis",
+                "google apis client",
+                "google cloud",
+                "google cloud platform",
+                "natural language",
+                "pub sub",
+                "pubsub",
+                "speech",
+                "stackdriver logging",
+                "storage",
+                "translate",
+                "translation",
+                "vision"
+            ],
+            "time": "2017-02-10T15:09:33+00:00"
         },
         {
             "name": "guzzle/guzzle",
@@ -4622,6 +4739,50 @@
             ],
             "abandoned": "ramsey/uuid",
             "time": "2015-07-23T19:00:41+00:00"
+        },
+        {
+            "name": "rize/uri-template",
+            "version": "0.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rize/UriTemplate.git",
+                "reference": "35cee84ae1c4fe0a6599392d7ca13977ff664bee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rize/UriTemplate/zipball/35cee84ae1c4fe0a6599392d7ca13977ff664bee",
+                "reference": "35cee84ae1c4fe0a6599392d7ca13977ff664bee",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Rize\\UriTemplate": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marut K",
+                    "homepage": "http://twitter.com/rezigned"
+                }
+            ],
+            "description": "PHP URI Template (RFC 6570) supports both expansion & extraction",
+            "keywords": [
+                "RFC 6570",
+                "template",
+                "uri"
+            ],
+            "time": "2017-02-21T15:25:22+00:00"
         },
         {
             "name": "sensio/distribution-bundle",
@@ -8323,7 +8484,8 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
-        "continuous-pipe/worker-bundle": 20
+        "continuous-pipe/worker-bundle": 20,
+        "continuous-pipe/message": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

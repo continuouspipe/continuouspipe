@@ -32,7 +32,7 @@
             <argument type="service" id="builder.build_request_source_resolver" />
             <argument type="service" id="router" />
             <argument>%river_host%</argument>
-            <argument>%use_ssl%%</argument>
+            <argument>%use_ssl%</argument>
         </service>
 
         <service id="builder.build_request_creator.guess_registry_details"

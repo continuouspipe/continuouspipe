@@ -12,6 +12,7 @@ Feature:
   Scenario: The timed out tides should be automatically failed when a tide is created
     Given the tide "00000000-0000-0000-0000-000000000000" is running and timed out
     When a tide is created
+    And the delayed messages are received
     Then the tide "00000000-0000-0000-0000-000000000000" should be failed
 
   Scenario: Planned timeout spotting

@@ -2,10 +2,11 @@
 
 namespace ContinuousPipe\River\Command;
 
+use ContinuousPipe\Message\Message;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\UuidInterface;
 
-class StartTideCommand implements TideCommand
+class StartTideCommand implements TideCommand, Message
 {
     /**
      * @JMS\Type("Ramsey\Uuid\Uuid")

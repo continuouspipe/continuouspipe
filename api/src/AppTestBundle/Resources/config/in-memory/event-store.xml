@@ -14,6 +14,8 @@
             <argument type="service" id="jms_serializer" />
         </service>
 
-        <service id="app.event_store" class="ContinuousPipe\Events\EventStore\InMemoryEventStore" />
+        <service id="app.event_store" class="ContinuousPipe\Events\EventStore\InMemoryEventStore">
+            <argument type="service" id="app.time_resolver" />
+        </service>
     </services>
 </container>

@@ -2,10 +2,10 @@
 
 namespace ContinuousPipe\River\LogStream\ArchiveLogs\EventListener\TideFinished;
 
-use ContinuousPipe\River\CommandBus\DelayedCommandBus;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\LogStream\ArchiveLogs\Command\ArchiveTideCommand;
 use ContinuousPipe\River\View\TideRepository;
+use SimpleBus\Message\Bus\MessageBus;
 
 class DelayArchiveLogs
 {
@@ -15,24 +15,19 @@ class DelayArchiveLogs
     private $tideRepository;
 
     /**
-     * @var DelayedCommandBus
+     * @var MessageBus
      */
-    private $delayedCommandBus;
+    private $commandBus;
 
     /**
      * @var int
      */
     private $delay;
 
-    /**
-     * @param DelayedCommandBus $delayedCommandBus
-     * @param TideRepository    $tideRepository
-     * @param int               $delay
-     */
-    public function __construct(DelayedCommandBus $delayedCommandBus, TideRepository $tideRepository, $delay)
+    public function __construct(MessageBus $commandBus, TideRepository $tideRepository, int $delay)
     {
         $this->tideRepository = $tideRepository;
-        $this->delayedCommandBus = $delayedCommandBus;
+        $this->commandBus = $commandBus;
         $this->delay = $delay;
     }
 
@@ -43,7 +38,10 @@ class DelayArchiveLogs
     {
         $tide = $this->tideRepository->find($event->getTideUuid());
 
-        $command = new ArchiveTideCommand($tide->getUuid(), $tide->getLogId());
-        $this->delayedCommandBus->publish($command, $this->delay);
+        $this->commandBus->handle(new ArchiveTideCommand(
+            $tide->getUuid(),
+            $tide->getLogId(),
+            (new \DateTime())->add(new \DateInterval('PT'.$this->delay.'S'))
+        ));
     }
 }
