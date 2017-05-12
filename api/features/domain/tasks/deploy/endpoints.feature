@@ -128,7 +128,7 @@ Feature:
                                     api_key: 123456
                                     project_identifier: 7890
                                     middlewares:
-                                        - template: https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication
+                                        - name: basic_authentication
                                           config:
                                               realm: This is secure!
                                               username: username
