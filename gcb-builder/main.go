@@ -3,9 +3,11 @@ package main
 import (
     "github.com/continuouspipe/continuouspipe/gcb-builder/builder"
 
+    "bytes"
     "flag"
     "fmt"
     "os"
+    "net/http"
     "github.com/docker/engine-api/client"
     "cloud.google.com/go/storage"
     "golang.org/x/net/context"
@@ -27,6 +29,7 @@ func main() {
 
     manifest, err := builder.ReadManifest(*manifestFilePath)
     if err != nil {
+        // Can't properly fail the build as we didn't yet read the manifest
         fmt.Println(err)
         os.Exit(1)
     }
@@ -41,25 +44,22 @@ func main() {
         manifest.ArtifactsConfiguration.ServiceAccount, err = ServiceAccountConfigurationFromFile(*googleServiceAccountFilePath)
 
         if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
+            FailBuild(manifest, err)
         }
     }
 
     stepRunner, err := NewStepRunner(manifest)
     if err != nil {
-        fmt.Println(err)
-        os.Exit(1)
+        FailBuild(manifest, err)
     }
 
     args := flag.Args()
     if len(args) > 0 && args[0] == "check" {
         if err = stepRunner.Check(); err != nil {
-            fmt.Println(err)
-            os.Exit(1)
+            FailBuild(manifest, err)
         }
 
-        os.Exit(0)
+        SuccessBuild(manifest)
     }
 
     // Add the firebase logging decorator if requested
@@ -68,8 +68,7 @@ func main() {
             manifest.FirebaseLoggingConfiguration.ServiceAccount, err = ServiceAccountConfigurationFromFile(*firebaseServiceAccountFilePath)
 
             if err != nil {
-                fmt.Println(err)
-                os.Exit(1)
+                FailBuild(manifest, err)
             }
         }
 
@@ -79,8 +78,7 @@ func main() {
         )
 
         if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
+            FailBuild(manifest, err)
         }
     }
 
@@ -88,11 +86,46 @@ func main() {
     err = buildRunner.Run(manifest)
 
     if err != nil {
-        fmt.Println(err)
-        os.Exit(1)
+        FailBuild(manifest, err)
     }
 
     fmt.Println(manifest.LogBoundary+"::END")
+
+    SuccessBuild(manifest)
+}
+
+func FailBuild(manifest builder.Manifest, error error) {
+    SendNotification(manifest.BuildCompleteEndpoint, "ERROR")
+
+    fmt.Println(error)
+    os.Exit(1)
+}
+
+func SuccessBuild(manifest builder.Manifest) {
+    SendNotification(manifest.BuildCompleteEndpoint, "SUCCESS")
+
+    os.Exit(0)
+}
+
+func SendNotification(endpoint string, status string) {
+    var body = []byte("{\"status\": \""+status+"\"}")
+
+    req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(body))
+    if err != nil {
+        panic(err)
+    }
+
+    req.Header.Set("Content-Type", "application/json")
+
+    httpClient := &http.Client{}
+    response, err := httpClient.Do(req)
+    if err != nil {
+        panic(err)
+    }
+
+    if response.StatusCode != 204 {
+        fmt.Println("ERROR: The status code is not the one expected:", response.StatusCode)
+    }
 }
 
 func NewStepRunner (manifest builder.Manifest) (builder.StepRunner, error) {
