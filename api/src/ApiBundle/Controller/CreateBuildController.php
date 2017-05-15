@@ -5,6 +5,7 @@ namespace ApiBundle\Controller;
 use ContinuousPipe\Builder\Aggregate\Build;
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
+use ContinuousPipe\Builder\Aggregate\Command\StartGcbBuild;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Engine;
@@ -103,6 +104,10 @@ class CreateBuildController
             $this->buildRequestTransformer->transform($request)
         );
 
+        if (StaticClient::variation('use-synchronous-gcb-build', new LDUser($this->getUserKey($request)), false)) {
+            $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
+        }
+        
         $this->commandBus->handle(new StartBuild($build->getIdentifier()));
 
         return $build;
