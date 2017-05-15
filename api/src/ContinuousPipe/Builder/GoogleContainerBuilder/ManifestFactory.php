@@ -56,7 +56,6 @@ class ManifestFactory
     public function create(Build $build) : array
     {
         $request = $build->getRequest();
-        $archiveSource = $request->getSteps()[0]->getArchive();
         
         return [
             'log_boundary' => $build->getIdentifier(),
@@ -71,10 +70,6 @@ class ManifestFactory
                 'service_account' => \GuzzleHttp\json_decode(file_get_contents($this->firebaseServiceAccountFilePath), true),
             ],
             'auth_configs' => $this->dockerRegistryAuthConfigs($request),
-            'archive_source' => [
-                'url' => $archiveSource->getUrl(),
-                'headers' => $archiveSource->getHeaders()
-            ],
             'steps' => array_map(function (BuildStepConfiguration $step) {
                 $stepManifest = [
                     'read_artifact' => array_map([$this, 'createArtifactManifest'], $step->getReadArtifacts()),
@@ -92,6 +87,13 @@ class ManifestFactory
 
                 if (null !== ($context = $step->getContext())) {
                     $stepManifest['build_directory'] = $context->getRepositorySubDirectory();
+                }
+
+                if (null !== ($archiveSource = $step->getArchive())) {
+                    $stepManifest['archive_source'] = [
+                        'url' => $archiveSource->getUrl(),
+                        'headers' => $archiveSource->getHeaders()
+                    ];
                 }
 
                 return $stepManifest;

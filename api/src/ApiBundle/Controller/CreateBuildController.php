@@ -106,6 +106,8 @@ class CreateBuildController
 
         if (StaticClient::variation('use-synchronous-gcb-build', new LDUser($this->getUserKey($request)), false)) {
             $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
+
+            return $build;
         }
         
         $this->commandBus->handle(new StartBuild($build->getIdentifier()));
