@@ -104,7 +104,7 @@ func (r FirebaseLoggedStepRunner) unwrap(child *firego.Firebase, err error) {
 
     child.Update(map[string]string{
         "status": status,
-        status+"At": time.Now().Format(time.RFC3339),
+        status+"At": time.Now().UTC().Format(time.RFC3339),
     })
 }
 
