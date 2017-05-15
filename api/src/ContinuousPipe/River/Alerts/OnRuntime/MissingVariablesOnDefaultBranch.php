@@ -31,9 +31,11 @@ class MissingVariablesOnDefaultBranch implements AlertsRepository
      */
     public function findByFlow(FlatFlow $flow)
     {
+        $codeReference = CodeReference::repositoryDefault($flow->getRepository());
+
         $missingVariables = $this->missingVariableResolver->findMissingVariables(
             $flow,
-            CodeReference::repositoryDefault($flow->getRepository())
+            $codeReference
         );
 
         if (count($missingVariables) == 0) {
@@ -43,7 +45,11 @@ class MissingVariablesOnDefaultBranch implements AlertsRepository
         return [
             new Alert(
                 'missing-variable',
-                sprintf('%d variable(s) are missing in the configuration', count($missingVariables)),
+                sprintf(
+                    '%d variable(s) are missing in the configuration for default branch "%s"',
+                    count($missingVariables),
+                    $codeReference
+                ),
                 new \DateTime(),
                 new AlertAction(
                     'state',
