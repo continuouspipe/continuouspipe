@@ -92,7 +92,7 @@ class ManifestFactory
                 if (null !== ($archiveSource = $step->getArchive())) {
                     $stepManifest['archive_source'] = [
                         'url' => $archiveSource->getUrl(),
-                        'headers' => $archiveSource->getHeaders()
+                        'headers' => empty($archiveSource->getHeaders()) ? new \stdClass() : $archiveSource->getHeaders()
                     ];
                 }
 
