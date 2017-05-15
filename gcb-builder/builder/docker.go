@@ -15,12 +15,42 @@ import (
     "github.com/docker/docker/builder/dockerignore"
     "encoding/base64"
     "encoding/json"
+    "net/http"
+    "compress/gzip"
+    "archive/tar"
 )
 
 // CreateBuildContext will create the Docker build context from the current directory,
 // based on the manifest configuration.
 func CreateBuildContext(step ManifestStep) (io.ReadCloser, error) {
-    contextDir, relDockerfile, err := builder.GetContextFromLocalDir(step.BuildDirectory, step.DockerfilePath)
+    var buildDirectory string
+    if step.ArchiveSource.Url != "" {
+        // Get the data
+        resp, err := http.Get(step.ArchiveSource.Url)
+        if err != nil {
+            return nil, err
+        }
+        defer resp.Body.Close()
+
+        // Writer the body to file
+        gzr, err := gzip.NewReader(resp.Body)
+        if err != nil {
+            return nil, fmt.Errorf("Create new gzip reader: %v", err)
+        }
+        defer gzr.Close()
+
+        err = untar(tar.NewReader(gzr), "source-code", true)
+        if err != nil {
+            return nil, err
+        }
+
+        buildDirectory = "./source-code/"+step.BuildDirectory
+    } else {
+        // FIXME The "build directory" configuration is not supported when the code is not downloaded.
+        buildDirectory = "."
+    }
+
+    contextDir, relDockerfile, err := builder.GetContextFromLocalDir(buildDirectory, buildDirectory+"/"+step.DockerfilePath)
 
     // And canonicalize dockerfile name to a platform-independent one
     relDockerfile, err = archive.CanonicalTarNameForPath(relDockerfile)

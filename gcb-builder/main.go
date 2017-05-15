@@ -81,6 +81,7 @@ func main() {
             FailBuild(manifest, err)
         }
     }
+    fmt.Println("start")
 
     buildRunner := builder.NewBuildRunner(stepRunner)
     err = buildRunner.Run(manifest)

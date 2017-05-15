@@ -7,6 +7,7 @@ import (
 )
 
 type ServiceAccountConfiguration struct {
+    Type       string `json:"type"`
     Email      string `json:"client_email"`
     PrivateKey string `json:"private_key"`
     ProjectId  string `json:"project_id"`
@@ -15,6 +16,11 @@ type ServiceAccountConfiguration struct {
 type ArtifactsConfiguration struct {
     BucketName     string                      `json:"bucket_name"`
     ServiceAccount ServiceAccountConfiguration `json:"service_account"`
+}
+
+type ArchiveSourceConfiguration struct {
+    Url     string            `json:"url"`
+    Headers map[string]string `json:"headers"`
 }
 
 type FirebaseLoggingConfiguration struct {
@@ -37,12 +43,13 @@ type Manifest struct {
 // ManifestStep is a step in the manifest
 type ManifestStep struct {
     Number         int
-    ImageName      string            `json:"image_name"`
-    DockerfilePath string            `json:"docker_file_path"`
-    BuildDirectory string            `json:"build_directory"`
-    BuildArgs      map[string]string `json:"build_args"`
-    WriteArtifacts []Artifact        `json:"write_artifacts"`
-    ReadArtifacts  []Artifact        `json:"read_artifacts"`
+    ImageName      string                     `json:"image_name"`
+    DockerfilePath string                     `json:"docker_file_path"`
+    BuildDirectory string                     `json:"build_directory"`
+    BuildArgs      map[string]string          `json:"build_args"`
+    WriteArtifacts []Artifact                 `json:"write_artifacts"`
+    ReadArtifacts  []Artifact                 `json:"read_artifacts"`
+    ArchiveSource  ArchiveSourceConfiguration `json:"archive_source"`
 }
 
 // ReadManifest reads the manifest from a file
