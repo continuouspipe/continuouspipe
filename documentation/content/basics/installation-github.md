@@ -1,11 +1,14 @@
 ---
-title: GitHub Installation
+title: "Installation: GitHub"
 menu:
   main:
     parent: 'basics'
     weight: 60
 
 weight: 60
+
+aliases:
+    - /basics/github-installation/
 ---
 In order to use ContinuousPipe with a GitHub repository, you need to configure two interaction points: 
 

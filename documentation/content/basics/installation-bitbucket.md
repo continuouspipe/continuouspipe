@@ -1,5 +1,5 @@
 ---
-title: Bitbucket Installation
+title: "Installation: Bitbucket"
 menu:
   main:
     parent: 'basics'
@@ -9,6 +9,7 @@ weight: 70
 
 aliases:
     - /configuration/bitbucket-integration/
+    - /basics/bitbucket-installation/
 ---
 In order to use ContinuousPipe with a Bitbucket repository, you need to configure two interaction points: 
 

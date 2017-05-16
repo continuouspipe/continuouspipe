@@ -95,3 +95,7 @@ figure {
 figure.half-width {
     max-width: 50%;
 }
+
+figure.concepts {
+    max-width: 60%;
+}
