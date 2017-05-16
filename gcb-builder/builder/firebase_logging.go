@@ -113,7 +113,7 @@ func (r FirebaseLoggedStepRunner) wrap(title string) *firego.Firebase {
         "type":"text",
         "contents": fmt.Sprintf(title),
         "status": "running",
-        "runningAt": time.Now()..UTC().Format(time.RFC3339),
+        "runningAt": time.Now().UTC().Format(time.RFC3339),
     }
 
     child, err := r.firebaseClient.Child(r.parentPath+"/children").Push(v)
