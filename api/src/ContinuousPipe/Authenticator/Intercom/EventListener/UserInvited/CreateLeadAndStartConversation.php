@@ -75,7 +75,7 @@ class CreateLeadAndStartConversation implements EventSubscriberInterface
 
         $this->intercomClient->message([
             'message_type' => 'email',
-            'subject' => sprintf('You\'ve been invited to the team "%s"', $team->getName()),
+            'subject' => sprintf('You\'ve been invited to the project "%s"', $team->getName()),
             'template' => 'personal',
             'body' => $this->templatingEngine->render('@intercom/user_invited.html.twig', [
                 'team' => $team,

@@ -56,11 +56,11 @@ class TeamBillingProfileAlertFinder implements AlertFinder
             return [
                 new Alert(
                     'billing-profile-not-found',
-                    'The team does not have any billing profile. You\'ll have a very limited experience.',
+                    'The project does not have any billing profile. You\'ll have a very limited experience.',
                     new \DateTime(),
                     new AlertAction(
                         'state',
-                        'Configure the team',
+                        'Configure the project',
                         'configuration'
                     )
                 ),
@@ -117,11 +117,11 @@ class TeamBillingProfileAlertFinder implements AlertFinder
         if (0 === count($subscriptions)) {
             return new Alert(
                 'billing-profile-has-no-subscription',
-                'Your team billing profile does not have any subscriptions. This will limit your experience.',
+                'Your project billing profile does not have any subscriptions. This will limit your experience.',
                 new \DateTime(),
                 new AlertAction(
                     'state',
-                    'Configure the team',
+                    'Configure the project',
                     'configuration'
                 )
             );
@@ -131,11 +131,11 @@ class TeamBillingProfileAlertFinder implements AlertFinder
         if (count($activeSubscriptions) == 0) {
             return new Alert(
                 'billing-profile-has-no-active-subscription',
-                'Your team billing profile does not have any active subscriptions. This will limit your experience.',
+                'Your project billing profile does not have any active subscriptions. This will limit your experience.',
                 new \DateTime(),
                 new AlertAction(
                     'state',
-                    'Configure the team',
+                    'Configure the project',
                     'configuration'
                 )
             );
