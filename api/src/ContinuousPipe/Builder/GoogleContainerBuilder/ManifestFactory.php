@@ -56,7 +56,7 @@ class ManifestFactory
     public function create(Build $build) : array
     {
         $request = $build->getRequest();
-
+        
         return [
             'log_boundary' => $build->getIdentifier(),
             'build_complete_endpoint' => $this->urlGenerator->generate('complete_build', ['id' => $build->getIdentifier()], UrlGeneratorInterface::ABSOLUTE_URL),
@@ -87,6 +87,13 @@ class ManifestFactory
 
                 if (null !== ($context = $step->getContext())) {
                     $stepManifest['build_directory'] = $context->getRepositorySubDirectory();
+                }
+
+                if (null !== ($archiveSource = $step->getArchive())) {
+                    $stepManifest['archive_source'] = [
+                        'url' => $archiveSource->getUrl(),
+                        'headers' => empty($archiveSource->getHeaders()) ? new \stdClass() : $archiveSource->getHeaders()
+                    ];
                 }
 
                 return $stepManifest;

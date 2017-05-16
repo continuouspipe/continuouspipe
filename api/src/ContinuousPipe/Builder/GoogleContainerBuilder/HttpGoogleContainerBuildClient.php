@@ -9,6 +9,8 @@ use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Artifact\ArtifactManager;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
+use Inviqa\LaunchDarklyBundle\Client\ExplicitUser\StaticClient;
+use LaunchDarkly\LDUser;
 
 class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
 {
@@ -68,7 +70,13 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
     public function createFromRequest(Build $build): GoogleContainerBuild
     {
         try {
-            $sourceArchive = $this->archiveBuilder->createArchive($build->getRequest()->getSteps()[0]);
+            if (StaticClient::variation('use-synchronous-gcb-build', new LDUser($this->getUserKey($build)), false)) {
+                $sourceArchive = new Archive\FileSystemArchive(Archive\FileSystemArchive::createDirectory('mani-only'));
+                $gcbBuilderVersion = 'v5';
+            } else {
+                $sourceArchive = $this->archiveBuilder->createArchive($build->getRequest()->getSteps()[0]);
+                $gcbBuilderVersion = 'v4';
+            }
             $mani = \GuzzleHttp\json_encode(
                 $this->manifestFactory->create($build)
             );
@@ -76,7 +84,6 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
         } catch (Archive\ArchiveException $e) {
             throw new GoogleContainerBuilderException('Something went wrong while creating the source archive', $e->getCode(), $e);
         }
-
         $sourceArtifact = new Artifact($build->getIdentifier() . '.tar.gz');
 
         try {
@@ -99,7 +106,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
                         ],
                         'steps' => [
                             [
-                                'name' => 'quay.io/continuouspipe/cloud-builder:v4',
+                                'name' => 'quay.io/continuouspipe/cloud-builder:' . $gcbBuilderVersion,
                                 'args' => [
                                     // Delete the manifest file once read
                                     '-delete-manifest',
@@ -151,5 +158,25 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
         }
 
         return new GoogleContainerBuildStatus($json['status']);
+    }
+
+    private function getUserKey(Build $build)
+    {
+        $steps = $build->getRequest()->getSteps();
+        if (!isset($steps[0])) {
+            return 'builder';
+        }
+
+        $image = $steps[0]->getImage();
+        if (!isset($image)) {
+            return 'builder';
+        }
+
+        $imageName = $image->getName();
+        if (!isset($imageName)) {
+            return 'builder';
+        }
+
+        return $imageName;
     }
 }
