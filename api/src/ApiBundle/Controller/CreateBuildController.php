@@ -7,7 +7,6 @@ use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
 use ContinuousPipe\Builder\Aggregate\Command\StartGcbBuild;
 use ContinuousPipe\Builder\Artifact;
-use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
@@ -86,10 +85,6 @@ class CreateBuildController
             $request = $request->withEngine(new Engine('gcb'));
         }
         if (null === $request->getEngine()) {
-            if (StaticClient::variation('run-hidden-gcb-build', new LDUser($userKey), false)) {
-                $this->createAndStartBuild($this->createHiddenGcbBuild($request));
-            }
-
             $request = $request->withEngine(new Engine('docker'));
         }
 
@@ -113,57 +108,6 @@ class CreateBuildController
         $this->commandBus->handle(new StartBuild($build->getIdentifier()));
 
         return $build;
-    }
-
-    private function createHiddenGcbBuild(BuildRequest $request) : BuildRequest
-    {
-        $updateArtifactPath = function (BuildStepConfiguration $step) {
-            return array_map(
-                function (Artifact $artifact) {
-                    return new Artifact($artifact->getIdentifier() . '-gcb', $artifact->getPath());
-                },
-                $step->getReadArtifacts()
-            );
-        };
-
-        $updateImagePath = function (BuildStepConfiguration $step) {
-            $image = $step->getImage();
-            if (!isset($image)) {
-                return null;
-            }
-
-            return $image->withTag($image->getTag() . '-gcb');
-        };
-
-        $updateLogStreamIdentifier = function (BuildStepConfiguration $step) {
-            $logStreamIdentifier = $step->getLogStreamIdentifier();
-            if (!isset($logStreamIdentifier)) {
-                return '';
-            }
-
-            return $logStreamIdentifier . '/gcb';
-        };
-
-        $request = $request->withSteps(
-            array_map(
-                function (BuildStepConfiguration $step) use ($updateArtifactPath, $updateImagePath, $updateLogStreamIdentifier) {
-                    return $step
-                        ->withReadArtifacts($updateArtifactPath($step))
-                        ->withLogStreamIdentifier($updateLogStreamIdentifier($step))
-                        ->withImage($updateImagePath($step));
-                },
-                $request->getSteps()
-            )
-        );
-
-        ;
-        if (null !== ($logging = $request->getLogging()) && null !== ($logStream = $logging->getLogStream())) {
-            $request = $request->withParentLogIdentifier(
-                $logStream->getParentLogIdentifier() . '/gcb'
-            );
-        }
-
-        return $request->withEngine(new Engine('gcb'));
     }
 
     private function getUserKey(BuildRequest $request)
