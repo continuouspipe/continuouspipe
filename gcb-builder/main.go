@@ -10,13 +10,13 @@ import (
     "net/http"
     "github.com/docker/engine-api/client"
     "cloud.google.com/go/storage"
-    "golang.org/x/net/context"
     "io/ioutil"
     "encoding/json"
     "google.golang.org/cloud"
     "golang.org/x/oauth2/google"
     "golang.org/x/oauth2/jwt"
     "golang.org/x/oauth2"
+    "errors"
 )
 
 func main() {
@@ -81,6 +81,7 @@ func main() {
             FailBuild(manifest, err)
         }
     }
+    fmt.Println("start")
 
     buildRunner := builder.NewBuildRunner(stepRunner)
     err = buildRunner.Run(manifest)
@@ -134,17 +135,18 @@ func NewStepRunner (manifest builder.Manifest) (builder.StepRunner, error) {
         return nil, err
     }
 
-    ctx := context.Background()
-    if "" != manifest.ArtifactsConfiguration.ServiceAccount.PrivateKey {
-        conf := &jwt.Config{
-            Email:      manifest.ArtifactsConfiguration.ServiceAccount.Email,
-            PrivateKey: []byte(manifest.ArtifactsConfiguration.ServiceAccount.PrivateKey),
-            Scopes:     []string{storage.ScopeFullControl},
-            TokenURL:   google.JWTTokenURL,
-        }
-
-        ctx = cloud.NewContext(manifest.ArtifactsConfiguration.ServiceAccount.ProjectId, conf.Client(oauth2.NoContext))
+    if "" == manifest.ArtifactsConfiguration.ServiceAccount.PrivateKey {
+        return nil, errors.New("Artifact service account private key is empty")
     }
+
+    conf := &jwt.Config{
+        Email:      manifest.ArtifactsConfiguration.ServiceAccount.Email,
+        PrivateKey: []byte(manifest.ArtifactsConfiguration.ServiceAccount.PrivateKey),
+        Scopes:     []string{storage.ScopeFullControl},
+        TokenURL:   google.JWTTokenURL,
+    }
+
+    ctx := cloud.NewContext(manifest.ArtifactsConfiguration.ServiceAccount.ProjectId, conf.Client(oauth2.NoContext))
 
     storageClient, err := storage.NewClient(ctx)
     if err != nil {
