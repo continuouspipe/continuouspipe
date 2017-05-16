@@ -17,10 +17,10 @@ weight: 170
 
 ## Bug Fixes
 
-* Fix for `watch` on linux. It was taking too long to add the directory watches.
+* Fix for `watch` on Linux. It was taking excessively long to add the directory watches compared to the Mac client due to differences in filesystem handling.
 
 ## Other Changes
 
-* We now send operational metrics to detect and diagnose application errors along with analytics information that will help to improve the tool. For now this metrics affect only the commands `destroy`, `build`, `bash` and `exec`
+* We now send operational metrics to detect and diagnose application errors along with analytics information that will help to improve the tool. For now this metrics affect only the commands `destroy`, `build`, `bash` and `exec`.
 
-* For the commands `destroy`, `build`, `bash` and `exec` we are now giving user friendly error messages that aim to explain: what has happened, why has happened and what can be done to resolve along with a session id that can be used to contact support.
+* For the commands `destroy`, `build`, `bash` and `exec` we are now giving user friendly error messages that aim to explain what has happened, why it has happened, what can be done to resolve, and a session id that can be used to contact support.
