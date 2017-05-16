@@ -26,16 +26,29 @@ func CreateBuildContext(step ManifestStep) (io.ReadCloser, error) {
     var buildDirectory string
     if step.ArchiveSource.Url != "" {
         // Get the data
-        resp, err := http.Get(step.ArchiveSource.Url)
+        request, err := http.NewRequest("GET", step.ArchiveSource.Url, nil)
         if err != nil {
             return nil, err
         }
-        defer resp.Body.Close()
+
+        for key, value := range step.ArchiveSource.Headers {
+            request.Header.Set(key, value)
+        }
+
+        response, err := http.DefaultClient.Do(request)
+        if err != nil {
+            return nil, err
+        }
+
+        defer response.Body.Close()
+        if response.StatusCode < 200 || response.StatusCode > 399 {
+            return nil, fmt.Errorf("Unable to download the source code (%d)", response.StatusCode)
+        }
 
         // Writer the body to file
-        gzr, err := gzip.NewReader(resp.Body)
+        gzr, err := gzip.NewReader(response.Body)
         if err != nil {
-            return nil, fmt.Errorf("Create new gzip reader: %v", err)
+            return nil, fmt.Errorf("Response was not expected: %v", err)
         }
         defer gzr.Close()
 
