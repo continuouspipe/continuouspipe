@@ -8,6 +8,7 @@ use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Task\TaskRunnerException;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideConfigurationException;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Psr\Log\LoggerInterface;
@@ -63,11 +64,23 @@ class FilterDecorator implements TaskRunner
     {
         try {
             $taskConfiguration = $this->getTaskConfiguration($tide, $task->getIdentifier());
+        } catch (TideConfigurationException $e) {
+            $this->logger->error('Task configuration exception', [
+                'exception' => $e,
+            ]);
+
+            throw new TaskRunnerException($e->getMessage(), $e->getCode(), $e, $task);
+        }
+
+        try {
             $shouldBeSkipped = $this->shouldSkipTask($taskConfiguration, $tide);
         } catch (TideConfigurationException $e) {
             $this->logger->error('Task configuration exception', [
                 'exception' => $e,
             ]);
+
+            $logger = $this->loggerFactory->fromId($task->getLogIdentifier());
+            $logger->child(new Text('Error in task filter condition - ' . $e->getMessage()))->updateStatus(Log::FAILURE);
 
             throw new TaskRunnerException($e->getMessage(), $e->getCode(), $e, $task);
         }
