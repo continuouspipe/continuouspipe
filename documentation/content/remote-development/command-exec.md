@@ -41,6 +41,9 @@ Running the `exec` command in interactive mode looks like this:
 ```
 cp-remote exec --interactive --kube-environment-name php-example-cpdev-foo --service web --flow-id 1268cc54-0c360641bb54 -- /bin/sh
 cp-remote exec -i -e php-example-cpdev-foo -s web -f 1268cc54-0c360641bb54 -- /bin/sh
+
+cp-remote exec --interactive -- /bin/sh
+cp-remote exec -i -- /bin/sh
 ```
 
 ***
@@ -62,4 +65,4 @@ Option | Alias | Default | Description
 
 Flag | Alias | Default | Description
 -----|-------|---------|------------
-`--interactive` | `-i` | false | Use interactive mode. Interactive mode allows you specify a ContinuousPipe username and API key to run commands without a token. Interactive mode requires the flags `--kube-environment-name`, `--service` and  `--flow-id` to be specified.
+`--interactive` | `-i` | false | Use interactive mode. Interactive mode allows you specify a ContinuousPipe username and API key to run commands without a token.
