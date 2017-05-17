@@ -103,7 +103,7 @@ class FileSystemArchive extends Context implements Archive
         return file_exists($this->getDirectory().DIRECTORY_SEPARATOR.$path);
     }
 
-    /**
+/**
      * {@inheritdoc}
      */
     public function write(string $path, Archive $archive)
