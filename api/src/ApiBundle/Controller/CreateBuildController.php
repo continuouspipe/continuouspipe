@@ -85,7 +85,7 @@ class CreateBuildController
             $request = $request->withEngine(new Engine('gcb'));
         }
         if (null === $request->getEngine()) {
-            $request = $request->withEngine(new Engine('gcb'));
+            $request = $request->withEngine(new Engine('docker'));
         }
 
         $build = $this->createAndStartBuild($request);
