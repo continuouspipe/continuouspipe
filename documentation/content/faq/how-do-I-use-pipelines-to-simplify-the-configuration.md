@@ -1,5 +1,5 @@
 ---
-title: How do I use "pipelines" to simplify the configuration?
+title: "Configuration: How do I use \"pipelines\" to simplify the configuration?"
 menu:
   main:
     parent: 'faq'

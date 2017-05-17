@@ -1,5 +1,5 @@
 ---
-title: How do I get the deployed endpoint address for a service?
+title: "Configuration: How do I get the deployed endpoint address for a service?"
 menu:
   main:
     parent: 'faq'

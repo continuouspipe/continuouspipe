@@ -1,5 +1,5 @@
 ---
-title: How do I set environment variables?
+title: "Configuration: How do I set environment variables?"
 menu:
   main:
     parent: 'faq'

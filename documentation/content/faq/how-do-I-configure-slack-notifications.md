@@ -1,5 +1,5 @@
 ---
-title: How do I configure Slack notifications?
+title: "Configuration: How do I configure Slack notifications?"
 menu:
   main:
     parent: 'faq'

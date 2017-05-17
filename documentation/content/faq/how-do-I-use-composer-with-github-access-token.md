@@ -1,5 +1,5 @@
 ---
-title: How do I use Composer with GitHub personal access token?
+title: "Configuration: How do I use Composer with GitHub personal access token?"
 menu:
   main:
     parent: 'faq'

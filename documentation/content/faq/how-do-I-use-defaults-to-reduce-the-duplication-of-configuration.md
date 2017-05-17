@@ -1,5 +1,5 @@
 ---
-title: How do I use "defaults" to reduce the duplication of configuration?
+title: "Configuration: How do I use \"defaults\" to reduce the duplication of configuration?"
 menu:
   main:
     parent: 'faq'
