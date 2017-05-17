@@ -40,7 +40,7 @@ class HttpBuildCreator implements BuildCreator
         $this->maximumAllowedBuildTime = $maximumAllowedBuildTime;
     }
 
-    public function startBuild(Artifact $sourceArtifact,  string $gcbBuilderVersion): ResponseInterface
+    public function startBuild(Artifact $sourceArtifact, string $gcbBuilderVersion): ResponseInterface
     {
         return $this->googleHttpClient->request(
             'post',

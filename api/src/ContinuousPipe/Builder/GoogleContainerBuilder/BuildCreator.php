@@ -7,5 +7,5 @@ use Psr\Http\Message\ResponseInterface;
 
 interface BuildCreator
 {
-    public function startBuild(Artifact $sourceArtifact,  string $gcbBuilderVersion): ResponseInterface;
+    public function startBuild(Artifact $sourceArtifact, string $gcbBuilderVersion): ResponseInterface;
 }
