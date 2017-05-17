@@ -76,6 +76,12 @@ or
 cp-remote bash -i -e php-example-cpdev-foo -s web -f 1268cc54-0c360641bb54
 ```
 
+or, if you don't know which flag options to use, simply run the following and you will be guided to the right pod
+
+```
+cp-remote bash -i
+```
+
 {{< note title="Note" >}} 
 The [bash command]({{< relref "remote-development/command-bash.md#interactive-mode" >}}) and [exec command]({{< relref "remote-development/command-exec.md#interactive-mode" >}}) can be run in interactive mode directly without having to run `cp-remote init -i` first.
 {{< /note >}}
