@@ -22,7 +22,6 @@ in order to test the builder locally:
 1. Move to a directory containing a `continuous-pipe.manifest.json` file. If you have access to Google Container Builder builds history,
    you can download the source of a previously ran build to have the manifest file.
 
-2. `DOCKER_HOST=unix:///var/run/docker.sock go run ~/Personal/go/src/github.com/continuouspipe/continuouspipe/gcb-builder/main.go`
-   *Note:* this is assuming your `$GOPATH` is `~/Personal/go`
+2. `DOCKER_HOST=unix:///var/run/docker.sock go run $GOPATH/src/github.com/continuouspipe/continuouspipe/gcb-builder/main.go`
 
 
