@@ -12,11 +12,11 @@ import (
     "cloud.google.com/go/storage"
     "io/ioutil"
     "encoding/json"
-    "google.golang.org/cloud"
     "golang.org/x/oauth2/google"
     "golang.org/x/oauth2/jwt"
-    "golang.org/x/oauth2"
+    "context"
     "errors"
+    "google.golang.org/api/option"
 )
 
 func main() {
@@ -146,9 +146,8 @@ func NewStepRunner (manifest builder.Manifest) (builder.StepRunner, error) {
         TokenURL:   google.JWTTokenURL,
     }
 
-    ctx := cloud.NewContext(manifest.ArtifactsConfiguration.ServiceAccount.ProjectId, conf.Client(oauth2.NoContext))
-
-    storageClient, err := storage.NewClient(ctx)
+    tokenSource := conf.TokenSource(context.TODO())
+    storageClient, err := storage.NewClient(context.Background(), option.WithTokenSource(tokenSource))
     if err != nil {
         return nil, err
     }
