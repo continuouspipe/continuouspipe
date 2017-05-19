@@ -80,8 +80,8 @@
         <!-- Handler & Listeners -->
         <service id="builder.google_container_builder.handler.fetch_gc_build_status" class="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\CommandHandler\FetchGCBuildStatusHandler">
             <argument type="service" id="builder.google_container_builder" />
-            <argument type="service" id="event_bus" />
             <argument type="service" id="command_bus" />
+            <argument type="service" id="builder.build.transaction_manager" />
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Command\FetchGCBuildStatus" />
         </service>

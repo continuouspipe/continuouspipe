@@ -2,9 +2,10 @@
 
 namespace ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\CommandHandler;
 
+use ContinuousPipe\Builder\Aggregate\Build;
 use ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Command\FetchGCBuildStatus;
-use ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildFinished;
 use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuilderClient;
+use ContinuousPipe\Events\Transaction\TransactionManager;
 use SimpleBus\Message\Bus\MessageBus;
 
 class FetchGCBuildStatusHandler
@@ -17,22 +18,22 @@ class FetchGCBuildStatusHandler
     /**
      * @var MessageBus
      */
-    private $eventBus;
-    /**
-     * @var MessageBus
-     */
     private $commandBus;
+    /**
+     * @var TransactionManager
+     */
+    private $transactionManager;
 
     /**
      * @param GoogleContainerBuilderClient $containerBuilderClient
-     * @param MessageBus $eventBus
      * @param MessageBus $commandBus
+     * @param TransactionManager $transactionManager
      */
-    public function __construct(GoogleContainerBuilderClient $containerBuilderClient, MessageBus $eventBus, MessageBus $commandBus)
+    public function __construct(GoogleContainerBuilderClient $containerBuilderClient, MessageBus $commandBus, TransactionManager $transactionManager)
     {
         $this->containerBuilderClient = $containerBuilderClient;
-        $this->eventBus = $eventBus;
         $this->commandBus = $commandBus;
+        $this->transactionManager = $transactionManager;
     }
 
     public function handle(FetchGCBuildStatus $command)
@@ -49,9 +50,9 @@ class FetchGCBuildStatusHandler
             return;
         }
 
-        $this->eventBus->handle(new GCBuildFinished(
-            $command->getBuildIdentifier(),
-            $status
-        ));
+        $this->transactionManager->apply($command->getBuildIdentifier(), function (Build $build) use ($status) {
+            $build->completeBuild($status);
+        });
+
     }
 }
