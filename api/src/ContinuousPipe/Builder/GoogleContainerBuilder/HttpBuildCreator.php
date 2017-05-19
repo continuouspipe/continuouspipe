@@ -55,7 +55,7 @@ class HttpBuildCreator implements BuildCreator
                     ],
                     'steps' => [
                         [
-                            'name' => 'quay.io/continuouspipe/cloud-builder:' . $gcbBuilderVersion,
+                            'name' => 'gcr.io/continuous-pipe-1042/cloud-builder:' . $gcbBuilderVersion,
                             'args' => [
                                 // Delete the manifest file once read
                                 '-delete-manifest',
