@@ -55,7 +55,10 @@ Feature:
             "tag": "build-container-with-artifacts"
           }
         }
-      ]
+      ],
+      "engine": {
+        "type": "docker"
+      }
     }
     """
     Then the build should be successful
@@ -80,7 +83,10 @@ Feature:
             "branch": "master-second"
           }
         }
-      ]
+      ],
+      "engine": {
+        "type": "docker"
+      }
     }
     """
     Then the build should be failed
@@ -106,7 +112,10 @@ Feature:
             }
           ]
         }
-      ]
+      ],
+      "engine": {
+        "type": "docker"
+      }
     }
     """
     Then the build should be failed
@@ -135,7 +144,10 @@ Feature:
             }
           ]
         }
-      ]
+      ],
+      "engine": {
+        "type": "docker"
+      }
     }
     """
     Then the build should be successful
@@ -160,7 +172,10 @@ Feature:
             }
           ]
         }
-      ]
+      ],
+      "engine": {
+        "type": "docker"
+      }
     }
     """
     Then the build should be successful
@@ -191,7 +206,10 @@ Feature:
             }
           ]
         }
-      ]
+      ],
+      "engine": {
+        "type": "docker"
+      }
     }
     """
     Then the build should be successful
@@ -216,7 +234,10 @@ Feature:
             }
           ]
         }
-      ]
+      ],
+      "engine": {
+        "type": "docker"
+      }
     }
     """
     Then the build should be failed
@@ -241,7 +262,10 @@ Feature:
             }
           ]
         }
-      ]
+      ],
+      "engine": {
+        "type": "docker"
+      }
     }
     """
     Then the build should be successful
