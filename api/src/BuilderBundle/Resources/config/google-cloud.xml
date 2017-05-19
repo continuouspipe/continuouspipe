@@ -86,5 +86,12 @@
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Command\FetchGCBuildStatus" />
         </service>
 
+        <service id="builder.google_container_builder.listener.fetch_status_when_gc_build_started"
+                 class="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\EventListener\FetchStatusWhenGCBuildStarted">
+            <argument type="service" id="command_bus" />
+
+             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildStarted" />
+        </service>
+
     </services>
 </container>

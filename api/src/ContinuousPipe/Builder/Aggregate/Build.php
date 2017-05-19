@@ -11,6 +11,7 @@ use ContinuousPipe\Builder\Aggregate\Event\BuildFinished;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStarted;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStepFinished;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStepStarted;
+use ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildFinished;
 use ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildStarted;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Engine;
@@ -188,6 +189,9 @@ class Build implements Aggregate
     {
         $this->status = self::STATUS_SUCCESS;
     }
+
+    private function applyGCBuildFinished(GCBuildFinished $event)
+    {}
 
     /**
      * @return string

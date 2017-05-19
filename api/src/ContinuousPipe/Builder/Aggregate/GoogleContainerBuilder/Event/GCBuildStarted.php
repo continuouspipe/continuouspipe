@@ -17,13 +17,13 @@ class GCBuildStarted extends BuildEvent
 
     /**
      * @param string $buildIdentifier
-     * @param GoogleContainerBuild $build
+     * @param GoogleContainerBuild $status
      */
-    public function __construct(string $buildIdentifier, GoogleContainerBuild $build)
+    public function __construct(string $buildIdentifier, GoogleContainerBuild $status)
     {
         parent::__construct($buildIdentifier);
 
-        $this->build = $build;
+        $this->build = $status;
     }
 
     /**
