@@ -41,7 +41,6 @@ class FetchGCBuildStatusHandler
         $status = $this->containerBuilderClient->fetchStatus($command->getGoogleContainerBuild());
 
         if ($status->isRunning()) {
-
             $this->commandBus->handle(new FetchGCBuildStatus(
                 $command->getBuildIdentifier(),
                 $command->getGoogleContainerBuild()

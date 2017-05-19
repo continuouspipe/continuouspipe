@@ -12,7 +12,7 @@ class GCBuildFinished extends BuildEvent
     /**
      * @JMS\Type("ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuildStatus")
      *
-     * @var GoogleContainerBuild
+     * @var GoogleContainerBuildStatus
      */
     private $status;
 

@@ -27,7 +27,7 @@ class FetchStatusWhenGCBuildStarted
         $this->commandBus->handle(new FetchGCBuildStatus(
             $event->getBuildIdentifier(),
             $event->getBuild(),
-            new \DateTime('+ 5 minutes')
+            new \DateTimeImmutable('+ 5 minutes')
         ));
     }
 }
