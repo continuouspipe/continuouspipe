@@ -128,7 +128,7 @@ class ManifestFactory
         return $authConfigs;
     }
 
-    private function getFirebaseParentLog(Logging $logging = null) : string
+    private function getFirebaseParentLog(Logging $logging = null)
     {
         if (null === $logging || null === ($logStream = $logging->getLogStream())) {
             return null;

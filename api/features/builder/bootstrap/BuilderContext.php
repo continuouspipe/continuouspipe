@@ -16,6 +16,7 @@ use ContinuousPipe\Builder\Aggregate\FromEvents\BuildEventStreamResolver;
 use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Article\TraceableArchiveBuilder;
 use ContinuousPipe\Builder\BuildStepConfiguration;
+use ContinuousPipe\Builder\GoogleContainerBuilder\HttpGoogleContainerBuildClient;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Notifier\HookableNotifier;
 use ContinuousPipe\Builder\Notifier\NotificationException;
@@ -23,6 +24,8 @@ use ContinuousPipe\Builder\Notifier\TraceableNotifier;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
+use ContinuousPipe\Builder\Tests\TraceableArtifactManager;
+use ContinuousPipe\Builder\Tests\TraceableBuildCreator;
 use ContinuousPipe\Events\AggregateNotFound;
 use ContinuousPipe\Events\EventStore\EventStore;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
@@ -107,6 +110,14 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var TracedPublisher
      */
     private $tracedPublisher;
+    /**
+     * @var TraceableArtifactManager
+     */
+    private $traceableArtifactManager;
+    /**
+     * @var TraceableBuildCreator
+     */
+    private $traceableBuildCreator;
 
     public function __construct(
         Kernel $kernel,
@@ -122,7 +133,9 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         MessageBus $commandBus,
         EventStore $eventStore,
         BuildRequestTransformer $buildRequestTransformer,
-        TracedPublisher $tracedPublisher
+        TracedPublisher $tracedPublisher,
+        TraceableArtifactManager $traceableArtifactManager,
+        TraceableBuildCreator $traceableBuildCreator
     ) {
         $this->kernel = $kernel;
         $this->traceableDockerClient = $traceableDockerClient;
@@ -138,6 +151,8 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         $this->eventStore = $eventStore;
         $this->buildRequestTransformer = $buildRequestTransformer;
         $this->tracedPublisher = $tracedPublisher;
+        $this->traceableArtifactManager = $traceableArtifactManager;
+        $this->traceableBuildCreator = $traceableBuildCreator;
     }
 
     /**
@@ -567,6 +582,26 @@ EOF;
                     )
                 );
             }
+        }
+    }
+
+    /**
+     * @Then the manifest file should be sent in an archive to to Google Cloud Storage
+     */
+    public function theManifestFileShouldBeSentInAnArchiveToToGoogleCloudStorage()
+    {
+        if (!isset($this->traceableArtifactManager->getWritten()[0]) || !$this->traceableArtifactManager->getWritten()[0]['archive']->contains(HttpGoogleContainerBuildClient::MANIFEST_FILENAME)) {
+            throw new \RuntimeException('Archive did not contain Manifest file');
+        }
+    }
+
+    /**
+     * @Then the archive details should be sent to Google Cloud Builder
+     */
+    public function theArchiveDetailsShouldBeSentToGoogleCloudBuilder()
+    {
+        if (!isset($this->traceableBuildCreator->getRequests()[0]) || $this->traceableBuildCreator->getRequests()[0]['source'] != $this->traceableArtifactManager->getWritten()[0]['archive']->contains(HttpGoogleContainerBuildClient::MANIFEST_FILENAME)) {
+            throw new \RuntimeException('Archive not send to GCB when starting build');
         }
     }
 
