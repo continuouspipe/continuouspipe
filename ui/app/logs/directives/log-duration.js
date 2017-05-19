@@ -27,7 +27,7 @@ angular.module('continuousPipeRiver')
 
                     function parseDate(s) {
                         var localTimezoneOffset = - 60000 * new Date().getTimezoneOffset(),
-                            dateTimestamp = +new Date(s.split('+')[0]);
+                            dateTimestamp = +new Date(s.split('+')[0].split('Z')[0]);
 
                         return dateTimestamp + localTimezoneOffset;
                     }
