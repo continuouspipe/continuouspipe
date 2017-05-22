@@ -32,12 +32,12 @@ class FetchGCBuildStatus implements DelayedMessage
     /**
      * @param string $buildIdentifier
      * @param GoogleContainerBuild $googleContainerBuild
-     * @param \DateTimeInterface $runAt
+     * @param \DateTime $runAt
      */
     public function __construct(
         string $buildIdentifier,
         GoogleContainerBuild $googleContainerBuild,
-        \DateTimeInterface $runAt = null
+        \DateTime $runAt = null
     ) {
         $this->buildIdentifier = $buildIdentifier;
         $this->googleContainerBuild = $googleContainerBuild;
