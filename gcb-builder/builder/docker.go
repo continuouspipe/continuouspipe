@@ -23,7 +23,6 @@ import (
 // CreateBuildContext will create the Docker build context from the current directory,
 // based on the manifest configuration.
 func CreateBuildContext(step ManifestStep) (io.ReadCloser, error) {
-    var buildDirectory string
     if step.ArchiveSource.Url != "" {
         // Get the data
         request, err := http.NewRequest("GET", step.ArchiveSource.Url, nil)
@@ -56,12 +55,9 @@ func CreateBuildContext(step ManifestStep) (io.ReadCloser, error) {
         if err != nil {
             return nil, err
         }
-
-        buildDirectory = "./source-code/"+step.BuildDirectory
-    } else {
-        // FIXME The "build directory" configuration is not supported when the code is not downloaded.
-        buildDirectory = "."
     }
+    // FIXME The "build directory" configuration is not supported when the code is not downloaded.
+    buildDirectory := GetBuildDirectory(step)
 
     contextDir, relDockerfile, err := builder.GetContextFromLocalDir(buildDirectory, buildDirectory+"/"+step.DockerfilePath)
 
@@ -154,4 +150,11 @@ func CreatePushRegistryAuth(manifest Manifest, imageName string) (string, error)
     }
 
     return base64.URLEncoding.EncodeToString(buf), nil
+}
+
+func GetBuildDirectory(step ManifestStep) string {
+    if step.ArchiveSource.Url != "" {
+        return  "./source-code/"+step.BuildDirectory
+    }
+    return step.BuildDirectory
 }
