@@ -1,4 +1,4 @@
-IMAGE_NAME=quay.io/continuouspipe/cloud-builder
+IMAGE_NAME=gcr.io/continuous-pipe-1042/cloud-builder
 TAG=v5
 
 all: build push
