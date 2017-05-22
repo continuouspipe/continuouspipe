@@ -8,7 +8,6 @@ use ContinuousPipe\Builder\Aggregate\Event\BuildEvent;
 use ContinuousPipe\Builder\Aggregate\Event\BuildFailed;
 use ContinuousPipe\Builder\Aggregate\Event\BuildFinished;
 use ContinuousPipe\Builder\Aggregate\Event\BuildStarted;
-use ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildFinished;
 use ContinuousPipe\Builder\Artifact\ArtifactRemover;
 use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuilderClient;
@@ -59,8 +58,6 @@ class BuildSaga
             if ($build->isEngine(Engine::GOOGLE_CONTAINER_BUILDER)) {
                 if ($event instanceof BuildStarted) {
                     $build->startWithGoogleContainerBuilder($this->googleContainerBuilderClient);
-                } elseif ($event instanceof GCBuildFinished) {
-                  $build->completeBuild($event->getStatus());
                 }
             } else {
                 if ($event instanceof StepFailed) {
