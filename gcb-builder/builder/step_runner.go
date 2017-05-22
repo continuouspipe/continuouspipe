@@ -144,5 +144,12 @@ func (sr DockerStepRunner) PushImage(manifest Manifest, step ManifestStep, outpu
 }
 
 func GetLocalArtifactTarget(step ManifestStep, artifact Artifact) string {
-    return step.BuildDirectory+string(os.PathSeparator)+artifact.Path
+    var buildDirectory string
+    if step.ArchiveSource.Url != "" {
+        buildDirectory = "./source-code/"+step.BuildDirectory
+    } else {
+        buildDirectory = step.BuildDirectory
+    }
+
+    return buildDirectory+string(os.PathSeparator)+artifact.Path
 }
