@@ -65,9 +65,12 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
         }
 
         if (!$object instanceof Service) {
-            $this->logger->warning('Unable to apply HttpLabs transformation on such object', [
-                'object' => $object,
-            ]);
+            $this->logger->warning(
+                'Unable to apply HttpLabs transformation on such object',
+                [
+                    'object' => $object,
+                ]
+            );
 
             return $publicEndpoint;
         }
@@ -77,12 +80,13 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
         $service = $serviceRepository->findOneByName($object->getMetadata()->getName());
 
         $logger = $this->loggerFactory->from($deploymentContext->getLog())
-            ->child(new Text('Configuring the HttpLabs stack for endpoint '.$publicEndpoint->getName()))
-            ->updateStatus(Log::RUNNING)
-        ;
+            ->child(new Text('Configuring the HttpLabs stack for endpoint ' . $publicEndpoint->getName()))
+            ->updateStatus(Log::RUNNING);
 
         try {
-            $httpLabsAnnotation = $service->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.httplabs.stack');
+            $httpLabsAnnotation = $service->getMetadata()->getAnnotationList()->get(
+                'com.continuouspipe.io.httplabs.stack'
+            );
             if (null !== $httpLabsAnnotation) {
                 $metadata = \GuzzleHttp\json_decode($httpLabsAnnotation->getValue(), true);
 
@@ -108,22 +112,30 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
 
                 $serviceRepository->annotate(
                     $service->getMetadata()->getName(),
-                    KeyValueObjectList::fromAssociativeArray([
-                        'com.continuouspipe.io.httplabs.stack' => \GuzzleHttp\json_encode($metadata),
-                    ], Annotation::class)
+                    KeyValueObjectList::fromAssociativeArray(
+                        [
+                            'com.continuouspipe.io.httplabs.stack' => \GuzzleHttp\json_encode($metadata),
+                        ],
+                        Annotation::class
+                    )
                 );
             }
         } catch (\Throwable $e) {
             $logger->updateStatus(Log::FAILURE);
 
-            $this->logger->warning('Something went wrong while configuring the HttpLabs stack', [
-                'exception' => $e,
-            ]);
+            $this->logger->warning(
+                'Something went wrong while configuring the HttpLabs stack',
+                [
+                    'exception' => $e,
+                ]
+            );
 
-            throw new EndpointException('Something went wrong while configuring the HttpLabs stack: ' . $e->getMessage());
+            throw new EndpointException(
+                'Something went wrong while configuring the HttpLabs stack: ' . $e->getMessage()
+            );
         }
 
-        $logger->child(new Text('Stack configured with the address: '.$metadata['stack_address']));
+        $logger->child(new Text('Stack configured with the address: ' . $metadata['stack_address']));
         $logger->updateStatus(Log::SUCCESS);
 
         return $publicEndpoint->withAddress($metadata['stack_address']);
@@ -141,12 +153,14 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
     private function getBackendAddress(PublicEndpoint $endpoint) : string
     {
         if ($this->hasPort($endpoint, 443)) {
-            return 'https://'.$endpoint->getAddress();
+            return 'https://' . $endpoint->getAddress();
         } elseif ($this->hasPort($endpoint, 80)) {
-            return 'http://'.$endpoint->getAddress();
+            return 'http://' . $endpoint->getAddress();
         }
 
-        throw new HttpLabsException('The HttpLabs proxy can be created only for services exposing the HTTP (80) or HTTPS (443) port');
+        throw new HttpLabsException(
+            'The HttpLabs proxy can be created only for services exposing the HTTP (80) or HTTPS (443) port'
+        );
     }
 
     private function hasPort(PublicEndpoint $endpoint, int $port) : bool

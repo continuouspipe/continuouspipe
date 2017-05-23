@@ -12,6 +12,7 @@ use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressHttpRulePath;
 use Kubernetes\Client\Model\IngressRule;
 use Kubernetes\Client\Model\KubernetesObject;
+use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\LoadBalancerStatus;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServicePort;
@@ -187,28 +188,14 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
      */
     private function getPublicEndpoint(NamespaceClient $namespaceClient, KubernetesObject $object)
     {
-        $loadBalancer = $this->getLoadBalancerStatus($namespaceClient, $object);
         $name = $object->getMetadata()->getName();
-
-        if (null === $loadBalancer) {
-            throw new EndpointNotFound('No load balancer found');
-        } elseif (0 === (count($ingresses = $loadBalancer->getIngresses()))) {
-            throw new EndpointNotFound('No ingress found');
-        }
-
         $ports = $this->getPorts($object);
 
-        foreach ($ingresses as $ingress) {
-            if ($hostname = $ingress->getHostname()) {
-                return new PublicEndpoint($name, $hostname, $ports);
-            }
-
-            if ($ip = $ingress->getIp()) {
-                return new PublicEndpoint($name, $ip, $ports);
-            }
+        if ($this->isInternalEndpoint($object)) {
+            return $this->createInternalPublicEndpoint($namespaceClient, $object, $name, $ports);
         }
 
-        throw new EndpointNotFound('No hostname or IP address found in ingresses');
+        return $this->getPublicEndpointFromIngresses($namespaceClient, $object, $name, $ports);
     }
 
     /**
@@ -285,5 +272,61 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         $ports = array_map($portsFromRules, $ingress->getSpecification()->getRules());
 
         return array_unique(array_merge(...$ports));
+    }
+
+    private function isInternalEndpoint(KubernetesObject $object): bool
+    {
+        return $object instanceof Service && $object->getMetadata()->getLabelList()->hasKey('internal-endpoint');
+    }
+
+    private function createInternalPublicEndpoint(
+        NamespaceClient $namespaceClient,
+        KubernetesObject $object,
+        string $name,
+        array $ports
+    ): PublicEndpoint {
+        return new PublicEndpoint(
+            $name,
+            sprintf(
+                '%s.%s.cluster.svc.local',
+                $object->getMetadata()->getName(),
+                $namespaceClient->getNamespace()->getMetadata()->getName()
+            ),
+            $ports
+        );
+    }
+
+    /**
+     * @return LoadBalancerIngress[]
+     */
+    private function getIngresses(NamespaceClient $namespaceClient, KubernetesObject $object): array
+    {
+        $loadBalancer = $this->getLoadBalancerStatus($namespaceClient, $object);
+
+        if (null === $loadBalancer) {
+            throw new EndpointNotFound('No load balancer found');
+        } elseif (0 === (count($ingresses = $loadBalancer->getIngresses()))) {
+            throw new EndpointNotFound('No ingress found');
+        }
+        return $ingresses;
+    }
+
+    private function getPublicEndpointFromIngresses(
+        NamespaceClient $namespaceClient,
+        KubernetesObject $object,
+        string $name,
+        array $ports
+    ): PublicEndpoint {
+        foreach ($this->getIngresses($namespaceClient, $object) as $ingress) {
+            if ($hostname = $ingress->getHostname()) {
+                return new PublicEndpoint($name, $hostname, $ports);
+            }
+
+            if ($ip = $ingress->getIp()) {
+                return new PublicEndpoint($name, $ip, $ports);
+            }
+        }
+
+        throw new EndpointNotFound('No hostname or IP address found in ingresses');
     }
 }

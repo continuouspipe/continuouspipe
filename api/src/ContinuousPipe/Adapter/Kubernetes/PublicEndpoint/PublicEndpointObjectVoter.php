@@ -22,10 +22,22 @@ class PublicEndpointObjectVoter
     {
         if ($object instanceof Ingress) {
             return true;
-        } elseif ($object instanceof Service) {
-            return $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER;
+        }
+
+        if ($object instanceof Service) {
+            return $this->isLoadBalancer($object) || $this->isInternalEndpoint($object);
         }
 
         return false;
+    }
+
+    private function isLoadBalancer(Service $object): bool
+    {
+        return $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER;
+    }
+
+    private function isInternalEndpoint(Service $object): bool
+    {
+        return $object->getMetadata()->getLabelList()->hasKey('internal-endpoint');
     }
 }
