@@ -48,7 +48,7 @@ class MissingVariablesOnDefaultBranch implements AlertsRepository
                 sprintf(
                     '%d variable(s) are missing in the configuration for default branch "%s"',
                     count($missingVariables),
-                    $codeReference
+                    $codeReference->getBranch()
                 ),
                 new \DateTime(),
                 new AlertAction(
