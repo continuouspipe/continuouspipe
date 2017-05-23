@@ -72,7 +72,7 @@ class ManifestFactory
             'auth_configs' => $this->dockerRegistryAuthConfigs($request),
             'steps' => array_map(function (BuildStepConfiguration $step) {
                 $stepManifest = [
-                    'read_artifact' => array_map([$this, 'createArtifactManifest'], $step->getReadArtifacts()),
+                    'read_artifacts' => array_map([$this, 'createArtifactManifest'], $step->getReadArtifacts()),
                     'write_artifacts' => array_map([$this, 'createArtifactManifest'], $step->getWriteArtifacts()),
                     'docker_file_path' => $this->dockerfileResolver->getFilePath($step->getContext()),
                 ];
