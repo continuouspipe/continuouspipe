@@ -60,6 +60,14 @@ class HttpLabsContext implements Context
             ])),
         ]);
 
+        $this->httpLabsHttpHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($uuid, $url) {
+                return $request->getMethod() == 'DELETE' &&
+                preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'$#i', (string) $request->getUri());
+            },
+            'response' => new Response(204),
+        ]);
+
         $this->theHttplabsStackWillBeSuccessfullyConfigured($uuid);
     }
 
@@ -237,5 +245,19 @@ class HttpLabsContext implements Context
         }
 
         throw new \RuntimeException('The stack was not updated');
+    }
+
+    /**
+     * @Then the stack :stackIdentifier should have been deleted
+     */
+    public function theStackShouldHaveBeenDeleted($stackIdentifier)
+    {
+        foreach ($this->traceableClient->getDeletedStacks() as $stack) {
+            if ($stack['stack_identifier'] == $stackIdentifier) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('The stack was not deleted');
     }
 }

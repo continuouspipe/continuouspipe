@@ -3,7 +3,6 @@
 namespace ContinuousPipe\HttpLabs;
 
 use ContinuousPipe\HttpLabs\Client\HttpLabsClient;
-use ContinuousPipe\HttpLabs\Client\HttpLabsException;
 use ContinuousPipe\HttpLabs\Client\Stack;
 
 class TraceableClient implements HttpLabsClient
@@ -21,6 +20,7 @@ class TraceableClient implements HttpLabsClient
      * @var HttpLabsClient
      */
     private $decoratedClient;
+    private $deletedStacks = [];
 
     public function __construct(HttpLabsClient $decoratedClient)
     {
@@ -30,7 +30,13 @@ class TraceableClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl, array $middlewares): Stack
+    public function createStack(
+        string $apiKey,
+        string $projectIdentifier,
+        string $name,
+        string $backendUrl,
+        array $middlewares
+    ): Stack
     {
         $stack = $this->decoratedClient->createStack($apiKey, $projectIdentifier, $name, $backendUrl, $middlewares);
 
@@ -57,6 +63,18 @@ class TraceableClient implements HttpLabsClient
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function deleteStack(string $apiKey, string $stackIdentifier)
+    {
+        $this->decoratedClient->deleteStack($apiKey, $stackIdentifier);
+
+        $this->deletedStacks[] = [
+            'stack_identifier' => $stackIdentifier,
+        ];
+    }
+
+    /**
      * @return array
      */
     public function getCreatedStacks(): array
@@ -71,4 +89,10 @@ class TraceableClient implements HttpLabsClient
     {
         return $this->updatedStacks;
     }
+
+    public function getDeletedStacks(): array
+    {
+        return $this->deletedStacks;
+    }
+
 }

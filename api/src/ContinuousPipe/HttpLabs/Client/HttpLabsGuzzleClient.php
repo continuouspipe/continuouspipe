@@ -141,4 +141,26 @@ class HttpLabsGuzzleClient implements HttpLabsClient
             'handler' => $stack,
         ]);
     }
+
+    /**
+     * Delete the given stack.
+     *
+     * @param string $apiKey
+     * @param string $stackIdentifier
+     *
+     * @throws HttpLabsException
+     */
+    public function deleteStack(string $apiKey, string $stackIdentifier)
+    {
+        $httpClient = $this->createClient($apiKey);
+
+        try {
+            $httpClient->request(
+                'delete',
+                sprintf('https://api.httplabs.io/stacks/%s', $stackIdentifier)
+            );
+        } catch (RequestException $e) {
+            throw new HttpLabsException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
 }

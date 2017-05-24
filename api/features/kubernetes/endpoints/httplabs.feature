@@ -282,3 +282,62 @@ Feature:
     And an HttpLabs stack should have been created with the backend "http://http.master.cluster.svc.local"
     And the deployment should contain the endpoint "foo-bar.httplabs.io"
     And the HttpLabs stack "00000000-0000-0000-0000-000000000000" should have been deployed
+
+  Scenario: It removes the httplabs stack when the environment is deleted
+    Given there is a service "http" for the component "app"
+    And the HttpLabs stack "00000000-0000-0000-0000-000000000000" will be successfully configured
+    And the HttpLabs stack "00000000-0000-0000-0000-000000000000" have the following middlewares:
+      | identifier                           | template | config |
+      | 00000000-0000-0000-0000-000000000001 | https://messenger-art-8717.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication | {"realm": "This is a restricted area", "username": "username","password": "password2"} |
+      | 00000000-0000-0000-0000-000000000002 | https://messenger-art-8717.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/ip_restrict          | {"ips": ["217.138.5.218", "217.138.5.2"]}                                              |
+    And the service "http" have the selector "component-identifier=app" and type "LoadBalancer" with the ports:
+      | name | port | protocol | targetPort |
+      | http | 80   | tcp      | 80         |
+    And the service "http" have the public IP "1.2.3.4"
+    And the service "http" have the following annotations:
+      | name                                 | value                                                                                             |
+      | com.continuouspipe.io.httplabs.stack | {"stack_identifier":"00000000-0000-0000-0000-000000000000","stack_address":"foo-bar.httplabs.io"} |
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "httplabs": {
+              "api_key": "cdba7ddb-06ac-47f8-b389-0819b48a2ee8",
+              "project_identifier": "13d1ab08-0eca-4289-aa8b-132bc569fe3f",
+              "middlewares": [
+                {
+                  "template": "https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication",
+                  "config": {
+                    "realm":"This is a restricted area",
+                    "username":"username",
+                    "password":"password"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+    """
+    And I send the built deployment request
+    When I delete the environment named "master" of the cluster "my-cluster" of the team "my-team"
+    Then the namespace should be deleted successfully
+    And the stack "00000000-0000-0000-0000-000000000000" should have been deleted

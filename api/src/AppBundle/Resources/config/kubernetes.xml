@@ -175,6 +175,13 @@
         <service id="pipe.httplabs.client" class="ContinuousPipe\HttpLabs\Client\HttpLabsGuzzleClient">
             <argument type="service" id="pipe.httplabs.http_client.handler" />
         </service>
+        <service id="pipe.httplabs.before_environment_deletion.delete_stack" class="ContinuousPipe\HttpLabs\BeforeEnvironmentDeletion\DeleteHttpLabsStack">
+            <argument type="service" id="logger" />
+            <argument type="service" id="pipe.httplabs.client" />
+            <argument type="service" id="security.encryption.vault" />
+
+            <tag name="kernel.event_subscriber" />
+        </service>
 
         <!-- ClusterHealthChecker -->
         <service id="pipe.k8s_health_checker.http.guzzle_client.stack" class="GuzzleHttp\HandlerStack">

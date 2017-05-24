@@ -27,5 +27,6 @@
                  decorates="pipe.httplabs.client">
             <argument type="service" id="pipe.httplabs.client.traceable.inner" />
         </service>
+
     </services>
 </container>
