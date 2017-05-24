@@ -5,12 +5,16 @@ namespace ContinuousPipe\HttpLabs\Endpoint;
 use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointException;
 use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointTransformer;
+use ContinuousPipe\HttpLabs\Authentication;
 use ContinuousPipe\HttpLabs\Client\HttpLabsClient;
 use ContinuousPipe\HttpLabs\Client\HttpLabsException;
 use ContinuousPipe\HttpLabs\Client\Stack;
+use ContinuousPipe\HttpLabs\Encryption\EncryptedAuthentication;
+use ContinuousPipe\HttpLabs\Encryption\EncryptionNamespace;
 use ContinuousPipe\Model\Component\Endpoint;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
+use ContinuousPipe\Security\Encryption\Vault;
 use Kubernetes\Client\Model\Annotation;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\KubernetesObject;
@@ -38,17 +42,23 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var Vault
+     */
+    private $vault;
 
     public function __construct(
         HttpLabsClient $httpLabsClient,
         DeploymentClientFactory $deploymentClientFactory,
         LoggerFactory $loggerFactory,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        Vault $vault
     ) {
         $this->httpLabsClient = $httpLabsClient;
         $this->loggerFactory = $loggerFactory;
         $this->logger = $logger;
         $this->deploymentClientFactory = $deploymentClientFactory;
+        $this->vault = $vault;
     }
 
     /**
@@ -105,9 +115,15 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
                     $httpLabsConfiguration->getMiddlewares()
                 );
 
+                $encryptedAuthentication = new EncryptedAuthentication(
+                    $this->vault,
+                    EncryptionNamespace::from($stack->getIdentifier())
+                );
+
                 $metadata = [
                     'stack_identifier' => $stack->getIdentifier(),
                     'stack_address' => $this->getStackAddress($stack),
+                    'encrypted_authentication' => $encryptedAuthentication->encrypt(new Authentication($httpLabsConfiguration->getApiKey())),
                 ];
 
                 $serviceRepository->annotate(

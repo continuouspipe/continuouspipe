@@ -296,7 +296,7 @@ Feature:
     And the service "http" have the public IP "1.2.3.4"
     And the service "http" have the following annotations:
       | name                                 | value                                                                                             |
-      | com.continuouspipe.io.httplabs.stack | {"stack_identifier":"00000000-0000-0000-0000-000000000000","stack_address":"foo-bar.httplabs.io"} |
+      | com.continuouspipe.io.httplabs.stack | {"stack_identifier":"00000000-0000-0000-0000-000000000000","stack_address":"foo-bar.httplabs.io", "encrypted_authentication":"SECRET_AUTH"} |
     And the components specification are:
     """
     [
@@ -336,6 +336,10 @@ Feature:
         ]
       }
     ]
+    """
+    And the encrypted value "SECRET_AUTH" in the namespace "00000000-0000-0000-0000-000000000000" will be decrypted as the following by the vault:
+    """
+    {"api_key":"cdba7ddb-06ac-47f8-b389-0819b48a2ee8"}
     """
     And I send the built deployment request
     When I delete the environment named "master" of the cluster "my-cluster" of the team "my-team"

@@ -168,6 +168,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="logger" />
+            <argument type="service" id="security.encryption.vault" />
         </service>
         <service id="pipe.httplabs.http_client.handler" class="GuzzleHttp\HandlerStack">
             <factory class="GuzzleHttp\HandlerStack" method="create" />

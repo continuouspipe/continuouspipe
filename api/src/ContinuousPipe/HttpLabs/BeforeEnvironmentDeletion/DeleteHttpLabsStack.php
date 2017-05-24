@@ -5,6 +5,8 @@ namespace ContinuousPipe\HttpLabs\BeforeEnvironmentDeletion;
 use ContinuousPipe\Adapter\Events;
 use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
 use ContinuousPipe\HttpLabs\Client\HttpLabsClient;
+use ContinuousPipe\HttpLabs\Encryption\EncryptedAuthentication;
+use ContinuousPipe\HttpLabs\Encryption\EncryptionNamespace;
 use ContinuousPipe\Security\Encryption\Vault;
 use Kubernetes\Client\Exception\Exception;
 use Psr\Log\LoggerInterface;
@@ -68,9 +70,16 @@ class DeleteHttpLabsStack implements EventSubscriberInterface
             try {
                 $metadata = \GuzzleHttp\json_decode($annotation->getValue(), true);
 
-                $apiKey = "I don't know where to get this from!";
+                $encryptedAuthentication = new EncryptedAuthentication(
+                    $this->vault,
+                    EncryptionNamespace::from($metadata['stack_identifier'])
+                );
+
+                $authentication = $encryptedAuthentication->decrypt($metadata['encrypted_authentication']);
+
+                
                 $this->httpLabsClient->deleteStack(
-                    $apiKey,
+                    $authentication->getApiKey(),
                     $metadata['stack_identifier']
                 );
             } catch (\Throwable $e) {
