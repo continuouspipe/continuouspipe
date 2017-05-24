@@ -7,6 +7,7 @@ use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent
 use ContinuousPipe\HttpLabs\Client\HttpLabsClient;
 use ContinuousPipe\HttpLabs\Encryption\EncryptedAuthentication;
 use ContinuousPipe\HttpLabs\Encryption\EncryptionNamespace;
+use ContinuousPipe\HttpLabs\Endpoint\HttpLabsEndpointTransformer;
 use ContinuousPipe\Security\Encryption\Vault;
 use Kubernetes\Client\Exception\Exception;
 use Psr\Log\LoggerInterface;
@@ -62,26 +63,15 @@ class DeleteHttpLabsStack implements EventSubscriberInterface
         }
 
         foreach ($services as $service) {
-            $annotation = $service->getMetadata()->getAnnotationList()->get('com.continuouspipe.io.httplabs.stack');
+            $annotation = $service->getMetadata()->getAnnotationList()->get(
+                HttpLabsEndpointTransformer::HTTPLABS_ANNOTATION
+            );
             if (null === $annotation) {
                 continue;
             }
 
             try {
-                $metadata = \GuzzleHttp\json_decode($annotation->getValue(), true);
-
-                $encryptedAuthentication = new EncryptedAuthentication(
-                    $this->vault,
-                    EncryptionNamespace::from($metadata['stack_identifier'])
-                );
-
-                $authentication = $encryptedAuthentication->decrypt($metadata['encrypted_authentication']);
-
-                
-                $this->httpLabsClient->deleteStack(
-                    $authentication->getApiKey(),
-                    $metadata['stack_identifier']
-                );
+                $this->deleteStack($annotation);
             } catch (\Throwable $e) {
                 $this->logger->warning(
                     'Something went wrong while deleting the HttpLabs stack',
@@ -91,5 +81,27 @@ class DeleteHttpLabsStack implements EventSubscriberInterface
                 );
             }
         }
+    }
+
+    private function getAuthenticationDetails($metadata)
+    {
+        $encryptedAuthentication = new EncryptedAuthentication(
+            $this->vault,
+            EncryptionNamespace::from($metadata['stack_identifier'])
+        );
+
+        return $encryptedAuthentication->decrypt($metadata['encrypted_authentication']);
+    }
+
+    private function deleteStack($annotation)
+    {
+        $metadata = \GuzzleHttp\json_decode($annotation->getValue(), true);
+
+        $authentication = $this->getAuthenticationDetails($metadata);
+
+        $this->httpLabsClient->deleteStack(
+            $authentication->getApiKey(),
+            $metadata['stack_identifier']
+        );
     }
 }
