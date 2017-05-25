@@ -21,16 +21,22 @@ class TideSummary
      * @var CurrentTask
      */
     private $currentTask;
+    /**
+     * @var string
+     */
+    private $environment;
 
     /**
-     * @param string            $status
+     * @param string $status
      * @param DeployedService[] $deployedServices
-     * @param CurrentTask       $currentTask
+     * @param CurrentTask $currentTask
+     * @param array $environments
      */
-    public function __construct($status, array $deployedServices = [], CurrentTask $currentTask = null)
+    public function __construct($status, array $deployedServices = [], CurrentTask $currentTask = null, string $environment = null)
     {
         $this->status = $status;
         $this->deployedServices = $deployedServices;
         $this->currentTask = $currentTask;
+        $this->environment = $environment;
     }
 }

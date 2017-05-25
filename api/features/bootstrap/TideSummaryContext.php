@@ -187,6 +187,21 @@ class TideSummaryContext implements Context
     }
 
     /**
+     * @Then I should see the :environment environment
+     */
+    public function iShouldSeeTheEnvironment($environment)
+    {
+        $decoded = $this->getJson();
+        if (!array_key_exists('environment', $decoded)) {
+            throw new \RuntimeException('Expected the JSON to contain an "environment" but not found');
+        }
+
+        if ($decoded['environment'] != $environment) {
+            throw new \RuntimeException(sprintf('Expected the environment to be %s but it was %s', $environment, $decoded['environment']));
+        }
+    }
+
+    /**
      * @param string $name
      */
     private function assetCurrentTaskIs($name)
