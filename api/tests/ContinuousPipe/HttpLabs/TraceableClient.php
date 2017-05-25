@@ -44,6 +44,7 @@ class TraceableClient implements HttpLabsClient
             'project_identifier' => $projectIdentifier,
             'backend_url' => $backendUrl,
             'stack' => $stack,
+            'middlewares' => $middlewares
         ];
 
         return $stack;
@@ -59,6 +60,7 @@ class TraceableClient implements HttpLabsClient
         $this->updatedStacks[] = [
             'stack_identifier' => $stackIdentifier,
             'backend_url' => $backendUrl,
+            'middlewares' => $middlewares
         ];
     }
 

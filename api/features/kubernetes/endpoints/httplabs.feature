@@ -58,7 +58,6 @@ Feature:
       | stack_address    | foo-bar.httplabs.io                  |
     And the deployment should contain the endpoint "foo-bar.httplabs.io"
     And the deployment endpoint "foo-bar.httplabs.io" should have the port "80"
-    And the HttpLabs stack "00000000-0000-0000-0000-000000000000" should have been deployed
 
   Scenario: It reuses the created HttpLabs stack and update it
     Given there is a service "http" for the component "app"
@@ -137,7 +136,7 @@ Feature:
               "project_identifier": "13d1ab08-0eca-4289-aa8b-132bc569fe3f",
               "middlewares": [
                 {
-                  "template": "https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication",
+                  "name": "basic_authentication",
                   "config": {
                     "realm":"This is a restricted area",
                     "username":"username",
@@ -145,7 +144,7 @@ Feature:
                   }
                 },
                 {
-                  "template":"https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/ip_restrict",
+                  "name":"ip_restrict",
                   "config":{
                     "ips": ["217.138.5.218", "217.138.5.2"]
                   }
@@ -159,7 +158,7 @@ Feature:
     """
     When I send the built deployment request
     Then an HttpLabs stack should have been created with the backend "http://1.2.3.4"
-    And a middleware from the template "https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication" should have been created on the stack "00000000-0000-0000-0000-000000000000" with the following configuration:
+    And a middleware with the name "basic_authentication" should have been created on the stack "00000000-0000-0000-0000-000000000000" with the following configuration:
     """
     {
       "realm":"This is a restricted area",
@@ -167,20 +166,16 @@ Feature:
       "password":"password"
     }
     """
-    And a middleware from the template "https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/ip_restrict" should have been created on the stack "00000000-0000-0000-0000-000000000000" with the following configuration:
+    And a middleware with the name "ip_restrict" should have been created on the stack "00000000-0000-0000-0000-000000000000" with the following configuration:
     """
     {
       "ips": ["217.138.5.218", "217.138.5.2"]
     }
     """
 
-  Scenario: It remove the existing middlewares when updating
+  Scenario: It updates the stack with all the configured middlewares
     Given there is a service "http" for the component "app"
     And the HttpLabs stack "00000000-0000-0000-0000-000000000000" will be successfully configured
-    And the HttpLabs stack "00000000-0000-0000-0000-000000000000" have the following middlewares:
-      | identifier                           | template                                                                                                            | config                                                                                 |
-      | 00000000-0000-0000-0000-000000000001 | https://messenger-art-8717.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication | {"realm": "This is a restricted area", "username": "username","password": "password2"} |
-      | 00000000-0000-0000-0000-000000000002 | https://messenger-art-8717.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/ip_restrict          | {"ips": ["217.138.5.218", "217.138.5.2"]}                                              |
     And the service "http" have the selector "component-identifier=app" and type "LoadBalancer" with the ports:
       | name | port | protocol | targetPort |
       | http | 80   | tcp      | 80         |
@@ -214,7 +209,7 @@ Feature:
               "project_identifier": "13d1ab08-0eca-4289-aa8b-132bc569fe3f",
               "middlewares": [
                 {
-                  "template": "https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication",
+                  "name": "basic_authentication",
                   "config": {
                     "realm":"This is a restricted area",
                     "username":"username",
@@ -231,7 +226,7 @@ Feature:
     When I send the built deployment request
     Then the service "http" should not be created
     And the stack "00000000-0000-0000-0000-000000000000" should have been updated
-    And a middleware from the template "https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication" should have been created on the stack "00000000-0000-0000-0000-000000000000" with the following configuration:
+    And a middleware with the name "basic_authentication" should have been created on the stack "00000000-0000-0000-0000-000000000000" with the following configuration:
     """
     {
       "realm":"This is a restricted area",
@@ -239,9 +234,6 @@ Feature:
       "password":"password"
     }
     """
-    And the middleware "00000000-0000-0000-0000-000000000001" from the stack "00000000-0000-0000-0000-000000000000" should have been removed
-    And the middleware "00000000-0000-0000-0000-000000000002" from the stack "00000000-0000-0000-0000-000000000000" should have been removed
-    And the HttpLabs stack "00000000-0000-0000-0000-000000000000" should have been deployed
 
   Scenario: It proxies through the internal endpoint
     Given the created HttpLabs stack will have the UUID "00000000-0000-0000-0000-000000000000" and the URL address "https://foo-bar.httplabs.io"
@@ -281,15 +273,10 @@ Feature:
     And the service "http" should have the type "ClusterIP"
     And an HttpLabs stack should have been created with the backend "http://http.master.cluster.svc.local"
     And the deployment should contain the endpoint "foo-bar.httplabs.io"
-    And the HttpLabs stack "00000000-0000-0000-0000-000000000000" should have been deployed
 
   Scenario: It removes the httplabs stack when the environment is deleted
     Given there is a service "http" for the component "app"
     And the HttpLabs stack "00000000-0000-0000-0000-000000000000" will be successfully configured
-    And the HttpLabs stack "00000000-0000-0000-0000-000000000000" have the following middlewares:
-      | identifier                           | template | config |
-      | 00000000-0000-0000-0000-000000000001 | https://messenger-art-8717.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication | {"realm": "This is a restricted area", "username": "username","password": "password2"} |
-      | 00000000-0000-0000-0000-000000000002 | https://messenger-art-8717.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/ip_restrict          | {"ips": ["217.138.5.218", "217.138.5.2"]}                                              |
     And the service "http" have the selector "component-identifier=app" and type "LoadBalancer" with the ports:
       | name | port | protocol | targetPort |
       | http | 80   | tcp      | 80         |
