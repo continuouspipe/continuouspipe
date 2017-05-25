@@ -30,4 +30,14 @@ interface HttpLabsClient
      * @throws HttpLabsException
      */
     public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares);
+
+    /**
+     * Delete the given stack.
+     *
+     * @param string $apiKey
+     * @param string $stackIdentifier
+     *
+     * @throws HttpLabsException
+     */
+    public function deleteStack(string $apiKey, string $stackIdentifier);
 }
