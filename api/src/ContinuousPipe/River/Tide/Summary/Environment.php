@@ -7,15 +7,15 @@ class Environment
     /**
      * @var string
      */
-    private $name;
+    private $identifier;
     /**
      * @var string
      */
     private $cluster;
 
-    public function __construct(string $name, string $cluster)
+    public function __construct(string $identifier, string $cluster)
     {
-        $this->name = $name;
+        $this->identifier = $identifier;
         $this->cluster = $cluster;
     }
 }

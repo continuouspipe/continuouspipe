@@ -196,7 +196,7 @@ class TideSummaryContext implements Context
             throw new \RuntimeException('Expected the JSON to contain an "environment" but not found');
         }
 
-        if ($decoded['environment']['name'] != $environment) {
+        if ($decoded['environment']['identifier'] != $environment) {
             throw new \RuntimeException(sprintf('Expected the environment to be %s but it was %s', $environment, $decoded['environment']));
         }
     }
