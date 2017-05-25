@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Tide;
 
 use ContinuousPipe\River\Tide\Summary\CurrentTask;
 use ContinuousPipe\River\Tide\Summary\DeployedService;
+use ContinuousPipe\River\Tide\Summary\Environment;
 
 class TideSummary
 {
@@ -30,9 +31,9 @@ class TideSummary
      * @param string $status
      * @param DeployedService[] $deployedServices
      * @param CurrentTask $currentTask
-     * @param array $environments
+     * @param Environment $environment
      */
-    public function __construct($status, array $deployedServices = [], CurrentTask $currentTask = null, string $environment = null)
+    public function __construct($status, array $deployedServices = [], CurrentTask $currentTask = null, Environment $environment = null)
     {
         $this->status = $status;
         $this->deployedServices = $deployedServices;

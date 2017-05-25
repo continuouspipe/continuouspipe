@@ -8,6 +8,7 @@ use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Tide\Summary\CurrentTask;
 use ContinuousPipe\River\Tide\Summary\DeployedService;
+use ContinuousPipe\River\Tide\Summary\Environment;
 use ContinuousPipe\River\View\Tide;
 
 class TideSummaryCreator
@@ -94,8 +95,9 @@ class TideSummaryCreator
         if (0 === count($deploymentSuccessfulEvents)) {
             return;
         }
+        $target = $deploymentSuccessfulEvents[0]->getDeployment()->getRequest()->getTarget();
 
-        return $deploymentSuccessfulEvents[0]->getDeployment()->getRequest()->getTarget()->getEnvironmentName();
+        return new Environment($target->getEnvironmentName(), $target->getClusterIdentifier());
     }
 
     /**
