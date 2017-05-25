@@ -82,6 +82,15 @@ class HttpLabsContext implements Context
                 'response' => new Response(204, ['Content-Type' => 'text/html; charset=UTF-8']),
             ]
         );
+
+        $this->httpLabsHttpHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($uuid) {
+                return $request->getMethod() == 'DELETE' &&
+                preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'$#i', (string) $request->getUri()) &&
+                $request->getHeader('Authorization')[0] == 'cdba7ddb-06ac-47f8-b389-0819b48a2ee8';
+            },
+            'response' => new Response(204),
+        ]);
     }
 
     /**
