@@ -95,3 +95,31 @@ figure {
 figure.half-width {
     max-width: 50%;
 }
+
+table.highlighttable {
+    width: 95%;
+}
+
+table.highlighttable td {
+    padding: 0;
+}
+
+table.highlighttable td.code {
+    width: 100%;
+}
+
+table.highlighttable pre {
+    margin-top: 0;
+}
+
+table.highlighttable td div.linenodiv {
+    padding-right: 0 !important;
+}
+
+table.highlighttable td.code span[style*="color: #ae81ff"] {
+    color: #66d9ef !important;
+}
+
+div.highlight span[style*="color: #ae81ff"] {
+    color: #66d9ef !important;
+}
