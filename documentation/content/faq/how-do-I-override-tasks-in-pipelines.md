@@ -1,5 +1,5 @@
 ---
-title: How do I override tasks in pipelines?
+title: "Configuration: How do I override tasks in pipelines?"
 menu:
   main:
     parent: 'faq'

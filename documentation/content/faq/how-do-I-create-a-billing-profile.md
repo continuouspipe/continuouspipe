@@ -1,5 +1,5 @@
 ---
-title: How do I create a billing profile?
+title: "Accounts: How do I create a billing profile?"
 menu:
   main:
     parent: 'faq'

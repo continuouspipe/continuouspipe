@@ -230,11 +230,10 @@ tasks:
                         environment_variables:
                             - name: SYMFONY_ENV
                               value: ${SYMFONY_ENV}
- 
- 
+
 pipelines:
     - name: Production
-      condition: 'not(code_reference.branch matches "/^cpdev/")'
+      condition: 'code_reference.branch in ["master"]'
       tasks: [ images, deployment ]
     - name: Remote
       condition: 'code_reference.branch matches "/^cpdev/"'
@@ -244,7 +243,9 @@ pipelines:
             value: dev
 ```
 
-This adds two different pipelines which use conditions to determine which pipeline is used. In this case it checks if the branch starts with "cpdev" - if it does then the Remote pipeline is used, if not the Production pipeline is used. You could use this to run different tasks but here the same tasks are run but variables have different values set. The YAML variable being used is named `SYMFONY_ENV` which is declared and initialised to "prod" at the top of the file. It stays as "prod" for the Production pipeline but is set to "dev" for remote environments.
+This adds two different pipelines which use conditions to determine which pipeline is used. In this case it checks if the branch starts with "cpdev" - if it does then the Remote pipeline is used. If the branch is "master" then the Production pipeline is used. If the branch does not match either of those conditions, the tide will fail. You could use this to run different tasks but here the same tasks are run but variables have different values set. 
+
+The YAML variable being used is named `SYMFONY_ENV` which is declared and initialised to "prod" at the top of the file. It stays as "prod" for the Production pipeline but is set to "dev" for remote environments.
 
 The `SYMFONY_ENV` YAML variable only has scope in ContinuousPipe whilst running the tasks - it is actually the `environment_variables` section for the service that is used to set `SYMFONY_ENV` as an environment variable on the service. 
 

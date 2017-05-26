@@ -1,5 +1,5 @@
 ---
-title: How do I set up manual approval of deployments?
+title: "Configuration: How do I set up manual approval of deployments?"
 menu:
   main:
     parent: 'faq'
