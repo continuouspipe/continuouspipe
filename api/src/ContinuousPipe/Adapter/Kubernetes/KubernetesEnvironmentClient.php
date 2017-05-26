@@ -158,7 +158,10 @@ class KubernetesEnvironmentClient implements EnvironmentClient
             return new Environment(
                 $namespaceMetadata->getName(),
                 $namespaceMetadata->getName(),
-                $components
+                $components,
+                null,
+                [],
+                $namespace->getStatus()->getPhase()
             );
         });
     }
