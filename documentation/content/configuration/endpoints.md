@@ -20,7 +20,7 @@ tasks:
                 web:
                     specification:
                         accessibility:
-                            from_external: false
+                            from_external: true
 ```
 
 This is fine for most purposes, but has it has three main limitations: 
@@ -40,7 +40,7 @@ tasks:
                           service.beta.kubernetes.io/external-traffic: OnlyLocal
                     specification:
                         accessibility:
-                            from_external: false
+                            from_external: true
 ```
 
 **2)** The IP addresses are chosen from a random pool and by default are not static, which means they cannot be reliably associated with a DNS record.
