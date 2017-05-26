@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "57e7e3d18b36b75269b1b87fe43d4846",
+    "content-hash": "57147f793d6b875374f787445fc2c7d6",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -311,16 +311,16 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "dev-feature/add-status-to-environment",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
-                "reference": "199eee7cd033d6d900e393ea1d0e694e416ba875"
+                "reference": "86c5af00a395b82e973fc25c8d66a9552260dc1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/199eee7cd033d6d900e393ea1d0e694e416ba875",
-                "reference": "199eee7cd033d6d900e393ea1d0e694e416ba875",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/86c5af00a395b82e973fc25c8d66a9552260dc1f",
+                "reference": "86c5af00a395b82e973fc25c8d66a9552260dc1f",
                 "shasum": ""
             },
             "require-dev": {
@@ -334,10 +334,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/model/tree/feature/add-status-to-environment",
+                "source": "https://github.com/continuouspipe/model/tree/2.4.1",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2017-05-26 10:38:50"
+            "time": "2017-05-26T13:00:46+00:00"
         },
         {
             "name": "continuous-pipe/platform-bundle",
@@ -8484,7 +8484,6 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
-        "continuous-pipe/model": 20,
         "continuous-pipe/worker-bundle": 20,
         "continuous-pipe/message": 20
     },
