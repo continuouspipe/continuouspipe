@@ -29,4 +29,4 @@ To get started with ContinuousPipe you will need the following:
 
 ## Customizable Workflow
 
-The [customizable workflow]({{< relref "basics/workflow.md" >}}) allows you to integrate developers, QA and product owners to produce super-fast feedback cycles on a feature-by-feature basis.
+The [customizable workflow]({{< relref "basics/workflow-principles.md" >}}) allows you to integrate developers, QA and product owners to produce super-fast feedback cycles on a feature-by-feature basis.
