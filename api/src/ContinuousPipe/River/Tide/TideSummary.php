@@ -27,12 +27,6 @@ class TideSummary
      */
     private $environment;
 
-    /**
-     * @param string $status
-     * @param DeployedService[] $deployedServices
-     * @param CurrentTask $currentTask
-     * @param Environment $environment
-     */
     public function __construct($status, array $deployedServices = [], CurrentTask $currentTask = null, Environment $environment = null)
     {
         $this->status = $status;

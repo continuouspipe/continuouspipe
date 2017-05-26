@@ -85,11 +85,6 @@ class TideSummaryCreator
         return $summary;
     }
 
-    /**
-     * @param DeploymentSuccessful[] $deploymentSuccessfulEvents
-     * @return string|null
-     *
-     */
     private function getEnvironments(array $deploymentSuccessfulEvents)
     {
         if (0 === count($deploymentSuccessfulEvents)) {
