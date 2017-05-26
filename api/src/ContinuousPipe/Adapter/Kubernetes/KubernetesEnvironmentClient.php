@@ -161,7 +161,7 @@ class KubernetesEnvironmentClient implements EnvironmentClient
                 $components,
                 null,
                 [],
-                $namespace->getStatus()->getPhase()
+                (null !== $status = $namespace->getStatus()) ? $status->getPhase() : null
             );
         });
     }
