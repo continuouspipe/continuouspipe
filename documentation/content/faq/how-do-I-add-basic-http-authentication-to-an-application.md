@@ -1,5 +1,5 @@
 ---
-title: How do I add basic HTTP authentication to an application?
+title: "Configuration: How do I add basic HTTP authentication to an application?"
 menu:
   main:
     parent: 'faq'

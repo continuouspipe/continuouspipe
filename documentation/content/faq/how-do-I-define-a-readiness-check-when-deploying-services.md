@@ -1,5 +1,5 @@
 ---
-title: How do I create a readiness check when deploying services?
+title: "Configuration: How do I create a readiness check when deploying services?"
 menu:
   main:
     parent: 'faq'

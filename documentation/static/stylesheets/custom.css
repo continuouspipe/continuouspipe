@@ -96,6 +96,10 @@ figure.half-width {
     max-width: 50%;
 }
 
+figure.three-quarter-width {
+    max-width: 75%;
+}
+
 table.highlighttable {
     width: 95%;
 }

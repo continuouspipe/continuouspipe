@@ -1,5 +1,5 @@
 ---
-title: What are the ContinuousPipe images?
+title: "General: What are the ContinuousPipe images?"
 menu:
   main:
     parent: 'faq'

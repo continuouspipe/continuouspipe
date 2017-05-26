@@ -1,5 +1,5 @@
 ---
-title: How do I control deployments using pull request labels?
+title: "Configuration: How do I control deployments using pull request labels?"
 menu:
   main:
     parent: 'faq'
