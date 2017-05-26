@@ -15,7 +15,7 @@ ContinuousPipe is a system for continuous automated deployment of multiple envir
 
 ## Technology Stack
 
-ContinuousPipe allows you to deploy your [Docker application]({{< relref "basics/docker-images.md" >}}) on any [Kubernetes cluster]({{< relref "basics/kubernetes-clusters.md" >}}).
+ContinuousPipe allows you to deploy your [Docker application]({{< relref "basics/concepts-build-concepts.md" >}}) on any [Kubernetes cluster]({{< relref "basics/concepts-deployment-concepts.md" >}}).
 
 {{< figure src="/images/basics/cp-technology-stack.png" class="diagram technology-stack" >}}
 
