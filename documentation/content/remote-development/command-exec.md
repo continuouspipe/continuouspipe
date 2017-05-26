@@ -21,7 +21,7 @@ cp-remote exec -- ls -la
 This will run the command on the default container specified during setup but you can specify another container to run the command on. For example, if the service you want to connect to is web:
 
 ```
-cp-remote exec web -- ls -la
+cp-remote exec -s web -- ls -la
 ```
 
 ***

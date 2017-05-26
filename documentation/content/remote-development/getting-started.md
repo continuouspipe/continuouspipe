@@ -80,3 +80,18 @@ The quick start guide gives an overview of how to get running with remote develo
 - [Remote Development: Configuring Your Repository]({{< relref "quick-start/remote-development-configuring-your-repository.md" >}})
 - [Remote Development: Creating a Remote Environment]({{< relref "quick-start/remote-development-creating-a-remote-environment.md" >}})
 - [Remote Development: Using a Remote Environment]({{< relref "quick-start/remote-development-using-a-remote-environment.md" >}})
+
+## Data Sharing
+
+**ContinuousPipe receives usage and diagnostic information for each cp-remote command executed. This allows errors to be detected and fixed as soon as possible.**
+
+Summary of information received:
+
+- The `cp-remote` version number
+- The operating system and system architecture (Linux, Windows or Mac)
+- The command name including arguments (excluding the init token)
+- The duration of the command
+- The success/failure code of the command
+- Some configuration settings (username, flow id, cluster id, environment id, remote branch name, service name, Kubernetes cluster user and address)
+- Any file names configured to be ignored (if present)
+- Any error stack (if present)
