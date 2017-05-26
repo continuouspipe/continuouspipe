@@ -81,7 +81,8 @@ class EnvironmentClient implements DeployedEnvironmentRepository
                         return new DeployedEnvironment(
                             $environment->getIdentifier(),
                             $clusterIdentifier,
-                            $environment->getComponents()
+                            $environment->getComponents(),
+                            $environment->getStatus()
                         );
                     }, $clusterEnvironments);
                 },
