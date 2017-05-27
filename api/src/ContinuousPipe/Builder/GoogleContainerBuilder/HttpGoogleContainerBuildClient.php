@@ -65,7 +65,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
     public function createFromRequest(Build $build): GoogleContainerBuild
     {
         try {
-            if (StaticClient::variation('use-synchronous-gcb-build', new LDUser($this->getUserKey($build)), false)) {
+            if (StaticClient::variation('use-synchronous-gcb-build', new LDUser($this->getUserKey($build)), true)) {
                 $sourceArchive = new Archive\FileSystemArchive(Archive\FileSystemArchive::createDirectory('mani-only'));
                 $gcbBuilderVersion = 'v5';
             } else {
