@@ -81,7 +81,7 @@ class CreateBuildController
         }
 
         $userKey = $this->getUserKey($request);
-        if (StaticClient::variation('main-gcb-build', new LDUser($userKey), false)) {
+        if (StaticClient::variation('main-gcb-build', new LDUser($userKey), true)) {
             $request = $request->withEngine(new Engine('gcb'));
         }
         if (null === $request->getEngine()) {
@@ -99,7 +99,7 @@ class CreateBuildController
             $this->buildRequestTransformer->transform($request)
         );
 
-        if (StaticClient::variation('use-synchronous-gcb-build', new LDUser($this->getUserKey($request)), false)) {
+        if (StaticClient::variation('use-synchronous-gcb-build', new LDUser($this->getUserKey($request)), true)) {
             $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
 
             return $build;
