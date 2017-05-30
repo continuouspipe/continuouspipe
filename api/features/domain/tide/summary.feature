@@ -61,3 +61,8 @@ Feature:
     And the deployment succeed
     When I ask the summary of the tide
     Then I should see the "00000000-0000-0000-0000-000000000000-my-feature" environment
+
+  Scenario: If there's a deploy task, I should see the environment name even if deployment failed
+    Given a tide is started for the branch "my-feature" with a deploy task
+    When I ask the summary of the tide
+    Then I should see the "00000000-0000-0000-0000-000000000000-my-feature" environment
