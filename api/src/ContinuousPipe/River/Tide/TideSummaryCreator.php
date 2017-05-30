@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Tide;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Tide\Summary\CurrentTask;
 use ContinuousPipe\River\Tide\Summary\DeployedService;
@@ -40,13 +41,11 @@ class TideSummaryCreator
      */
     public function fromTide(Tide $tide)
     {
-        $deploymentSuccessfulEvents = $this->getDeploymentSuccessfulEventsForTide($tide);
-
         return new TideSummary(
             $tide->getStatus(),
-            $this->getDeployedServices($deploymentSuccessfulEvents),
+            $this->getDeployedServices($this->getDeploymentSuccessfulEventsForTide($tide)),
             $this->getCurrentTask($tide),
-            $this->getEnvironments($deploymentSuccessfulEvents)
+            $this->getEnvironments($this->getDeploymentStartedEventsForTide($tide))
         );
     }
 
@@ -138,12 +137,31 @@ class TideSummaryCreator
      */
     private function getDeploymentSuccessfulEventsForTide(Tide $tide): array
     {
+        return $this->getFilteredEvents($tide,
+            function ($event) {
+                return $event instanceof DeploymentSuccessful;
+            }
+        );
+    }
+
+    /**
+     * @return DeploymentStarted[]
+     */
+    private function getDeploymentStartedEventsForTide(Tide $tide): array
+    {
+        return $this->getFilteredEvents($tide,
+            function ($event) {
+                return $event instanceof DeploymentStarted;
+            }
+        );
+    }
+
+    private function getFilteredEvents(Tide $tide, $filter): array
+    {
         return array_values(
             array_filter(
                 $this->eventStore->findByTideUuid($tide->getUuid()),
-                function ($event) {
-                    return $event instanceof DeploymentSuccessful;
-                }
+                $filter
             )
         );
     }
