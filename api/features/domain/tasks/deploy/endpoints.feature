@@ -144,6 +144,64 @@ Feature:
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration that have 1 middleware
 
+  Scenario: HttpLabs proxy with specific dns name
+    When a tide is started for the branch "my-very-long-shiny-new-feature-branch-name" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                httplabs:
+                                    api_key: 123456
+                                    project_identifier: 7890
+                                    host:
+                                        expression: 'hash_long_domain_prefix(code_reference.branch, 27) ~ "-certeo.inviqa-001.httplabs.net"'
+
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration for the project "7890" and API key "123456"
+    And the endpoint "http" of the component "app" should be deployed with an HttpLabs host "my-very-long-shi-02b27a5635-certeo.inviqa-001.httplabs.net"
+
+  Scenario: HttpLabs proxy with specific dns name using record suffix
+    When a tide is started for the branch "my-very-long-shiny-new-feature-branch-name" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                httplabs:
+                                    api_key: 123456
+                                    project_identifier: 7890
+                                    record_suffix: "-certeo.inviqa-001.httplabs.net"
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration for the project "7890" and API key "123456"
+    And the endpoint "http" of the component "app" should be deployed with an HttpLabs host "my-very-long-shiny-new-02b27a5635-certeo.inviqa-001.httplabs.net"
+
   Scenario: Add endpoints annotations
     When a tide is started with the following configuration:
     """

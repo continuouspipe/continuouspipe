@@ -29,7 +29,7 @@
         "raven/raven": "^0.12.1",
         "sroze/log-stream": "~0.4.4",
         "tolerance/tolerance": "dev-master",
-        "continuous-pipe/model": "~2.4.1",
+        "continuous-pipe/model": "dev-features/add-incoming-to-httplabs",
         "continuous-pipe/security": "~2.7.0",
         "simple-bus/rabbitmq-bundle-bridge": "~3.1.0",
         "simple-bus/jms-serializer-bundle-bridge": "^2.0",
