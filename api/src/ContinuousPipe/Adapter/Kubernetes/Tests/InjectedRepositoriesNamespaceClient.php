@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Tests;
 
+use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\NamespaceClient;
 use Kubernetes\Client\Repository\DeploymentRepository;
 use Kubernetes\Client\Repository\EventRepository;
@@ -15,6 +16,11 @@ use Kubernetes\Client\Repository\ServiceRepository;
 
 class InjectedRepositoriesNamespaceClient implements NamespaceClient
 {
+    /**
+     * @var KubernetesNamespace|null
+     */
+    private $namespace;
+
     /**
      * @var PodRepository
      */
@@ -61,18 +67,27 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
     private $eventRepository;
 
     /**
-     * @param PodRepository                   $podRepository
-     * @param ServiceRepository               $serviceRepository
+     * @param PodRepository $podRepository
+     * @param ServiceRepository $serviceRepository
      * @param ReplicationControllerRepository $replicationControllerRepository
-     * @param SecretRepository                $secretRepository
-     * @param ServiceAccountRepository        $serviceAccountRepository
+     * @param SecretRepository $secretRepository
+     * @param ServiceAccountRepository $serviceAccountRepository
      * @param PersistentVolumeClaimRepository $persistentVolumeClaimRepository
-     * @param IngressRepository               $ingressRepository
-     * @param DeploymentRepository            $deploymentRepository
-     * @param EventRepository                 $eventRepository
+     * @param IngressRepository $ingressRepository
+     * @param DeploymentRepository $deploymentRepository
+     * @param EventRepository $eventRepository
      */
-    public function __construct(PodRepository $podRepository, ServiceRepository $serviceRepository, ReplicationControllerRepository $replicationControllerRepository, SecretRepository $secretRepository, ServiceAccountRepository $serviceAccountRepository, PersistentVolumeClaimRepository $persistentVolumeClaimRepository, IngressRepository $ingressRepository, DeploymentRepository $deploymentRepository, EventRepository $eventRepository)
-    {
+    public function __construct(
+        PodRepository $podRepository,
+        ServiceRepository $serviceRepository,
+        ReplicationControllerRepository $replicationControllerRepository,
+        SecretRepository $secretRepository,
+        ServiceAccountRepository $serviceAccountRepository,
+        PersistentVolumeClaimRepository $persistentVolumeClaimRepository,
+        IngressRepository $ingressRepository,
+        DeploymentRepository $deploymentRepository,
+        EventRepository $eventRepository
+    ) {
         $this->podRepository = $podRepository;
         $this->serviceRepository = $serviceRepository;
         $this->replicationControllerRepository = $replicationControllerRepository;
@@ -154,5 +169,21 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
     public function getEventRepository()
     {
         return $this->eventRepository;
+    }
+
+    /**
+     * @return KubernetesNamespace
+     */
+    public function getNamespace() : KubernetesNamespace
+    {
+        return $this->namespace;
+    }
+
+    public function withNamespace(KubernetesNamespace $namespace) : self
+    {
+        $client = clone $this;
+        $client->namespace = $namespace;
+
+        return $client;
     }
 }

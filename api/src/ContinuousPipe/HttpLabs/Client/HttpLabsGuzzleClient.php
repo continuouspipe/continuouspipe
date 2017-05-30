@@ -34,38 +34,21 @@ class HttpLabsGuzzleClient implements HttpLabsClient
             // Create the stack
             $response = $httpClient->request(
                 'post',
-                sprintf('https://api.httplabs.io/projects/%s/stacks', $projectIdentifier),
+                sprintf('https://api.httplabs.io/projects/%s/complete-stacks', $projectIdentifier),
                 [
                     'json' => [
                         'name' => substr($name, 0, 20),
+                        'backend' => $backendUrl,
+                        'middlewares' => $middlewares
                     ]
                 ]
             );
 
-            // Get the stack information
-            $stackUri = $response->getHeaderLine('Location');
-            $stackResponseContents = $httpClient->request('get', $stackUri)->getBody()->getContents();
-            try {
-                $responseJson = \GuzzleHttp\json_decode($stackResponseContents, true);
+            return $this->getStack($response->getHeaderLine('Location'), $httpClient);
 
-                if (!isset($responseJson['id']) || !isset($responseJson['url'])) {
-                    throw new \InvalidArgumentException('The response needs to contain `id` and `url`');
-                }
-            } catch (\InvalidArgumentException $e) {
-                throw new HttpLabsException('Unable to understand the response from HttpLabs', $e->getCode(), $e);
-            }
-
-            $stack = new Stack(
-                $responseJson['id'],
-                $responseJson['url']
-            );
-
-            $this->updateStack($apiKey, $stack->getIdentifier(), $backendUrl, $middlewares);
         } catch (RequestException $e) {
             throw new HttpLabsException('Unable to create the HttpLabs stack', $e->getCode(), $e);
         }
-
-        return $stack;
     }
 
     /**
@@ -79,47 +62,10 @@ class HttpLabsGuzzleClient implements HttpLabsClient
             $httpClient->request('put', $stackUri, [
                 'json' => [
                     'backend' => $backendUrl,
+                    'middlewares' => $middlewares
                 ]
             ]);
 
-            if (count($middlewares) > 0) {
-                // List the existing middlewares
-                $existingMiddlewareUris = [];
-                $middlewareListResponse = $httpClient->request('get', $stackUri . '/middlewares');
-                try {
-                    $responseJson = \GuzzleHttp\json_decode($middlewareListResponse->getBody()->getContents(), true);
-                    if (!isset($responseJson['total'])) {
-                        throw new \InvalidArgumentException('The response needs to contain `total`');
-                    }
-
-                    if ($responseJson['total'] > 0) {
-                        if (!isset($responseJson['_embedded']['sp:middlewares'])) {
-                            throw new \InvalidArgumentException('The response needs to contain `_embedded.sp:middlewares`');
-                        }
-
-                        $existingMiddlewareUris = array_map(function (array $middleware) {
-                            return $middleware['_links']['self']['href'];
-                        }, $responseJson['_embedded']['sp:middlewares']);
-                    }
-                } catch (\InvalidArgumentException $e) {
-                    throw new HttpLabsException('Unable to understand the response from HttpLabs', $e->getCode(), $e);
-                }
-
-                // Remove the existing middlewares
-                foreach ($existingMiddlewareUris as $existingMiddlewareUri) {
-                    $httpClient->request('delete', $existingMiddlewareUri);
-                }
-
-                // Add the configured middlewares
-                foreach ($middlewares as $middleware) {
-                    $httpClient->request('post', $stackUri . '/middlewares', [
-                        'json' => $middleware,
-                    ]);
-                }
-            }
-
-            // Deploy the stack
-            $httpClient->request('post', $stackUri.'/deployments');
         } catch (RequestException $e) {
             throw new HttpLabsException($e->getMessage(), $e->getCode(), $e);
         }
@@ -137,8 +83,44 @@ class HttpLabsGuzzleClient implements HttpLabsClient
             return $request->withAddedHeader('Authorization', $apiKey);
         }));
 
-        return new Client([
-            'handler' => $stack,
-        ]);
+        return new Client(['handler' => $stack]);
+    }
+
+    private function getStack(string $stackUri, Client $httpClient): Stack
+    {
+        $stackResponseContents = $httpClient->request('get', $stackUri)->getBody()->getContents();
+        try {
+            $responseJson = \GuzzleHttp\json_decode($stackResponseContents, true);
+
+            if (!isset($responseJson['id']) || !isset($responseJson['url'])) {
+                throw new \InvalidArgumentException('The response needs to contain `id` and `url`');
+            }
+        } catch (\InvalidArgumentException $e) {
+            throw new HttpLabsException('Unable to understand the response from HttpLabs', $e->getCode(), $e);
+        }
+
+        return new Stack($responseJson['id'], $responseJson['url']);
+    }
+
+    /**
+     * Delete the given stack.
+     *
+     * @param string $apiKey
+     * @param string $stackIdentifier
+     *
+     * @throws HttpLabsException
+     */
+    public function deleteStack(string $apiKey, string $stackIdentifier)
+    {
+        $httpClient = $this->createClient($apiKey);
+
+        try {
+            $httpClient->request(
+                'delete',
+                sprintf('https://api.httplabs.io/stacks/%s', $stackIdentifier)
+            );
+        } catch (RequestException $e) {
+            throw new HttpLabsException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

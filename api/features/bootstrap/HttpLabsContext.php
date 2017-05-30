@@ -2,11 +2,8 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Guzzle\MatchingHandler;
 use ContinuousPipe\HttpLabs\TraceableClient;
-use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 
@@ -21,16 +18,11 @@ class HttpLabsContext implements Context
      * @var MatchingHandler
      */
     private $httpLabsHttpHandler;
-    /**
-     * @var History
-     */
-    private $httpLabsHttpHistory;
 
-    public function __construct(MatchingHandler $httpLabsHttpHandler, TraceableClient $traceableClient, History $httpLabsHttpHistory)
+    public function __construct(MatchingHandler $httpLabsHttpHandler, TraceableClient $traceableClient)
     {
         $this->traceableClient = $traceableClient;
         $this->httpLabsHttpHandler = $httpLabsHttpHandler;
-        $this->httpLabsHttpHistory = $httpLabsHttpHistory;
     }
 
     /**
@@ -38,27 +30,40 @@ class HttpLabsContext implements Context
      */
     public function theCreatedHttplabsStackWillHaveTheUuidAndTheUrlAddress($uuid, $url)
     {
-        $this->httpLabsHttpHandler->pushMatcher([
-            'match' => function(RequestInterface $request) {
-                return $request->getMethod() == 'POST' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/projects\/([^\/]+)/stacks$#i', (string) $request->getUri());
-            },
-            'response' => new Response(201, [
-                'Content-Type' => 'text/html; charset=UTF-8',
-                'Location' => 'https://api.httplabs.io/stacks/'.$uuid
-            ]),
-        ]);
+        $this->httpLabsHttpHandler->pushMatcher(
+            [
+                'match' => function (RequestInterface $request) {
+                    return $request->getMethod() == 'POST' &&
+                    preg_match(
+                        '#^https\:\/\/api\.httplabs\.io\/projects\/([^\/]+)/complete-stacks$#i',
+                        (string) $request->getUri()
+                    );
+                },
+                'response' => new Response(
+                    201, [
+                    'Content-Type' => 'text/html; charset=UTF-8',
+                    'Location' => 'https://api.httplabs.io/stacks/' . $uuid
+                ]
+                ),
+            ]
+        );
 
-        $this->httpLabsHttpHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($uuid, $url) {
-                return $request->getMethod() == 'GET' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'$#i', (string) $request->getUri());
-            },
-            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
-                'id' => $uuid,
-                'url' => $url,
-            ])),
-        ]);
+        $this->httpLabsHttpHandler->pushMatcher(
+            [
+                'match' => function (RequestInterface $request) use ($uuid, $url) {
+                    return $request->getMethod() == 'GET' &&
+                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/' . $uuid . '$#i', (string) $request->getUri());
+                },
+                'response' => new Response(
+                    200, ['Content-Type' => 'application/json'], json_encode(
+                    [
+                        'id' => $uuid,
+                        'url' => $url,
+                    ]
+                )
+                ),
+            ]
+        );
 
         $this->theHttplabsStackWillBeSuccessfullyConfigured($uuid);
     }
@@ -68,79 +73,23 @@ class HttpLabsContext implements Context
      */
     public function theHttplabsStackWillBeSuccessfullyConfigured($uuid)
     {
-        $this->httpLabsHttpHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($uuid) {
-                return $request->getMethod() == 'PUT' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'$#i', (string) $request->getUri());
-            },
-            'response' => new Response(204, ['Content-Type' => 'text/html; charset=UTF-8']),
-        ]);
-
-        $this->httpLabsHttpHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($uuid) {
-                return $request->getMethod() == 'POST' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'\/deployments$#i', (string) $request->getUri());
-            },
-            'response' => new Response(201, ['Content-Type' => 'text/html; charset=UTF-8']),
-        ]);
-
-        $this->httpLabsHttpHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($uuid) {
-                return $request->getMethod() == 'POST' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'\/middlewares#i', (string) $request->getUri());
-            },
-            'response' => new Response(201, ['Content-Type' => 'text/html; charset=UTF-8']),
-        ]);
+        $this->httpLabsHttpHandler->pushMatcher(
+            [
+                'match' => function (RequestInterface $request) use ($uuid) {
+                    return $request->getMethod() == 'PUT' &&
+                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/' . $uuid . '$#i', (string) $request->getUri());
+                },
+                'response' => new Response(204, ['Content-Type' => 'text/html; charset=UTF-8']),
+            ]
+        );
 
         $this->httpLabsHttpHandler->pushMatcher([
             'match' => function(RequestInterface $request) use ($uuid) {
                 return $request->getMethod() == 'DELETE' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/middlewares/([^\/]+)#i', (string) $request->getUri());
+                preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'$#i', (string) $request->getUri()) &&
+                $request->getHeader('Authorization')[0] == 'cdba7ddb-06ac-47f8-b389-0819b48a2ee8';
             },
-            'response' => new Response(204, ['Content-Type' => 'text/html; charset=UTF-8']),
-        ]);
-
-        $this->httpLabsHttpHandler->pushMatcher([
-            'match' => function(RequestInterface $request) use ($uuid) {
-                return $request->getMethod() == 'GET' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'\/middlewares#i', (string) $request->getUri());
-            },
-            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
-                'total' => 0,
-            ])),
-        ]);
-    }
-
-    /**
-     * @Given the HttpLabs stack :uuid have the following middlewares:
-     */
-    public function theHttplabsStackHaveTheFollowingMiddlewares($uuid, TableNode $table)
-    {
-        $middlewares = array_map(function(array $row) {
-            return [
-                'config' => json_decode($row['config'], true),
-                '_links' => [
-                    'self' => [
-                        'href' => 'https://api.httplabs.io/middlewares/'.$row['identifier'],
-                    ],
-                    'sp:template' => [
-                        'href' => $row['template'],
-                    ],
-                ],
-            ];
-        }, $table->getHash());
-
-        $this->httpLabsHttpHandler->unshiftMatcher([
-            'match' => function(RequestInterface $request) use ($uuid) {
-                return $request->getMethod() == 'GET' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$uuid.'\/middlewares#i', (string) $request->getUri());
-            },
-            'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode([
-                'total' => count($middlewares),
-                '_embedded' => [
-                    'sp:middlewares' => $middlewares,
-                ]
-            ])),
+            'response' => new Response(204),
         ]);
     }
 
@@ -171,54 +120,30 @@ class HttpLabsContext implements Context
     }
 
     /**
-     * @Then the HttpLabs stack :stackIdentifier should have been deployed
+     * @Then a middleware with the name :name should have been created on the stack :stackIdentifier with the following configuration:
      */
-    public function theHttplabsStackShouldHaveBeenDeployed($stackIdentifier)
-    {
-        foreach ($this->httpLabsHttpHistory as $request) {
-            if  ($request->getMethod() == 'POST' && preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$stackIdentifier.'/deployments$#i', (string) $request->getUri())) {
-                return;
-            }
-        }
-
-        throw new \RuntimeException('The stack was not deployed');
-    }
-
-
-    /**
-     * @Then the middleware :middlewareIdentifier from the stack :stackIdentifier should have been removed
-     */
-    public function theMiddlewareFromTheStackShouldHaveBeenRemoved($middlewareIdentifier, $stackIdentifier)
-    {
-        foreach ($this->httpLabsHttpHistory as $request) {
-            if  ($request->getMethod() == 'DELETE' && preg_match('#^https\:\/\/api\.httplabs\.io\/middlewares\/'.$middlewareIdentifier.'$#i', (string) $request->getUri())) {
-                return;
-            }
-        }
-
-        throw new \RuntimeException('The middleware was not removed');
-    }
-
-    /**
-     * @Then a middleware from the template :template should have been created on the stack :stackIdentifier with the following configuration:
-     */
-    public function aMiddlewareFromTheTemplateShouldHaveBeenCreatedOnTheStackWithTheFollowingConfiguration($template, $stackIdentifier, PyStringNode $string)
-    {
+    public function aMiddlewareWithTheNameShouldHaveBeenCreatedOnTheStackWithTheFollowingConfiguration(
+        $name,
+        $stackIdentifier,
+        PyStringNode $string
+    ) {
         $expectedConfiguration = \GuzzleHttp\json_decode($string->getRaw(), true);
 
-        foreach ($this->httpLabsHttpHistory as $request) {
-            /** @var Request $request */
-            if  ($request->getMethod() != 'POST' || !preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/'.$stackIdentifier.'/middlewares#i', (string) $request->getUri())) {
-                continue;
+        foreach ($this->traceableClient->getUpdatedStacks() as $stack) {
+            if ($stack['stack_identifier'] == $stackIdentifier && (isset($stack['middlewares']))) {
+                foreach ($stack['middlewares'] as $middleware) {
+                    if ($middleware['name'] == $name && $middleware['config'] == $expectedConfiguration) {
+                        return;
+                    }
+                }
             }
+        }
 
-            $body = $request->getBody();
-            $body->rewind();
-
-            $json = \GuzzleHttp\json_decode($body->getContents(), true);
-
-            if ($json['template'] == $template && $json['config'] == $expectedConfiguration) {
-                return;
+        if (null !== $stack = $this->traceableClient->getCreatedStacks()[0]) {
+            foreach ($stack['middlewares'] as $middleware) {
+                if ($middleware['name'] == $name && $middleware['config'] == $expectedConfiguration) {
+                    return;
+                }
             }
         }
 
@@ -237,5 +162,19 @@ class HttpLabsContext implements Context
         }
 
         throw new \RuntimeException('The stack was not updated');
+    }
+
+    /**
+     * @Then the stack :stackIdentifier should have been deleted
+     */
+    public function theStackShouldHaveBeenDeleted($stackIdentifier)
+    {
+        foreach ($this->traceableClient->getDeletedStacks() as $stack) {
+            if ($stack['stack_identifier'] == $stackIdentifier) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('The stack was not deleted');
     }
 }
