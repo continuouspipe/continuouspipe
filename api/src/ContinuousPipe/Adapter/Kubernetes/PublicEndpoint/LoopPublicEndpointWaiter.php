@@ -288,7 +288,7 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         return new PublicEndpoint(
             $name,
             sprintf(
-                '%s.%s.cluster.svc.local',
+                '%s.%s.svc.cluster.local',
                 $object->getMetadata()->getName(),
                 $namespaceClient->getNamespace()->getMetadata()->getName()
             ),

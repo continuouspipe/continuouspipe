@@ -271,7 +271,7 @@ Feature:
     When I send the built deployment request
     Then the service "http" should be created
     And the service "http" should have the type "ClusterIP"
-    And an HttpLabs stack should have been created with the backend "http://http.master.cluster.svc.local"
+    And an HttpLabs stack should have been created with the backend "http://http.master.svc.cluster.local"
     And the deployment should contain the endpoint "foo-bar.httplabs.io"
 
   Scenario: It removes the httplabs stack when the environment is deleted
