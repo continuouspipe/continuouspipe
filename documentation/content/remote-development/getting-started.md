@@ -14,13 +14,13 @@ ContinuousPipe can be used as a remote development environment using the `cp-rem
 
 You will need the following:
 
- * A ContinuousPipe hosted project with the GitHub, Docker and Kubernetes integration set up
+ * A ContinuousPipe hosted project with the GitHub or Bitbucket, Docker and Kubernetes integration set up
  * The project checked out locally
  * `rsync` installed locally
  * Optionally, a [keen.io](https://keen.io) write token, project id and event collection name if you want to log usage stats
 
 {{< note title="Note" >}}
-If the GitHub repository is not the origin of your checked out project then you will need to add a [Git remote](https://help.github.com/articles/adding-a-remote/) for that repository.
+If the GitHub or Bitbucket repository is not the origin of your checked out project then you will need to add a [Git remote](https://help.github.com/articles/adding-a-remote/) for that repository.
 {{< /note >}}
 
 ## Installation
