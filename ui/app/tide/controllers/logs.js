@@ -69,7 +69,7 @@ angular.module('continuousPipeRiver')
                 closeOnConfirm: false
             }, function() {
                 EnvironmentRepository.delete(flow, environment).then(function () {
-                    retry();
+                    $scope.retry();
 
                 }, function (error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the environment", "error");
