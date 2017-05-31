@@ -5,6 +5,10 @@ angular.module('continuousPipeRiver')
         $scope.flow = flow;
 
         var getEnvironmentStatus = function(environment) {
+            if (environment.status == 'Terminating') {
+                return 'terminating';
+            }
+
             var status = 'healthy';
 
             for (var i = 0; i < environment.components.length; i++) {
@@ -60,7 +64,7 @@ angular.module('continuousPipeRiver')
 
                     loadEnvironments();
                 }, function (error) {
-                    swal("Error !", $http.getError(error) || "An unknown error occured while deleting the environment", "error");
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the environment", "error");
                 });
             });
         };

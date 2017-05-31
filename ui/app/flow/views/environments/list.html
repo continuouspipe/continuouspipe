@@ -18,7 +18,7 @@
                 </md-card-avatar>
                 <md-card-header-text>
                     <span class="md-title">{{ environment.identifier }}</span>
-                    <span class="md-subhead">Status: <span class="status-text" ng-class="{'status-success': environment.status == 'healthy', 'status-failure': environment.status == 'unhealthy', 'status-running': environment.status === 'unknown'}">{{ environment.status }}</span></span>
+                    <span class="md-subhead">Status: <span class="status-text" ng-class="{'status-success': environment.status == 'healthy', 'status-failure': environment.status == 'unhealthy', 'status-running': environment.status === 'unknown', 'status-terminating': environment.status === 'terminating'}">{{ environment.status }}</span></span>
                 </md-card-header-text>
 
                 <md-button class="md-raised md-primary environment-card-btn"

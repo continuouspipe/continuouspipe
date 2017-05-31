@@ -625,6 +625,9 @@ body {
         &.status-cancelled {
             color: $cancelled-dark-color;
         }
+        &.status-terminating {
+            color: $cancelled-dark-color;
+        }
     }
 
     .alerts-container {
