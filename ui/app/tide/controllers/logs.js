@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TideLogsController', function(TideRepository, TideSummaryRepository, LogFinder, EndpointOpener, $scope, $state, $http, flow, tide, summary) {
+    .controller('TideLogsController', function(TideRepository, EnvironmentRepository, TideSummaryRepository, LogFinder, EndpointOpener, $scope, $state, $http, flow, tide, summary) {
         $scope.tide = tide;
         $scope.summary = summary;
         $scope.log = LogFinder.find(tide.log_id);
@@ -55,6 +55,25 @@ angular.module('continuousPipeRiver')
                 swal("Error !", $http.getError(error) || "An unknown error occured while creating the tide", "error");
             })['finally'](function() {
                 $scope.isLoading = false;
+            });
+        };
+
+        $scope.deleteAndRetry = function(environment) {
+            swal({
+                title: "Are you sure?",
+                text: "The environment "+environment.identifier+" won't be recoverable",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, remove it!",
+                closeOnConfirm: false
+            }, function() {
+                EnvironmentRepository.delete(flow, environment).then(function () {
+                    $scope.retry();
+
+                }, function (error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the environment", "error");
+                });
             });
         };
 

@@ -64,7 +64,7 @@ angular.module('continuousPipeRiver')
 
                     loadEnvironments();
                 }, function (error) {
-                    swal("Error !", $http.getError(error) || "An unknown error occured while deleting the environment", "error");
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the environment", "error");
                 });
             });
         };
