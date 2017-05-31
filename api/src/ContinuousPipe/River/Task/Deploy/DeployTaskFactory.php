@@ -341,53 +341,9 @@ class DeployTaskFactory implements TaskFactory
                             ->end()
                         ->end()
                     ->end()
-                    ->arrayNode('cloud_flare_zone')
-                        ->children()
-                            ->scalarNode('zone_identifier')->isRequired()->end()
-                            ->scalarNode('record_suffix')->end()
-                            ->arrayNode('host')
-                                ->children()
-                                    ->scalarNode('expression')->isRequired()->end()
-                                ->end()
-                            ->end()
-                            ->scalarNode('backend_address')->end()
-                            ->integerNode('ttl')->end()
-                            ->booleanNode('proxied')->end()
-                            ->arrayNode('authentication')
-                                ->isRequired()
-                                ->children()
-                                    ->scalarNode('email')->isRequired()->end()
-                                    ->scalarNode('api_key')->isRequired()->end()
-                                ->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                    ->arrayNode('httplabs')
-                        ->children()
-                            ->scalarNode('project_identifier')->isRequired()->end()
-                            ->scalarNode('api_key')->isRequired()->end()
-                            ->scalarNode('record_suffix')->end()
-                            ->arrayNode('host')
-                                ->children()
-                                    ->scalarNode('expression')->isRequired()->end()
-                                ->end()
-                            ->end()
-                            ->arrayNode('middlewares')
-                                ->prototype('variable')->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                    ->arrayNode('ingress')
-                        ->children()
-                            ->scalarNode('class')->isRequired()->end()
-                            ->arrayNode('host')
-                                ->children()
-                                    ->scalarNode('expression')->isRequired()->end()
-                                ->end()
-                            ->end()
-                            ->scalarNode('host_suffix')->end()
-                        ->end()
-                    ->end()
+                    ->append($this->getCloudflareNode())
+                    ->append($this->getHttplabsNode())
+                    ->append($this->getIngressNode())
                 ->end()
             ->end()
         ;
@@ -468,5 +424,76 @@ class DeployTaskFactory implements TaskFactory
     private function getIdentifier(string $name) : string
     {
         return (new Slugify())->slugify($name);
+    }
+
+    private function getCloudflareNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('cloud_flare_zone');
+
+        $node
+            ->children()
+                ->scalarNode('zone_identifier')->isRequired()->end()
+                ->scalarNode('record_suffix')->end()
+                ->arrayNode('host')
+                    ->children()
+                        ->scalarNode('expression')->isRequired()->end()
+                    ->end()
+                ->end()
+                ->scalarNode('backend_address')->end()
+                ->integerNode('ttl')->end()
+                ->booleanNode('proxied')->end()
+                ->arrayNode('authentication')
+                    ->isRequired()
+                    ->children()
+                        ->scalarNode('email')->isRequired()->end()
+                        ->scalarNode('api_key')->isRequired()->end()
+                    ->end()
+                ->end()
+            ->end();
+
+        return $node;
+    }
+
+    private function getHttplabsNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('httplabs');
+
+        $node
+            ->children()
+                ->scalarNode('project_identifier')->isRequired()->end()
+                ->scalarNode('api_key')->isRequired()->end()
+                ->scalarNode('record_suffix')->end()
+                ->arrayNode('host')
+                    ->children()
+                        ->scalarNode('expression')->isRequired()->end()
+                    ->end()
+                ->end()
+                ->arrayNode('middlewares')
+                    ->prototype('variable')->end()
+                ->end()
+            ->end();
+
+        return $node;
+    }
+
+    private function getIngressNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('ingress');
+
+        $node
+            ->children()
+                ->scalarNode('class')->isRequired()->end()
+                ->arrayNode('host')
+                    ->children()
+                        ->scalarNode('expression')->isRequired()->end()
+                    ->end()
+                ->end()
+                ->scalarNode('host_suffix')->end()
+            ->end();
+
+        return $node;
     }
 }

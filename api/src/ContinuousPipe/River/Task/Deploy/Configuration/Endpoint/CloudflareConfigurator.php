@@ -29,9 +29,8 @@ class CloudflareConfigurator implements EndpointConfigurator
         }
 
         if (isset($endpointConfiguration['cloud_flare_zone']['record_suffix'])) {
-            if ($this->hostnameResolver->suffixTooLong($endpointConfiguration['cloud_flare_zone']['record_suffix'])) {
-                throw new TideGenerationException(sprintf('The cloud_flare_zone record_suffix cannot be more than %s characters long', $this->maxSuffixLength()));
-            }
+            $this->hostnameResolver->checkSuffixLength('cloud_flare_zone', $endpointConfiguration);
+
             return;
         }
 
@@ -54,15 +53,15 @@ class CloudflareConfigurator implements EndpointConfigurator
      */
     public function addHost(array $endpointConfiguration, TaskContext $context)
     {
-        if (isset($endpointConfiguration['cloud_flare_zone']['record_suffix'])) {
-            $endpointConfiguration['cloud_flare_zone']['host']['expression'] =
-                $this->hostnameResolver->generateHostExpression($endpointConfiguration['cloud_flare_zone']['record_suffix']);
+        if (!isset($endpointConfiguration['cloud_flare_zone'])) {
+            return $endpointConfiguration;
         }
 
-        if (isset($endpointConfiguration['cloud_flare_zone']['host'])) {
-            $endpointConfiguration['cloud_flare_zone']['hostname'] =
-                $this->hostnameResolver->resolveHostname($context, $endpointConfiguration['cloud_flare_zone']['host']);
-        }
+        $endpointConfiguration['cloud_flare_zone'] = $this->hostnameResolver->addHost(
+            $endpointConfiguration['cloud_flare_zone'],
+            $context,
+            'hostname'
+        );
 
         return $endpointConfiguration;
     }

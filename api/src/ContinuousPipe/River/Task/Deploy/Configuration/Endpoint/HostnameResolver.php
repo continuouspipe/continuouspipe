@@ -22,10 +22,37 @@ class HostnameResolver
     {
         $this->flowVariableResolver = $flowVariableResolver;
     }
-    
+
+    public function checkSuffixLength(string $configKey, array $endpointConfiguration)
+    {
+        if ($this->suffixTooLong($endpointConfiguration[$configKey]['record_suffix'])) {
+            throw new TideGenerationException(
+                sprintf(
+                    'The %s record_suffix cannot be more than %s characters long',
+                    $configKey,
+                    $this->maxSuffixLength()
+                )
+            );
+        }
+    }
+
     public function suffixTooLong(string $suffix): bool
     {
         return mb_strlen($suffix) > $this->maxSuffixLength();
+    }
+
+    public function addHost(array $config, TaskContext $context, string $hostKey)
+    {
+        if (isset($config['record_suffix'])) {
+            $config['host']['expression'] =
+                $this->generateHostExpression($config['record_suffix']);
+        }
+        if (isset($config['host'])) {
+            $config[$hostKey] =
+                $this->resolveHostname($context, $config['host']);
+        }
+
+        return $config;
     }
 
     /**

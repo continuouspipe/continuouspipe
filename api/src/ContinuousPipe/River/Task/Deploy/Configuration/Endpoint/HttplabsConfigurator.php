@@ -29,15 +29,7 @@ class HttplabsConfigurator implements EndpointConfigurator
         }
 
         if (isset($endpointConfiguration['httplabs']['record_suffix'])) {
-            if ($this->hostnameResolver->suffixTooLong($endpointConfiguration['httplabs']['record_suffix'])) {
-                throw new TideGenerationException(
-                    sprintf(
-                        'The httplabs record_suffix cannot be more than %s characters long',
-                        $this->hostnameResolver->maxSuffixLength()
-                    )
-                );
-            }
-            return;
+            $this->hostnameResolver->checkSuffixLength('httplabs', $endpointConfiguration);
         }
     }
 
@@ -49,14 +41,15 @@ class HttplabsConfigurator implements EndpointConfigurator
      */
     public function addHost(array $endpointConfiguration, TaskContext $context)
     {
-        if (isset($endpointConfiguration['httplabs']['record_suffix'])) {
-            $endpointConfiguration['httplabs']['host']['expression'] =
-                $this->hostnameResolver->generateHostExpression($endpointConfiguration['httplabs']['record_suffix']);
+        if (!isset($endpointConfiguration['httplabs'])) {
+            return $endpointConfiguration;
         }
-        if (isset($endpointConfiguration['httplabs']['host'])) {
-            $endpointConfiguration['httplabs']['incoming'] =
-                $this->hostnameResolver->resolveHostname($context, $endpointConfiguration['httplabs']['host']);
-        }
+
+        $endpointConfiguration['httplabs'] = $this->hostnameResolver->addHost(
+            $endpointConfiguration['httplabs'],
+            $context,
+            'incoming'
+        );
 
         return $endpointConfiguration;
     }

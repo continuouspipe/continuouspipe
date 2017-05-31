@@ -66,10 +66,6 @@ class ComponentFactory
     }
 
     /**
-     * Get component endpoints from the configuration.
-     *
-     * @param array $configuration
-     *
      * @return Component\Endpoint[]
      */
     private function getEndpoints(TaskContext $context, array $configuration)
@@ -78,20 +74,8 @@ class ComponentFactory
             return [];
         }
 
-        // Resolve hosts expression
-        $configuration['endpoints'] = array_map(
-            function (array $endpointConfiguration) use ($context) {
-                $this->endpointConfigurator->checkConfiguration($endpointConfiguration);
-
-                return $this->endpointConfigurator->addHost($endpointConfiguration, $context);
-            },
-            $configuration['endpoints']
-        );
-
-        $jsonEncodedEndpoints = json_encode($configuration['endpoints']);
-
         return $this->serializer->deserialize(
-            $jsonEncodedEndpoints,
+            json_encode($this->addHostsToConfig($context, $configuration['endpoints'])),
             sprintf('array<%s>', Component\Endpoint::class),
             'json'
         );
@@ -141,6 +125,18 @@ class ComponentFactory
             $jsonEncodedExtensions,
             sprintf('array<%s>', Extension::class),
             'json'
+        );
+    }
+
+    private function addHostsToConfig(TaskContext $context, array $configuration)
+    {
+        return array_map(
+            function (array $endpointConfiguration) use ($context) {
+                $this->endpointConfigurator->checkConfiguration($endpointConfiguration);
+
+                return $this->endpointConfigurator->addHost($endpointConfiguration, $context);
+            },
+            $configuration
         );
     }
 
