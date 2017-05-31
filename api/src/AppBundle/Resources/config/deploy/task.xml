@@ -58,8 +58,33 @@
         </service>
 
         <service id="river.task.deploy.configuration.component_factory" class="ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory">
-            <argument type="service" id="river.flow.variable.flow_variable_resolver" />
+            <argument type="service" id="river.task.deploy.configuration.composite_configurator" />
             <argument type="service" id="jms_serializer" />
         </service>
+
+        <service id="river.task.deploy.configuration.composite_configurator" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\CompositeConfigurator">
+            <argument type="collection">
+                <argument type="service" id="river.task.deploy.configuration.ingress_configurator" />
+                <argument type="service" id="river.task.deploy.configuration.httplabs_configurator" />
+                <argument type="service" id="river.task.deploy.configuration.cloudflare_configurator" />
+            </argument>
+        </service>
+
+        <service id="river.task.deploy.configuration.ingress_configurator" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\IngressConfigurator">
+            <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />
+        </service>
+
+        <service id="river.task.deploy.configuration.httplabs_configurator" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\HttplabsConfigurator">
+            <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />
+        </service>
+
+        <service id="river.task.deploy.configuration.cloudflare_configurator" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\CloudflareConfigurator">
+            <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />
+        </service>
+
+        <service id="river.task.deploy.configuration.hostname_resolver" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\HostnameResolver">
+            <argument type="service" id="river.flow.variable.flow_variable_resolver" />
+        </service>
+
     </services>
 </container>
