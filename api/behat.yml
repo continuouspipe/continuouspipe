@@ -34,6 +34,7 @@ default:
                     - @river.commit_resolver.predictable
                     - @event_bus
                     - @river.tide_event_store
+                    - @river.code_repository.branch_query
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -113,6 +114,7 @@ default:
                 - StorageContext:
                     - @river.pipeline.view.storage
                     - @river.repository.flow
+                    - @river.branch.view.storage
 
         github:
             paths:
@@ -170,6 +172,7 @@ default:
                     - @river.commit_resolver.predictable
                     - @event_bus
                     - @river.tide_event_store
+                    - @river.code_repository.branch_query
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -269,6 +272,7 @@ default:
                     - @river.commit_resolver.predictable
                     - @event_bus
                     - @river.tide_event_store
+                    - @river.code_repository.branch_query
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -380,6 +384,7 @@ smoke:
                     - @river.commit_resolver.predictable
                     - @event_bus
                     - @river.tide_event_store
+                    - @river.code_repository.branch_query
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - Tide\TasksContext:

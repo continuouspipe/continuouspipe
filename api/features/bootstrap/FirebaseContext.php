@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
 use GuzzleHttp\Psr7\Request;
 

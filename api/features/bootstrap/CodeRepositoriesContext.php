@@ -2,9 +2,11 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryUser;
 use ContinuousPipe\River\CodeRepository\Event\CodePushed;
+use ContinuousPipe\River\CodeRepository\InMemoryBranchQuery;
 use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\EventBus\EventStore;
@@ -38,17 +40,17 @@ class CodeRepositoriesContext implements Context
      * @var EventStore
      */
     private $eventStore;
-
     /**
-     * @param PredictableCommitResolver $predictableCommitResolver
-     * @param MessageBus $eventBus
-     * @param EventStore $eventStore
+     * @var InMemoryBranchQuery
      */
-    public function __construct(PredictableCommitResolver $predictableCommitResolver, MessageBus $eventBus, EventStore $eventStore)
+    private $branchQuery;
+
+    public function __construct(PredictableCommitResolver $predictableCommitResolver, MessageBus $eventBus, EventStore $eventStore, InMemoryBranchQuery $branchQuery)
     {
         $this->predictableCommitResolver = $predictableCommitResolver;
         $this->eventBus = $eventBus;
         $this->eventStore = $eventStore;
+        $this->branchQuery = $branchQuery;
     }
 
     /**
@@ -104,5 +106,13 @@ class CodeRepositoriesContext implements Context
             new PullRequest(1234),
             $commentId
         ));
+    }
+
+    /**
+     * @Given there is a :branch branch in the repository for the flow :flow
+     */
+    public function thereIsABranchInTheRepository($branch, $flow)
+    {
+        $this->branchQuery->addBranch($flow, $branch);
     }
 }

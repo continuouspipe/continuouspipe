@@ -1,7 +1,9 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\InMemoryBranchViewStorage;
 use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Repository\FlowRepository;
@@ -19,10 +21,16 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      */
     private $flowRepository;
 
-    public function __construct(InMemoryPipelineViewStorage $pipelineViewStorage, FlowRepository $flowRepository)
+    /**
+     * @var InMemoryBranchViewStorage
+     */
+    private $branchViewStorage;
+
+    public function __construct(InMemoryPipelineViewStorage $pipelineViewStorage, FlowRepository $flowRepository, InMemoryBranchViewStorage $branchViewStorage)
     {
         $this->pipelineViewStorage = $pipelineViewStorage;
         $this->flowRepository = $flowRepository;
+        $this->branchViewStorage = $branchViewStorage;
     }
 
     /**
@@ -38,6 +46,20 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
             throw new \RuntimeException(sprintf(
                 'The pipeline named "%s" does not get deleted from view storage.',
                 $pipelineName
+            ));
+        }
+    }
+
+
+    /**
+     * @Then the branch :branch for the flow :flow should be saved to the permanent storage of views
+     */
+    public function theBranchForTheFlowShouldBeDeletedFromThePermanentStorageOfViews($branch, $flow)
+    {
+        if (!$this->branchViewStorage->wasBranchSaved(Uuid::fromString($flow), new Branch($branch))) {
+            throw new \RuntimeException(sprintf(
+                'The branch "%s" did not get saved in view storage.',
+                $branch
             ));
         }
     }

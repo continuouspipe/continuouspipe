@@ -1,0 +1,10 @@
+<?php
+
+namespace ContinuousPipe\River\View\Storage;
+
+use Ramsey\Uuid\UuidInterface;
+
+interface BranchViewStorage
+{
+    public function save(UuidInterface $flowUUid);
+}

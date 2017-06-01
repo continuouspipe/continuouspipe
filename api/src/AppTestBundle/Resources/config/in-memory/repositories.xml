@@ -14,6 +14,18 @@
             <argument type="service" id="csa_guzzle.middleware.history" />
         </service>
         <service id="river.pipeline.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage" />
+        <service id="river.branch.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\InMemoryBranchViewStorage">
+            <argument type="service" id="river.code_repository.branch_query" />
+        </service>
         <service id="development_environment.read_model.repository" class="ContinuousPipe\DevelopmentEnvironment\ReadModel\InMemoryEnvironmentRepository" />
+
+
+        <service id="river.listener.code_pushed.branch_view" class="ContinuousPipe\River\View\EventListener\CodePushedBranchView">
+            <argument type="service" id="river.branch.view.storage" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\CodePushed" />
+        </service>
+        <service id="river.code_repository.branch_query" class="ContinuousPipe\River\CodeRepository\InMemoryBranchQuery" />
+
     </services>
 </container>
