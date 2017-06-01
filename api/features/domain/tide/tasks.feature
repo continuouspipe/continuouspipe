@@ -115,3 +115,10 @@ Feature:
     Then the task named "build1" should be successful
     And the task named "build2" should be running
     And the task named "build3" should be pending
+
+  Scenario: It should report an error when a task filter is broken
+    When a tide is started with the following configurations:
+      | name  | type   | configuration                                               | filter   |
+      | build | build  | {"services": []}                                            | database |
+      | run1  | run    | {"cluster": "foo", "image": "bar", "commands": ["bin/bar"]} |          |
+    Then a log containing 'Error in task filter condition' should be created

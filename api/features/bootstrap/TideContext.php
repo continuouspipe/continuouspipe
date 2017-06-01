@@ -911,7 +911,7 @@ EOF;
                 [
                     'deploy' => [
                         'cluster' => 'fake/foo',
-                        'services' => []
+                        'services' => [],
                     ]
                 ]
             ]

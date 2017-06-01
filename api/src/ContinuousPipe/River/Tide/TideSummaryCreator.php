@@ -5,9 +5,11 @@ namespace ContinuousPipe\River\Tide;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Tide\Summary\CurrentTask;
 use ContinuousPipe\River\Tide\Summary\DeployedService;
+use ContinuousPipe\River\Tide\Summary\Environment;
 use ContinuousPipe\River\View\Tide;
 
 class TideSummaryCreator
@@ -41,24 +43,19 @@ class TideSummaryCreator
     {
         return new TideSummary(
             $tide->getStatus(),
-            $this->getDeployedServices($tide),
-            $this->getCurrentTask($tide)
+            $this->getDeployedServices($this->getDeploymentSuccessfulEventsForTide($tide)),
+            $this->getCurrentTask($tide),
+            $this->getEnvironments($this->getDeploymentStartedEventsForTide($tide))
         );
     }
 
     /**
-     * @param Tide $tide
+     * @param DeploymentSuccessful[] $deploymentSuccessfulEvents
+     * @return Summary\DeployedService[]
      *
-     * @return DeployedService[]
      */
-    private function getDeployedServices(Tide $tide)
+    private function getDeployedServices(array $deploymentSuccessfulEvents)
     {
-        $events = $this->eventStore->findByTideUuid($tide->getUuid());
-        /** @var DeploymentSuccessful[] $deploymentSuccessfulEvents */
-        $deploymentSuccessfulEvents = array_values(array_filter($events, function ($event) {
-            return $event instanceof DeploymentSuccessful;
-        }));
-
         if (0 === count($deploymentSuccessfulEvents)) {
             return [];
         }
@@ -85,6 +82,16 @@ class TideSummaryCreator
         }
 
         return $summary;
+    }
+
+    private function getEnvironments(array $deploymentSuccessfulEvents)
+    {
+        if (0 === count($deploymentSuccessfulEvents)) {
+            return;
+        }
+        $target = $deploymentSuccessfulEvents[0]->getDeployment()->getRequest()->getTarget();
+
+        return new Environment($target->getEnvironmentName(), $target->getClusterIdentifier());
     }
 
     /**
@@ -123,5 +130,39 @@ class TideSummaryCreator
         }
 
         return;
+    }
+
+    /**
+     * @return DeploymentSuccessful[]
+     */
+    private function getDeploymentSuccessfulEventsForTide(Tide $tide): array
+    {
+        return $this->getFilteredEvents($tide,
+            function ($event) {
+                return $event instanceof DeploymentSuccessful;
+            }
+        );
+    }
+
+    /**
+     * @return DeploymentStarted[]
+     */
+    private function getDeploymentStartedEventsForTide(Tide $tide): array
+    {
+        return $this->getFilteredEvents($tide,
+            function ($event) {
+                return $event instanceof DeploymentStarted;
+            }
+        );
+    }
+
+    private function getFilteredEvents(Tide $tide, $filter): array
+    {
+        return array_values(
+            array_filter(
+                $this->eventStore->findByTideUuid($tide->getUuid()),
+                $filter
+            )
+        );
     }
 }
