@@ -25,6 +25,13 @@
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\CodePushed" />
         </service>
+
+        <service id="river.listener.branch_deleted.branch_view" class="ContinuousPipe\River\View\EventListener\BranchDeletedBranchView">
+            <argument type="service" id="river.branch.view.storage" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\BranchDeleted" />
+        </service>
+
         <service id="river.code_repository.branch_query" class="ContinuousPipe\River\CodeRepository\InMemoryBranchQuery" />
         <service id="river.code_repository.branch_with_tides_query" class="ContinuousPipe\River\CodeRepository\InMemoryBranchWithTidesQuery">
             <argument type="service" id="river.code_repository.branch_query"/>

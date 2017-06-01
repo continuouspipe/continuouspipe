@@ -57,3 +57,19 @@ Feature:
       | tide                                 |
       | 4e09cc05-8545-4622-a35a-b0d9a62b9fde |
 
+  Scenario: It updates the branch views when a branch is deleted
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services: []
+
+    """
+    When the branch "master" is deleted for the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
+    Then the branch "develop" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
+

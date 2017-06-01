@@ -5,13 +5,16 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryUser;
+use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use ContinuousPipe\River\CodeRepository\Event\CodePushed;
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\InMemoryBranchQuery;
 use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Notifications\Events\CommentedPullRequest;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
+use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 
 class CodeRepositoriesContext implements Context
@@ -114,5 +117,13 @@ class CodeRepositoriesContext implements Context
     public function thereIsABranchInTheRepository($branch, $flow)
     {
         $this->branchQuery->addBranch($flow, $branch);
+    }
+
+    /**
+     * @When the branch :branch is deleted for the repository for the flow :flow
+     */
+    public function theBranchIsDeleted($branch, $flow)
+    {
+        $this->eventBus->handle(new BranchDeleted(Uuid::fromString($flow), new CodeReference(new GitHubCodeRepository('a', 'b', 'c', 'd', true), null, $branch)));
     }
 }
