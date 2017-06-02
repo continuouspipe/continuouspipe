@@ -22,22 +22,23 @@ class InMemoryPullRequestViewStorage implements PullRequestViewStorage
         $this->savedPullRequests[(string) $flowUuid][$pullRequest->getIdentifier()] = $pullRequest;
     }
 
-    /*public function updateTide(Tide $tide)
+    public function updateTide(Tide $tide)
     {
         $flowUuid = $tide->getFlowUuid();
         $branchName = $tide->getCodeReference()->getBranch();
+
         if (!isset($this->savedPullRequests[(string) $flowUuid])) {
-            $this->save($flowUuid);
-        }
-
-        if (!isset($this->savedPullRequests[(string) $flowUuid][$branchName])) {
-            $this->savedPullRequests[(string) $flowUuid][$branchName] = new Branch($branchName, [$tide]);
-
             return;
         }
 
-        $this->savedPullRequests[(string) $flowUuid][$branchName] = $this->savedPullRequests[(string) $flowUuid][$branchName]->withTide($tide);
-    }*/
+        $this->savedPullRequests[(string) $flowUuid] = array_map(function (PullRequest $pullRequest) use ($branchName, $tide) {
+            if ((string) $pullRequest->getBranch() == $branchName) {
+                return $pullRequest->withBranch($pullRequest->getBranch()->withTide($tide));
+            }
+
+            return $pullRequest;
+        }, $this->savedPullRequests[(string) $flowUuid]);
+    }
 
     public function wasPullRequestSaved(UuidInterface $flowUuid, PullRequest $pullRequest)
     {
@@ -49,8 +50,7 @@ class InMemoryPullRequestViewStorage implements PullRequestViewStorage
             return false;
         }
 
-        return $this->savedPullRequests[(string) $flowUuid][$pullRequest->getIdentifier()] == $pullRequest;
-        //return $branch->getTideUuids() == $this->savedPullRequests[(string) $flowUuid][(string) $branch]->getTideUuids();
+        return array_intersect($pullRequest->getBranch()->getTideUuids(), $this->savedPullRequests[(string) $flowUuid][$pullRequest->getIdentifier()]->getBranch()->getTideUuids()) == $pullRequest->getBranch()->getTideUuids();
     }
 
 }

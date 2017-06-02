@@ -58,7 +58,7 @@ class InMemoryBranchViewStorage implements BranchViewStorage
         if (!isset($this->savedBranches[(string) $flowUuid][(string) $branch])) {
             return false;
         }
-        
-        return $branch->getTideUuids() == $this->savedBranches[(string) $flowUuid][(string) $branch]->getTideUuids();
+
+        return array_intersect($branch->getTideUuids(), $this->savedBranches[(string) $flowUuid][(string) $branch]->getTideUuids()) == $branch->getTideUuids();
     }
 }

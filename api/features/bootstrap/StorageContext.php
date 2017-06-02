@@ -124,6 +124,20 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         }
     }
 
+    /**
+     * @Then pull request :number titled :title for branch :branch of flow :flow is stored with the following tides:
+     */
+    public function pullRequestForBranchOfFlowIsStoredWithTheFollowingTides($number, $title, $branch, $flow, TableNode $table)
+    {
+        $tides = array_map(function($t) use ($flow) {return $this->createTideView($flow, $t['tide']);}, $table->getHash());
+        if (!$this->pullRequestViewStorage->wasPullRequestSaved(Uuid::fromString($flow), new PullRequest($number, $title, new Branch($branch, $tides)))) {
+            throw new \RuntimeException(sprintf(
+                'The pull request "%s" - "%s" did not get saved in view storage.',
+                $number,
+                $title
+            ));
+        }
+    }
 
     private function createTideView($flow, $tide)
     {

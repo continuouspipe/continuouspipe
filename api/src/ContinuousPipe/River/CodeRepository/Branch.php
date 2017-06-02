@@ -32,7 +32,7 @@ class Branch
 
     public function getTideUuids()
     {
-        array_map(function(Tide $tide) {return $tide->getUuid();}, $this->tides);
+        return array_map(function(Tide $tide) {return $tide->getUuid();}, $this->tides);
     }
 
     private function mergeTides(array $tides, Tide $toMerge)
