@@ -66,7 +66,7 @@ angular.module('continuousPipeRiver')
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, remove it!",
-                closeOnConfirm: false
+                closeOnConfirm: true
             }, function() {
                 EnvironmentRepository.delete(flow, environment).then(function () {
                     $scope.retry();
