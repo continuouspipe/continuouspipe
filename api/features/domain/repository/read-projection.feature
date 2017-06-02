@@ -73,3 +73,33 @@ Feature:
     When the branch "master" is deleted for the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
     Then the branch "develop" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
 
+  Scenario: It updates when a new ide is created
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services: []
+
+    """
+    And the "master" branch in the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" has the following tides:
+      | tide                                 |
+      | e635cd99-3872-4be5-8f26-9ab46c7faf36 |
+      | c151b296-33d4-4e2d-8e81-de32fd0d5e30 |
+    And the "develop" branch in the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" has the following tides:
+      | tide                                 |
+      | 4e09cc05-8545-4622-a35a-b0d9a62b9fde |
+    When the commit "12345" is pushed to the branch "master"
+    And I create a tide "fc256d7a-2a8d-46e9-836a-e9ddec711f84" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" for branch "develop" and commit "12345"
+    Then the "master" branch for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" is stored with the following tides:
+      | tide                                 |
+      | e635cd99-3872-4be5-8f26-9ab46c7faf36 |
+      | c151b296-33d4-4e2d-8e81-de32fd0d5e30 |
+    And the "develop" branch for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" is stored with the following tides:
+      | tide                                 |
+      | fc256d7a-2a8d-46e9-836a-e9ddec711f84 |
+      | 4e09cc05-8545-4622-a35a-b0d9a62b9fde |

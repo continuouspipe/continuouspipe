@@ -32,6 +32,17 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\BranchDeleted" />
         </service>
 
+        <service id="river.listener.tide_event.branch_view" class="ContinuousPipe\River\View\EventListener\TideEventBranchView">
+            <argument type="service" id="river.branch.view.storage" />
+            <argument type="service" id="river.view.tide_view_factory" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCancelled" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful" />
+        </service>
+
         <service id="river.code_repository.branch_query" class="ContinuousPipe\River\CodeRepository\InMemoryBranchQuery" />
         <service id="river.code_repository.branch_with_tides_query" class="ContinuousPipe\River\CodeRepository\InMemoryBranchWithTidesQuery">
             <argument type="service" id="river.code_repository.branch_query"/>

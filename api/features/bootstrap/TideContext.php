@@ -8,6 +8,7 @@ use ContinuousPipe\Message\Debug\TracedMessageProducer;
 use ContinuousPipe\Message\Direct\DelayedMessagesBuffer;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Command\DeleteEnvironments;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Command\StartTideCommand;
@@ -31,6 +32,7 @@ use ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideTaskView;
 use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
 use LogStream\Node\Container;
 use LogStream\Node\Text;
 use LogStream\Tree\TreeLog;
@@ -50,6 +52,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Yaml\Yaml;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
+use ContinuousPipe\River\TideContext as ContextForTide;
 
 class TideContext implements Context
 {
@@ -1558,5 +1561,51 @@ EOF;
         return array_map(function(array $tide) {
             return $this->tideRepository->find(Uuid::fromString($tide['uuid']));
         }, $json);
+    }
+
+    /**
+     * @When I create a tide :tide for the flow :flow for branch :branch and commit :commit
+     */
+    public function iCreateATideForBranchAndCommit($tide, $flow, $branch, $commit)
+    {
+        $context = new ContextForTide();
+        $context->set(
+            ContextForTide::CODE_REFERENCE_KEY,
+            new CodeReference(new GitHubCodeRepository('a', 'b', 'c', 'd', true), $commit, $branch)
+        );
+        $context->set(
+            ContextForTide::TIDE_UUID_KEY,
+            Uuid::fromString($tide)
+        );
+        $context->set(
+            ContextForTide::CONFIGURATION_KEY,
+            '[]'
+        );
+        $context->set(
+            ContextForTide::FLOW_UUID_KEY,
+            Uuid::fromString($flow)
+        );
+        $context->set(
+            ContextForTide::TIDE_LOG_KEY,
+            new TreeLog()
+        );
+        $context->set(
+            ContextForTide::TEAM_KEY,
+            new Team('a', 'b')
+        );
+        $context->set(
+            ContextForTide::USER_KEY,
+            new User('a', Uuid::fromString('2a698c5c-837c-4352-9eeb-49addc0ead19'))
+        );
+        $this->eventBus->handle(
+
+            new TideCreated(
+                Uuid::fromString($tide),
+                Uuid::fromString($flow),
+                $context,
+                Uuid::uuid4(),
+                new Flow\Projections\FlatPipeline(Uuid::uuid4(), 'default')
+            )
+        );
     }
 }
