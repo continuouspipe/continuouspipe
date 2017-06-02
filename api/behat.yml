@@ -116,6 +116,7 @@ default:
                     - @river.repository.flow
                     - @river.branch.view.storage
                     - @river.code_repository.tides_for_branch_query
+                    - @river.branch.pull_request.view.storage
 
         github:
             paths:

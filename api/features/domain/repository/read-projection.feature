@@ -11,7 +11,7 @@ Feature:
     And there is a "master" branch in the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
     And there is a "develop" branch in the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
 
-  Scenario: It creates the read model for all branches in firebase
+  Scenario: It creates the read model for all branches
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -103,3 +103,20 @@ Feature:
       | tide                                 |
       | fc256d7a-2a8d-46e9-836a-e9ddec711f84 |
       | 4e09cc05-8545-4622-a35a-b0d9a62b9fde |
+
+  Scenario: It creates the read model for pull requests when they are opened
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services: []
+
+    """
+    And there is a "feature/new-feature" branch in the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
+    When I open a pull request "4" titled "Please review my new feature" for commit "4567" the branch "feature/new-feature" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
+    Then the pull request "4" titled "feature/new-feature" for branch "feature/new-feature" of flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views

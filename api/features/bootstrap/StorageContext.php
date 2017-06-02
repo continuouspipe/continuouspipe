@@ -7,8 +7,10 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\InMemoryTidesForBranchQuery;
+use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\InMemoryBranchViewStorage;
+use ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\InMemoryPullRequestViewStorage;
 use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Repository\FlowRepository;
@@ -38,13 +40,18 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var InMemoryTidesForBranchQuery
      */
     private $tidesForBranchQuery;
+    /**
+     * @var InMemoryPullRequestViewStorage
+     */
+    private $pullRequestViewStorage;
 
-    public function __construct(InMemoryPipelineViewStorage $pipelineViewStorage, FlowRepository $flowRepository, InMemoryBranchViewStorage $branchViewStorage, InMemoryTidesForBranchQuery $tidesForBranchQuery)
+    public function __construct(InMemoryPipelineViewStorage $pipelineViewStorage, FlowRepository $flowRepository, InMemoryBranchViewStorage $branchViewStorage, InMemoryTidesForBranchQuery $tidesForBranchQuery, InMemoryPullRequestViewStorage $pullRequestViewStorage)
     {
         $this->pipelineViewStorage = $pipelineViewStorage;
         $this->flowRepository = $flowRepository;
         $this->branchViewStorage = $branchViewStorage;
         $this->tidesForBranchQuery = $tidesForBranchQuery;
+        $this->pullRequestViewStorage = $pullRequestViewStorage;
     }
 
     /**
@@ -68,7 +75,7 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     /**
      * @Then the branch :branch for the flow :flow should be saved to the permanent storage of views
      */
-    public function theBranchForTheFlowShouldBeDeletedFromThePermanentStorageOfViews($branch, $flow)
+    public function theBranchForTheFlowShouldBeSavedTohePermanentStorageOfViews($branch, $flow)
     {
         if (!$this->branchViewStorage->wasBranchSaved(Uuid::fromString($flow), new Branch($branch))) {
             throw new \RuntimeException(sprintf(
@@ -102,6 +109,21 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
             ));
         }
     }
+
+    /**
+     * @Then the pull request :number titled :title for branch :branch of flow :flow should be saved to the permanent storage of views
+     */
+    public function thePullRequestTitledForTheFlowShouldBeSavedToThePermanentStorageOfViews($number, $title, $branch, $flow)
+    {
+        if (!$this->pullRequestViewStorage->wasPullRequestSaved(Uuid::fromString($flow), new PullRequest($number, $title/*, new Branch($branch)*/))) {
+            throw new \RuntimeException(sprintf(
+                'The pull request "%s" - "%s" did not get saved in view storage.',
+                $number,
+                $title
+            ));
+        }
+    }
+
 
     private function createTideView($flow, $tide)
     {

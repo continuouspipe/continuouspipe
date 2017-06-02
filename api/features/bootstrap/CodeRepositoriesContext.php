@@ -7,6 +7,7 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryUser;
 use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use ContinuousPipe\River\CodeRepository\Event\CodePushed;
+use ContinuousPipe\River\CodeRepository\Event\PullRequestOpened;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\InMemoryBranchQuery;
 use ContinuousPipe\River\CodeRepository\PullRequest;
@@ -125,5 +126,16 @@ class CodeRepositoriesContext implements Context
     public function theBranchIsDeleted($branch, $flow)
     {
         $this->eventBus->handle(new BranchDeleted(Uuid::fromString($flow), new CodeReference(new GitHubCodeRepository('a', 'b', 'c', 'd', true), null, $branch)));
+    }
+
+    /**
+     * @When I open a pull request :number titled :title for commit :commit the branch :branch for the flow :flow
+     */
+    public function iOpenAPullRequestTitledForCommitTheBranch($number, $title, $commit, $branch, $flow)
+    {
+        $this->eventBus->handle(new PullRequestOpened(
+            Uuid::fromString($flow), 
+            new CodeReference(new GitHubCodeRepository('a', 'b', 'c', 'd', true), $commit, $branch),
+            new PullRequest($number, $title)));
     }
 }
