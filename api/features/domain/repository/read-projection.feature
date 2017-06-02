@@ -119,4 +119,4 @@ Feature:
     """
     And there is a "feature/new-feature" branch in the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
     When I open a pull request "4" titled "Please review my new feature" for commit "4567" the branch "feature/new-feature" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
-    Then the pull request "4" titled "feature/new-feature" for branch "feature/new-feature" of flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
+    Then the pull request "4" titled "Please review my new feature" for branch "feature/new-feature" of flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views

@@ -48,8 +48,8 @@ class InMemoryPullRequestViewStorage implements PullRequestViewStorage
         if (!isset($this->savedPullRequests[(string) $flowUuid][$pullRequest->getIdentifier()])) {
             return false;
         }
-        
-        return true;
+
+        return $this->savedPullRequests[(string) $flowUuid][$pullRequest->getIdentifier()] == $pullRequest;
         //return $branch->getTideUuids() == $this->savedPullRequests[(string) $flowUuid][(string) $branch]->getTideUuids();
     }
 

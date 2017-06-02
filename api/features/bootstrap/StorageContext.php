@@ -115,7 +115,7 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      */
     public function thePullRequestTitledForTheFlowShouldBeSavedToThePermanentStorageOfViews($number, $title, $branch, $flow)
     {
-        if (!$this->pullRequestViewStorage->wasPullRequestSaved(Uuid::fromString($flow), new PullRequest($number, $title/*, new Branch($branch)*/))) {
+        if (!$this->pullRequestViewStorage->wasPullRequestSaved(Uuid::fromString($flow), new PullRequest($number, $title, new Branch($branch)))) {
             throw new \RuntimeException(sprintf(
                 'The pull request "%s" - "%s" did not get saved in view storage.',
                 $number,
