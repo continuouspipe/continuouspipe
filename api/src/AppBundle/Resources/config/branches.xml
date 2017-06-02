@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.listener.code_pushed.branch_view" class="ContinuousPipe\River\View\EventListener\CodePushedBranchView">
+            <argument type="service" id="river.branch.view.storage" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\CodePushed" />
+        </service>
+
+        <service id="river.listener.branch_deleted.branch_view" class="ContinuousPipe\River\View\EventListener\BranchDeletedBranchView">
+            <argument type="service" id="river.branch.view.storage" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\BranchDeleted" />
+        </service>
+
+        <service id="river.listener.tide_event.branch_view" class="ContinuousPipe\River\View\EventListener\TideEventBranchView">
+            <argument type="service" id="river.branch.view.storage" />
+            <argument type="service" id="river.view.tide_view_factory" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCancelled" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful" />
+        </service>
+    </services>
+</container>
