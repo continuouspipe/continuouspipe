@@ -139,6 +139,20 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         }
     }
 
+    /**
+     * @Then the pull request :number titled :title for branch :branch of flow :flow should not be in the permanent storage of views
+     */
+    public function thePullRequestTitledForBranchOfFlowShouldNotBeInThePermanentStorageOfViews($number, $title, $branch, $flow)
+    {
+        if ($this->pullRequestViewStorage->wasPullRequestSaved(Uuid::fromString($flow), new PullRequest($number, $title, new Branch($branch)))) {
+            throw new \RuntimeException(sprintf(
+                'The pull request "%s" - "%s" is still in view storage.',
+                $number,
+                $title
+            ));
+        }
+    }
+
     private function createTideView($flow, $tide)
     {
         return Tide::create(

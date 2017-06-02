@@ -10,5 +10,9 @@ interface PullRequestViewStorage
 {
     public function add(UuidInterface $flowUuid, PullRequest $pullRequest);
 
-    //public function updateTide(Tide $tide);
+    public function updateTide(Tide $tide);
+
+    public function deletePullRequest(UuidInterface $flowUuid, PullRequest $pullRequest);
+
+    public function deleteBranch(UuidInterface $flowUuid, string $branchName);
 }

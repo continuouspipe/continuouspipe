@@ -23,6 +23,18 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\PullRequestOpened" />
         </service>
 
+        <service id="river.listener.pull_request_closed.pull_request_view" class="ContinuousPipe\River\View\EventListener\PullRequestClosedPullRequestView">
+            <argument type="service" id="river.branch.pull_request.view.storage" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\PullRequestClosed" />
+        </service>
+
+        <service id="river.listener.branch_deleted.pull_request_view" class="ContinuousPipe\River\View\EventListener\BranchDeletedPullRequestView">
+            <argument type="service" id="river.branch.pull_request.view.storage" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\BranchDeleted" />
+        </service>
+
         <service id="river.listener.tide_event.branch_view" class="ContinuousPipe\River\View\EventListener\TideEventBranchView">
             <argument type="service" id="river.branch.view.storage" />
             <argument type="service" id="river.view.tide_view_factory" />

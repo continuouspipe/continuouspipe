@@ -12,6 +12,7 @@ use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\InMemoryBranchQuery;
 use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
+use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Notifications\Events\CommentedPullRequest;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
@@ -136,6 +137,19 @@ class CodeRepositoriesContext implements Context
         $this->eventBus->handle(new PullRequestOpened(
             Uuid::fromString($flow), 
             new CodeReference(new GitHubCodeRepository('a', 'b', 'c', 'd', true), $commit, $branch),
-            new PullRequest($number, $title)));
+            new PullRequest($number, $title))
+        );
+    }
+
+    /**
+     * @When I close the pull request :number titled :title for commit :commit of the branch :branch for the flow :flow
+     */
+    public function iCloseThePullRequestTitledForCommitOfTheBranchForTheFlow($number, $title, $commit, $branch, $flow)
+    {
+        $this->eventBus->handle(new PullRequestClosed(
+            Uuid::fromString($flow),
+            new CodeReference(new GitHubCodeRepository('a', 'b', 'c', 'd', true), $commit, $branch),
+            new PullRequest($number, $title))
+        );
     }
 }

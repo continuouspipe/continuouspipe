@@ -40,6 +40,30 @@ class InMemoryPullRequestViewStorage implements PullRequestViewStorage
         }, $this->savedPullRequests[(string) $flowUuid]);
     }
 
+    public function deletePullRequest(UuidInterface $flowUuid, PullRequest $pullRequest)
+    {
+        if (!isset($this->savedPullRequests[(string) $flowUuid])) {
+            return;
+        }
+
+        if (!isset($this->savedPullRequests[(string) $flowUuid][$pullRequest->getIdentifier()])) {
+            return;
+        }
+        
+        unset($this->savedPullRequests[(string) $flowUuid][$pullRequest->getIdentifier()]);
+    }
+
+    public function deleteBranch(UuidInterface $flowUuid, string $branchName)
+    {
+        if (!isset($this->savedPullRequests[(string) $flowUuid])) {
+            return;
+        }
+
+        $this->savedPullRequests[(string) $flowUuid] = array_filter($this->savedPullRequests[(string) $flowUuid], function (PullRequest $pullRequest) use ($branchName) {
+            return (string) $pullRequest->getBranch() != $branchName;
+        });
+    }
+
     public function wasPullRequestSaved(UuidInterface $flowUuid, PullRequest $pullRequest)
     {
         if (!isset($this->savedPullRequests[(string) $flowUuid])) {
