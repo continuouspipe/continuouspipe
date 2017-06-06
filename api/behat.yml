@@ -93,6 +93,8 @@ default:
                 - DevelopmentEnvironmentContext:
                     - @kernel
                     - @event_bus
+                - BranchContext:
+                    - @command_bus
 
                 # TBR:
                 - GitHubContext:

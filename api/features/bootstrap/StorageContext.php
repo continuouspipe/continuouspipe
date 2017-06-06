@@ -74,10 +74,11 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
 
     /**
      * @Then the branch :branch for the flow :flow should be saved to the permanent storage of views
+     * @Then the branch :branch for the flow :flow should be saved to the permanent storage of views as an unpinned branch
      */
-    public function theBranchForTheFlowShouldBeSavedTohePermanentStorageOfViews($branch, $flow)
+    public function theBranchForTheFlowShouldBeSavedToThePermanentStorageOfViews($branch, $flow)
     {
-        if (!$this->branchViewStorage->wasBranchSaved(Uuid::fromString($flow), new Branch($branch))) {
+        if (!$this->branchViewStorage->wasBranchSaved(Uuid::fromString($flow), new Branch($branch, [], false))) {
             throw new \RuntimeException(sprintf(
                 'The branch "%s" did not get saved in view storage.',
                 $branch
@@ -149,6 +150,20 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
                 'The pull request "%s" - "%s" is still in view storage.',
                 $number,
                 $title
+            ));
+        }
+    }
+
+
+    /**
+     * @Then the branch :branch for the flow :flow should be saved to the permanent storage of views as a pinned branch
+     */
+    public function theBranchForTheFlowShouldBeSavedToThePermanentStorageOfViewsAsAPinnedBranch($branch, $flow)
+    {
+        if (!$this->branchViewStorage->wasBranchSaved(Uuid::fromString($flow), new Branch($branch, [], true))) {
+            throw new \RuntimeException(sprintf(
+                'The branch "%s" did not get saved in view storage.',
+                $branch
             ));
         }
     }

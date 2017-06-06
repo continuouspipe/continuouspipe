@@ -15,7 +15,7 @@
         </service>
         <service id="river.pipeline.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage" />
         <service id="river.branch.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\InMemoryBranchViewStorage">
-            <argument type="service" id="river.code_repository.branch_with_tides_query" />
+            <argument type="service" id="river.code_repository.pinned_branches_query" />
         </service>
         <service id="river.branch.pull_request.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\InMemoryPullRequestViewStorage"/>
         <service id="development_environment.read_model.repository" class="ContinuousPipe\DevelopmentEnvironment\ReadModel\InMemoryEnvironmentRepository" />
@@ -25,6 +25,12 @@
             <argument type="service" id="river.code_repository.branch_query"/>
             <argument type="service" id="river.code_repository.tides_for_branch_query"/>
         </service>
+
+        <service id="river.code_repository.pinned_branches_query" class="ContinuousPipe\River\CodeRepository\PinnedBranchQuery">
+            <argument type="service" id="river.code_repository.branch_with_tides_query"/>
+            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
+        </service>
+
         <service id="river.code_repository.tides_for_branch_query" class="ContinuousPipe\River\CodeRepository\InMemoryTidesForBranchQuery" />
 
     </services>

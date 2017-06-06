@@ -1,7 +1,7 @@
 Feature:
   In order to display the branches of a repository
   As a system
-  I want to write a read projection in Firebase
+  I want to write a read projection
 
   Background:
     Given I am authenticated as "samuel"

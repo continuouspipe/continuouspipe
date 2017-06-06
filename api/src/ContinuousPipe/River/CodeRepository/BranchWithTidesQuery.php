@@ -2,6 +2,8 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
+use Ramsey\Uuid\UuidInterface;
+
 class BranchWithTidesQuery implements BranchQuery
 {
     private $innerQuery;
@@ -13,13 +15,13 @@ class BranchWithTidesQuery implements BranchQuery
         $this->tidesForBranchQuery = $tidesForBranchQuery;
     }
 
-    public function findBranches($flow): array
+    public function findBranches(UuidInterface $flowUuid): array
     {
 
         return array_map(function(Branch $branch) {
             return $branch->withTides($this->tidesForBranchQuery->findLatestTides($branch));
         },
-            $this->innerQuery->findBranches($flow)
+            $this->innerQuery->findBranches($flowUuid)
         );
     }
 

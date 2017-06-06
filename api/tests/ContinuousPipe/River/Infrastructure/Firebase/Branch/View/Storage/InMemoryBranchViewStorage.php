@@ -29,7 +29,15 @@ class InMemoryBranchViewStorage implements BranchViewStorage
     {
         $branches = $this->branchQuery->findBranches($flowUuid);
 
-        $this->savedBranches[(string) $flowUuid] = array_combine(array_map(function(Branch $branch) {return (string) $branch;}, $branches), $branches);
+        $this->savedBranches[(string) $flowUuid] = array_combine(
+            array_map(
+                function (Branch $branch) {
+                    return (string) $branch;
+                },
+                $branches
+            ),
+            $branches
+        );
     }
 
     public function updateTide(Tide $tide)
@@ -42,11 +50,31 @@ class InMemoryBranchViewStorage implements BranchViewStorage
 
         if (!isset($this->savedBranches[(string) $flowUuid][$branchName])) {
             $this->savedBranches[(string) $flowUuid][$branchName] = new Branch($branchName, [$tide]);
-            
+
             return;
         }
 
-        $this->savedBranches[(string) $flowUuid][$branchName] = $this->savedBranches[(string) $flowUuid][$branchName]->withTide($tide); 
+        $this->savedBranches[(string) $flowUuid][$branchName] = $this->savedBranches[(string) $flowUuid][$branchName]->withTide(
+            $tide
+        );
+    }
+
+    public function branchPinned(UuidInterface $flowUuid, string $branch)
+    {
+        $this->updateBranchPinning($flowUuid, $branch,
+            function(Branch $branch) {
+                return $branch->pinned();
+            }
+        );
+    }
+
+    public function branchUnpinned(UuidInterface $flowUuid, string $branch)
+    {
+        $this->updateBranchPinning($flowUuid, $branch,
+            function(Branch $branch) {
+                return $branch->unpinned();
+            }
+        );
     }
 
     public function wasBranchSaved(UuidInterface $flowUuid, Branch $branch)
@@ -59,6 +87,33 @@ class InMemoryBranchViewStorage implements BranchViewStorage
             return false;
         }
 
-        return array_intersect($branch->getTideUuids(), $this->savedBranches[(string) $flowUuid][(string) $branch]->getTideUuids()) == $branch->getTideUuids();
+        if ($branch->isPinned() !== $this->savedBranches[(string) $flowUuid][(string) $branch]->isPinned()) {
+            return false;
+        }
+
+        return array_intersect(
+            $branch->getTideUuids(),
+            $this->savedBranches[(string) $flowUuid][(string) $branch]->getTideUuids()
+        ) == $branch->getTideUuids();
+    }
+
+    /**
+     * @param UuidInterface $flowUuid
+     * @param string $branch
+     * @param $updateBranch
+     */
+    private function updateBranchPinning(UuidInterface $flowUuid, string $branch, $updateBranch)
+    {
+        if (!isset($this->savedBranches[(string) $flowUuid]) || !isset($this->savedBranches[(string) $flowUuid][$branch])) {
+            $this->save($flowUuid);
+        }
+
+        if (!isset($this->savedBranches[(string) $flowUuid][$branch])) {
+            return;
+        }
+
+        $this->savedBranches[(string) $flowUuid][$branch] = $updateBranch(
+            $this->savedBranches[(string) $flowUuid][$branch]
+        );
     }
 }

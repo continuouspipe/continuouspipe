@@ -8,21 +8,33 @@ class Branch
 {
     private $name;
     private $tides;
+    private $pinned;
 
-    public function __construct(string $name, array $tides = [])
+    public function __construct(string $name, array $tides = [], bool $pinned = false)
     {
         $this->name = $name;
         $this->tides = $tides;
+        $this->pinned = $pinned;
     }
 
     public function withTides(array $tides)
     {
-        return new self($this->name, $tides);
+        return new self($this->name, $tides, $this->pinned);
     }
 
     public function withTide(Tide $tide)
     {
-        return new self($this->name, $this->mergeTides($this->tides, $tide));
+        return new self($this->name, $this->mergeTides($this->tides, $tide), $this->pinned);
+    }
+
+    public function pinned()
+    {
+        return new self($this->name, $this->tides, true);
+    }
+
+    public function unpinned()
+    {
+        return new self($this->name, $this->tides, false);
     }
 
     public function __toString()
@@ -33,6 +45,11 @@ class Branch
     public function getTideUuids()
     {
         return array_map(function(Tide $tide) {return $tide->getUuid();}, $this->tides);
+    }
+
+    public function isPinned(): bool
+    {
+        return $this->pinned;
     }
 
     private function mergeTides(array $tides, Tide $toMerge)

@@ -17,6 +17,18 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\BranchDeleted" />
         </service>
 
+        <service id="river.listener.branch_pinned.branch_view" class="ContinuousPipe\River\View\EventListener\BranchPinnedView">
+            <argument type="service" id="river.branch.view.storage" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\BranchPinned" />
+        </service>
+
+        <service id="river.listener.branch_unpinned.branch_view" class="ContinuousPipe\River\View\EventListener\BranchUnpinnedView">
+            <argument type="service" id="river.branch.view.storage" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\BranchUnpinned" />
+        </service>
+
         <service id="river.listener.pull_request_open.pull_request_view" class="ContinuousPipe\River\View\EventListener\PullRequestOpenedView">
             <argument type="service" id="river.branch.pull_request.view.storage" />
 

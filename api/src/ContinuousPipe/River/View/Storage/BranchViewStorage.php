@@ -10,4 +10,8 @@ interface BranchViewStorage
     public function save(UuidInterface $flowUUid);
 
     public function updateTide(Tide $tide);
+
+    public function branchPinned(UuidInterface $flowUuid, string $branch);
+    
+    public function branchUnpinned(UuidInterface $flowUuid, string $branch);
 }

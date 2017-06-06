@@ -3,8 +3,10 @@
 namespace ContinuousPipe\River;
 
 use ContinuousPipe\River\Event\TideCreated;
-use ContinuousPipe\River\EventBased\RaiseEventCapability;
 use ContinuousPipe\River\EventBased\ApplyEventCapability;
+use ContinuousPipe\River\EventBased\RaiseEventCapability;
+use ContinuousPipe\River\Flow\Event\BranchPinned;
+use ContinuousPipe\River\Flow\Event\BranchUnpinned;
 use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
 use ContinuousPipe\River\Flow\Event\FlowCreated;
 use ContinuousPipe\River\Flow\Event\FlowRecovered;
@@ -50,6 +52,7 @@ final class Flow
      * @var FlatPipeline[]
      */
     private $pipelines = [];
+    private $pinnedBranches = [];
 
     private function __construct()
     {
@@ -109,6 +112,24 @@ final class Flow
         );
     }
 
+    public function pinBranch(string $branch)
+    {
+        $event = new BranchPinned(
+            $this->uuid,
+            $branch
+        );
+        $this->raise($event);
+    }
+
+    public function unpinBranch(string $branch)
+    {
+        $event = new BranchUnpinned(
+            $this->uuid,
+            $branch
+        );
+        $this->raise($event);
+    }
+
     /**
      * @param TideCreated $event
      */
@@ -161,6 +182,17 @@ final class Flow
 
     public function applyFlowRecovered(FlowRecovered $event)
     {
+    }
+
+    public function applyBranchPinned(BranchPinned $event)
+    {
+        $this->pinnedBranches[] = $event->getBranch();
+        $this->pinnedBranches = array_unique($this->pinnedBranches);
+    }
+
+    public function applyBranchUnpinned(BranchUnpinned $event)
+    {
+        unset($this->pinnedBranches[$event->getBranch()]);
     }
 
     public function getUuid() : UuidInterface
@@ -222,4 +254,10 @@ final class Flow
             }
         }
     }
+
+    public function getPinnedBranches(): array
+    {
+        return $this->pinnedBranches;
+    }
+
 }

@@ -2,13 +2,15 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
+use Ramsey\Uuid\UuidInterface;
+
 class InMemoryBranchQuery implements BranchQuery
 {
     private $branches = [];
 
-    public function findBranches($flow): array
+    public function findBranches(UuidInterface $flowUuid): array
     {
-        return isset($this->branches[(string) $flow]) ? $this->branches[(string) $flow] : [];
+        return isset($this->branches[(string) $flowUuid]) ? $this->branches[(string) $flowUuid] : [];
     }
 
     public function addBranch($flow, $branch)
