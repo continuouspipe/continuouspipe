@@ -20,7 +20,7 @@ class PinnedBranchQuery implements BranchQuery
     {
         $flow = $this->flatFlowRepository->find($flowUuid);
         return array_map(function(Branch $branch) use ($flow) {
-            return $branch->pinned($flow->isBranchPinned($branch));
+            return $flow->isBranchPinned($branch) ? $branch->pinned(): $branch->unpinned();
         },
             $this->innerQuery->findBranches($flowUuid)
         );
