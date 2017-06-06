@@ -33,10 +33,6 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     private $flowRepository;
 
     /**
-     * @var InMemoryBranchViewStorage
-     */
-    private $branchViewStorage;
-    /**
      * @var InMemoryTidesForBranchQuery
      */
     private $tidesForBranchQuery;
@@ -45,11 +41,10 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      */
     private $pullRequestViewStorage;
 
-    public function __construct(InMemoryPipelineViewStorage $pipelineViewStorage, FlowRepository $flowRepository, InMemoryBranchViewStorage $branchViewStorage, InMemoryTidesForBranchQuery $tidesForBranchQuery, InMemoryPullRequestViewStorage $pullRequestViewStorage)
+    public function __construct(InMemoryPipelineViewStorage $pipelineViewStorage, FlowRepository $flowRepository, InMemoryTidesForBranchQuery $tidesForBranchQuery, InMemoryPullRequestViewStorage $pullRequestViewStorage)
     {
         $this->pipelineViewStorage = $pipelineViewStorage;
         $this->flowRepository = $flowRepository;
-        $this->branchViewStorage = $branchViewStorage;
         $this->tidesForBranchQuery = $tidesForBranchQuery;
         $this->pullRequestViewStorage = $pullRequestViewStorage;
     }
@@ -71,21 +66,6 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         }
     }
 
-
-    /**
-     * @Then the branch :branch for the flow :flow should be saved to the permanent storage of views
-     * @Then the branch :branch for the flow :flow should be saved to the permanent storage of views as an unpinned branch
-     */
-    public function theBranchForTheFlowShouldBeSavedToThePermanentStorageOfViews($branch, $flow)
-    {
-        if (!$this->branchViewStorage->wasBranchSaved(Uuid::fromString($flow), new Branch($branch, [], false))) {
-            throw new \RuntimeException(sprintf(
-                'The branch "%s" did not get saved in view storage.',
-                $branch
-            ));
-        }
-    }
-
     /**
      * @Given the :branch branch in the repository for the flow :flow has the following tides:
      */
@@ -93,21 +73,6 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     {
         foreach ($table->getHash() as $tide) {
             $this->tidesForBranchQuery->addTide(new Branch($branch), $this->createTideView($flow, $tide['tide']));
-        }
-    }
-
-    /**
-     * @Then the :branch branch for the flow :flow is stored with the following tides:
-     */
-    public function theBranchForTheFlowHasTheFollowingTidesStored($branch, $flow, TableNode $table)
-    {
-        $tides = array_map(function($t) use ($flow) {return $this->createTideView($flow, $t['tide']);}, $table->getHash());
-
-        if (!$this->branchViewStorage->wasBranchSaved(Uuid::fromString($flow), new Branch($branch, $tides))) {
-            throw new \RuntimeException(sprintf(
-                'The branch "%s" did not get saved in view storage.',
-                $branch
-            ));
         }
     }
 
@@ -150,20 +115,6 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
                 'The pull request "%s" - "%s" is still in view storage.',
                 $number,
                 $title
-            ));
-        }
-    }
-
-
-    /**
-     * @Then the branch :branch for the flow :flow should be saved to the permanent storage of views as a pinned branch
-     */
-    public function theBranchForTheFlowShouldBeSavedToThePermanentStorageOfViewsAsAPinnedBranch($branch, $flow)
-    {
-        if (!$this->branchViewStorage->wasBranchSaved(Uuid::fromString($flow), new Branch($branch, [], true))) {
-            throw new \RuntimeException(sprintf(
-                'The branch "%s" did not get saved in view storage.',
-                $branch
             ));
         }
     }

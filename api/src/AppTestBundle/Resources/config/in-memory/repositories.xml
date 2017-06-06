@@ -14,8 +14,12 @@
             <argument type="service" id="csa_guzzle.middleware.history" />
         </service>
         <service id="river.pipeline.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage" />
-        <service id="river.branch.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\InMemoryBranchViewStorage">
+        <service id="river.branch.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\FirebaseBranchViewStorage">
+            <argument type="service" id="river.view.storage.firebase_client" />
+            <argument>%firebase_database_uri%</argument>
+            <argument type="service" id="logger" />
             <argument type="service" id="river.code_repository.pinned_branches_query" />
+            <argument type="service" id="jms_serializer" />
         </service>
         <service id="river.branch.pull_request.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\InMemoryPullRequestViewStorage"/>
         <service id="development_environment.read_model.repository" class="ContinuousPipe\DevelopmentEnvironment\ReadModel\InMemoryEnvironmentRepository" />

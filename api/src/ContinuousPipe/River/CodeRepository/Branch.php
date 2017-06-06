@@ -52,6 +52,11 @@ class Branch
         return $this->pinned;
     }
 
+    public function getTides()
+    {
+        return $this->tides;
+    }
+
     private function mergeTides(array $tides, Tide $toMerge)
     {
         $newTides = [];

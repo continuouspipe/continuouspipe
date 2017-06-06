@@ -7,7 +7,7 @@ use Ramsey\Uuid\UuidInterface;
 
 interface BranchViewStorage
 {
-    public function save(UuidInterface $flowUUid);
+    public function save(UuidInterface $flowUuid);
 
     public function updateTide(Tide $tide);
 
