@@ -452,6 +452,22 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with an HttpLabs host :host
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithAnHttplabsHost($endpointName, $name, $host)
+    {
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
+
+        if (null === ($httpLabsConfiguration = $endpoint->getHttpLabs())) {
+            throw new \RuntimeException('The HttpLabs configuration is null');
+        }
+
+        if ($httpLabsConfiguration->getIncoming() != $host) {
+            throw new \RuntimeException('HttpLabs host configuration does not match');
+        }
+    }
+
+    /**
      * @Then the endpoint :endpointName of the component :name should be deployed with an HttpLabs configuration that have :count middleware
      */
     public function theEndpointOfTheComponentShouldBeDeployedWithAnHttplabsConfigurationThatHaveMiddleware($endpointName, $name, $count)
