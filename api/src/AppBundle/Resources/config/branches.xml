@@ -58,5 +58,24 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful" />
         </service>
 
+        <service id="river.branch.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\FirebaseBranchViewStorage">
+            <argument type="service" id="river.view.storage.firebase_client" />
+            <argument>%firebase_database_uri%</argument>
+            <argument type="service" id="logger" />
+            <argument type="service" id="river.code_repository.pinned_branches_query" />
+            <argument type="service" id="jms_serializer" />
+        </service>
+
+        <service id="river.branch.pull_request.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\FirebasePullRequestViewStorage">
+            <argument type="service" id="river.view.storage.firebase_client" />
+            <argument>%firebase_database_uri%</argument>
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.code_repository.pinned_branches_query" class="ContinuousPipe\River\CodeRepository\PinnedBranchQuery">
+            <argument type="service" id="river.code_repository.branch_with_tides_query"/>
+            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
+        </service>
+
     </services>
 </container>
