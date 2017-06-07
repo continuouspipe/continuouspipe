@@ -58,15 +58,5 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful" />
         </service>
 
-         <service id="river.listener.tide_event.branch_pull_request_view" class="ContinuousPipe\River\View\EventListener\TideEventPullRequestView">
-            <argument type="service" id="river.branch.pull_request.view.storage" />
-            <argument type="service" id="river.view.tide_view_factory" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated" />
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted" />
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCancelled" />
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed" />
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful" />
-        </service>
     </services>
 </container>

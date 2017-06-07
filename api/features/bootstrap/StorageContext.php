@@ -36,17 +36,12 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var InMemoryTidesForBranchQuery
      */
     private $tidesForBranchQuery;
-    /**
-     * @var InMemoryPullRequestViewStorage
-     */
-    private $pullRequestViewStorage;
 
-    public function __construct(InMemoryPipelineViewStorage $pipelineViewStorage, FlowRepository $flowRepository, InMemoryTidesForBranchQuery $tidesForBranchQuery, InMemoryPullRequestViewStorage $pullRequestViewStorage)
+    public function __construct(InMemoryPipelineViewStorage $pipelineViewStorage, FlowRepository $flowRepository, InMemoryTidesForBranchQuery $tidesForBranchQuery)
     {
         $this->pipelineViewStorage = $pipelineViewStorage;
         $this->flowRepository = $flowRepository;
         $this->tidesForBranchQuery = $tidesForBranchQuery;
-        $this->pullRequestViewStorage = $pullRequestViewStorage;
     }
 
     /**
@@ -73,49 +68,6 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     {
         foreach ($table->getHash() as $tide) {
             $this->tidesForBranchQuery->addTide(new Branch($branch), $this->createTideView($flow, $tide['tide']));
-        }
-    }
-
-    /**
-     * @Then the pull request :number titled :title for branch :branch of flow :flow should be saved to the permanent storage of views
-     */
-    public function thePullRequestTitledForTheFlowShouldBeSavedToThePermanentStorageOfViews($number, $title, $branch, $flow)
-    {
-        if (!$this->pullRequestViewStorage->wasPullRequestSaved(Uuid::fromString($flow), new PullRequest($number, $title, new Branch($branch)))) {
-            throw new \RuntimeException(sprintf(
-                'The pull request "%s" - "%s" did not get saved in view storage.',
-                $number,
-                $title
-            ));
-        }
-    }
-
-    /**
-     * @Then pull request :number titled :title for branch :branch of flow :flow is stored with the following tides:
-     */
-    public function pullRequestForBranchOfFlowIsStoredWithTheFollowingTides($number, $title, $branch, $flow, TableNode $table)
-    {
-        $tides = array_map(function($t) use ($flow) {return $this->createTideView($flow, $t['tide']);}, $table->getHash());
-        if (!$this->pullRequestViewStorage->wasPullRequestSaved(Uuid::fromString($flow), new PullRequest($number, $title, new Branch($branch, $tides)))) {
-            throw new \RuntimeException(sprintf(
-                'The pull request "%s" - "%s" did not get saved in view storage.',
-                $number,
-                $title
-            ));
-        }
-    }
-
-    /**
-     * @Then the pull request :number titled :title for branch :branch of flow :flow should not be in the permanent storage of views
-     */
-    public function thePullRequestTitledForBranchOfFlowShouldNotBeInThePermanentStorageOfViews($number, $title, $branch, $flow)
-    {
-        if ($this->pullRequestViewStorage->wasPullRequestSaved(Uuid::fromString($flow), new PullRequest($number, $title, new Branch($branch)))) {
-            throw new \RuntimeException(sprintf(
-                'The pull request "%s" - "%s" is still in view storage.',
-                $number,
-                $title
-            ));
         }
     }
 

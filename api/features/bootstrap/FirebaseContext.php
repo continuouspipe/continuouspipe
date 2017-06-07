@@ -187,6 +187,66 @@ class FirebaseContext implements Context
         throw new \RuntimeException('Request not found');
     }
 
+    /**
+     * @Then the pull request :number titled :title for branch :branch of flow :flow should be saved to the permanent storage of views
+     */
+    public function thePullRequestTitledForTheFlowShouldBeSavedToThePermanentStorageOfViews(
+        $number,
+        $title,
+        $branch,
+        $flow
+    ) {
+        foreach ($this->httpHistory as $request) {
+            /** @var Request $request */
+            $uri = (string) $request->getUri();
+
+            $requestBase = sprintf(
+                'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch/%s',
+                $flow,
+                $branch
+            );
+
+            if (0 === strpos($uri, $requestBase)) {
+                if (0 === strpos($uri, $requestBase)) {
+                    if (json_decode($request->getBody()->getContents(), true) == [
+                            'identifier' => $number,
+                            'title' => $title
+                        ]
+                    ) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        throw new \RuntimeException('Request not found');
+    }
+
+    /**
+     * @Then the pull request :number titled :title for branch :branch of flow :flow should not be in the permanent storage of views
+     */
+    public function thePullRequestTitledForBranchOfFlowShouldNotBeInThePermanentStorageOfViews(
+        $number,
+        $title,
+        $branch,
+        $flow
+    ) {
+        foreach ($this->httpHistory as $request) {
+            /** @var Request $request */
+            $uri = (string) $request->getUri();
+
+            $requestBase = sprintf(
+                'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch/%s',
+                $flow,
+                $branch
+            );
+
+            if (0 === strpos($uri, $requestBase) && $request->getMethod() == 'DELETE') {
+                return;
+            }
+        }
+    }
+
     private function findUpdateRequest($branch, $flow, $tideUuid)
     {
         $updateRequestBase = sprintf(

@@ -10,7 +10,6 @@ use Firebase\Exception\ApiException;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class FirebaseBranchViewStorage implements BranchViewStorage
