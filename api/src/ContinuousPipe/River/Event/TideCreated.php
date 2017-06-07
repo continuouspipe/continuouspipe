@@ -1,6 +1,6 @@
 <?php
 
-    namespace ContinuousPipe\River\Event;
+namespace ContinuousPipe\River\Event;
 
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
 use ContinuousPipe\River\TideContext;

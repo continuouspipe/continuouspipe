@@ -1568,44 +1568,6 @@ EOF;
      */
     public function iCreateATideForBranchAndCommit($tide, $flow, $branch, $commit)
     {
-        $context = new ContextForTide();
-        $context->set(
-            ContextForTide::CODE_REFERENCE_KEY,
-            new CodeReference(new GitHubCodeRepository('a', 'b', 'c', 'd', true), $commit, $branch)
-        );
-        $context->set(
-            ContextForTide::TIDE_UUID_KEY,
-            Uuid::fromString($tide)
-        );
-        $context->set(
-            ContextForTide::CONFIGURATION_KEY,
-            '[]'
-        );
-        $context->set(
-            ContextForTide::FLOW_UUID_KEY,
-            Uuid::fromString($flow)
-        );
-        $context->set(
-            ContextForTide::TIDE_LOG_KEY,
-            new TreeLog()
-        );
-        $context->set(
-            ContextForTide::TEAM_KEY,
-            new Team('a', 'b')
-        );
-        $context->set(
-            ContextForTide::USER_KEY,
-            new User('a', Uuid::fromString('2a698c5c-837c-4352-9eeb-49addc0ead19'))
-        );
-        $this->eventBus->handle(
-
-            new TideCreated(
-                Uuid::fromString($tide),
-                Uuid::fromString($flow),
-                $context,
-                Uuid::uuid4(),
-                new Flow\Projections\FlatPipeline(Uuid::uuid4(), 'default')
-            )
-        );
+        $this->createTide($branch, $commit, Uuid::fromString($tide));
     }
 }
