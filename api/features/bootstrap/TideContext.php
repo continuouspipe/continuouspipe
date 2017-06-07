@@ -6,9 +6,6 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Message\Debug\TracedMessageProducer;
 use ContinuousPipe\Message\Direct\DelayedMessagesBuffer;
-use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
-use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Command\DeleteEnvironments;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Command\StartTideCommand;
@@ -24,18 +21,10 @@ use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Pipeline\TideGenerationTrigger;
 use ContinuousPipe\River\Recover\CancelTides\Command\CancelTideCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand;
-use ContinuousPipe\River\Recover\TimedOutTides\TimedOutTideRepository;
-use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
-use ContinuousPipe\River\Tests\Queue\TracedDelayedCommandBus;
 use ContinuousPipe\River\Tests\View\PredictableTimeResolver;
 use ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideTaskView;
-use ContinuousPipe\Security\Team\Team;
-use ContinuousPipe\Security\User\User;
-use LogStream\Node\Container;
-use LogStream\Node\Text;
-use LogStream\Tree\TreeLog;
 use phpseclib\Crypt\Random;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -51,8 +40,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Yaml\Yaml;
-use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
-use ContinuousPipe\River\TideContext as ContextForTide;
 
 class TideContext implements Context
 {
@@ -1233,6 +1220,17 @@ EOF;
         $tide->setStatus($status);
 
         $this->viewTideRepository->save($tide);
+    }
+
+    /**
+     * @Given the :branch branch in the repository for the flow :flow has the following tides:
+     */
+    public function theBranchInTheRepositoryForTheFlowHasTheFollowingTides($branch, $flow, TableNode $table)
+    {
+        foreach ($table->getHash() as $tide) {
+            $uuid = Uuid::fromString($tide['tide']);
+            $this->iHaveATide($uuid, $branch);
+        }
     }
 
     /**

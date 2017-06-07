@@ -77,5 +77,10 @@
             <argument type="service" id="river.flow.projections.flat_flow_repository"/>
         </service>
 
+        <service id="river.code_repository.branch_with_tides_query" class="ContinuousPipe\River\CodeRepository\BranchWithTidesQuery">
+            <argument type="service" id="river.code_repository.branch_query"/>
+            <argument type="service" id="river.view.tide_repository"/>
+        </service>
+
     </services>
 </container>

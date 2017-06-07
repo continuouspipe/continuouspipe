@@ -67,7 +67,6 @@ class FirebaseBranchViewStorage implements BranchViewStorage
 
     public function updateTide(Tide $tide)
     {
-        //TODO do the full branch update if it's not already there????
         try {
             $this->firebaseClient->update(
                 $this->databaseUri,

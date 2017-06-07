@@ -18,12 +18,6 @@
         <service id="development_environment.read_model.repository" class="ContinuousPipe\DevelopmentEnvironment\ReadModel\InMemoryEnvironmentRepository" />
 
         <service id="river.code_repository.branch_query" class="ContinuousPipe\River\CodeRepository\InMemoryBranchQuery" />
-        <service id="river.code_repository.branch_with_tides_query" class="ContinuousPipe\River\CodeRepository\InMemoryBranchWithTidesQuery">
-            <argument type="service" id="river.code_repository.branch_query"/>
-            <argument type="service" id="river.code_repository.tides_for_branch_query"/>
-        </service>
-
-        <service id="river.code_repository.tides_for_branch_query" class="ContinuousPipe\River\CodeRepository\InMemoryTidesForBranchQuery" />
 
     </services>
 </container>

@@ -119,11 +119,12 @@ class FirebaseContext implements Context
             );
 
             if (0 === strpos($uri, $requestBase)) {
+                $body = json_decode($request->getBody()->getContents(), true);
                 $foundTideUuids = array_map(
                     function (array $tide) {
                         return $tide['uuid'];
                     },
-                    json_decode($request->getBody()->getContents(), true)['latest-tides']
+                    isset($body['latest-tides']) ? $body['latest-tides'] : []
                 );
                 foreach ($tideUuids as $tideUuid) {
                     if (!in_array($tideUuid, $foundTideUuids)) {

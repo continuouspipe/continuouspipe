@@ -134,7 +134,7 @@ Feature:
                 services: []
 
     """
-    And there is a "feature/new-feature" branch in the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
+    And there is a "successful" tide for the branch "feature/new-feature"
     And I open a pull request "4" titled "Please review my new feature" for commit "4567" the branch "feature/new-feature" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
     When I close the pull request "4" titled "Please review my new feature" for commit "4567" of the branch "feature/new-feature" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
     Then the pull request "4" titled "Please review my new feature" for branch "feature/new-feature" of flow "d7825625-f775-4ab9-b91c-b93813871bc7" should not be in the permanent storage of views
