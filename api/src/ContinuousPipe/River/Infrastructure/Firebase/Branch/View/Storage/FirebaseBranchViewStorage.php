@@ -10,6 +10,7 @@ use Firebase\Exception\ApiException;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class FirebaseBranchViewStorage implements BranchViewStorage
@@ -52,28 +53,15 @@ class FirebaseBranchViewStorage implements BranchViewStorage
 
     public function save(UuidInterface $flowUuid)
     {
-        $branches = $this->branchQuery->findBranches($flowUuid);
-
-        foreach ($branches as $branch) {
+        foreach ($this->branchQuery->findBranches($flowUuid) as $branch) {
             try {
                 $this->firebaseClient->set(
                     $this->databaseUri,
-                    sprintf(
-                        'flows/%s/branches/%s/latest-tides',
-                        (string) $flowUuid,
-                        (string) $branch
-                    ),
-                    $this->normalizeTides($branch->getTides())
+                    $this->savePath($flowUuid, $branch),
+                    $this->saveBody($branch)
                 );
             } catch (ApiException $e) {
-                $this->logger->warning(
-                    'Unable to save the branch view into Firebase',
-                    [
-                        'exception' => $e,
-                        'message' => $e->getMessage(),
-                        'flowUuid' => (string) $flowUuid,
-                    ]
-                );
+                $this->logCannotSave($flowUuid, $e);
             }
         }
     }
@@ -81,29 +69,14 @@ class FirebaseBranchViewStorage implements BranchViewStorage
     public function updateTide(Tide $tide)
     {
         //TODO do the full branch update if it's not already there????
-        $flowUuid = $tide->getFlowUuid();
-        $branchName = $tide->getCodeReference()->getBranch();
-
         try {
             $this->firebaseClient->update(
                 $this->databaseUri,
-                sprintf(
-                    'flows/%s/branches/%s/latest-tides/%s',
-                    (string) $flowUuid,
-                    $branchName,
-                    $tide->getUuid()
-                ),
+                $this->tideUpdatePath($tide, $tide->getFlowUuid(), $tide->getCodeReference()->getBranch()),
                 $this->normalizeTide($tide)
             );
         } catch (ApiException $e) {
-            $this->logger->warning(
-                'Unable to update the branches view in Firebase',
-                [
-                    'exception' => $e,
-                    'message' => $e->getMessage(),
-                    'flowUuid' => (string) $flowUuid,
-                ]
-            );
+            $this->logCannotUpdate($tide->getFlowUuid(), $e);
         }
     }
 
@@ -143,22 +116,59 @@ class FirebaseBranchViewStorage implements BranchViewStorage
         try {
             $this->firebaseClient->update(
                 $this->databaseUri,
-                sprintf(
-                    'flows/%s/branches/%s',
-                    (string) $flowUuid,
-                    $branch
-                ),
+                $this->savePath($flowUuid, $branch),
                 ['pinned' => $pinned]
             );
         } catch (ApiException $e) {
-            $this->logger->warning(
-                'Unable to update the branches view in Firebase',
-                [
-                    'exception' => $e,
-                    'message' => $e->getMessage(),
-                    'flowUuid' => (string) $flowUuid,
-                ]
-            );
+            $this->logCannotUpdate($flowUuid, $e);
         }
     }
+
+    private function logCannotSave(UuidInterface $flowUuid, \Exception $e)
+    {
+        $this->logger->warning(
+            'Unable to save the branch view into Firebase',
+            [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'flowUuid' => (string) $flowUuid,
+            ]
+        );
+    }
+
+    private function logCannotUpdate(UuidInterface $flowUuid, \Exception $e)
+    {
+        $this->logger->warning(
+            'Unable to update the branches view in Firebase',
+            [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'flowUuid' => (string) $flowUuid,
+            ]
+        );
+    }
+
+    private function tideUpdatePath(Tide $tide, $flowUuid, $branchName)
+    {
+        return sprintf(
+            'flows/%s/branches/%s/latest-tides/%s',
+            (string) $flowUuid,
+            $branchName,
+            $tide->getUuid()
+        );
+    }
+
+    private function savePath(UuidInterface $flowUuid, $branch)
+    {
+        return sprintf('flows/%s/branches/%s', (string) $flowUuid, (string) $branch);
+    }
+
+    private function saveBody($branch)
+    {
+        return [
+            'latest-tides' => $this->normalizeTides($branch->getTides()),
+            'pinned' => $branch->isPinned(),
+        ];
+    }
+
 }

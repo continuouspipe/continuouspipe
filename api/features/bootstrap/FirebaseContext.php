@@ -2,17 +2,9 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
-use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use ContinuousPipe\River\View\Tide;
-use ContinuousPipe\Security\Team\Team;
-use ContinuousPipe\Security\User\User;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
 use GuzzleHttp\Psr7\Request;
-use LogStream\Tree\TreeLog;
-use Ramsey\Uuid\Uuid;
 
 class FirebaseContext implements Context
 {
@@ -91,7 +83,7 @@ class FirebaseContext implements Context
             $uri = (string) $request->getUri();
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s/latest-tides',
+                'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s',
                 $flow,
                 $branch
             );
@@ -109,30 +101,37 @@ class FirebaseContext implements Context
      */
     public function theBranchForTheFlowHasTheFollowingTidesStored($branch, $flow, TableNode $table)
     {
-        $tideUuids = array_map(function($t) {return $t['tide'];}, $table->getHash());
+        $tideUuids = array_map(
+            function ($t) {
+                return $t['tide'];
+            },
+            $table->getHash()
+        );
 
         foreach ($this->httpHistory as $request) {
             /** @var Request $request */
             $uri = (string) $request->getUri();
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s/latest-tides',
+                'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s',
                 $flow,
                 $branch
             );
 
             if (0 === strpos($uri, $requestBase)) {
-                $foundTideUuids = array_map(function(array $tide) {return $tide['uuid'];},
-                    json_decode($request->getBody()->getContents(), true)
+                $foundTideUuids = array_map(
+                    function (array $tide) {
+                        return $tide['uuid'];
+                    },
+                    json_decode($request->getBody()->getContents(), true)['latest-tides']
                 );
                 foreach ($tideUuids as $tideUuid) {
                     if (!in_array($tideUuid, $foundTideUuids)) {
-                        $this->findUpdateRequest($branch, $flow, $uri);
+                        $this->findUpdateRequest($branch, $flow, $tideUuid);
                     }
                 }
                 return;
             }
-
         }
 
         throw new \RuntimeException('Request not found');
@@ -188,21 +187,22 @@ class FirebaseContext implements Context
         throw new \RuntimeException('Request not found');
     }
 
-    private function findUpdateRequest($branch, $flow, $uri)
+    private function findUpdateRequest($branch, $flow, $tideUuid)
     {
         $updateRequestBase = sprintf(
-            'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s/latest-tides',
+            'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s/latest-tides/%',
             $flow,
-            $branch
+            $branch,
+            $tideUuid
         );
 
         foreach ($this->httpHistory as $request) {
-            if (0 === strpos($uri, $updateRequestBase)) {
+            if (0 === strpos((string) $request->getUri(), $updateRequestBase)) {
                 return;
             }
         }
 
-        throw new \RuntimeException('Request not found');
+        throw new \RuntimeException('Update request not found');
     }
 
 }
