@@ -16,6 +16,8 @@ class PullRequestClosedPullRequestView
 
     public function notify(PullRequestClosed $event)
     {
-        $this->pullRequestViewStorage->deletePullRequest($event->getFlowUuid(), $event->getPullRequest());
+        if (null !== $pullRequst = $event->getPullRequest()) {
+            $this->pullRequestViewStorage->deletePullRequest($event->getFlowUuid(), $pullRequst);
+        }
     }
 }

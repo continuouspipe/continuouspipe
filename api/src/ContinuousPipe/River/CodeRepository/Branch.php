@@ -44,7 +44,12 @@ class Branch
 
     public function getTideUuids()
     {
-        return array_map(function(Tide $tide) {return $tide->getUuid();}, $this->tides);
+        return array_map(
+            function (Tide $tide) {
+                return $tide->getUuid();
+            },
+            $this->tides
+        );
     }
 
     public function isPinned(): bool
@@ -61,7 +66,8 @@ class Branch
     {
         $newTides = [];
         $replaced = false;
-        foreach($tides as $tide) {
+
+        foreach ($tides as $tide) {
             if ($toMerge->getUuid() == $tide->getUuid()) {
                 $newTides[] = $toMerge;
                 $replaced = true;
@@ -75,6 +81,5 @@ class Branch
         }
 
         return $newTides;
-
     }
 }
