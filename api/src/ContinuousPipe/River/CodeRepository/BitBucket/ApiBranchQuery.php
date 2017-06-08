@@ -25,7 +25,7 @@ class ApiBranchQuery implements BranchQuery
         if (!$repository instanceof BitBucketCodeRepository) {
             throw new \InvalidArgumentException('The repository of this flow is not supported');
         }
-        
+
         return $this->clientFactory->createForCodeRepository($repository)->getBranches($repository);
     }
 

@@ -83,7 +83,7 @@ class ApiBranchQuery implements BranchQuery
         $body = \GuzzleHttp\json_decode($response->getBody(), true);
 
         if (null !== $nextLink = $this->nextLink($response)) {
-            return array_merge($body,  $this->fetchBranches($token, $nextLink));
+            return array_merge($body, $this->fetchBranches($token, $nextLink));
         }
 
         return $body;
