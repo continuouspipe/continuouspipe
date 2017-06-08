@@ -2,27 +2,24 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
-use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
-use Ramsey\Uuid\UuidInterface;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 class PinnedBranchQuery implements BranchQuery
 {
     private $innerQuery;
-    private $flatFlowRepository;
 
-    public function __construct(BranchQuery $innerQuery, FlatFlowRepository $flatFlowRepository)
+    public function __construct(BranchQuery $innerQuery)
     {
         $this->innerQuery = $innerQuery;
-        $this->flatFlowRepository = $flatFlowRepository;
     }
 
-    public function findBranches(UuidInterface $flowUuid): array
+    public function findBranches(FlatFlow $flow): array
     {
-        $flow = $this->flatFlowRepository->find($flowUuid);
-        return array_map(function(Branch $branch) use ($flow) {
-            return $flow->isBranchPinned($branch) ? $branch->pinned(): $branch->unpinned();
-        },
-            $this->innerQuery->findBranches($flowUuid)
+        return array_map(
+            function (Branch $branch) use ($flow) {
+                return $flow->isBranchPinned($branch) ? $branch->pinned() : $branch->unpinned();
+            },
+            $this->innerQuery->findBranches($flow)
         );
     }
 

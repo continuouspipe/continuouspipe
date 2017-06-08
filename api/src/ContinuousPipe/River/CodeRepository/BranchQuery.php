@@ -2,12 +2,12 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
-use Ramsey\Uuid\UuidInterface;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 interface BranchQuery
 {
     /**
      * @return Branch[]
      */
-    public function findBranches(UuidInterface $flowUuid): array;
+    public function findBranches(FlatFlow $flow): array;
 }

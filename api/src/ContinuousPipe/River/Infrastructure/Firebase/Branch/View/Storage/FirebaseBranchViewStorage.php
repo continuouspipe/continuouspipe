@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage;
 
 use ContinuousPipe\River\CodeRepository\BranchQuery;
+use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Infrastructure\Firebase\FirebaseClient;
 use ContinuousPipe\River\View\Storage\BranchViewStorage;
 use ContinuousPipe\River\View\Tide;
@@ -35,24 +36,30 @@ class FirebaseBranchViewStorage implements BranchViewStorage
      * @var SerializerInterface
      */
     private $serializer;
+    /**
+     * @var FlatFlowRepository
+     */
+    private $flowRepository;
 
     public function __construct(
         FirebaseClient $firebaseClient,
         string $databaseUri,
         LoggerInterface $logger,
         BranchQuery $branchQuery,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        FlatFlowRepository $flowRepository
     ) {
         $this->databaseUri = $databaseUri;
         $this->logger = $logger;
         $this->firebaseClient = $firebaseClient;
         $this->branchQuery = $branchQuery;
         $this->serializer = $serializer;
+        $this->flowRepository = $flowRepository;
     }
 
     public function save(UuidInterface $flowUuid)
     {
-        foreach ($this->branchQuery->findBranches($flowUuid) as $branch) {
+        foreach ($this->branchQuery->findBranches($this->flowRepository->find($flowUuid)) as $branch) {
             try {
                 $this->firebaseClient->set(
                     $this->databaseUri,

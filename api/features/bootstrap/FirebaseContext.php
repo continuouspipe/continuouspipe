@@ -87,7 +87,6 @@ class FirebaseContext implements Context
                 $flow,
                 $branch
             );
-
             if (0 === strpos($uri, $requestBase)) {
                 return;
             }

@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\View\TideRepository;
-use Ramsey\Uuid\UuidInterface;
 
 class BranchWithTidesQuery implements BranchQuery
 {
@@ -17,13 +17,16 @@ class BranchWithTidesQuery implements BranchQuery
         $this->tideRepository = $tideRepository;
     }
 
-    public function findBranches(UuidInterface $flowUuid): array
+    public function findBranches(FlatFlow $flow): array
     {
 
-        return array_map(function(Branch $branch) use ($flowUuid) {
-            return $branch->withTides($this->tideRepository->findByBranch($flowUuid, (string) $branch, self::MAX_TIDES));
-        },
-            $this->innerQuery->findBranches($flowUuid)
+        return array_map(
+            function (Branch $branch) use ($flow) {
+                return $branch->withTides(
+                    $this->tideRepository->findByBranch($flow->getUuid(), (string) $branch, self::MAX_TIDES)
+                );
+            },
+            $this->innerQuery->findBranches($flow)
         );
     }
 

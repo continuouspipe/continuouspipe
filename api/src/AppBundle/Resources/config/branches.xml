@@ -64,6 +64,7 @@
             <argument type="service" id="logger" />
             <argument type="service" id="river.code_repository.pinned_branches_query" />
             <argument type="service" id="jms_serializer" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
         </service>
 
         <service id="river.branch.pull_request.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\FirebasePullRequestViewStorage">
@@ -74,7 +75,6 @@
 
         <service id="river.code_repository.pinned_branches_query" class="ContinuousPipe\River\CodeRepository\PinnedBranchQuery">
             <argument type="service" id="river.code_repository.branch_with_tides_query"/>
-            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
         </service>
 
         <service id="river.code_repository.branch_with_tides_query" class="ContinuousPipe\River\CodeRepository\BranchWithTidesQuery">

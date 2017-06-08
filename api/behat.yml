@@ -112,6 +112,7 @@ default:
                     - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
+                    - @river.code_repository.branch_query
 
                 - StorageContext:
                     - @river.pipeline.view.storage
@@ -142,6 +143,7 @@ default:
                     - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
+                    - @river.code_repository.branch_query
 
                 # Common contexts
                 - SecurityContext:
@@ -242,6 +244,7 @@ default:
                     - @river.bitbucket.client_factory
                     - @csa_guzzle.data_collector.history_bag
                     - @repository_river.code_repository_repository
+                    - @river.code_repository.branch_query
 
                 # Common contexts
                 - SecurityContext:

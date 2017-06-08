@@ -2,21 +2,53 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use Ramsey\Uuid\UuidInterface;
 
 class InMemoryBranchQuery implements BranchQuery
 {
-    private $branches = [];
 
-    public function findBranches(UuidInterface $flowUuid): array
+    private $branches = [];
+    /**
+     * @var BranchQuery
+     */
+    private $innerQuery;
+    private $onlyInMemory = true;
+
+    public function __construct(BranchQuery $innerQuery)
     {
-        return isset($this->branches[(string) $flowUuid]) ? $this->branches[(string) $flowUuid] : [];
+        $this->innerQuery = $innerQuery;
     }
 
-    public function addBranch($flow, $branch)
+    public function findBranches(FlatFlow $flow): array
+    {
+        if(isset($this->branches[(string) $flow->getUuid()])) {
+            return $this->branches[(string) $flow->getUuid()];
+        }
+
+        if ($this->onlyInMemory) {
+            return [];
+        }
+        
+        return $this->innerQuery->findBranches($flow);
+    }
+
+    public function addBranch($flowUuid, $branch)
     {
         $toAdd = [new Branch($branch)];
 
-        $this->branches[$flow] = isset($this->branches[$flow]) ? array_merge($this->branches[$flow], $toAdd) : $toAdd;
+        $this->branches[$flowUuid] = isset($this->branches[$flowUuid]) ? array_merge($this->branches[$flowUuid], $toAdd) : $toAdd;
     }
+
+    public function onlyInMemory()
+    {
+        $this->onlyInMemory = true;
+    }
+
+    public function notOnlyInMemory()
+    {
+        $this->onlyInMemory = false;
+    }
+
+
 }

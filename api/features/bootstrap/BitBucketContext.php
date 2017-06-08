@@ -80,6 +80,10 @@ class BitBucketContext implements CodeRepositoryContext
      * @var array
      */
     private $commitBuilder = [];
+    /**
+     * @var CodeRepository\InMemoryBranchQuery
+     */
+    private $inMemoryBranchQuery;
 
     public function __construct(
         MatchingHandler $bitBucketMatchingClientHandler,
@@ -88,7 +92,8 @@ class BitBucketContext implements CodeRepositoryContext
         SerializerInterface $serializer,
         BitBucketClientFactory $clientFactory,
         History $guzzleHistory,
-        InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository
+        InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository,
+        CodeRepository\InMemoryBranchQuery $inMemoryBranchQuery
     ) {
         $this->bitBucketMatchingClientHandler = $bitBucketMatchingClientHandler;
         $this->kernel = $kernel;
@@ -97,6 +102,7 @@ class BitBucketContext implements CodeRepositoryContext
         $this->clientFactory = $clientFactory;
         $this->guzzleHistory = $guzzleHistory;
         $this->inMemoryCodeRepositoryRepository = $inMemoryCodeRepositoryRepository;
+        $this->inMemoryBranchQuery = $inMemoryBranchQuery;
     }
 
     /**
@@ -823,6 +829,54 @@ class BitBucketContext implements CodeRepositoryContext
     public function processingTheWebhookShouldBeDenied()
     {
         $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @Given the following branches exists in the bitbucket repository with slug :slug:
+     */
+    public function theFollowingBranchesExistsInTheBitbucketRepository(TableNode $table, $slug)
+    {
+        $url = 'https://api.bitbucket.org/2.0/repositories/sroze/' . $slug . '/refs/branches';
+
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url) {
+                return $request->getMethod() == 'GET' && ((string) $request->getUri() == $url);
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode(['values' => $table->getHash()])),
+        ]);
+        $this->inMemoryBranchQuery->notOnlyInMemory();
+    }
+
+    /**
+     * @Given the following branches exists in the bitbucket repository with slug :slug and are paginated in the api response:
+     */
+    public function theFollowingBranchesExistsInTheBitbucketRepositoryAndArePaginatedInTheApiResponse(TableNode $table, $slug)
+    {
+        $url = 'https://api.bitbucket.org/2.0/repositories/sroze/' . $slug . '/refs/branches';
+
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url) {
+                return $request->getMethod() == 'GET' && ((string) $request->getUri() == $url);
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode(
+                [
+                    'values' => [$table->getHash()[0]],
+                    'next' => $url . '?page=2'
+                ]
+            )),
+        ]);
+
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url) {
+                return $request->getMethod() == 'GET' && ((string) $request->getUri() == $url . '?page=2');
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode(
+                [
+                    'values' => array_slice($table->getHash(), 1)
+                ]
+            )),
+        ]);
+        $this->inMemoryBranchQuery->notOnlyInMemory();
     }
 
     private function createRepositoriesResponse(string $username, TableNode $table, int $currentPage, int $pageCount, string $pageUrl): Response
