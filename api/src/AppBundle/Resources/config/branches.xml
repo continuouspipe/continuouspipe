@@ -62,7 +62,7 @@
             <argument type="service" id="river.view.storage.firebase_client" />
             <argument>%firebase_database_uri%</argument>
             <argument type="service" id="logger" />
-            <argument type="service" id="river.code_repository.pinned_branches_query" />
+            <argument type="service" id="river.code_repository.branch_query" />
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
         </service>
@@ -73,13 +73,35 @@
             <argument type="service" id="logger" />
         </service>
 
-        <service id="river.code_repository.pinned_branches_query" class="ContinuousPipe\River\CodeRepository\PinnedBranchQuery">
-            <argument type="service" id="river.code_repository.branch_with_tides_query"/>
+        <service id="river.code_repository.pinned_branches_query"
+                 class="ContinuousPipe\River\CodeRepository\PinnedBranchQuery"
+                 decorates="river.code_repository.branch_query">
+            <argument type="service" id="river.code_repository.pinned_branches_query.inner"/>
         </service>
 
-        <service id="river.code_repository.branch_with_tides_query" class="ContinuousPipe\River\CodeRepository\BranchWithTidesQuery">
-            <argument type="service" id="river.code_repository.branch_query"/>
+        <service id="river.code_repository.branch_with_tides_query"
+                 class="ContinuousPipe\River\CodeRepository\BranchWithTidesQuery"
+                 decorates="river.code_repository.branch_query">
+            <argument type="service" id="river.code_repository.branch_with_tides_query.inner"/>
             <argument type="service" id="river.view.tide_repository"/>
+        </service>
+
+        <service id="river.code_repository.branch_query" class="ContinuousPipe\River\CodeRepository\RepositoryBranchQuery">
+            <argument type="collection">
+                <argument key="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository" type="service" id="river.code_repository.branch_query.github"/>
+                <argument key="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository" type="service" id="river.code_repository.branch_query.bitbucket"/>
+            </argument>
+        </service>
+
+        <service id="river.code_repository.branch_query.github" class="GitHub\Integration\ApiBranchQuery">
+            <argument type="service" id="river.github.guzzle_http_client" />
+            <argument type="service" id="github.integration.installation_repository" />
+            <argument type="service" id="github.integration.installation_token_resolver" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.code_repository.branch_query.bitbucket" class="ContinuousPipe\River\CodeRepository\BitBucket\ApiBranchQuery">
+            <argument type="service" id="river.bitbucket.client_factory"/>
         </service>
 
     </services>
