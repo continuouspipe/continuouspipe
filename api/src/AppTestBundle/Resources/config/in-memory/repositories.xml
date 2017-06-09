@@ -23,5 +23,7 @@
                 <argument type="service" id="river.code_repository.branch_query.in_memory.inner"/>
         </service>
 
+        <service id="river.view.storage.firebase_client" alias="river.view.storage.firebase_client.main"/>
+
     </services>
 </container>
