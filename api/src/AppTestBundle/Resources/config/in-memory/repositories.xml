@@ -17,12 +17,6 @@
 
         <service id="development_environment.read_model.repository" class="ContinuousPipe\DevelopmentEnvironment\ReadModel\InMemoryEnvironmentRepository" />
 
-        <service id="river.code_repository.branch_query.in_memory"
-                 class="ContinuousPipe\River\CodeRepository\InMemoryBranchQuery"
-                 decorates="river.code_repository.branch_query">
-                <argument type="service" id="river.code_repository.branch_query.in_memory.inner"/>
-        </service>
-
         <service id="river.view.storage.firebase_client" alias="river.view.storage.firebase_client.main"/>
 
     </services>
