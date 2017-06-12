@@ -66,7 +66,7 @@
                 </tbody>
             </table>
 
-            <md-card-actions layout="row" layout-align="end center">
+            <md-card-actions layout="row" layout-align="end center" ng-show="isAdmin">
                 <md-button class="md-warn"
                            ng-click="delete(environment)"
                            ng-disabled="isLoading">

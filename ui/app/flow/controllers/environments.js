@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, $componentLogDialog, TideRepository, EnvironmentRepository, EndpointOpener, RemoteShellOpener, flow) {
+    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, $componentLogDialog, TideRepository, EnvironmentRepository, EndpointOpener, RemoteShellOpener, flow, user, project, UserPermissionsRepository) {
         $scope.flow = flow;
 
         var getEnvironmentStatus = function(environment) {
@@ -49,6 +49,12 @@ angular.module('continuousPipeRiver')
             });
         };
 
+        var getCurrentUserPermissions = function() {
+            UserPermissionsRepository.findForUserAndProject(user, project).then(function(permissions) {
+                $scope.isAdmin =  permissions.indexOf('ADMIN') > -1;
+            });
+        };
+
         $scope.delete = function(environment) {
             swal({
                 title: "Are you sure?",
@@ -70,6 +76,7 @@ angular.module('continuousPipeRiver')
         };
 
         loadEnvironments();
+        getCurrentUserPermissions();
 
         $scope.openEndpoint = function(endpoint) {
             EndpointOpener.open(endpoint);

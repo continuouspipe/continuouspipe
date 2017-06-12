@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TideLogsController', function(TideRepository, EnvironmentRepository, TideSummaryRepository, LogFinder, EndpointOpener, $scope, $state, $http, flow, tide, summary) {
+    .controller('TideLogsController', function(TideRepository, EnvironmentRepository, TideSummaryRepository, LogFinder, EndpointOpener, $scope, $state, $http, flow, tide, summary, user, project, UserPermissionsRepository) {
         $scope.tide = tide;
         $scope.summary = summary;
         $scope.log = LogFinder.find(tide.log_id);
@@ -17,11 +17,18 @@ angular.module('continuousPipeRiver')
             }
         };
 
+        var getCurrentUserPermissions = function() {
+            UserPermissionsRepository.findForUserAndProject(user, project).then(function(permissions) {
+                $scope.isAdmin =  permissions.indexOf('ADMIN') > -1;
+            });
+        };
+
         $scope.$on('$destroy', function() {
             timeOutIdentifier && clearTimeout(timeOutIdentifier);
         });
 
         reloadSummaryIfNotCompleted();
+        getCurrentUserPermissions();
 
         $scope.cancel = function() {
             $scope.isLoading = true;
