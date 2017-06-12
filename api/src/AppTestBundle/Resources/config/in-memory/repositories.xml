@@ -14,6 +14,10 @@
             <argument type="service" id="csa_guzzle.middleware.history" />
         </service>
         <service id="river.pipeline.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage" />
+
         <service id="development_environment.read_model.repository" class="ContinuousPipe\DevelopmentEnvironment\ReadModel\InMemoryEnvironmentRepository" />
+
+        <service id="river.view.storage.firebase_client" alias="river.view.storage.firebase_client.main"/>
+
     </services>
 </container>

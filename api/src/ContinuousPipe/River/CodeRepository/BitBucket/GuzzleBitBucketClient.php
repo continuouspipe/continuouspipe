@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
 use ContinuousPipe\AtlassianAddon\BitBucket\PullRequest;
+use ContinuousPipe\River\CodeRepository\Branch;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\SerializerInterface;
@@ -159,5 +160,44 @@ class GuzzleBitBucketClient implements BitBucketClient
         }
 
         return $pullRequests;
+    }
+
+    public function getBranches(BitBucketCodeRepository $codeRepository)
+    {
+        try {
+            return $this->readBranches('/2.0/repositories/' . $codeRepository->getApiSlug() . '/refs/branches');
+        } catch (RequestException $e) {
+            $message = $e->getMessage();
+            if ($e->getResponse() && $e->getResponse()->getStatusCode() == 404) {
+                $message = 'Branches not found for the repository';
+            }
+
+            throw new BitBucketClientException($message, $e->getCode(), $e);
+        }
+
+    }
+
+    private function readBranches(string $link)
+    {
+        try {
+            $response = $this->client->request('GET', $link);
+        } catch (RequestException $e) {
+            throw new BitBucketClientException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        $json = $this->readJson($response);
+
+        $branches = array_map(
+            function (array $branch) {
+                return new Branch($branch['name']);
+            },
+            $json['values']
+        );
+
+        if (isset($json['next'])) {
+            return array_merge($branches, $this->readBranches($json['next']));
+        }
+
+        return $branches;
     }
 }

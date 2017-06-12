@@ -8,5 +8,6 @@
         <service id="river.controllers.test_controller" class="AppTestBundle\Controller\TestController">
             <argument type="service" id="command_bus" />
         </service>
+
     </services>
 </container>

@@ -10,5 +10,12 @@
                  decorates="river.commit_resolver">
             <argument type="service" id="river.commit_resolver.predictable.inner" />
         </service>
+
+        <service id="river.code_repository.branch_query.in_memory"
+                 class="ContinuousPipe\River\CodeRepository\InMemoryBranchQuery"
+                 decorates="river.code_repository.branch_query">
+                <argument type="service" id="river.code_repository.branch_query.in_memory.inner"/>
+        </service>
+
     </services>
 </container>

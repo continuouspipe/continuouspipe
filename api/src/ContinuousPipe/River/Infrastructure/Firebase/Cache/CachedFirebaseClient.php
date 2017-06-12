@@ -66,6 +66,11 @@ class CachedFirebaseClient implements FirebaseClient
         }
     }
 
+    public function remove(string $databaseUri, string $path)
+    {
+        $this->decoratedClient->remove($databaseUri, $path);
+    }
+
     private function getCacheKey(string $databaseUri, string $path, array $value) : string
     {
         return md5($databaseUri . '/' . $path . ':' . \GuzzleHttp\json_encode($value));

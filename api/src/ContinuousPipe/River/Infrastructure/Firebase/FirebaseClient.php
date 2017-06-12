@@ -23,4 +23,6 @@ interface FirebaseClient
      * @throws ApiException
      */
     public function update(string $databaseUri, string $path, array $value);
+
+    public function remove(string $databaseUri, string $path);
 }

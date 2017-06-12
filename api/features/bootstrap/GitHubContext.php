@@ -124,6 +124,10 @@ class GitHubContext implements CodeRepositoryContext
      * @var TraceableInstallationTokenResolver
      */
     private $traceableInstallationTokenResolver;
+    /**
+     * @var CodeRepository\InMemoryBranchQuery
+     */
+    private $inMemoryBranchQuery;
 
     public function __construct(
         Kernel $kernel,
@@ -139,7 +143,8 @@ class GitHubContext implements CodeRepositoryContext
         InstallationTokenResolver $realInstallationTokenResolver,
         InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository,
         InstallationRepository $realCodeRepositoryRepository,
-        MatchingHandler $matchingHandler
+        MatchingHandler $matchingHandler,
+        CodeRepository\InMemoryBranchQuery $inMemoryBranchQuery
     ) {
         $this->kernel = $kernel;
         $this->fakePullRequestResolver = $fakePullRequestResolver;
@@ -156,6 +161,7 @@ class GitHubContext implements CodeRepositoryContext
         $this->realInstallationRepositoryRepository = $realCodeRepositoryRepository;
         $this->traceableInstallationRepository = $traceableInstallationRepository;
         $this->traceableInstallationTokenResolver = $traceableInstallationTokenResolver;
+        $this->inMemoryBranchQuery = $inMemoryBranchQuery;
     }
 
     /**
@@ -957,6 +963,55 @@ class GitHubContext implements CodeRepositoryContext
         $contents['installation']['id'] = $installationIdentifier;
 
         $this->sendWebHook('integration_installation', json_encode($contents));
+    }
+
+    /**
+     * @Given the following branches exists in the github repository:
+     */
+    public function theFollowingBranchesExistsInTheGithubRepository(TableNode $table)
+    {
+        $url = sprintf(
+            'https://api.github.com/repos/%s/%s/branches',
+            'sroze',
+            'docker-php-example'
+        );
+
+        $this->matchingHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url) {
+                return $request->getUri() == $url;
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode($table->getHash())),
+        ]);
+        
+        $this->inMemoryBranchQuery->notOnlyInMemory();
+    }
+
+    /**
+     * @Given the following branches exists in the github repository and are paginated in the api response:
+     */
+    public function theFollowingBranchesExistsInTheGithubRepositoryAndArePaginatedInTheApiResponse(TableNode $table)
+    {
+        $url = sprintf(
+            'https://api.github.com/repos/%s/%s/branches',
+            'sroze',
+            'docker-php-example'
+        );
+
+        $this->matchingHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url) {
+                return $request->getUri() == $url;
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, ['Link' =>  '<'.$url.'?page=2>; rel="next"'], \GuzzleHttp\json_encode([$table->getHash()[0]])),
+        ]);
+
+        $this->matchingHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url) {
+                return $request->getUri() == $url.'?page=2';
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode(array_slice($table->getHash(), 1))),
+        ]);
+
+        $this->inMemoryBranchQuery->notOnlyInMemory();
     }
 
     /**

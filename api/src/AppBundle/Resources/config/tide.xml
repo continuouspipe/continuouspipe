@@ -172,14 +172,15 @@
             <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
         </service>
 
-        <service id="river.view.storage.firebase_client" class="ContinuousPipe\River\Infrastructure\Firebase\DatabaseFirebaseClient">
+        <service id="river.view.storage.firebase_client" alias="river.view.storage.firebase_client.predis_cached"/>
+
+        <service id="river.view.storage.firebase_client.main" class="ContinuousPipe\River\Infrastructure\Firebase\DatabaseFirebaseClient">
             <argument type="service" id="river.view.storage.firebase.database_factory" />
         </service>
 
         <service id="river.view.storage.firebase_client.predis_cached"
-                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedFirebaseClient"
-                 decorates="river.view.storage.firebase_client">
-            <argument type="service" id="river.view.storage.firebase_client.predis_cached.inner" />
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedFirebaseClient">
+            <argument type="service" id="river.view.storage.firebase_client.main" />
             <argument type="service" id="river.predis_cache" />
             <argument type="service" id="logger" />
         </service>
