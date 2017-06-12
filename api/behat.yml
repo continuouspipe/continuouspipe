@@ -384,6 +384,7 @@ smoke:
                     - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
+                    - @river.code_repository.branch_query
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus
