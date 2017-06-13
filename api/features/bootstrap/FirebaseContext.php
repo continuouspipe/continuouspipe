@@ -79,16 +79,15 @@ class FirebaseContext implements Context
     public function theBranchForTheFlowShouldBeSavedToTheFirebaseStorageOfViews($branch, $flow)
     {
         foreach ($this->httpHistory as $request) {
-            /** @var Request $request */
             $uri = (string) $request->getUri();
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s',
-                $flow,
-                md5($branch)
+                'https://continuous-pipe.firebaseio.com/flows/%s/branches',
+                $flow
             );
             if (0 === strpos($uri, $requestBase)) {
-                return;
+                $body = json_decode($request->getBody()->getContents(), true);
+                return isset($body[md5($branch)]);
             }
         }
 
