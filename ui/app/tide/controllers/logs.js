@@ -17,18 +17,13 @@ angular.module('continuousPipeRiver')
             }
         };
 
-        var getCurrentUserPermissions = function() {
-            UserPermissionsRepository.findForUserAndProject(user, project).then(function(permissions) {
-                $scope.isAdmin =  permissions.indexOf('ADMIN') > -1;
-            });
-        };
+        $scope.isAdmin = UserPermissionsRepository.isAdmin(user, project);
 
         $scope.$on('$destroy', function() {
             timeOutIdentifier && clearTimeout(timeOutIdentifier);
         });
 
         reloadSummaryIfNotCompleted();
-        getCurrentUserPermissions();
 
         $scope.cancel = function() {
             $scope.isLoading = true;

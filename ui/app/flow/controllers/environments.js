@@ -49,11 +49,7 @@ angular.module('continuousPipeRiver')
             });
         };
 
-        var getCurrentUserPermissions = function() {
-            UserPermissionsRepository.findForUserAndProject(user, project).then(function(permissions) {
-                $scope.isAdmin =  permissions.indexOf('ADMIN') > -1;
-            });
-        };
+        $scope.isAdmin = UserPermissionsRepository.isAdmin(user, project);
 
         $scope.delete = function(environment) {
             swal({
@@ -76,7 +72,6 @@ angular.module('continuousPipeRiver')
         };
 
         loadEnvironments();
-        getCurrentUserPermissions();
 
         $scope.openEndpoint = function(endpoint) {
             EndpointOpener.open(endpoint);
