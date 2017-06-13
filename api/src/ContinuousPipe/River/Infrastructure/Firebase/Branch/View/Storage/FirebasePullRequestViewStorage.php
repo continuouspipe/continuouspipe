@@ -74,7 +74,7 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
         return sprintf(
             'flows/%s/pull-requests/by-branch/%s',
             (string) $flowUuid,
-            $branchName
+            md5($branchName)
         );
     }
 

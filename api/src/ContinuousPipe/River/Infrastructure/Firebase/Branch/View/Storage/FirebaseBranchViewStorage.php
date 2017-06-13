@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage;
 
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\CodeRepository\BranchQuery;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Infrastructure\Firebase\FirebaseClient;
@@ -63,7 +64,7 @@ class FirebaseBranchViewStorage implements BranchViewStorage
             try {
                 $this->firebaseClient->set(
                     $this->databaseUri,
-                    $this->savePath($flowUuid, $branch),
+                    $this->savePath($flowUuid, (string) $branch),
                     $this->saveBody($branch)
                 );
             } catch (ApiException $e) {
@@ -158,21 +159,22 @@ class FirebaseBranchViewStorage implements BranchViewStorage
         return sprintf(
             'flows/%s/branches/%s/latest-tides/%s',
             (string) $flowUuid,
-            $branchName,
+            md5($branchName),
             $tide->getUuid()
         );
     }
 
-    private function savePath(UuidInterface $flowUuid, $branch)
+    private function savePath(UuidInterface $flowUuid, string $branch)
     {
-        return sprintf('flows/%s/branches/%s', (string) $flowUuid, (string) $branch);
+        return sprintf('flows/%s/branches/%s', (string) $flowUuid, md5($branch));
     }
 
-    private function saveBody($branch)
+    private function saveBody(Branch $branch)
     {
         return [
             'latest-tides' => $this->normalizeTides($branch->getTides()),
             'pinned' => $branch->isPinned(),
+            'name' => (string) $branch
         ];
     }
 
