@@ -157,7 +157,7 @@ class FirebaseBranchViewStorage implements BranchViewStorage
         return sprintf(
             'flows/%s/branches/%s/latest-tides/%s',
             (string) $flowUuid,
-            md5($branchName),
+            hash('sha256', $branchName),
             $tide->getUuid()
         );
     }
@@ -169,7 +169,7 @@ class FirebaseBranchViewStorage implements BranchViewStorage
 
     private function savePath(UuidInterface $flowUuid, string $branch)
     {
-        return sprintf('flows/%s/branches/%s', (string) $flowUuid, md5($branch));
+        return sprintf('flows/%s/branches/%s', (string) $flowUuid, hash('sha256', $branch));
     }
 
     private function saveBody(array $branches)
