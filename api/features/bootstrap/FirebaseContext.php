@@ -85,7 +85,7 @@ class FirebaseContext implements Context
             $requestBase = sprintf(
                 'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s',
                 $flow,
-                $branch
+                md5($branch)
             );
             if (0 === strpos($uri, $requestBase)) {
                 return;
@@ -114,7 +114,7 @@ class FirebaseContext implements Context
             $requestBase = sprintf(
                 'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s',
                 $flow,
-                $branch
+                md5($branch)
             );
 
             if (0 === strpos($uri, $requestBase)) {
@@ -149,7 +149,7 @@ class FirebaseContext implements Context
             $requestBase = sprintf(
                 'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s',
                 $flow,
-                $branch
+                md5($branch)
             );
 
             if (0 === strpos($uri, $requestBase)) {
@@ -174,7 +174,7 @@ class FirebaseContext implements Context
             $requestBase = sprintf(
                 'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s',
                 $flow,
-                $branch
+                md5($branch)
             );
 
             if (0 === strpos($uri, $requestBase)) {
@@ -203,7 +203,7 @@ class FirebaseContext implements Context
             $requestBase = sprintf(
                 'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch/%s',
                 $flow,
-                $branch
+                md5($branch)
             );
 
             if (0 === strpos($uri, $requestBase)) {
@@ -238,7 +238,7 @@ class FirebaseContext implements Context
             $requestBase = sprintf(
                 'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch/%s',
                 $flow,
-                $branch
+                md5($branch)
             );
 
             if (0 === strpos($uri, $requestBase) && $request->getMethod() == 'DELETE') {
@@ -252,7 +252,7 @@ class FirebaseContext implements Context
         $updateRequestBase = sprintf(
             'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s/latest-tides/%',
             $flow,
-            $branch,
+            md5($branch),
             $tideUuid
         );
 
