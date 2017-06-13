@@ -157,6 +157,10 @@ tasks:
                               value: ${HOSTED_GRAPHITE_API_KEY}
                             - name: GITHUB_SECRET
                               value: ${GITHUB_SECRET}
+                            - name: GITHUB_INTEGRATION_ID
+                              value: ${GITHUB_INTEGRATION_ID}
+                            - name: GITHUB_INTEGRATION_KEY_NAME
+                              value: ${GITHUB_INTEGRATION_KEY_NAME}
                             - name: GOOGLE_PUB_SUB_TOPIC
                               value: ${GOOGLE_PUB_SUB_TOPIC}
                             - name: GOOGLE_PUB_SUB_SUBSCRIPTION_NAME
