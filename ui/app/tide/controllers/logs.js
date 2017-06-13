@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TideLogsController', function(TideRepository, EnvironmentRepository, TideSummaryRepository, LogFinder, EndpointOpener, $scope, $state, $http, flow, tide, summary, user, project, UserPermissionsRepository) {
+    .controller('TideLogsController', function(TideRepository, EnvironmentRepository, TideSummaryRepository, LogFinder, EndpointOpener, $scope, $state, $http, flow, tide, summary, user, project) {
         $scope.tide = tide;
         $scope.summary = summary;
         $scope.log = LogFinder.find(tide.log_id);
@@ -17,7 +17,7 @@ angular.module('continuousPipeRiver')
             }
         };
 
-        $scope.isAdmin = UserPermissionsRepository.isAdmin(user, project);
+        $scope.isAdmin = user.isAdmin(project);
 
         $scope.$on('$destroy', function() {
             timeOutIdentifier && clearTimeout(timeOutIdentifier);
