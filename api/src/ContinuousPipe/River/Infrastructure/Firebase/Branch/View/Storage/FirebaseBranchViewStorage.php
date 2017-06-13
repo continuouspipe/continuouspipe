@@ -60,16 +60,14 @@ class FirebaseBranchViewStorage implements BranchViewStorage
 
     public function save(UuidInterface $flowUuid)
     {
-        foreach ($this->branchQuery->findBranches($this->flowRepository->find($flowUuid)) as $branch) {
-            try {
-                $this->firebaseClient->set(
-                    $this->databaseUri,
-                    $this->savePath($flowUuid, (string) $branch),
-                    $this->saveBody($branch)
-                );
-            } catch (ApiException $e) {
-                $this->logCannotSave($flowUuid, $e);
-            }
+        try {
+            $this->firebaseClient->set(
+                $this->databaseUri,
+                $this->replacePath($flowUuid),
+                $this->saveBody($this->branchQuery->findBranches($this->flowRepository->find($flowUuid)))
+            );
+        } catch (ApiException $e) {
+            $this->logCannotSave($flowUuid, $e);
         }
     }
 
@@ -159,23 +157,33 @@ class FirebaseBranchViewStorage implements BranchViewStorage
         return sprintf(
             'flows/%s/branches/%s/latest-tides/%s',
             (string) $flowUuid,
-            md5($branchName),
+            hash('sha256', $branchName),
             $tide->getUuid()
         );
     }
 
-    private function savePath(UuidInterface $flowUuid, string $branch)
+    private function replacePath(UuidInterface $flowUuid)
     {
-        return sprintf('flows/%s/branches/%s', (string) $flowUuid, md5($branch));
+        return sprintf('flows/%s/branches', (string) $flowUuid);
     }
 
-    private function saveBody(Branch $branch)
+    private function savePath(UuidInterface $flowUuid, string $branch)
     {
-        return [
-            'latest-tides' => $this->normalizeTides($branch->getTides()),
-            'pinned' => $branch->isPinned(),
-            'name' => (string) $branch
-        ];
+        return sprintf('flows/%s/branches/%s', (string) $flowUuid, hash('sha256', $branch));
+    }
+
+    private function saveBody(array $branches)
+    {
+        return array_map(
+            function (Branch $branch) {
+                return [
+                    'latest-tides' => $this->normalizeTides($branch->getTides()),
+                    'pinned' => $branch->isPinned(),
+                    'name' => (string) $branch
+                ];
+            },
+            $branches
+        );
     }
 
 }
