@@ -11,9 +11,23 @@ angular.module('continuousPipeRiver')
                 database.ref().child('flows/' + flow.uuid + '/pull-requests/by-branch')
             );
 
-            pullRequestsByBranch.$watch(function(event) {
-                console.log('got PR by branch', pullRequestsByBranch);
-            });
+
+            var reloadPullRequests = function() {
+                $scope.pullRequests = pullRequestsByBranch
+                    .filter(function(pullRequestInBranch) {
+                        return pullRequestInBranch.$id in $scope.branches;
+                    })
+                    .map(function(pullRequestInBranch) {
+                        var view = $scope.branches[pullRequestInBranch.$id];
+                        view.pull_request = $pullRequestInBranch;
+
+                        return view;
+                    })
+                ;
+            };
+
+            $scope.branches.$loaded(reloadPullRequests);
+            pullRequestsByBranch.$watch(reloadPullRequests);
         });
 
         $scope.pinOrUnPin = function(branch) {

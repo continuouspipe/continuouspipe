@@ -23,6 +23,14 @@
     </ul>
 
     <md-subheader class="md-primary">Branches with pull requests</md-subheader>
+    <ul class="branch-list">
+        <li ng-repeat="pullRequest in pullRequests | orderBy:['name']" 
+            ng-class="'status-'+(branch | latestTideInBranch).status"
+            ng-include="'flow/views/branches/list-branch-template.html'" />
+        <li ng-if="pullRequests.length == 0" class="branch-placeholder">
+            <p>No pull-request found.</p>
+        </li>
+    </ul>
 
     <md-subheader class="md-primary">Other branches</md-subheader>
     <ul class="branch-list">
