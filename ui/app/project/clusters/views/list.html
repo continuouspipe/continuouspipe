@@ -5,7 +5,7 @@
             <span ng-hide="clusters">Loading...</span>
         </h2>
         <span flex></span>
-        <md-button class="md-raised" aria-label="Add" ui-sref="clusters.add">Add</md-button>
+        <md-button ng-show="isAdmin" class="md-raised" aria-label="Add" ui-sref="clusters.add">Add</md-button>
     </div>
 </md-toolbar>
 <md-content flex id="content">
@@ -32,7 +32,7 @@
                 <td>{{ cluster.address }} <small>{{ cluster.version }}</small></td>
                 <td>User <small>{{ cluster.username }}</small></td>
                 <td>
-                    <md-button ng-click="deleteCluster(cluster)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+                    <md-button ng-show="isAdmin" ng-click="deleteCluster(cluster)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
                     <md-button ng-click="inspectCluster(cluster)" class="md-icon-button"><i class="material-icons">lightbulb_outline</i></md-button>
                 </td>
             </tr>

@@ -21,7 +21,7 @@
                 <th>Server</th>
                 <th>Username</th>
                 <th>Email</th>
-                <th>Actions</th>
+                <th ng-show="isAdmin">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -29,7 +29,7 @@
                 <td>{{ credential.serverAddress }}</td>
                 <td>{{ credential.username }}</td>
                 <td>{{ credential.email }}</td>
-                <td>
+                <td ng-show="isAdmin">
                     <md-button ng-click="deleteCredentials(credential)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
                 </td>
             </tr>

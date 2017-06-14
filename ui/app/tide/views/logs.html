@@ -37,7 +37,7 @@
         </md-button>
 
         <md-button class="md-raised md-warn"
-                   ng-show="['success', 'failure', 'cancelled'].indexOf(summary.status) != -1 && summary.environment"
+                   ng-show="isAdmin && ['success', 'failure', 'cancelled'].indexOf(summary.status) != -1 && summary.environment"
                    ng-click="deleteAndRetry(summary.environment)"
                    ng-disabled="isLoading">
             Delete & {{['failure', 'cancelled'].indexOf(summary.status) != -1 ? 'Retry' : 'Rerun'}}

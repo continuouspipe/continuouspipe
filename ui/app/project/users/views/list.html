@@ -6,7 +6,7 @@
             <span ng-hide="membersStatus">Loading...</span>
         </h2>
         <span flex></span>
-        <md-button class="md-raised" aria-label="Add a user" ui-sref="users.add">Add</md-button>
+        <md-button  ng-show="isAdmin" class="md-raised" aria-label="Add a user" ui-sref="users.add">Add</md-button>
     </div>
 </md-toolbar>
 <md-content flex id="content">
@@ -16,14 +16,14 @@
             <tr>
                 <th>Username</th>
                 <th>Permissions</th>
-                <th>Actions</th>
+                <th ng-show="isAdmin">Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="membership in membersStatus.memberships">
                 <td>{{ membership.user.username }}</td>
                 <td>{{ membership.permissions | join:', ' }}</td>
-                <td>
+                <td ng-show="isAdmin">
                     <md-button ng-click="removeMembership(membership)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
                 </td>
             </tr>
