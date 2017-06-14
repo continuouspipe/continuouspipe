@@ -6,7 +6,6 @@ use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\Infrastructure\Firebase\FirebaseClient;
 use ContinuousPipe\River\View\Storage\PullRequestViewStorage;
 use Firebase\Exception\ApiException;
-use JMS\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
 
@@ -43,18 +42,27 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
                 $this->databaseUri,
                 $this->tideUpdatePath($flowUuid, (string) $pullRequest->getBranch()),
                 [
-                    'identifier' => (string) $pullRequest->getIdentifier(),
-                    'title' => $pullRequest->getTitle(),
+                    (string) $pullRequest->getIdentifier() => [
+                        'identifier' => (string) $pullRequest->getIdentifier(),
+                        'title' => $pullRequest->getTitle()
+                    ]
                 ]
             );
         } catch (ApiException $e) {
-            $this->logCannotAdd($flowUuid, $e);
+            $this->logCannotUpdate($flowUuid, $e);
         }
     }
 
     public function deletePullRequest(UuidInterface $flowUuid, PullRequest $pullRequest)
     {
-        $this->deleteBranch($flowUuid, (string) $pullRequest->getBranch());
+        try {
+            $this->firebaseClient->remove(
+                $this->databaseUri,
+                $this->pullRequestPath($flowUuid, (string) $pullRequest->getBranch(), $pullRequest->getIdentifier())
+            );
+        } catch (ApiException $e) {
+            $this->logCannotUpdate($flowUuid, $e);
+        }
     }
 
     public function deleteBranch(UuidInterface $flowUuid, string $branchName)
@@ -65,7 +73,7 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
                 $this->tideUpdatePath($flowUuid, $branchName)
             );
         } catch (ApiException $e) {
-            $this->logCannotAdd($flowUuid, $e);
+            $this->logCannotUpdate($flowUuid, $e);
         }
     }
 
@@ -78,7 +86,17 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
         );
     }
 
-    private function logCannotAdd(UuidInterface $flowUuid, \Exception $e)
+    private function pullRequestPath(UuidInterface $flowUuid, string $branchName, string $pullRequestId)
+    {
+        return sprintf(
+            'flows/%s/pull-requests/by-branch/%s/%s',
+            (string) $flowUuid,
+            hash('sha256', $branchName),
+            $pullRequestId
+        );
+    }
+
+    private function logCannotUpdate(UuidInterface $flowUuid, \Exception $e)
     {
         $this->logger->warning(
             'Unable to update the pull requests view in Firebase',

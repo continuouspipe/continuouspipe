@@ -63,8 +63,8 @@
             <argument>%firebase_database_uri%</argument>
             <argument type="service" id="logger" />
             <argument type="service" id="river.code_repository.branch_query" />
-            <argument type="service" id="jms_serializer" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.branch.view.branch_normalizer" />
         </service>
 
         <service id="river.branch.pull_request.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\FirebasePullRequestViewStorage">
@@ -102,6 +102,10 @@
 
         <service id="river.code_repository.branch_query.bitbucket" class="ContinuousPipe\River\CodeRepository\BitBucket\ApiBranchQuery">
             <argument type="service" id="river.bitbucket.client_factory"/>
+        </service>
+
+        <service id="river.branch.view.branch_normalizer" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\BranchNormalizer">
+            <argument type="service" id="jms_serializer"/>
         </service>
 
     </services>
