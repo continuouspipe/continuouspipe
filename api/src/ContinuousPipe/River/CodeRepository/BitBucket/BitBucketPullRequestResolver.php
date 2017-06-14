@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\CodeRepository\BitBucket;
 use ContinuousPipe\AtlassianAddon\BitBucket\PullRequest as BitBucketPullRequest;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
@@ -68,7 +69,7 @@ class BitBucketPullRequestResolver implements PullRequestResolver
                 return new PullRequest(
                     $pullRequest->getId(),
                     $pullRequest->getTitle(),
-                    $pullRequest->getSource()->getBranch()->getName()
+                    new Branch($pullRequest->getSource()->getBranch()->getName())
                 );
             },
             $matchingPullRequests

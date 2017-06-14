@@ -73,7 +73,9 @@ class BranchController
      */
     public function refreshAction($uuid, FlatFlow $flow)
     {
-        $this->branchViewStorage->save($uuid);
-        $this->pullRequestViewStorage->save($uuid, $flow->getRepository());
+        if (null !== $repository = $flow->getRepository()) {
+            $this->branchViewStorage->save($uuid);
+            $this->pullRequestViewStorage->save($uuid, $repository);
+        }
     }
 }

@@ -53,7 +53,7 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
                 $this->saveBody($this->pullRequestQuery->findAll($flowUuid, $repository))
             );
         } catch (ApiException $e) {
-            $this->logCannotSave($flowUuid, $e);
+            $this->logCannotAdd($flowUuid, $e);
         }
     }
 

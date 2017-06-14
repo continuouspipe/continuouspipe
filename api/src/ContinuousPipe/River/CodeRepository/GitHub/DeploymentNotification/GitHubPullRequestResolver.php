@@ -4,11 +4,11 @@ namespace ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
-use GitHub\WebHook\Model\Branch;
 use GitHub\WebHook\Model\PullRequest;
 use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\Serializer;
