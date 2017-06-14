@@ -29,6 +29,9 @@
         <li ng-repeat="branch in branches | filter:'!pinned' | orderBy:['name']" 
             ng-class="'status-'+(branch | latestTideInBranch).status"
             ng-include="'flow/views/branches/list-branch-template.html'" />
+        <li ng-if="(branches | filter:'!pinned').length == 0" class="branch-placeholder">
+            <p>No other branches.</p>
+        </li>
     </ul>
 
     </remote-resource>
