@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, $componentLogDialog, TideRepository, EnvironmentRepository, EndpointOpener, RemoteShellOpener, flow) {
+    .controller('FlowEnvironmentsController', function($scope, $remoteResource, $http, $mdDialog, $componentLogDialog, TideRepository, EnvironmentRepository, EndpointOpener, RemoteShellOpener, flow, user, project) {
         $scope.flow = flow;
 
         var getEnvironmentStatus = function(environment) {
@@ -48,6 +48,8 @@ angular.module('continuousPipeRiver')
                 });
             });
         };
+
+        $scope.isAdmin = user.isAdmin(project);
 
         $scope.delete = function(environment) {
             swal({

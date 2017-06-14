@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectUsersController', function($scope, $remoteResource, $http, ProjectMembershipRepository, ProjectRepository, InvitationRepository, project) {
+    .controller('ProjectUsersController', function($scope, $remoteResource, $http, ProjectMembershipRepository, ProjectRepository, InvitationRepository, project, user) {
         var load = function() {
             $scope.membersStatus = null;
             $remoteResource.load('membersStatus', ProjectRepository.getMembersStatus(project.slug)).then(function (membersStatus) {
@@ -40,6 +40,8 @@ angular.module('continuousPipeRiver')
                 InvitationRepository.remove(project, invitation).then(load, handleError);
             });
         };
+
+        $scope.isAdmin = user.isAdmin(project);
 
         load();
     });

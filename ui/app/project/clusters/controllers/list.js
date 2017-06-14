@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectClustersController', function($scope, $remoteResource, $http, $mdDialog, ClusterRepository, project) {
+    .controller('ProjectClustersController', function($scope, $remoteResource, $http, $mdDialog, ClusterRepository, project, user) {
         var controller = this;
 
         this.loadClusters = function() {
@@ -30,6 +30,8 @@ angular.module('continuousPipeRiver')
             });
         };
 
+        $scope.isAdmin = user.isAdmin(project);
+        
         this.loadClusters();
 
         $scope.inspectCluster = function(cluster) {
