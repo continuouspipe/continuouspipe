@@ -208,8 +208,10 @@ class FirebaseContext implements Context
             if (0 === strpos($uri, $requestBase)) {
                 if (0 === strpos($uri, $requestBase)) {
                     if (json_decode($request->getBody()->getContents(), true) == [
-                            'identifier' => $number,
-                            'title' => $title
+                            $number => [
+                                'identifier' => $number,
+                                'title' => $title
+                            ]
                         ]
                     ) {
                         return;
