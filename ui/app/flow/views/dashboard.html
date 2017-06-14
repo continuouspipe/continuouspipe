@@ -19,7 +19,7 @@
 </md-content>
 <md-content flex id="content" ng-if="!isLoading && tides.length != 0">
     <md-subheader class="md-primary">Pipelines</md-subheader>
-    <pipeline-overview ng-repeat="pipeline in pipelines" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
+    <pipeline-overview ng-repeat="pipeline in pipelines | orderBy:'name'" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
 
     <md-subheader class="md-primary">Last 10 tides per pipeline</md-subheader>
     <ul class="tide-list">
