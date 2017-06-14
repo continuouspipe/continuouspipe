@@ -20,7 +20,7 @@
     </li>
     <li ng-repeat="placeholder in [0, 1, 2, 3, 4]" ng-if="!(branch | branchLastTides)[placeholder]" class="placeholder-tide"></li>
     <li>
-        <md-button class="md-icon-button" ng-click="pinOrUnPin(branch)">
+        <md-button class="md-icon-button" ng-click="pinOrUnPin(branch)" ng-show="isAdmin">
             <md-icon ng-if="branch.pinned">star</md-icon>
             <md-icon ng-if="!branch.pinned">star_border</md-icon>
         </md-button>

@@ -1,7 +1,9 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('BranchesController', function ($scope, $http, $mdToast, $firebaseArray, $authenticatedFirebaseDatabase, PinnedBranchRepository, flow) {
+    .controller('BranchesController', function ($scope, $http, $mdToast, $firebaseArray, $authenticatedFirebaseDatabase, PinnedBranchRepository, flow, user, project) {
+        $scope.isAdmin = user.isAdmin(project);
+        
         $authenticatedFirebaseDatabase.get(flow).then(function (database) {
             $scope.branches = $firebaseArray(
                 database.ref().child('flows/' + flow.uuid + '/branches')
