@@ -13,83 +13,23 @@
         <h3>Push something to your repository! Or manually run a deployment.</h3>
     </div>
     <md-subheader class="md-primary">Pinned Branches</md-subheader>
-    <remote-resource resource-name="branches">
-        <ul class="tide-list">
-            <li ng-repeat="branch in branches | orderBy:['name']" class="pipeline-card"
-                ng-class="['status-'+tide.status]">
-                <div>
-                    <span>{{ branch.name }}</span>
-                    <span ng-show="branch['latest-tides']">{{ (branch | latestTideInBranch).creation_date | timeAgo }}</span>
-                </div>
+    <ul class="branch-list">
+        <li ng-repeat="branch in branches | filter:'pinned' | orderBy:['name']" 
+            ng-class="'status-'+(branch | latestTideInBranch).status"
+            ng-include="'flow/views/branches/list-branch-template.html'" />
+        <li ng-if="(branches | filter:'pinned').length == 0" class="branch-placeholder">
+            <p><strong>No pinned branches.</strong> Click on the icon on the right of the "other" branches to pin a branch.</p>
+        </li>
+    </ul>
 
-                <div>
-                    <span ng-show="branch['latest-tides']">{{ (branch | latestTideInBranch).code_reference.sha1 }}</span>
-                </div>
+    <md-subheader class="md-primary">Branches with pull requests</md-subheader>
 
-                <ul class="branch-last-tides">
-                    <li ng-repeat="tide in branch['latest-tides'] | limitTo: 5">
-                        <span ng-show="tide.status=='success'"><md-icon>done</md-icon></span>
-                        <span ng-show="tide.status=='failure'"><md-icon>clear</md-icon></span>
-                        <span ng-show="tide.status=='cancelled'"><md-icon>block</md-icon></span>
-                        <span ng-show="tide.status=='pending'"><md-icon>hourglass_empty</md-icon></span>
-                        <span ng-show="tide.status=='running'">SOMETHING ELSE</span>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-
-    </remote-resource>
-
-    <md-subheader class="md-primary">Pull Requests</md-subheader>
-    <remote-resource resource-name="pull-requests">
-        <md-card ng-repeat="pullRequest in pullRequests" class="pipeline-card"
-                 ng-class="{'collapsed': !pullRequest.expanded}">
-            <md-card-header ng-click="pullRequest.expanded = !pullRequest.expanded;">
-                <md-card-header-text>
-                    <span class="md-title">{{ pullRequest.identifier }} - {{ pullRequest.title }} ({{pullRequest.branch.name}})</span>
-                </md-card-header-text>
-                <md-card-avatar ng-show="pullRequest.branch.more_tides.length">
-                    <md-icon class="md-avatar-icon">
-                        <i class="material-icons" ng-show="!pullRequest.expanded">chevron_right</i>
-                        <i class="material-icons" ng-show="pullRequest.expanded">expand_more</i>
-                    </md-icon>
-                </md-card-avatar>
-            </md-card-header>
-            <md-card-content layout="column">
-                <div layout="row" class="pipeline-details-row">
-                    <span class="pipeline-details-row__details" ng-show="pullRequest.branch.last_tide">
-                        <md-icon>code</md-icon> {{ pullRequest.branch.last_tide.code_reference.sha1 | limitTo:7 }}
-                        <span>
-                            <md-tooltip md-direction="bottom">{{ pullRequest.branch.last_tide.creation_date | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
-                            <md-icon>schedule</md-icon> {{ pullRequest.branch.last_tide.creation_date | timeAgo }}
-                            <span class="status-text" ng-class="['status-'+pullRequest.branch.last_tide.status]">{{ pullRequest.branch.last_tide.status }}</span>
-                        </span>
-                    </span>
-                    <span flex></span>
-                    <task-list tide="pullRequest.branch.last_tide"/>
-                </div>
-                <div layout="row" ng-show="!pullRequest.branch.last_tide && isLoading">
-                    <span>Loading...</span>
-                </div>
-                <div layout="row" ng-show="!pullRequest.branch.last_tide && !isLoading">
-                    <span>No matching tide found.</span>
-                </div>
-                <div layout="row" class="pipeline-details-row" ng-repeat="tide in pullRequest.branch.more_tides"
-                     ng-show="pullRequest.expanded">
-                    <span class="pipeline-details-row__details">
-                        <md-icon>code</md-icon> {{ tide.code_reference.sha1 | limitTo:7 }}
-                        <span>
-                            <md-tooltip
-                                    md-direction="bottom">{{ tide.creation_date | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
-                            <md-icon>schedule</md-icon> {{ tide.creation_date | timeAgo }}
-                            <span class="status-text" ng-class="['status-'+tide.status]">{{ tide.status }}</span>
-                        </span>
-                    </span>
-                    <span flex></span>
-                    <task-list tide="tide"/>
-                </div>
-            </md-card-content>
-        </md-card>
+    <md-subheader class="md-primary">Other branches</md-subheader>
+    <ul class="branch-list">
+        <li ng-repeat="branch in branches | filter:'!pinned' | orderBy:['name']" 
+            ng-class="'status-'+(branch | latestTideInBranch).status"
+            ng-include="'flow/views/branches/list-branch-template.html'" />
+    </ul>
 
     </remote-resource>
 </md-content>

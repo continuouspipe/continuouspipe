@@ -1,0 +1,25 @@
+<div class="branch-details">
+    <p><span class="status-colored ellispable">{{ branch.name }}</span></p>
+    <p><span ng-show="branch['latest-tides']">{{ (branch | latestTideInBranch).creation_date | timeAgo }}</span></p>
+</div>
+
+<div class="branch-code">
+    <p><md-icon>code</md-icon> <span ng-show="branch['latest-tides']">{{ (branch | latestTideInBranch).code_reference.sha1 | limitTo:7 }}</span></p>
+</div>
+
+<ul class="branch-last-tides">
+    <li ng-repeat="tide in (branch | branchLastTides)" class="branch-last-tide" ng-class="tide.status | tideStatusClass">
+        <span ng-show="tide.status=='success'"><md-icon>done</md-icon></span>
+        <span ng-show="tide.status=='failure'"><md-icon>clear</md-icon></span>
+        <span ng-show="tide.status=='cancelled'"><md-icon>block</md-icon></span>
+        <span ng-show="tide.status=='pending'"><md-icon>hourglass_empty</md-icon></span>
+        <md-progress-circular md-mode="indeterminate"  ng-show="tide.status=='running'"></md-progress-circular>
+    </li>
+    <li ng-repeat="placeholder in [0, 1, 2, 3, 4]" ng-if="!(branch | branchLastTides)[placeholder]" class="placeholder-tide"></li>
+    <li>
+        <md-button class="md-icon-button" ng-click="pinOrUnPin(branch)">
+            <md-icon ng-if="branch.pinned">star</md-icon>
+            <md-icon ng-if="!branch.pinned">star_border</md-icon>
+        </md-button>
+    </li>
+</ul>
