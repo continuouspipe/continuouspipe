@@ -3,9 +3,13 @@
 namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\River\View\Tide;
+use JMS\Serializer\Annotation as JMS;
 
 class Branch
 {
+    /**
+     * @JMS\Type("string")
+     */
     private $name;
     private $tides;
     private $pinned;

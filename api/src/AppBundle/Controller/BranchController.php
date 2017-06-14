@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\Command\PinBranch;
 use ContinuousPipe\River\Command\UnpinBranch;
 use ContinuousPipe\River\Flow;
@@ -28,24 +29,26 @@ class BranchController
     }
 
     /**
-     * @Route("/flows/{uuid}/pinned-branch/{branchName}", methods={"PUT"})
+     * @Route("/flows/{uuid}/pinned-branch", methods={"POST"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @ParamConverter("branch", converter="fos_rest.request_body")
      * @Security("is_granted('ADMIN', flow)")
      * @View(statusCode=204)
      */
-    public function pinAction($uuid, $branchName)
+    public function pinAction($uuid, Branch $branch)
     {
-        $this->commandBus->handle(new PinBranch(Uuid::fromString($uuid), $branchName));
+        $this->commandBus->handle(new PinBranch(Uuid::fromString($uuid), (string) $branch));
     }
 
     /**
-     * @Route("/flows/{uuid}/pinned-branch/{branchName}", methods={"DELETE"})
+     * @Route("/flows/{uuid}/pinned-branch", methods={"DELETE"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @ParamConverter("branch", converter="fos_rest.request_body")
      * @Security("is_granted('ADMIN', flow)")
      * @View(statusCode=204)
      */
-    public function unpinAction($uuid, $branchName)
+    public function unpinAction($uuid, Branch $branch)
     {
-        $this->commandBus->handle(new UnpinBranch(Uuid::fromString($uuid), $branchName));
+        $this->commandBus->handle(new UnpinBranch(Uuid::fromString($uuid), (string) $branch));
     }
 }
