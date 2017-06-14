@@ -919,9 +919,17 @@ body {
                     display: flex;
                     align-items: center;
 
+                    &.branch-last-tide {
+                        cursor: pointer;
+                    }
+
                     > span {
                         flex: 1;
                         text-align: center;
+                    }
+
+                    > md-progress-circular {
+                        margin: 0 auto 0 auto;
                     }
 
                     &.placeholder-tide {
@@ -931,43 +939,43 @@ body {
                     &.status-success {
                         background: $success-color;
 
-                        .status-colored {
-                            color: $success-dark-color;
+                        &:hover {
+                            background: $success-dark-color;
                         }
                     }
                     &.status-failure {
                         background: $failure-color;
 
-                        .status-colored {
-                            color: $failure-dark-color;
+                        &:hover {
+                            background: $failure-dark-color;
                         }
                     }
                     &.status-running {
                         background: $running-color;
 
-                        .status-colored {
-                            color: $running-dark-color;
+                        &:hover {
+                            background: $running-dark-color;
                         }
                     }
                     &.status-skipped {
                         background: $skipped-color;
 
-                        .status-colored {
-                            color: $skipped-dark-color;
+                        &:hover {
+                            background: $skipped-dark-color;
                         }
                     }
                     &.status-cancelled {
                         background: $cancelled-color;
 
-                        .status-colored {
-                            color: $cancelled-dark-color;
+                        &:hover {
+                            background: $cancelled-dark-color;
                         }
                     }
                     &.status-pending {
                         background: $pending-color;
 
-                        .status-colored {
-                            color: $pending-dark-color;
+                        &:hover {
+                            background: $pending-dark-color;
                         }
                     }
                 }
