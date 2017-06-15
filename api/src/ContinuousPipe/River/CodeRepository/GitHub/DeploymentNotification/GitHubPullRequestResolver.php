@@ -3,6 +3,8 @@
 namespace ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
@@ -39,14 +41,56 @@ class GitHubPullRequestResolver implements PullRequestResolver
      */
     public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference) : array
     {
+        $pullRequests = $this->fetchAll($flowUuid, $codeReference->getRepository());
+
+        $matchingPullRequests = array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
+            return $codeReference->getBranch() == $pullRequest->getHead()->getReference();
+        }));
+
+        return $this->toPullRequests($matchingPullRequests);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(UuidInterface $flowUuid, CodeRepository $repository): bool
+    {
+        return $repository instanceof GitHubCodeRepository;
+    }
+
+    /**
+     * @return \ContinuousPipe\River\CodeRepository\PullRequest[]
+     */
+    public function findAll(UuidInterface $flowUuid, CodeRepository $repository): array
+    {
+        return $this->toPullRequests($this->fetchAll($flowUuid, $repository));
+    }
+
+    private function toPullRequests($matchingPullRequests)
+    {
+        return array_map(
+            function (PullRequest $pullRequest) {
+                return new \ContinuousPipe\River\CodeRepository\PullRequest(
+                    $pullRequest->getNumber(),
+                    $pullRequest->getTitle(),
+                    new Branch($pullRequest->getHead()->getReference())
+                );
+            },
+            $matchingPullRequests
+        );
+    }
+
+    private function fetchAll(UuidInterface $flowUuid, CodeRepository $repository)
+    {
         $client = $this->gitHubClientFactory->createClientForFlow($flowUuid);
 
-        $repository = $codeReference->getRepository();
         if (!$repository instanceof GitHubCodeRepository) {
-            throw new \RuntimeException(sprintf(
-                'Repository of type "%s" not supported',
-                get_class($repository)
-            ));
+            throw new \RuntimeException(
+                sprintf(
+                    'Repository of type "%s" not supported',
+                    get_class($repository)
+                )
+            );
         }
 
         try {
@@ -61,26 +105,10 @@ class GitHubPullRequestResolver implements PullRequestResolver
             throw new CodeRepositoryException($e->getMessage(), $e->getCode(), $e);
         }
 
-        $jsonEncoded = json_encode($rawPullRequests);
-        $pullRequests = $this->serializer->deserialize($jsonEncoded, 'array<'.PullRequest::class.'>', 'json');
-
-        $matchingPullRequests = array_values(array_filter($pullRequests, function (PullRequest $pullRequest) use ($codeReference) {
-            return $codeReference->getBranch() == $pullRequest->getHead()->getReference();
-        }));
-
-        return array_map(function (PullRequest $pullRequest) {
-            return new \ContinuousPipe\River\CodeRepository\PullRequest(
-                $pullRequest->getNumber(),
-                $pullRequest->getTitle()
-            );
-        }, $matchingPullRequests);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function supports(UuidInterface $flowUuid, CodeReference $codeReference): bool
-    {
-        return $codeReference->getRepository() instanceof GitHubCodeRepository;
+        return $this->serializer->deserialize(
+            json_encode($rawPullRequests),
+            'array<' . PullRequest::class . '>',
+            'json'
+        );
     }
 }

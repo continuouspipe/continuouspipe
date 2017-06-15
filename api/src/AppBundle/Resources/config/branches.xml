@@ -11,6 +11,12 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\CodePushed" />
         </service>
 
+        <service id="river.listener.code_pushed.pull_request_view" class="ContinuousPipe\River\View\EventListener\CodePushedPullRequestView">
+            <argument type="service" id="river.branch.pull_request.view.storage" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\CodePushed" />
+        </service>
+
         <service id="river.listener.branch_deleted.branch_view" class="ContinuousPipe\River\View\EventListener\BranchDeletedBranchView">
             <argument type="service" id="river.branch.view.storage" />
 
@@ -71,6 +77,8 @@
             <argument type="service" id="river.view.storage.firebase_client" />
             <argument>%firebase_database_uri%</argument>
             <argument type="service" id="logger" />
+            <argument type="service" id="river.pull_request_resolver" />
+            <argument type="service" id="river.branch.view.pull_request_normalizer" />
         </service>
 
         <service id="river.code_repository.pinned_branches_query"
@@ -107,6 +115,8 @@
         <service id="river.branch.view.branch_normalizer" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\BranchNormalizer">
             <argument type="service" id="jms_serializer"/>
         </service>
+
+        <service id="river.branch.view.pull_request_normalizer" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\PullRequestNormalizer"/>
 
     </services>
 </container>

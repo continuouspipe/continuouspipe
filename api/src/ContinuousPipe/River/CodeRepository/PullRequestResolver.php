@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository;
 use Ramsey\Uuid\UuidInterface;
 
 interface PullRequestResolver
@@ -23,9 +24,14 @@ interface PullRequestResolver
      * Return true if the pull-request resolver supports the tide.
      *
      * @param UuidInterface $flowUuid
-     * @param CodeReference $codeReference
-     *
+     * @param CodeRepository $repository
      * @return bool
+     *
      */
-    public function supports(UuidInterface $flowUuid, CodeReference $codeReference) : bool;
+    public function supports(UuidInterface $flowUuid, CodeRepository $repository) : bool;
+
+    /**
+     * @return PullRequest[]
+     */
+    public function findAll(UuidInterface $flowUuid, CodeRepository $repository): array;
 }

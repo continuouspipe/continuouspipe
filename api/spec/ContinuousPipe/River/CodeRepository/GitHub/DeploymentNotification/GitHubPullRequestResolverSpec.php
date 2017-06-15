@@ -3,6 +3,7 @@
 namespace spec\ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\GitHubPullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
@@ -43,7 +44,8 @@ class GitHubPullRequestResolverSpec extends ObjectBehavior
         $this->findPullRequestWithHeadReference($flowUuid, $codeReference)->shouldBeLike([
             new \ContinuousPipe\River\CodeRepository\PullRequest(
                 '1',
-                'My Precious PR'
+                'My Precious PR',
+                new Branch('my-precious-branch')
             )
         ]);
     }

@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\Guzzle\MatchingHandler;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
@@ -663,11 +664,12 @@ class GitHubContext implements CodeRepositoryContext
      * @Given the pull-request #:number contains the tide-related commit
      * @Given the GitHub pull-request #:number contains the tide-related commit
      * @Given the GitHub pull-request #:number titled :title contains the tide-related commit
+     * @Given there is a GitHub pull-request #:number titled :title for branch :branch
      */
-    public function aPullRequestContainsTheTideRelatedCommit($number, $title = null)
+    public function aPullRequestContainsTheTideRelatedCommit($number, $title = null, $branch = null)
     {
         $this->fakePullRequestResolver->willResolve([
-            new CodeRepository\PullRequest($number, $title),
+            new CodeRepository\PullRequest($number, $title, isset($branch) ? new Branch($branch): null),
         ]);
     }
 

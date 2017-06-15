@@ -2,7 +2,9 @@
 
 namespace ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage;
 
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\PullRequest;
+use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\Infrastructure\Firebase\FirebaseClient;
 use ContinuousPipe\River\View\Storage\PullRequestViewStorage;
 use Firebase\Exception\ApiException;
@@ -24,15 +26,40 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
      * @var FirebaseClient
      */
     private $firebaseClient;
+    /**
+     * @var PullRequestResolver
+     */
+    private $pullRequestQuery;
+    /**
+     * @var PullRequestNormalizer
+     */
+    private $normalizer;
 
     public function __construct(
         FirebaseClient $firebaseClient,
         string $databaseUri,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        PullRequestResolver $pullRequestQuery,
+        PullRequestNormalizer $normalizer
     ) {
         $this->databaseUri = $databaseUri;
         $this->logger = $logger;
         $this->firebaseClient = $firebaseClient;
+        $this->pullRequestQuery = $pullRequestQuery;
+        $this->normalizer = $normalizer;
+    }
+
+    public function save(UuidInterface $flowUuid, CodeRepository $repository)
+    {
+        try {
+            $this->firebaseClient->set(
+                $this->databaseUri,
+                $this->savePath($flowUuid),
+                $this->normalizer->normalizePullRequests($this->pullRequestQuery->findAll($flowUuid, $repository))
+            );
+        } catch (ApiException $e) {
+            $this->logCannotUpdate($flowUuid, $e);
+        }
     }
 
     public function add(UuidInterface $flowUuid, PullRequest $pullRequest)
@@ -40,13 +67,8 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
         try {
             $this->firebaseClient->update(
                 $this->databaseUri,
-                $this->tideUpdatePath($flowUuid, (string) $pullRequest->getBranch()),
-                [
-                    (string) $pullRequest->getIdentifier() => [
-                        'identifier' => (string) $pullRequest->getIdentifier(),
-                        'title' => $pullRequest->getTitle()
-                    ]
-                ]
+                $this->pullRequestPath($flowUuid, (string) $pullRequest->getBranch(), $pullRequest->getIdentifier()),
+                $this->normalizer->normalizePullRequest($pullRequest)
             );
         } catch (ApiException $e) {
             $this->logCannotUpdate($flowUuid, $e);
@@ -83,6 +105,14 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
             'flows/%s/pull-requests/by-branch/%s',
             (string) $flowUuid,
             hash('sha256', $branchName)
+        );
+    }
+
+    private function savePath(UuidInterface $flowUuid)
+    {
+        return sprintf(
+            'flows/%s/pull-requests/by-branch',
+            (string) $flowUuid
         );
     }
 
