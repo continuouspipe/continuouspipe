@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage;
 
-use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
@@ -53,7 +52,7 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
                 $this->saveBody($this->pullRequestQuery->findAll($flowUuid, $repository))
             );
         } catch (ApiException $e) {
-            $this->logCannotAdd($flowUuid, $e);
+            $this->logCannotUpdate($flowUuid, $e);
         }
     }
 
