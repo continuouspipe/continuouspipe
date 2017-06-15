@@ -14,10 +14,10 @@
     </div>
     <md-subheader class="md-primary">Pinned Branches</md-subheader>
     <ul class="branch-list">
-        <li ng-repeat="branch in branches | filter:'pinned' | orderBy:['name']" 
+        <li ng-repeat="branch in branches | filter:{pinned:true} | orderBy:['name']"
             ng-class="'status-'+(branch | latestTideInBranch).status"
             ng-include="'flow/views/branches/list-branch-template.html'" />
-        <li ng-if="(branches | filter:'pinned').length == 0" class="branch-placeholder">
+        <li ng-if="(branches | filter:{pinned:true}).length == 0" class="branch-placeholder">
             <p><strong>No pinned branches.</strong> Click on the icon on the right of the "other" branches to pin a branch.</p>
         </li>
     </ul>
@@ -34,10 +34,10 @@
 
     <md-subheader class="md-primary">Other branches</md-subheader>
     <ul class="branch-list">
-        <li ng-repeat="branch in branches | filter:'!pinned' | orderBy:['name']" 
+        <li ng-repeat="branch in branches | filter:{pinned:false} | orderBy:['name']"
             ng-class="'status-'+(branch | latestTideInBranch).status"
             ng-include="'flow/views/branches/list-branch-template.html'" />
-        <li ng-if="(branches | filter:'!pinned').length == 0" class="branch-placeholder">
+        <li ng-if="(branches | filter:{pinned:false}).length == 0" class="branch-placeholder">
             <p>No other branches.</p>
         </li>
     </ul>
