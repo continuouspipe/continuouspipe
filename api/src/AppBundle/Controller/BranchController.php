@@ -6,6 +6,9 @@ use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\Command\PinBranch;
 use ContinuousPipe\River\Command\UnpinBranch;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\View\Storage\BranchViewStorage;
+use ContinuousPipe\River\View\Storage\PullRequestViewStorage;
 use FOS\RestBundle\Controller\Annotations\View;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -22,10 +25,20 @@ class BranchController
      * @var MessageBus
      */
     private $commandBus;
+    /**
+     * @var BranchViewStorage
+     */
+    private $branchViewStorage;
+    /**
+     * @var PullRequestViewStorage
+     */
+    private $pullRequestViewStorage;
 
-    public function __construct(MessageBus $commandBus)
+    public function __construct(MessageBus $commandBus, BranchViewStorage $branchViewStorage, PullRequestViewStorage $pullRequestViewStorage)
     {
         $this->commandBus = $commandBus;
+        $this->branchViewStorage = $branchViewStorage;
+        $this->pullRequestViewStorage = $pullRequestViewStorage;
     }
 
     /**
@@ -50,5 +63,17 @@ class BranchController
     public function unpinAction($uuid, Branch $branch)
     {
         $this->commandBus->handle(new UnpinBranch(Uuid::fromString($uuid), (string) $branch));
+    }
+
+    /**
+     * @Route("/flows/{uuid}/branches/refresh", methods={"POST"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
+     * @View(statusCode=204)
+     */
+    public function refreshAction($uuid, FlatFlow $flow)
+    {
+        $this->branchViewStorage->save($uuid);
+        $this->pullRequestViewStorage->save($uuid, $flow->getRepository());
     }
 }

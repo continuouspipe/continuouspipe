@@ -2,7 +2,10 @@
 
 namespace ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage;
 
+use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\PullRequest;
+use ContinuousPipe\River\CodeRepository\PullRequestResolver;
 use ContinuousPipe\River\Infrastructure\Firebase\FirebaseClient;
 use ContinuousPipe\River\View\Storage\PullRequestViewStorage;
 use Firebase\Exception\ApiException;
@@ -24,15 +27,34 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
      * @var FirebaseClient
      */
     private $firebaseClient;
+    /**
+     * @var PullRequestResolver
+     */
+    private $pullRequestQuery;
 
     public function __construct(
         FirebaseClient $firebaseClient,
         string $databaseUri,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        PullRequestResolver $pullRequestQuery
     ) {
         $this->databaseUri = $databaseUri;
         $this->logger = $logger;
         $this->firebaseClient = $firebaseClient;
+        $this->pullRequestQuery = $pullRequestQuery;
+    }
+
+    public function save(UuidInterface $flowUuid, CodeRepository $repository)
+    {
+        try {
+            $this->firebaseClient->set(
+                $this->databaseUri,
+                $this->savePath($flowUuid),
+                $this->saveBody($this->pullRequestQuery->findAll($flowUuid, $repository))
+            );
+        } catch (ApiException $e) {
+            $this->logCannotSave($flowUuid, $e);
+        }
     }
 
     public function add(UuidInterface $flowUuid, PullRequest $pullRequest)
@@ -86,6 +108,14 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
         );
     }
 
+    private function savePath(UuidInterface $flowUuid)
+    {
+        return sprintf(
+            'flows/%s/pull-requests/by-branch',
+            (string) $flowUuid
+        );
+    }
+
     private function pullRequestPath(UuidInterface $flowUuid, string $branchName, string $pullRequestId)
     {
         return sprintf(
@@ -105,6 +135,27 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
                 'message' => $e->getMessage(),
                 'flowUuid' => (string) $flowUuid,
             ]
+        );
+    }
+
+    private function saveBody(array $pullRequests)
+    {
+        return array_combine(
+            array_map(
+                function (PullRequest $pullRequest) {
+                    return hash('sha256', (string) $pullRequest->getBranch());
+                },
+                $pullRequests
+            ),
+            array_map(
+                function (PullRequest $pullRequest) {
+                    return [
+                        'identifier' => (string) $pullRequest->getIdentifier(),
+                        'title' => $pullRequest->getTitle(),
+                    ];
+                },
+                $pullRequests
+            )
         );
     }
 

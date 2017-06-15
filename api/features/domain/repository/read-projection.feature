@@ -73,7 +73,7 @@ Feature:
     When the branch "master" is deleted for the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
     Then the branch "develop" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
 
-  Scenario: It updates when a new ide is created
+  Scenario: It updates when a new tide is created
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
