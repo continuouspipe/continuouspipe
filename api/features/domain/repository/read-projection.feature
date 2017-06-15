@@ -25,8 +25,10 @@ Feature:
 
     """
     When the commit "12345" is pushed to the branch "master"
-    Then the branch "master" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
-    And the branch "develop" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
+    Then the following branches for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views:
+      | name    |
+      | master  |
+      | develop |
 
   Scenario: It stores the most recent tides for a branch
     Given I have a "continuous-pipe.yml" file in my repository that contains:
