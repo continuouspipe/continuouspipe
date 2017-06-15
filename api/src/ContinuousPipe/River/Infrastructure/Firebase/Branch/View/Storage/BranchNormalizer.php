@@ -21,7 +21,15 @@ class BranchNormalizer
 
     public function normalizeBranches(array $branches)
     {
-        return array_map([$this, 'normalizeBranch'], $branches);
+        return array_combine(
+            array_map(
+                function (Branch $branch) {
+                    return hash('sha256', (string) $branch);
+                },
+                $branches
+            ),
+            array_map([$this, 'normalizeBranch'], $branches)
+        );
     }
 
     public function normalizeBranch(Branch $branch)

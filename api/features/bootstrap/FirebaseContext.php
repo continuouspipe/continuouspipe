@@ -74,6 +74,34 @@ class FirebaseContext implements Context
     }
 
     /**
+     * @Then the following branches for the flow :flow should be saved to the permanent storage of views:
+     */
+    public function theFollowingBranchesForTheFlowShouldBeSavedToThePermanentStorageOfViews($flow, TableNode $table)
+    {
+        foreach ($this->httpHistory as $request) {
+            $uri = (string) $request->getUri();
+
+            $requestBase = sprintf(
+                'https://continuous-pipe.firebaseio.com/flows/%s/branches',
+                $flow
+            );
+            if (0 === strpos($uri, $requestBase)) {
+                $body = json_decode($request->getBody()->getContents(), true);
+
+                $branchHashes = array_map(function ($branch) {
+                    return hash('sha256', $branch['name']);
+                }, $table->getHash());
+
+                if (array_intersect($branchHashes, array_keys($body)) == $branchHashes) {
+                    return;
+                }
+            }
+        }
+
+        throw new \RuntimeException('Request not found');
+    }
+
+    /**
      * @Then the branch :branch for the flow :flow should be saved to the permanent storage of views
      */
     public function theBranchForTheFlowShouldBeSavedToTheFirebaseStorageOfViews($branch, $flow)
@@ -87,6 +115,7 @@ class FirebaseContext implements Context
             );
             if (0 === strpos($uri, $requestBase)) {
                 $body = json_decode($request->getBody()->getContents(), true);
+                
                 return isset($body[hash('sha256', $branch)]);
             }
         }
