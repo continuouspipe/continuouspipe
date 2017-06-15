@@ -117,6 +117,7 @@ default:
                 - StorageContext:
                     - @river.pipeline.view.storage
                     - @river.repository.flow
+                    - @kernel
 
         github:
             paths:

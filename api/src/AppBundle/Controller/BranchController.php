@@ -67,15 +67,14 @@ class BranchController
 
     /**
      * @Route("/flows/{uuid}/branches/refresh", methods={"POST"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
      * @View(statusCode=204)
      */
-    public function refreshAction($uuid, FlatFlow $flow)
+    public function refreshAction(FlatFlow $flow)
     {
         if (null !== $repository = $flow->getRepository()) {
-            $this->branchViewStorage->save($uuid);
-            $this->pullRequestViewStorage->save($uuid, $repository);
+            $this->branchViewStorage->save($flow->getUuid());
+            $this->pullRequestViewStorage->save($flow->getUuid(), $repository);
         }
     }
 }

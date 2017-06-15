@@ -156,3 +156,20 @@ Feature:
     And I open a pull request "4" titled "Please review my new feature" for commit "4567" the branch "feature/new-feature" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
     When the branch "feature/new-feature" is deleted for the repository for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
     Then the pull request "4" titled "Please review my new feature" for branch "feature/new-feature" of flow "d7825625-f775-4ab9-b91c-b93813871bc7" should not be in the permanent storage of views
+
+  Scenario: It creates the read model for all branches
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services: []
+
+    """
+    When I refresh the branches and pull requests for the flow "d7825625-f775-4ab9-b91c-b93813871bc7"
+    Then the branch "master" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
+    And the branch "develop" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
