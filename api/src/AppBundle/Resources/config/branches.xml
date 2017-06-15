@@ -78,6 +78,7 @@
             <argument>%firebase_database_uri%</argument>
             <argument type="service" id="logger" />
             <argument type="service" id="river.pull_request_resolver" />
+            <argument type="service" id="river.branch.view.pull_request_normalizer" />
         </service>
 
         <service id="river.code_repository.pinned_branches_query"
@@ -114,6 +115,8 @@
         <service id="river.branch.view.branch_normalizer" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\BranchNormalizer">
             <argument type="service" id="jms_serializer"/>
         </service>
+
+        <service id="river.branch.view.pull_request_normalizer" class="ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage\PullRequestNormalizer"/>
 
     </services>
 </container>

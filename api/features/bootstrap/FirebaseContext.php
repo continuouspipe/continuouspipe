@@ -219,17 +219,16 @@ class FirebaseContext implements Context
 
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch/%s',
+                'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch/%s/%s',
                 $flow,
-                hash('sha256', $branch)
+                hash('sha256', $branch),
+                $number
             );
 
             if (0 === strpos($uri, $requestBase)) {
                 if ($body == [
-                        $number => [
-                            'identifier' => $number,
-                            'title' => $title
-                        ]
+                        'identifier' => $number,
+                        'title' => $title
                     ]
                 ) {
                     return;

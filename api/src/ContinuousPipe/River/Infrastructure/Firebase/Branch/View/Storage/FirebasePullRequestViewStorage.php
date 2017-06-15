@@ -30,17 +30,23 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
      * @var PullRequestResolver
      */
     private $pullRequestQuery;
+    /**
+     * @var PullRequestNormalizer
+     */
+    private $normalizer;
 
     public function __construct(
         FirebaseClient $firebaseClient,
         string $databaseUri,
         LoggerInterface $logger,
-        PullRequestResolver $pullRequestQuery
+        PullRequestResolver $pullRequestQuery,
+        PullRequestNormalizer $normalizer
     ) {
         $this->databaseUri = $databaseUri;
         $this->logger = $logger;
         $this->firebaseClient = $firebaseClient;
         $this->pullRequestQuery = $pullRequestQuery;
+        $this->normalizer = $normalizer;
     }
 
     public function save(UuidInterface $flowUuid, CodeRepository $repository)
@@ -49,7 +55,7 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
             $this->firebaseClient->set(
                 $this->databaseUri,
                 $this->savePath($flowUuid),
-                $this->saveBody($this->pullRequestQuery->findAll($flowUuid, $repository))
+                $this->normalizer->normalizePullRequests($this->pullRequestQuery->findAll($flowUuid, $repository))
             );
         } catch (ApiException $e) {
             $this->logCannotUpdate($flowUuid, $e);
@@ -61,13 +67,8 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
         try {
             $this->firebaseClient->update(
                 $this->databaseUri,
-                $this->tideUpdatePath($flowUuid, (string) $pullRequest->getBranch()),
-                [
-                    (string) $pullRequest->getIdentifier() => [
-                        'identifier' => (string) $pullRequest->getIdentifier(),
-                        'title' => $pullRequest->getTitle()
-                    ]
-                ]
+                $this->pullRequestPath($flowUuid, (string) $pullRequest->getBranch(), $pullRequest->getIdentifier()),
+                $this->normalizer->normalizePullRequest($pullRequest)
             );
         } catch (ApiException $e) {
             $this->logCannotUpdate($flowUuid, $e);
@@ -134,27 +135,6 @@ class FirebasePullRequestViewStorage implements PullRequestViewStorage
                 'message' => $e->getMessage(),
                 'flowUuid' => (string) $flowUuid,
             ]
-        );
-    }
-
-    private function saveBody(array $pullRequests)
-    {
-        return array_combine(
-            array_map(
-                function (PullRequest $pullRequest) {
-                    return hash('sha256', (string) $pullRequest->getBranch());
-                },
-                $pullRequests
-            ),
-            array_map(
-                function (PullRequest $pullRequest) {
-                    return [
-                        'identifier' => (string) $pullRequest->getIdentifier(),
-                        'title' => $pullRequest->getTitle(),
-                    ];
-                },
-                $pullRequests
-            )
         );
     }
 
