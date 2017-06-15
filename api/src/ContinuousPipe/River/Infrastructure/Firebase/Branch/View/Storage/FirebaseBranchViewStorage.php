@@ -2,15 +2,12 @@
 
 namespace ContinuousPipe\River\Infrastructure\Firebase\Branch\View\Storage;
 
-use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\CodeRepository\BranchQuery;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Infrastructure\Firebase\FirebaseClient;
 use ContinuousPipe\River\View\Storage\BranchViewStorage;
 use ContinuousPipe\River\View\Tide;
 use Firebase\Exception\ApiException;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
 
@@ -34,28 +31,28 @@ class FirebaseBranchViewStorage implements BranchViewStorage
      */
     private $branchQuery;
     /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-    /**
      * @var FlatFlowRepository
      */
     private $flowRepository;
+    /**
+     * @var BranchNormalizer
+     */
+    private $branchNormalizer;
 
     public function __construct(
         FirebaseClient $firebaseClient,
         string $databaseUri,
         LoggerInterface $logger,
         BranchQuery $branchQuery,
-        SerializerInterface $serializer,
-        FlatFlowRepository $flowRepository
+        FlatFlowRepository $flowRepository,
+        BranchNormalizer $branchNormalizer
     ) {
         $this->databaseUri = $databaseUri;
         $this->logger = $logger;
         $this->firebaseClient = $firebaseClient;
         $this->branchQuery = $branchQuery;
-        $this->serializer = $serializer;
         $this->flowRepository = $flowRepository;
+        $this->branchNormalizer = $branchNormalizer;
     }
 
     public function save(UuidInterface $flowUuid)
@@ -64,7 +61,9 @@ class FirebaseBranchViewStorage implements BranchViewStorage
             $this->firebaseClient->set(
                 $this->databaseUri,
                 $this->replacePath($flowUuid),
-                $this->saveBody($this->branchQuery->findBranches($this->flowRepository->find($flowUuid)))
+                $this->branchNormalizer->normalizeBranches(
+                    $this->branchQuery->findBranches($this->flowRepository->find($flowUuid))
+                )
             );
         } catch (ApiException $e) {
             $this->logCannotSave($flowUuid, $e);
@@ -77,7 +76,7 @@ class FirebaseBranchViewStorage implements BranchViewStorage
             $this->firebaseClient->update(
                 $this->databaseUri,
                 $this->tideUpdatePath($tide, $tide->getFlowUuid(), $tide->getCodeReference()->getBranch()),
-                $this->normalizeTide($tide)
+                $this->branchNormalizer->normalizeTide($tide)
             );
         } catch (ApiException $e) {
             $this->logCannotUpdate($tide->getFlowUuid(), $e);
@@ -92,27 +91,6 @@ class FirebaseBranchViewStorage implements BranchViewStorage
     public function branchUnpinned(UuidInterface $flowUuid, string $branch)
     {
         $this->updateBranchPinning($flowUuid, $branch, false);
-    }
-
-    private function normalizeTides(array $tides): array
-    {
-        return array_combine(
-            array_map(
-                function (Tide $tide) {
-                    return $tide->getUuid();
-                },
-                $tides
-            ),
-            array_map([$this, 'normalizeTide'], $tides)
-        );
-    }
-
-    private function normalizeTide(Tide $tide): array
-    {
-        $context = SerializationContext::create();
-        $context->setGroups(['Default']);
-
-        return \GuzzleHttp\json_decode($this->serializer->serialize($tide, 'json', $context), true);
     }
 
     private function updateBranchPinning(UuidInterface $flowUuid, string $branch, $pinned)
@@ -170,20 +148,6 @@ class FirebaseBranchViewStorage implements BranchViewStorage
     private function savePath(UuidInterface $flowUuid, string $branch)
     {
         return sprintf('flows/%s/branches/%s', (string) $flowUuid, hash('sha256', $branch));
-    }
-
-    private function saveBody(array $branches)
-    {
-        return array_map(
-            function (Branch $branch) {
-                return [
-                    'latest-tides' => $this->normalizeTides($branch->getTides()),
-                    'pinned' => $branch->isPinned(),
-                    'name' => (string) $branch
-                ];
-            },
-            $branches
-        );
     }
 
 }
