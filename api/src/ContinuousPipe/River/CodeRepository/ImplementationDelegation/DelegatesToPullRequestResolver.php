@@ -7,7 +7,6 @@ use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
-use ContinuousPipe\River\View\Tide;
 use Ramsey\Uuid\UuidInterface;
 
 class DelegatesToPullRequestResolver implements PullRequestResolver
@@ -31,7 +30,7 @@ class DelegatesToPullRequestResolver implements PullRequestResolver
     public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference): array
     {
         foreach ($this->resolvers as $resolver) {
-            if ($resolver->supports($flowUuid, $codeReference)) {
+            if ($resolver->supports($flowUuid, $codeReference->getRepository())) {
                 return $resolver->findPullRequestWithHeadReference($flowUuid, $codeReference);
             }
         }

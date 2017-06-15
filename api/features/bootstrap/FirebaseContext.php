@@ -198,6 +198,7 @@ class FirebaseContext implements Context
         foreach ($this->httpHistory as $request) {
             /** @var Request $request */
             $uri = (string) $request->getUri();
+            $body = json_decode($request->getBody()->getContents(), true);
 
             $fullRequestBase = sprintf(
                 'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch',
@@ -206,7 +207,6 @@ class FirebaseContext implements Context
             );
 
             if (0 === strpos($uri, $fullRequestBase)) {
-                $body = json_decode($request->getBody()->getContents(), true);
                 $branchHash = hash('sha256', $branch);
                 if (isset($body[$branchHash]) && $body[$branchHash] == [
                         'identifier' => $number,
@@ -225,7 +225,7 @@ class FirebaseContext implements Context
             );
 
             if (0 === strpos($uri, $requestBase)) {
-                if (json_decode($request->getBody()->getContents(), true) == [
+                if ($body == [
                         $number => [
                             'identifier' => $number,
                             'title' => $title

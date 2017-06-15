@@ -31,7 +31,7 @@ class BitBucketPullRequestResolver implements PullRequestResolver
      */
     public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference): array
     {
-        $pullRequests = $this->findAll($flowUuid, $codeReference->getRepository());
+        $pullRequests = $this->fetchAll($codeReference->getRepository());
 
         $matchingPullRequests = array_values(
             array_filter(

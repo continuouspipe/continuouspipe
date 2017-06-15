@@ -14,6 +14,7 @@ use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientException;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientFactory;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
 use ContinuousPipe\River\Guzzle\MatchingHandler;
+use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
 use Lcobucci\JWT\Builder;
@@ -84,6 +85,10 @@ class BitBucketContext implements CodeRepositoryContext
      * @var CodeRepository\InMemoryBranchQuery
      */
     private $inMemoryBranchQuery;
+    /**
+     * @var FakePullRequestResolver
+     */
+    private $fakePullRequestResolver;
 
     public function __construct(
         MatchingHandler $bitBucketMatchingClientHandler,
@@ -93,7 +98,8 @@ class BitBucketContext implements CodeRepositoryContext
         BitBucketClientFactory $clientFactory,
         History $guzzleHistory,
         InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository,
-        CodeRepository\InMemoryBranchQuery $inMemoryBranchQuery
+        CodeRepository\InMemoryBranchQuery $inMemoryBranchQuery,
+        FakePullRequestResolver $fakePullRequestResolver
     ) {
         $this->bitBucketMatchingClientHandler = $bitBucketMatchingClientHandler;
         $this->kernel = $kernel;
@@ -103,6 +109,7 @@ class BitBucketContext implements CodeRepositoryContext
         $this->guzzleHistory = $guzzleHistory;
         $this->inMemoryCodeRepositoryRepository = $inMemoryCodeRepositoryRepository;
         $this->inMemoryBranchQuery = $inMemoryBranchQuery;
+        $this->fakePullRequestResolver = $fakePullRequestResolver;
     }
 
     /**
@@ -198,6 +205,9 @@ class BitBucketContext implements CodeRepositoryContext
             },
             'response' => new Response(200, ['Content-Type' => 'application/json'], json_encode($pullRequests)),
         ]);
+        
+        $this->fakePullRequestResolver->notInMemoryOnly();
+
     }
 
     /**
@@ -233,7 +243,7 @@ class BitBucketContext implements CodeRepositoryContext
 
             return $request;
         }
-
+        
         throw new \RuntimeException('No matching request found');
     }
 
