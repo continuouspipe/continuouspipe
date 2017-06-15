@@ -17,11 +17,11 @@ angular.module('continuousPipeRiver')
             var reloadPullRequests = function() {
                 $scope.pullRequests = pullRequestsByBranch
                     .filter(function(pullRequestInBranch) {
-                        return pullRequestInBranch.$id in $scope.branches;
+                        return $scope.branches.some(function(branch) {return branch.$id == pullRequestInBranch.$id});
                     })
                     .map(function(pullRequestInBranch) {
-                        var view = $scope.branches[pullRequestInBranch.$id];
-                        view.pull_request = $pullRequestInBranch;
+                        var view = $scope.branches.filter(function(branch) {return branch.$id == pullRequestInBranch.$id})[0];
+                        view.pull_request = pullRequestInBranch;
 
                         return view;
                     })
