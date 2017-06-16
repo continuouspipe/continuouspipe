@@ -47,7 +47,7 @@ class GitHubPullRequestResolver implements PullRequestResolver
             return $codeReference->getBranch() == $pullRequest->getHead()->getReference();
         }));
 
-        return $this->toPullRequests($matchingPullRequests);
+        return $this->toPullRequests($matchingPullRequests, $codeReference->getRepository()->getAddress());
     }
 
     /**
@@ -63,15 +63,16 @@ class GitHubPullRequestResolver implements PullRequestResolver
      */
     public function findAll(UuidInterface $flowUuid, CodeRepository $repository): array
     {
-        return $this->toPullRequests($this->fetchAll($flowUuid, $repository));
+        return $this->toPullRequests($this->fetchAll($flowUuid, $repository), $repository->getAddress());
     }
 
-    private function toPullRequests($matchingPullRequests)
+    private function toPullRequests($matchingPullRequests, string $address)
     {
         return array_map(
-            function (PullRequest $pullRequest) {
-                return new \ContinuousPipe\River\CodeRepository\PullRequest(
+            function (PullRequest $pullRequest) use ($address) {
+                return \ContinuousPipe\River\CodeRepository\PullRequest::github(
                     $pullRequest->getNumber(),
+                    $address,
                     $pullRequest->getTitle(),
                     new Branch($pullRequest->getHead()->getReference())
                 );

@@ -13,6 +13,7 @@ use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClient;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientException;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientFactory;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\Guzzle\MatchingHandler;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
@@ -89,6 +90,7 @@ class BitBucketContext implements CodeRepositoryContext
      * @var FakePullRequestResolver
      */
     private $fakePullRequestResolver;
+    private $repository;
 
     public function __construct(
         MatchingHandler $bitBucketMatchingClientHandler,
@@ -143,6 +145,7 @@ class BitBucketContext implements CodeRepositoryContext
         );
 
         $this->inMemoryCodeRepositoryRepository->add($repository);
+        $this->repository = $repository;
 
         $this->thereIsTheAddOnInstalledForTheBitbucketRepositoryOwnedByUser($name, $username);
 
@@ -900,6 +903,16 @@ class BitBucketContext implements CodeRepositoryContext
             )),
         ]);
         $this->inMemoryBranchQuery->notOnlyInMemory();
+    }
+
+    /**
+     * @Given there is a Bitbucket pull-request #:number titled :title for branch :branch
+     */
+    public function aPullRequestContainsTheTideRelatedCommit($number, $title, $branch)
+    {
+        $this->fakePullRequestResolver->willResolve([
+            CodeRepository\PullRequest::bitbucket($number, $this->repository->getAddress(), $title, isset($branch) ? new Branch($branch): null),
+        ]);
     }
 
     private function createRepositoriesResponse(string $username, TableNode $table, int $currentPage, int $pageCount, string $pageUrl): Response

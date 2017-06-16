@@ -129,6 +129,7 @@ class GitHubContext implements CodeRepositoryContext
      * @var CodeRepository\InMemoryBranchQuery
      */
     private $inMemoryBranchQuery;
+    private $repository;
 
     public function __construct(
         Kernel $kernel,
@@ -256,6 +257,7 @@ class GitHubContext implements CodeRepositoryContext
         );
 
         $this->inMemoryCodeRepositoryRepository->add($repository);
+        $this->repository = $repository;
 
         return $repository;
     }
@@ -669,7 +671,7 @@ class GitHubContext implements CodeRepositoryContext
     public function aPullRequestContainsTheTideRelatedCommit($number, $title = null, $branch = null)
     {
         $this->fakePullRequestResolver->willResolve([
-            new CodeRepository\PullRequest($number, $title, isset($branch) ? new Branch($branch): null),
+            CodeRepository\PullRequest::github($number, $this->repository->getAddress(), $title, isset($branch) ? new Branch($branch): null),
         ]);
     }
 

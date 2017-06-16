@@ -261,12 +261,14 @@ class FirebaseContext implements Context
 
     /**
      * @Then the pull request :number titled :title for branch :branch of flow :flow should be saved to the permanent storage of views
+     * @Then the pull request :number titled :title for branch :branch of flow :flow should be saved to the permanent storage of views with url :url
      */
     public function thePullRequestTitledForTheFlowShouldBeSavedToThePermanentStorageOfViews(
         $number,
         $title,
         $branch,
-        $flow
+        $flow,
+        $url = null
     ) {
         foreach ($this->httpHistory as $request) {
             /** @var Request $request */
@@ -281,9 +283,11 @@ class FirebaseContext implements Context
 
             if (0 === strpos($uri, $fullRequestBase)) {
                 $branchHash = hash('sha256', $branch);
+
                 if (isset($body[$branchHash]) && $body[$branchHash] == [
                         'identifier' => $number,
-                        'title' => $title
+                        'title' => $title,
+                        'url' => $url,
                     ]
                 ) {
                     return;
@@ -300,7 +304,8 @@ class FirebaseContext implements Context
             if (0 === strpos($uri, $requestBase)) {
                 if ($body == [
                         'identifier' => $number,
-                        'title' => $title
+                        'title' => $title,
+                        'url' => $url,
                     ]
                 ) {
                     return;

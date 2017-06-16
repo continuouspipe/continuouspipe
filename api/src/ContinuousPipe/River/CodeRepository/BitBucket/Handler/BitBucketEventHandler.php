@@ -41,11 +41,13 @@ class BitBucketEventHandler
         } elseif ($event instanceof PullRequestCreated) {
             $pullRequest = $event->getPullRequest();
 
+            $codeReference = $this->createPullRequestCodeReference($event, $pullRequest);
             $this->eventBus->handle(new PullRequestOpened(
                 $command->getFlowUuid(),
-                $this->createPullRequestCodeReference($event, $pullRequest),
-                new PullRequest(
+                $codeReference,
+                PullRequest::bitbucket(
                     $pullRequest->getId(),
+                    $codeReference->getRepository()->getAddress(),
                     $pullRequest->getTitle()
                 )
             ));

@@ -9,7 +9,7 @@ Feature:
     And the user "samuel" is "USER" of the team "samuel"
     And the GitHub account "sroze" have the installation "0000"
     And the token of the GitHub installation "0000" is "1234"
-    And the GitHub repository "bar" exists
+    And the GitHub repository "docker-php-example" exists
     And I have a flow with UUID "d7825625-f775-4ab9-b91c-b93813871bc7"
 
   Scenario: It creates the read model for all branches
@@ -75,7 +75,7 @@ Feature:
     When the commit "12345" is pushed to the branch "master"
     Then the branch "master" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
     And the branch "develop" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
-    And the pull request "34" titled "A Pull Request" for branch "feature/new-feature" of flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
+    And the pull request "34" titled "A Pull Request" for branch "feature/new-feature" of flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views with url "https://github.com/sroze/docker-php-example/pull/34"
 
   Scenario: It includes the latest commit in the branch
     Given I have a "continuous-pipe.yml" file in my repository that contains:
