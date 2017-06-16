@@ -1,13 +1,16 @@
 <div class="branch-details">
-    <p ng-if="branch.pull_request"><span class="status-colored ellispable">{{ branch.pull_request.title }}</span></p>
-    <p ng-if="!branch.pull_request"><span class="status-colored ellispable">{{ branch.name }}</span></p>
+    <p ng-if="branch.pull_request"><a class="status-colored ellispable" ng-href="{{ branch.pull_request.url }}">{{ branch.pull_request.title }}</a></p>
+    <p ng-if="!branch.pull_request">
+            <span ng-if="!branch.url" class="status-colored ellispable">{{ branch.name }}</span>
+            <a ng-if="branch.url"class="status-colored ellispable" ng-href="{{ branch.url }}">{{ branch.name }}</a>
+    </span></p>
 
     <p><span ng-show="branch['latest-tides']">{{ (branch | latestTideInBranch).creation_date | timeAgo }}</span></p>
 </div>
 
 <div class="branch-code">
-    <p><md-icon>code</md-icon> <span ng-show="branch['latest-tides']">{{ (branch | latestTideInBranch).code_reference.sha1 | limitTo:7 }}</span></p>
-    <p ng-if="branch.pull_request"><md-icon>pull_request</md-icon> <span>#{{ branch.pull_request.identifier }}</span></p>
+    <p><md-icon>code</md-icon> <a ng-show="branch['latest-commit']" ng-href="{{ branch['latest-commit'].url }}">{{ branch['latest-commit'].sha1 | limitTo:7 }}</a></p>
+    <p ng-if="branch.pull_request"><md-icon>pull_request</md-icon> <a ng-href="{{ branch.pull_request.url }}">#{{ branch.pull_request.identifier }}</a></p>
 </div>
 
 <ul class="branch-last-tides">
