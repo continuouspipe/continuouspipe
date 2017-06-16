@@ -26,6 +26,7 @@ angular.module('continuousPipeRiver')
                 return [];
             }
 
-            return sortedTides(branch);
+            return sortedTides(branch).slice(0, 5);
         }
-    });
+    })
+
