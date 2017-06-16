@@ -978,11 +978,24 @@ class GitHubContext implements CodeRepositoryContext
             'docker-php-example'
         );
 
+        $branches = array_map(function(array $b) {
+            $branch =  [
+                'name' => $b['name'],
+            ];
+            if (isset($b['sha']) && isset($b['url'])) {
+                $branch['commit'] = [
+                    'sha' => $b['sha'],
+                    'url' => $b['url'],
+                ];
+            }
+            return $branch;
+        }, $table->getHash());
+
         $this->matchingHandler->pushMatcher([
             'match' => function(RequestInterface $request) use ($url) {
                 return $request->getUri() == $url;
             },
-            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode($table->getHash())),
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode($branches)),
         ]);
         
         $this->inMemoryBranchQuery->notOnlyInMemory();

@@ -13,32 +13,39 @@ class Branch
     private $name;
     private $tides;
     private $pinned;
+    private $latestCommit;
 
-    public function __construct(string $name, array $tides = [], bool $pinned = false)
+    public function __construct(string $name, array $tides = [], bool $pinned = false, Commit $latestCommit = null)
     {
         $this->name = $name;
         $this->tides = $tides;
         $this->pinned = $pinned;
+        $this->latestCommit = $latestCommit;
     }
 
     public function withTides(array $tides)
     {
-        return new self($this->name, $tides, $this->pinned);
+        return new self($this->name, $tides, $this->pinned, $this->latestCommit);
     }
 
     public function withTide(Tide $tide)
     {
-        return new self($this->name, $this->mergeTides($this->tides, $tide), $this->pinned);
+        return new self($this->name, $this->mergeTides($this->tides, $tide), $this->pinned, $this->latestCommit);
+    }
+
+    public function withLatestCommit(Commit $latestCommit)
+    {
+        return new self($this->name, $this->tides, $this->pinned, $latestCommit);
     }
 
     public function pinned()
     {
-        return new self($this->name, $this->tides, true);
+        return new self($this->name, $this->tides, true, $this->latestCommit);
     }
 
     public function unpinned()
     {
-        return new self($this->name, $this->tides, false);
+        return new self($this->name, $this->tides, false, $this->latestCommit);
     }
 
     public function __toString()
@@ -86,4 +93,10 @@ class Branch
 
         return $newTides;
     }
+
+    public function getLatestCommit()
+    {
+        return $this->latestCommit;
+    }
+
 }

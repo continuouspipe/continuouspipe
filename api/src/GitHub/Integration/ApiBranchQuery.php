@@ -4,6 +4,7 @@ namespace GitHub\Integration;
 
 use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\CodeRepository\BranchQuery;
+use ContinuousPipe\River\CodeRepository\Commit;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use GuzzleHttp\ClientInterface;
@@ -54,8 +55,14 @@ class ApiBranchQuery implements BranchQuery
         }
 
         return array_map(
-            function (array $branch) {
-                return new Branch($branch['name']);
+            function (array $b) {
+                $branch = new Branch($b['name']);
+
+                if (isset($b['commit']['sha']) && isset($b['commit']['url'])) {
+                    return $branch->withLatestCommit(Commit::fromShaAndGitubApiUrl($b['commit']['sha'], $b['commit']['url']));
+                }
+
+                return $branch;
             },
             $this->fetchBranches($this->getToken($repository), $this->branchUri($repository))
         );

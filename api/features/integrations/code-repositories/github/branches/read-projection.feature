@@ -33,7 +33,7 @@ Feature:
     Then the branch "master" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
     And the branch "develop" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
 
-  Scenario: It creates the read model for all branches
+  Scenario: It creates the read model for all branches when they are paginated
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -77,3 +77,25 @@ Feature:
     And the branch "develop" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
     And the pull request "34" titled "A Pull Request" for branch "feature/new-feature" of flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
 
+  Scenario: It includes the latest commit in the branch
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services: []
+
+    """
+    And the following branches exists in the github repository:
+      | name    | sha   | url                                                            |
+      | master  | 12345 | https://api.github.com/repos/octocat/Hello-World/commits/12345 |
+      | develop | abcde | https://api.github.com/repos/octocat/Hello-World/commits/abcde |
+    When the commit "12345" is pushed to the branch "master"
+    Then the following branches for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views:
+      | name    | sha   | url                                                 |
+      | master  | 12345 | https://github.com/octocat/Hello-World/commit/12345 |
+      | develop | abcde | https://github.com/octocat/Hello-World/commit/abcde |

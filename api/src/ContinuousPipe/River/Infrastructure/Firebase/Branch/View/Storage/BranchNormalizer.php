@@ -34,11 +34,20 @@ class BranchNormalizer
 
     public function normalizeBranch(Branch $branch)
     {
-        return [
+        $normalizedBranch = [
             'latest-tides' => $this->normalizeTides($branch->getTides()),
             'pinned' => $branch->isPinned(),
-            'name' => (string) $branch
+            'name' => (string) $branch,
         ];
+        
+        if (null !== $latestCommit = $branch->getLatestCommit()) {
+            $normalizedBranch['latest-commit'] = [
+                'sha' => $latestCommit->getSha(),
+                'url' => $latestCommit->getUrl(),
+            ];
+        }
+        
+        return $normalizedBranch;
     }
 
     public function normalizeTides(array $tides): array

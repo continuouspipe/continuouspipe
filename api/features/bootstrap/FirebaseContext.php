@@ -88,11 +88,49 @@ class FirebaseContext implements Context
             if (0 === strpos($uri, $requestBase)) {
                 $body = json_decode($request->getBody()->getContents(), true);
 
-                $branchHashes = array_map(function ($branch) {
-                    return hash('sha256', $branch['name']);
-                }, $table->getHash());
+                $expectedBranches = array_combine(
+                    array_map(
+                        function ($branch) {
+                            return hash('sha256', $branch['name']);
+                        },
+                        $table->getHash()
+                    ),
+                    array_map(
+                        function (array $b) {
+                            $branch = [
+                                'name' => $b['name'],
+                            ];
+                            if (isset($b['sha']) && isset($b['url'])) {
+                                $branch['latest-commit'] = [
+                                    'sha' => $b['sha'],
+                                    'url' => $b['url'],
+                                ];
+                            }
+                            return $branch;
+                        },
+                        $table->getHash()
+                    )
+                );
 
-                if (array_intersect($branchHashes, array_keys($body)) == $branchHashes) {
+                $returnedBranches = array_map(
+                    function ($b) {
+                        if (!is_array($b)) {
+                            return $b;
+                        }
+                        $branch = [];
+                        if(isset($b['name'])) {
+                            $branch['name'] = $b['name'];
+                        }
+
+                        if(isset($b['latest-commit'])) {
+                            $branch['latest-commit'] = $b['latest-commit'];
+                        }
+                        return $branch;
+                    },
+                    $body
+                );
+
+                if ($expectedBranches == $returnedBranches) {
                     return;
                 }
             }
@@ -115,7 +153,7 @@ class FirebaseContext implements Context
             );
             if (0 === strpos($uri, $requestBase)) {
                 $body = json_decode($request->getBody()->getContents(), true);
-                
+
                 return isset($body[hash('sha256', $branch)]);
             }
         }
@@ -245,7 +283,6 @@ class FirebaseContext implements Context
                     return;
                 }
             }
-
 
             $requestBase = sprintf(
                 'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch/%s/%s',

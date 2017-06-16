@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
 use ContinuousPipe\AtlassianAddon\BitBucket\PullRequest;
 use ContinuousPipe\River\CodeRepository\Branch;
+use ContinuousPipe\River\CodeRepository\Commit;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\SerializerInterface;
@@ -188,8 +189,17 @@ class GuzzleBitBucketClient implements BitBucketClient
         $json = $this->readJson($response);
 
         $branches = array_map(
-            function (array $branch) {
-                return new Branch($branch['name']);
+            function (array $b) {
+                $branch = new Branch($b['name']);
+
+                if (isset($b['target']['hash']) && isset($b['target']['links']['html']['href'])) {
+                    return $branch->withLatestCommit(new Commit(
+                        $b['target']['hash'],
+                        $b['target']['links']['html']['href'])
+                    );
+                }
+
+                return $branch;
             },
             $json['values']
         );
