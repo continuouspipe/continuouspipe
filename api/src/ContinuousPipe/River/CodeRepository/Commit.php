@@ -15,7 +15,7 @@ class Commit
         $this->url = $url;
     }
 
-    static public function fromShaAndGitubApiUrl(string $sha, string $url)
+    public static function fromShaAndGitubApiUrl(string $sha, string $url)
     {
         return new self($sha, self::toGithubWebsiteUrl($sha, $url));
     }

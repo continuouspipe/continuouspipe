@@ -65,7 +65,7 @@ class BitBucketPullRequestResolver implements PullRequestResolver
     private function toPullRequests($matchingPullRequests, string $address)
     {
         return array_map(
-            function (BitBucketPullRequest $pullRequest) use($address) {
+            function (BitBucketPullRequest $pullRequest) use ($address) {
                 return PullRequest::bitbucket(
                     $pullRequest->getId(),
                     $address,
