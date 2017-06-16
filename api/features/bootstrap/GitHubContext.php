@@ -982,10 +982,10 @@ class GitHubContext implements CodeRepositoryContext
             $branch =  [
                 'name' => $b['name'],
             ];
-            if (isset($b['sha']) && isset($b['url'])) {
+            if (isset($b['sha']) && isset($b['commit-url'])) {
                 $branch['commit'] = [
                     'sha' => $b['sha'],
-                    'url' => $b['url'],
+                    'url' => $b['commit-url'],
                 ];
             }
             return $branch;

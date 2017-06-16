@@ -91,11 +91,11 @@ Feature:
 
     """
     And the following branches exists in the github repository:
-      | name    | sha   | url                                                            |
-      | master  | 12345 | https://api.github.com/repos/octocat/Hello-World/commits/12345 |
-      | develop | abcde | https://api.github.com/repos/octocat/Hello-World/commits/abcde |
+      | name    | sha   | commit-url                                                          |
+      | master  | 12345 | https://api.github.com/repos/sroze/docker-php-example/commits/12345 |
+      | develop | abcde | https://api.github.com/repos/sroze/docker-php-example/commits/abcde |
     When the commit "12345" is pushed to the branch "master"
     Then the following branches for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views:
-      | name    | sha   | url                                                 |
-      | master  | 12345 | https://github.com/octocat/Hello-World/commit/12345 |
-      | develop | abcde | https://github.com/octocat/Hello-World/commit/abcde |
+      | name    | sha   | commit-url                                               | url                                                        |
+      | master  | 12345 | https://github.com/sroze/docker-php-example/commit/12345 | https://github.com/sroze/docker-php-example/branch/master  |
+      | develop | abcde | https://github.com/sroze/docker-php-example/commit/abcde | https://github.com/sroze/docker-php-example/branch/develop |

@@ -46,7 +46,11 @@ class BranchNormalizer
                 'url' => $latestCommit->getUrl(),
             ];
         }
-        
+
+        if (null !== $url = $branch->getUrl()) {
+            $normalizedBranch['url'] = $url;
+        }
+
         return $normalizedBranch;
     }
 

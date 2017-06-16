@@ -28,8 +28,10 @@ Feature:
       | master  |
       | develop |
     When the commit "12345" is pushed to the branch "master"
-    Then the branch "master" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
-    And the branch "develop" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
+    Then the following branches for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views:
+      | name    | url                                                   |
+      | master  | https://bitbucket.org/sroze/my-example/branch/master  |
+      | develop | https://bitbucket.org/sroze/my-example/branch/develop |
 
   Scenario: It creates the read model for all branches
     Given I have a "continuous-pipe.yml" file in my repository that contains:
@@ -66,11 +68,11 @@ Feature:
 
     """
     And the following branches exist in the bitbucket repository with slug "my-example":
-      | name    | sha   | url                                                   |
-      | master  | 12345 | https://bitbucket.org/samuel/my-example/commits/12345 |
-      | develop | abcde | https://bitbucket.org/samuel/my-example/commits/abcde |
+      | name    | sha   | commit-url                                           |
+      | master  | 12345 | https://bitbucket.org/sroze/my-example/commits/12345 |
+      | develop | abcde | https://bitbucket.org/sroze/my-example/commits/abcde |
     When the commit "12345" is pushed to the branch "master"
     Then the following branches for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views:
-      | name    | sha   | url                                                   |
-      | master  | 12345 | https://bitbucket.org/samuel/my-example/commits/12345 |
-      | develop | abcde | https://bitbucket.org/samuel/my-example/commits/abcde |
+      | name    | sha   | commit-url                                           | url                                                   |
+      | master  | 12345 | https://bitbucket.org/sroze/my-example/commits/12345 | https://bitbucket.org/sroze/my-example/branch/master  |
+      | develop | abcde | https://bitbucket.org/sroze/my-example/commits/abcde | https://bitbucket.org/sroze/my-example/branch/develop |

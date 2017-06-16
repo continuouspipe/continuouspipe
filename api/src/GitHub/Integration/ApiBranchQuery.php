@@ -55,8 +55,8 @@ class ApiBranchQuery implements BranchQuery
         }
 
         return array_map(
-            function (array $b) {
-                $branch = new Branch($b['name']);
+            function (array $b) use ($repository) {
+                $branch = Branch::github($b['name'], $repository->getAddress());
 
                 if (isset($b['commit']['sha']) && isset($b['commit']['url'])) {
                     return $branch->withLatestCommit(Commit::fromShaAndGitubApiUrl($b['commit']['sha'], $b['commit']['url']));

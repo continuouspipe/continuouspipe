@@ -14,38 +14,80 @@ class Branch
     private $tides;
     private $pinned;
     private $latestCommit;
+    /**
+     * @var string
+     */
+    private $url;
 
-    public function __construct(string $name, array $tides = [], bool $pinned = false, Commit $latestCommit = null)
-    {
+    public function __construct(
+        string $name,
+        array $tides = [],
+        bool $pinned = false,
+        Commit $latestCommit = null,
+        string $url = null
+    ) {
         $this->name = $name;
         $this->tides = $tides;
         $this->pinned = $pinned;
         $this->latestCommit = $latestCommit;
+        $this->url = $url;
+    }
+
+    public static function bitbucket(string $name, string $address)
+    {
+        return new self(
+            $name,
+            [],
+            false,
+            null,
+            str_replace(
+                'https://api.bitbucket.org/2.0/repositories/',
+                'https://bitbucket.org/',
+                $address . '/branch/' . $name
+            )
+        );
+    }
+
+    public static function github(string $name, string $address)
+    {
+        return new self(
+            $name,
+            [],
+            false,
+            null,
+            $address . '/branch/' . $name
+        );
     }
 
     public function withTides(array $tides)
     {
-        return new self($this->name, $tides, $this->pinned, $this->latestCommit);
+        return new self($this->name, $tides, $this->pinned, $this->latestCommit, $this->url);
     }
 
     public function withTide(Tide $tide)
     {
-        return new self($this->name, $this->mergeTides($this->tides, $tide), $this->pinned, $this->latestCommit);
+        return new self(
+            $this->name,
+            $this->mergeTides($this->tides, $tide),
+            $this->pinned,
+            $this->latestCommit,
+            $this->url
+        );
     }
 
     public function withLatestCommit(Commit $latestCommit)
     {
-        return new self($this->name, $this->tides, $this->pinned, $latestCommit);
+        return new self($this->name, $this->tides, $this->pinned, $latestCommit, $this->url);
     }
 
     public function pinned()
     {
-        return new self($this->name, $this->tides, true, $this->latestCommit);
+        return new self($this->name, $this->tides, true, $this->latestCommit, $this->url);
     }
 
     public function unpinned()
     {
-        return new self($this->name, $this->tides, false, $this->latestCommit);
+        return new self($this->name, $this->tides, false, $this->latestCommit, $this->url);
     }
 
     public function __toString()
@@ -97,6 +139,11 @@ class Branch
     public function getLatestCommit()
     {
         return $this->latestCommit;
+    }
+
+    public function getUrl()
+    {
+        return $this->url;
     }
 
 }

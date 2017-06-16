@@ -100,11 +100,14 @@ class FirebaseContext implements Context
                             $branch = [
                                 'name' => $b['name'],
                             ];
-                            if (isset($b['sha']) && isset($b['url'])) {
+                            if (isset($b['sha']) && isset($b['commit-url'])) {
                                 $branch['latest-commit'] = [
                                     'sha' => $b['sha'],
-                                    'url' => $b['url'],
+                                    'url' => $b['commit-url'],
                                 ];
+                            }
+                            if (isset($b['url'])) {
+                                $branch['url'] = $b['url'];
                             }
                             return $branch;
                         },
@@ -124,6 +127,9 @@ class FirebaseContext implements Context
 
                         if(isset($b['latest-commit'])) {
                             $branch['latest-commit'] = $b['latest-commit'];
+                        }
+                        if (isset($b['url'])) {
+                            $branch['url'] = $b['url'];
                         }
                         return $branch;
                     },

@@ -852,10 +852,10 @@ class BitBucketContext implements CodeRepositoryContext
             $branch =  [
                 'name' => $b['name'],
             ];
-            if (isset($b['sha']) && isset($b['url'])) {
+            if (isset($b['sha']) && isset($b['commit-url'])) {
                 $branch['target'] = [
                     'hash' => $b['sha'],
-                    'links' => ['html' => ['href' => $b['url']]],
+                    'links' => ['html' => ['href' => $b['commit-url']]],
                 ];
             }
             return $branch;

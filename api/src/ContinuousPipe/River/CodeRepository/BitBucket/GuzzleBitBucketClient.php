@@ -166,7 +166,10 @@ class GuzzleBitBucketClient implements BitBucketClient
     public function getBranches(BitBucketCodeRepository $codeRepository)
     {
         try {
-            return $this->readBranches('/2.0/repositories/' . $codeRepository->getApiSlug() . '/refs/branches');
+            return $this->readBranches(
+                '/2.0/repositories/' . $codeRepository->getApiSlug() . '/refs/branches',
+                $codeRepository->getAddress()
+            );
         } catch (RequestException $e) {
             $message = $e->getMessage();
             if ($e->getResponse() && $e->getResponse()->getStatusCode() == 404) {
@@ -178,7 +181,7 @@ class GuzzleBitBucketClient implements BitBucketClient
 
     }
 
-    private function readBranches(string $link)
+    private function readBranches(string $link, string $address)
     {
         try {
             $response = $this->client->request('GET', $link);
@@ -189,8 +192,8 @@ class GuzzleBitBucketClient implements BitBucketClient
         $json = $this->readJson($response);
 
         $branches = array_map(
-            function (array $b) {
-                $branch = new Branch($b['name']);
+            function (array $b) use ($address) {
+                $branch = Branch::bitbucket($b['name'], $address);
 
                 if (isset($b['target']['hash']) && isset($b['target']['links']['html']['href'])) {
                     return $branch->withLatestCommit(new Commit(
@@ -205,7 +208,7 @@ class GuzzleBitBucketClient implements BitBucketClient
         );
 
         if (isset($json['next'])) {
-            return array_merge($branches, $this->readBranches($json['next']));
+            return array_merge($branches, $this->readBranches($json['next'], $address));
         }
 
         return $branches;
