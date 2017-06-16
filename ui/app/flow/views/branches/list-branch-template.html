@@ -7,7 +7,7 @@
 
 <div class="branch-code">
     <p><md-icon>code</md-icon> <span ng-show="branch['latest-tides']">{{ (branch | latestTideInBranch).code_reference.sha1 | limitTo:7 }}</span></p>
-    <p ng-if="branch.pull_request"><md-icon>pull_request</md-icon> <span>#{{ branch.pull_request.number }}</span></p>
+    <p ng-if="branch.pull_request"><md-icon>pull_request</md-icon> <span>#{{ branch.pull_request.identifier }}</span></p>
 </div>
 
 <ul class="branch-last-tides">
