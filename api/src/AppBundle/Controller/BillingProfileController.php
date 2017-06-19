@@ -11,6 +11,10 @@ use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use ContinuousPipe\Billing\Subscription\SubscriptionException;
 use ContinuousPipe\Billing\Usage\UsageTracker;
 use ContinuousPipe\Message\UserActivity;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Team\TeamMembership;
+use ContinuousPipe\Security\Team\TeamMembershipRepository;
+use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -54,6 +58,10 @@ class BillingProfileController
      * @var string
      */
     private $recurlySubdomain;
+    /**
+     * @var TeamMembershipRepository
+     */
+    private $teamMembershipRepository;
 
     public function __construct(
         UserBillingProfileRepository $userBillingProfileRepository,
@@ -62,6 +70,7 @@ class BillingProfileController
         ActivityTracker $activityTracker,
         UrlGeneratorInterface $urlGenerator,
         UsageTracker $usageTracker,
+        TeamMembershipRepository $teamMembershipRepository,
         string $recurlySubdomain
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
@@ -71,6 +80,7 @@ class BillingProfileController
         $this->activityTracker = $activityTracker;
         $this->urlGenerator = $urlGenerator;
         $this->usageTracker = $usageTracker;
+        $this->teamMembershipRepository = $teamMembershipRepository;
     }
 
     /**
@@ -97,7 +107,18 @@ class BillingProfileController
             $this->createBillingProfile($user, $request->get('name'));
         }
 
-        return ['billingProfiles' => $this->userBillingProfileRepository->findAllByUser($user)];
+        $billingProfilesOfTeamsUserIsAdmin = $this->teamMembershipRepository->findByUser($user)->filter(function(TeamMembership $membership) {
+            return $membership->isAdmin();
+        })->map(function(TeamMembership $membership) {
+            return $membership->getTeam();
+        })->map(function(Team $team) {
+            return $this->userBillingProfileRepository->findByTeam($team);
+        });
+
+        return [
+            'billingProfiles' => $this->userBillingProfileRepository->findAllByUser($user),
+            'relatedTeamsBillingProfiles' => $billingProfilesOfTeamsUserIsAdmin,
+        ];
     }
 
     /**

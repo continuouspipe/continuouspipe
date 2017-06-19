@@ -23,6 +23,7 @@
             <argument type="service" id="app.billing.activity_tracker" />
             <argument type="service" id="router" />
             <argument type="service" id="app.billing.usage_tracker" />
+            <argument type="service" id="app.repository.team_membership" />
             <argument>%recurly_subdomain%</argument>
         </service>
 
