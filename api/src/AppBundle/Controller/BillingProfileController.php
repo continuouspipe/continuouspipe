@@ -129,8 +129,7 @@ class BillingProfileController
     public function configureAction(User $user, string $uuid, Request $request)
     {
         $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
-
-        if ($billingProfile->getUser() != $user) {
+        if (!$this->userHasAccess($user, $billingProfile)) {
             throw new AccessDeniedHttpException('You are not authorized to access this billing profile');
         }
 
@@ -252,5 +251,25 @@ class BillingProfileController
         $this->userBillingProfileRepository->save($billingProfile);
 
         return $billingProfile;
+    }
+
+    private function userHasAccess(User $user, UserBillingProfile $billingProfile)
+    {
+        if ($billingProfile->getUser()->getUsername() == $user->getUsername()) {
+            return true;
+        }
+
+        $teams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
+        $teamsUserIsAdmin = array_filter($teams, function(Team $team) use ($user) {
+            $adminUserMemberships = $team->getMemberships()->filter(function(TeamMembership $membership) use ($user) {
+                return $membership->getUser()->getUsername() == $user->getUsername();
+            })->filter(function(TeamMembership $membership) {
+                return $membership->isAdmin();
+            });
+
+            return $adminUserMemberships->count() > 0;
+        });
+
+        return count($teamsUserIsAdmin) > 0;
     }
 }

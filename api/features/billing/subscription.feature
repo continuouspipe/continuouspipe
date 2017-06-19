@@ -91,3 +91,13 @@ Feature:
     And the user "another-user" with email "test@example.com" is authenticated on its account
     When I view the list of billing profiles
     Then I should see a billing profile named "My project foo profile"
+
+  Scenario: I have access the billing profile if I am admin of a team
+    Given there is a team "foo"
+    And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel" named "My project foo profile"
+    And there is a user "another-user"
+    And the user "another-user" is administrator of the team "foo"
+    And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
+    And the user "another-user" with email "test@example.com" is authenticated on its account
+    When I configure my billing profile "00000000-0000-0000-0000-000000000000"
+    Then I should be able to subscribe
