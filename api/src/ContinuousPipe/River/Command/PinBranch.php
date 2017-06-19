@@ -38,5 +38,4 @@ class PinBranch implements FlowCommand, Message
     {
         return $this->branch;
     }
-
 }

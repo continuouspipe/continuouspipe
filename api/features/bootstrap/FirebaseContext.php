@@ -157,14 +157,34 @@ class FirebaseContext implements Context
                 'https://continuous-pipe.firebaseio.com/flows/%s/branches',
                 $flow
             );
-            if (0 === strpos($uri, $requestBase)) {
-                $body = json_decode($request->getBody()->getContents(), true);
 
-                return isset($body[hash('sha256', $branch)]);
+            if (0 === strpos($uri, $requestBase)) {
+                /** @var \GuzzleHttp\Psr7\Stream $body */
+                $body = $request->getBody();
+                $body->rewind();
+
+                $json = json_decode($body->getContents(), true);
+                if (!isset($json[hash('sha256', $branch)])) {
+                    continue;
+                }
+
+                return $json[hash('sha256', $branch)];
             }
         }
 
         throw new \RuntimeException('Request not found');
+    }
+
+    /**
+     * @Then the branch :branch for the flow :flow should be saved to the permanent storage of views with a not null datetime
+     */
+    public function theBranchForTheFlowShouldBeSavedToTheFirebaseStorageOfViewsWithANotNullDateTime($branch, $flow)
+    {
+        $branch = $this->theBranchForTheFlowShouldBeSavedToTheFirebaseStorageOfViews($branch, $flow);
+
+        if (empty($branch['latest-commit']['datetime'])) {
+            throw new \RuntimeException('Datetime of latest commit found empty');
+        }
     }
 
     /**

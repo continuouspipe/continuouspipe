@@ -65,7 +65,6 @@ class TideReportListener
         foreach ($tide->getTasks()->getTasks() as $task) {
             $this->logTaskEvent($tide, $task);
         }
-
     }
 
     private function getTideStatusCode(Tide $tide): int

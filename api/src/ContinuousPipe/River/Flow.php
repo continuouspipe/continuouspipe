@@ -259,5 +259,4 @@ final class Flow
     {
         return $this->pinnedBranches;
     }
-
 }

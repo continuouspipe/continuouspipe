@@ -74,5 +74,4 @@ class IngressConfigurator implements EndpointConfigurator
 
         return $endpointConfiguration;
     }
-
 }

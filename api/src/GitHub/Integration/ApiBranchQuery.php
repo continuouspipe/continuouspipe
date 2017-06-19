@@ -55,11 +55,11 @@ class ApiBranchQuery implements BranchQuery
         }
         
         return array_map(
-            function (array $b) use ($repository) {
-                $branch = Branch::github($b['name'], $repository->getAddress());
+            function (array $gitHubBranch) use ($repository) {
+                $branch = Branch::github($gitHubBranch['name'], $repository->getAddress());
 
-                if (isset($b['commit']['sha']) && isset($b['commit']['url'])) {
-                    return $branch->withLatestCommit(Commit::fromShaAndGitubApiUrl($b['commit']['sha'], $b['commit']['url']));
+                if (isset($gitHubBranch['commit']['sha']) && isset($gitHubBranch['commit']['url'])) {
+                    return $branch->withLatestCommit(Commit::fromGitHubRepresentation($gitHubBranch['commit']));
                 }
 
                 return $branch;
@@ -130,5 +130,4 @@ class ApiBranchQuery implements BranchQuery
 
         return trim($nextLink[0], '<>');
     }
-
 }

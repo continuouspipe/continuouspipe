@@ -45,6 +45,10 @@ class BranchNormalizer
                 'sha' => $latestCommit->getSha(),
                 'url' => $latestCommit->getUrl(),
             ];
+
+            if (null !== ($date = $latestCommit->getDateTime())) {
+                $normalizedBranch['latest-commit']['datetime'] = $date->format(\DateTime::RFC3339);
+            }
         }
 
         if (null !== $url = $branch->getUrl()) {
@@ -74,5 +78,4 @@ class BranchNormalizer
 
         return \GuzzleHttp\json_decode($this->serializer->serialize($tide, 'json', $context), true);
     }
-
 }

@@ -53,5 +53,4 @@ class HttplabsConfigurator implements EndpointConfigurator
 
         return $endpointConfiguration;
     }
-
 }

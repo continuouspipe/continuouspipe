@@ -6,7 +6,6 @@ use ContinuousPipe\River\CodeRepository\PullRequest;
 
 class PullRequestNormalizer
 {
-
     public function normalizePullRequests(array $pullRequests)
     {
         return array_combine(
@@ -31,5 +30,4 @@ class PullRequestNormalizer
             'url' => $pullRequest->getUrl(),
         ];
     }
-
 }

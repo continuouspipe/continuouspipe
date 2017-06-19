@@ -71,5 +71,5 @@ interface BitBucketClient
      */
     public function deletePullRequestComment(BitBucketCodeRepository $codeRepository, string $pullRequestIdentifier, string $commentIdentifier);
     
-    public function getBranches(BitBucketCodeRepository $codeRepository); 
+    public function getBranches(BitBucketCodeRepository $codeRepository);
 }

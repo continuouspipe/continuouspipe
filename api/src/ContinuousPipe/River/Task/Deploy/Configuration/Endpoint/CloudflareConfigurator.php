@@ -65,5 +65,4 @@ class CloudflareConfigurator implements EndpointConfigurator
 
         return $endpointConfiguration;
     }
-
 }

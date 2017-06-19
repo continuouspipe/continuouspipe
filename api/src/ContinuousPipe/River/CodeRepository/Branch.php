@@ -149,5 +149,4 @@ class Branch
     {
         return $this->url;
     }
-
 }

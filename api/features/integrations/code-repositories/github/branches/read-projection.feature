@@ -99,3 +99,23 @@ Feature:
       | name    | sha   | commit-url                                               | url                                                        |
       | master  | 12345 | https://github.com/sroze/docker-php-example/commit/12345 | https://github.com/sroze/docker-php-example/branch/master  |
       | develop | abcde | https://github.com/sroze/docker-php-example/commit/abcde | https://github.com/sroze/docker-php-example/branch/develop |
+
+  Scenario: It also adds the commit datetime
+    Given there is a repository identifier "987987"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services: []
+
+    """
+    And the following branches exists in the github repository:
+      | name    | sha   | commit-url                                           | datetime                  |
+      | master  | 12345 | https://bitbucket.org/sroze/my-example/commits/12345 | 2016-12-27T13:04:07+00:00 |
+    When the commit "12345" is pushed to the branch "master"
+    Then the branch "master" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views with a not null datetime
