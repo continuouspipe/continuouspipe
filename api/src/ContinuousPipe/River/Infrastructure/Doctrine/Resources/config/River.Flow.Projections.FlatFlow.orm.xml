@@ -17,5 +17,6 @@
 
         <embedded name="team" class="ContinuousPipe\Security\Team\Team" />
         <embedded name="user" class="ContinuousPipe\Security\User\User" />
+        <field name="pinnedBranches" type="simple_array" nullable="true"/>
     </entity>
 </doctrine-mapping>
