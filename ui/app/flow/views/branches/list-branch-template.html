@@ -1,0 +1,34 @@
+<div class="branch-details">
+    <p ng-if="branch.pull_request">
+        <a class="status-colored ellispable" ng-href="{{ branch.pull_request.url }}" target="_blank">{{ branch.pull_request.title }}</a>
+    </p>
+    <p ng-if="!branch.pull_request">
+        <span ng-if="!branch.url" class="status-colored ellispable">{{ branch.name }}</span>
+        <a ng-if="branch.url"class="status-colored ellispable" ng-href="{{ branch.url }}" target="_blank">{{ branch.name }}</a>
+    </p>
+
+    <p><span ng-show="branch['latest-tides']">{{ (branch | latestTideInBranch).creation_date | timeAgo }}</span></p>
+</div>
+
+<div class="branch-code">
+    <p><md-icon>code</md-icon> <a ng-show="branch['latest-commit']" ng-href="{{ branch['latest-commit'].url }}" target="_blank">{{ branch['latest-commit'].sha | limitTo:7 }}</a></p>
+    <p ng-if="branch.pull_request">
+        <md-icon class="cp-icon-git-branch"></md-icon> <a ng-href="{{ branch.pull_request.url }}" target="_blank">#{{ branch.pull_request.identifier }}</a></p>
+</div>
+
+<ul class="branch-last-tides">
+    <li ng-repeat="tide in (branch | branchLastTides)" class="branch-last-tide" ng-class="tide.status | tideStatusClass" ui-sref="tide.logs({tideUuid: tide.uuid})" >
+        <span ng-show="tide.status=='success'"><md-icon>done</md-icon></span>
+        <span ng-show="tide.status=='failure'"><md-icon>clear</md-icon></span>
+        <span ng-show="tide.status=='cancelled'"><md-icon>block</md-icon></span>
+        <span ng-show="tide.status=='pending'"><md-icon>hourglass_empty</md-icon></span>
+        <md-progress-circular md-mode="indeterminate"  ng-show="tide.status=='running'"></md-progress-circular>
+    </li>
+    <li ng-repeat="placeholder in [0, 1, 2, 3, 4]" ng-if="!(branch | branchLastTides)[placeholder]" class="placeholder-tide"></li>
+    <li>
+        <md-button class="md-icon-button" ng-click="pinOrUnPin(branch)" ng-show="isAdmin">
+            <md-icon ng-if="branch.pinned">star</md-icon>
+            <md-icon ng-if="!branch.pinned">star_border</md-icon>
+        </md-button>
+    </li>
+</ul>

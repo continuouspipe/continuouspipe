@@ -834,6 +834,216 @@ body {
             }
         }
     }
+
+    ul.branch-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        > li {
+            border-left: 4px solid grey;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            flex-flow: row nowrap;
+            align-items: center;
+            height: 60px;
+            text-decoration: none;
+            color: #333;
+            padding-left: 10px;
+            border-bottom: 1px solid #efefef;
+            margin-bottom: 5px;
+
+            &.branch-placeholder {
+                border: none;
+                text-align: center;
+
+                > p {
+                    flex: 1;
+                }
+            }
+
+            &:first-child {
+                margin-top: 5px;
+            }
+
+            &:hover {
+                background: #efefef;
+            }
+
+            span {
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+
+                &.ellispable {
+                    max-width: 100%;
+                    display: inline-block;
+                }
+            }
+
+            md-icon[class^="cp-icon-"] {
+                text-align: center;
+                font-size: 1.5em;
+            }
+
+            p {
+                margin: 0;
+                padding: 0;
+            }
+
+            .branch-details {
+                width: 40%;
+                padding-left: 1em;
+
+                a {
+                    text-decoration: none;
+                    color: #999;
+                }
+            }
+            .branch-code {
+                width: 15%;
+
+                a {
+                    text-decoration: none;
+                    color: #333;
+                }
+            }
+            .branch-last-tides {
+                width: 21%;
+            }
+
+            ul.branch-last-tides {
+                width: 30%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                display: flex;
+                justify-content: space-between;
+                flex-flow: row nowrap;
+                align-items: center;
+
+                li {
+                    width: 20%;
+                    border-right: 1px solid #fff;
+                    height: 100%;
+                    margin: 0;
+                    padding: 0;
+                    list-style: none;
+                    display: flex;
+                    align-items: center;
+
+                    &.branch-last-tide {
+                        cursor: pointer;
+                    }
+
+                    > span {
+                        flex: 1;
+                        text-align: center;
+                    }
+
+                    > md-progress-circular {
+                        margin: 0 auto 0 auto;
+                    }
+
+                    &.placeholder-tide {
+                        background: #fcfcfc;
+                    }
+
+                    &.status-success {
+                        background: $success-color;
+
+                        &:hover {
+                            background: $success-dark-color;
+                        }
+                    }
+                    &.status-failure {
+                        background: $failure-color;
+
+                        &:hover {
+                            background: $failure-dark-color;
+                        }
+                    }
+                    &.status-running {
+                        background: $running-color;
+
+                        &:hover {
+                            background: $running-dark-color;
+                        }
+                    }
+                    &.status-skipped {
+                        background: $skipped-color;
+
+                        &:hover {
+                            background: $skipped-dark-color;
+                        }
+                    }
+                    &.status-cancelled {
+                        background: $cancelled-color;
+
+                        &:hover {
+                            background: $cancelled-dark-color;
+                        }
+                    }
+                    &.status-pending {
+                        background: $pending-color;
+
+                        &:hover {
+                            background: $pending-dark-color;
+                        }
+                    }
+                }
+            }
+
+            code {
+                font-size: 12px;
+            }
+
+            &.status-success {
+                border-left-color: $success-dark-color;
+
+                .status-colored {
+                    color: $success-dark-color;
+                }
+            }
+            &.status-failure {
+                border-left-color: $failure-dark-color;
+
+                .status-colored {
+                    color: $failure-dark-color;
+                }
+            }
+            &.status-running {
+                border-left-color: $running-dark-color;
+
+                .status-colored {
+                    color: $running-dark-color;
+                }
+            }
+            &.status-skipped {
+                border-left-color: $skipped-dark-color;
+
+                .status-colored {
+                    color: $skipped-dark-color;
+                }
+            }
+            &.status-cancelled {
+                border-left-color: $cancelled-dark-color;
+
+                .status-colored {
+                    color: $cancelled-dark-color;
+                }
+            }
+            &.status-pending {
+                border-left-color: $pending-dark-color;
+
+                .status-colored {
+                    color: $pending-dark-color;
+                }
+            }
+        }
+    }
 }
 
 $loader-color: rgb(66, 133, 244);
