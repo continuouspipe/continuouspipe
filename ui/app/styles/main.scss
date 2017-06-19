@@ -882,6 +882,11 @@ body {
                 }
             }
 
+            md-icon[class^="cp-icon-"] {
+                text-align: center;
+                font-size: 1.5em;
+            }
+
             p {
                 margin: 0;
                 padding: 0;
