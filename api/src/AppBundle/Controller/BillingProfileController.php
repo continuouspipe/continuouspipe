@@ -115,7 +115,7 @@ class BillingProfileController
         }
 
         $billingProfilesOfTeamsUserIsAdmin = $this->teamMembershipRepository->findByUser($user)->filter(function(TeamMembership $membership) {
-            return $membership->isAdmin();
+            return in_array(TeamMembership::PERMISSION_ADMIN, $membership->getPermissions());
         })->map(function(TeamMembership $membership) {
             return $membership->getTeam();
         })->map(function(Team $team) {
@@ -289,7 +289,7 @@ class BillingProfileController
             $adminUserMemberships = $team->getMemberships()->filter(function(TeamMembership $membership) use ($user) {
                 return $membership->getUser()->getUsername() == $user->getUsername();
             })->filter(function(TeamMembership $membership) {
-                return $membership->isAdmin();
+                return in_array(TeamMembership::PERMISSION_ADMIN, $membership->getPermissions());
             });
 
             return $adminUserMemberships->count() > 0;
