@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectRegistryCredentialsController', function($scope, $remoteResource, RegistryCredentialsRepository) {
+    .controller('ProjectRegistryCredentialsController', function($scope, $remoteResource, RegistryCredentialsRepository, user, project) {
         var controller = this;
 
         this.loadCredentials = function() {
@@ -29,6 +29,8 @@ angular.module('continuousPipeRiver')
                 });
             });
         };
+        
+        $scope.isAdmin = user.isAdmin(project);
 
         this.loadCredentials();
     });

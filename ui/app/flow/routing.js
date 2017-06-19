@@ -158,5 +158,15 @@ angular.module('continuousPipeRiver')
                 },
                 aside: true
             })
+            .state('flow.branches', {
+                url: '/branches',
+                views: {
+                    'content@': {
+                        templateUrl: 'flow/views/branches/list.html',
+                        controller: 'BranchesController'
+                    }
+                },
+                aside: true
+            })
         ;
     });
