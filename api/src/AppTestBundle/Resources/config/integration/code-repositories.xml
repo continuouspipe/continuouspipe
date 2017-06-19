@@ -13,7 +13,8 @@
 
         <service id="river.code_repository.branch_query.in_memory"
                  class="ContinuousPipe\River\CodeRepository\InMemoryBranchQuery"
-                 decorates="river.code_repository.branch_query">
+                 decorates="river.code_repository.branch_query"
+                 decoration-priority="3" >
                 <argument type="service" id="river.code_repository.branch_query.in_memory.inner"/>
         </service>
 

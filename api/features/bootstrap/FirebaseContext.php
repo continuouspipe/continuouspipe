@@ -231,6 +231,23 @@ class FirebaseContext implements Context
             }
         }
 
+        foreach ($this->httpHistory as $request) {
+            $uri = (string) $request->getUri();
+
+            $requestBase = sprintf(
+                'https://continuous-pipe.firebaseio.com/flows/%s/branches',
+                $flow
+            );
+            if (0 === strpos($uri, $requestBase)) {
+                $body = json_decode($request->getBody()->getContents(), true);
+
+                if (isset($body[hash('sha256', $branch)]) && $body[hash('sha256', $branch)]['pinned'] == true) {
+                    return;
+                };
+            }
+        }
+
+
         throw new \RuntimeException('Request not found');
     }
 

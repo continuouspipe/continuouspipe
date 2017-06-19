@@ -83,13 +83,15 @@
 
         <service id="river.code_repository.pinned_branches_query"
                  class="ContinuousPipe\River\CodeRepository\PinnedBranchQuery"
-                 decorates="river.code_repository.branch_query">
+                 decorates="river.code_repository.branch_query"
+                 decoration-priority="1">
             <argument type="service" id="river.code_repository.pinned_branches_query.inner"/>
         </service>
 
         <service id="river.code_repository.branch_with_tides_query"
                  class="ContinuousPipe\River\CodeRepository\BranchWithTidesQuery"
-                 decorates="river.code_repository.branch_query">
+                 decorates="river.code_repository.branch_query"
+                 decoration-priority="2">
             <argument type="service" id="river.code_repository.branch_with_tides_query.inner"/>
             <argument type="service" id="river.view.tide_repository"/>
         </service>

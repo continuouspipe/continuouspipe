@@ -249,7 +249,7 @@ class GitHubContext implements CodeRepositoryContext
             new Repository(
                 new \GitHub\WebHook\Model\User('sroze'),
                 'docker-php-example',
-                'https://github.com/sroze/docker-php-example',
+                'https://api.github.com/repos/sroze/docker-php-example',
                 false,
                 $identifier ?: 37856553,
                 'master'
