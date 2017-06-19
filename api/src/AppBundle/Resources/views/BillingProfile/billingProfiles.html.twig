@@ -11,7 +11,7 @@
             <li><a href="{{ path('account_billing_profile', { 'uuid': billingProfile.uuid}) }}">{{ billingProfile.name }}</a></li>
         {% endfor %}
     </ul>
-    <h2>User profiles of teams you are administrator</h2>
+    <h2>Billing profiles of teams you administer</h2>
     <ul>
         {% for billingProfile in relatedTeamsBillingProfiles %}
             <li><a href="{{ path('account_billing_profile', { 'uuid': billingProfile.uuid}) }}">{{ billingProfile.name }}</a></li>
