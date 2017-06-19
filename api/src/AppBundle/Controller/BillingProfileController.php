@@ -11,7 +11,12 @@ use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use ContinuousPipe\Billing\Subscription\SubscriptionException;
 use ContinuousPipe\Billing\Usage\UsageTracker;
 use ContinuousPipe\Message\UserActivity;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Team\TeamMembership;
+use ContinuousPipe\Security\Team\TeamMembershipRepository;
+use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -51,6 +56,14 @@ class BillingProfileController
      */
     private $usageTracker;
     /**
+     * @var TeamMembershipRepository
+     */
+    private $teamMembershipRepository;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
      * @var string
      */
     private $recurlySubdomain;
@@ -62,6 +75,8 @@ class BillingProfileController
         ActivityTracker $activityTracker,
         UrlGeneratorInterface $urlGenerator,
         UsageTracker $usageTracker,
+        TeamMembershipRepository $teamMembershipRepository,
+        LoggerInterface $logger,
         string $recurlySubdomain
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
@@ -71,6 +86,8 @@ class BillingProfileController
         $this->activityTracker = $activityTracker;
         $this->urlGenerator = $urlGenerator;
         $this->usageTracker = $usageTracker;
+        $this->teamMembershipRepository = $teamMembershipRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -97,7 +114,18 @@ class BillingProfileController
             $this->createBillingProfile($user, $request->get('name'));
         }
 
-        return ['billingProfiles' => $this->userBillingProfileRepository->findAllByUser($user)];
+        $billingProfilesOfTeamsUserIsAdmin = $this->teamMembershipRepository->findByUser($user)->filter(function (TeamMembership $membership) {
+            return in_array(TeamMembership::PERMISSION_ADMIN, $membership->getPermissions());
+        })->map(function (TeamMembership $membership) {
+            return $membership->getTeam();
+        })->map(function (Team $team) {
+            return $this->userBillingProfileRepository->findByTeam($team);
+        });
+
+        return [
+            'billingProfiles' => $this->userBillingProfileRepository->findAllByUser($user),
+            'relatedTeamsBillingProfiles' => $billingProfilesOfTeamsUserIsAdmin,
+        ];
     }
 
     /**
@@ -108,8 +136,7 @@ class BillingProfileController
     public function configureAction(User $user, string $uuid, Request $request)
     {
         $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
-
-        if ($billingProfile->getUser() != $user) {
+        if (!$this->userHasAccess($user, $billingProfile)) {
             throw new AccessDeniedHttpException('You are not authorized to access this billing profile');
         }
 
@@ -132,6 +159,11 @@ class BillingProfileController
             $operation = $request->request->get('_operation');
 
             if ('subscribe' === $operation) {
+                $this->logger->warning('A user has clicked on the subscribe button', [
+                    'username' => $user->getUsername(),
+                    'billingProfile' => $billingProfile->getUuid()->toString(),
+                ]);
+
                 // Add the billing profile in the session
                 $request->getSession()->set('_current_billing_profile', $billingProfile->getUuid()->toString());
 
@@ -175,7 +207,20 @@ class BillingProfileController
                         }
                     } catch (SubscriptionException $e) {
                         $request->getSession()->getFlashBag()->add('danger', $e->getMessage());
+
+                        $this->logger->error('Something went wrong while changing the billing subscription', [
+                            'exception' => $e,
+                            'username' => $user->getUsername(),
+                            'billingProfile' => $billingProfile->getUuid()->toString(),
+                            'operation' => $operation,
+                        ]);
                     }
+
+                    $this->logger->warning('A user has changed a subscription', [
+                        'username' => $user->getUsername(),
+                        'billingProfile' => $billingProfile->getUuid()->toString(),
+                        'operation' => $operation,
+                    ]);
                 }
 
                 return new RedirectResponse($this->urlGenerator->generate('account_billing_profile'));
@@ -231,5 +276,25 @@ class BillingProfileController
         $this->userBillingProfileRepository->save($billingProfile);
 
         return $billingProfile;
+    }
+
+    private function userHasAccess(User $user, UserBillingProfile $billingProfile)
+    {
+        if ($billingProfile->getUser()->getUsername() == $user->getUsername()) {
+            return true;
+        }
+
+        $teams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
+        $teamsUserIsAdmin = array_filter($teams, function (Team $team) use ($user) {
+            $adminUserMemberships = $team->getMemberships()->filter(function (TeamMembership $membership) use ($user) {
+                return $membership->getUser()->getUsername() == $user->getUsername();
+            })->filter(function (TeamMembership $membership) {
+                return in_array(TeamMembership::PERMISSION_ADMIN, $membership->getPermissions());
+            });
+
+            return $adminUserMemberships->count() > 0;
+        });
+
+        return count($teamsUserIsAdmin) > 0;
     }
 }

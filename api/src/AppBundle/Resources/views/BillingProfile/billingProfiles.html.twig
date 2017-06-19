@@ -5,12 +5,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.0/css/bootstrap-slider.min.css" />
 {% endblock %}
 {% block account_content %}
-    <h2>Billing profiles</h2>
+    <h2>Your billing profiles</h2>
     <ul>
         {% for billingProfile in billingProfiles %}
             <li><a href="{{ path('account_billing_profile', { 'uuid': billingProfile.uuid}) }}">{{ billingProfile.name }}</a></li>
         {% endfor %}
     </ul>
+    <h2>Billing profiles of teams you administer</h2>
+    <ul>
+        {% for billingProfile in relatedTeamsBillingProfiles %}
+            <li><a href="{{ path('account_billing_profile', { 'uuid': billingProfile.uuid}) }}">{{ billingProfile.name }}</a></li>
+        {% endfor %}
+    </ul>
+
     <h2>Create billing profile</h2>
     <form method="post" class="form-horizontal">
         <div class="form-group">
@@ -25,5 +32,4 @@
             </div>
         </div>
     </form>
-
 {% endblock %}

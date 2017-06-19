@@ -84,13 +84,14 @@ class SubscriptionContext implements Context
 
     /**
      * @Then I should see that one has been created in the name :profileName
+     * @Then I should see a billing profile named :profileName
      */
     public function iShouldSeeThatOneHasBeenCreatedForMe($profileName)
     {
         $this->assertStatusCode(200);
 
         if (false === strpos($this->response->getContent(), $profileName . '</a></li>')) {
-            throw new \RuntimeException('Did not found \'samuel (samuel.roze@gmail.com)\' in the page');
+            throw new \RuntimeException('Did not found \''.$profileName.'\' in the page');
         }
     }
 

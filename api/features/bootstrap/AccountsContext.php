@@ -85,13 +85,14 @@ class AccountsContext implements Context
 
     /**
      * @Given there is a billing profile :uuid for the user :username
+     * @Given there is a billing profile :uuid for the user :username named :name
      */
-    public function thereIsABillingProfileForTheUser($uuid, $username)
+    public function thereIsABillingProfileForTheUser($uuid, $username, $name = null)
     {
         $this->userBillingProfileRepository->save(new UserBillingProfile(
             Uuid::fromString($uuid),
             $this->securityContext->thereIsAUser($username)->getUser(),
-            'NAME',
+            $name ?: 'NAME',
             new \DateTime(),
             false
         ));
