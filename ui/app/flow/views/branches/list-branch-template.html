@@ -6,7 +6,7 @@
 </div>
 
 <div class="branch-code">
-    <p><md-icon>code</md-icon> <span ng-show="branch['latest-tides']">{{ (branch | latestTideInBranch).code_reference.sha1 | limitTo:7 }}</span></p>
+    <p><md-icon>code</md-icon> <a ng-show="branch['latest-commit']" ng-href="{{ branch['latest-commit'].url }}" target="_blank">{{ branch['latest-commit'].sha | limitTo:7 }}</a></p>
     <p ng-if="branch.pull_request"><md-icon class="cp-icon-git-branch"></md-icon> <span>#{{ branch.pull_request.identifier }}</span></p>
 </div>
 

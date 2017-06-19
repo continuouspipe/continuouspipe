@@ -898,6 +898,11 @@ body {
             }
             .branch-code {
                 width: 15%;
+
+                a {
+                    text-decoration: none;
+                    color: #333;
+                }
             }
             .branch-last-tides {
                 width: 21%;
