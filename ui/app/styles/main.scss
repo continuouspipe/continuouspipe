@@ -882,6 +882,11 @@ body {
                 }
             }
 
+            md-icon[class^="cp-icon-"] {
+                text-align: center;
+                font-size: 1.5em;
+            }
+
             p {
                 margin: 0;
                 padding: 0;
@@ -893,6 +898,11 @@ body {
             }
             .branch-code {
                 width: 15%;
+
+                a {
+                    text-decoration: none;
+                    color: #333;
+                }
             }
             .branch-last-tides {
                 width: 21%;
