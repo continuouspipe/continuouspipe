@@ -895,6 +895,11 @@ body {
             .branch-details {
                 width: 40%;
                 padding-left: 1em;
+
+                a {
+                    text-decoration: none;
+                    color: #999;
+                }
             }
             .branch-code {
                 width: 15%;
