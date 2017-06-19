@@ -20,7 +20,6 @@ class FakePullRequestResolver implements PullRequestResolver
 
     /**
      * FakePullRequestResolver constructor.
-     * @param array $resolution
      */
     public function __construct(PullRequestResolver $innerResolver)
     {

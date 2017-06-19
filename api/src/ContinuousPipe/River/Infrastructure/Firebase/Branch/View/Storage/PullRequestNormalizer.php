@@ -28,6 +28,7 @@ class PullRequestNormalizer
         return [
             'identifier' => (string) $pullRequest->getIdentifier(),
             'title' => $pullRequest->getTitle(),
+            'url' => $pullRequest->getUrl(),
         ];
     }
 

@@ -13,6 +13,7 @@ use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClient;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientException;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientFactory;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\Guzzle\MatchingHandler;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
@@ -89,6 +90,7 @@ class BitBucketContext implements CodeRepositoryContext
      * @var FakePullRequestResolver
      */
     private $fakePullRequestResolver;
+    private $repository;
 
     public function __construct(
         MatchingHandler $bitBucketMatchingClientHandler,
@@ -143,6 +145,7 @@ class BitBucketContext implements CodeRepositoryContext
         );
 
         $this->inMemoryCodeRepositoryRepository->add($repository);
+        $this->repository = $repository;
 
         $this->thereIsTheAddOnInstalledForTheBitbucketRepositoryOwnedByUser($name, $username);
 
@@ -842,23 +845,36 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
-     * @Given the following branches exists in the bitbucket repository with slug :slug:
+     * @Given the following branches exist in the bitbucket repository with slug :slug:
      */
     public function theFollowingBranchesExistsInTheBitbucketRepository(TableNode $table, $slug)
     {
         $url = 'https://api.bitbucket.org/2.0/repositories/sroze/' . $slug . '/refs/branches';
 
+        $branches = array_map(function(array $b) {
+            $branch =  [
+                'name' => $b['name'],
+            ];
+            if (isset($b['sha']) && isset($b['commit-url'])) {
+                $branch['target'] = [
+                    'hash' => $b['sha'],
+                    'links' => ['html' => ['href' => $b['commit-url']]],
+                ];
+            }
+            return $branch;
+        }, $table->getHash());
+
         $this->bitBucketMatchingClientHandler->pushMatcher([
             'match' => function(RequestInterface $request) use ($url) {
                 return $request->getMethod() == 'GET' && ((string) $request->getUri() == $url);
             },
-            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode(['values' => $table->getHash()])),
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode(['values' => $branches])),
         ]);
         $this->inMemoryBranchQuery->notOnlyInMemory();
     }
 
     /**
-     * @Given the following branches exists in the bitbucket repository with slug :slug and are paginated in the api response:
+     * @Given the following branches exist in the bitbucket repository with slug :slug and are paginated in the api response:
      */
     public function theFollowingBranchesExistsInTheBitbucketRepositoryAndArePaginatedInTheApiResponse(TableNode $table, $slug)
     {
@@ -887,6 +903,16 @@ class BitBucketContext implements CodeRepositoryContext
             )),
         ]);
         $this->inMemoryBranchQuery->notOnlyInMemory();
+    }
+
+    /**
+     * @Given there is a Bitbucket pull-request #:number titled :title for branch :branch
+     */
+    public function aPullRequestContainsTheTideRelatedCommit($number, $title, $branch)
+    {
+        $this->fakePullRequestResolver->willResolve([
+            CodeRepository\PullRequest::bitbucket($number, $this->repository->getAddress(), $title, isset($branch) ? new Branch($branch): null),
+        ]);
     }
 
     private function createRepositoriesResponse(string $username, TableNode $table, int $currentPage, int $pageCount, string $pageUrl): Response

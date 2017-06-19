@@ -43,7 +43,7 @@ class BitBucketPullRequestResolver implements PullRequestResolver
             )
         );
 
-        return $this->toPullRequests($matchingPullRequests);
+        return $this->toPullRequests($matchingPullRequests, $codeReference->getRepository()->getAddress());
     }
 
     /**
@@ -59,15 +59,16 @@ class BitBucketPullRequestResolver implements PullRequestResolver
      */
     public function findAll(UuidInterface $flowUuid, CodeRepository $repository): array
     {
-        return $this->toPullRequests($this->fetchAll($repository));
+        return $this->toPullRequests($this->fetchAll($repository), $repository->getAddress());
     }
 
-    private function toPullRequests($matchingPullRequests)
+    private function toPullRequests($matchingPullRequests, string $address)
     {
         return array_map(
-            function (BitBucketPullRequest $pullRequest) {
-                return new PullRequest(
+            function (BitBucketPullRequest $pullRequest) use ($address) {
+                return PullRequest::bitbucket(
                     $pullRequest->getId(),
+                    $address,
                     $pullRequest->getTitle(),
                     new Branch($pullRequest->getSource()->getBranch()->getName())
                 );

@@ -129,6 +129,7 @@ class GitHubContext implements CodeRepositoryContext
      * @var CodeRepository\InMemoryBranchQuery
      */
     private $inMemoryBranchQuery;
+    private $repository;
 
     public function __construct(
         Kernel $kernel,
@@ -256,6 +257,7 @@ class GitHubContext implements CodeRepositoryContext
         );
 
         $this->inMemoryCodeRepositoryRepository->add($repository);
+        $this->repository = $repository;
 
         return $repository;
     }
@@ -669,7 +671,7 @@ class GitHubContext implements CodeRepositoryContext
     public function aPullRequestContainsTheTideRelatedCommit($number, $title = null, $branch = null)
     {
         $this->fakePullRequestResolver->willResolve([
-            new CodeRepository\PullRequest($number, $title, isset($branch) ? new Branch($branch): null),
+            CodeRepository\PullRequest::github($number, $this->repository->getAddress(), $title, isset($branch) ? new Branch($branch): null),
         ]);
     }
 
@@ -978,11 +980,24 @@ class GitHubContext implements CodeRepositoryContext
             'docker-php-example'
         );
 
+        $branches = array_map(function(array $b) {
+            $branch =  [
+                'name' => $b['name'],
+            ];
+            if (isset($b['sha']) && isset($b['commit-url'])) {
+                $branch['commit'] = [
+                    'sha' => $b['sha'],
+                    'url' => $b['commit-url'],
+                ];
+            }
+            return $branch;
+        }, $table->getHash());
+
         $this->matchingHandler->pushMatcher([
             'match' => function(RequestInterface $request) use ($url) {
                 return $request->getUri() == $url;
             },
-            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode($table->getHash())),
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode($branches)),
         ]);
         
         $this->inMemoryBranchQuery->notOnlyInMemory();

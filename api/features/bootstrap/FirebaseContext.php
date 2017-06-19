@@ -88,11 +88,55 @@ class FirebaseContext implements Context
             if (0 === strpos($uri, $requestBase)) {
                 $body = json_decode($request->getBody()->getContents(), true);
 
-                $branchHashes = array_map(function ($branch) {
-                    return hash('sha256', $branch['name']);
-                }, $table->getHash());
+                $expectedBranches = array_combine(
+                    array_map(
+                        function ($branch) {
+                            return hash('sha256', $branch['name']);
+                        },
+                        $table->getHash()
+                    ),
+                    array_map(
+                        function (array $b) {
+                            $branch = [
+                                'name' => $b['name'],
+                            ];
+                            if (isset($b['sha']) && isset($b['commit-url'])) {
+                                $branch['latest-commit'] = [
+                                    'sha' => $b['sha'],
+                                    'url' => $b['commit-url'],
+                                ];
+                            }
+                            if (isset($b['url'])) {
+                                $branch['url'] = $b['url'];
+                            }
+                            return $branch;
+                        },
+                        $table->getHash()
+                    )
+                );
 
-                if (array_intersect($branchHashes, array_keys($body)) == $branchHashes) {
+                $returnedBranches = array_map(
+                    function ($b) {
+                        if (!is_array($b)) {
+                            return $b;
+                        }
+                        $branch = [];
+                        if(isset($b['name'])) {
+                            $branch['name'] = $b['name'];
+                        }
+
+                        if(isset($b['latest-commit'])) {
+                            $branch['latest-commit'] = $b['latest-commit'];
+                        }
+                        if (isset($b['url'])) {
+                            $branch['url'] = $b['url'];
+                        }
+                        return $branch;
+                    },
+                    $body
+                );
+
+                if ($expectedBranches == $returnedBranches) {
                     return;
                 }
             }
@@ -115,7 +159,7 @@ class FirebaseContext implements Context
             );
             if (0 === strpos($uri, $requestBase)) {
                 $body = json_decode($request->getBody()->getContents(), true);
-                
+
                 return isset($body[hash('sha256', $branch)]);
             }
         }
@@ -217,12 +261,14 @@ class FirebaseContext implements Context
 
     /**
      * @Then the pull request :number titled :title for branch :branch of flow :flow should be saved to the permanent storage of views
+     * @Then the pull request :number titled :title for branch :branch of flow :flow should be saved to the permanent storage of views with url :url
      */
     public function thePullRequestTitledForTheFlowShouldBeSavedToThePermanentStorageOfViews(
         $number,
         $title,
         $branch,
-        $flow
+        $flow,
+        $url = null
     ) {
         foreach ($this->httpHistory as $request) {
             /** @var Request $request */
@@ -237,15 +283,16 @@ class FirebaseContext implements Context
 
             if (0 === strpos($uri, $fullRequestBase)) {
                 $branchHash = hash('sha256', $branch);
+
                 if (isset($body[$branchHash]) && $body[$branchHash] == [
                         'identifier' => $number,
-                        'title' => $title
+                        'title' => $title,
+                        'url' => $url,
                     ]
                 ) {
                     return;
                 }
             }
-
 
             $requestBase = sprintf(
                 'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch/%s/%s',
@@ -257,7 +304,8 @@ class FirebaseContext implements Context
             if (0 === strpos($uri, $requestBase)) {
                 if ($body == [
                         'identifier' => $number,
-                        'title' => $title
+                        'title' => $title,
+                        'url' => $url,
                     ]
                 ) {
                     return;
