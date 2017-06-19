@@ -55,7 +55,11 @@ class Branch
             [],
             false,
             null,
-            $address . '/branch/' . $name
+            str_replace(
+                'api.github.com/repos/',
+                'github.com/',
+                $address
+            ) . '/branch/' . $name
         );
     }
 

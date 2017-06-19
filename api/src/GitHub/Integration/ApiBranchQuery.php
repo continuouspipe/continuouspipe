@@ -53,7 +53,7 @@ class ApiBranchQuery implements BranchQuery
         if (!$repository instanceof GitHubCodeRepository) {
             throw new \InvalidArgumentException('The repository of this flow is not supported');
         }
-
+        
         return array_map(
             function (array $b) use ($repository) {
                 $branch = Branch::github($b['name'], $repository->getAddress());

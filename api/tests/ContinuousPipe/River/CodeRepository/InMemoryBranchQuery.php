@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use Ramsey\Uuid\UuidInterface;
 
 class InMemoryBranchQuery implements BranchQuery
 {

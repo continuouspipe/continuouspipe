@@ -34,7 +34,7 @@ default:
                     - @river.commit_resolver.predictable
                     - @event_bus
                     - @river.tide_event_store
-                    - @river.code_repository.branch_query
+                    - @river.code_repository.branch_query.in_memory
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -112,7 +112,7 @@ default:
                     - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
-                    - @river.code_repository.branch_query
+                    - @river.code_repository.branch_query.in_memory
 
                 - StorageContext:
                     - @river.pipeline.view.storage
@@ -144,7 +144,7 @@ default:
                     - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
-                    - @river.code_repository.branch_query
+                    - @river.code_repository.branch_query.in_memory
 
                 # Common contexts
                 - SecurityContext:
@@ -176,7 +176,7 @@ default:
                     - @river.commit_resolver.predictable
                     - @event_bus
                     - @river.tide_event_store
-                    - @river.code_repository.branch_query
+                    - @river.code_repository.branch_query.in_memory
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -245,7 +245,7 @@ default:
                     - @river.bitbucket.client_factory
                     - @csa_guzzle.data_collector.history_bag
                     - @repository_river.code_repository_repository
-                    - @river.code_repository.branch_query
+                    - @river.code_repository.branch_query.in_memory
                     - @river.pull_request_resolver
 
                 # Common contexts
@@ -278,7 +278,7 @@ default:
                     - @river.commit_resolver.predictable
                     - @event_bus
                     - @river.tide_event_store
-                    - @river.code_repository.branch_query
+                    - @river.code_repository.branch_query.in_memory
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -386,12 +386,12 @@ smoke:
                     - @github.integration.installation_token_resolver
                     - @repository_river.code_repository_repository
                     - @river.github.guzzle_http_client.handler.matching
-                    - @river.code_repository.branch_query
+                    - @river.code_repository.branch_query.in_memory
                 - CodeRepositoriesContext:
                     - @river.commit_resolver.predictable
                     - @event_bus
                     - @river.tide_event_store
-                    - @river.code_repository.branch_query
+                    - @river.code_repository.branch_query.in_memory
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - Tide\TasksContext:
