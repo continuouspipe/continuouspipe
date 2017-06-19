@@ -78,7 +78,7 @@ Feature:
       | develop | abcde | https://bitbucket.org/sroze/my-example/commits/abcde | https://bitbucket.org/sroze/my-example/branch/develop |
 
   Scenario: It also updates the pull requests
-    Given there is a repository identifier "987987
+    Given there is a repository identifier "987987"
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -100,3 +100,23 @@ Feature:
     Then the branch "master" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
     And the branch "develop" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views
     And the pull request "34" titled "A Pull Request" for branch "feature/new-feature" of flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views with url "https://bitbucket.org/sroze/php-example/pull-requests/34"
+
+  Scenario: It also adds the commit datetime
+    Given there is a repository identifier "987987"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        images:
+            build: ~
+
+        deployment:
+            deploy:
+                cluster: foo
+                services: []
+
+    """
+    And the following branches exist in the bitbucket repository with slug "my-example":
+      | name    | sha   | commit-url                                           | datetime                  |
+      | master  | 12345 | https://bitbucket.org/sroze/my-example/commits/12345 | 2016-12-27T13:04:07+00:00 |
+    When the commit "12345" is pushed to the branch "master"
+    Then the branch "master" for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views with a not null datetime

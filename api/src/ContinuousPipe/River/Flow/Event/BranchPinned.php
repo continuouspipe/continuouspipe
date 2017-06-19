@@ -36,5 +36,4 @@ class BranchPinned implements FlowEvent
     {
         return $this->branch;
     }
-    
 }

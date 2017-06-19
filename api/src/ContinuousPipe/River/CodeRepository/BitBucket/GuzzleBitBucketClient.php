@@ -178,7 +178,6 @@ class GuzzleBitBucketClient implements BitBucketClient
 
             throw new BitBucketClientException($message, $e->getCode(), $e);
         }
-
     }
 
     private function readBranches(string $link, string $address)
@@ -196,9 +195,12 @@ class GuzzleBitBucketClient implements BitBucketClient
                 $branch = Branch::bitbucket($b['name'], $address);
 
                 if (isset($b['target']['hash']) && isset($b['target']['links']['html']['href'])) {
-                    return $branch->withLatestCommit(new Commit(
-                        $b['target']['hash'],
-                        $b['target']['links']['html']['href'])
+                    return $branch->withLatestCommit(
+                        new Commit(
+                            $b['target']['hash'],
+                            $b['target']['links']['html']['href'],
+                            isset($b['target']['date']) ? new \DateTime($b['target']['date']) : null
+                        )
                     );
                 }
 

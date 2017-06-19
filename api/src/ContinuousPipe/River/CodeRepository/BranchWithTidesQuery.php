@@ -19,7 +19,6 @@ class BranchWithTidesQuery implements BranchQuery
 
     public function findBranches(FlatFlow $flow): array
     {
-
         return array_map(
             function (Branch $branch) use ($flow) {
                 return $branch->withTides(
@@ -29,5 +28,4 @@ class BranchWithTidesQuery implements BranchQuery
             $this->innerQuery->findBranches($flow)
         );
     }
-
 }

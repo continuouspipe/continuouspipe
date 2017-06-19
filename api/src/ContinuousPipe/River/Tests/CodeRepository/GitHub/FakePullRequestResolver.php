@@ -40,8 +40,6 @@ class FakePullRequestResolver implements PullRequestResolver
         }
 
         return $this->innerResolver->findPullRequestWithHeadReference($flowUuid, $codeReference);
-        
-        
     }
 
     /**
@@ -82,5 +80,4 @@ class FakePullRequestResolver implements PullRequestResolver
     {
         $this->inMemoryOnly = false;
     }
-
 }

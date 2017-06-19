@@ -861,6 +861,11 @@ class BitBucketContext implements CodeRepositoryContext
                     'links' => ['html' => ['href' => $b['commit-url']]],
                 ];
             }
+
+            if (isset($b['datetime'])) {
+                $branch['target']['date'] = $b['datetime'];
+            }
+
             return $branch;
         }, $table->getHash());
 

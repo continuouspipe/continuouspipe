@@ -22,5 +22,4 @@ class PinnedBranchQuery implements BranchQuery
             $this->innerQuery->findBranches($flow)
         );
     }
-
 }

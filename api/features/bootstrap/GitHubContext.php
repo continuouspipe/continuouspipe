@@ -990,6 +990,11 @@ class GitHubContext implements CodeRepositoryContext
                     'url' => $b['commit-url'],
                 ];
             }
+
+            if (isset($b['datetime'])) {
+                $branch['commit']['timestamp'] = $b['datetime'];
+            }
+
             return $branch;
         }, $table->getHash());
 

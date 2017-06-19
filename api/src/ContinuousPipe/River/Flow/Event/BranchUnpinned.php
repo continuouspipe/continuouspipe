@@ -36,5 +36,4 @@ class BranchUnpinned implements FlowEvent
     {
         return $this->branch;
     }
-    
 }

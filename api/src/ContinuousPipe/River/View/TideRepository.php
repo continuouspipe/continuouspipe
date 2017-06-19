@@ -44,7 +44,7 @@ interface TideRepository extends TideViewStorage
      * @param Uuid $flowUuid
      * @param string $branch
      * @param null $limit
-     * 
+     *
      * @return Tide[]
      */
     public function findByBranch(Uuid $flowUuid, $branch, $limit = null);
@@ -121,5 +121,4 @@ interface TideRepository extends TideViewStorage
      * @return Tide[]
      */
     public function findLastSuccessfulByFlowUuidAndBranch(UuidInterface $flowUuid, string $branch, int $limit) : array;
-
 }

@@ -28,5 +28,4 @@ class ApiBranchQuery implements BranchQuery
 
         return $this->clientFactory->createForCodeRepository($repository)->getBranches($repository);
     }
-
 }

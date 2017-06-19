@@ -38,5 +38,4 @@ class UnpinBranch implements FlowCommand, Message
     {
         return $this->branch;
     }
-
 }

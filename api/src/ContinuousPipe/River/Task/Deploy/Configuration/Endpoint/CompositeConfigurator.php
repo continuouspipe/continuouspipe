@@ -48,5 +48,4 @@ class CompositeConfigurator implements EndpointConfigurator
             $endpointConfiguration
         );
     }
-
 }

@@ -72,5 +72,4 @@ class PullRequest
     {
         return $this->url;
     }
-
 }

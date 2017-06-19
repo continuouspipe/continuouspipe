@@ -149,5 +149,4 @@ class FirebaseBranchViewStorage implements BranchViewStorage
     {
         return sprintf('flows/%s/branches/%s', (string) $flowUuid, hash('sha256', $branch));
     }
-
 }

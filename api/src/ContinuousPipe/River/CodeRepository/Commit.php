@@ -9,24 +9,28 @@ class Commit
     private $sha;
     private $url;
 
-    public function __construct(string $sha, string $url)
+    /**
+     * @var \DateTimeInterface
+     */
+    private $dateTime;
+
+    public function __construct(string $sha, string $url, \DateTimeInterface $dateTime = null)
     {
         $this->sha = $sha;
         $this->url = $url;
+        $this->dateTime = $dateTime;
     }
 
-    public static function fromShaAndGitubApiUrl(string $sha, string $url)
+    public static function fromGitHubRepresentation(array $commit)
     {
-        return new self($sha, self::toGithubWebsiteUrl($sha, $url));
-    }
-
-    private static function toGithubWebsiteUrl(string $sha, string $url)
-    {
-        return str_replace(
-            ['api.github.com/repos/', 'commits/' . $sha],
-            ['github.com/', 'commit/' . $sha],
-            $url
+        $datetime = isset($commit['timestamp']) ? new \DateTime($commit['timestamp']) : null;
+        $url = str_replace(
+            ['api.github.com/repos/', 'commits/' . $commit['sha']],
+            ['github.com/', 'commit/' . $commit['sha']],
+            $commit['url']
         );
+
+        return new self($commit['sha'], $url, $datetime);
     }
 
     public function getSha(): string
@@ -39,4 +43,11 @@ class Commit
         return $this->url;
     }
 
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getDateTime()
+    {
+        return $this->dateTime;
+    }
 }
