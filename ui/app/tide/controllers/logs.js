@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('TideLogsController', function(TideRepository, EnvironmentRepository, TideSummaryRepository, LogFinder, EndpointOpener, $scope, $state, $http, flow, tide, summary, user, project) {
+    .controller('TideLogsController', function(TideRepository, EnvironmentRepository, TideSummaryRepository, LogFinder, EndpointOpener, $scope, $state, $http, flow, tide, summary, user, project, $authenticatedFirebaseDatabase, $firebaseArray) {
         $scope.tide = tide;
         $scope.summary = summary;
         $scope.log = LogFinder.find(tide.log_id);
@@ -18,6 +18,21 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.isAdmin = user.isAdmin(project);
+
+        $scope.pinnedBranch = true;
+        $authenticatedFirebaseDatabase.get(flow).then(function (database) {
+            var branches = $firebaseArray(
+                database.ref().child('flows/' + flow.uuid + '/branches')
+            );
+
+            branches.$loaded(function() {
+                var matchingBranches = branches.filter(function(branch) {
+                    return branch.name == tide.code_reference.branch;
+                });
+
+                $scope.pinnedBranch = matchingBranches.length ? matchingBranches[0].pinned : false
+            });
+        });
 
         $scope.$on('$destroy', function() {
             timeOutIdentifier && clearTimeout(timeOutIdentifier);
