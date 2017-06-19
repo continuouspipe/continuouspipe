@@ -1,5 +1,5 @@
 <div class="branch-details">
-    <p ng-if="branch.pull_request"><a class="status-colored ellispable" ng-href="{{ branch.pull_request.url }}">{{ branch.pull_request.title }}</a></p>
+    <p ng-if="branch.pull_request"><a class="status-colored ellispable" ng-href="{{ branch.pull_request.url }}" target="_blank">{{ branch.pull_request.title }}</a></p>
     <p ng-if="!branch.pull_request">
             <span ng-if="!branch.url" class="status-colored ellispable">{{ branch.name }}</span>
             <a ng-if="branch.url"class="status-colored ellispable" ng-href="{{ branch.url }}">{{ branch.name }}</a>
