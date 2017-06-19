@@ -8,7 +8,11 @@
         <service id="repository_river.code_repository_repository" class="ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository" />
         <service id="repository_river.organisation_repository" class="ContinuousPipe\River\Tests\CodeRepository\InMemoryOrganisationRepository" />
         <service id="repository_river.github.webhook_manager" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakeWebHookManager" />
-        <service id="river.github.pull_request_resolver" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver" />
+        <service id="river.pull_request_resolver.in_memory"
+                 class="ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver"
+                 decorates="river.pull_request_resolver">
+            <argument type="service" id="river.pull_request_resolver.in_memory.inner"/>
+        </service>
         <service id="river.github.http_client" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\TestHttpClient" />
         <service id="river.github.client_factory" class="ContinuousPipe\River\Tests\CodeRepository\GitHub\TestClientFactory">
             <argument type="service" id="river.github.http_client" />

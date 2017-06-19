@@ -6,8 +6,6 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Message\Debug\TracedMessageProducer;
 use ContinuousPipe\Message\Direct\DelayedMessagesBuffer;
-use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\River\Command\DeleteEnvironments;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Command\StartTideCommand;
@@ -23,17 +21,10 @@ use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Pipeline\TideGenerationTrigger;
 use ContinuousPipe\River\Recover\CancelTides\Command\CancelTideCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand;
-use ContinuousPipe\River\Recover\TimedOutTides\TimedOutTideRepository;
-use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
-use ContinuousPipe\River\Tests\Queue\TracedDelayedCommandBus;
 use ContinuousPipe\River\Tests\View\PredictableTimeResolver;
 use ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideTaskView;
-use ContinuousPipe\Security\Team\Team;
-use LogStream\Node\Container;
-use LogStream\Node\Text;
-use LogStream\Tree\TreeLog;
 use phpseclib\Crypt\Random;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -49,7 +40,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Yaml\Yaml;
-use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 
 class TideContext implements Context
 {
@@ -1233,6 +1223,17 @@ EOF;
     }
 
     /**
+     * @Given the :branch branch in the repository for the flow :flow has the following tides:
+     */
+    public function theBranchInTheRepositoryForTheFlowHasTheFollowingTides($branch, $flow, TableNode $table)
+    {
+        foreach ($table->getHash() as $tide) {
+            $uuid = Uuid::fromString($tide['tide']);
+            $this->iHaveATide($uuid, $branch);
+        }
+    }
+
+    /**
      * @Given I have a tide :uuid
      */
     public function iHaveATide($uuid, $branch = null, $commit = null)
@@ -1558,5 +1559,13 @@ EOF;
         return array_map(function(array $tide) {
             return $this->tideRepository->find(Uuid::fromString($tide['uuid']));
         }, $json);
+    }
+
+    /**
+     * @When I create a tide :tide for the flow :flow for branch :branch and commit :commit
+     */
+    public function iCreateATideForBranchAndCommit($tide, $flow, $branch, $commit)
+    {
+        $this->createTide($branch, $commit, Uuid::fromString($tide));
     }
 }

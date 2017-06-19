@@ -30,7 +30,7 @@ class DeployedEnvironment
 
     /**
      * @JMS\Type("string")
-     * 
+     *
      * @var string
      */
     private $status;

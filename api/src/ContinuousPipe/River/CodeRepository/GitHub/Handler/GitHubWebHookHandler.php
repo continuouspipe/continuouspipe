@@ -104,8 +104,9 @@ class GitHubWebHookHandler
     private function handlePullRequestEvent(UuidInterface $flowUuid, PullRequestEvent $event)
     {
         $codeReference = $this->codeReferenceResolver->fromPullRequestEvent($event);
-        $pullRequest = new PullRequest(
+        $pullRequest = PullRequest::github(
             $event->getNumber(),
+            $codeReference->getRepository()->getAddress(),
             $event->getPullRequest()->getTitle()
         );
 

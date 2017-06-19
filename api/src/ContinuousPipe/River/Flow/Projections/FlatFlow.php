@@ -49,6 +49,7 @@ class FlatFlow
      * @var CodeRepository|null
      */
     private $repository;
+    private $pinnedBranches;
 
     public function __construct()
     {
@@ -70,6 +71,7 @@ class FlatFlow
         $view->user = $flow->getUser();
         $view->pipelines = new ArrayCollection($flow->getPipelines());
         $view->repository = $flow->getCodeRepository();
+        $view->pinnedBranches = $flow->getPinnedBranches();
 
         return $view;
     }
@@ -111,6 +113,11 @@ class FlatFlow
     public function getUser() : User
     {
         return $this->user;
+    }
+
+    public function isBranchPinned(CodeRepository\Branch $branch)
+    {
+        return in_array((string) $branch, $this->pinnedBranches);
     }
 
     /**

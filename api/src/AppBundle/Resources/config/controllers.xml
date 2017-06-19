@@ -118,5 +118,10 @@
         <service id="serializer.uuid_handler" class="ContinuousPipe\River\Serializer\UuidHandler">
             <tag name="jms_serializer.subscribing_handler" />
         </service>
+        <service id="app.controller.branch" class="AppBundle\Controller\BranchController">
+            <argument type="service" id="command_bus"/>
+            <argument type="service" id="river.branch.view.storage"/>
+            <argument type="service" id="river.branch.pull_request.view.storage"/>
+        </service>
     </services>
 </container>

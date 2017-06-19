@@ -43,10 +43,11 @@ interface TideRepository extends TideViewStorage
      *
      * @param Uuid $flowUuid
      * @param string $branch
+     * @param null $limit
      *
      * @return Tide[]
      */
-    public function findByBranch(Uuid $flowUuid, $branch);
+    public function findByBranch(Uuid $flowUuid, $branch, $limit = null);
 
     /**
      * @param Uuid $flowUuid

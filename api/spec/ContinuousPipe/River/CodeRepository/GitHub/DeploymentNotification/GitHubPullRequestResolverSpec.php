@@ -3,6 +3,7 @@
 namespace spec\ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\DeploymentNotification\GitHubPullRequestResolver;
 use ContinuousPipe\River\GitHub\ClientFactory;
@@ -21,6 +22,7 @@ class GitHubPullRequestResolverSpec extends ObjectBehavior
     {
         $gitHubCodeRepository->getOrganisation()->willReturn('continuous-pipe');
         $gitHubCodeRepository->getName()->willReturn('river');
+        $gitHubCodeRepository->getAddress()->willReturn('https://github.com/continuous-pipe/river');
         $codeReference->getRepository()->willReturn($gitHubCodeRepository);
 
         $gitHubClientFactory->createClientForFlow(Argument::any())->willReturn($client);
@@ -41,9 +43,11 @@ class GitHubPullRequestResolverSpec extends ObjectBehavior
         $codeReference->getBranch()->willReturn('my-precious-branch');
 
         $this->findPullRequestWithHeadReference($flowUuid, $codeReference)->shouldBeLike([
-            new \ContinuousPipe\River\CodeRepository\PullRequest(
+            \ContinuousPipe\River\CodeRepository\PullRequest::github(
                 '1',
-                'My Precious PR'
+                'https://github.com/continuous-pipe/river',
+                'My Precious PR',
+                new Branch('my-precious-branch')
             )
         ]);
     }

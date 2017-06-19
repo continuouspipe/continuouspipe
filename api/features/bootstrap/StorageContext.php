@@ -1,11 +1,14 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Repository\FlowRepository;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
@@ -18,11 +21,16 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var FlowRepository
      */
     private $flowRepository;
+    /**
+     * @var KernelInterface
+     */
+    private $kernel;
 
-    public function __construct(InMemoryPipelineViewStorage $pipelineViewStorage, FlowRepository $flowRepository)
+    public function __construct(InMemoryPipelineViewStorage $pipelineViewStorage, FlowRepository $flowRepository, KernelInterface $kernel)
     {
         $this->pipelineViewStorage = $pipelineViewStorage;
         $this->flowRepository = $flowRepository;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -41,4 +49,16 @@ class StorageContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
             ));
         }
     }
+
+    /**
+     * @When I refresh the branches and pull requests for the flow :flow
+     */
+    public function iRefreshTheBranchesAndPullRequests($flow)
+    {
+        $this->kernel->handle(Request::create(
+            "/flows/$flow/branches/refresh",
+            'POST'
+        ));
+    }
+
 }

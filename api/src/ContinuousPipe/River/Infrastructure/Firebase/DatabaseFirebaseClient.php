@@ -35,4 +35,9 @@ class DatabaseFirebaseClient implements FirebaseClient
     {
         return $this->databaseFactory->create($databaseUri)->getReference($path)->update($value);
     }
+
+    public function remove(string $databaseUri, string $path)
+    {
+        return $this->databaseFactory->create($databaseUri)->getReference($path)->remove();
+    }
 }

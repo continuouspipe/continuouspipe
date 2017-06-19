@@ -545,6 +545,7 @@ EOF;
      * @Given I have a flow with a BitBucket repository :name owned by user :username
      * @Given I have a flow :uuid with a BitBucket repository :name owned by user :username
      * @Given I have a flow with a BitBucket repository named :name with slug :slug and owned by user :username
+     * @Given I have a flow :uuid with a BitBucket repository named :name with slug :slug and owned by user :username
      */
     public function iHaveAFlowWithABitBucketRepositoryOwnerByUser($name, $username, $uuid = null, $slug = null)
     {
