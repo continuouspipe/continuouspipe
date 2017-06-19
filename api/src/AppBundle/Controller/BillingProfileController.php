@@ -114,11 +114,11 @@ class BillingProfileController
             $this->createBillingProfile($user, $request->get('name'));
         }
 
-        $billingProfilesOfTeamsUserIsAdmin = $this->teamMembershipRepository->findByUser($user)->filter(function(TeamMembership $membership) {
+        $billingProfilesOfTeamsUserIsAdmin = $this->teamMembershipRepository->findByUser($user)->filter(function (TeamMembership $membership) {
             return in_array(TeamMembership::PERMISSION_ADMIN, $membership->getPermissions());
-        })->map(function(TeamMembership $membership) {
+        })->map(function (TeamMembership $membership) {
             return $membership->getTeam();
-        })->map(function(Team $team) {
+        })->map(function (Team $team) {
             return $this->userBillingProfileRepository->findByTeam($team);
         });
 
@@ -285,10 +285,10 @@ class BillingProfileController
         }
 
         $teams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
-        $teamsUserIsAdmin = array_filter($teams, function(Team $team) use ($user) {
-            $adminUserMemberships = $team->getMemberships()->filter(function(TeamMembership $membership) use ($user) {
+        $teamsUserIsAdmin = array_filter($teams, function (Team $team) use ($user) {
+            $adminUserMemberships = $team->getMemberships()->filter(function (TeamMembership $membership) use ($user) {
                 return $membership->getUser()->getUsername() == $user->getUsername();
-            })->filter(function(TeamMembership $membership) {
+            })->filter(function (TeamMembership $membership) {
                 return in_array(TeamMembership::PERMISSION_ADMIN, $membership->getPermissions());
             });
 
