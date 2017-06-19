@@ -16,6 +16,7 @@ use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -55,13 +56,17 @@ class BillingProfileController
      */
     private $usageTracker;
     /**
-     * @var string
-     */
-    private $recurlySubdomain;
-    /**
      * @var TeamMembershipRepository
      */
     private $teamMembershipRepository;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
+     * @var string
+     */
+    private $recurlySubdomain;
 
     public function __construct(
         UserBillingProfileRepository $userBillingProfileRepository,
@@ -71,6 +76,7 @@ class BillingProfileController
         UrlGeneratorInterface $urlGenerator,
         UsageTracker $usageTracker,
         TeamMembershipRepository $teamMembershipRepository,
+        LoggerInterface $logger,
         string $recurlySubdomain
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
@@ -81,6 +87,7 @@ class BillingProfileController
         $this->urlGenerator = $urlGenerator;
         $this->usageTracker = $usageTracker;
         $this->teamMembershipRepository = $teamMembershipRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -152,6 +159,11 @@ class BillingProfileController
             $operation = $request->request->get('_operation');
 
             if ('subscribe' === $operation) {
+                $this->logger->warning('A user has clicked on the subscribe button', [
+                    'username' => $user->getUsername(),
+                    'billingProfile' => $billingProfile->getUuid()->toString(),
+                ]);
+
                 // Add the billing profile in the session
                 $request->getSession()->set('_current_billing_profile', $billingProfile->getUuid()->toString());
 
@@ -195,7 +207,20 @@ class BillingProfileController
                         }
                     } catch (SubscriptionException $e) {
                         $request->getSession()->getFlashBag()->add('danger', $e->getMessage());
+
+                        $this->logger->error('Something went wrong while changing the billing subscription', [
+                            'exception' => $e,
+                            'username' => $user->getUsername(),
+                            'billingProfile' => $billingProfile->getUuid()->toString(),
+                            'operation' => $operation,
+                        ]);
                     }
+
+                    $this->logger->warning('A user has changed a subscription', [
+                        'username' => $user->getUsername(),
+                        'billingProfile' => $billingProfile->getUuid()->toString(),
+                        'operation' => $operation,
+                    ]);
                 }
 
                 return new RedirectResponse($this->urlGenerator->generate('account_billing_profile'));
