@@ -3,7 +3,7 @@
 function sortedTides (branch) {
     var lastTides = Object.values(branch['latest-tides']);
     lastTides.sort(function (left, right) {
-        return left.creation_date < right.creation_date ? -1 : 1;
+        return left.creation_date > right.creation_date ? -1 : 1;
     });
 
     return lastTides;
