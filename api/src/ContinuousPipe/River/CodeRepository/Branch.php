@@ -59,7 +59,7 @@ class Branch
                 'api.github.com/repos/',
                 'github.com/',
                 $address
-            ) . '/branch/' . $name
+            ) . '/tree/' . $name
         );
     }
 
