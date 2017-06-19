@@ -97,8 +97,8 @@ Feature:
     When the commit "12345" is pushed to the branch "master"
     Then the following branches for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views:
       | name    | sha   | commit-url                                               | url                                                        |
-      | master  | 12345 | https://github.com/sroze/docker-php-example/commit/12345 | https://github.com/sroze/docker-php-example/branch/master  |
-      | develop | abcde | https://github.com/sroze/docker-php-example/commit/abcde | https://github.com/sroze/docker-php-example/branch/develop |
+      | master  | 12345 | https://github.com/sroze/docker-php-example/commit/12345 | https://github.com/sroze/docker-php-example/tree/master  |
+      | develop | abcde | https://github.com/sroze/docker-php-example/commit/abcde | https://github.com/sroze/docker-php-example/tree/develop |
 
   Scenario: It also adds the commit datetime
     Given there is a repository identifier "987987"
