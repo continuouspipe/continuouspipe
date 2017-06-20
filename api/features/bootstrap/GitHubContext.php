@@ -866,10 +866,19 @@ class GitHubContext implements CodeRepositoryContext
 
     /**
      * @Then processing the webhook should be denied
+     * @Then I should be refused to see the installation token
      */
     public function iShouldDenyTheAccessToTheWebhook()
     {
         $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @Then I should be told I need be authenticated
+     */
+    public function iShouldBeToldINeedToBeAuthenticated()
+    {
+        $this->assertResponseStatus(401);
     }
 
     /**

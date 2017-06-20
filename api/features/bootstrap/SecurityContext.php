@@ -21,6 +21,7 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class SecurityContext implements Context
@@ -117,6 +118,15 @@ class SecurityContext implements Context
         $this->tokenStorage->setToken($token);
 
         $this->currentUser = $user;
+    }
+
+    /**
+     * @Given I am authenticated with the :role role
+     */
+    public function iAmAuthenticatedWithTheRole($role)
+    {
+        $token = new PreAuthenticatedToken($role, '', 'main', [$role]);
+        $this->tokenStorage->setToken($token);
     }
 
     /**

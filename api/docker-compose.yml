@@ -24,7 +24,7 @@ api:
         - 80
     ports:
         - 81:80
-
+        - 444:443
 worker:
     build: .
     volumes:
