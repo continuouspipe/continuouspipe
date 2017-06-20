@@ -43,7 +43,7 @@ class GitHubInstallationTokenController
     {
         $repository = $flow->getRepository();
         if (!$repository instanceof GitHubCodeRepository) {
-            throw new BadRequestHttpException('The repository of this flow is not supported');
+            throw new BadRequestHttpException('The repository for this flow is not supported');
         }
 
         return $this->installationTokenResolver->get(

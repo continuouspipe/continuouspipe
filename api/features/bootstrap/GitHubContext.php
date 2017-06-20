@@ -239,6 +239,7 @@ class GitHubContext implements CodeRepositoryContext
 
     /**
      * @Given the GitHub account :account have the installation :installationIdentifier
+     * @Given the GitHub account :account has the installation :installationIdentifier
      */
     public function theGithubAccountHaveTheInstallation($account, $installationIdentifier)
     {
@@ -866,7 +867,7 @@ class GitHubContext implements CodeRepositoryContext
 
     /**
      * @Then processing the webhook should be denied
-     * @Then I should be refused to see the installation token
+     * @Then I should not be allowed to see the installation token
      */
     public function iShouldDenyTheAccessToTheWebhook()
     {
