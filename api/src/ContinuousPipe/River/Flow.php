@@ -192,7 +192,7 @@ final class Flow
 
     public function applyBranchUnpinned(BranchUnpinned $event)
     {
-        unset($this->pinnedBranches[$event->getBranch()]);
+        $this->pinnedBranches = array_diff($this->pinnedBranches, [$event->getBranch()]);
     }
 
     public function getUuid() : UuidInterface
