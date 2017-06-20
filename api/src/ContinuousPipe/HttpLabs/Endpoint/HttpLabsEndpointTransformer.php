@@ -121,7 +121,13 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
             );
 
             if (null !== $httpLabsAnnotation) {
-                $metadata = $this->updateStack($publicEndpoint, $httpLabsAnnotation, $httpLabsConfiguration);
+                $currentMetadata = \GuzzleHttp\json_decode($httpLabsAnnotation->getValue(), true);
+                $metadata = $this->updateStack($publicEndpoint, $httpLabsConfiguration, $currentMetadata);
+
+                if ($currentMetadata == $metadata) {
+                    return $metadata;
+                }
+
             } else {
                 $stack = $this->createStack($deploymentContext, $publicEndpoint, $httpLabsConfiguration);
                 $metadata = $this->createMetadata($stack, $httpLabsConfiguration);
@@ -184,9 +190,8 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
         return $serviceRepository->findOneByName($object->getMetadata()->getName());
     }
 
-    private function updateStack(PublicEndpoint $publicEndpoint, $httpLabsAnnotation, Endpoint\HttpLabs $httpLabsConfiguration)
+    private function updateStack(PublicEndpoint $publicEndpoint, Endpoint\HttpLabs $httpLabsConfiguration, $metadata)
     {
-        $metadata = \GuzzleHttp\json_decode($httpLabsAnnotation->getValue(), true);
         if (null !== $incoming = $httpLabsConfiguration->getIncoming()) {
             $metadata['stack_address'] = $incoming;
         }
