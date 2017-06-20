@@ -35,6 +35,7 @@
     <md-subheader class="md-primary">Other branches</md-subheader>
     <ul class="branch-list">
         <li ng-repeat="branch in branches | filter:{pinned:false} | orderBy:['name']"
+            ng-if="!branch.pull_request"
             ng-class="'status-'+(branch | latestTideInBranch).status"
             ng-include="'flow/views/branches/list-branch-template.html'" />
         <li ng-if="(branches | filter:{pinned:false}).length == 0" class="branch-placeholder">
