@@ -37,7 +37,7 @@ class HttpLabsGuzzleClient implements HttpLabsClient
                 'backend' => $backendUrl,
                 'middlewares' => $middlewares
             ];
-            if ($incoming) {
+            if ($incoming !== null) {
                 $requestBody['incoming'] = $incoming;
             }
             $response = $httpClient->request(

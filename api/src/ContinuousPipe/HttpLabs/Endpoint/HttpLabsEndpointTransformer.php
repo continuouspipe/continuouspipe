@@ -127,7 +127,6 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
                 if ($currentMetadata == $metadata) {
                     return $metadata;
                 }
-
             } else {
                 $stack = $this->createStack($deploymentContext, $publicEndpoint, $httpLabsConfiguration);
                 $metadata = $this->createMetadata($stack, $httpLabsConfiguration);
