@@ -34,10 +34,10 @@
 
     <md-subheader class="md-primary">Other branches</md-subheader>
     <ul class="branch-list">
-        <li ng-repeat="branch in branches | filter:{pinned:false} | orderBy:['name']"
+        <li ng-repeat="branch in branches | filter:{pinned:false} | branchesWithoutPullRequest | orderBy:['name']"
             ng-class="'status-'+(branch | latestTideInBranch).status"
             ng-include="'flow/views/branches/list-branch-template.html'" />
-        <li ng-if="(branches | filter:{pinned:false}).length == 0" class="branch-placeholder">
+        <li ng-if="(branches | filter:{pinned:false} | branchesWithoutPullRequest).length == 0" class="branch-placeholder">
             <p>No other branches.</p>
         </li>
     </ul>
