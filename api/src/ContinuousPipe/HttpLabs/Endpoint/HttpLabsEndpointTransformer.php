@@ -121,11 +121,12 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
             );
 
             if (null !== $httpLabsAnnotation) {
-                return $this->updateStack($publicEndpoint, $httpLabsAnnotation, $httpLabsConfiguration);
+                $metadata = $this->updateStack($publicEndpoint, $httpLabsAnnotation, $httpLabsConfiguration);
+            } else {
+                $stack = $this->createStack($deploymentContext, $publicEndpoint, $httpLabsConfiguration);
+                $metadata = $this->createMetadata($stack, $httpLabsConfiguration);
             }
-            $stack = $this->createStack($deploymentContext, $publicEndpoint, $httpLabsConfiguration);
 
-            $metadata = $this->createMetadata($stack, $httpLabsConfiguration);
             $this->annotateService($serviceRepository, $service, $metadata);
 
             return $metadata;
@@ -183,15 +184,19 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
         return $serviceRepository->findOneByName($object->getMetadata()->getName());
     }
 
-    private function updateStack(PublicEndpoint $publicEndpoint, $httpLabsAnnotation, $httpLabsConfiguration)
+    private function updateStack(PublicEndpoint $publicEndpoint, $httpLabsAnnotation, Endpoint\HttpLabs $httpLabsConfiguration)
     {
         $metadata = \GuzzleHttp\json_decode($httpLabsAnnotation->getValue(), true);
+        if (null !== $incoming = $httpLabsConfiguration->getIncoming()) {
+            $metadata['stack_address'] = $incoming;
+        }
 
         $this->httpLabsClient->updateStack(
             $httpLabsConfiguration->getApiKey(),
             $metadata['stack_identifier'],
             $this->getBackendAddress($publicEndpoint),
-            $httpLabsConfiguration->getMiddlewares()
+            $httpLabsConfiguration->getMiddlewares(),
+            $incoming
         );
         return $metadata;
     }
@@ -206,7 +211,8 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
             $httpLabsConfiguration->getProjectIdentifier(),
             $deploymentContext->getEnvironment()->getName(),
             $this->getBackendAddress($publicEndpoint),
-            $httpLabsConfiguration->getMiddlewares()
+            $httpLabsConfiguration->getMiddlewares(),
+            $httpLabsConfiguration->getIncoming()
         );
     }
 
