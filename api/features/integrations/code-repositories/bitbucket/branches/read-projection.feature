@@ -29,9 +29,9 @@ Feature:
       | develop |
     When the commit "12345" is pushed to the branch "master"
     Then the following branches for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views:
-      | name    | url                                                   |
-      | master  | https://bitbucket.org/sroze/my-example/branch/master  |
-      | develop | https://bitbucket.org/sroze/my-example/branch/develop |
+      | name    | url                                                   | pinned |
+      | master  | https://bitbucket.org/sroze/my-example/branch/master  | false  |
+      | develop | https://bitbucket.org/sroze/my-example/branch/develop | false  |
 
   Scenario: It creates the read model for all branches
     Given I have a "continuous-pipe.yml" file in my repository that contains:
@@ -73,9 +73,9 @@ Feature:
       | develop | abcde | https://bitbucket.org/sroze/my-example/commits/abcde |
     When the commit "12345" is pushed to the branch "master"
     Then the following branches for the flow "d7825625-f775-4ab9-b91c-b93813871bc7" should be saved to the permanent storage of views:
-      | name    | sha   | commit-url                                           | url                                                   |
-      | master  | 12345 | https://bitbucket.org/sroze/my-example/commits/12345 | https://bitbucket.org/sroze/my-example/branch/master  |
-      | develop | abcde | https://bitbucket.org/sroze/my-example/commits/abcde | https://bitbucket.org/sroze/my-example/branch/develop |
+      | name    | sha   | commit-url                                           | url                                                   | pinned |
+      | master  | 12345 | https://bitbucket.org/sroze/my-example/commits/12345 | https://bitbucket.org/sroze/my-example/branch/master  | false  |
+      | develop | abcde | https://bitbucket.org/sroze/my-example/commits/abcde | https://bitbucket.org/sroze/my-example/branch/develop | false  |
 
   Scenario: It also updates the pull requests
     Given there is a repository identifier "987987"
