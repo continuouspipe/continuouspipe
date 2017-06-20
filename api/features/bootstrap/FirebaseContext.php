@@ -109,6 +109,10 @@ class FirebaseContext implements Context
                             if (isset($b['url'])) {
                                 $branch['url'] = $b['url'];
                             }
+
+                            if (isset($b['pinned'])) {
+                                $branch['pinned'] = $b['pinned'] == 'true' ? true : false;
+                            }
                             return $branch;
                         },
                         $table->getHash()
@@ -121,16 +125,20 @@ class FirebaseContext implements Context
                             return $b;
                         }
                         $branch = [];
-                        if(isset($b['name'])) {
+                        if (isset($b['name'])) {
                             $branch['name'] = $b['name'];
                         }
 
-                        if(isset($b['latest-commit'])) {
+                        if (isset($b['latest-commit'])) {
                             $branch['latest-commit'] = $b['latest-commit'];
                         }
                         if (isset($b['url'])) {
                             $branch['url'] = $b['url'];
                         }
+                        if (isset($b['pinned'])) {
+                            $branch['pinned'] = $b['pinned'];
+                        }
+
                         return $branch;
                     },
                     $body
@@ -266,7 +274,6 @@ class FirebaseContext implements Context
                 };
             }
         }
-
 
         throw new \RuntimeException('Request not found');
     }
