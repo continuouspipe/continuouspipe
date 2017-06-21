@@ -201,6 +201,14 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @When I request the GitHub installation token for the flow :flowUuid
+     */
+    public function iRequestTheGithubInstallationTokenForTheFlow($flowUuid)
+    {
+        $this->response = $this->kernel->handle(Request::create('/github/flows/'.$flowUuid.'/installation-token'));
+    }
+
+    /**
      * @Then I should receive the archive value :response
      */
     public function iShouldReceiveTheArchiveValue($response)
@@ -215,7 +223,23 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @Then I should receive the installation token :token
+     */
+    public function iShouldReceiveTheInstallationToken($token)
+    {
+        $this->assertResponseStatus(200);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        if ($token != $json['token']) {
+            var_dump($json);
+
+            throw new \RuntimeException('Token not found');
+        }
+    }
+
+    /**
      * @Given the GitHub account :account have the installation :installationIdentifier
+     * @Given the GitHub account :account has the installation :installationIdentifier
      */
     public function theGithubAccountHaveTheInstallation($account, $installationIdentifier)
     {
@@ -843,10 +867,19 @@ class GitHubContext implements CodeRepositoryContext
 
     /**
      * @Then processing the webhook should be denied
+     * @Then I should not be allowed to see the installation token
      */
     public function iShouldDenyTheAccessToTheWebhook()
     {
         $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @Then I should be told I need be authenticated
+     */
+    public function iShouldBeToldINeedToBeAuthenticated()
+    {
+        $this->assertResponseStatus(401);
     }
 
     /**
