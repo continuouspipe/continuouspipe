@@ -17,11 +17,7 @@
               Open <code>{{ serviceName }}</code>
           </md-button>
         </div>
-        <div ng-show="relations.length" class="relations">
-            <a ng-repeat="relation in relations" ng-href="{{ relation.link }}" class="relation">
-                <md-icon class="cp-icon-github"></md-icon>
-            </a>
-        </div>
+
         <md-button class="md-raised md-warn"
                    ng-show="['running', 'pending'].indexOf(summary.status) != -1"
                    ng-click="cancel()"
@@ -39,9 +35,19 @@
         <md-button class="md-raised md-warn"
                    ng-show="isAdmin && ['success', 'failure', 'cancelled'].indexOf(summary.status) != -1 && summary.environment"
                    ng-click="deleteAndRetry(summary.environment)"
-                   ng-disabled="isLoading">
-            Delete & {{['failure', 'cancelled'].indexOf(summary.status) != -1 ? 'Retry' : 'Rerun'}}
+                   ng-disabled="isLoading || pinnedBranch">
+            <span>
+                <md-tooltip ng-if="pinnedBranch" md-direction="bottom">This branch is pinned, so its environment cannot be deleted. Branches can be pinned and unpinned from the branches view</md-tooltip>
+                <md-tooltip ng-if="!pinnedBranch" md-direction="bottom">Delete the environment for this branch and rerun the tide. You can pin branches to prevent this from the branches view</md-tooltip>
+                Delete & {{['failure', 'cancelled'].indexOf(summary.status) != -1 ? 'Retry' : 'Rerun'}}
+            </span>
         </md-button>
+
+        <div ng-show="relations.length" class="relations">
+            <a ng-repeat="relation in relations" ng-href="{{ relation.link }}" class="relation">
+                <md-icon class="cp-icon-github"></md-icon>
+            </a>
+        </div>
 
     </div>
 </md-toolbar>

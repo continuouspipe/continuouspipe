@@ -29,4 +29,11 @@ angular.module('continuousPipeRiver')
             return sortedTides(branch).slice(0, 5);
         }
     })
+    .filter('branchesWithoutPullRequest', function() {
+        return function(branches) {
+            return branches.filter(function(branch) {
+                return !branch.pull_request;
+            })
+        }
+    })
 
