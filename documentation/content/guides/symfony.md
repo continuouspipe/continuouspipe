@@ -12,6 +12,10 @@ weight: 20
 
 This is a guide to getting a Symfony application running on ContinuousPipe with a remote development environment. The code samples used in the guide can be seen at https://github.com/continuouspipe/demo-symfony. 
 
+{{< note title="Recorded video" >}}
+We've recorded a [getting started with ContinuousPipe](https://www.youtube.com/watch?v=d45YNe7umWI) video that uses a Symfony application as a demonstration, you may also want to have a look.
+{{< /note >}}
+
 ## Prerequisites
 
 Before getting started you will need the following:
