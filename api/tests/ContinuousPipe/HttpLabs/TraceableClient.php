@@ -35,16 +35,18 @@ class TraceableClient implements HttpLabsClient
         string $projectIdentifier,
         string $name,
         string $backendUrl,
-        array $middlewares
+        array $middlewares,
+        string $incoming = null
     ): Stack
     {
-        $stack = $this->decoratedClient->createStack($apiKey, $projectIdentifier, $name, $backendUrl, $middlewares);
+        $stack = $this->decoratedClient->createStack($apiKey, $projectIdentifier, $name, $backendUrl, $middlewares, $incoming);
 
         $this->createdStacks[] = [
             'project_identifier' => $projectIdentifier,
             'backend_url' => $backendUrl,
             'stack' => $stack,
-            'middlewares' => $middlewares
+            'middlewares' => $middlewares,
+            'incoming' => $incoming
         ];
 
         return $stack;
@@ -53,14 +55,15 @@ class TraceableClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares)
+    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares, string $incoming = null)
     {
-        $this->decoratedClient->updateStack($apiKey, $stackIdentifier, $backendUrl, $middlewares);
+        $this->decoratedClient->updateStack($apiKey, $stackIdentifier, $backendUrl, $middlewares, $incoming);
 
         $this->updatedStacks[] = [
             'stack_identifier' => $stackIdentifier,
             'backend_url' => $backendUrl,
-            'middlewares' => $middlewares
+            'middlewares' => $middlewares,
+            'incoming' =>$incoming,
         ];
     }
 
