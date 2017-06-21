@@ -165,6 +165,18 @@ class HttpLabsContext implements Context
     }
 
     /**
+     * @Then the stack :stackIdentifier should have been updated with incoming url :incoming
+     */
+    public function theStackShouldHaveBeenUpdatedWithIncoming($stackIdentifier, $incoming)
+    {
+        foreach ($this->traceableClient->getUpdatedStacks() as $stack) {
+            if ($stack['stack_identifier'] == $stackIdentifier && $stack['incoming'] == $incoming) {
+                return;
+            }
+        }
+    }
+
+        /**
      * @Then the stack :stackIdentifier should have been deleted
      */
     public function theStackShouldHaveBeenDeleted($stackIdentifier)
@@ -176,5 +188,19 @@ class HttpLabsContext implements Context
         }
 
         throw new \RuntimeException('The stack was not deleted');
+    }
+
+    /**
+     * @Then an HttpLabs stack should have been created with the backend :backend and incoming url :incoming
+     */
+    public function anHttplabsStackShouldHaveBeenCreatedWithTheBackendAndIncomingUrl($backend, $incoming)
+    {
+        foreach ($this->traceableClient->getCreatedStacks() as $stack) {
+            if ($stack['backend_url'] == $backend && $stack['incoming'] == $incoming) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('No stack created with this backend URL');
     }
 }

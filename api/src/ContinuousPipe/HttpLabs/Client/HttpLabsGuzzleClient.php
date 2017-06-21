@@ -26,21 +26,25 @@ class HttpLabsGuzzleClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl, array $middlewares): Stack
+    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl, array $middlewares, string $incoming = null): Stack
     {
         $httpClient = $this->createClient($apiKey);
 
         try {
             // Create the stack
+            $requestBody = [
+                'name' => substr($name, 0, 20),
+                'backend' => $backendUrl,
+                'middlewares' => $middlewares
+            ];
+            if ($incoming !== null) {
+                $requestBody['incoming'] = $incoming;
+            }
             $response = $httpClient->request(
                 'post',
                 sprintf('https://api.httplabs.io/projects/%s/complete-stacks', $projectIdentifier),
                 [
-                    'json' => [
-                        'name' => substr($name, 0, 20),
-                        'backend' => $backendUrl,
-                        'middlewares' => $middlewares
-                    ]
+                    'json' => $requestBody
                 ]
             );
 
@@ -54,7 +58,7 @@ class HttpLabsGuzzleClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares)
+    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares, string $incoming = null)
     {
         try {
             $stackUri = 'https://api.httplabs.io/stacks/'.$stackIdentifier;
@@ -62,7 +66,8 @@ class HttpLabsGuzzleClient implements HttpLabsClient
             $httpClient->request('put', $stackUri, [
                 'json' => [
                     'backend' => $backendUrl,
-                    'middlewares' => $middlewares
+                    'middlewares' => $middlewares,
+                    'incoming' => $incoming,
                 ]
             ]);
 

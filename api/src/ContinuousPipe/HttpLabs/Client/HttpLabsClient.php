@@ -17,8 +17,8 @@ interface HttpLabsClient
      *
      * @return Stack
      */
-    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl, array $middlewares) : Stack;
-
+    public function createStack(string $apiKey, string $projectIdentifier, string $name, string $backendUrl, array $middlewares, string $incoming = null) : Stack;
+    
     /**
      * Update the given stack.
      *
@@ -29,7 +29,7 @@ interface HttpLabsClient
      *
      * @throws HttpLabsException
      */
-    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares);
+    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares, string $incoming = null);
 
     /**
      * Delete the given stack.
