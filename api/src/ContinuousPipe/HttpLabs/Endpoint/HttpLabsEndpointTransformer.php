@@ -197,6 +197,7 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
 
         $this->httpLabsClient->updateStack(
             $httpLabsConfiguration->getApiKey(),
+            $httpLabsConfiguration->getProjectIdentifier(),
             $metadata['stack_identifier'],
             $this->getBackendAddress($publicEndpoint),
             $httpLabsConfiguration->getMiddlewares(),

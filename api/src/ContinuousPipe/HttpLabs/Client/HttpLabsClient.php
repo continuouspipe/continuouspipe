@@ -29,7 +29,7 @@ interface HttpLabsClient
      *
      * @throws HttpLabsException
      */
-    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares, string $incoming = null);
+    public function updateStack(string $apiKey, string $projectIdentifier, string $stackIdentifier, string $backendUrl, array $middlewares, string $incoming = null);
 
     /**
      * Delete the given stack.
