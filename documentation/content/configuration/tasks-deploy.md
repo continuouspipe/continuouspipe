@@ -38,7 +38,7 @@ tasks:
 ```
 
 ## Image Source
-If you have a [`build` task]({{< relref "tasks.md" >}}) before the deployment task and an image for the service with the same name was built just before, this image name will be used automatically, so you have nothing to configure.
+If you have a [`build` task]({{< relref "configuration/tasks.md" >}}) before the deployment task and an image for the service with the same name was built just before, this image name will be used automatically, so you have nothing to configure.
 
 If that's not the case, the first way to reference an image is to explicitly mention the image name. Note that this value is automatically guessed if you have a service having the same name in your project's `docker-compose.yml` file.
 
@@ -133,6 +133,8 @@ endpoints:
                 cert: ${WILDCARD_SSL_CERT}
                 key: ${WILDCARD_SSL_KEY}
 ```
+
+The documentation on [endpoints]({{< relref "configuration/endpoints.md" >}}) gives more details on how to use Ingress and SSL.
 
 ## Basic HTTP Authentication
 

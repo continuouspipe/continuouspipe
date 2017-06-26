@@ -12,7 +12,7 @@ ContinuousPipe provides images for many common technologies that you may need to
 
 Some examples are:
 
-- [PHP with NGINX](https://quay.io/repository/continuouspipe/php7.1-nginx)
+- [PHP with Nginx](https://quay.io/repository/continuouspipe/php7.1-nginx)
 - [PHP with Apache](https://quay.io/repository/continuouspipe/php7.1-apache)
 - [MYSQL](https://quay.io/repository/continuouspipe/mysql8.0)
 - [Redis](https://quay.io/repository/continuouspipe/redis3)
@@ -29,6 +29,6 @@ Any of the images can be used by referencing them in your `Dockerfile`:
 FROM quay.io/continuouspipe/php7.1-apache:stable
 ```
 
-The benefit of using ContinuousPipe images are that they have been created according to best practices on security and performance. For example, the Apache and NGINX server images are automatically configured to use HTTPS only websites and install self signed SSL certificate on container start. More information about the specific setup of each image is provided in the README for each image within https://github.com/continuouspipe/dockerfiles.
+The benefit of using ContinuousPipe images are that they have been created according to best practices on security and performance. For example, the Apache and Nginx server images are automatically configured to use HTTPS only websites and install self signed SSL certificate on container start. More information about the specific setup of each image is provided in the README for each image within https://github.com/continuouspipe/dockerfiles.
 
 ContinuousPipe images are also compatible with the [remote development]({{< relref "remote-development/getting-started.md" >}}) functionality without any additional configuration.

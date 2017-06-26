@@ -14,7 +14,7 @@ You can integrate your endpoints with the [Cloudflare](https://www.cloudflare.co
 
 An example of the Cloudflare endpoint integration is as follows:
 
-```yaml
+``` yaml
 tasks:
     # ...
     deployment:
@@ -56,7 +56,7 @@ The domain used in the `record_suffix` needs to match the domain associated with
 
 As you can see, using the default environment identifier results in a rather long endpoint URL. This can be improved by overriding the environment name as follows:
 
-```yaml
+``` yaml
 tasks:
     # ...
     deployment:
