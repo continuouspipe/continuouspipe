@@ -59,7 +59,7 @@ Using the [Nginx Ingress controller](https://github.com/kubernetes/ingress/tree/
 
 ContinuousPipe currently provides no way to create the Nginx Ingress controller - this needs to be done as a manual step when setting up your Kubernetes cluster. Once the Ingress is deployed, it will be assigned an IP address from a random pool, which will then be static for the lifetime of the Ingress. The IP address of the manually deployed Ingress then needs to be set up in a DNS rule so that it is associated with your domain, unless you are using [Cloudflare integration](#nginx-ingress-with-cloudflare-ssl).
 
-**You need an ingress controller to be deployed on your cluster first.** You can use [ContinuousPipe's ingress controller](https://github.com/continuouspipe/nginx-ingress-controller) or any of the official [Kubernetes ingress controllers](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers). 
+**You need an Ingress controller to be deployed on your cluster first.** You can use the [ContinuousPipe Ingress controller](https://github.com/continuouspipe/nginx-ingress-controller) or any of the official [Kubernetes Ingress controllers](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-controllers). 
 
 ### ContinuousPipe Modifications
 
