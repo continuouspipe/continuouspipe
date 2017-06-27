@@ -2,7 +2,7 @@ FROM nginx
 
 # Install pygments (for syntax highlighting)
 RUN apt-get -qq update \
-	&& DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends python-pygments git ca-certificates \
+	&& DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends python-pygments git ca-certificates rsync \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Download and install hugo
