@@ -1,3 +1,5 @@
+var Raven = require('raven');
+
 var HttpHandlerFactory = function(LogsCollection) {
     var redirect = function(request, response) {
         response.writeHead(200, {"Content-Type": "text/html"});
@@ -109,7 +111,16 @@ var HttpHandlerFactory = function(LogsCollection) {
             if (request.method == route.method && null !== (matches = request.url.match(route.url))) {
                 route.parameterMapping && route.parameterMapping(request, matches);
 
-                return route.handler(request, response);
+                try {
+                    return route.handler(request, response);
+                } catch (e) {
+                    console.log(e);
+
+                    Raven.captureException(e);
+
+                    response.writeHead(500);
+                    response.end();
+                }
             }
         }
 

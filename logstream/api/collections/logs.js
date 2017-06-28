@@ -1,8 +1,9 @@
 var uuid = require('node-uuid'),
     md5 = require('md5'),
-    CONTENTS_BYTES_LIMIT = 10485760;
+    CONTENTS_BYTES_LIMIT = 10485760,
+    Raven = require('raven');
 
-var LogsCollection = function(root, bucket, sentry) {
+var LogsCollection = function(root, bucket) {
     this.insert = function(log, callback) {
         var path = log.parent ? log.parent+'/children' : null,
             logRoot = path ? root.child(path) : root,
@@ -31,7 +32,7 @@ var LogsCollection = function(root, bucket, sentry) {
                 callback(error, log);
             });
         } catch (e) {
-            sentry.captureException(e);
+            Raven.captureException(e);
 
             // Silently fail as it shouldn't
             callback(null, log);
@@ -55,7 +56,7 @@ var LogsCollection = function(root, bucket, sentry) {
                 });
             });
         } catch (e) {
-            sentry.captureException(e);
+            Raven.captureException(e);
 
             // Silently fail as it shouldn't
             updatedProperties._id = id;

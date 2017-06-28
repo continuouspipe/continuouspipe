@@ -5,7 +5,7 @@ var http2 = require('http2'),
     HandlerFactory = require('./handler'),
     Firebase = require('firebase'),
     gcloud = require('gcloud'),
-    raven = require('raven');
+    Raven = require('raven');
 
 // Create the firebase connection
 var firebase_application = process.env.FIREBASE_APP;
@@ -21,8 +21,7 @@ var firebase = new Firebase('https://'+firebase_application+'.firebaseio.com/'),
     });
 
 // Configure the Sentry exception collection
-var sentry = new raven.Client(process.env.SENTRY_DSN);
-sentry.patchGlobal();
+Raven.config(process.env.SENTRY_DSN).install();
 
 // Start the HTTP server
 var port = process.env.PORT || 443;
@@ -35,8 +34,7 @@ var options = {
 var handler = HandlerFactory(
     new LogsCollection(
         firebase.child('logs'),
-        storage.bucket('logstream-archives'),
-        sentry
+        storage.bucket('logstream-archives')
     )
 );
 
