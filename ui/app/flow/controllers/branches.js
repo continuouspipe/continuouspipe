@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('BranchesController', function ($scope, $http, $mdToast, $firebaseArray, $authenticatedFirebaseDatabase, PinnedBranchRepository, flow, user, project) {
+    .controller('BranchesController', function ($scope, $http, $mdToast, $firebaseArray, $authenticatedFirebaseDatabase, PinnedBranchRepository, flow, user, project, BranchFactory) {
         $scope.isAdmin = user.isAdmin(project);
         
         $authenticatedFirebaseDatabase.get(flow).then(function (database) {
-            $scope.branches = $firebaseArray(
+            $scope.branches = BranchFactory(
                 database.ref().child('flows/' + flow.uuid + '/branches')
             );
 
@@ -17,7 +17,9 @@ angular.module('continuousPipeRiver')
             var reloadPullRequests = function() {
                 $scope.pullRequests = pullRequestsByBranch
                     .filter(function(pullRequestInBranch) {
-                        return $scope.branches.some(function(branch) {return branch.$id == pullRequestInBranch.$id});
+                        return $scope.branches.some(function(branch) {
+                            return branch.$id == pullRequestInBranch.$id
+                        });
                     })
                     .map(function(pullRequestInBranch) {
                         var view = $scope.branches.filter(function(branch) {return branch.$id == pullRequestInBranch.$id})[0];
@@ -33,8 +35,8 @@ angular.module('continuousPipeRiver')
         });
 
         $scope.pinOrUnPin = function(branch) {
-            var method = branch.pinned ? 'unpin' : 'pin';
-            PinnedBranchRepository[method](flow.uuid, branch.name).then(function(response) {
+            var method = branch.data.pinned ? 'unpin' : 'pin';
+            PinnedBranchRepository[method](flow.uuid, branch.data.name).then(function(response) {
                 $mdToast.show($mdToast.simple()
                     .textContent('Branch successfully '+method+'ned')
                     .position('top')
