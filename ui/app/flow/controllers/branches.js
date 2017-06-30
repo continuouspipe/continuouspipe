@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('BranchesController', function ($scope, $http, $mdToast, $firebaseArray, $authenticatedFirebaseDatabase, PinnedBranchRepository, flow, user, project, BranchFactory) {
+    .controller('BranchesController', function ($scope, $http, $mdToast, $firebaseArray, $authenticatedFirebaseDatabase, PinnedBranchRepository, flow, user, project, BranchFactory, $mdDialog, $remoteResource, EnvironmentRepository) {
         $scope.isAdmin = user.isAdmin(project);
         
         $authenticatedFirebaseDatabase.get(flow).then(function (database) {
@@ -46,4 +46,83 @@ angular.module('continuousPipeRiver')
                 swal("Error !", $http.getError(response), "error");
             })
         };
+        $scope.showAlert = function(ev, environment) {
+
+            var envs = $scope.environments.filter(function (env) {
+                return environment.identifier == env.identifier;
+            });
+            
+            if (envs.length) {
+                environment = envs[0];
+            }
+
+            var mdDialogCtrl = function ($scope, EndpointOpener, RemoteShellOpener, $componentLogDialog) {
+
+                $scope.environment = environment;
+                $scope.openEndpoint = function(endpoint) {
+                    EndpointOpener.open(endpoint);
+                };
+
+                $scope.openRemoteShell = function(environment, endpoint) {
+                    RemoteShellOpener.open(environment, endpoint)
+                };
+
+                $scope.liveStreamComponent = function(environment, component) {
+                    $componentLogDialog.open($scope, flow, environment, component);
+                };
+            };
+
+            $mdDialog.show({
+                templateUrl: '/flow/views/branches/environment.html',
+                controller: mdDialogCtrl,
+                clickOutsideToClose: true
+            });
+        };
+
+        var loadEnvironments = function() {
+            $remoteResource.load('environments', EnvironmentRepository.findByFlow(flow)).then(function (environments) {
+                $scope.environments = environments.map(function(environment) {
+                    environment.status = getEnvironmentStatus(environment);
+                    environment.endpoints = getEnvironmentEndpoints(environment);
+                    environment.flow = flow;
+
+                    return environment;
+                });
+            });
+        };
+
+        var getEnvironmentStatus = function(environment) {
+            if (environment.status == 'Terminating') {
+                return 'terminating';
+            }
+
+            var status = 'healthy';
+
+            for (var i = 0; i < environment.components.length; i++) {
+                var component = environment.components[i];
+
+                if (component.status.status != 'healthy') {
+                    status = component.status.status;
+                }
+            }
+
+            return status;
+        };
+
+        var getEnvironmentEndpoints = function(environment) {
+            var endpoints = [];
+
+            environment.components.forEach(function(component) {
+                component.status.public_endpoints.forEach(function(endpoint) {
+                    endpoints.push({
+                        name: component.name,
+                        address: endpoint
+                    });
+                })
+            });
+
+            return endpoints;
+        };
+
+        loadEnvironments();
     });

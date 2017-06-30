@@ -6,9 +6,6 @@
         <span ng-if="!branch.data.url" class="status-colored ellispable">{{ branch.data.name }}</span>
         <a ng-if="branch.data.url"class="status-colored ellispable" ng-href="{{ branch.data.url }}" target="_blank">{{ branch.data.name }}</a>
     </p>
-    <p ng-if="branch.environment">
-        Env id: {{branch.environment.identifier}}
-    </p>
     <p><span ng-show="branch.data['latest-tides']">{{ (branch | latestTideInBranch).creation_date | timeAgo }}</span></p>
 </div>
 
@@ -17,7 +14,11 @@
     <p ng-if="branch.pull_request">
         <md-icon class="cp-icon-git-branch"></md-icon> <a ng-href="{{ branch.pull_request.url }}" target="_blank">#{{ branch.pull_request.identifier }}</a></p>
 </div>
-
+<p ng-if="branch.environment.identifier">
+    <md-button class="md-icon-button" ng-click="showAlert($event, branch.environment)">
+        <md-icon>pageview</md-icon>
+    </md-button>
+</p>
 <ul class="branch-last-tides">
     <li ng-repeat="tide in (branch | branchLastTides)" class="branch-last-tide" ng-class="tide.status | tideStatusClass" ui-sref="tide.logs({tideUuid: tide.uuid})" >
         <span ng-show="tide.status=='success'"><md-icon>done</md-icon></span>
