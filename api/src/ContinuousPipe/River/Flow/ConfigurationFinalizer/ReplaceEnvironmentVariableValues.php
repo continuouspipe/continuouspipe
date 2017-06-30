@@ -83,7 +83,7 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
                         'Unable to decrypt the value of the variable "%s": %s',
                         $item['name'],
                         $e->getMessage()
-                    ));
+                    ), $e->getCode(), $e);
                 }
             } elseif (array_key_exists('value', $item)) {
                 $value = $item['value'];
