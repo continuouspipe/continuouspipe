@@ -1,33 +1,21 @@
 server {
     listen 80;
 
-    root /app/web;
-    index index.html;
-
     server_name localhost;
 
-    location / {
-        try_files $uri @rewriteapp;
-    }
+    include /etc/nginx/app.conf;
+}
 
-    location @rewriteapp {
-        rewrite ^(.*)$ /app.php/$1 last;
-    }
+server {
+    listen  443;
+    server_name localhost;
 
-    location ~ \.php(/|$) {
-        fastcgi_split_path_info ^(.+\.php)(/.*)$;
-        include fastcgi_params;
-        fastcgi_read_timeout 300;
+    ssl on;
 
-        fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
-        fastcgi_param PATH_INFO $fastcgi_path_info;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param HTTPS $https;
-        fastcgi_param HTTP_PROXY "";
+    ssl_certificate      /usr/local/certs/server.crt;
+    ssl_certificate_key  /usr/local/certs/server.key;
+    ssl_client_certificate /usr/local/certs/ca.crt;
+    ssl_verify_client optional;
 
-        fastcgi_pass unix:///var/run/php7.0-fpm.sock;
-    }
-
-    error_log /dev/stderr info;
-    access_log /dev/stdout;
+    include /etc/nginx/app.conf;
 }
