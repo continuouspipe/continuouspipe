@@ -267,6 +267,9 @@ body {
                     .md-icon-button {
                         padding: 0;
                     }
+                    .icon-link--help {
+                        padding-top: 7px;
+                    }
                 }
             }
         }
@@ -1123,7 +1126,4 @@ code {
 .yaml-editor-buttons {
     text-align: center;
     padding: 10px;
-}
-.md-icon-button.icon-link {
-    padding-top: 7px !important;
 }
