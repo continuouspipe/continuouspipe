@@ -88,6 +88,8 @@ angular.module('continuousPipeRiver')
             });
         };
 
+        $scope.environments = [];
+        
         var loadEnvironments = function() {
             $remoteResource.load('environments', EnvironmentRepository.findByFlow(flow)).then(function (environments) {
                 $scope.environments = environments.map(function(environment) {
