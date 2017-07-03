@@ -14,7 +14,7 @@
     <p ng-if="branch.pull_request">
         <md-icon class="cp-icon-git-branch"></md-icon> <a ng-href="{{ branch.pull_request.url }}" target="_blank">#{{ branch.pull_request.identifier }}</a></p>
 </div>
-<p ng-if="hasEnvironment(branch.environment)">
+<p ng-if="branch.environment && hasEnvironment(branch.environment)">
     <md-button class="md-icon-button" ng-click="showAlert($event, branch.environment)">
         <md-icon>pageview</md-icon>
     </md-button>
