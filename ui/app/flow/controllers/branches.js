@@ -46,6 +46,15 @@ angular.module('continuousPipeRiver')
                 swal("Error !", $http.getError(response), "error");
             })
         };
+        
+        $scope.hasEnvironment = function(environment) {
+            var envs = $scope.environments.filter(function (env) {
+                return environment.identifier == env.identifier;
+            });
+
+            return envs.length > 0;
+        };
+        
         $scope.showAlert = function(ev, environment) {
 
             var envs = $scope.environments.filter(function (env) {
@@ -88,6 +97,7 @@ angular.module('continuousPipeRiver')
 
                     return environment;
                 });
+                
             });
         };
 
