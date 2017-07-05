@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('BranchesController', function ($scope, $http, $mdToast, $firebaseArray, $authenticatedFirebaseDatabase, PinnedBranchRepository, flow, user, project, BranchFactory, $mdDialog, $remoteResource, EnvironmentRepository) {
+    .controller('BranchesController', function ($scope, $http, $mdToast, $firebaseArray, $authenticatedFirebaseDatabase, PinnedBranchRepository, flow, user, project, BranchFactory, $mdDialog, $remoteResource, EnvironmentRepository, $rootScope) {
         $scope.isAdmin = user.isAdmin(project);
         
         $authenticatedFirebaseDatabase.get(flow).then(function (database) {
@@ -65,9 +65,10 @@ angular.module('continuousPipeRiver')
                 environment = envs[0];
             }
 
-            var mdDialogCtrl = function ($scope, EndpointOpener, RemoteShellOpener, $componentLogDialog) {
+            var mdDialogCtrl = function ($scope, EndpointOpener, RemoteShellOpener) {
 
                 $scope.environment = environment;
+                $scope.flow = flow;
                 $scope.openEndpoint = function(endpoint) {
                     EndpointOpener.open(endpoint);
                 };
@@ -77,8 +78,31 @@ angular.module('continuousPipeRiver')
                 };
 
                 $scope.liveStreamComponent = function(environment, component) {
-                    $componentLogDialog.open($scope, flow, environment, component);
+                    var liveStreamCtrl = function ($scope) {
+                        $scope.environment = environment;
+                        $scope.component = component;
+
+                        $scope.close = function() {
+                            $mdDialog.cancel();
+                        };
+
+                        if ($scope.component.status.containers.length === 1) {
+                            $scope.selectedPod = $scope.component.status.containers[0];
+                        }
+                    };
+
+
+                    var dialogScope = $scope.$new();
+                    dialogScope.environment = environment;
+                    dialogScope.component = component;
+
+                    $mdDialog.show({
+                        controller: liveStreamCtrl,
+                        templateUrl: 'logs/views/dialogs/components.html',
+                        clickOutsideToClose: true,
+                    });
                 };
+
             };
 
             $mdDialog.show({
@@ -89,7 +113,7 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.environments = [];
-        
+
         var loadEnvironments = function() {
             $remoteResource.load('environments', EnvironmentRepository.findByFlow(flow)).then(function (environments) {
                 $scope.environments = environments.map(function(environment) {
