@@ -96,3 +96,10 @@ Feature:
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then I should receive a service unavailable error
     And I should see the "Collecting environment list from clusters failed." message in the log
+
+  Scenario: It returns the HttpLabs DNS
+    Given the service "app" have the following annotations:
+      | name                                 | value                                                                                             |
+      | com.continuouspipe.io.httplabs.stack | {"stack_identifier":"00000000-0000-0000-0000-000000000000","stack_address":"foo-bar.httplabs.io"} |
+    When I request the environment list of the cluster "my-cluster" of the team "my-team"
+    Then the status of the component "app" should contain the public endpoint "foo-bar.httplabs.io"

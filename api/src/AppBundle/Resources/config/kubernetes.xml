@@ -38,6 +38,7 @@
         <service id="kubernetes.reverse_transformer.chained_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ChainedComponentPublicEndpointResolver">
             <argument type="collection">
                 <argument type="service" id="pipe.cloud_flare.component_public_endpoint_resolver"/>
+                <argument type="service" id="pipe.httplabs.component_public_endpoint_resolver"/>
                 <argument type="service" id="kubernetes.reverse_transformer.ingress.ingress_public_endpoint_resolver" />
                 <argument type="service" id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver" />
             </argument>
@@ -182,6 +183,10 @@
             <argument type="service" id="security.encryption.vault" />
 
             <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="pipe.httplabs.component_public_endpoint_resolver" class="ContinuousPipe\HttpLabs\HttpLabsComponentPublicEndpointResolver">
+            <argument type="service" id="logger" />
         </service>
 
         <!-- ClusterHealthChecker -->
