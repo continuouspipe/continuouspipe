@@ -19,9 +19,6 @@ angular.module('continuousPipeRiver')
                     }
                 },
                 views: {
-                    'aside@': {
-                        templateUrl: 'project/layout/views/aside.html'
-                    },
                     'title@layout': {
                         controller: function ($scope, project) {
                             $scope.project = project;
@@ -31,6 +28,9 @@ angular.module('continuousPipeRiver')
                     'alerts@': {
                         templateUrl: 'project/views/alerts.html',
                         controller: 'ProjectAlertsController'
+                    },
+                    'content@': {
+                        templateUrl: 'project/layout/views/wrapper.html'
                     }
                 }
             })
@@ -38,17 +38,16 @@ angular.module('continuousPipeRiver')
                 parent: 'project',
                 url: '/flows',
                 views: {
-                    'content@': {
+                    'content@project': {
                         templateUrl: 'project/flows/views/list.html',
                         controller: 'FlowListController'
                     }
-                },
-                aside: true
+                }
             })
             .state('flows.create', {
                 url: '/create',
                 views: {
-                    'content@': {
+                    'content@project': {
                         templateUrl: 'project/flows/views/create.html',
                         controller: 'CreateFlowController'
                     },
@@ -64,76 +63,69 @@ angular.module('continuousPipeRiver')
                 parent: 'project',
                 url: '/users',
                 views: {
-                    'content@': {
+                    'content@project': {
                         templateUrl: 'project/users/views/list.html',
                         controller: 'ProjectUsersController'
                     }
-                },
-                aside: true
+                }
             })
             .state('users.add', {
                 parent: 'project',
                 url: '/add',
                 views: {
-                    'content@': {
+                    'content@project': {
                         templateUrl: 'project/users/views/add.html',
                         controller: 'ProjectAddUserController'
                     }
-                },
-                aside: true
+                }
             })
             .state('clusters', {
                 parent: 'project',
                 url: '/clusters',
                 views: {
-                    'content@': {
+                    'content@project': {
                         templateUrl: 'project/clusters/views/list.html',
                         controller: 'ProjectClustersController'
                     }
-                },
-                aside: true
+                }
             })
             .state('clusters.add', {
                 url: '/add',
                 views: {
-                    'content@': {
+                    'content@project': {
                         templateUrl: 'project/clusters/views/add.html',
                         controller: 'ProjectAddClusterController'
                     }
-                },
-                aside: true
+                }
             })
             .state('registry-credentials', {
                 parent: 'project',
                 url: '/registry-credentials',
                 views: {
-                    'content@': {
+                    'content@project': {
                         templateUrl: 'project/registry-credentials/views/list.html',
                         controller: 'ProjectRegistryCredentialsController'
                     }
-                },
-                aside: true
+                }
             })
             .state('registry-credentials.create', {
                 url: '/create',
                 views: {
-                    'content@': {
+                    'content@project': {
                         templateUrl: 'project/registry-credentials/views/create.html',
                         controller: 'ProjectCreateRegistryCredentialsController'
                     }
-                },
-                aside: true
+                }
             })
             .state('configuration', {
                 parent: 'project',
                 url: '/configuration',
                 views: {
-                    'content@': {
+                    'content@project': {
                         templateUrl: 'project/configuration/views/edit.html',
                         controller: 'ProjectConfigurationController'
                     }
-                },
-                aside: true
+                }
             })
         ;
     });

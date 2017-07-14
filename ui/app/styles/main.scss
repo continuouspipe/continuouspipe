@@ -6,6 +6,7 @@
 @import "components/components";
 @import "components/environments";
 @import "components/tables";
+@import "components/tabs";
 
 .mobile-only {
     @include largeScreen {
@@ -226,6 +227,9 @@ body {
         &.content {
             font-size: 14px;
             background: $content-background;
+            flex: 1;
+            flex-direction: column;
+            display: flex;
 
             md-content {
                 background: $content-background;
@@ -574,33 +578,23 @@ body {
         }
 
         &.status-failure {
-            background: $failure-color;
             color: $failure-dark-color;
-            border-left: 2px solid $failure-dark-color;
         }
 
         &.status-success {
-            background: $success-color;
             color: $success-dark-color;
-            border-left: 2px solid $success-dark-color;
         }
 
         &.status-pending {
-            background: $pending-color;
             color: $pending-dark-color;
-            border-left: 2px solid $pending-dark-color;
         }
 
         &.status-cancelled {
-            background: $cancelled-color;
             color: $cancelled-dark-color;
-            border-left: 2px solid $cancelled-dark-color;
         }
 
         &.status-running {
-            background: $running-color;
             color: $running-dark-color;
-            border-left: 2px solid $running-dark-color;
 
             .relations {
                 margin-right: 10px;
