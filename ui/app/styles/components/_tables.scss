@@ -1,0 +1,39 @@
+div.list-items {
+    width: 100%;
+    color: #333;
+
+    [class^="list-col-"], [class*=" list-col-"] {
+        padding: 10px;
+    }
+
+    .list-col-8 {
+        flex: 1 0 20em;
+    }
+
+    .list-col-2 {
+        flex: 0 0 20em;
+    }
+
+    .list-item, .list-items-header {
+        display: flex;
+        flex-flow: row nowrap;
+        flex-grow: 1;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .list-item {
+        background: #fff;
+        margin-bottom: 10px;
+        border: 1px solid #dfdfdf;
+
+        &.clickable {
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+    }
+}

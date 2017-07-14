@@ -5,6 +5,7 @@
 @import "atoms/typography";
 @import "components/components";
 @import "components/environments";
+@import "components/tables";
 
 .mobile-only {
     @include largeScreen {
