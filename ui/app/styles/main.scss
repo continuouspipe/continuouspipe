@@ -5,7 +5,7 @@
 @import "atoms/typography";
 @import "components/components";
 @import "components/environments";
-@import "components/tables";
+@import "components/items";
 @import "components/tabs";
 
 .mobile-only {
@@ -233,10 +233,6 @@ body {
 
             md-content {
                 background: $content-background;
-
-                md-toolbar {
-                    z-index: 85;
-                }
 
                 md-content {
                     md-toolbar {

@@ -35,5 +35,35 @@ div.list-items {
             text-decoration: none;
             color: #333;
         }
+
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+    }
+
+    .list-environment {
+        margin-bottom: 10px;
+
+        .list-item {
+            margin-bottom: 0;
+        }
+
+        .environment-details {
+            background: #fff;
+            margin-left: 20px;
+
+            table.components {
+                width: 100%;
+                border: 1px solid #dfdfdf;
+                border-top: none;
+
+                td, th {
+                    text-align: left;
+                    padding: 5px 10px;
+                }
+            }
+        }
     }
 }
