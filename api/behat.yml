@@ -35,6 +35,7 @@ default:
                     - @event_bus
                     - @river.tide_event_store
                     - @river.code_repository.branch_query.in_memory
+                    - @river.code_repository.local_filesystem_resolver
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -177,6 +178,7 @@ default:
                     - @event_bus
                     - @river.tide_event_store
                     - @river.code_repository.branch_query.in_memory
+                    - @river.code_repository.local_filesystem_resolver
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -279,6 +281,7 @@ default:
                     - @event_bus
                     - @river.tide_event_store
                     - @river.code_repository.branch_query.in_memory
+                    - @river.code_repository.local_filesystem_resolver
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -392,6 +395,7 @@ smoke:
                     - @event_bus
                     - @river.tide_event_store
                     - @river.code_repository.branch_query.in_memory
+                    - @river.code_repository.local_filesystem_resolver
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - Tide\TasksContext:

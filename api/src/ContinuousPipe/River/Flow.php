@@ -9,6 +9,7 @@ use ContinuousPipe\River\Flow\Event\BranchPinned;
 use ContinuousPipe\River\Flow\Event\BranchUnpinned;
 use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
 use ContinuousPipe\River\Flow\Event\FlowCreated;
+use ContinuousPipe\River\Flow\Event\FlowFlexed;
 use ContinuousPipe\River\Flow\Event\FlowRecovered;
 use ContinuousPipe\River\Flow\Event\PipelineCreated;
 use ContinuousPipe\River\Flow\Event\PipelineDeleted;
@@ -53,6 +54,11 @@ final class Flow
      */
     private $pipelines = [];
     private $pinnedBranches = [];
+
+    /**
+     * @var boolean
+     */
+    private $flexed;
 
     private function __construct()
     {
@@ -195,6 +201,11 @@ final class Flow
         $this->pinnedBranches = array_diff($this->pinnedBranches, [$event->getBranch()]);
     }
 
+    public function applyFlowFlexed(FlowFlexed $event)
+    {
+        $this->flexed = true;
+    }
+
     public function getUuid() : UuidInterface
     {
         return $this->uuid;
@@ -258,5 +269,10 @@ final class Flow
     public function getPinnedBranches(): array
     {
         return $this->pinnedBranches;
+    }
+
+    public function isFlex() : bool
+    {
+        return $this->flexed ?: false;
     }
 }

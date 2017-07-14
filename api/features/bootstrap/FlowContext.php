@@ -937,6 +937,15 @@ EOF;
     }
 
     /**
+     * @Given the flow :uuid has flex activated
+     */
+    public function theFlowHasFlexActivated($uuid)
+    {
+        $this->eventBus->handle(new Flow\Event\FlowFlexed(Uuid::fromString($uuid)));
+        $this->currentFlow = $flow = $this->flowRepository->find(Uuid::fromString($uuid));
+    }
+
+    /**
      * @Then the environment should be deleted
      */
     public function theEnvironmentShouldBeDeleted()

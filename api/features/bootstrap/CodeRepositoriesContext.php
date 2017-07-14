@@ -8,6 +8,7 @@ use ContinuousPipe\River\CodeRepository\CodeRepositoryUser;
 use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use ContinuousPipe\River\CodeRepository\Event\CodePushed;
 use ContinuousPipe\River\CodeRepository\Event\PullRequestOpened;
+use ContinuousPipe\River\CodeRepository\FileSystem\LocalFilesystemResolver;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\InMemoryBranchQuery;
 use ContinuousPipe\River\CodeRepository\PullRequest;
@@ -49,13 +50,18 @@ class CodeRepositoriesContext implements Context
      * @var InMemoryBranchQuery
      */
     private $branchQuery;
+    /**
+     * @var LocalFilesystemResolver
+     */
+    private $localFilesystemResolver;
 
-    public function __construct(PredictableCommitResolver $predictableCommitResolver, MessageBus $eventBus, EventStore $eventStore, InMemoryBranchQuery $branchQuery)
+    public function __construct(PredictableCommitResolver $predictableCommitResolver, MessageBus $eventBus, EventStore $eventStore, InMemoryBranchQuery $branchQuery, LocalFilesystemResolver $localFilesystemResolver)
     {
         $this->predictableCommitResolver = $predictableCommitResolver;
         $this->eventBus = $eventBus;
         $this->eventStore = $eventStore;
         $this->branchQuery = $branchQuery;
+        $this->localFilesystemResolver = $localFilesystemResolver;
     }
 
     /**
@@ -65,6 +71,14 @@ class CodeRepositoriesContext implements Context
     {
         $this->tideContext = $scope->getEnvironment()->getContext('TideContext');
         $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
+    }
+
+    /**
+     * @Given the code repository contains the fixtures folder :fixtureFolder
+     */
+    public function theCodeRepositoryContainsTheFixturesFolder($fixtureFolder)
+    {
+        $this->localFilesystemResolver->overwriteFileSystemWithLocalPath(__DIR__.'/../fixtures/'.$fixtureFolder);
     }
 
     /**

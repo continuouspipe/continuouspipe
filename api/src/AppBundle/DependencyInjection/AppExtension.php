@@ -53,5 +53,6 @@ class AppExtension extends Extension
         $loader->load('github/integration.xml');
         $loader->load('command.xml');
         $loader->load('branches.xml');
+        $loader->load('flex.xml');
     }
 }
