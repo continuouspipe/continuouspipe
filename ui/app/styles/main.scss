@@ -293,6 +293,10 @@ body {
                     border-radius: 20px;
                     padding: 0 15px;
 
+                    @include smallScreen {
+                        font-size: 11px;
+                    }
+
                     &:hover {
                         background: $inner-toolbar-button-hovered-background !important;
                     }
@@ -308,6 +312,12 @@ body {
                     }
                     .icon-link--help {
                         padding-top: 7px;
+                    }
+
+                    @include smallScreen {
+                        h2 {
+                            font-size: 15px;
+                        }
                     }
                 }
             }
@@ -678,7 +688,22 @@ body {
             padding: 0 100px 0 0;
         }
 
-        button {
+        &__alerts {
+            &.md-button {
+                margin: 0;
+                padding: 0;
+                width: 30px;
+                height: 22px;
+                line-height: 1;
+                min-height: 22px;
+                position: relative;
+                top: -1px;
+                font-weight: bold;
+            }
+
+        }
+
+        &__configure {
             height: 30px;
             line-height: 30px;
             position: absolute;
@@ -694,7 +719,7 @@ body {
                 padding: 0;
             }
 
-            button {
+            &__configure {
                 position: relative;
                 top: 0;
                 left: 0;
