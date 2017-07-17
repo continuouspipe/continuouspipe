@@ -27,3 +27,11 @@
     -webkit-hyphens: auto;
     hyphens: auto;
 }
+
+@mixin clearfix {
+  &:after {
+    content:"";
+    display:table;
+    clear:both;
+  }
+}

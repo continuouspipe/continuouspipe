@@ -4,14 +4,15 @@ div.list-items {
 
     [class^="list-col-"], [class*=" list-col-"] {
         padding: 10px;
+        box-sizing: border-box;
     }
 
     .list-col-8 {
-        flex: 1 0 20em;
+        flex: 5;
     }
 
     .list-col-2 {
-        flex: 0 0 20em;
+        flex: 2;
     }
 
     .list-item, .list-items-header {
@@ -62,6 +63,34 @@ div.list-items {
                 td, th {
                     text-align: left;
                     padding: 5px 10px;
+                }
+            }
+        }
+    }
+}
+
+@include smallScreen {
+    div.list-items {
+        &.responsive-list-items {
+            .list-item {
+                display: block;
+            }
+
+            .list-items-header {
+                display: none;
+            }
+
+            .list-col-8,
+            .list-col-2 {
+                display: block;
+                width: 100%;
+
+                &:before {
+                    content: attr(data-th) ": ";
+                    font-weight: bold;
+                    display: block;
+                    text-transform: uppercase;
+                    margin: 0 0 3px;
                 }
             }
         }

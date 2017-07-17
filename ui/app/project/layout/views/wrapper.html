@@ -1,19 +1,25 @@
-<div class="tabs-toolbar">
+<div class="tabs-toolbar" ng-class="{'open' : toggle}">
+
+    <button class="tabs-menu-btn" ng-click="toggle = !toggle" ng-class="{'open' : toggle}">
+        <div></div>
+        <span>MENU</span>
+    </button>
+
     <ul class="tabs">
         <li class="tab">
-            <a ui-sref-active="selected" ui-sref="flows"><md-icon>sync</md-icon> <span>Flows</span></a>
+            <a ng-click="toggle = !toggle" ui-sref-active="selected" ui-sref="flows"><md-icon>sync</md-icon> <span>Flows</span></a>
         </li>
         <li class="tab">
-            <a ui-sref-active="selected" ui-sref="users"><md-icon>group</md-icon> <span>Users</span></a>
+            <a ng-click="toggle = !toggle" ui-sref-active="selected" ui-sref="users"><md-icon>group</md-icon> <span>Users</span></a>
         </li>
         <li class="tab">
-            <a ui-sref-active="selected" ui-sref="clusters"><md-icon>cloud</md-icon> <span>Clusters</span></a>
+            <a ng-click="toggle = !toggle" ui-sref-active="selected" ui-sref="clusters"><md-icon>cloud</md-icon> <span>Clusters</span></a>
         </li>
         <li class="tab">
-            <a ui-sref-active="selected" ui-sref="registry-credentials"><md-icon>storage</md-icon> <span>Registries</span></a>
+            <a ng-click="toggle = !toggle" ui-sref-active="selected" ui-sref="registry-credentials"><md-icon>storage</md-icon> <span>Registries</span></a>
         </li>
         <li class="tab">
-            <a ui-sref-active="selected" ui-sref="configuration"><md-icon>build</md-icon> <span>Project Configuration</span></a>
+            <a ng-click="toggle = !toggle" ui-sref-active="selected" ui-sref="configuration"><md-icon>build</md-icon> <span>Project Configuration</span></a>
         </li>
     </ul>
 </div>

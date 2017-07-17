@@ -8,7 +8,7 @@
 </md-toolbar>
 <md-content flex id="content" class="card-grid half environment-grid">
     <remote-resource resource-name="environments" class="environment-grid-inner">
-        <div class="list-items">
+        <div class="list-items responsive-list-items">
             <div class="list-items-header">
                 <div class="list-col-8">Name</div>
                 <div class="list-col-8">Status</div>
@@ -19,27 +19,27 @@
 
             <div class="list-environment" ng-repeat="environment in environments">
                 <div class="list-item">
-                    <div class="list-col-8 clickable" ng-click="environment.expanded = !environment.expanded;">
+                    <div data-th="Name" class="list-col-8 clickable" ng-click="environment.expanded = !environment.expanded;">
                         <md-icon>
                             <i class="material-icons" ng-show="!environment.expanded">chevron_right</i>
                             <i class="material-icons" ng-show="environment.expanded">expand_more</i>
                         </md-icon>
                         <span>{{ environment.identifier }}</span>
                     </div>
-                    <div class="list-col-8">
+                    <div data-th="Status" class="list-col-8">
                         <span class="status-text" ng-class="{'status-success': environment.status == 'healthy', 'status-failure': environment.status == 'unhealthy', 'status-running': environment.status === 'unknown', 'status-terminating': environment.status === 'terminating'}">{{ environment.status }}</span>
                     </div>
-                    <div class="list-col-8">
+                    <div data-th="Endpoints" class="list-col-8">
                         <ul class="environments">
                             <li ng-repeat="endpoint in environment.endpoints" ng-click="openEndpoint(endpoint); $event.stopPropagation()">
                                 <md-icon class="material-icons">open_in_new</md-icon> <span>{{ endpoint.name }}</span>
                             </li>
                         </ul>
                     </div>
-                    <div class="list-col-2">
+                    <div data-th="Components" class="list-col-2">
                         <span>{{ environment.components.length }}</span>
                     </div>
-                    <div class="list-col-2">
+                    <div data-th="Actions" class="list-col-2">
                         <md-button class="md-warn"
                            ng-click="delete(environment)"
                            ng-disabled="isLoading"
@@ -47,7 +47,7 @@
                            <md-icon class="material-icons">delete</md-icon>
                             Delete
                         </md-button>
-                    </div>                
+                    </div>
                 </div>
 
                 <div class="environment-details" ng-if="environment.expanded">

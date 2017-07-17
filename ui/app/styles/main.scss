@@ -82,6 +82,40 @@ table.table {
     }
 }
 
+@include smallScreen {
+    table.responsive-table{
+        thead {
+            th {
+              display: none;
+            }
+        }
+
+        tbody {
+            margin: 1em 0;
+            min-width: 300px;
+            overflow: hidden;
+
+            tr {
+                border-top: 1px solid #ddd;
+                border-bottom: 1px solid #ddd;
+            }
+
+            td {
+                display: block;
+                padding: 15px;
+
+                &:before {
+                    content: attr(data-th) ": ";
+                    font-weight: bold;
+                    display: block;
+                }
+            }
+        }
+    }
+}
+
+
+
 body {
     .md-open-menu-container {
         z-index: 500;
@@ -122,6 +156,10 @@ body {
                 font-size: $logo-size;
                 width: $logo-size;
                 height: $logo-size + 10;
+
+                @include smallScreen {
+                    margin-left: 0;
+                }
 
                 @include largeScreen {
                     padding-top: 10px;
@@ -284,6 +322,11 @@ body {
         position: relative;
         text-align: center;
 
+        @include smallScreen {
+            margin: 10px;
+            padding: 10px;
+        }
+
         i.top-right-arrow {
             position: absolute;
             font-size: 200px;
@@ -325,7 +368,7 @@ body {
     }
 
     .card-grid {
-        padding: 20px 0;
+        padding: 20px 10px;
 
         @include largeScreen {
             padding: 20px;
@@ -627,21 +670,36 @@ body {
     .alerts-container {
         background: #FF5722;
         color: #fff;
-        padding: 0 0 0 20px;
-
-        > span {
-            line-height: 45px;
-            padding-right: 10px;
-        }
+        padding: 0 20px;
+        width: 100%;
 
         h2 {
             font-size: 16px;
+            padding: 0 100px 0 0;
         }
 
         button {
             height: 30px;
             line-height: 30px;
-            margin: 4px;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            margin: -18px 0 0;
+        }
+
+        @include smallScreen {
+            text-align: center;
+
+            h2 {
+                padding: 0;
+            }
+
+            button {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin: 0 0 6px;
+            }
         }
     }
 
@@ -1037,6 +1095,26 @@ body {
                 }
             }
         }
+
+         @include smallScreen {
+            li {
+                display: block;
+                height: auto;
+
+                .branch-details,
+                .branch-code {
+                    display: block;
+                    width: 100%;
+                    padding: 10px 0;
+                }
+
+                ul.branch-last-tides {
+                    width: 100%;
+                    padding: 10px 0;
+                }
+            }
+        }
+
     }
 }
 
@@ -1120,5 +1198,13 @@ code {
 }
 
 #documentation {
-    padding-top: 8px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    height: 100%;
+    margin: 0;
+}
+
+#contact-us-launcher {
+    margin: 0;
 }

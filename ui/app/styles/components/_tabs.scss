@@ -1,10 +1,24 @@
 .tabs-toolbar {
     background: $header-background !important;
+    border-top: 1px solid rgba(255,255,255, 0.5);
+
+    @include smallScreen {
+        .tabs {
+            max-height: 0;
+            overflow: hidden;
+            transition: 0.5s ease-in-out max-height;
+        }
+
+        &.open .tabs {
+            max-height: 300px;
+        }
+    }
 
     ul.tabs {
         list-style: none;
         margin: 0 0 0 20px;
         padding: 0;
+        @include clearfix;
 
         li {
             float: left;
@@ -33,6 +47,97 @@
                     border-bottom: 2px solid #fff;
                     opacity: 1;
                 }
+            }
+        }
+
+        @include smallScreen {
+            margin: 0;
+
+            li {
+                width: 100%;
+
+                a {
+                    display: block;
+
+                    &.selected {
+                        border: 0;
+                        background: #2c5a8a;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.tabs-menu-btn div,
+.tabs-menu-btn div:before,
+.tabs-menu-btn div:after {
+    width: 100%;
+    height: 3px;
+    background: #fff;
+    -webkit-transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+
+.tabs-menu-btn {
+    position: relative;
+    width: 100px;
+    height: 36px;
+    cursor: pointer;
+    padding: 0;
+    background: none;
+    border: 0;
+    padding-right: 70px;
+    margin: 10px;
+    display: none !important; // overwrite inline style
+
+    @include smallScreen {
+        display: block !important; // overwrite inline style
+    }
+
+    span {
+        color: #fff;
+        position: absolute;
+        left: 42px;
+        top: 10px;
+    }
+
+    div {
+        position: relative;
+        margin: 0;
+
+        &:after {
+            top: 9px;
+        }
+
+        &:before {
+            top: -9px;
+        }
+
+        &:before,
+        &:after {
+            left: 0;
+            content: '';
+            position: absolute;
+        }
+    }
+
+    &.open {
+        div {
+            background: none;
+
+            &:before {
+                -webkit-transform: rotate(-45deg);
+                transform: rotate(-45deg);
+                top: 0;
+            }
+
+            &:after {
+                -webkit-transform: rotate(45deg);
+                transform: rotate(45deg);
+                top: 0;
             }
         }
     }

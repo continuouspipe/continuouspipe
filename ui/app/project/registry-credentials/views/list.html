@@ -18,7 +18,7 @@
         <p>Enter the credentials of your prefered Docker Registries and ContinuousPipe will be able to push your built Docker images to them.</p>
     </div>
     <remote-resource resource-name="credentials">
-        <table class="table hover" ng-show="credentials.length > 0">
+        <table class="table responsive-table hover" ng-show="credentials.length > 0">
             <thead>
             <tr>
                 <th>Server</th>
@@ -29,10 +29,10 @@
             </thead>
             <tbody>
             <tr ng-repeat="credential in credentials">
-                <td>{{ credential.serverAddress }}</td>
-                <td>{{ credential.username }}</td>
-                <td>{{ credential.email }}</td>
-                <td ng-show="isAdmin">
+                <td data-th="Server">{{ credential.serverAddress }}</td>
+                <td data-th="Username">{{ credential.username }}</td>
+                <td data-th="Email">{{ credential.email }}</td>
+                <td data-th="Actions" ng-show="isAdmin">
                     <md-button ng-click="deleteCredentials(credential)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
                 </td>
             </tr>
