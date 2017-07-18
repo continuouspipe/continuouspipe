@@ -1,16 +1,12 @@
 .tabs-toolbar {
     background: $header-background !important;
-    border-top: 1px solid rgba(255,255,255, 0.5);
-    padding: 10px 0;
 
     @include smallScreen {
-        .tabs {
-            max-height: 0;
-            overflow: hidden;
-            transition: 0.5s ease-in-out max-height;
-        }
+        max-height: 0;
+        overflow: hidden;
+        transition: 0.5s ease-in-out max-height;
 
-        &.open .tabs {
+        &.open {
             max-height: 300px;
         }
     }
@@ -18,7 +14,6 @@
     ul.tabs {
         list-style: none;
         margin: 0 0 0 20px;
-        padding: 0;
         @include clearfix;
 
         li {
@@ -45,7 +40,7 @@
                 }
 
                 &.selected {
-                    border-bottom: 2px solid rgba(255,255,255, 0.65);
+                    border-bottom: 2px solid #fff;
                     opacity: 1;
                 }
             }
@@ -53,6 +48,7 @@
 
         @include smallScreen {
             margin: 0;
+            padding: 0;
 
             li {
                 width: 100%;
@@ -83,14 +79,15 @@
 }
 
 .tabs-menu-btn {
-    position: relative;
-    width: 100px;
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 31px;
     height: 36px;
     cursor: pointer;
     padding: 0;
     background: none;
     border: 0;
-    padding-right: 70px;
     margin: 0 10px;
     display: none !important; // overwrite inline style
 

@@ -113,6 +113,10 @@ table.table {
             }
         }
     }
+
+    md-toolbar .logo {
+        display: none;
+    }
 }
 
 
@@ -1233,4 +1237,17 @@ code {
 
 #contact-us-launcher {
     margin: 0;
+}
+
+
+@include smallScreen {
+    md-dialog.logs-dialog {
+        display: block;
+        max-width: 95%;
+
+        .md-toolbar-tools {
+            font-size: 12px;
+            padding: 0 10px;
+        }
+    }
 }
