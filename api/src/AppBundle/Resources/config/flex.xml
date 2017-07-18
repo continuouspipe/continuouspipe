@@ -5,6 +5,26 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <!-- Controller -->
+        <service id="app.controller.flex" class="AppBundle\Controller\FlowFlexController">
+            <argument type="service" id="command_bus"/>
+        </service>
+
+        <!-- Flex activation -->
+        <service id="river.flex.cluster_resolver" class="ContinuousPipe\River\Flex\Cluster\ClusterResolver">
+            <argument>%flex_cluster_address%</argument>
+        </service>
+        <service id="river.flex.activation.do_activate_handler" class="ContinuousPipe\River\Flex\AsFeature\CommandHandler\DoActivateFlex">
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="security.authenticator.client" />
+            <argument type="service" id="river.flex.cluster_resolver" />
+            <argument type="service" id="river.flow.transaction_manager" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex" />
+        </service>
+
+        <!-- Configuration generation -->
         <service id="river.flex.generates_configuration_per_flow"
                  class="ContinuousPipe\River\Flex\CodeRepositoryFileSystem\GeneratesConfigurationForFlexFlows"
                  decorates="river.file_system_resolver">

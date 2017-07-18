@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Repository;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\Security\Team\Team;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 interface FlowRepository
 {
@@ -43,13 +43,13 @@ interface FlowRepository
     /**
      * Find a flow by its UUID.
      *
-     * @param Uuid $uuid
+     * @param UuidInterface $uuid
      *
      * @throws FlowNotFound
      *
      * @return Flow
      */
-    public function find(Uuid $uuid);
+    public function find(UuidInterface $uuid);
 
     /**
      * @deprecated Need to use the `FlatFlowRepository` instead

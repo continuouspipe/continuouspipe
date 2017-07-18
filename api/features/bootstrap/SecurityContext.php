@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use ContinuousPipe\Security\Account\BitBucketAccount;
 use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Encryption\InMemory\PreviouslyKnownValuesVault;
@@ -16,6 +17,7 @@ use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
+use Doctrine\Common\Collections\Collection;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
@@ -223,6 +225,30 @@ class SecurityContext implements Context
     }
 
     /**
+     * @Then the team :teamSlug should have one cluster named :clusterName
+     */
+    public function theTeamShouldHaveOneClusterNamed($teamSlug, $clusterName)
+    {
+        $clusters = $this->findMatchingClusters($teamSlug, $clusterName);
+
+        if ($clusters->count() != 1) {
+            throw new \RuntimeException(sprintf('Found %d clusters', $clusters->count()));
+        }
+    }
+
+    /**
+     * @Then the team :teamSlug should have a cluster named :clusterName
+     */
+    public function theTeamShouldHaveAClusterNamed($teamSlug, $clusterName)
+    {
+        $clusters = $this->findMatchingClusters($teamSlug, $clusterName);
+
+        if ($clusters->count() == 0) {
+            throw new \RuntimeException('Cluster was not found');
+        }
+    }
+
+    /**
      * @Given the user :username is a ghost
      */
     public function theUserIsAGhost($username)
@@ -306,5 +332,15 @@ class SecurityContext implements Context
             $encryptedValue,
             $plainValue
         );
+    }
+
+    private function findMatchingClusters($teamSlug, $clusterName) : Collection
+    {
+        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($teamSlug);
+        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+
+        return $bucket->getClusters()->filter(function(Cluster $cluster) use ($clusterName) {
+            return $cluster->getIdentifier() == $clusterName;
+        });
     }
 }

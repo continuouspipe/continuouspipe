@@ -946,6 +946,19 @@ EOF;
     }
 
     /**
+     * @When I activate flex for the flow :uuid
+     */
+    public function iActivateFlexForTheFlow($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$uuid.'/features/flex',
+            'POST'
+        ));
+
+        $this->assertResponseCode(204);
+    }
+
+    /**
      * @Then the environment should be deleted
      */
     public function theEnvironmentShouldBeDeleted()

@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\Events\Aggregate;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\EventBased\ApplyEventCapability;
 use ContinuousPipe\River\EventBased\RaiseEventCapability;
@@ -19,7 +20,7 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
 
-final class Flow
+final class Flow implements Aggregate
 {
     use RaiseEventCapability,
         ApplyEventCapability;
@@ -110,30 +111,33 @@ final class Flow
      */
     public function update(array $configuration)
     {
-        $this->raise(
-            new FlowConfigurationUpdated(
-                $this->uuid,
-                $configuration
-            )
-        );
+        $this->raise(new FlowConfigurationUpdated(
+            $this->uuid,
+            $configuration
+        ));
     }
 
     public function pinBranch(string $branch)
     {
-        $event = new BranchPinned(
+        $this->raise(new BranchPinned(
             $this->uuid,
             $branch
-        );
-        $this->raise($event);
+        ));
     }
 
     public function unpinBranch(string $branch)
     {
-        $event = new BranchUnpinned(
+        $this->raise(new BranchUnpinned(
             $this->uuid,
             $branch
-        );
-        $this->raise($event);
+        ));
+    }
+
+    public function activateFlex()
+    {
+        $this->raise(new FlowFlexed(
+            $this->uuid
+        ));
     }
 
     /**

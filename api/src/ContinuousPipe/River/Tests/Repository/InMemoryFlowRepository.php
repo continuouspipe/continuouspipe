@@ -8,6 +8,7 @@ use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class InMemoryFlowRepository implements FlowRepository
 {
@@ -53,7 +54,7 @@ class InMemoryFlowRepository implements FlowRepository
     /**
      * {@inheritdoc}
      */
-    public function find(Uuid $uuid)
+    public function find(UuidInterface $uuid)
     {
         if (!array_key_exists((string) $uuid, $this->flowsByUuid)) {
             throw new FlowNotFound();

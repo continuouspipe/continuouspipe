@@ -167,6 +167,8 @@ tasks:
                               value: ${GOOGLE_PUB_SUB_SUBSCRIPTION_NAME}
                             - name: LOGITIO_API_KEY
                               value: ${LOGITIO_API_KEY}
+                            - name: FLEX_CLUSTER_ADDRESS
+                              value: ${FLEX_CLUSTER_ADDRESS}
 
                     deployment_strategy:
                         readiness_probe:

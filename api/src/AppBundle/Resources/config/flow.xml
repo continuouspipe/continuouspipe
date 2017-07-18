@@ -102,5 +102,13 @@
             <argument type="service" id="river.tide_configuration_factory" />
             <argument type="service" id="logger" />
         </service>
+
+        <service id="river.flow.aggregate_repository" class="ContinuousPipe\River\Flow\Aggregate\FlowAggregateRepository">
+            <argument type="service" id="river.repository.flow" />
+        </service>
+        <service id="river.flow.transaction_manager" class="ContinuousPipe\Events\Transaction\PopAndDispatchEventsTransactionManager">
+            <argument type="service" id="river.flow.aggregate_repository" />
+            <argument type="service" id="event_bus" />
+        </service>
     </services>
 </container>
