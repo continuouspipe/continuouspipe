@@ -14,11 +14,11 @@
     <p ng-if="branch.pull_request">
         <md-icon class="cp-icon-git-branch"></md-icon> <a ng-href="{{ branch.pull_request.url }}" target="_blank">#{{ branch.pull_request.identifier }}</a></p>
 </div>
-<p ng-if="branch.environment && hasEnvironment(branch.environment)">
-    <md-button class="md-icon-button" ng-click="showAlert($event, branch.environment)">
+<div class="environment-button">
+    <md-button ng-if="branch.environment && hasEnvironment(branch.environment)" class="md-icon-button" ng-click="showAlert($event, branch.environment)">
         <md-icon>pageview</md-icon>
     </md-button>
-</p>
+</div>
 <ul class="branch-last-tides">
     <li ng-repeat="tide in (branch | branchLastTides)" class="branch-last-tide" ng-class="tide.status | tideStatusClass" ui-sref="tide.logs({tideUuid: tide.uuid})" >
         <span ng-show="tide.status=='success'"><md-icon>done</md-icon></span>
