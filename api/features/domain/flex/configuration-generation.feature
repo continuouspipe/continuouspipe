@@ -17,7 +17,7 @@ Feature:
             build:
                 services:
                     app:
-                        image: gcr.io/cp-flex/00000000-0000-0000-0000-000000000000
+                        image: quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000
 
         app_deployment:
             deploy:

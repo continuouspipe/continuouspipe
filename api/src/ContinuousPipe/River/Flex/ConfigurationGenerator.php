@@ -54,7 +54,7 @@ tasks:
         build:
             services:
                 app:
-                    image: gcr.io/cp-flex/{$flowUuid}
+                    image: quay.io/continuouspipe-flex/flow-{$flowUuid}
                     naming_strategy: sha1
     
     app_deployment:
