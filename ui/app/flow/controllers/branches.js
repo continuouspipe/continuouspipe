@@ -106,7 +106,7 @@ angular.module('continuousPipeRiver')
             };
 
             $mdDialog.show({
-                templateUrl: '/flow/views/branches/environment.html',
+                templateUrl: 'flow/views/branches/environment.html',
                 controller: mdDialogCtrl,
                 clickOutsideToClose: true
             });
