@@ -96,6 +96,8 @@ default:
                     - @event_bus
                 - BranchContext:
                     - @command_bus
+                - QuayIoContext:
+                    - @csa_guzzle.data_collector.history_bag
 
                 # TBR:
                 - GitHubContext:
@@ -231,6 +233,8 @@ default:
                 - UserActivityContext:
                     - @river.user_activity.traceable_dispatcher
                     - @river.user_activity.middleware_supporting_dispatcher
+                - QuayIoContext:
+                    - @csa_guzzle.data_collector.history_bag
 
         bitbucket:
             paths:
@@ -334,6 +338,8 @@ default:
                 - UserActivityContext:
                     - @river.user_activity.traceable_dispatcher
                     - @river.user_activity.middleware_supporting_dispatcher
+                - QuayIoContext:
+                    - @csa_guzzle.data_collector.history_bag
 
     extensions:
         Behat\Symfony2Extension:

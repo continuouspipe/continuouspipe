@@ -249,6 +249,20 @@ class SecurityContext implements Context
     }
 
     /**
+     * @Then the team :teamSlug should have docker credentials for :serverAddress with the username :username
+     */
+    public function theTeamShouldHaveDockerCredentialsForWithTheUsername($teamSlug, $serverAddress, $username)
+    {
+        $matchingRegistries = $this->findTeamBucket($teamSlug)->getDockerRegistries()->filter(function(DockerRegistry $registry) use ($serverAddress, $username) {
+            return $registry->getServerAddress() == $serverAddress && $registry->getUsername() == $username;
+        });
+
+        if ($matchingRegistries->count() == 0) {
+            throw new \RuntimeException('Found no matching registry');
+        }
+    }
+
+    /**
      * @Given the user :username is a ghost
      */
     public function theUserIsAGhost($username)
@@ -336,11 +350,15 @@ class SecurityContext implements Context
 
     private function findMatchingClusters($teamSlug, $clusterName) : Collection
     {
-        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($teamSlug);
-        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
-
-        return $bucket->getClusters()->filter(function(Cluster $cluster) use ($clusterName) {
+        return $this->findTeamBucket($teamSlug)->getClusters()->filter(function(Cluster $cluster) use ($clusterName) {
             return $cluster->getIdentifier() == $clusterName;
         });
+    }
+
+    private function findTeamBucket($teamSlug) : Bucket
+    {
+        return $this->inMemoryAuthenticatorClient->findBucketByUuid(
+            $this->inMemoryAuthenticatorClient->findTeamBySlug($teamSlug)->getBucketUuid()
+        );
     }
 }

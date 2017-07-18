@@ -20,6 +20,7 @@
             <argument type="service" id="security.authenticator.client" />
             <argument type="service" id="river.flex.cluster_resolver" />
             <argument type="service" id="river.flow.transaction_manager" />
+            <argument type="service" id="quay.client"/>
 
             <tag name="command_handler" handles="ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex" />
         </service>
