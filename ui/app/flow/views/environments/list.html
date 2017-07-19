@@ -8,7 +8,7 @@
 </md-toolbar>
 <md-content flex id="content" class="card-grid half environment-grid">
     <remote-resource resource-name="environments" class="environment-grid-inner">
-        <div class="list-items responsive-list-items">
+        <div ng-show="environments.length" class="list-items responsive-list-items">
             <div class="list-items-header">
                 <div class="list-col-8">Name</div>
                 <div class="list-col-8">Status</div>
