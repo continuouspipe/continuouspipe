@@ -111,6 +111,22 @@ class CredentialsBucketContext implements Context
             $content
         ));
     }
+
+    /**
+     * @When I create a new docker registry with the following configuration in the bucket :bucket with the API key :apiKey:
+     */
+    public function iCreateANewDockerRegistryWithTheFollowingConfigurationWithTheApiKey($bucket, $apiKey, TableNode $table)
+    {
+        $content = json_encode($table->getHash()[0]);
+
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/docker-registries', $bucket),
+            'POST', [], [], [],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_X_API_KEY' => $apiKey],
+            $content
+        ));
+    }
+
     /**
      * @When I delete the credentials of the docker registry :serverAddress from the bucket :bucket
      */
@@ -228,6 +244,20 @@ class CredentialsBucketContext implements Context
             sprintf('/api/bucket/%s/clusters', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
+            $content
+        ));
+    }
+    /**
+     * @When I create a cluster with the following configuration in the bucket :bucket with the API key :apiKey:
+     */
+    public function iCreateAClusterWithTheFollowingConfigurationInTheBucketWithTheApiKey($bucket, $apiKey, TableNode $table)
+    {
+        $content = json_encode($table->getHash()[0]);
+
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/clusters', $bucket),
+            'POST', [], [], [],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_X_API_KEY' => $apiKey],
             $content
         ));
     }
