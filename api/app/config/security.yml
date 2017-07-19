@@ -44,6 +44,7 @@ security:
             provider: chain
             simple_preauth:
                 authenticator: api.api_key_authenticator
+                provider: authenticator
 
     access_control:
         # TODO: Secure with GitHub IPs
