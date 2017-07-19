@@ -66,5 +66,12 @@
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\PullRequestOpened"/>
         </service>
+
+        <service id="river.code_repository.code_archive_streamer" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToCodeStreamer">
+            <argument type="collection">
+                <argument type="service" id="river.github.code_archive_streamer" />
+                <argument type="service" id="river.bitbucket.code_archive_streamer" />
+            </argument>
+        </service>
     </services>
 </container>
