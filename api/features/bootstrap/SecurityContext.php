@@ -19,6 +19,7 @@ use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use Doctrine\Common\Collections\Collection;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,6 +46,10 @@ class SecurityContext implements Context
      * @var PreviouslyKnownValuesVault
      */
     private $previouslyKnownValuesVault;
+    /**
+     * @var JWTManagerInterface
+     */
+    private $jwtManager;
 
     /**
      * @var Response|null
@@ -60,12 +65,14 @@ class SecurityContext implements Context
         TokenStorageInterface $tokenStorage,
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         KernelInterface $kernel,
-        PreviouslyKnownValuesVault $previouslyKnownValuesVault
+        PreviouslyKnownValuesVault $previouslyKnownValuesVault,
+        JWTManagerInterface $jwtManager
     ) {
         $this->tokenStorage = $tokenStorage;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->kernel = $kernel;
         $this->previouslyKnownValuesVault = $previouslyKnownValuesVault;
+        $this->jwtManager = $jwtManager;
     }
 
     /**
@@ -360,5 +367,10 @@ class SecurityContext implements Context
         return $this->inMemoryAuthenticatorClient->findBucketByUuid(
             $this->inMemoryAuthenticatorClient->findTeamBySlug($teamSlug)->getBucketUuid()
         );
+    }
+
+    public function tokenForUser($username)
+    {
+        return $this->jwtManager->create(new \Symfony\Component\Security\Core\User\User($username, null));
     }
 }

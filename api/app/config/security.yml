@@ -15,7 +15,14 @@ security:
                     '/C=UK/ST=London/O=ContinuousPipe/CN=FeatureTimeline':
                         roles: ['ROLE_SYSTEM_FEATURE_TIMELINE']
                         password: ''
+                    continuouspipe_builder_for_sources:
+                        roles: ['ROLE_DOWNLOAD_CODE_ARCHIVE']
 
+        chain:
+            chain:
+                providers:
+                    - in_memory
+                    - authenticator
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt|error)|css|images|js)/
@@ -34,7 +41,7 @@ security:
                 provider: in_memory
             lexik_jwt: ~
             anonymous: ~
-            provider: authenticator
+            provider: chain
             simple_preauth:
                 authenticator: api.api_key_authenticator
 
@@ -48,8 +55,11 @@ security:
         - { path: ^/builder/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/pipe/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/runner/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        # TODO: Remove this deprecated path; that is also a security hole
         - { path: ^/github/flows, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/flows/([a-z0-9-]+)/source-code/archive, methods: [GET], roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        - { path: ^/flows/([a-z0-9-]+)/source-code/archive, methods: [GET], roles: ROLE_DOWNLOAD_CODE_ARCHIVE }
 
         # TODO: Secure with Atlassian's IPs
         - { path: ^/connect/service/bitbucket/addon/, roles: IS_AUTHENTICATED_ANONYMOUSLY }

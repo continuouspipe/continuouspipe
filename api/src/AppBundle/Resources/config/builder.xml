@@ -23,6 +23,7 @@
         <service id="builder.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\ThroughRiverArchiveProxySourceResolver">
             <argument type="service" id="logger" />
             <argument type="service" id="router" />
+            <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
             <argument>%river_host%</argument>
         </service>
 

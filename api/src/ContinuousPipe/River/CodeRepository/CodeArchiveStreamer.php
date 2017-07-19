@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\CodeRepository;
 use Psr\Http\Message\StreamInterface;
 use Ramsey\Uuid\UuidInterface;
 

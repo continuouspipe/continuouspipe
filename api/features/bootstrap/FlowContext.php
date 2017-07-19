@@ -987,11 +987,45 @@ EOF;
      */
     public function iRequestTheArchiveOfTheRepositoryForTheFlow($flowUuid, $reference)
     {
+        $this->iRequestTheArchiveOfTheRepositoryForTheFlowWithTheTokenForUser($flowUuid, $reference, 'continuouspipe_builder_for_sources');
+    }
+
+    /**
+     * @When I request the archive of the repository for the flow :flowUuid and reference :reference with the token for user :username
+     */
+    public function iRequestTheArchiveOfTheRepositoryForTheFlowWithTheTokenForUser($flowUuid, $reference, $username)
+    {
+        $this->response = $this->getStreamedResponse(
+            Request::create('/flows/'.$flowUuid.'/source-code/archive/'.$reference, 'GET', [], [], [], [
+                'HTTP_AUTHORIZATION' => 'Bearer '.$this->securityContext->tokenForUser($username)
+            ])
+        );
+    }
+
+    /**
+     * @When I request the archive of the repository for the flow :flowUuid and reference :reference without credentials
+     */
+    public function iRequestTheArchiveOfTheRepositoryForTheFlowWithoutCredentials($flowUuid, $reference)
+    {
+        $this->response = $this->getStreamedResponse(
+            Request::create('/flows/'.$flowUuid.'/source-code/archive/'.$reference)
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    private function getStreamedResponse(Request $request)
+    {
         ob_start();
-        $this->response = $this->kernel->handle(Request::create('/flows/'.$flowUuid.'/source-code/archive/'.$reference));
+        $response = $this->kernel->handle($request);
         $content = ob_get_contents();
-        $this->response = new Response($content, $this->response->getStatusCode(), $this->response->headers->all());
+        $response = new Response($content, $response->getStatusCode(), $response->headers->all());
         ob_end_clean();
+
+        return $response;
     }
 
     /**
