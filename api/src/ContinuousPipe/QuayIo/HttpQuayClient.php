@@ -113,8 +113,7 @@ class HttpQuayClient implements QuayClient
                         throw new RobotAlreadyExists($json['message']);
                     }
                 } catch (\Throwable $sub) {
-                    // We can't get anything from the response, fallback on the default
-                    // catching behaviour
+                    $e = new QuayException('Cannot read from the response: '.$sub->getMessage(), $e->getCode(), $e);
                 }
             }
 

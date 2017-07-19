@@ -51,7 +51,6 @@ COPY . /app/
 WORKDIR /app
 
 RUN container build
-
 EOF;
 
         try {
@@ -60,51 +59,116 @@ EOF;
             $variables = [];
         }
 
-        $dockerComposeFile = <<<EOF
-version: '2'
-services:
-    app:
-        build: .
-        environment: {$this->generateDockerComposeEnvironmentFromVariables($variables)}
-        expose: [ 443 ]
-EOF;
+        $dockerComposeServices = [];
+        $buildServices = [
+            'app' => [
+                'image' => 'quay.io/continuouspipe-flex/flow-'.$flowUuid,
+                'naming_strategy' => 'sha1',
+            ],
+        ];
 
-        $continuousPipeFile = <<<EOF
-variables: {$this->generateEncryptedVariables($flow)}
-      
-defaults:
-    cluster: flex-cluster
-    environment:
-        name: "'{$flowUuid}' ~ code_reference.branch"
-    
-tasks:
-    images:
-        build:
-            services:
-                app:
-                    image: quay.io/continuouspipe-flex/flow-{$flowUuid}
-                    naming_strategy: sha1
-    
-    app_deployment:
-        deploy:
-            services:
-                app:
-                    endpoints:
-                        - name: app
-                          cloud_flare_zone:
-                              zone_identifier: \${CLOUD_FLARE_ZONE}
-                              authentication:
-                                  email: \${CLOUD_FLARE_EMAIL}
-                                  api_key: \${CLOUD_FLARE_API_KEY}
-                          ingress:
-                              class: nginx
-                              host_suffix: '{$configuration->getSmallIdentifier()}-flex.continuouspipe.net'
-EOF;
+        $appDeployServices = [
+            'app' => [
+                'endpoints' => [
+                    [
+                        'name' => 'app',
+                        'cloud_flare_zone' => [
+                            'zone_identifier' => '${CLOUD_FLARE_ZONE}',
+                            'authentication' => [
+                                'email' => '${CLOUD_FLARE_EMAIL}',
+                                'api_key' => '${CLOUD_FLARE_API_KEY}',
+                            ]
+                        ],
+                        'ingress' => [
+                            'class' => 'nginx',
+                            'host_suffix' => $configuration->getSmallIdentifier().'-flex.continuouspipe.net',
+                        ]
+                    ]
+                ],
+                'deployment_strategy' => [
+                    'readiness_probe' => [
+                        'type' => 'tcp',
+                        'port' => 80,
+                    ],
+                ],
+            ]
+        ];
+
+        $tasks = [
+            '0_images' => [
+                'build' => [
+                    'services' => $buildServices,
+                ]
+            ],
+            '2_app_deployment' => [
+                'deploy' => [
+                    'services' => $appDeployServices
+                ]
+            ]
+        ];
+
+        if (isset($variables['DATABASE_URL'])) {
+            $variables['DATABASE_URL'] = 'postgres://app:app@database/app';
+
+            $dockerComposeServices['database'] = [
+                'image' => 'postgres',
+                'environment' => [
+                    'POSTGRES_PASSWORD=app',
+                    'POSTGRES_USER=app',
+                    'POSTGRES_DB=app',
+                ],
+                'expose' => [
+                    5432,
+                ]
+            ];
+
+            $tasks['1_database_deployment'] = [
+                'deploy' => [
+                    'services' => [
+                        'database' => [
+                            'deployment_strategy' => [
+                                'readiness_probe' => [
+                                    'type' => 'tcp',
+                                    'port' => 5432,
+                                ],
+                            ],
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        // Sort tasks by name
+        ksort($tasks);
+
+        $continuousPipeFile = [
+            'variables' => $this->generateVariables($flow),
+            'defaults' => [
+                'cluster' => 'flex',
+                'environment' => [
+                    'name' => '\''.$flowUuid.'\' ~ code_reference.branch',
+                ],
+            ],
+            'tasks' => $tasks,
+        ];
+
+        $dockerComposeServices['app'] = [
+            'build' => '.',
+            'environment' => $this->generateDockerComposeEnvironmentFromVariables($variables),
+            'expose' => [
+                443,
+            ],
+        ];
+
+        $dockerComposeFile = [
+            'version' => '2',
+            'services' => $dockerComposeServices,
+        ];
 
         return [
             'Dockerfile' => $dockerFile,
-            'docker-compose.yml' => $dockerComposeFile,
-            'continuous-pipe.yml' => $continuousPipeFile,
+            'docker-compose.yml' => Yaml::dump($dockerComposeFile),
+            'continuous-pipe.yml' => Yaml::dump($continuousPipeFile),
         ];
     }
 
@@ -116,20 +180,20 @@ EOF;
             $variableDefinitions[] = $key.'='.$value;
         }
 
-        return '['.implode(',', $variableDefinitions).']';
+        return $variableDefinitions;
     }
 
-    private function generateEncryptedVariables(FlatFlow $flow)
+    private function generateVariables(FlatFlow $flow)
     {
-        $encryptedVariables = [];
+        $variables = [];
 
         foreach ($this->defaultVariables as $key => $value) {
-            $encryptedVariables[] = [
+            $variables[] = [
                 'name' => $key,
                 'encrypted_value' => $this->encryptedVariableVault->encrypt($flow->getUuid(), $value),
             ];
         }
 
-        return Yaml::dump($encryptedVariables, 0);
+        return $variables;
     }
 }
