@@ -128,7 +128,9 @@
                 "google_pub_sub_topic": "GOOGLE_PUB_SUB_TOPIC",
                 "google_pub_sub_subscription_name": "GOOGLE_PUB_SUB_SUBSCRIPTION_NAME",
                 "logitio_api_key": "LOGITIO_API_KEY",
-                "flex_cluster_address": "FLEX_CLUSTER_ADDRESS"
+                "flex_cluster_address": "FLEX_CLUSTER_ADDRESS",
+                "flex_quay_io_access_token": "FLEX_QUAY_IO_ACCESS_TOKEN",
+                "flex_quay_io_organisation": "FLEX_QUAY_IO_ORGANISATION"
             }
         }]
     },

@@ -169,6 +169,10 @@ tasks:
                               value: ${LOGITIO_API_KEY}
                             - name: FLEX_CLUSTER_ADDRESS
                               value: ${FLEX_CLUSTER_ADDRESS}
+                            - name: FLEX_QUAY_IO_ACCESS_TOKEN
+                              value: ${FLEX_QUAY_IO_ACCESS_TOKEN}
+                            - name: FLEX_QUAY_IO_ORGANISATION
+                              value: ${FLEX_QUAY_IO_ORGANISATION}
 
                     deployment_strategy:
                         readiness_probe:

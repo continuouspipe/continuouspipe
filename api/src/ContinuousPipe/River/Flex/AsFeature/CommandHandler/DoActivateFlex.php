@@ -79,11 +79,10 @@ class DoActivateFlex
             );
         }
 
-        $repositoryName = 'flow-'.$flow->getUuid()->toString();
-        $this->quayClient->createRepository($repositoryName);
+        $repository = $this->quayClient->createRepository('flow-'.$flow->getUuid()->toString());
         $this->quayClient->allowRobotToAccessRepository(
             $robotAccountName,
-            $repositoryName
+            $repository->getName()
         );
 
         $this->flowTransactionManager->apply($flow->getUuid()->toString(), function (Flow $flow) {

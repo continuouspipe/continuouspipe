@@ -26,7 +26,7 @@ class QuayIoContext implements Context
     {
         $this->assertOneRequestMatching(function(Request $request) use ($repositoryName) {
             return $request->getMethod() == 'POST' &&
-                preg_match('#\/repositories$#', $request->getUri());
+                preg_match('#\/repository$#', $request->getUri());
         });
     }
 
@@ -36,8 +36,8 @@ class QuayIoContext implements Context
     public function aQuayIoRobotAccountShouldHaveBeenCreatedWithAccessToTheRepository($robotAccountName, $repositoryName)
     {
         $this->assertOneRequestMatching(function(Request $request) use ($repositoryName, $robotAccountName) {
-            return $request->getMethod() == 'POST' &&
-                preg_match('#\/robots$#', $request->getUri());
+            return $request->getMethod() == 'PUT' &&
+                preg_match('#\/robots/([a-z0-9-]+)$#', $request->getUri());
         });
     }
 

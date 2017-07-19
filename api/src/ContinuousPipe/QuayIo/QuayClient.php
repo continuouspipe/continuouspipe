@@ -34,5 +34,5 @@ interface QuayClient
      *
      * @throws QuayException
      */
-    public function allowRobotToAccessRepository(string $robotName, string $repositoryName) : void;
+    public function allowRobotToAccessRepository(string $robotName, string $repositoryName);
 }
