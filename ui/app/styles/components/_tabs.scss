@@ -13,7 +13,8 @@
 
     ul.tabs {
         list-style: none;
-        margin: 0 0 0 20px;
+        margin: 0;
+        padding: 0 20px;
         @include clearfix;
 
         li {
@@ -23,15 +24,14 @@
             md-icon {
                 color: #fff;
                 font-size: 1.3em;
-                margin-top: 5px;
+                margin-top: 3px;
             }
 
             a {
                 text-decoration: none;
                 color: #fff;
                 display: inline-block;
-                padding: 5px 10px 5px 10px;
-                opacity: 0.75;
+                padding: 7px 10px;
 
                 span {
                     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
@@ -40,8 +40,7 @@
                 }
 
                 &.selected {
-                    border-bottom: 2px solid #fff;
-                    opacity: 1;
+                    background: #2c5a8a;
                 }
             }
         }
@@ -55,11 +54,6 @@
 
                 a {
                     display: block;
-
-                    &.selected {
-                        border: 0;
-                        background: #2c5a8a;
-                    }
                 }
             }
         }
