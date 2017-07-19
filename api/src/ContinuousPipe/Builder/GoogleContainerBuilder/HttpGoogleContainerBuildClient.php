@@ -65,13 +65,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
     public function createFromRequest(Build $build): GoogleContainerBuild
     {
         try {
-            if (StaticClient::variation('use-synchronous-gcb-build', new LDUser($this->getUserKey($build)), true)) {
-                $sourceArchive = new Archive\FileSystemArchive(Archive\FileSystemArchive::createDirectory('mani-only'));
-                $gcbBuilderVersion = 'v5';
-            } else {
-                $sourceArchive = $this->archiveBuilder->createArchive($build->getRequest()->getSteps()[0]);
-                $gcbBuilderVersion = 'v4';
-            }
+            $sourceArchive = $this->archiveBuilder->createArchive($build->getRequest()->getSteps()[0]);
             $sourceArchive->writeFile(self::MANIFEST_FILENAME,
                 \GuzzleHttp\json_encode($this->manifestFactory->create($build))
             );
@@ -81,7 +75,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
 
         $sourceArtifact = new Artifact($build->getIdentifier() . '.tar.gz');
         $this->writeArtifact($sourceArchive, $sourceArtifact);
-        $response = $this->startBuild($sourceArtifact, $gcbBuilderVersion);
+        $response = $this->startBuild($sourceArtifact, 'v4');
 
         return new GoogleContainerBuild($this->getGcbBuildId($response));
     }
