@@ -1,7 +1,7 @@
 'use strict';
 
 function sortedTides (branch) {
-    var lastTides = Object.values(branch['latest-tides']);
+    var lastTides = Object.values(branch.data['latest-tides']);
     lastTides.sort(function (left, right) {
         return left.creation_date > right.creation_date ? -1 : 1;
     });
@@ -11,7 +11,7 @@ function sortedTides (branch) {
 angular.module('continuousPipeRiver')
     .filter('latestTideInBranch', function () {
         return function (branch) {
-            if (!branch['latest-tides']) {
+            if (!branch.data['latest-tides']) {
                 return;
             }
 
@@ -22,7 +22,7 @@ angular.module('continuousPipeRiver')
     })
     .filter('branchLastTides', function() {
         return function (branch) {
-            if (!branch['latest-tides']) {
+            if (!branch.data['latest-tides']) {
                 return [];
             }
 
@@ -31,7 +31,7 @@ angular.module('continuousPipeRiver')
     })
     .filter('branchesWithoutPullRequest', function() {
         return function(branches) {
-            return branches.filter(function(branch) {
+            return (branches || []).filter(function(branch) {
                 return !branch.pull_request;
             })
         }
