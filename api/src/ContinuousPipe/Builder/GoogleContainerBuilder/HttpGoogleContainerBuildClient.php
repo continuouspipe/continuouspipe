@@ -65,7 +65,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
     public function createFromRequest(Build $build): GoogleContainerBuild
     {
         try {
-            $sourceArchive = $this->archiveBuilder->createArchive($build->getRequest()->getSteps()[0]);
+            $sourceArchive = new Archive\FileSystemArchive(Archive\FileSystemArchive::createDirectory('mani-only'));
             $sourceArchive->writeFile(self::MANIFEST_FILENAME,
                 \GuzzleHttp\json_encode($this->manifestFactory->create($build))
             );
@@ -75,7 +75,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
 
         $sourceArtifact = new Artifact($build->getIdentifier() . '.tar.gz');
         $this->writeArtifact($sourceArchive, $sourceArtifact);
-        $response = $this->startBuild($sourceArtifact, 'v4');
+        $response = $this->startBuild($sourceArtifact, 'v5');
 
         return new GoogleContainerBuild($this->getGcbBuildId($response));
     }
