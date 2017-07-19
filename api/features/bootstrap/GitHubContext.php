@@ -189,37 +189,11 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
-     * @When I request the archive of the repository for the flow :flowUuid and reference :reference
-     */
-    public function iRequestTheArchiveOfTheRepositoryForTheFlow($flowUuid, $reference)
-    {
-        ob_start();
-        $this->response = $this->kernel->handle(Request::create('/github/flows/'.$flowUuid.'/source-code/archive/'.$reference));
-        $content = ob_get_contents();
-        $this->response = new Response($content, $this->response->getStatusCode(), $this->response->headers->all());
-        ob_end_clean();
-    }
-
-    /**
      * @When I request the GitHub installation token for the flow :flowUuid
      */
     public function iRequestTheGithubInstallationTokenForTheFlow($flowUuid)
     {
         $this->response = $this->kernel->handle(Request::create('/github/flows/'.$flowUuid.'/installation-token'));
-    }
-
-    /**
-     * @Then I should receive the archive value :response
-     */
-    public function iShouldReceiveTheArchiveValue($response)
-    {
-        $content = $this->response->getContent();
-
-        if ($content != $response) {
-            var_dump($content);
-
-            throw new \RuntimeException('Got unexpected response');
-        }
     }
 
     /**

@@ -116,10 +116,10 @@
             <argument type="service" id="river.github.client_factory" />
         </service>
 
-        <service id="river.code_repository.github.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\GitHub\Builder\GitHubBuildRequestSourceResolver">
-            <argument type="service" id="logger" />
-            <argument type="service" id="router" />
-            <argument>%river_host%</argument>
+        <service id="river.github.code_archive_streamer" class="ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeArchiveStreamer">
+            <argument type="service" id="river.github.guzzle_http_client" />
+            <argument type="service" id="github.integration.installation_repository" />
+            <argument type="service" id="github.integration.installation_token_resolver" />
         </service>
     </services>
 </container>

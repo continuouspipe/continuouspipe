@@ -1,19 +1,15 @@
 <?php
 
-namespace ContinuousPipe\River\CodeRepository\GitHub\Builder;
+namespace ContinuousPipe\River\CodeRepository;
 
-use ContinuousPipe\Builder\Repository;
+use ContinuousPipe\Builder\BuildRequestSourceResolver;
 use ContinuousPipe\Builder\Request\Archive;
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\CodeRepository;
-use GitHub\Integration\InstallationNotFound;
-use GitHub\Integration\InstallationRepository;
-use GitHub\Integration\InstallationTokenResolver;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class GitHubBuildRequestSourceResolver implements CodeRepository\ImplementationDelegation\BuildRequestSourceResolverAdapter
+class ThroughRiverArchiveProxySourceResolver implements BuildRequestSourceResolver
 {
     /**
      * @var LoggerInterface
@@ -24,16 +20,14 @@ class GitHubBuildRequestSourceResolver implements CodeRepository\ImplementationD
      * @var UrlGeneratorInterface
      */
     private $urlGenerator;
+
     /**
      * @var string
      */
     private $riverUrl;
 
-    public function __construct(
-        LoggerInterface $logger,
-        UrlGeneratorInterface $urlGenerator,
-        string $riverUrl
-    ) {
+    public function __construct(LoggerInterface $logger, UrlGeneratorInterface $urlGenerator, string $riverUrl)
+    {
         $this->logger = $logger;
         $this->urlGenerator = $urlGenerator;
         $this->riverUrl = $riverUrl;
@@ -50,10 +44,5 @@ class GitHubBuildRequestSourceResolver implements CodeRepository\ImplementationD
                 'reference' => $codeReference->getCommitSha() ?: $codeReference->getBranch(),
             ])
         );
-    }
-
-    public function supports(UuidInterface $flowUuid, CodeReference $codeReference): bool
-    {
-        return $codeReference->getRepository() instanceof CodeRepository\GitHub\GitHubCodeRepository;
     }
 }

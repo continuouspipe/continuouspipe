@@ -27,5 +27,12 @@
                 <argument type="service" id="river.github.file_system_resolver" />
             </argument>
         </service>
+
+        <service id="river.code_repository.code_archive_streamer" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToCodeStreamer">
+            <argument type="collection">
+                <argument type="service" id="river.github.code_archive_streamer" />
+                <argument type="service" id="river.bitbucket.code_archive_streamer" />
+            </argument>
+        </service>
     </services>
 </container>

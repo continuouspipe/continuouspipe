@@ -983,6 +983,34 @@ EOF;
     }
 
     /**
+     * @When I request the archive of the repository for the flow :flowUuid and reference :reference
+     */
+    public function iRequestTheArchiveOfTheRepositoryForTheFlow($flowUuid, $reference)
+    {
+        ob_start();
+        $this->response = $this->kernel->handle(Request::create('/flows/'.$flowUuid.'/source-code/archive/'.$reference));
+        $content = ob_get_contents();
+        $this->response = new Response($content, $this->response->getStatusCode(), $this->response->headers->all());
+        ob_end_clean();
+    }
+
+    /**
+     * @Then I should receive the archive value :response
+     */
+    public function iShouldReceiveTheArchiveValue($response)
+    {
+        $content = $this->response->getContent();
+
+        $this->assertResponseCode(200);
+
+        if ($content != $response) {
+            var_dump($this->response->getContent());
+
+            throw new \RuntimeException('Got unexpected response');
+        }
+    }
+
+    /**
      * @return Flow
      */
     public function getCurrentFlow()
@@ -1045,7 +1073,8 @@ EOF;
     private function assertResponseCode($code)
     {
         if ($this->response->getStatusCode() != $code) {
-            echo $this->response->getContent();
+            var_dump($this->response->getContent());
+
             throw new \RuntimeException(sprintf(
                 'Expected response code %d, but got %d',
                 $code,

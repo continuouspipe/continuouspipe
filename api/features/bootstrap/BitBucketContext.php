@@ -233,6 +233,19 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
+     * @Given the BitBucket URL :url will return :response with the header :headerName
+     */
+    public function theBitbucketUrlWillReturnWithTheHeader($url, $response, $headerName)
+    {
+        $this->bitBucketMatchingClientHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url, $headerName) {
+                return $request->getUri() == $url && !empty($request->getHeaderLine($headerName));
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], $response),
+        ]);
+    }
+
+    /**
      * @Then the addresses of the environment should be commented on the pull-request
      */
     public function theAddressesOfTheEnvironmentShouldBeCommentedOnThePullRequest()

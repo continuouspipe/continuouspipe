@@ -11,7 +11,7 @@ Feature:
     When I request the archive of the repository for the flow "00000000-0000-0000-0000-000000000000" and reference "sha1"
     Then I should receive the archive value "OK"
 
-  Scenario: It will start the GitHub build using the archive address with the according secret
+  Scenario: It will start the GitHub build using the archive address
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:

@@ -19,6 +19,8 @@ use ContinuousPipe\River\Notifications\Events\CommentedPullRequest;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class CodeRepositoriesContext implements Context
 {

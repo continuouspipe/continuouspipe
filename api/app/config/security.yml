@@ -49,6 +49,7 @@ security:
         - { path: ^/pipe/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/runner/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/github/flows, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/flows/([a-z0-9-]+)/source-code/archive, methods: [GET], roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
         # TODO: Secure with Atlassian's IPs
         - { path: ^/connect/service/bitbucket/addon/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
