@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\Command\StartGcbBuild;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Engine;
+use ContinuousPipe\Builder\Image\ExistingImageChecker;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\View\BuildViewRepository;
@@ -43,6 +44,10 @@ class CreateBuildController
      * @var MessageBus
      */
     private $commandBus;
+    /**
+     * @var ExistingImageChecker
+     */
+    private $imageChecker;
 
     /**
      * @param MessageBus $commandBus
@@ -50,19 +55,22 @@ class CreateBuildController
      * @param BuildFactory $buildFactory
      * @param BuildViewRepository $buildViewRepository
      * @param BuildRequestTransformer $buildRequestTransformer
+     * @param ExistingImageChecker $imageChecker
      */
     public function __construct(
         MessageBus $commandBus,
         ValidatorInterface $validator,
         BuildFactory $buildFactory,
         BuildViewRepository $buildViewRepository,
-        BuildRequestTransformer $buildRequestTransformer
+        BuildRequestTransformer $buildRequestTransformer,
+        ExistingImageChecker $imageChecker
     ) {
         $this->commandBus = $commandBus;
         $this->validator = $validator;
         $this->buildFactory = $buildFactory;
         $this->buildViewRepository = $buildViewRepository;
         $this->buildRequestTransformer = $buildRequestTransformer;
+        $this->imageChecker = $imageChecker;
     }
 
     /**
@@ -91,6 +99,19 @@ class CreateBuildController
         $build = $this->buildFactory->fromRequest(
             $this->buildRequestTransformer->transform($request)
         );
+
+        //check if build already started here?
+        //so use service to do it?
+        //ok cool, so what do I need to do in the tests
+        //add some way of checking if the build has alreayd been done for a single step build
+        //make sure the correct stuff is logged
+        //what about the response? might just be ok.
+        //make it a service can always change where it is called from
+
+        if ($this->imageChecker->checkIfImagesExist($build)) {
+
+            return $build;
+        }
 
         $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
 

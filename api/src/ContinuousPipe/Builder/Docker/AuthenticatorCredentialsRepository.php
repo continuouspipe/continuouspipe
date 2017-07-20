@@ -36,6 +36,14 @@ class AuthenticatorCredentialsRepository implements CredentialsRepository
      */
     public function findByImage(Image $image, Uuid $credentialsBucketUuid)
     {
+        return RegistryCredentials::fromDockerRegistryCredentials($this->findRegistryByImage($image, $credentialsBucketUuid));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findRegistryByImage(Image $image, Uuid $credentialsBucketUuid): DockerRegistry
+    {
         $server = $this->registryServerResolver->getServerName($image);
         $bucket = $this->bucketRepository->find($credentialsBucketUuid);
 
@@ -50,6 +58,7 @@ class AuthenticatorCredentialsRepository implements CredentialsRepository
             ));
         }
 
-        return RegistryCredentials::fromDockerRegistryCredentials($matchingCredentials->first());
+        return $matchingCredentials->first();
     }
+
 }

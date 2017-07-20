@@ -74,6 +74,14 @@
             </argument>
         </service>
 
+        <service id="builder.image.registry" class="ContinuousPipe\Builder\Image\InMemoryRegistry" />
+
+        <service id="builder.existing_image_checker" class="ContinuousPipe\Builder\Image\ExistingImageChecker">
+            <argument type="service" id="log_stream.logger_factory"/>
+            <argument type="service" id="builder.image.registry"/>
+        </service>
+
+
         <!-- Notification(s) -->
         <service id="builder.listener.notification_when_finished" class="ContinuousPipe\Builder\EventListener\SendNotificationWhenBuildFinishes">
             <argument type="service" id="builder.notifier" />
