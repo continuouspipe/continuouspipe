@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Flex\AsFeature\CommandHandler;
 
 use ContinuousPipe\Events\Transaction\TransactionManager;
 use ContinuousPipe\QuayIo\QuayClient;
+use ContinuousPipe\QuayIo\RepositoryAlreadyExists;
 use ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex;
 use ContinuousPipe\River\Flex\Cluster\ClusterResolver;
 use ContinuousPipe\River\Flow;
@@ -71,17 +72,22 @@ class DoActivateFlex
             );
         }
 
-        $robotAccountName = $this->getDockerRegistryRobotAccountName($flow->getTeam());
+        $registry = $this->generateRobotAccount($flow->getTeam());
         if (!$this->hasQuayDockerRegistryCredentials($bucket)) {
             $this->authenticatorClient->addDockerRegistryToBucket(
                 $bucket->getUuid(),
-                $this->generateRobotAccount($robotAccountName)
+                $registry
             );
         }
 
-        $repository = $this->quayClient->createRepository('flow-'.$flow->getUuid()->toString());
-        $this->quayClient->allowRobotToAccessRepository(
-            $robotAccountName,
+        try {
+            $repository = $this->quayClient->createRepository('flow-' . $flow->getUuid()->toString());
+        } catch (RepositoryAlreadyExists $e) {
+            $repository = $e->getRepository();
+        }
+
+        $this->quayClient->allowUserToAccessRepository(
+            $registry->getUsername(),
             $repository->getName()
         );
 
@@ -99,8 +105,9 @@ class DoActivateFlex
         return $flexClusters->count() > 0;
     }
 
-    private function generateRobotAccount(string $robotAccountName) : DockerRegistry
+    private function generateRobotAccount(Team $team) : DockerRegistry
     {
+        $robotAccountName = $this->getDockerRegistryRobotAccountName($team);
         $robot = $this->quayClient->createRobotAccount($robotAccountName);
 
         return new DockerRegistry(
