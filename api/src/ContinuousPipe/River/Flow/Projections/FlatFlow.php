@@ -49,7 +49,16 @@ class FlatFlow
      * @var CodeRepository|null
      */
     private $repository;
+
+    /**
+     * @var string[]
+     */
     private $pinnedBranches;
+
+    /**
+     * @var boolean
+     */
+    private $flex;
 
     public function __construct()
     {
@@ -72,6 +81,7 @@ class FlatFlow
         $view->pipelines = new ArrayCollection($flow->getPipelines());
         $view->repository = $flow->getCodeRepository();
         $view->pinnedBranches = $flow->getPinnedBranches();
+        $view->flex = $flow->isFlex();
 
         return $view;
     }
@@ -126,5 +136,10 @@ class FlatFlow
     public function getPipelines()
     {
         return $this->pipelines;
+    }
+
+    public function isFlex()
+    {
+        return $this->flex;
     }
 }

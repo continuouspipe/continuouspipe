@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bcd83249329dae60473719838a7d9b64",
+    "content-hash": "53e076c4b399d6019d6590e2e6dd0d60",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -375,16 +375,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.7.1",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "c1d14d6174988624b4cc3063ef7f1f47a8ff7ea0"
+                "reference": "2a2ebcbeb8cb3da7a5c41e3aba521c9618662e5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/c1d14d6174988624b4cc3063ef7f1f47a8ff7ea0",
-                "reference": "c1d14d6174988624b4cc3063ef7f1f47a8ff7ea0",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/2a2ebcbeb8cb3da7a5c41e3aba521c9618662e5c",
+                "reference": "2a2ebcbeb8cb3da7a5c41e3aba521c9618662e5c",
                 "shasum": ""
             },
             "require": {
@@ -405,10 +405,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.7.1",
+                "source": "https://github.com/continuouspipe/security/tree/2.8.0",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-06-30T10:53:40+00:00"
+            "time": "2017-07-19T13:46:42+00:00"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -5597,6 +5597,63 @@
                 "minification"
             ],
             "time": "2016-11-22T11:42:57+00:00"
+        },
+        {
+            "name": "symfony/dotenv",
+            "version": "v3.3.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/dotenv.git",
+                "reference": "f6e82cd0386f303f78aaa58a40a41b247927dfae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/dotenv/zipball/f6e82cd0386f303f78aaa58a40a41b247927dfae",
+                "reference": "f6e82cd0386f303f78aaa58a40a41b247927dfae",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "require-dev": {
+                "symfony/process": "^3.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Dotenv\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Registers environment variables from a .env file",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "dotenv",
+                "env",
+                "environment"
+            ],
+            "time": "2017-07-03T07:16:11+00:00"
         },
         {
             "name": "symfony/monolog-bundle",

@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Controller -->
+        <service id="app.controller.flex" class="AppBundle\Controller\FlowFlexController">
+            <argument type="service" id="command_bus"/>
+        </service>
+
+        <!-- Flex activation -->
+        <service id="river.flex.cluster_resolver" class="ContinuousPipe\River\Flex\Cluster\ClusterResolver">
+            <argument>%flex_cluster_address%</argument>
+        </service>
+        <service id="river.flex.activation.do_activate_handler" class="ContinuousPipe\River\Flex\AsFeature\CommandHandler\DoActivateFlex">
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="security.authenticator.client" />
+            <argument type="service" id="river.flex.cluster_resolver" />
+            <argument type="service" id="river.flow.transaction_manager" />
+            <argument type="service" id="quay.client"/>
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex" />
+        </service>
+
+        <!-- Configuration generation -->
+        <service id="river.flex.configuration_generator" class="ContinuousPipe\River\Flex\ConfigurationGenerator" />
+        <service id="river.flex.generates_configuration_per_flow"
+                 class="ContinuousPipe\River\Flex\CodeRepositoryFileSystem\GeneratesConfigurationForFlexFlows"
+                 decorates="river.file_system_resolver">
+            <argument type="service" id="river.flex.generates_configuration_per_flow.inner" />
+            <argument type="service" id="river.flex.configuration_generator" />
+        </service>
+
+        <!-- Archive injection -->
+        <service id="river.flex.code_archive_enhancement.inject_generated_files"
+                 class="ContinuousPipe\River\Flex\CodeArchiveEnhancement\InjectGeneratedFilesInCodeArchiveStreamer"
+                 decorates="river.code_repository.code_archive_streamer">
+            <argument type="service" id="river.flex.code_archive_enhancement.inject_generated_files.inner" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
+            <argument type="service" id="river.flex.configuration_generator" />
+        </service>
+    </services>
+</container>

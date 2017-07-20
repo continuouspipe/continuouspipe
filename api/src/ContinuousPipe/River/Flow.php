@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\Events\Aggregate;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\EventBased\ApplyEventCapability;
 use ContinuousPipe\River\EventBased\RaiseEventCapability;
@@ -9,6 +10,7 @@ use ContinuousPipe\River\Flow\Event\BranchPinned;
 use ContinuousPipe\River\Flow\Event\BranchUnpinned;
 use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
 use ContinuousPipe\River\Flow\Event\FlowCreated;
+use ContinuousPipe\River\Flow\Event\FlowFlexed;
 use ContinuousPipe\River\Flow\Event\FlowRecovered;
 use ContinuousPipe\River\Flow\Event\PipelineCreated;
 use ContinuousPipe\River\Flow\Event\PipelineDeleted;
@@ -18,7 +20,7 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
 
-final class Flow
+final class Flow implements Aggregate
 {
     use RaiseEventCapability,
         ApplyEventCapability;
@@ -53,6 +55,11 @@ final class Flow
      */
     private $pipelines = [];
     private $pinnedBranches = [];
+
+    /**
+     * @var boolean
+     */
+    private $flexed;
 
     private function __construct()
     {
@@ -104,30 +111,33 @@ final class Flow
      */
     public function update(array $configuration)
     {
-        $this->raise(
-            new FlowConfigurationUpdated(
-                $this->uuid,
-                $configuration
-            )
-        );
+        $this->raise(new FlowConfigurationUpdated(
+            $this->uuid,
+            $configuration
+        ));
     }
 
     public function pinBranch(string $branch)
     {
-        $event = new BranchPinned(
+        $this->raise(new BranchPinned(
             $this->uuid,
             $branch
-        );
-        $this->raise($event);
+        ));
     }
 
     public function unpinBranch(string $branch)
     {
-        $event = new BranchUnpinned(
+        $this->raise(new BranchUnpinned(
             $this->uuid,
             $branch
-        );
-        $this->raise($event);
+        ));
+    }
+
+    public function activateFlex()
+    {
+        $this->raise(new FlowFlexed(
+            $this->uuid
+        ));
     }
 
     /**
@@ -195,6 +205,11 @@ final class Flow
         $this->pinnedBranches = array_diff($this->pinnedBranches, [$event->getBranch()]);
     }
 
+    public function applyFlowFlexed(FlowFlexed $event)
+    {
+        $this->flexed = true;
+    }
+
     public function getUuid() : UuidInterface
     {
         return $this->uuid;
@@ -258,5 +273,10 @@ final class Flow
     public function getPinnedBranches(): array
     {
         return $this->pinnedBranches;
+    }
+
+    public function isFlex() : bool
+    {
+        return $this->flexed ?: false;
     }
 }

@@ -31,10 +31,8 @@
             <argument type="service" id="logger" />
             <argument type="service" id="event_bus" />
         </service>
-        <service id="app.controller.github_code_archive" class="AppBundle\Controller\GitHubCodeCodeArchiveController">
-            <argument type="service" id="river.github.guzzle_http_client" />
-            <argument type="service" id="github.integration.installation_repository" />
-            <argument type="service" id="github.integration.installation_token_resolver" />
+        <service id="app.controller.code_archive" class="AppBundle\Controller\CodeArchiveController">
+            <argument type="service" id="river.code_repository.code_archive_streamer" />
             <argument type="service" id="logger" />
         </service>
         <service id="app.controller.github_installation_token" class="AppBundle\Controller\GitHubInstallationTokenController">

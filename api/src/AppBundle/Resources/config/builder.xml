@@ -20,11 +20,11 @@
                  runner="tolerance.operation_runners.builder" />
         </service>
 
-        <service id="builder.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToBuildRequestSourceResolverAdapater">
-            <argument type="collection">
-                <argument type="service" id="river.code_repository.github.build_request_source_resolver" />
-                <argument type="service" id="river.code_repository.bitbucket.build_request_source_resolver" />
-            </argument>
+        <service id="builder.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\ThroughRiverArchiveProxySourceResolver">
+            <argument type="service" id="logger" />
+            <argument type="service" id="router" />
+            <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
+            <argument>%river_host%</argument>
         </service>
 
         <service id="builder.build_request_creator" class="ContinuousPipe\Builder\WithSourceAndNotificationsBuildRequestCreator">

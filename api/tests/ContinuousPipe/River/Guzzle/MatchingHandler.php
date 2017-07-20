@@ -114,7 +114,13 @@ class MatchingHandler
     {
         foreach ($this->matchers as $matcher) {
             if ($matcher['match']($request)) {
-                return $matcher['response'];
+                $response = $matcher['response'];
+
+                if (is_callable($response)) {
+                    $response = $response($request);
+                }
+
+                return $response;
             }
         }
 

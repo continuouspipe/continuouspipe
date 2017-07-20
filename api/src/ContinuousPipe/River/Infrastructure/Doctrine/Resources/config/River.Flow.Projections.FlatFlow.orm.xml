@@ -7,6 +7,7 @@
     <entity name="ContinuousPipe\River\Flow\Projections\FlatFlow">
         <id name="uuid" type="uuid" />
         <field name="configuration" type="json_array" />
+        <field name="flex" type="boolean" />
         <one-to-many field="pipelines" target-entity="ContinuousPipe\River\Flow\Projections\FlatPipeline" mapped-by="flow" />
         <many-to-one field="repository" target-entity="ContinuousPipe\River\AbstractCodeRepository">
             <cascade>

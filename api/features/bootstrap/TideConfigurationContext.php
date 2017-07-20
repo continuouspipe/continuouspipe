@@ -47,7 +47,7 @@ class TideConfigurationContext implements Context
      */
     public function theConfigurationOfTheTideIsGenerated()
     {
-        $flow = $this->flowContext->createFlow();
+        $flow = $this->getFlow();
         $this->configuration = $this->tideConfigurationFactory->getConfiguration(Flow\Projections\FlatFlow::fromFlow($flow), new CodeReference(
             $flow->getCodeRepository(),
             'sha1'
@@ -67,9 +67,7 @@ class TideConfigurationContext implements Context
      */
     public function theConfigurationOfTheTideIsGeneratedForTheBranchAndTheCommit($branch, $sha1)
     {
-        if (null === ($flow = $this->flowContext->getCurrentFlow())) {
-            $flow = $this->flowContext->createFlow();
-        }
+        $flow = $this->getFlow();
 
         $this->configuration = $this->tideConfigurationFactory->getConfiguration(Flow\Projections\FlatFlow::fromFlow($flow), new CodeReference(
             $flow->getCodeRepository(),
@@ -155,5 +153,17 @@ class TideConfigurationContext implements Context
             }
         }
         return $array1;
+    }
+
+    /**
+     * @return Flow
+     */
+    private function getFlow(): Flow
+    {
+        if (null === ($flow = $this->flowContext->getCurrentFlow())) {
+            $flow = $this->flowContext->createFlow();
+            return $flow;
+        }
+        return $flow;
     }
 }

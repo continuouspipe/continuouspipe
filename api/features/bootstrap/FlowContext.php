@@ -937,6 +937,28 @@ EOF;
     }
 
     /**
+     * @Given the flow :uuid has flex activated
+     */
+    public function theFlowHasFlexActivated($uuid)
+    {
+        $this->eventBus->handle(new Flow\Event\FlowFlexed(Uuid::fromString($uuid)));
+        $this->currentFlow = $flow = $this->flowRepository->find(Uuid::fromString($uuid));
+    }
+
+    /**
+     * @When I activate flex for the flow :uuid
+     */
+    public function iActivateFlexForTheFlow($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$uuid.'/features/flex',
+            'POST'
+        ));
+
+        $this->assertResponseCode(204);
+    }
+
+    /**
      * @Then the environment should be deleted
      */
     public function theEnvironmentShouldBeDeleted()
@@ -957,6 +979,74 @@ EOF;
 
         if (0 != count($deletions)) {
             throw new \RuntimeException('Deleted environment(s) found');
+        }
+    }
+
+    /**
+     * @When I request the archive of the repository for the flow :flowUuid and reference :reference
+     */
+    public function iRequestTheArchiveOfTheRepositoryForTheFlow($flowUuid, $reference)
+    {
+        $this->iRequestTheArchiveOfTheRepositoryForTheFlowWithTheTokenForUser($flowUuid, $reference, 'continuouspipe_builder_for_sources');
+    }
+
+    /**
+     * @When I request the archive of the repository for the flow :flowUuid and reference :reference with the token for user :username
+     */
+    public function iRequestTheArchiveOfTheRepositoryForTheFlowWithTheTokenForUser($flowUuid, $reference, $username)
+    {
+        $this->response = $this->getStreamedResponse(
+            Request::create('/flows/'.$flowUuid.'/source-code/archive/'.$reference, 'GET', [], [], [], [
+                'HTTP_AUTHORIZATION' => 'Bearer '.$this->securityContext->tokenForUser($username)
+            ])
+        );
+    }
+
+    /**
+     * @When I request the archive of the repository for the flow :flowUuid and reference :reference without credentials
+     */
+    public function iRequestTheArchiveOfTheRepositoryForTheFlowWithoutCredentials($flowUuid, $reference)
+    {
+        $this->response = $this->getStreamedResponse(
+            Request::create('/flows/'.$flowUuid.'/source-code/archive/'.$reference)
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    private function getStreamedResponse(Request $request)
+    {
+        ob_start();
+        $response = $this->kernel->handle($request);
+
+        if ($response->getStatusCode() != 200) {
+            ob_end_flush();
+            return $response;
+        }
+
+        $content = ob_get_contents();
+        $response = new Response($content, $response->getStatusCode(), $response->headers->all());
+        ob_end_clean();
+
+        return $response;
+    }
+
+    /**
+     * @Then I should receive the archive value :response
+     */
+    public function iShouldReceiveTheArchiveValue($response)
+    {
+        $content = $this->response->getContent();
+
+        $this->assertResponseCode(200);
+
+        if ($content != $response) {
+            var_dump($this->response->getContent());
+
+            throw new \RuntimeException('Got unexpected response');
         }
     }
 
@@ -1023,7 +1113,8 @@ EOF;
     private function assertResponseCode($code)
     {
         if ($this->response->getStatusCode() != $code) {
-            echo $this->response->getContent();
+            var_dump($this->response->getContent());
+
             throw new \RuntimeException(sprintf(
                 'Expected response code %d, but got %d',
                 $code,
@@ -1070,5 +1161,13 @@ EOF;
         }
 
         return $context;
+    }
+
+    /**
+     * @return null|Response
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 }

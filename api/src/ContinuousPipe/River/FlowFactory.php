@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River;
 
+use ContinuousPipe\Events\Transaction\TransactionManager;
 use ContinuousPipe\River\Flow\ConfigurationException;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
@@ -32,15 +33,20 @@ class FlowFactory
     private $flatFlowRepository;
 
     /**
-     * @param UserContext        $userContext
-     * @param MessageBus         $eventBus
-     * @param FlatFlowRepository $flatFlowRepository
+     * @var TransactionManager
      */
-    public function __construct(UserContext $userContext, MessageBus $eventBus, FlatFlowRepository $flatFlowRepository)
-    {
+    private $flowTransactionManager;
+
+    public function __construct(
+        UserContext $userContext,
+        MessageBus $eventBus,
+        FlatFlowRepository $flatFlowRepository,
+        TransactionManager $flowTransactionManager
+    ) {
         $this->userContext = $userContext;
         $this->eventBus = $eventBus;
         $this->flatFlowRepository = $flatFlowRepository;
+        $this->flowTransactionManager = $flowTransactionManager;
     }
 
     /**
@@ -80,13 +86,11 @@ class FlowFactory
      */
     public function update(Flow $flow, FlowUpdateRequest $updateRequest)
     {
-        $flow->update(
-            $this->parseConfiguration($updateRequest)
-        );
-
-        foreach ($flow->raisedEvents() as $event) {
-            $this->eventBus->handle($event);
-        }
+        $this->flowTransactionManager->apply($flow->getUuid(), function (Flow $flow) use ($updateRequest) {
+            $flow->update(
+                $this->parseConfiguration($updateRequest)
+            );
+        });
 
         return $this->flatFlowRepository->find($flow->getUuid());
     }

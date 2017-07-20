@@ -18,6 +18,5 @@
         <service id="development_environment.read_model.repository" class="ContinuousPipe\DevelopmentEnvironment\ReadModel\InMemoryEnvironmentRepository" />
 
         <service id="river.view.storage.firebase_client" alias="river.view.storage.firebase_client.main"/>
-
     </services>
 </container>

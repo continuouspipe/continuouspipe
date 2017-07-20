@@ -10,6 +10,7 @@ default:
                     - @security.authenticator.client.in_memory
                     - @kernel
                     - @security.encryption.vault
+                    - @lexik_jwt_authentication.jwt_manager
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -35,6 +36,8 @@ default:
                     - @event_bus
                     - @river.tide_event_store
                     - @river.code_repository.branch_query.in_memory
+                    - @river.code_repository.local_filesystem_resolver
+                    - @river.code_repository.code_archive_streamer.overwritten
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -95,6 +98,8 @@ default:
                     - @event_bus
                 - BranchContext:
                     - @command_bus
+                - QuayIoContext:
+                    - @csa_guzzle.data_collector.history_bag
 
                 # TBR:
                 - GitHubContext:
@@ -152,6 +157,7 @@ default:
                     - @security.authenticator.client.in_memory
                     - @kernel
                     - @security.encryption.vault
+                    - @lexik_jwt_authentication.jwt_manager
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -177,6 +183,8 @@ default:
                     - @event_bus
                     - @river.tide_event_store
                     - @river.code_repository.branch_query.in_memory
+                    - @river.code_repository.local_filesystem_resolver
+                    - @river.code_repository.code_archive_streamer.overwritten
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -229,6 +237,8 @@ default:
                 - UserActivityContext:
                     - @river.user_activity.traceable_dispatcher
                     - @river.user_activity.middleware_supporting_dispatcher
+                - QuayIoContext:
+                    - @csa_guzzle.data_collector.history_bag
 
         bitbucket:
             paths:
@@ -254,6 +264,7 @@ default:
                     - @security.authenticator.client.in_memory
                     - @kernel
                     - @security.encryption.vault
+                    - @lexik_jwt_authentication.jwt_manager
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -279,6 +290,8 @@ default:
                     - @event_bus
                     - @river.tide_event_store
                     - @river.code_repository.branch_query.in_memory
+                    - @river.code_repository.local_filesystem_resolver
+                    - @river.code_repository.code_archive_streamer.overwritten
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -331,6 +344,8 @@ default:
                 - UserActivityContext:
                     - @river.user_activity.traceable_dispatcher
                     - @river.user_activity.middleware_supporting_dispatcher
+                - QuayIoContext:
+                    - @csa_guzzle.data_collector.history_bag
 
     extensions:
         Behat\Symfony2Extension:
@@ -350,6 +365,7 @@ smoke:
                     - @security.authenticator.client.in_memory
                     - @kernel
                     - @security.encryption.vault
+                    - @lexik_jwt_authentication.jwt_manager
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client
@@ -392,6 +408,8 @@ smoke:
                     - @event_bus
                     - @river.tide_event_store
                     - @river.code_repository.branch_query.in_memory
+                    - @river.code_repository.local_filesystem_resolver
+                    - @river.code_repository.code_archive_streamer.overwritten
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - Tide\TasksContext:

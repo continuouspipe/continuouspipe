@@ -3,21 +3,27 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
+use ContinuousPipe\Archive\FileSystemArchive;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryUser;
 use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use ContinuousPipe\River\CodeRepository\Event\CodePushed;
 use ContinuousPipe\River\CodeRepository\Event\PullRequestOpened;
+use ContinuousPipe\River\CodeRepository\FileSystem\LocalFilesystemResolver;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\InMemoryBranchQuery;
+use ContinuousPipe\River\CodeRepository\OverwrittenArchiveStreamer;
 use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\Event\GitHub\CommentedTideFeedback;
 use ContinuousPipe\River\Event\GitHub\PullRequestClosed;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Notifications\Events\CommentedPullRequest;
 use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
+use GuzzleHttp\Psr7\Stream;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class CodeRepositoriesContext implements Context
 {
@@ -49,13 +55,29 @@ class CodeRepositoriesContext implements Context
      * @var InMemoryBranchQuery
      */
     private $branchQuery;
+    /**
+     * @var LocalFilesystemResolver
+     */
+    private $localFilesystemResolver;
+    /**
+     * @var OverwrittenArchiveStreamer
+     */
+    private $overwrittenArchiveStreamer;
 
-    public function __construct(PredictableCommitResolver $predictableCommitResolver, MessageBus $eventBus, EventStore $eventStore, InMemoryBranchQuery $branchQuery)
-    {
+    public function __construct(
+        PredictableCommitResolver $predictableCommitResolver,
+        MessageBus $eventBus,
+        EventStore $eventStore,
+        InMemoryBranchQuery $branchQuery,
+        LocalFilesystemResolver $localFilesystemResolver,
+        OverwrittenArchiveStreamer $overwrittenArchiveStreamer
+    ) {
         $this->predictableCommitResolver = $predictableCommitResolver;
         $this->eventBus = $eventBus;
         $this->eventStore = $eventStore;
         $this->branchQuery = $branchQuery;
+        $this->localFilesystemResolver = $localFilesystemResolver;
+        $this->overwrittenArchiveStreamer = $overwrittenArchiveStreamer;
     }
 
     /**
@@ -65,6 +87,14 @@ class CodeRepositoriesContext implements Context
     {
         $this->tideContext = $scope->getEnvironment()->getContext('TideContext');
         $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
+    }
+
+    /**
+     * @Given the code repository contains the fixtures folder :fixtureFolder
+     */
+    public function theCodeRepositoryContainsTheFixturesFolder($fixtureFolder)
+    {
+        $this->localFilesystemResolver->overwriteFileSystemWithLocalPath(__DIR__.'/../fixtures/'.$fixtureFolder);
     }
 
     /**
@@ -150,6 +180,62 @@ class CodeRepositoriesContext implements Context
             Uuid::fromString($flow),
             new CodeReference(new GitHubCodeRepository('a', 'b', 'c', 'd', true), $commit, $branch),
             new PullRequest($number, $title))
+        );
+    }
+
+    /**
+     * @Given the code archive of the flow :flowUuid looks like the fixtures file :archiveFile
+     */
+    public function theCodeArchiveOfTheFlowLooksLikeTheFixturesFile($flowUuid, $archiveFile)
+    {
+        $this->overwrittenArchiveStreamer->overwriteForFlow(
+            $flowUuid,
+            function() use ($archiveFile) {
+                return new Stream(fopen(__DIR__.'/../fixtures/'.$archiveFile, 'r'));
+            }
+        );
+    }
+
+    /**
+     * @Then the archive should not contain a :fileName file
+     */
+    public function theArchiveShouldNotContainAFile($fileName)
+    {
+        if ($this->archiveFromFlowResponse()->contains($fileName)) {
+            throw new \RuntimeException('The file should not exists');
+        }
+    }
+
+    /**
+     * @Then the archive should contain a :fileName file
+     */
+    public function theArchiveShouldContainAFile($fileName)
+    {
+        $archive = $this->archiveFromFlowResponse();
+        if (!$archive->contains($fileName)) {
+            var_dump($archive);
+
+            throw new \RuntimeException('The file do not exists');
+        }
+    }
+
+    private function archiveFromFlowResponse()
+    {
+        if (null === ($archiveResponse = $this->flowContext->getResponse())) {
+            throw new \RuntimeException('Flow response empty, did you run the right scenario before?');
+        }
+
+        var_dump($archiveResponse->getContent());
+        if ($archiveResponse->getStatusCode() != 200) {
+
+            throw new \RuntimeException(sprintf('Expected status code 200 but got %d', $archiveResponse->getStatusCode()));
+        }
+
+        return FileSystemArchive::fromStream(
+            \GuzzleHttp\Psr7\stream_for(
+                $archiveResponse->getContent()
+            ),
+            FileSystemArchive::TAR_GZ
         );
     }
 }
