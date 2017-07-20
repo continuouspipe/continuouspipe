@@ -8,72 +8,79 @@
 </md-toolbar>
 <md-content flex id="content" class="card-grid half environment-grid">
     <remote-resource resource-name="environments" class="environment-grid-inner">
-        <md-card ng-repeat="environment in environments" ng-class="{'collapsed': !environment.expanded}">
-            <md-card-header ng-click="environment.expanded = !environment.expanded;">
-                <md-card-avatar>
-                    <md-icon class="md-avatar-icon">
-                        <i class="material-icons" ng-show="!environment.expanded">chevron_right</i>
-                        <i class="material-icons" ng-show="environment.expanded">expand_more</i>
-                    </md-icon>
-                </md-card-avatar>
-                <md-card-header-text>
-                    <span class="md-title">{{ environment.identifier }}</span>
-                    <span class="md-subhead">Status: <span class="status-text" ng-class="{'status-success': environment.status == 'healthy', 'status-failure': environment.status == 'unhealthy', 'status-running': environment.status === 'unknown', 'status-terminating': environment.status === 'terminating'}">{{ environment.status }}</span></span>
-                </md-card-header-text>
+        <div ng-show="environments.length" class="list-items responsive-list-items">
+            <div class="list-items-header">
+                <div class="list-col-8">Name</div>
+                <div class="list-col-8">Status</div>
+                <div class="list-col-8">Endpoints</div>
+                <div class="list-col-2">Components</div>
+                <div class="list-col-2">Actions</div>
+            </div>
 
-                <md-button class="md-raised md-primary environment-card-btn"
-                           ng-repeat="endpoint in environment.endpoints"
-                           ng-click="openEndpoint(endpoint); $event.stopPropagation()">
-                    Open <code>{{ endpoint.name }}</code>
-                </md-button>
-
-                <md-button class="md-raised md-primary environment-card-btn"
-                           ng-repeat="endpoint in environment.endpoints"
-                           ng-click="openRemoteShell(environment, endpoint)">
-                    Remote Shell <code>{{ endpoint.name }}</code>
-                </md-button>
-
-                <md-button class="md-raised md-primary environment-card-btn"
-                           ng-repeat="endpoint in environment.endpoints"
-                           ng-click="$event.stopPropagation()"
-                           ui-sref="flow.environment-preview({identifier: environment.identifier})">
-                    Preview <code>{{ endpoint.name }}</code>
-                </md-button>
-            </md-card-header>
-
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Component</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-show="!environment.components.length">
-                    <td colspan="3">No components found.</td>
-                </tr>
-                <tr ng-repeat="component in environment.components">
-                    <td><strong>{{ component.name }}</strong></td>
-                    <td class="status-text" ng-class="{'status-success': component.status.status == 'healthy', 'status-failure': component.status.status == 'unhealthy', 'status-running': component.status.status === 'unknown'}">{{ component.status.status }}</td>
-                    <td>
-                        <md-button class="md-icon-button logs-button" ng-click="liveStreamComponent(environment, component)">
-                            <md-tooltip md-direction="top">Live-stream logs</md-tooltip>
-                            <md-icon class="material-icons">playlist_play</md-icon>
-                        </md-button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-            <md-card-actions layout="row" layout-align="end center" ng-show="isAdmin">
-                <md-button class="md-warn"
+            <div class="list-environment" ng-repeat="environment in environments">
+                <div class="list-item">
+                    <div data-th="Name" class="list-col-8 clickable" ng-click="environment.expanded = !environment.expanded;">
+                        <md-icon>
+                            <i class="material-icons" ng-show="!environment.expanded">chevron_right</i>
+                            <i class="material-icons" ng-show="environment.expanded">expand_more</i>
+                        </md-icon>
+                        <span>{{ environment.identifier }}</span>
+                    </div>
+                    <div data-th="Status" class="list-col-8">
+                        <span class="status-text" ng-class="{'status-success': environment.status == 'healthy', 'status-failure': environment.status == 'unhealthy', 'status-running': environment.status === 'unknown', 'status-terminating': environment.status === 'terminating'}">{{ environment.status }}</span>
+                    </div>
+                    <div data-th="Endpoints" class="list-col-8">
+                        <ul class="environments">
+                            <li ng-repeat="endpoint in environment.endpoints" ng-click="openEndpoint(endpoint); $event.stopPropagation()">
+                                <md-icon class="material-icons">open_in_new</md-icon> <span>{{ endpoint.name }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div data-th="Components" class="list-col-2">
+                        <span>{{ environment.components.length }}</span>
+                    </div>
+                    <div data-th="Actions" class="list-col-2">
+                        <md-button class="md-warn"
                            ng-click="delete(environment)"
-                           ng-disabled="isLoading">
-                   <md-icon class="material-icons">delete</md-icon>
-                    Delete
-                </md-button>
-            </md-card-actions>
-        </md-card>
+                           ng-disabled="isLoading"
+                           ng-show="isAdmin">
+                           <md-icon class="material-icons">delete</md-icon>
+                            Delete
+                        </md-button>
+                    </div>
+                </div>
+
+                <div class="environment-details" ng-if="environment.expanded">
+                    <table class="table components">
+                        <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-show="!environment.components.length">
+                            <td colspan="3">No components found.</td>
+                        </tr>
+                        <tr ng-repeat="component in environment.components">
+                            <td><strong>{{ component.name }}</strong></td>
+                            <td class="status-text" ng-class="{'status-success': component.status.status == 'healthy', 'status-failure': component.status.status == 'unhealthy', 'status-running': component.status.status === 'unknown'}">{{ component.status.status }}</td>
+                            <td>
+                                <md-button class="md-icon-button logs-button" ng-click="liveStreamComponent(environment, component)">
+                                    <md-tooltip md-direction="top">Live-stream logs</md-tooltip>
+                                    <md-icon class="material-icons">playlist_play</md-icon>
+                                </md-button>
+                                <md-button class="md-icon-button" ng-click="openRemoteShell(environment, component)">
+                                    <md-tooltip md-direction="top">Remote shell</md-tooltip>
+                                    <md-icon class="material-icons">keyboard</md-icon>
+                                </md-button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </remote-resource>
 </md-content>

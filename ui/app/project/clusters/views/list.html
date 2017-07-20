@@ -18,7 +18,7 @@
         <p>Add your existing cluster or let us create one on your behalf on an partner hosting platform provider.</p>
     </div>
     <remote-resource resource-name="clusters">
-        <table class="table hover" ng-show="clusters.length > 0">
+        <table class="table responsive-table hover" ng-show="clusters.length > 0">
             <thead>
             <tr>
                 <th>Type</th>
@@ -30,11 +30,11 @@
             </thead>
             <tbody>
             <tr ng-repeat="cluster in clusters">
-                <td>{{ cluster.type }}</td>
-                <td>{{ cluster.identifier }}</td>
-                <td>{{ cluster.address }} <small>{{ cluster.version }}</small></td>
-                <td>User <small>{{ cluster.username }}</small></td>
-                <td>
+                <td data-th="Type">{{ cluster.type }}</td>
+                <td data-th="Identifier">{{ cluster.identifier }}</td>
+                <td data-th="Address">{{ cluster.address }} <small>{{ cluster.version }}</small></td>
+                <td data-th="Credentials">User <small>{{ cluster.username }}</small></td>
+                <td data-th="Actions">
                     <md-button ng-show="isAdmin" ng-click="deleteCluster(cluster)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
                     <md-button ng-click="inspectCluster(cluster)" class="md-icon-button"><i class="material-icons">lightbulb_outline</i></md-button>
                 </td>

@@ -5,6 +5,8 @@
 @import "atoms/typography";
 @import "components/components";
 @import "components/environments";
+@import "components/items";
+@import "components/tabs";
 
 .mobile-only {
     @include largeScreen {
@@ -80,6 +82,45 @@ table.table {
     }
 }
 
+@include smallScreen {
+    table.responsive-table{
+        thead {
+            th {
+              display: none;
+            }
+        }
+
+        tbody {
+            margin: 1em 0;
+            min-width: 300px;
+            overflow: hidden;
+
+            tr {
+                border-top: 1px solid #ddd;
+                border-bottom: 1px solid #ddd;
+            }
+
+            td {
+                display: block;
+                padding: 15px;
+
+                &:before {
+                    content: attr(data-th) ": ";
+                    font-weight: bold;
+                    display: block;
+                    color: #80868D;
+                }
+            }
+        }
+    }
+
+    md-toolbar .logo {
+        display: none;
+    }
+}
+
+
+
 body {
     .md-open-menu-container {
         z-index: 500;
@@ -121,6 +162,10 @@ body {
                 width: $logo-size;
                 height: $logo-size + 10;
 
+                @include smallScreen {
+                    margin-left: 0;
+                }
+
                 @include largeScreen {
                     padding-top: 10px;
                 }
@@ -129,6 +174,8 @@ body {
 
         button.md-button.account-button {
             padding: 0;
+            position: relative;
+            top: 2px;
 
             img {
                 border-radius: 50%;
@@ -225,13 +272,12 @@ body {
         &.content {
             font-size: 14px;
             background: $content-background;
+            flex: 1;
+            flex-direction: column;
+            display: flex;
 
             md-content {
                 background: $content-background;
-
-                md-toolbar {
-                    z-index: 85;
-                }
 
                 md-content {
                     md-toolbar {
@@ -254,6 +300,10 @@ body {
                     border-radius: 20px;
                     padding: 0 15px;
 
+                    @include smallScreen {
+                        font-size: 11px;
+                    }
+
                     &:hover {
                         background: $inner-toolbar-button-hovered-background !important;
                     }
@@ -270,6 +320,12 @@ body {
                     .icon-link--help {
                         padding-top: 7px;
                     }
+
+                    @include smallScreen {
+                        h2 {
+                            font-size: 15px;
+                        }
+                    }
                 }
             }
         }
@@ -282,6 +338,11 @@ body {
         padding: 50px;
         position: relative;
         text-align: center;
+
+        @include smallScreen {
+            margin: 10px;
+            padding: 10px;
+        }
 
         i.top-right-arrow {
             position: absolute;
@@ -324,7 +385,7 @@ body {
     }
 
     .card-grid {
-        padding: 20px 0;
+        padding: 20px 10px;
 
         @include largeScreen {
             padding: 20px;
@@ -576,33 +637,23 @@ body {
         }
 
         &.status-failure {
-            background: $failure-color;
             color: $failure-dark-color;
-            border-left: 2px solid $failure-dark-color;
         }
 
         &.status-success {
-            background: $success-color;
             color: $success-dark-color;
-            border-left: 2px solid $success-dark-color;
         }
 
         &.status-pending {
-            background: $pending-color;
             color: $pending-dark-color;
-            border-left: 2px solid $pending-dark-color;
         }
 
         &.status-cancelled {
-            background: $cancelled-color;
             color: $cancelled-dark-color;
-            border-left: 2px solid $cancelled-dark-color;
         }
 
         &.status-running {
-            background: $running-color;
             color: $running-dark-color;
-            border-left: 2px solid $running-dark-color;
 
             .relations {
                 margin-right: 10px;
@@ -636,21 +687,52 @@ body {
     .alerts-container {
         background: #FF5722;
         color: #fff;
-        padding: 0 0 0 20px;
-
-        > span {
-            line-height: 45px;
-            padding-right: 10px;
-        }
+        padding: 0 20px;
+        width: 100%;
 
         h2 {
             font-size: 16px;
+            padding: 0 100px 0 0;
+            margin: 11px 0;
         }
 
-        button {
+        &__alerts {
+            &.md-button {
+                margin: 0;
+                padding: 0;
+                width: 30px;
+                height: 22px;
+                line-height: 1;
+                min-height: 22px;
+                position: relative;
+                top: -1px;
+                font-weight: bold;
+            }
+
+        }
+
+        &__configure {
             height: 30px;
             line-height: 30px;
-            margin: 4px;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            margin: -18px 0 0;
+        }
+
+        @include smallScreen {
+            text-align: center;
+
+            h2 {
+                padding: 0;
+            }
+
+            &__configure {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin: 0 0 6px;
+            }
         }
     }
 
@@ -1049,6 +1131,26 @@ body {
                 }
             }
         }
+
+         @include smallScreen {
+            li {
+                display: block;
+                height: auto;
+
+                .branch-details,
+                .branch-code {
+                    display: block;
+                    width: 100%;
+                    padding: 10px 0;
+                }
+
+                ul.branch-last-tides {
+                    width: 100%;
+                    padding: 10px 0;
+                }
+            }
+        }
+
     }
 }
 
@@ -1132,5 +1234,26 @@ code {
 }
 
 #documentation {
-    padding-top: 8px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    height: 100%;
+    margin: 0;
+}
+
+#contact-us-launcher {
+    margin: 0;
+}
+
+
+@include smallScreen {
+    md-dialog.logs-dialog {
+        display: block;
+        max-width: 95%;
+
+        .md-toolbar-tools {
+            font-size: 12px;
+            padding: 0 10px;
+        }
+    }
 }
