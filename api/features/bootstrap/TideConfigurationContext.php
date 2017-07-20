@@ -85,6 +85,8 @@ class TideConfigurationContext implements Context
         $intersection = $this->array_intersect_recursive($expectedConfiguration, $this->configuration);
 
         if ($intersection != $expectedConfiguration) {
+            print_r($intersection);
+
             throw new \RuntimeException(sprintf(
                 'Expected to have at least this configuration but found: %s',
                 PHP_EOL.Yaml::dump($this->configuration)

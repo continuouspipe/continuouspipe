@@ -2,14 +2,15 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
 use ContinuousPipe\Archive\FileSystemArchive;
+use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryUser;
 use ContinuousPipe\River\CodeRepository\Event\BranchDeleted;
 use ContinuousPipe\River\CodeRepository\Event\CodePushed;
 use ContinuousPipe\River\CodeRepository\Event\PullRequestOpened;
 use ContinuousPipe\River\CodeRepository\FileSystem\LocalFilesystemResolver;
+use ContinuousPipe\River\CodeRepository\FileSystem\PartiallyOverwrittenFileSystemResolver;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\CodeRepository\InMemoryBranchQuery;
 use ContinuousPipe\River\CodeRepository\OverwrittenArchiveStreamer;
@@ -63,6 +64,10 @@ class CodeRepositoriesContext implements Context
      * @var OverwrittenArchiveStreamer
      */
     private $overwrittenArchiveStreamer;
+    /**
+     * @var PartiallyOverwrittenFileSystemResolver
+     */
+    private $partiallyOverwrittenFileSystemResolver;
 
     public function __construct(
         PredictableCommitResolver $predictableCommitResolver,
@@ -70,7 +75,8 @@ class CodeRepositoriesContext implements Context
         EventStore $eventStore,
         InMemoryBranchQuery $branchQuery,
         LocalFilesystemResolver $localFilesystemResolver,
-        OverwrittenArchiveStreamer $overwrittenArchiveStreamer
+        OverwrittenArchiveStreamer $overwrittenArchiveStreamer,
+        PartiallyOverwrittenFileSystemResolver $partiallyOverwrittenFileSystemResolver
     ) {
         $this->predictableCommitResolver = $predictableCommitResolver;
         $this->eventBus = $eventBus;
@@ -78,6 +84,7 @@ class CodeRepositoriesContext implements Context
         $this->branchQuery = $branchQuery;
         $this->localFilesystemResolver = $localFilesystemResolver;
         $this->overwrittenArchiveStreamer = $overwrittenArchiveStreamer;
+        $this->partiallyOverwrittenFileSystemResolver = $partiallyOverwrittenFileSystemResolver;
     }
 
     /**
@@ -95,6 +102,14 @@ class CodeRepositoriesContext implements Context
     public function theCodeRepositoryContainsTheFixturesFolder($fixtureFolder)
     {
         $this->localFilesystemResolver->overwriteFileSystemWithLocalPath(__DIR__.'/../fixtures/'.$fixtureFolder);
+    }
+
+    /**
+     * @Given the :path file in the code repository contains:
+     */
+    public function theFileInTheCodeRepositoryContains($path, PyStringNode $contents)
+    {
+        $this->partiallyOverwrittenFileSystemResolver->overrideFile($path, $contents->getRaw());
     }
 
     /**

@@ -34,5 +34,12 @@
                  decoration-priority="5"> <!-- This will decorates before the other default decorators -->
             <argument type="service" id="river.code_repository.code_archive_streamer.overwritten.inner" />
         </service>
+
+        <service id="river.code_repository.partially_overwritten_filesystem_resolver"
+                 class="ContinuousPipe\River\CodeRepository\FileSystem\PartiallyOverwrittenFileSystemResolver"
+                 decorates="river.file_system_resolver"
+                 decoration-priority="5">
+            <argument type="service" id="river.code_repository.partially_overwritten_filesystem_resolver.inner" />
+        </service>
     </services>
 </container>
