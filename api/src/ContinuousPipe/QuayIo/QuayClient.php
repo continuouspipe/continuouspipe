@@ -27,12 +27,12 @@ interface QuayClient
     public function createRepository(string $name) : Repository;
 
     /**
-     * Allow a robot to access a repository.
+     * Allow a user to access a repository.
      *
-     * @param string $robotName
+     * @param string $username
      * @param string $repositoryName
      *
      * @throws QuayException
      */
-    public function allowRobotToAccessRepository(string $robotName, string $repositoryName);
+    public function allowUserToAccessRepository(string $username, string $repositoryName);
 }

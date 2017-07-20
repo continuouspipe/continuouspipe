@@ -54,27 +54,31 @@ class HttpQuayClient implements QuayClient
 
     public function createRepository(string $name): Repository
     {
-        $repository = $this->json(
-            $this->request('post', $this->baseUrl . '/repository', [
-                'json' => [
-                    'namespace' => $this->organisation,
-                    'repository' => $name,
-                    'visibility' => 'public',
-                    'description' => $name,
-                ]
-            ])
-        );
+        try {
+            $repository = $this->json(
+                $this->request('post', $this->baseUrl . '/repository', [
+                    'json' => [
+                        'namespace' => $this->organisation,
+                        'repository' => $name,
+                        'visibility' => 'public',
+                        'description' => $name,
+                    ]
+                ])
+            );
+        } catch (RepositoryAlreadyExists $e) {
+            throw $e->withRepository(new Repository($this->organisation.'/'.$name));
+        }
 
         return new Repository(
             $repository['namespace'].'/'.$repository['name']
         );
     }
 
-    public function allowRobotToAccessRepository(string $robotName, string $repositoryName)
+    public function allowUserToAccessRepository(string $username, string $repositoryName)
     {
         $this->request(
             'put',
-            $this->baseUrl . '/repositories/'.$repositoryName.'/permissions/user/'.$robotName,
+            $this->baseUrl . '/repository/'.$repositoryName.'/permissions/user/'.$username,
             [
                 'json' => [
                     'role' => 'write',
@@ -92,6 +96,19 @@ class HttpQuayClient implements QuayClient
                 ],
             ], $options));
         } catch (RequestException $e) {
+            if (null !== ($response = $e->getResponse())) {
+                try {
+                    $json = $this->json($response);
+
+                    if (isset($json['error_message']) && $json['error_message'] == 'Repository already exists') {
+                        throw new RepositoryAlreadyExists($e);
+                    }
+                } catch (\Throwable $sub) {
+                    // We can't get anything from the response, fallback on the default
+                    // catching behaviour
+                }
+            }
+
             throw new QuayException($e->getMessage(), $e->getCode(), $e);
         }
     }

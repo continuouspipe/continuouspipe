@@ -51,10 +51,10 @@ class QuayHttpHandler extends MatchingHandler
                 'match' => function (RequestInterface $request) {
                     return
                         $request->getMethod() == 'PUT' &&
-                        preg_match('#/repositories/([a-z0-9\/-]+)/permissions/user/([a-z0-9\+-]+)$#', $request->getUri());
+                        preg_match('#/repository/([a-z0-9\/-]+)/permissions/user/([a-z0-9\+-]+)$#', $request->getUri());
                 },
                 'response' => function(RequestInterface $request) {
-                    preg_match('#/repositories/([a-z0-9\/-]+)/permissions/user/([a-z0-9\+-]+)$#', $request->getUri(), $matches);
+                    preg_match('#/repository/([a-z0-9\/-]+)/permissions/user/([a-z0-9\+-]+)$#', $request->getUri(), $matches);
 
                     return new Response(200, ['Content-Type' => 'application/json'], json_encode([
                         'name' => $matches[2],

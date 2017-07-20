@@ -25,19 +25,40 @@ class QuayIoContext implements Context
     public function aQuayIoRepositoryShouldBeCreated($repositoryName)
     {
         $this->assertOneRequestMatching(function(Request $request) use ($repositoryName) {
-            return $request->getMethod() == 'POST' &&
-                preg_match('#\/repository$#', $request->getUri());
+            if ($request->getMethod() != 'POST' || !preg_match('#\/repository$#', $request->getUri())) {
+                return false;
+            }
+
+            $body = $request->getBody();
+            $body->rewind();
+
+            $contents = $body->getContents();
+            $json = \GuzzleHttp\json_decode($contents, true);
+
+            return $json['repository'] == $repositoryName;
         });
     }
 
     /**
-     * @Then a quay.io robot account :robotAccountName should have been created with access to the :repositoryName repository
+     * @Then a quay.io robot account :robotAccountName should have been created
      */
-    public function aQuayIoRobotAccountShouldHaveBeenCreatedWithAccessToTheRepository($robotAccountName, $repositoryName)
+    public function aQuayIoRobotAccountShouldHaveBeenCreated($robotAccountName)
     {
-        $this->assertOneRequestMatching(function(Request $request) use ($repositoryName, $robotAccountName) {
-            return $request->getMethod() == 'PUT' &&
-                preg_match('#\/robots/([a-z0-9-]+)$#', $request->getUri());
+        $this->assertOneRequestMatching(function(Request $request) use ($robotAccountName) {
+            return $request->getMethod() == 'PUT' && preg_match('#\/robots/'.$robotAccountName.'$#', $request->getUri());
+        });
+    }
+
+    /**
+     * @Then the quay.io user :username should have been granted access to the :repository repository
+     */
+    public function theQuayIoUserShouldHaveBeenGrantedAccessToTheRepository($username, $repository)
+    {
+        $this->assertOneRequestMatching(function(Request $request) use ($username, $repository) {
+            $username = str_replace(['/', '+'], ['\\/', '\\+'], $username);
+            $repository = str_replace(['/', '+'], ['\\/', '\\+'], $repository);
+
+            return $request->getMethod() == 'PUT' && preg_match('#\/repository\/'.$repository.'\/permissions\/user\/'.$username.'$#', $request->getUri());
         });
     }
 
