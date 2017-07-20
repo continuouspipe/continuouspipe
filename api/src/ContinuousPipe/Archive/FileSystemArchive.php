@@ -158,7 +158,7 @@ class FileSystemArchive implements Archive
                 }
             }
 
-            if (false === $stream->close() || false == fclose($pipes[0])) {
+            if (false === $stream->close() || false === fclose($pipes[0])) {
                 throw new ArchiveException('Unable to close the artifact to archive stream');
             }
 
