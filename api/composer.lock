@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "11398a21b8dd98098654f248fe25090a",
+    "content-hash": "53e076c4b399d6019d6590e2e6dd0d60",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -375,16 +375,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "dev-allow-to-create-resources",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "3f7555ecc9a421002c8b73a306052b8a3f7ab234"
+                "reference": "2a2ebcbeb8cb3da7a5c41e3aba521c9618662e5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/3f7555ecc9a421002c8b73a306052b8a3f7ab234",
-                "reference": "3f7555ecc9a421002c8b73a306052b8a3f7ab234",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/2a2ebcbeb8cb3da7a5c41e3aba521c9618662e5c",
+                "reference": "2a2ebcbeb8cb3da7a5c41e3aba521c9618662e5c",
                 "shasum": ""
             },
             "require": {
@@ -405,10 +405,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/allow-to-create-resources",
+                "source": "https://github.com/continuouspipe/security/tree/2.8.0",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-07-18 19:47:24"
+            "time": "2017-07-19T13:46:42+00:00"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -8544,7 +8544,6 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
-        "continuous-pipe/security": 20,
         "continuous-pipe/worker-bundle": 20,
         "continuous-pipe/message": 20
     },
