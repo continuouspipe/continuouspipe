@@ -6,6 +6,7 @@ use ContinuousPipe\Events\Aggregate;
 use ContinuousPipe\River\Event\TideCreated;
 use ContinuousPipe\River\EventBased\ApplyEventCapability;
 use ContinuousPipe\River\EventBased\RaiseEventCapability;
+use ContinuousPipe\River\Flex\FlexConfiguration;
 use ContinuousPipe\River\Flow\Event\BranchPinned;
 use ContinuousPipe\River\Flow\Event\BranchUnpinned;
 use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
@@ -57,9 +58,9 @@ final class Flow implements Aggregate
     private $pinnedBranches = [];
 
     /**
-     * @var boolean
+     * @var FlexConfiguration
      */
-    private $flexed;
+    private $flexConfiguration;
 
     private function __construct()
     {
@@ -136,7 +137,10 @@ final class Flow implements Aggregate
     public function activateFlex()
     {
         $this->raise(new FlowFlexed(
-            $this->uuid
+            $this->uuid,
+            new FlexConfiguration(
+                random_str(6)
+            )
         ));
     }
 
@@ -207,7 +211,7 @@ final class Flow implements Aggregate
 
     public function applyFlowFlexed(FlowFlexed $event)
     {
-        $this->flexed = true;
+        $this->flexConfiguration = $event->getFlexConfiguration();
     }
 
     public function getUuid() : UuidInterface
@@ -275,8 +279,21 @@ final class Flow implements Aggregate
         return $this->pinnedBranches;
     }
 
-    public function isFlex() : bool
+    /**
+     * @return FlexConfiguration|null
+     */
+    public function getFlexConfiguration()
     {
-        return $this->flexed ?: false;
+        return $this->flexConfiguration;
     }
+}
+
+function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyz')
+{
+    $str = '';
+    $max = mb_strlen($keyspace, '8bit') - 1;
+    for ($i = 0; $i < $length; ++$i) {
+        $str .= $keyspace[random_int(0, $max)];
+    }
+    return $str;
 }

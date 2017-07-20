@@ -4,13 +4,39 @@ namespace ContinuousPipe\River\Flex;
 
 use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\Flow\EncryptedVariable\EncryptedVariableVault;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationGenerator
 {
+    /**
+     * @var EncryptedVariableVault
+     */
+    private $encryptedVariableVault;
+
+    /**
+     * @var array
+     */
+    private $defaultVariables;
+
+    /**
+     * @param EncryptedVariableVault $encryptedVariableVault
+     * @param array $defaultVariables
+     */
+    public function __construct(EncryptedVariableVault $encryptedVariableVault, array $defaultVariables)
+    {
+        $this->encryptedVariableVault = $encryptedVariableVault;
+        $this->defaultVariables = $defaultVariables;
+    }
+
     public function generate(RelativeFileSystem $fileSystem, FlatFlow $flow)
     {
+        if (null === ($configuration = $flow->getFlexConfiguration())) {
+            throw new \InvalidArgumentException('The flow must be flexed in order to generate the configuration');
+        }
+
         $flowUuid = $flow->getUuid()->toString();
 
         $dockerFile = <<<EOF
@@ -44,6 +70,8 @@ services:
 EOF;
 
         $continuousPipeFile = <<<EOF
+variables: {$this->generateEncryptedVariables($flow)}
+      
 defaults:
     cluster: flex-cluster
     environment:
@@ -70,7 +98,7 @@ tasks:
                                   api_key: \${CLOUD_FLARE_API_KEY}
                           ingress:
                               class: nginx
-                              host_suffix: '{$flowUuid}-flex.continuouspipe.net'
+                              host_suffix: '{$configuration->getSmallIdentifier()}-flex.continuouspipe.net'
 EOF;
 
         return [
@@ -89,5 +117,19 @@ EOF;
         }
 
         return '['.implode(',', $variableDefinitions).']';
+    }
+
+    private function generateEncryptedVariables(FlatFlow $flow)
+    {
+        $encryptedVariables = [];
+
+        foreach ($this->defaultVariables as $key => $value) {
+            $encryptedVariables[] = [
+                'name' => $key,
+                'encrypted_value' => $this->encryptedVariableVault->encrypt($flow->getUuid(), $value),
+            ];
+        }
+
+        return Yaml::dump($encryptedVariables, 0);
     }
 }

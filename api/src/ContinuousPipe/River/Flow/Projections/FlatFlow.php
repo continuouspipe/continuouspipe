@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Flow\Projections;
 
 use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\Flex\FlexConfiguration;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\Security\Team\Team;
@@ -56,9 +57,9 @@ class FlatFlow
     private $pinnedBranches;
 
     /**
-     * @var boolean
+     * @var FlexConfiguration
      */
-    private $flex;
+    private $flexConfiguration;
 
     public function __construct()
     {
@@ -81,7 +82,7 @@ class FlatFlow
         $view->pipelines = new ArrayCollection($flow->getPipelines());
         $view->repository = $flow->getCodeRepository();
         $view->pinnedBranches = $flow->getPinnedBranches();
-        $view->flex = $flow->isFlex();
+        $view->flexConfiguration = $flow->getFlexConfiguration();
 
         return $view;
     }
@@ -140,6 +141,14 @@ class FlatFlow
 
     public function isFlex()
     {
-        return $this->flex;
+        return $this->flexConfiguration != null && $this->flexConfiguration->getSmallIdentifier() !== null;
+    }
+
+    /**
+     * @return FlexConfiguration|null
+     */
+    public function getFlexConfiguration()
+    {
+        return $this->flexConfiguration;
     }
 }

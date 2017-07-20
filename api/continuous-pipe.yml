@@ -173,6 +173,12 @@ tasks:
                               value: ${FLEX_QUAY_IO_ACCESS_TOKEN}
                             - name: FLEX_QUAY_IO_ORGANISATION
                               value: ${FLEX_QUAY_IO_ORGANISATION}
+                            - name: FLEX_CLOUD_FLARE_ZONE
+                              value: ${FLEX_CLOUD_FLARE_ZONE}
+                            - name: FLEX_CLOUD_FLARE_EMAIL
+                              value: ${FLEX_CLOUD_FLARE_EMAIL}
+                            - name: FLEX_CLOUD_FLARE_API_KEY
+                              value: ${FLEX_CLOUD_FLARE_API_KEY}
 
                     deployment_strategy:
                         readiness_probe:
