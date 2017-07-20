@@ -4,7 +4,6 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Aggregate\Build;
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
-use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
 use ContinuousPipe\Builder\Aggregate\Command\StartGcbBuild;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Engine;
@@ -12,8 +11,6 @@ use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\View\BuildViewRepository;
 use FOS\RestBundle\Controller\Annotations\View;
-use Inviqa\LaunchDarklyBundle\Client\ExplicitUser\StaticClient;
-use LaunchDarkly\LDUser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use SimpleBus\Message\Bus\MessageBus;
@@ -80,12 +77,8 @@ class CreateBuildController
             return \FOS\RestBundle\View\View::create($violations->get(0), 400);
         }
 
-        $userKey = $this->getUserKey($request);
-        if (StaticClient::variation('main-gcb-build', new LDUser($userKey), true)) {
-            $request = $request->withEngine(new Engine('gcb'));
-        }
         if (null === $request->getEngine()) {
-            $request = $request->withEngine(new Engine('docker'));
+            $request = $request->withEngine(new Engine('gcb'));
         }
 
         $build = $this->createAndStartBuild($request);
@@ -99,34 +92,9 @@ class CreateBuildController
             $this->buildRequestTransformer->transform($request)
         );
 
-        if (StaticClient::variation('use-synchronous-gcb-build', new LDUser($this->getUserKey($request)), true)) {
-            $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
-
-            return $build;
-        }
-        
-        $this->commandBus->handle(new StartBuild($build->getIdentifier()));
+        $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
 
         return $build;
     }
 
-    private function getUserKey(BuildRequest $request)
-    {
-        $steps = $request->getSteps();
-        if (!isset($steps[0])) {
-            return 'builder';
-        }
-
-        $image = $steps[0]->getImage();
-        if (!isset($image)) {
-            return 'builder';
-        }
-
-        $imageName = $image->getName();
-        if (!isset($imageName)) {
-            return 'builder';
-        }
-
-        return $imageName;
-    }
 }
