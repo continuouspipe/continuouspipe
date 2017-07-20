@@ -7,7 +7,6 @@
     <entity name="ContinuousPipe\River\Flow\Projections\FlatFlow">
         <id name="uuid" type="uuid" />
         <field name="configuration" type="json_array" />
-        <field name="flex" type="boolean" />
         <one-to-many field="pipelines" target-entity="ContinuousPipe\River\Flow\Projections\FlatPipeline" mapped-by="flow" />
         <many-to-one field="repository" target-entity="ContinuousPipe\River\AbstractCodeRepository">
             <cascade>
@@ -18,6 +17,8 @@
 
         <embedded name="team" class="ContinuousPipe\Security\Team\Team" />
         <embedded name="user" class="ContinuousPipe\Security\User\User" />
+        <embedded name="flexConfiguration" class="ContinuousPipe\River\Flex\FlexConfiguration" />
+
         <field name="pinnedBranches" type="simple_array" nullable="true"/>
     </entity>
 </doctrine-mapping>

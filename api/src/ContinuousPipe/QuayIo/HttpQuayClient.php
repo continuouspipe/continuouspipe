@@ -38,12 +38,17 @@ class HttpQuayClient implements QuayClient
 
     public function createRobotAccount(string $name): RobotAccount
     {
-        $robot = $this->json(
-            $this->request(
-                'put',
-                sprintf($this->baseUrl.'/organization/%s/robots/%s', $this->organisation, $name)
-            )
-        );
+        $url = sprintf($this->baseUrl . '/organization/%s/robots/%s', $this->organisation, $name);
+
+        try {
+            $robot = $this->json(
+                $this->request('put', $url)
+            );
+        } catch (RobotAlreadyExists $e) {
+            $robot = $this->json(
+                $this->request('get', $url)
+            );
+        }
 
         return new RobotAccount(
             $robot['name'],
@@ -102,6 +107,10 @@ class HttpQuayClient implements QuayClient
 
                     if (isset($json['error_message']) && $json['error_message'] == 'Repository already exists') {
                         throw new RepositoryAlreadyExists($e);
+                    }
+
+                    if (isset($json['message']) && strpos($json['message'], 'Existing robot with name:') === 0) {
+                        throw new RobotAlreadyExists($json['message']);
                     }
                 } catch (\Throwable $sub) {
                     // We can't get anything from the response, fallback on the default

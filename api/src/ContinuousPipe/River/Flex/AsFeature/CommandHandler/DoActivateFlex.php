@@ -72,8 +72,9 @@ class DoActivateFlex
             );
         }
 
-        $registry = $this->generateRobotAccount($flow->getTeam());
-        if (!$this->hasQuayDockerRegistryCredentials($bucket)) {
+        if (null === ($registry = $this->getFlexDockerRegistryCredentials($flow->getTeam(), $bucket))) {
+            $registry = $this->generateRobotAccount($flow->getTeam());
+
             $this->authenticatorClient->addDockerRegistryToBucket(
                 $bucket->getUuid(),
                 $registry
@@ -118,17 +119,17 @@ class DoActivateFlex
         );
     }
 
-    private function hasQuayDockerRegistryCredentials(Bucket $bucket)
+    private function getDockerRegistryRobotAccountName(Team $team) : string
+    {
+        return 'project-'.$team->getSlug();
+    }
+
+    private function getFlexDockerRegistryCredentials(Team $team, Bucket $bucket)
     {
         $quayCredentials = $bucket->getDockerRegistries()->filter(function (DockerRegistry $credentials) {
             return $credentials->getServerAddress() == 'quay.io';
         });
 
-        return $quayCredentials->count() > 0;
-    }
-
-    private function getDockerRegistryRobotAccountName(Team $team) : string
-    {
-        return 'project-'.$team->getSlug();
+        return !$quayCredentials->isEmpty() ? $quayCredentials->first() : null;
     }
 }

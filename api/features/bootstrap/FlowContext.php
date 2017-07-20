@@ -9,6 +9,7 @@ use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\EventStore\EventStore;
+use ContinuousPipe\River\Flex\FlexConfiguration;
 use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
@@ -938,10 +939,11 @@ EOF;
 
     /**
      * @Given the flow :uuid has flex activated
+     * @Given the flow :uuid has been flex activated with the same identifier :smallIdentifier
      */
-    public function theFlowHasFlexActivated($uuid)
+    public function theFlowHasFlexActivated($uuid, $smallIdentifier = 'qwerty')
     {
-        $this->eventBus->handle(new Flow\Event\FlowFlexed(Uuid::fromString($uuid)));
+        $this->eventBus->handle(new Flow\Event\FlowFlexed(Uuid::fromString($uuid), new FlexConfiguration($smallIdentifier)));
         $this->currentFlow = $flow = $this->flowRepository->find(Uuid::fromString($uuid));
     }
 
