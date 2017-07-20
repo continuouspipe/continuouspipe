@@ -4,7 +4,6 @@ namespace ContinuousPipe\Archive;
 
 use ContinuousPipe\DockerCompose\LocalRelativeFileSystem;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
-use GuzzleHttp\Psr7\Stream;
 use Psr\Http\Message\StreamInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
