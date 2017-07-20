@@ -1021,6 +1021,12 @@ EOF;
     {
         ob_start();
         $response = $this->kernel->handle($request);
+
+        if ($response->getStatusCode() != 200) {
+            ob_end_flush();
+            return $response;
+        }
+
         $content = ob_get_contents();
         $response = new Response($content, $response->getStatusCode(), $response->headers->all());
         ob_end_clean();
@@ -1155,5 +1161,13 @@ EOF;
         }
 
         return $context;
+    }
+
+    /**
+     * @return null|Response
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 }

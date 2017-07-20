@@ -30,11 +30,11 @@ class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
      */
     private $configurationGenerator;
 
-    public function __construct(RelativeFileSystem $decoratedFileSystem, FlatFlow $flow)
+    public function __construct(ConfigurationGenerator $configurationGenerator, RelativeFileSystem $decoratedFileSystem, FlatFlow $flow)
     {
+        $this->configurationGenerator = $configurationGenerator;
         $this->decoratedFileSystem = $decoratedFileSystem;
         $this->flow = $flow;
-        $this->configurationGenerator = new ConfigurationGenerator();
     }
 
     /**

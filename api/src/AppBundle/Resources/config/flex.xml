@@ -26,10 +26,21 @@
         </service>
 
         <!-- Configuration generation -->
+        <service id="river.flex.configuration_generator" class="ContinuousPipe\River\Flex\ConfigurationGenerator" />
         <service id="river.flex.generates_configuration_per_flow"
                  class="ContinuousPipe\River\Flex\CodeRepositoryFileSystem\GeneratesConfigurationForFlexFlows"
                  decorates="river.file_system_resolver">
             <argument type="service" id="river.flex.generates_configuration_per_flow.inner" />
+            <argument type="service" id="river.flex.configuration_generator" />
+        </service>
+
+        <!-- Archive injection -->
+        <service id="river.flex.code_archive_enhancement.inject_generated_files"
+                 class="ContinuousPipe\River\Flex\CodeArchiveEnhancement\InjectGeneratedFilesInCodeArchiveStreamer"
+                 decorates="river.code_repository.code_archive_streamer">
+            <argument type="service" id="river.flex.code_archive_enhancement.inject_generated_files.inner" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
+            <argument type="service" id="river.flex.configuration_generator" />
         </service>
     </services>
 </container>

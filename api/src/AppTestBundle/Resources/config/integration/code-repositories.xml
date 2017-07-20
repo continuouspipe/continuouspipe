@@ -27,5 +27,12 @@
                 <argument type="service" id="river.github.file_system_resolver" />
             </argument>
         </service>
+
+        <service id="river.code_repository.code_archive_streamer.overwritten"
+                 class="ContinuousPipe\River\CodeRepository\OverwrittenArchiveStreamer"
+                 decorates="river.code_repository.code_archive_streamer"
+                 decoration-priority="5"> <!-- This will decorates before the other default decorators -->
+            <argument type="service" id="river.code_repository.code_archive_streamer.overwritten.inner" />
+        </service>
     </services>
 </container>
