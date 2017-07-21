@@ -67,3 +67,12 @@ Feature:
     And a tide is created
     When I delete the flow "00000000-0000-0000-0000-000000000000"
     Then the flow should be successfully deleted
+
+  Scenario: The list looks good even with non flexified flows
+    Given the team "samuel" exists
+    And I have a flow with UUID "00000000-0000-0000-0000-000000000000" in the team "samuel"
+    And I have a flow with UUID "11111111-0000-0000-0000-000000000000" in the team "samuel"
+    And the flow "11111111-0000-0000-0000-000000000000" has flex activated
+    When I retrieve the list of the flows of the team "samuel"
+    Then I should see the flow "00000000-0000-0000-0000-000000000000"
+    And I should see the flow "11111111-0000-0000-0000-000000000000"

@@ -112,7 +112,7 @@ class HttpQuayClient implements QuayClient
                     if (isset($json['message']) && strpos($json['message'], 'Existing robot with name:') === 0) {
                         throw new RobotAlreadyExists($json['message']);
                     }
-                } catch (\Throwable $sub) {
+                } catch (\InvalidArgumentException $sub) {
                     $e = new QuayException('Cannot read from the response: '.$sub->getMessage(), $e->getCode(), $e);
                 }
             }
