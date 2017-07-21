@@ -54,9 +54,9 @@ RUN container build
 EOF;
 
         try {
-            $variables = (new Dotenv())->parse($fileSystem->getContents('.env.dist'));
+            $applicationEnvironmentVariables = (new Dotenv())->parse($fileSystem->getContents('.env.dist'));
         } catch (FileNotFound $e) {
-            $variables = [];
+            $applicationEnvironmentVariables = [];
         }
 
         $dockerComposeServices = [];
@@ -95,6 +95,10 @@ EOF;
             ]
         ];
 
+        // Uses CloudFlare to terminate the SSL connection
+        $appDeployServices['app']['endpoints']['cloud_flare_zone']['proxied'] = true;
+        $applicationEnvironmentVariables['WEB_REVERSE_PROXIED'] = true;
+
         $tasks = [
             '0_images' => [
                 'build' => [
@@ -108,8 +112,8 @@ EOF;
             ]
         ];
 
-        if (isset($variables['DATABASE_URL'])) {
-            $variables['DATABASE_URL'] = 'postgres://app:app@database/app';
+        if (isset($applicationEnvironmentVariables['DATABASE_URL'])) {
+            $applicationEnvironmentVariables['DATABASE_URL'] = 'postgres://app:app@database/app';
 
             $dockerComposeServices['database'] = [
                 'image' => 'postgres',
@@ -155,9 +159,9 @@ EOF;
 
         $dockerComposeServices['app'] = [
             'build' => '.',
-            'environment' => $this->generateDockerComposeEnvironmentFromVariables($variables),
+            'environment' => $this->generateDockerComposeEnvironmentFromVariables($applicationEnvironmentVariables),
             'expose' => [
-                443,
+                80,
             ],
         ];
 
