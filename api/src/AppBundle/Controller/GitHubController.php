@@ -4,9 +4,11 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\River\CodeRepository\GitHub\Command\HandleGitHubEvent;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
+use ContinuousPipe\River\Event\GitHub\InstallationUpdated;
 use ContinuousPipe\River\Event\GitHub\IntegrationInstallationDeleted;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
+use GitHub\WebHook\Event\InstallationRepositoriesEvent;
 use GitHub\WebHook\Event\IntegrationInstallationEvent;
 use GitHub\WebHook\GitHubRequest;
 use Psr\Log\LoggerInterface;
@@ -87,26 +89,27 @@ class GitHubController
             if ($event->isDeletedAction()) {
                 $this->eventBus->handle(new IntegrationInstallationDeleted($event->getInstallation()));
             }
-            return new Response(null, Response::HTTP_ACCEPTED);
-        }
+        } elseif ($event instanceof InstallationRepositoriesEvent) {
+            $this->eventBus->handle(new InstallationUpdated($event->getInstallation()));
+        } else {
+            $repository = GitHubCodeRepository::fromRepository($event->getRepository());
+            $flows = $this->flowRepository->findByCodeRepository($repository);
 
-        $repository = GitHubCodeRepository::fromRepository($event->getRepository());
-        $flows = $this->flowRepository->findByCodeRepository($repository);
+            if (empty($flows)) {
+                $this->logger->warning('No flows found for this repository', [
+                    'repository_type' => $repository->getType(),
+                    'repository_identifier' => $repository->getIdentifier(),
+                ]);
 
-        if (empty($flows)) {
-            $this->logger->warning('No flows found for this repository', [
-                'repository_type' => $repository->getType(),
-                'repository_identifier' => $repository->getIdentifier(),
-            ]);
+                return new JsonResponse(['message' => 'No matching flows found for this repository'], 404);
+            }
 
-            return new JsonResponse(['message' => 'No matching flows found for this repository'], 404);
-        }
-
-        foreach ($flows as $flow) {
-            $this->commandBus->handle(new HandleGitHubEvent(
-                $flow->getUuid(),
-                $event
-            ));
+            foreach ($flows as $flow) {
+                $this->commandBus->handle(new HandleGitHubEvent(
+                    $flow->getUuid(),
+                    $event
+                ));
+            }
         }
 
         return new Response(null, Response::HTTP_ACCEPTED);

@@ -34,3 +34,21 @@ Feature:
     When GitHub installation "5678" is deleted
     And I look up the installation for repository "bar" 5 times
     Then GitHub repository API should have been called twice
+
+  Scenario: GitHub repository cache is cleared when a repository is added
+    Given the cache is clean
+    And the GitHub account "sroze" have the installation "5678"
+    And the GitHub repository "bar" exists
+    And the installation for repository "bar" is retrieved once
+    When a GitHub repository is added to the installation "5678"
+    And I look up the installation for repository "bar" 5 times
+    Then GitHub repository API should have been called twice
+
+  Scenario: GitHub repository cache is cleared when a repository is removed
+    Given the cache is clean
+    And the GitHub account "sroze" have the installation "5678"
+    And the GitHub repository "bar" exists
+    And the installation for repository "bar" is retrieved once
+    When a GitHub repository is removed from the installation "5678"
+    And I look up the installation for repository "bar" 5 times
+    Then GitHub repository API should have been called twice
