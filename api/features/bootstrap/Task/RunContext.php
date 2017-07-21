@@ -357,6 +357,24 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with a SSL certificate for the hostname :hostname
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithSslCertificateForTheHostname($endpointName, $name, $hostname)
+    {
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
+
+        foreach ($endpoint->getSslCertificates() as $certificate) {
+            $sslMetadata = openssl_x509_parse(base64_decode($certificate->getCert()));
+
+            if ($sslMetadata['subject']['CN'] == $hostname) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('No matching SSL certificate found');
+    }
+
+    /**
      * @Then the endpoint :endpointName of the component :name should be deployed with a CloudFlare DNS zone configuration
      */
     public function theEndpointOfTheComponentShouldBeDeployedWithACloudflareDnsZoneConfiguration($endpointName, $name)

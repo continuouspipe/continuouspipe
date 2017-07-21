@@ -54,9 +54,9 @@ RUN container build
 EOF;
 
         try {
-            $variables = (new Dotenv())->parse($fileSystem->getContents('.env.dist'));
+            $applicationEnvironmentVariables = (new Dotenv())->parse($fileSystem->getContents('.env.dist'));
         } catch (FileNotFound $e) {
-            $variables = [];
+            $applicationEnvironmentVariables = [];
         }
 
         $dockerComposeServices = [];
@@ -83,6 +83,13 @@ EOF;
                         'ingress' => [
                             'class' => 'nginx',
                             'host_suffix' => '-'.$configuration->getSmallIdentifier().'-flex.continuouspipe.net',
+                        ],
+                        'ssl_certificates' => [
+                            [
+                                'name' => 'automatic',
+                                'cert' => 'automatic',
+                                'key' => 'automatic',
+                            ]
                         ]
                     ]
                 ],
@@ -94,6 +101,10 @@ EOF;
                 ],
             ]
         ];
+
+        // Uses CloudFlare to terminate the SSL connection
+        $appDeployServices['app']['endpoints'][0]['cloud_flare_zone']['proxied'] = true;
+        $applicationEnvironmentVariables['WEB_REVERSE_PROXIED'] = true;
 
         $tasks = [
             '0_images' => [
@@ -108,8 +119,8 @@ EOF;
             ]
         ];
 
-        if (isset($variables['DATABASE_URL'])) {
-            $variables['DATABASE_URL'] = 'postgres://app:app@database/app';
+        if (isset($applicationEnvironmentVariables['DATABASE_URL'])) {
+            $applicationEnvironmentVariables['DATABASE_URL'] = 'postgres://app:app@database/app';
 
             $dockerComposeServices['database'] = [
                 'image' => 'postgres',
@@ -155,9 +166,9 @@ EOF;
 
         $dockerComposeServices['app'] = [
             'build' => '.',
-            'environment' => $this->generateDockerComposeEnvironmentFromVariables($variables),
+            'environment' => $this->generateDockerComposeEnvironmentFromVariables($applicationEnvironmentVariables),
             'expose' => [
-                443,
+                80,
             ],
         ];
 

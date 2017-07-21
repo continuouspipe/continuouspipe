@@ -5,7 +5,7 @@ namespace ContinuousPipe\River\Task\Deploy\Configuration\Endpoint;
 use ContinuousPipe\River\Pipeline\TideGenerationException;
 use ContinuousPipe\River\Task\TaskContext;
 
-class IngressConfigurator implements EndpointConfigurator
+class IngressConfigurator implements EndpointConfigurationEnhancer
 {
     /**
      * @var HostnameResolver
@@ -18,14 +18,12 @@ class IngressConfigurator implements EndpointConfigurator
     }
 
     /**
-     * @param array $endpointConfiguration
-     * @return array
-     * @throws TideGenerationException
+     * {@inheritdoc}
      */
-    public function checkConfiguration(array $endpointConfiguration)
+    public function enhance(array $endpointConfiguration, TaskContext $context)
     {
         if (!isset($endpointConfiguration['ingress'])) {
-            return;
+            return $endpointConfiguration;
         }
 
         if (isset($endpointConfiguration['ingress']['host_suffix'])) {
@@ -37,24 +35,10 @@ class IngressConfigurator implements EndpointConfigurator
                     )
                 );
             }
-            return;
+        } elseif (!isset($endpointConfiguration['ingress']['host']['expression'])) {
+            throw new TideGenerationException('The ingress needs a host_suffix or a host expression');
         }
 
-        if (isset($endpointConfiguration['ingress']['host']['expression'])) {
-            return;
-        }
-
-        throw new TideGenerationException('The ingress needs a host_suffix or a host expression');
-    }
-
-    /**
-     * @param array $endpointConfiguration
-     * @param TaskContext $context
-     * @return array
-     * @throws TideGenerationException
-     */
-    public function addHost(array $endpointConfiguration, TaskContext $context)
-    {
         if (isset($endpointConfiguration['ingress']['host_suffix'])) {
             $endpointConfiguration['ingress']['host']['expression'] =
                 $this->hostnameResolver->generateHostExpression($endpointConfiguration['ingress']['host_suffix']);

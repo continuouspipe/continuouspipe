@@ -19,6 +19,7 @@
 
         <service id="river.view.storage.firebase_client" alias="river.view.storage.firebase_client.main"/>
         <service id="river.code_repository.local_filesystem_resolver" class="ContinuousPipe\River\CodeRepository\FileSystem\LocalFilesystemResolver" />
+        <service id="river.ssl_certificates.repository" class="ContinuousPipe\River\SslCertificate\InMemorySslCertificateRepository" />
 
         <service id="river.file_system_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\FileSystemResolverDelegator">
             <argument type="collection">
