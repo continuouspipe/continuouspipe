@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\Collection;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Yaml\Yaml;
+use JMS\Serializer\Annotation as JMS;
 
 class FlatFlow
 {
@@ -57,6 +58,9 @@ class FlatFlow
     private $pinnedBranches;
 
     /**
+     * @JMS\Type("ContinuousPipe\River\Flex\FlexConfiguration")
+     * @JMS\Accessor(getter="getFlexConfiguration")
+     *
      * @var FlexConfiguration
      */
     private $flexConfiguration;
