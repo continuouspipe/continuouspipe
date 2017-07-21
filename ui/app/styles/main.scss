@@ -280,6 +280,8 @@ body {
                 background: $content-background;
 
                 md-content {
+                    z-index: 45;
+                    
                     md-toolbar {
                         z-index: 50;
                     }

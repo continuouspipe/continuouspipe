@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('CreateFlowController', function($scope, $state, $remoteResource, $http, AUTHENTICATOR_API_URL, WizardRepository, AccountRepository, RegistryCredentialsRepository, ClusterRepository, FlowRepository, project, user) {
+    .controller('CreateFlowController', function($scope, $state, $remoteResource, $http, AUTHENTICATOR_API_URL, WizardRepository, AccountRepository, RegistryCredentialsRepository, ClusterRepository, FlowRepository, project, user) {        
         $scope.linkAccountUrl = AUTHENTICATOR_API_URL + '/account/';
         $scope.user = user;
 
@@ -35,11 +35,18 @@ angular.module('continuousPipeRiver')
             loadRepositoryList(WizardRepository.findRepositoryByCurrentUser($scope.account));
         });
 
-        var loadRepositoryList = function(repositories) {
+        var currentRepositoriesPromise;
+        var loadRepositoryList = function(repositoriesPromise) {            
             $scope.repositories = [];
-            $remoteResource.load('repositories', repositories).then(function (repositories) {
+            $remoteResource.load('repositories', repositoriesPromise).then(function (repositories) {
                 $scope.repositories = repositories;
             });
+
+            if (currentRepositoriesPromise && currentRepositoriesPromise.cancel) {
+                currentRepositoriesPromise.cancel();
+            }
+
+            currentRepositoriesPromise = repositoriesPromise;
         };
 
         $scope.$watch('wizard.organisation', function(organisation) {
