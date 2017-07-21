@@ -62,6 +62,7 @@
             <argument type="service" id="logger" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\IntegrationInstallationDeleted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\GitHub\InstallationUpdated" />
         </service>
     </services>
 </container>

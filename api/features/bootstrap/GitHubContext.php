@@ -977,6 +977,30 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @When a GitHub repository is added to the installation :installationIdentifier
+     */
+    public function aGithubRepositoryIsAddedToTheIntegration($installationIdentifier)
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('integration_repository-added.json'), true);
+
+        $contents['installation']['id'] = $installationIdentifier;
+
+        $this->sendWebHook('installation_repositories', json_encode($contents));
+    }
+
+    /**
+     * @When a GitHub repository is removed from the installation :installationIdentifier
+     */
+    public function aGithubRepositoryIsRemovedFromTheIntegration($installationIdentifier)
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('integration_repository-removed.json'), true);
+
+        $contents['installation']['id'] = $installationIdentifier;
+
+        $this->sendWebHook('installation_repositories', json_encode($contents));
+    }
+
+    /**
      * @Given the following branches exists in the github repository:
      */
     public function theFollowingBranchesExistsInTheGithubRepository(TableNode $table)
