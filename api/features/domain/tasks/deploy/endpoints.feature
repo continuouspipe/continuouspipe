@@ -629,6 +629,7 @@ Feature:
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "feature-my-very-c5743d6c37-certeo.inviqa-001.continuouspipe.net"
 
+  @smoke
   Scenario: A self-signed SSL certificate can be generated automatically for the hostname
     When a tide is started for the branch "my-feature" with the following configuration:
     """

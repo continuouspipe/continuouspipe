@@ -103,7 +103,7 @@ EOF;
         ];
 
         // Uses CloudFlare to terminate the SSL connection
-        $appDeployServices['app']['endpoints']['cloud_flare_zone']['proxied'] = true;
+        $appDeployServices['app']['endpoints'][0]['cloud_flare_zone']['proxied'] = true;
         $applicationEnvironmentVariables['WEB_REVERSE_PROXIED'] = true;
 
         $tasks = [

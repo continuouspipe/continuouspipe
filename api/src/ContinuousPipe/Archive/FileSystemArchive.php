@@ -5,6 +5,7 @@ namespace ContinuousPipe\Archive;
 use ContinuousPipe\DockerCompose\LocalRelativeFileSystem;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use Psr\Http\Message\StreamInterface;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
 class FileSystemArchive implements Archive
@@ -25,6 +26,11 @@ class FileSystemArchive implements Archive
         $archive->writeStream('/', $stream, $format);
 
         return $archive;
+    }
+
+    public static function createEmpty() : FilesystemArchive
+    {
+        return new self(self::createDirectory('empty'));
     }
 
     public static function copyFrom(string $path) : FileSystemArchive
@@ -91,10 +97,18 @@ class FileSystemArchive implements Archive
         );
     }
 
+    /**
+     * @throws ArchiveException
+     */
     public function delete()
     {
         $fileSystem = new Filesystem();
-        $fileSystem->remove($this->directory);
+
+        try {
+            $fileSystem->remove($this->directory);
+        } catch (IOException $e) {
+            throw new ArchiveException('Cannot delete the archive', $e->getCode(), $e);
+        }
     }
 
     public function contains(string $path): bool

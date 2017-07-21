@@ -364,8 +364,14 @@ class RunContext implements Context
         $endpoint = $this->getEndpointOfComponent($name, $endpointName);
 
         foreach ($endpoint->getSslCertificates() as $certificate) {
-            var_dump($certificate);
+            $sslMetadata = openssl_x509_parse(base64_decode($certificate->getCert()));
+
+            if ($sslMetadata['subject']['CN'] == $hostname) {
+                return;
+            }
         }
+
+        throw new \RuntimeException('No matching SSL certificate found');
     }
 
     /**

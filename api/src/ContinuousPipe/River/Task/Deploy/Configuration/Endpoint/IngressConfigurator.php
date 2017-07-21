@@ -35,7 +35,7 @@ class IngressConfigurator implements EndpointConfigurationEnhancer
                     )
                 );
             }
-        } else if (!isset($endpointConfiguration['ingress']['host']['expression'])) {
+        } elseif (!isset($endpointConfiguration['ingress']['host']['expression'])) {
             throw new TideGenerationException('The ingress needs a host_suffix or a host expression');
         }
 
