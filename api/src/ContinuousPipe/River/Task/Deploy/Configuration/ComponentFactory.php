@@ -6,6 +6,7 @@ use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Extension;
 use ContinuousPipe\River\Flow\Variable\FlowVariableResolver;
 use ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\CompositeConfigurator;
+use ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\EndpointConfigurationEnhancer;
 use ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\EndpointConfigurator;
 use ContinuousPipe\River\Task\TaskContext;
 use JMS\Serializer\SerializerInterface;
@@ -18,14 +19,14 @@ class ComponentFactory
      */
     private $serializer;
     /**
-     * @var EndpointConfigurator
+     * @var EndpointConfigurationEnhancer
      */
-    private $endpointConfigurator;
+    private $endpointConfigurationEnhancer;
 
-    public function __construct(EndpointConfigurator $endpointConfigurator, SerializerInterface $serializer)
+    public function __construct(EndpointConfigurationEnhancer $endpointConfigurationEnhancer, SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
-        $this->endpointConfigurator = $endpointConfigurator;
+        $this->endpointConfigurationEnhancer = $endpointConfigurationEnhancer;
     }
 
     /**
@@ -132,9 +133,7 @@ class ComponentFactory
     {
         return array_map(
             function (array $endpointConfiguration) use ($context) {
-                $this->endpointConfigurator->checkConfiguration($endpointConfiguration);
-
-                return $this->endpointConfigurator->addHost($endpointConfiguration, $context);
+                return $this->endpointConfigurationEnhancer->enhance($endpointConfiguration, $context);
             },
             $configuration
         );

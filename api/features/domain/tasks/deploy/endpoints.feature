@@ -628,3 +628,43 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "feature-my-very-c5743d6c37-certeo.inviqa-001.continuouspipe.net"
+
+  Scenario: A self-signed SSL certificate can be generated automatically for the hostname
+    When a tide is started for the branch "my-feature" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: app
+                                ingress:
+                                    class: nginx
+                                    host:
+                                        expression: 'code_reference.branch ~ "-12357-flex.continuouspipe.net"'
+
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+
+                                ssl_certificates:
+                                    - name: automatic
+                                      cert: automatic
+                                      key: automatic
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "app"
+    And the endpoint "app" of the component "app" should be deployed with a CloudFlare DNS zone configuration
+    And the endpoint "app" of the component "app" should be deployed with 1 SSL certificate
+    And the endpoint "app" of the component "app" should be deployed with a SSL certificate for the hostname "my-feature-12357-flex.continuouspipe.net"

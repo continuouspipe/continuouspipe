@@ -83,6 +83,13 @@ EOF;
                         'ingress' => [
                             'class' => 'nginx',
                             'host_suffix' => '-'.$configuration->getSmallIdentifier().'-flex.continuouspipe.net',
+                        ],
+                        'ssl_certificates' => [
+                            [
+                                'name' => 'automatic',
+                                'cert' => 'automatic',
+                                'key' => 'automatic',
+                            ]
                         ]
                     ]
                 ],
