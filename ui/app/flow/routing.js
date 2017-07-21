@@ -113,6 +113,15 @@ angular.module('continuousPipeRiver')
                     }
                 }
             })
+            .state('flow.configuration.checklist', {
+                url: '/checklist',
+                views: {
+                    'content@flow': {
+                        templateUrl: 'flow/views/configuration/checklist.html',
+                        controller: 'FlowConfigurationChecklistController'
+                    }
+                }
+            })
             .state('flow.development-environments', {
                 url: '/development-environments',
                 views: {

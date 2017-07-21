@@ -7,6 +7,7 @@
 @import "components/environments";
 @import "components/items";
 @import "components/tabs";
+@import "components/check_list";
 
 .mobile-only {
     @include largeScreen {

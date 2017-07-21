@@ -66,7 +66,7 @@ angular.module('continuousPipeRiver')
             $scope.isLoading = true;
 
             FlowRepository.createFromRepositoryAndProject(project, $scope.wizard.repository).then(function(flow) {
-                $state.go('flow.dashboard', {uuid: flow.uuid});
+                $state.go('flow.configuration.checklist', {uuid: flow.uuid});
 
                 Intercom('trackEvent', 'created-flow', {
                     flow: flow
