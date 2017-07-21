@@ -74,6 +74,7 @@ EOF;
                         'name' => 'app',
                         'cloud_flare_zone' => [
                             'zone_identifier' => '${CLOUD_FLARE_ZONE}',
+                            'proxied' => true,
                             'authentication' => [
                                 'email' => '${CLOUD_FLARE_EMAIL}',
                                 'api_key' => '${CLOUD_FLARE_API_KEY}',
@@ -81,7 +82,7 @@ EOF;
                         ],
                         'ingress' => [
                             'class' => 'nginx',
-                            'host_suffix' => $configuration->getSmallIdentifier().'-flex.continuouspipe.net',
+                            'host_suffix' => '-'.$configuration->getSmallIdentifier().'-flex.continuouspipe.net',
                         ]
                     ]
                 ],
@@ -146,7 +147,7 @@ EOF;
             'defaults' => [
                 'cluster' => 'flex',
                 'environment' => [
-                    'name' => '\''.$flowUuid.'\' ~ code_reference.branch',
+                    'name' => '\''.$flowUuid.'-\' ~ code_reference.branch',
                 ],
             ],
             'tasks' => $tasks,
