@@ -40,7 +40,17 @@ Feature:
                                       api_key: api_key
                               ingress:
                                   class: nginx
-                                  host_suffix: 'abc123-flex.continuouspipe.net'
+                                  host_suffix: '-abc123-flex.continuouspipe.net'
+    """
+
+  Scenario: The environment name is based on the flow UUID
+    Given the code repository contains the fixtures folder "flex-skeleton"
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    defaults:
+        environment:
+            name: "'00000000-0000-0000-0000-000000000000-' ~ code_reference.branch"
     """
 
   Scenario: It adds a database when Symfony has Doctrine enabled
