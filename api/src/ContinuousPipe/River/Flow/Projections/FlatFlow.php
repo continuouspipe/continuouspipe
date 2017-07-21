@@ -141,7 +141,7 @@ class FlatFlow
 
     public function isFlex()
     {
-        return $this->flexConfiguration != null && $this->flexConfiguration->getSmallIdentifier() !== null;
+        return $this->hasFlexConfiguration();
     }
 
     /**
@@ -149,6 +149,11 @@ class FlatFlow
      */
     public function getFlexConfiguration()
     {
-        return $this->flexConfiguration;
+        return $this->hasFlexConfiguration() ? $this->flexConfiguration : null;
+    }
+
+    private function hasFlexConfiguration() : bool
+    {
+        return $this->flexConfiguration != null && $this->flexConfiguration->getSmallIdentifier() !== null;
     }
 }
