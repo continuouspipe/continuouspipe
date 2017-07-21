@@ -78,6 +78,10 @@
             <argument type="service" id="security.authenticator.client" />
             <argument type="service" id="validator" />
         </service>
+        <service id="app.controller.features" class="AppBundle\Controller\FlowFeaturesController">
+            <argument type="service" id="command_bus"/>
+            <argument type="service" id="river.flex.availability_detector"/>
+        </service>
 
         <!-- Param converters -->
         <service id="app.request.param_converter.code_repository" class="AppBundle\Request\ParamConverter\CodeRepositoryParamConverter">

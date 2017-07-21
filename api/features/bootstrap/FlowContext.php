@@ -1110,6 +1110,53 @@ EOF;
     }
 
     /**
+     * @When I request the features of the flow :flowUuid
+     */
+    public function iRequestTheFeaturesOfTheFlow($flowUuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$flowUuid.'/features'
+        ));
+    }
+
+    /**
+     * @Then the feature :feature should not be :status
+     */
+    public function theFeatureShouldNotBe($feature, $status)
+    {
+        $this->assertResponseCode(200);
+        $this->assertFeatureHasStatus($feature, $status, false);
+    }
+
+    /**
+     * @Then the feature :feature should be :status
+     */
+    public function theFeatureShouldBeAvailable($feature, $status)
+    {
+        $this->assertResponseCode(200);
+        $this->assertFeatureHasStatus($feature, $status, true);
+    }
+
+    private function assertFeatureHasStatus($feature, $status, $expectedValue)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        foreach ($json as $foundFeature) {
+            if ($foundFeature['feature'] == $feature) {
+                if ($foundFeature[$status] != $expectedValue) {
+                    throw new \RuntimeException(sprintf(
+                        'Expected status %s for feature %s but found %s',
+                        $expectedValue,
+                        $feature,
+                        $foundFeature[$status]
+                    ));
+                }
+            }
+        }
+
+    }
+
+    /**
      * @param int $code
      */
     private function assertResponseCode($code)
