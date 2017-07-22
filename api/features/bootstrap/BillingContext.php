@@ -173,46 +173,4 @@ class BillingContext implements Context
 
         throw new \RuntimeException('Unable to find this activity');
     }
-
-    /**
-     * @Given Redis has the following user activities:
-     */
-    public function redisHasTheFollowingUserActivities(TableNode $table)
-    {
-        foreach ($table->getColumnsHash() as $row) {
-            $userActivity = new UserActivity(
-                $row['team_slug'],
-                Uuid::fromString($row['flow_uuid']),
-                $row['type'],
-                new UserActivityUser($row['user']),
-                new DateTime($row['date_time'])
-            );
-
-            $key = sprintf(
-                'activity:%s:%s:%s:%s:%s:%s',
-                $userActivity->getTeamSlug(),
-                (string) $userActivity->getFlowUuid(),
-                $userActivity->getDateTime()->format('Y'),
-                $userActivity->getDateTime()->format('m'),
-                $userActivity->getDateTime()->format('d'),
-                $userActivity->getUser()->getUsername()
-            );
-
-            $this->redisClient->set(
-                $key,
-                $this->serializer->serialize($userActivity, 'json')
-            );
-        }
-    }
-
-    /**
-     * @When I run the migration console command :commandName
-     */
-    public function iRunTheConsoleCommand()
-    {
-        $input = new Symfony\Component\Console\Input\ArrayInput(['--run' => true]);
-        $output = new Symfony\Component\Console\Output\NullOutput();
-
-        $this->migrateUserActivitiesCommand->run($input, $output);
-    }
 }
