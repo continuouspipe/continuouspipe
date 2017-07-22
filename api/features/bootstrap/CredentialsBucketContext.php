@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Authenticator\Obfuscate\Serializer\ObfuscateCredentialsSubscriber;
 use ContinuousPipe\Security\Credentials\Bucket;
@@ -238,15 +239,40 @@ class CredentialsBucketContext implements Context
      */
     public function iCreateAClusterWithTheFollowingConfigurationInTheBucket($bucket, TableNode $table)
     {
-        $content = json_encode($table->getHash()[0]);
+        $content = $table->getHash()[0];
+
+        if (isset($content['features'])) {
+            $features = explode(',', $content['features']);
+
+            $content['features'] = array_combine(
+                $features,
+                array_fill(0, count($features), true)
+            );
+        }
 
         $this->response = $this->kernel->handle(Request::create(
             sprintf('/api/bucket/%s/clusters', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
-            $content
+            json_encode($content)
         ));
     }
+
+    /**
+     * @When I update the cluster :clusterIdentifier of the bucket :bucketUuid with the following request:
+     */
+    public function iUpdateTheClusterOfTheBucketWithTheFollowingRequest($clusterIdentifier, $bucketUuid, PyStringNode $request)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/clusters/%s', $bucketUuid, $clusterIdentifier),
+            'PATCH', [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $request->getRaw()
+        ));
+
+        $this->assertResponseCodeIs($this->response, 200);
+    }
+
     /**
      * @When I create a cluster with the following configuration in the bucket :bucket with the API key :apiKey:
      */
@@ -306,14 +332,7 @@ class CredentialsBucketContext implements Context
      */
     public function theListShouldNotContainTheCluster($identifier)
     {
-        try {
-            $this->theListShouldContainTheCluster($identifier);
-            $found = true;
-        } catch (\Exception $e) {
-            $found = false;
-        }
-
-        if ($found) {
+        if (null !== $this->getClusterFromList($identifier)) {
             throw new \Exception('The cluster was found');
         }
     }
@@ -322,6 +341,18 @@ class CredentialsBucketContext implements Context
      * @Then the list should contain the cluster :identifier
      */
     public function theListShouldContainTheCluster($identifier)
+    {
+        if (null === $this->getClusterFromList($identifier)) {
+            throw new \RuntimeException('No matching cluster found');
+        }
+    }
+
+    /**
+     * @param string $identifier
+     *
+     * @return array|null
+     */
+    private function getClusterFromList($identifier)
     {
         $decoded = json_decode($this->response->getContent(), true);
         if (!is_array($decoded)) {
@@ -333,7 +364,33 @@ class CredentialsBucketContext implements Context
         });
 
         if (0 == count($matchingClusters)) {
-            throw new \RuntimeException('No matching cluster found');
+            return null;
+        }
+
+        return current($matchingClusters);
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should have the feature :feature
+     */
+    public function theClusterShouldHaveTheFeatureRbac($clusterIdentifier, $feature)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (!isset($cluster['features'][$feature]) || !$cluster['features'][$feature]) {
+            throw new \RuntimeException('Feature is not activated');
+        }
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should not have the feature :feature
+     */
+    public function theClusterShouldNotHaveTheFeatureRbac($clusterIdentifier, $feature)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (isset($cluster['features'][$feature]) && $cluster['features'][$feature]) {
+            throw new \RuntimeException('Feature is activated');
         }
     }
 
