@@ -17,3 +17,9 @@ Feature:
     Given the flow "00000000-0000-0000-0000-000000000000" has flex activated
     When I request the archive of the repository for the flow "00000000-0000-0000-0000-000000000000" and reference "sha1"
     Then the archive should contain a "Dockerfile" file
+
+  Scenario: Flexified flow will also contain the CP configuration
+    Given the code archive of the flow "00000000-0000-0000-0000-000000000000" looks like the fixtures file "flex-skeleton-example-partypoker-staking.tar.gz"
+    And the flow "00000000-0000-0000-0000-000000000000" has flex activated
+    When I request the archive of the repository for the flow "00000000-0000-0000-0000-000000000000" and reference "sha1"
+    Then the archive should contain a "continuous-pipe.yml" file
