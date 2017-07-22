@@ -40,12 +40,9 @@ class ConfigurationGenerator
         $flowUuid = $flow->getUuid()->toString();
 
         $dockerFile = <<<EOF
-FROM quay.io/continuouspipe/symfony-php7.1-nginx:latest
+FROM quay.io/continuouspipe/symfony-flex:latest
 ARG SYMFONY_ENV=prod
 ARG APP_ENV=prod
-
-ENV WEB_DIRECTORY=public
-ENV SYMFONY_APP_ENDPOINT=/index.php
 
 COPY . /app/
 WORKDIR /app
