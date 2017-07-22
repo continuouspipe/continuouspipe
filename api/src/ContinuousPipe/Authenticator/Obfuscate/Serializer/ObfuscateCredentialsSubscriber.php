@@ -65,7 +65,7 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
      */
     public function preSerializeKubernetesCluster(ObjectEvent $event)
     {
-        if ($this->shouldObfuscate()) {
+        if ($this->shouldObfuscate($event)) {
             $this->override($event->getObject(), 'password', self::OBFUSCATE_PLACEHOLDER);
         }
     }
@@ -75,7 +75,7 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
      */
     public function preSerializeDockerRegistry(ObjectEvent $event)
     {
-        if ($this->shouldObfuscate()) {
+        if ($this->shouldObfuscate($event)) {
             $this->override($event->getObject(), 'password', self::OBFUSCATE_PLACEHOLDER);
         }
     }
@@ -85,7 +85,7 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
      */
     public function preSerializeGithubToken(ObjectEvent $event)
     {
-        if ($this->shouldObfuscate()) {
+        if ($this->shouldObfuscate($event)) {
             $this->override($event->getObject(), 'accessToken', self::OBFUSCATE_PLACEHOLDER);
         }
     }
@@ -119,8 +119,12 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
     /**
      * @return bool
      */
-    private function shouldObfuscate()
+    private function shouldObfuscate(ObjectEvent $event)
     {
+        if (!$event->getContext()->attributes->get('should-obfuscate')->getOrElse(true)) {
+            return false;
+        }
+
         if (null === ($token = $this->tokenStorage->getToken())) {
             return true;
         }

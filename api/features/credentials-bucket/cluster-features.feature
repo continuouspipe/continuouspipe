@@ -25,8 +25,7 @@ Feature:
     {"features": {"rbac": true, "network-policies": true}}
     """
     And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
-    Then I should see the cluster "my-kube"
-    And the cluster "my-kube" should have the feature rbac
+    Then the cluster "my-kube" should have the feature rbac
     And the cluster "my-kube" should have the feature "network-policies"
 
   Scenario: I remove some features from the cluster
@@ -38,6 +37,5 @@ Feature:
     {"features": {"rbac": true}}
     """
     And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
-    Then I should see the cluster "my-kube"
-    And the cluster "my-kube" should have the feature rbac
+    Then the cluster "my-kube" should have the feature rbac
     And the cluster "my-kube" should not have the feature "network-policies"
