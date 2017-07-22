@@ -190,4 +190,119 @@ angular.module('continuousPipeRiver')
                 });
             });
         };
-    });
+    })
+    .controller('FlowConfigurationChecklistController', function($scope, $rootScope, $http, $state, AlertsRepository, AlertManager, FeaturesRepository, flow) {
+        $scope.flow = flow;
+        $scope.$on('$destroy', $rootScope.$on('visibility-changed', refreshStatus));
+
+        var refreshStatus = function() {
+            $scope.isLoading = true;
+            AlertsRepository.findByFlow(flow).then(function(alerts) {
+                $scope.repositoryAlert = getRepositoryAlert(alerts);
+
+                if (null === $scope.repositoryAlert) {
+                    $scope.loadingFlexCompatibility = true;
+                    FeaturesRepository.findAll(flow).then(function(features) {
+                        $scope.flexFeature = getFlexFeature(features);
+                    }, function(error) {
+                        swal("Error !", $http.getError(error) || "An unknown error occurred while loading the available features", "error");
+                    })['finally'](function() {
+                        $scope.loadingFlexCompatibility = false;
+                    });
+                }
+            }, function(error) {
+                swal("Error !", $http.getError(error) || "An unknown error occurred while loading the status of the flow", "error");
+            })['finally'](function() {
+                $scope.isLoading = false;
+            });
+        };
+
+        var getRepositoryAlert = function(alerts) {
+            for (var i = 0; i < alerts.length; i++) {
+                if (['github-integration', 'bitbucket-addon'].indexOf(alerts[i].type) !== -1) {
+                    return alerts[i];
+                }
+            }
+
+            return null;
+        };
+
+        var getFlexFeature = function(features) {
+            for (var i = 0; i < features.length; i++) {
+                if (features[i].feature == 'flex') {
+                    return features[i];
+                }
+            }
+
+            return null;
+        }
+
+        var activateFlex = function() {
+            $scope.isLoading = true;
+            FeaturesRepository.enable(flow, 'flex').then(function() {
+                return refreshStatus();
+            }, function(error) {
+                swal("Error !", $http.getError(error) || "An unknown error occurred while activating flex", "error");
+            })['finally'](function() {
+                $scope.isLoading = false;
+            });
+        };
+
+        $scope.$watchGroup(['repositoryAlert', 'loadingFlexCompatibility'], function() {
+            $scope.checks = [
+                {
+                    icon: flow.repository.type == 'bitbucket' ? 'cp-icon-bitbucket' : 'cp-icon-github',
+                    title: 'Code repository access',
+                    description: 'ContinuousPipe has access to your code repository',
+                    status: {
+                        summary: $scope.isLoading ? 'loading' : (
+                            $scope.repositoryAlert === null ? 'success' : 'error'
+                        ),
+                        action: $scope.repositoryAlert ? {
+                            'title': $scope.repositoryAlert.action.title,
+                            'click': function() {
+                                AlertManager.open($scope.repositoryAlert);
+                            }
+                        } : undefined
+                    }
+                },
+                {
+                    icon: 'touch_app',
+                    title: 'ContinuousPipe for Flex',
+                    description: 'You don\'t need a Kubernetes cluster, a Docker Registry, a Docker configuration, a Docker-Compose configuration... we do everything for you!',
+                    status: $scope.loadingFlexCompatibility ? {'summary': 'loading'} : (
+                         $scope.flexFeature ?
+                            !$scope.flexFeature.available ? {
+                                'summary': 'disabled',
+                                'icon': 'warning',
+                                'message': $scope.flexFeature.reason || 'Your application is not supported'
+                            } 
+                            :   (
+                                $scope.flexFeature.enabled ? {'summary': 'success', 'icon': 'done'}
+                                    : {
+                                        'summary': 'optional',
+                                        'action': {
+                                            'title': 'Enable !',
+                                            'click': activateFlex
+                                        }
+                                    }
+                            )
+                        : {
+                            'summary': 'disabled'
+                         }
+                    )
+                }
+            ];
+
+            $scope.isReady = $scope.checks.reduce(function(carry, check) {
+                return carry && ['disabled', 'success', 'optional'].indexOf(check.status.summary) !== -1;
+            }, true);
+        });
+
+        $scope.start = function() {
+            $state.go('flow.dashboard', {uuid: flow.uuid});
+        }
+
+        refreshStatus();
+    })
+;

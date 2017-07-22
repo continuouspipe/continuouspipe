@@ -7,6 +7,7 @@
 @import "components/environments";
 @import "components/items";
 @import "components/tabs";
+@import "components/check_list";
 
 .mobile-only {
     @include largeScreen {
@@ -280,6 +281,8 @@ body {
                 background: $content-background;
 
                 md-content {
+                    z-index: 45;
+                    
                     md-toolbar {
                         z-index: 50;
                     }
