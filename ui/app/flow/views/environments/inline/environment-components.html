@@ -1,0 +1,32 @@
+<table class="table components">
+    <thead>
+    <tr>
+        <th>Component</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-show="!environment.components.length">
+        <td colspan="3">No components found.</td>
+    </tr>
+    <tr ng-repeat="component in environment.components">
+        <td><strong>{{ component.name }}</strong></td>
+        <td class="status-text" ng-class="{'status-success': component.status.status == 'healthy', 'status-failure': component.status.status == 'unhealthy', 'status-running': component.status.status === 'unknown'}">{{ component.status.status }}</td>
+        <td>
+            <md-button class="md-icon-button logs-button" ng-click="liveStreamComponent(environment, component)">
+                <md-tooltip md-direction="top">Live-stream logs</md-tooltip>
+                <md-icon class="material-icons">playlist_play</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" ng-click="openRemoteShell(environment, component)">
+                <md-tooltip md-direction="top">Remote shell</md-tooltip>
+                <md-icon class="material-icons">keyboard</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" ng-repeat="address in component.status.public_endpoints" ng-click="openEndpoint({name: component.name, address: address})">
+                <md-tooltip md-direction="top">{{ address }}</md-tooltip>
+                <md-icon class="material-icons">open_in_new</md-icon>
+            </md-button>
+        </td>
+    </tr>
+    </tbody>
+</table>
