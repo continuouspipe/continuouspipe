@@ -18,4 +18,25 @@ class Environment
         $this->identifier = $identifier;
         $this->cluster = $cluster;
     }
+
+    /**
+     * @return string
+     */
+    public function getIdentifier(): string
+    {
+        return $this->identifier;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCluster(): string
+    {
+        return $this->cluster;
+    }
+
+    public function __toString()
+    {
+        return 'Cluster: '.$this->getCluster().' Identifier: '.$this->getIdentifier();
+    }
 }

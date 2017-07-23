@@ -128,19 +128,7 @@ class DeployContext implements Context
         $this->deployment = $this->getDeployment();
         $componentStatuses = $this->deployment->getComponentStatuses() ?: [];
         $componentStatuses[$name] = new ComponentStatus(true, false, false);
-        $publicEndpoints = $this->deployment->getPublicEndpoints() ?: [];
-
-        foreach ($table->getHash() as $row) {
-            if (array_key_exists('ports', $row)) {
-                $ports = array_map(function (string $port) {
-                    return new PublicEndpointPort((int)$port, PublicEndpointPort::PROTOCOL_TCP);
-                }, explode(',', $row['ports']));
-            } else {
-                $ports = [];
-            }
-
-            $publicEndpoints[] = new PublicEndpoint($row['name'], $row['address'], $ports);
-        }
+        $publicEndpoints = array_merge($this->deployment->getPublicEndpoints() ?: [], $this->endpointsFromTable($table));
 
         $this->deployment = new Deployment(
             $this->deployment->getUuid(),
@@ -276,8 +264,9 @@ class DeployContext implements Context
 
     /**
      * @When the second deploy succeed
+     * @When the second deploy succeed with the following public endpoints:
      */
-    public function theSecondDeploySucceed()
+    public function theSecondDeploySucceed(TableNode $endpointsTable = null)
     {
         $deployments = $this->traceablePipeClient->getDeployments();
         if (1 >= count($deployments)) {
@@ -286,7 +275,11 @@ class DeployContext implements Context
 
         /** @var DeployTask $task */
         $task = $this->tideTasksContext->getTasksOfType(DeployTask::class)[1];
-        $this->sendDeployTaskNotification($task, Deployment::STATUS_SUCCESS);
+        $this->sendDeployTaskNotification(
+            $task,
+            Deployment::STATUS_SUCCESS,
+            $endpointsTable !== null ? $this->endpointsFromTable($endpointsTable) : []
+        );
     }
 
     /**
@@ -701,7 +694,7 @@ class DeployContext implements Context
      * @param DeployTask $task
      * @param $status
      */
-    private function sendDeployTaskNotification(DeployTask $task, $status)
+    private function sendDeployTaskNotification(DeployTask $task, $status, array $publicEndpoints = [])
     {
         $events = $this->tideTasksContext->getTaskEvents($task);
         $deploymentStartedEvents = array_values(array_filter($events->getEvents(), function($event) {
@@ -719,7 +712,8 @@ class DeployContext implements Context
             new Deployment(
                 $deploymentStartedEvent->getDeployment()->getUuid(),
                 $deploymentStartedEvent->getDeployment()->getRequest(),
-                $status
+                $status,
+                $publicEndpoints
             )
         );
     }
@@ -761,5 +755,26 @@ class DeployContext implements Context
         }
 
         return array_pop($deploymentRequests);
+    }
+
+    /**
+     * @param TableNode $table
+     * @return array
+     */
+    private function endpointsFromTable(TableNode $table): array
+    {
+        $endpoints = [];
+        foreach ($table->getHash() as $row) {
+            if (array_key_exists('ports', $row)) {
+                $ports = array_map(function (string $port) {
+                    return new PublicEndpointPort((int)$port, PublicEndpointPort::PROTOCOL_TCP);
+                }, explode(',', $row['ports']));
+            } else {
+                $ports = [];
+            }
+
+            $endpoints[] = new PublicEndpoint($row['name'], $row['address'], $ports);
+        }
+        return $endpoints;
     }
 }
