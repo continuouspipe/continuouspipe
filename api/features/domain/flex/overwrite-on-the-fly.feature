@@ -23,3 +23,18 @@ Feature:
     And the flow "00000000-0000-0000-0000-000000000000" has flex activated
     When I request the archive of the repository for the flow "00000000-0000-0000-0000-000000000000" and reference "sha1"
     Then the archive should contain a "continuous-pipe.yml" file
+
+  Scenario: It will build the image with the environment as build arguments
+    Given the flow "00000000-0000-0000-0000-000000000000" has flex activated
+    When I request the archive of the repository for the flow "00000000-0000-0000-0000-000000000000" and reference "sha1"
+    Then the archive should contain a "Dockerfile" file
+    And the file "Dockerfile" in the archive should look like:
+    """
+    FROM quay.io/continuouspipe/symfony-flex:latest
+    ARG APP_ENV
+    ARG APP_DEBUG
+    ARG APP_SECRET
+    COPY . /app/
+    WORKDIR /app
+    RUN container build
+    """

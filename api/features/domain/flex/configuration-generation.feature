@@ -93,3 +93,19 @@ Feature:
                                 - { name: APP_SECRET, value: 547417d8a21a468aa18ba068702c0e9a }
                                 - { name: DATABASE_URL, value: postgres://app:app@database/app }
     """
+
+  Scenario: It will build the image with the environment as build arguments
+    Given the code repository contains the fixtures folder "flex-skeleton"
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        0_images:
+            build:
+                services:
+                    app:
+                        environment:
+                            - name: APP_ENV
+                            - name: APP_DEBUG
+                            - name: APP_SECRET
+    """

@@ -39,31 +39,40 @@ class ConfigurationGenerator
 
         $flowUuid = $flow->getUuid()->toString();
 
-        $dockerFile = <<<EOF
-FROM quay.io/continuouspipe/symfony-flex:latest
-ARG SYMFONY_ENV=prod
-ARG APP_ENV=prod
-
-COPY . /app/
-WORKDIR /app
-
-RUN container build
-EOF;
-
         try {
             $applicationEnvironmentVariables = (new Dotenv())->parse($fileSystem->getContents('.env.dist'));
         } catch (FileNotFound $e) {
             $applicationEnvironmentVariables = [];
         }
 
-        $dockerComposeServices = [];
+        $dockerFileLines = [
+            'FROM quay.io/continuouspipe/symfony-flex:latest',
+        ];
+
+        $buildVariables = [];
+        foreach ($applicationEnvironmentVariables as $variableName => $value) {
+            $dockerFileLines[] = 'ARG '.$variableName;
+            $buildVariables[] = [
+                'name' => $variableName,
+                'value' => $value,
+            ];
+        }
+
+        $dockerFileLines[] = 'COPY . /app/';
+        $dockerFileLines[] = 'WORKDIR /app';
+
+        $dockerFileLines[] = 'RUN container build';
+        $dockerFile = implode("\n", $dockerFileLines);
+
         $buildServices = [
             'app' => [
                 'image' => 'quay.io/continuouspipe-flex/flow-'.$flowUuid,
                 'naming_strategy' => 'sha1',
+                'environment' => $buildVariables
             ],
         ];
 
+        $dockerComposeServices = [];
         $appDeployServices = [
             'app' => [
                 'endpoints' => [

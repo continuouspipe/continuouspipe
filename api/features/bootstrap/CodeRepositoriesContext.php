@@ -228,9 +228,21 @@ class CodeRepositoriesContext implements Context
     {
         $archive = $this->archiveFromFlowResponse();
         if (!$archive->contains($fileName)) {
-            var_dump($archive);
-
             throw new \RuntimeException('The file do not exists');
+        }
+    }
+
+    /**
+     * @Then the file :filePath in the archive should look like:
+     */
+    public function theFileInTheArchiveShouldLookLike($filePath, PyStringNode $string)
+    {
+        $archive = $this->archiveFromFlowResponse();
+        $foundContents = $archive->getFilesystem()->getContents($filePath);
+        $expectedContents = $string->getRaw();
+
+        if ($foundContents != $expectedContents) {
+            throw new \RuntimeException('Found following content instead: '.$foundContents);
         }
     }
 
