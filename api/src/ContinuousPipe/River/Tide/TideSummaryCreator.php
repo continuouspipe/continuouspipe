@@ -11,6 +11,7 @@ use ContinuousPipe\River\Tide\Summary\CurrentTask;
 use ContinuousPipe\River\Tide\Summary\DeployedService;
 use ContinuousPipe\River\Tide\Summary\Environment;
 use ContinuousPipe\River\View\Tide;
+use Psr\Log\LoggerInterface;
 
 class TideSummaryCreator
 {
@@ -25,13 +26,20 @@ class TideSummaryCreator
     private $tideRepository;
 
     /**
-     * @param EventStore     $eventStore
-     * @param TideRepository $tideRepository
+     * @var LoggerInterface
      */
-    public function __construct(EventStore $eventStore, TideRepository $tideRepository)
+    private $logger;
+
+    /**
+     * @param EventStore $eventStore
+     * @param TideRepository $tideRepository
+     * @param LoggerInterface $logger
+     */
+    public function __construct(EventStore $eventStore, TideRepository $tideRepository, LoggerInterface $logger)
     {
         $this->eventStore = $eventStore;
         $this->tideRepository = $tideRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -45,7 +53,7 @@ class TideSummaryCreator
             $tide->getStatus(),
             $this->getDeployedServices($this->getDeploymentSuccessfulEventsForTide($tide)),
             $this->getCurrentTask($tide),
-            $this->getEnvironments($this->getDeploymentStartedEventsForTide($tide))
+            $this->getEnvironment($this->getDeploymentStartedEventsForTide($tide))
         );
     }
 
@@ -60,7 +68,18 @@ class TideSummaryCreator
             return [];
         }
 
-        $deployment = $deploymentSuccessfulEvents[0]->getDeployment();
+        $services = [];
+
+        foreach ($deploymentSuccessfulEvents as $deploymentSuccessful) {
+            $services = array_merge($services, $this->getDeployedServicesFromEvent($deploymentSuccessful));
+        }
+
+        return $services;
+    }
+
+    private function getDeployedServicesFromEvent(DeploymentSuccessful $event)
+    {
+        $deployment = $event->getDeployment();
         $statuses = $deployment->getComponentStatuses();
         $publicEndpoints = $this->getAssociativePublicEndpoints($deployment->getPublicEndpoints());
 
@@ -84,14 +103,28 @@ class TideSummaryCreator
         return $summary;
     }
 
-    private function getEnvironments(array $deploymentSuccessfulEvents)
+    /**
+     * @param DeploymentStarted[] $deploymentStartedEvents
+     *
+     * @return Environment|null
+     */
+    private function getEnvironment(array $deploymentStartedEvents)
     {
-        if (0 === count($deploymentSuccessfulEvents)) {
-            return;
-        }
-        $target = $deploymentSuccessfulEvents[0]->getDeployment()->getRequest()->getTarget();
+        $environments = array_unique(array_map(function (DeploymentStarted $event) {
+            $target = $event->getDeployment()->getRequest()->getTarget();
 
-        return new Environment($target->getEnvironmentName(), $target->getClusterIdentifier());
+            return new Environment($target->getEnvironmentName(), $target->getClusterIdentifier());
+        }, $deploymentStartedEvents));
+
+        if (count($environments) == 0) {
+            return null;
+        } elseif (count($environments) != 1) {
+            $this->logger->warning('Summary is tricky: tide deployed on multiple environments', [
+                'tide_uuid' => (string) $deploymentStartedEvents[0]->getTideUuid(),
+            ]);
+        }
+
+        return $environments[0];
     }
 
     /**

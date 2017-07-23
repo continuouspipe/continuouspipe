@@ -66,3 +66,34 @@ Feature:
     Given a tide is started for the branch "my-feature" with a deploy task
     When I ask the summary of the tide
     Then I should see the "00000000-0000-0000-0000-000000000000-my-feature" environment
+
+  Scenario: It returns the deployed services of all the deployment tasks
+    Given a tide is started with the following configuration:
+    """
+    tasks:
+        database:
+            deploy:
+                cluster: fake/foo
+                services:
+                    database:
+                        specification:
+                            source:
+                                image: foo:bar
+
+        app:
+            deploy:
+                cluster: fake/foo
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo:bar
+    """
+    And the first deploy succeed
+    And the second deploy succeed with the following public endpoints:
+      | name     | address | ports  |
+      | app      | 1.2.3.4 | 80     |
+    When I ask the summary of the tide
+    Then I should see in the list the following deployed services:
+      | name     | address |
+      | app      | 1.2.3.4 |
