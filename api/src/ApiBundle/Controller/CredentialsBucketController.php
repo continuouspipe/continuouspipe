@@ -7,9 +7,15 @@ use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Credentials\GitHubToken;
+use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -34,13 +40,20 @@ class CredentialsBucketController
     private $bucketRepository;
 
     /**
-     * @param BucketRepository   $bucketRepository
-     * @param ValidatorInterface $validator
+     * @var SerializerInterface
      */
-    public function __construct(BucketRepository $bucketRepository, ValidatorInterface $validator)
+    private $serializer;
+
+    /**
+     * @param BucketRepository $bucketRepository
+     * @param ValidatorInterface $validator
+     * @param SerializerInterface $serializer
+     */
+    public function __construct(BucketRepository $bucketRepository, ValidatorInterface $validator, SerializerInterface $serializer)
     {
         $this->validator = $validator;
         $this->bucketRepository = $bucketRepository;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -176,7 +189,7 @@ class CredentialsBucketController
      */
     public function createClusterAction(Bucket $bucket, Cluster $cluster)
     {
-        if ($this->bucketHasClusterIdentified($bucket, $cluster->getIdentifier())) {
+        if (null !== $this->getClusterIdentified($bucket, $cluster->getIdentifier())) {
             $violations = new ConstraintViolationList([
                 new ConstraintViolation(
                     'A cluster with this identifier already exists in this team',
@@ -205,6 +218,26 @@ class CredentialsBucketController
     }
 
     /**
+     * @Route("/clusters/{clusterIdentifier}", methods={"PATCH"})
+     * @View
+     */
+    public function patchClusterAction(Bucket $bucket, string $clusterIdentifier, Request $request)
+    {
+        if (null === ($cluster = $this->getClusterIdentified($bucket, $clusterIdentifier))) {
+            throw new NotFoundHttpException(sprintf('Cluster "%s" not found', $clusterIdentifier));
+        }
+
+        $updatedCluster = $this->applyPatch($cluster, \GuzzleHttp\json_decode($request->getContent(), true));
+
+        $bucket->getClusters()->removeElement($cluster);
+        $bucket->getClusters()->add($updatedCluster);
+
+        $this->bucketRepository->save($bucket);
+
+        return $updatedCluster;
+    }
+
+    /**
      * @Route("/clusters/{identifier}", methods={"DELETE"})
      * @View
      */
@@ -226,14 +259,40 @@ class CredentialsBucketController
      * @param Bucket $bucket
      * @param string $clusterIdentifier
      *
-     * @return bool
+     * @return Cluster|null
      */
-    private function bucketHasClusterIdentified(Bucket $bucket, string $clusterIdentifier)
+    private function getClusterIdentified(Bucket $bucket, string $clusterIdentifier)
     {
-        $clusters = $bucket->getClusters()->filter(function (Cluster $cluster) use ($clusterIdentifier) {
-            return $cluster->getIdentifier() == $clusterIdentifier;
-        });
+        foreach ($bucket->getClusters() as $cluster) {
+            if ($cluster->getIdentifier() == $clusterIdentifier) {
+                return $cluster;
+            }
+        }
 
-        return $clusters->count() > 0;
+        return null;
+    }
+
+    private function applyPatch($object, array $patch)
+    {
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setAttribute('should-obfuscate', false);
+        $serializationContext->setGroups(['Default', 'All']);
+
+        $objectAsArray = \GuzzleHttp\json_decode($this->serializer->serialize($object, 'json', $serializationContext), true);
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+
+        foreach ($patch as $key => $value) {
+            $propertyAccessor->setValue($objectAsArray, '['.$key.']', $value);
+        }
+
+        $deserializationContext = DeserializationContext::create();
+        $deserializationContext->setGroups(['Default', 'All']);
+
+        return $this->serializer->deserialize(
+            \GuzzleHttp\json_encode($objectAsArray),
+            get_class($object),
+            'json',
+            $deserializationContext
+        );
     }
 }

@@ -65,7 +65,7 @@ Feature:
     Given I am authenticated as user "samuel"
     And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
       | identifier | type       | address         | username | password | version |
-      | my-kybe    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    |
+      | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    |
     When I delete the cluster "my-kube" from the bucket "00000000-0000-0000-0000-000000000000"
     And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
     Then the list should not contain the cluster "my-kube"
