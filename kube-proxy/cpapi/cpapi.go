@@ -52,8 +52,8 @@ type ApiCluster struct {
 	Type       string `json:"type"`
 }
 
-func (c ClusterInfo) GetCluster(cpUsername string, cpApiKey string, flowId string, clusterIdentifier string) (*ApiCluster, error) {
-	apiFlow, err := c.GetApiFlow(cpApiKey, flowId)
+func (c ClusterInfo) GetCluster(cpUsername string, apiKeyOrToken string, flowId string, clusterIdentifier string) (*ApiCluster, error) {
+	apiFlow, err := c.GetApiFlow(cpUsername, apiKeyOrToken, flowId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get the api flow, " + err.Error())
 	}
@@ -74,7 +74,7 @@ func (c ClusterInfo) GetCluster(cpUsername string, cpApiKey string, flowId strin
 	return &targetCluster, nil
 }
 
-func (c ClusterInfo) GetApiFlow(apiKey string, flowId string) (*ApiFlow, error) {
+func (c ClusterInfo) GetApiFlow(cpUsername string, apiKeyOrToken string, flowId string) (*ApiFlow, error) {
 	url := c.getRiverURL()
 	url.Path = "/flows/" + flowId
 
@@ -82,7 +82,12 @@ func (c ClusterInfo) GetApiFlow(apiKey string, flowId string) (*ApiFlow, error) 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create new request for GetApiFlow, " + err.Error())
 	}
-	req.Header.Add("X-Api-Key", apiKey)
+
+	if cpUsername == "x-token-auth" {
+		req.Header.Add("Authorization", "Bearer "+apiKeyOrToken)
+	} else {
+		req.Header.Add("X-Api-Key", apiKeyOrToken)
+	}
 
 	respBody, err := c.getResponseBody(c.client, req)
 
