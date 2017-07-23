@@ -40,7 +40,7 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
         // Replace the pipeline variables first
         foreach ($configuration['pipelines'] as &$pipeline) {
             $variables = $this->resolveVariables($flow, $pipeline, $variableContext);
-            $pipeline = self::replaceValues($pipeline, $variables);
+            $pipeline = self::replaceValues($pipeline, $variables, false);
         }
 
         // Replace the tasks variables
@@ -103,14 +103,15 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
     /**
      * @param array $array
      * @param array $mapping
+     * @param bool  $applyDefaults
      *
      * @return array
      */
-    public static function replaceValues(array $array, array $mapping)
+    public static function replaceValues(array $array, array $mapping, bool $applyDefaults = true)
     {
-        array_walk_recursive($array, function (&$value) use ($mapping) {
+        array_walk_recursive($array, function (&$value) use ($mapping, $applyDefaults) {
             if (is_string($value)) {
-                $value = self::replaceVariables($value, $mapping);
+                $value = self::replaceVariables($value, $mapping, $applyDefaults);
             }
         });
 
@@ -120,16 +121,30 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
     /**
      * @param string $value
      * @param array  $mapping
+     * @param bool   $applyDefaults
      *
      * @return string
      */
-    public static function replaceVariables(string $value, array $mapping)
+    public static function replaceVariables(string $value, array $mapping, bool $applyDefaults = true)
     {
-        $variableKeys = array_map(function ($key) {
-            return sprintf('${%s}', $key);
-        }, array_keys($mapping));
+        return preg_replace_callback(
+            '/\$\{(?<variable>[a-z0-9_]+)(\?\:(?<default>[^\}]+))?\}/i',
+            function (array $matches) use ($mapping, $applyDefaults) {
+                $variable = $matches['variable'];
+                $line = $matches[0];
 
-        return str_replace($variableKeys, array_values($mapping), $value);
+                if (array_key_exists($variable, $mapping)) {
+                    return $mapping[$variable];
+                }
+
+                if ($applyDefaults && isset($matches['default'])) {
+                    return $matches['default'];
+                }
+
+                return $line;
+            },
+            $value
+        );
     }
 
     /**

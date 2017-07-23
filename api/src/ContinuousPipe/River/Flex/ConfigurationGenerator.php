@@ -54,7 +54,7 @@ class ConfigurationGenerator
             $dockerFileLines[] = 'ARG '.$variableName;
             $buildVariables[] = [
                 'name' => $variableName,
-                'value' => $value,
+                'value' => '${'.$variableName.'?:'.$value.'}',
             ];
         }
 

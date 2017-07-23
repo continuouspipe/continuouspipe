@@ -47,7 +47,7 @@ class ReplaceDeployedEndpointsVariables implements DeploymentRequestEnhancer
 
                 return new EnvironmentVariable(
                     $environmentVariable->getName(),
-                    ReplaceEnvironmentVariableValues::replaceVariables(null === $value ? '' : (string) $value, $publicEndpointMappings)
+                    ReplaceEnvironmentVariableValues::replaceVariables(null === $value ? '' : (string) $value, $publicEndpointMappings, false)
                 );
             }, $component->getSpecification()->getEnvironmentVariables());
 
