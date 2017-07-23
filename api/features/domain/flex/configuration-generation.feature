@@ -3,12 +3,10 @@ Feature:
   As a user
   I want CP to generate my configuration for me
 
-  Background:
+  Scenario: It generates a basic configuration for Symfony
     Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
     And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
-
-  Scenario: It generates a basic configuration for Symfony
-    Given the code repository contains the fixtures folder "flex-skeleton"
+    And the code repository contains the fixtures folder "flex-skeleton"
     When the configuration of the tide is generated
     Then the generated configuration should contain at least:
     """
@@ -44,7 +42,9 @@ Feature:
     """
 
   Scenario: The environment name is based on the flow UUID
-    Given the code repository contains the fixtures folder "flex-skeleton"
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
+    And the code repository contains the fixtures folder "flex-skeleton"
     When the configuration of the tide is generated
     Then the generated configuration should contain at least:
     """
@@ -54,7 +54,9 @@ Feature:
     """
 
   Scenario: It adds a database when Symfony has Doctrine enabled
-    Given the code repository contains the fixtures folder "flex-skeleton"
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
+    And the code repository contains the fixtures folder "flex-skeleton"
     And the ".env.dist" file in the code repository contains:
     """
     ###> symfony/framework-bundle ###
@@ -95,7 +97,9 @@ Feature:
     """
 
   Scenario: It will build the image with the environment as build arguments
-    Given the code repository contains the fixtures folder "flex-skeleton"
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
+    And the code repository contains the fixtures folder "flex-skeleton"
     When the configuration of the tide is generated
     Then the generated configuration should contain at least:
     """
@@ -108,4 +112,42 @@ Feature:
                             - name: APP_ENV
                             - name: APP_DEBUG
                             - name: APP_SECRET
+    """
+
+  Scenario: Override the env.dist values by using variables
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000" and the following configuration:
+    """
+    variables:
+    - name: FOO
+      value: my-foo
+    """
+    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
+    And the code repository contains the fixtures folder "flex-skeleton"
+    And the ".env.dist" file in the code repository contains:
+    """
+    ###> symfony/framework-bundle ###
+    APP_ENV=dev
+    APP_DEBUG=1
+    APP_SECRET=547417d8a21a468aa18ba068702c0e9a
+    ###< symfony/framework-bundle ###
+
+    FOO=foo
+    BAR=bar
+    """
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        0_images:
+            build:
+                services:
+                    app:
+                        environment:
+                            - name: APP_ENV
+                            - name: APP_DEBUG
+                            - name: APP_SECRET
+                            - name: FOO
+                              value: my-foo
+                            - name: BAR
+                              value: bar
     """
