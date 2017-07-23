@@ -5,3 +5,5 @@ dist
 bower_components
 /templates.js
 .vscode
+/.cp-remote-settings.yml
+cp-remote-logs

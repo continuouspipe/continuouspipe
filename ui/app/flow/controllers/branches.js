@@ -93,6 +93,7 @@ angular.module('continuousPipeRiver')
 
 
                     var dialogScope = $scope.$new();
+                    dialogScope.flow = flow;
                     dialogScope.environment = environment;
                     dialogScope.component = component;
 
