@@ -125,11 +125,20 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
      */
     public static function replaceVariables(string $value, array $mapping)
     {
-        $variableKeys = array_map(function ($key) {
-            return sprintf('${%s}', $key);
-        }, array_keys($mapping));
+        return preg_replace_callback(
+            '/\$\{(?<variable>[a-z0-9_]+)\}/i',
+            function(array $matches)  use ($mapping) {
+                $variable = $matches['variable'];
+                $line = $matches[0];
 
-        return str_replace($variableKeys, array_values($mapping), $value);
+                if (array_key_exists($variable, $mapping)) {
+                    return $mapping[$variable];
+                }
+
+                return $line;
+            },
+            $value
+        );
     }
 
     /**
