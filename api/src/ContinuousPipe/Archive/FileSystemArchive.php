@@ -85,16 +85,25 @@ class FileSystemArchive implements Archive
         }
 
         $this->fileSystemProcess = proc_open("/usr/bin/env tar ".$options." .", [["pipe", "r"], ["pipe", "w"], ["pipe", "w"]], $pipes, $this->directory);
-        $this->fileSystemStream = $pipes[1];
+
+        if (false === ($contents = stream_get_contents($pipes[1]))) {
+            throw new ArchiveException('Cannot re-package the archive');
+        }
 
         $error = stream_get_contents($pipes[2]);
         if (!empty($error)) {
             throw new ArchiveException('Something went wrong while reading the stream: '.$error);
         }
 
-        return \GuzzleHttp\Psr7\stream_for(
-            stream_get_contents($pipes[1])
-        );
+        if (0 !== ($status = proc_close($this->fileSystemProcess))) {
+            throw new ArchiveException('Turning source code into an archive went wrong, got status %d', $status);
+        }
+
+        @fclose($pipes[0]);
+        @fclose($pipes[1]);
+        @fclose($pipes[2]);
+
+        return \GuzzleHttp\Psr7\stream_for($contents);
     }
 
     /**
