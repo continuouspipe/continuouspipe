@@ -381,54 +381,61 @@ md-dialog.logs-dialog {
         height: 80%;
     }
 
-    > form {
+    pod-selector {
         flex: 1;
+        display: flex;
 
-        md-dialog-content {
+        > form {
             flex: 1;
             display: flex;
+            flex-direction: column;
 
-            > md-tabs {
+            md-dialog-content {
+                flex: 1;
+                display: flex;
+
+                > md-tabs {
+                    flex: 1;
+                }
+            }
+        }
+    }
+
+    pod-logs {
+        flex: 1;
+        display: flex;
+
+        > remote-resource {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+
+            > div[ng-transclude] {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+
+            > .remote-resource.loading {
                 flex: 1;
             }
         }
 
-        pod-logs {
-            flex: 1;
-            display: flex;
-
-            > remote-resource {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-
-                > div[ng-transclude] {
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
+        md-tabs-content-wrapper {
+            md-tab-content {
+                &:first-child {
+                    background: #002b36;
                 }
 
-                > .remote-resource.loading {
-                    flex: 1;
-                }
-            }
+                table {
+                    margin: 0;
 
-            md-tabs-content-wrapper {
-                md-tab-content {
-                    &:first-child {
-                        background: #002b36;
+                    th, td {
+                        padding: 10px;
                     }
 
-                    table {
-                        margin: 0;
-
-                        th, td {
-                            padding: 10px;
-                        }
-
-                        thead {
-                            border-top: 1px solid #ccc;
-                        }
+                    thead {
+                        border-top: 1px solid #ccc;
                     }
                 }
             }

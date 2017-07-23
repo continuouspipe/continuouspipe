@@ -1,16 +1,20 @@
-<md-dialog>
-    <md-toolbar>
-        <div class="md-toolbar-tools">
-            <h2>Bash shell in the pod "{{endpoint.name}}"</h2>
-        </div>
-    </md-toolbar>
-    <md-dialog-content>
-        <md-content class="md-padding">
-            <p><strong>Note:</strong> In order to open a bash session in this container, you need to have <a href="https://docs.continuouspipe.io/remote-development/getting-started/">cp-remote</a> installed and configured.</p>
-            <pre class="raw">cp-remote bash -i -e {{environment.identifier}} -s {{endpoint.name}} -f {{environment.flow.uuid}}</pre>
-            <hr />
-            <p><strong>If <code>/bin/bash</code> is not available on the pod</strong>, you can specify the command you want to run:</p>
-            <pre class="raw">cp-remote exec -i -e {{environment.identifier}} -s {{endpoint.name}} -f {{environment.flow.uuid}} -- /bin/sh</pre>
-        </md-content>
-    </md-dialog-content>
+<md-dialog class="logs-dialog">
+    <pod-selector component="component" title="Bash shell in {{ component.name }}">
+        <md-tabs>
+            <md-tab label="From your laptop">
+                <md-content class="md-padding">
+                    <p><strong>Note:</strong> In order to open a bash session in this container, you need to have <a href="https://docs.continuouspipe.io/remote-development/getting-started/">cp-remote</a> installed and configured.</p>
+                    <pre class="raw">cp-remote bash -i -e {{environment.identifier}} -s {{component.name}} -f {{environment.flow.uuid}}</pre>
+                    <hr />
+                    <p><strong>If <code>/bin/bash</code> is not available on the pod</strong>, you can specify the command you want to run:</p>
+                    <pre class="raw">cp-remote exec -i -e {{environment.identifier}} -s {{component.name}} -f {{environment.flow.uuid}} -- /bin/sh</pre>
+                </md-content>
+            </md-tab>
+            <md-tab label="Web-based">
+                <md-content>
+                    <pod-shell environment="environment" pod="pod"></pod-shell>
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </pod-selector>
 </md-dialog>
