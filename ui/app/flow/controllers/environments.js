@@ -41,10 +41,11 @@ angular.module('continuousPipeRiver')
             $remoteResource.load('environments', EnvironmentRepository.findByFlow(flow)).then(function (environments) {
                 $scope.environments = environments.map(function(environment) {
                     var flowUuidPrefix = flow.uuid+'-';
+                    
                     // Remove the flow UUID prefix if it exists
-                    if (environment.identifier.indexOf(flowUuidPrefix) === 0) {
-                        environment.identifier = environment.identifier.substr(flowUuidPrefix.length);
-                    }
+                    environment.displayName = environment.identifier.indexOf(flowUuidPrefix) === 0 ?
+                        environment.identifier.substr(flowUuidPrefix.length) :
+                        environment.identifier;
 
                     environment.status = getEnvironmentStatus(environment);
                     environment.endpoints = getEnvironmentEndpoints(environment);

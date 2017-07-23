@@ -24,7 +24,7 @@
                             <i class="material-icons" ng-show="!environment.expanded">chevron_right</i>
                             <i class="material-icons" ng-show="environment.expanded">expand_more</i>
                         </md-icon>
-                        <span>{{ environment.identifier }}</span>
+                        <span>{{ environment.displayName }}</span>
                     </div>
                     <div data-th="Status" class="list-col-8">
                         <span class="status-text" ng-class="{'status-success': environment.status == 'healthy', 'status-failure': environment.status == 'unhealthy', 'status-running': environment.status === 'unknown', 'status-terminating': environment.status === 'terminating'}">{{ environment.status }}</span>
