@@ -16,6 +16,9 @@ variables:
     - name: RIVER_API_URL
       condition: code_reference.branch == 'production'
       value: https://river.continuouspipe.io
+    - name: KUBE_PROXY_HOSTNAME
+      value: kube-proxy.continuouspipe.io
+      condition: code_reference.branch == 'production'
 
     - name: AUTHENTICATOR_API_URL
       condition: code_reference.branch != 'production'
@@ -23,7 +26,9 @@ variables:
     - name: RIVER_API_URL
       condition: code_reference.branch != 'production'
       value: https://river-staging.continuouspipe.io
-
+    - name: KUBE_PROXY_HOSTNAME
+      value: kube-proxy-staging.continuouspipe.io
+      condition: code_reference.branch != 'production'
 tasks:
     images:
         build:
@@ -70,3 +75,5 @@ tasks:
                               value: ${RIVER_API_URL}
                             - name: SENTRY_DSN
                               value: ${SENTRY_DSN}
+                            - name: KUBE_PROXY_HOSTNAME
+                              value: ${KUBE_PROXY_HOSTNAME}
