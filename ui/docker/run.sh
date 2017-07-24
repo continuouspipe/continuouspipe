@@ -9,6 +9,7 @@ angular.module('config', [])
 .constant('LOG_STREAM_API_URL', '"$LOG_STREAM_API_URL"')
 .constant('PIPE_API_URL', '"$PIPE_API_URL"')
 .constant('SENTRY_DSN', '"$SENTRY_DSN"')
+.constant('KUBE_PROXY_HOSTNAME', '"$KUBE_PROXY_HOSTNAME"')
 ;" > /app/dist/scripts/config.js
 
 # Start nginx
