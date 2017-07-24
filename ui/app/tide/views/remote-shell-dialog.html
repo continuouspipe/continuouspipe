@@ -2,7 +2,7 @@
     <pod-selector component="component" title="Bash shell in {{ component.name }}">
         <md-tabs>
             <md-tab label="From your laptop">
-                <md-content class="md-padding">
+                <md-content class="md-padding flex">
                     <p><strong>Note:</strong> In order to open a bash session in this container, you need to have <a href="https://docs.continuouspipe.io/remote-development/getting-started/">cp-remote</a> installed and configured.</p>
                     <pre class="raw">cp-remote bash -i -e {{environment.identifier}} -s {{component.name}} -f {{environment.flow.uuid}}</pre>
                     <hr />

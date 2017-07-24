@@ -38,7 +38,7 @@ pre {
     code, pre {
         font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
     }
-    
+
     code {
         font-size: 90%;
         color: #c7254e;
@@ -386,6 +386,10 @@ md-dialog.logs-dialog {
     pod-selector {
         flex: 1;
         display: flex;
+    }
+
+    .flex {
+        flex: 1;
     }
 
     > form, pod-selector > form {
