@@ -49,13 +49,15 @@ angular.module('continuousPipeRiver')
 
                     setTimeout(function() {
                         term.fit();
-                    }, 10);
+                    }, 500);
 
                     angular.element($window).bind('resize', function(){
                         term.fit();
                     });
 
                     socket.addEventListener('message', function(event) {
+                        term.fit();
+                        
                         var message = event.data,
                             contents = atob(message.substr(1));
 
