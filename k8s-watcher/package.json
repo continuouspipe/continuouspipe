@@ -11,6 +11,7 @@
     "kubernetes-client": "^2.2.2",
     "kue": "^0.11.5",
     "node-statsd": "^0.1.1",
-    "raven": "^0.12.0"
+    "raven": "^0.12.0",
+    "ws": "^3.0.0"
   }
 }

@@ -34,3 +34,8 @@ Response:
 	"log": "-KUvUFQ80nw5z2yL13CY"
 }
 ```
+
+### Exec into container
+
+Method: `Websocket`
+Path: `/flows/<flowUuid>/cluster/<cluster>/<namespace>/pod/<pod>`
