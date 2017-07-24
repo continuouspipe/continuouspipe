@@ -69,7 +69,14 @@ func (m HttpHandler) NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*Up
 
 	user, password, ok := r.BasicAuth()
 	if ok != true {
-		return nil, fmt.Errorf("Basic auth failed")
+		access_token := r.URL.Query().Get("access_token")
+
+		if access_token != "" {
+			user = "x-token-auth"
+			password = access_token
+		} else {
+			return nil, fmt.Errorf("Auth has failed (basic & query)")
+		}
 	}
 
 	cinfo := cpapi.NewClusterInfo()

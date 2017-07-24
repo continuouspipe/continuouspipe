@@ -15,6 +15,8 @@ The authentication is made by HTTP basic auth.
 *Username:* `x-token-auth`
 *Password:* the token
 
+*Alternative approach:* using the `access_token` query parameter.
+
 ### User's API key
 
 *Username:* the user's username
