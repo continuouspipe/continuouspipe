@@ -2,10 +2,10 @@
 
 angular.module('continuousPipeRiver')
     .service('RemoteShellOpener', function($mdDialog) {
-        this.open = function(environment, endpoint) {
+        this.open = function(environment, component) {
             $mdDialog.show({
                 controller: function($scope, $mdDialog) {
-                    $scope.endpoint = endpoint;
+                    $scope.component = component;
                     $scope.environment = environment;
 
                     $scope.opened = $scope.cancel = function() {

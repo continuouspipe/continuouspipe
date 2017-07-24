@@ -440,6 +440,7 @@ module.exports = function (grunt) {
           AUTHENTICATOR_API_URL: process.env.AUTHENTICATOR_API_URL,
           LOG_STREAM_API_URL: process.env.LOG_STREAM_API_URL,
           PIPE_API_URL: process.env.PIPE_API_URL,
+          KUBE_PROXY_HOSTNAME: process.env.KUBE_PROXY_HOSTNAME,
           SENTRY_DSN: process.env.SENTRY_DSN
         }
       }

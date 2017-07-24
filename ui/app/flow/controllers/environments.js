@@ -77,8 +77,8 @@ angular.module('continuousPipeRiver')
             EndpointOpener.open(endpoint);
         };
 
-        $scope.openRemoteShell = function(environment, endpoint) {
-            RemoteShellOpener.open(environment, endpoint)
+        $scope.openRemoteShell = function(environment, component) {
+            RemoteShellOpener.open(environment, component);
         };
 
         $scope.liveStreamComponent = function(environment, component) {
@@ -152,8 +152,7 @@ angular.module('continuousPipeRiver')
             dialogScope.component = component;
 
             $mdDialog.show({
-                controller: 'LogsComponentDialogController',
-                templateUrl: 'logs/views/dialogs/components.html',
+                templateUrl: 'logs/views/dialogs/component-logs.html',
                 parent: angular.element(document.body),
                 clickOutsideToClose: true,
                 scope: dialogScope
