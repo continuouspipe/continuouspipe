@@ -34,9 +34,13 @@ angular.module('continuousPipeRiver')
                         '/pods/'+$scope.pod.identifier+
                         '/exec'+
                         '?'+
-                        'stdout=1&stdin=1&stderr=1&tty=true&command='+encodeURIComponent('/bin/bash')+
+                        'stdout=1&stdin=1&stderr=1&tty=true'+
                         '&access_token='+$tokenStorage.get()
                     ;
+
+                    ['/bin/bash', '-c', 'export TERM=xterm; exec bash'].forEach(function(command) {
+                        proxyWebSocketUri += '&command='+encodeURIComponent(command);
+                    });
 
                     var socket = new WebSocket(proxyWebSocketUri, 'base64.channel.k8s.io');
 
