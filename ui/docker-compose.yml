@@ -8,6 +8,7 @@ ui:
     - AUTHENTICATOR_API_URL=https://authenticator-staging.continuouspipe.io
     - PIPE_API_URL=https://pipe-staging.continuouspipe.io
     - LOG_STREAM_API_URL=http://logstream-api.docker
+    - KUBE_PROXY_HOSTNAME=kube-proxy-staging.continuouspipe.io
   expose:
     - 80
     - 35729

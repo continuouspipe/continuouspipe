@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('BranchesController', function ($scope, $http, $mdToast, $firebaseArray, $authenticatedFirebaseDatabase, PinnedBranchRepository, flow, user, project, BranchFactory, $mdDialog, $remoteResource, EnvironmentRepository, $rootScope) {
+    .controller('BranchesController', function ($scope, $http, $mdToast, $firebaseArray, $authenticatedFirebaseDatabase, $componentLogDialog, PinnedBranchRepository, flow, user, project, BranchFactory, $mdDialog, $remoteResource, EnvironmentRepository, $rootScope) {
         $scope.isAdmin = user.isAdmin(project);
         
         $authenticatedFirebaseDatabase.get(flow).then(function (database) {
@@ -66,41 +66,25 @@ angular.module('continuousPipeRiver')
             }
 
             var mdDialogCtrl = function ($scope, EndpointOpener, RemoteShellOpener) {
-
                 $scope.environment = environment;
                 $scope.flow = flow;
                 $scope.openEndpoint = function(endpoint) {
                     EndpointOpener.open(endpoint);
                 };
 
-                $scope.openRemoteShell = function(environment, endpoint) {
-                    RemoteShellOpener.open(environment, endpoint)
+                $scope.openRemoteShell = function(environment, component) {
+                    RemoteShellOpener.open(environment, component);
                 };
 
                 $scope.liveStreamComponent = function(environment, component) {
-                    var liveStreamCtrl = function ($scope) {
-                        $scope.environment = environment;
-                        $scope.component = component;
-
-                        $scope.close = function() {
-                            $mdDialog.cancel();
-                        };
-
-                        if ($scope.component.status.containers.length === 1) {
-                            $scope.selectedPod = $scope.component.status.containers[0];
-                        }
-                    };
-
-
                     var dialogScope = $scope.$new();
                     dialogScope.flow = flow;
                     dialogScope.environment = environment;
                     dialogScope.component = component;
 
                     $mdDialog.show({
-                        controller: liveStreamCtrl,
-                        templateUrl: 'logs/views/dialogs/components.html',
-                        clickOutsideToClose: true,
+                        templateUrl: 'logs/views/dialogs/component-logs.html',
+                        clickOutsideToClose: true
                     });
                 };
 
