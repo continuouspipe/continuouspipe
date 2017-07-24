@@ -39,40 +39,40 @@ var HttpHandlerFactory = function(queue, firebase, statsd) {
         var schema = {
             "properties": {
                 "cluster": {
-                      "type": "object",
-                      "properties": {
+                    "type": "object",
+                    "properties": {
                         "address": {
-                              "type": "string"
+                            "type": "string"
                         },
                         "version": {
-                              "type": "string"
+                            "type": "string"
                         },
                         "username": {
-                              "type": "string"
+                            "type": "string"
                         },
                         "password": {
-                              "type": "string"
+                            "type": "string"
                         }
-                      },
-                      "required": [
+                    },
+                    "required": [
                         "address",
                         "version",
                         "username",
                         "password"
-                      ]
+                    ]
                 },
                 "namespace": {
-                      "type": "string"
+                    "type": "string"
                 },
                 "pod": {
-                      "type": "string"
+                    "type": "string"
                 }
-              },
-              "required": [
+            },
+            "required": [
                 "cluster",
                 "namespace",
                 "pod"
-              ]
+            ]
         };
 
         getRequestJson(request, response, function(data) {
