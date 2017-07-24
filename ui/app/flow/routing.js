@@ -19,8 +19,8 @@ angular.module('continuousPipeRiver')
                     }
                 },
                 views: {
-                    'aside@': {
-                        templateUrl: 'flow/views/layout/aside.html',
+                    'content@': {
+                        templateUrl: 'flow/views/layout/wrapper.html',
                         controller: function($scope, flow) {
                             $scope.flow = flow;
                         }
@@ -36,48 +36,43 @@ angular.module('continuousPipeRiver')
                         templateUrl: 'project/views/alerts.html',
                         controller: 'FlowAlertsController'
                     }
-                },
-                aside: true
+                }
             })
             .state('flow.tides', {
                 url: '/tides',
                 views: {
-                    'content@': {
+                    'content@flow': {
                         templateUrl: 'flow/views/tides/list.html',
                         controller: 'FlowTidesController'
                     }
-                },
-                aside: true
+                }
             })
             .state('flow.dashboard', {
                 url: '/dashboard',
                 views: {
-                    'content@': {
+                    'content@flow': {
                         templateUrl: 'flow/views/dashboard.html',
                         controller: 'FlowDashboardController'
                     }
-                },
-                aside: true
+                }
             })
             .state('flow.create-tide', {
                 url: '/tides/create',
                 views: {
-                    'content@': {
+                    'content@flow': {
                         templateUrl: 'flow/views/tides/create.html',
                         controller: 'FlowCreateTideController'
                     }
-                },
-                aside: true
+                }
             })
             .state('flow.environments', {
                 url: '/environments',
                 views: {
-                    'content@': {
+                    'content@flow': {
                         templateUrl: 'flow/views/environments/list.html',
                         controller: 'FlowEnvironmentsController'
                     }
-                },
-                aside: true
+                }
             })
             .state('flow.environment-preview', {
                 url: '/environments/:identifier',
@@ -99,7 +94,7 @@ angular.module('continuousPipeRiver')
                     }
                 },
                 views: {
-                    'content@': {
+                    'content@flow': {
                         templateUrl: 'flow/views/environments/show.html',
                         controller: 'EnvironmentPreviewController'
                     },
@@ -107,41 +102,46 @@ angular.module('continuousPipeRiver')
                         templateUrl: 'flow/views/environments/header.html',
                         controller: 'EnvironmentPreviewController'
                     }
-                },
-                aside: false
+                }
             })
             .state('flow.configuration', {
                 url: '/configuration',
                 views: {
-                    'content@': {
+                    'content@flow': {
                         templateUrl: 'flow/views/configuration/edit.html',
                         controller: 'FlowConfigurationController'
                     }
-                },
-                aside: true
+                }
+            })
+            .state('flow.configuration.checklist', {
+                url: '/checklist',
+                views: {
+                    'content@flow': {
+                        templateUrl: 'flow/views/configuration/checklist.html',
+                        controller: 'FlowConfigurationChecklistController'
+                    }
+                }
             })
             .state('flow.development-environments', {
                 url: '/development-environments',
                 views: {
-                    'content@': {
+                    'content@flow': {
                         templateUrl: 'flow/views/remote/list.html',
                         controller: 'ListOfDevelopmentEnvironmentsController'
                     }
-                },
-                aside: true
+                }
             })
             .state('flow.create-development-environment', {
                 url: '/development-environments/create',
                 views: {
-                    'content@': {
+                    'content@flow': {
                         templateUrl: 'flow/views/remote/create.html',
                         controller: 'CreateDevelopmentEnvironmentController'
                     }
                 },
                 params: {
                     environment: {}
-                },
-                aside: true
+                }
             })
             .state('flow.development-environment', {
                 url: '/development-environments/:environmentUuid',
@@ -151,22 +151,20 @@ angular.module('continuousPipeRiver')
                     }
                 },
                 views: {
-                    'content@': {
+                    'content@flow': {
                         templateUrl: 'flow/views/remote/show.html',
                         controller: 'DevelopmentEnvironmentController'
                     }
-                },
-                aside: true
+                }
             })
             .state('flow.branches', {
                 url: '/branches',
                 views: {
-                    'content@': {
+                    'content@flow': {
                         templateUrl: 'flow/views/branches/list.html',
                         controller: 'BranchesController'
                     }
-                },
-                aside: true
+                }
             })
         ;
     });

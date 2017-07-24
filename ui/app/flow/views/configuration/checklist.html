@@ -1,0 +1,35 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2><span>Configuration check-list</span></h2>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <ul class="checklist">
+        <li ng-repeat="check in checks" ng-class="['status-'+check.status.summary]">
+            <div class="icon">
+                <md-icon ng-if="check.icon.substring(0, 3) != 'cp-'">{{ check.icon }}</md-icon>
+                <i ng-if="check.icon.substring(0, 3) == 'cp-'" ng-class="check.icon"></i>
+            </div>
+            <div class="description">
+                <h3>{{ check.title }}</h3>
+                <p>{{ check.description }}</p>
+            </div>
+            <div class="status">
+                <md-progress-circular ng-if="check.status.summary == 'loading'" md-mode="indeterminate" md-diameter="40px"></md-progress-circular>
+
+                <md-icon ng-if="check.status.icon">{{ check.status.icon }}</md-icon>
+                <p ng-if="check.status.message">{{ check.status.message }}</p>
+
+                <md-button ng-if="check.status.action" ng-click="check.status.action.click()" class="md-raised md-primary" ng-disabled="isLoading">{{ check.status.action.title }}</md-button>
+            </div>
+        </li>
+    </ul>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create" ng-disabled="isLoading || !isReady" ng-click="start()">
+            Get started !
+        </md-button>
+    </div>
+</md-toolbar>

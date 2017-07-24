@@ -1,0 +1,20 @@
+<div class="tabs-toolbar" ng-class="{'open' : $root.toggle}">
+    <ul class="tabs">
+        <li class="tab">
+            <a ng-click="$root.toggle = !$root.toggle" ui-sref-active="selected" ui-sref="flows"><md-icon>sync</md-icon> <span>Flows</span></a>
+        </li>
+        <li class="tab">
+            <a ng-click="$root.toggle = !$root.toggle" ui-sref-active="selected" ui-sref="users"><md-icon>group</md-icon> <span>Users</span></a>
+        </li>
+        <li class="tab">
+            <a ng-click="$root.toggle = !$root.toggle" ui-sref-active="selected" ui-sref="clusters"><md-icon>cloud</md-icon> <span>Clusters</span></a>
+        </li>
+        <li class="tab">
+            <a ng-click="$root.toggle = !$root.toggle" ui-sref-active="selected" ui-sref="registry-credentials"><md-icon>storage</md-icon> <span>Registries</span></a>
+        </li>
+        <li class="tab">
+            <a ng-click="$root.toggle = !$root.toggle" ui-sref-active="selected" ui-sref="configuration"><md-icon>build</md-icon> <span>Project Configuration</span></a>
+        </li>
+    </ul>
+</div>
+<md-content ui-view="content" class="content"></md-content>

@@ -33,6 +33,11 @@ angular.module('continuousPipeRiver')
 
                 return result;
             }, function(error) {
+                if (error.status == -1) {
+                    // Request has been cancelled; ignore.
+                    return;
+                }
+
                 resource.status = 'error';
                 resource.error = $http.getError(error) || 'An error occurred while loading '+name;
             });

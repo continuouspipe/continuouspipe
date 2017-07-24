@@ -5,8 +5,14 @@
 <md-button class="md-icon-button logo" aria-label="Dashboard" ui-sref="projects">
     <md-icon class="cp-icon-logo"></md-icon>
 </md-button>
+
+<button class="tabs-menu-btn" ng-click="$root.toggle = !$root.toggle" ng-class="{'open' : $root.toggle}">
+    <div></div>
+</button>
+
 <h2 class="title"><span ui-view="title"></span></h2>
 <span flex></span>
+<md-button id="documentation" href="https://docs.continuouspipe.io/" target="_blank">Documentation</md-button>
 <md-button id="contact-us-launcher">Support</md-button>
 <md-menu md-position-mode="target-right target">
     <md-button aria-label="Account" class="md-icon-button account-button" ng-click="$mdOpenMenu($event)">
