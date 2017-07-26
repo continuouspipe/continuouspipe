@@ -23,9 +23,12 @@ angular.module('continuousPipeRiver')
                     })
                     .map(function(pullRequestInBranch) {
                         var view = $scope.branches.filter(function(branch) {return branch.$id == pullRequestInBranch.$id})[0],
-                            pullRequestIdentifier = Object.keys(pullRequestInBranch)[0];
+                            firstPullRequestKey = Object.keys(pullRequestInBranch)[0];
 
-                        view.pull_request = pullRequestInBranch[pullRequestIdentifier];
+                        view.pull_request = 
+                            typeof pullRequestInBranch[pullRequestIdentifier] == 'object' ?
+                            pullRequestInBranch[pullRequestIdentifier] :
+                            pullRequestInBranch;
 
                         return view;
                     })
