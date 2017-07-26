@@ -10,7 +10,7 @@
 </div>
 
 <div class="branch-code">
-    <p><md-icon>code</md-icon> <a ng-show="branch.data['latest-commit']" ng-href="{{ branch.data['latest-commit'].url }}" target="_blank">{{ branch.data['latest-commit'].sha | limitTo:7 }}</a></p>
+    <p><md-icon>code</md-icon> <a ng-show="branch | branchLatestCommit" ng-href="{{ branch.data['latest-commit'].url }}" target="_blank">{{ branch | branchLatestCommit | limitTo:7 }}</a></p>
     <p ng-if="branch.pull_request">
         <md-icon class="cp-icon-git-branch"></md-icon> <a ng-href="{{ branch.pull_request.url }}" target="_blank">#{{ branch.pull_request.identifier }}</a></p>
 </div>

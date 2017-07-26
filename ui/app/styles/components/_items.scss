@@ -41,6 +41,10 @@ div.list-items {
             margin: 0;
             padding: 0;
             list-style: none;
+
+            > li[role="button"] {
+                cursor: pointer;
+            }
         }
     }
 

@@ -8,17 +8,19 @@ function sortedTides (branch) {
 
     return lastTides;
 }
+
+function latestTideInBranch(branch) {
+    if (!branch.data['latest-tides']) {
+        return;
+    }
+
+    var lastTides = sortedTides(branch);
+
+    return lastTides.length ? lastTides[0] : null;
+}
 angular.module('continuousPipeRiver')
     .filter('latestTideInBranch', function () {
-        return function (branch) {
-            if (!branch.data['latest-tides']) {
-                return;
-            }
-
-            var lastTides = sortedTides(branch);
-
-            return lastTides.length ? lastTides[0] : null;
-        };
+        return latestTideInBranch;
     })
     .filter('branchLastTides', function() {
         return function (branch) {
@@ -36,4 +38,22 @@ angular.module('continuousPipeRiver')
             })
         }
     })
+    .filter('branchLatestCommit', function() {
+        return function(branch) {
+            if (!branch.data) {
+                return;
+            }
 
+            if (branch.data['latest-commit']) {
+                return branch.data['latest-commit'].sha;
+            }
+
+            var lastTide = latestTideInBranch(branch);
+            if (!lastTide) {
+                return;
+            }
+
+            return lastTide.code_reference.sha1;
+        };
+    })
+;
