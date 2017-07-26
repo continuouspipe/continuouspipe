@@ -22,8 +22,10 @@ angular.module('continuousPipeRiver')
                         });
                     })
                     .map(function(pullRequestInBranch) {
-                        var view = $scope.branches.filter(function(branch) {return branch.$id == pullRequestInBranch.$id})[0];
-                        view.pull_request = pullRequestInBranch;
+                        var view = $scope.branches.filter(function(branch) {return branch.$id == pullRequestInBranch.$id})[0],
+                            pullRequestIdentifier = Object.keys(pullRequestInBranch)[0];
+
+                        view.pull_request = pullRequestInBranch[pullRequestIdentifier];
 
                         return view;
                     })
