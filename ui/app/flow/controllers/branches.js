@@ -26,8 +26,8 @@ angular.module('continuousPipeRiver')
                             firstPullRequestKey = Object.keys(pullRequestInBranch)[0];
 
                         view.pull_request = 
-                            typeof pullRequestInBranch[pullRequestIdentifier] == 'object' ?
-                            pullRequestInBranch[pullRequestIdentifier] :
+                            typeof pullRequestInBranch[firstPullRequestKey] == 'object' ?
+                            pullRequestInBranch[firstPullRequestKey] :
                             pullRequestInBranch;
 
                         return view;
