@@ -19,13 +19,13 @@ Feature:
           encrypted_value: YXBpX2tleQ==
 
     tasks:
-        0_images:
+        00_images:
             build:
                 services:
                     app:
                         image: quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000
 
-        2_app_deployment:
+        10_app_deployment:
             deploy:
                 services:
                     app:
@@ -76,7 +76,7 @@ Feature:
     Then the generated configuration should contain at least:
     """
     tasks:
-        1_database_deployment:
+        05_database_deployment:
             deploy:
                 services:
                     database:
@@ -84,7 +84,7 @@ Feature:
                             ports:
                                 - { identifier: database5432, port: 5432, protocol: TCP }
 
-        2_app_deployment:
+        10_app_deployment:
             deploy:
                 services:
                     app:
@@ -104,7 +104,7 @@ Feature:
     Then the generated configuration should contain at least:
     """
     tasks:
-        0_images:
+        00_images:
             build:
                 services:
                     app:
@@ -138,7 +138,7 @@ Feature:
     Then the generated configuration should contain at least:
     """
     tasks:
-        0_images:
+        00_images:
             build:
                 services:
                     app:

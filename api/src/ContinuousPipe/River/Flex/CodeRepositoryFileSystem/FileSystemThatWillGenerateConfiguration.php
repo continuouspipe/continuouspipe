@@ -63,12 +63,18 @@ class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
 
     private function generateFile(string $filePath)
     {
-        $generatedFiles = $this->configurationGenerator->generate($this->decoratedFileSystem, $this->flow);
+        $generatedConfiguration = $this->configurationGenerator->generate($this->decoratedFileSystem, $this->flow);
 
-        if (!array_key_exists($filePath, $generatedFiles)) {
-            throw new FileNotFound('File '.$filePath.' was not generated');
+        foreach ($generatedConfiguration->getGeneratedFiles() as $generatedFile) {
+            if ($generatedFile->getPath() == $filePath) {
+                if ($generatedFile->hasFailed()) {
+                    throw new FileNotFound('Generation of file '.$filePath.' failed: '.$generatedFile->getFailureReason());
+                }
+
+                return $generatedFile->getContents();
+            }
         }
 
-        return $generatedFiles[$filePath];
+        throw new FileNotFound('File '.$filePath.' was not generated');
     }
 }

@@ -52,10 +52,10 @@ class InjectGeneratedFilesInCodeArchiveStreamer implements CodeArchiveStreamer
         }
 
         $archive = FileSystemArchive::fromStream($stream, FileSystemArchive::TAR_GZ);
-        $generateFiles = $this->configurationGenerator->generate($archive->getFilesystem(), $flow);
+        $generatedConfiguration = $this->configurationGenerator->generate($archive->getFilesystem(), $flow);
 
-        foreach ($generateFiles as $filePath => $contents) {
-            $archive->writeFile($filePath, $contents);
+        foreach ($generatedConfiguration->getGeneratedFiles() as $generatedFile) {
+            $archive->writeFile($generatedFile->getPath(), $generatedFile->getContents());
         }
 
         return $archive->read(Archive::TAR_GZ);
