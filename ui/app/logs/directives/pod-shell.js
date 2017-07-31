@@ -81,6 +81,13 @@ angular.module('continuousPipeRiver')
                     $scope.$on('$destroy', function() {
                         socket.close();
                     });
+
+                    Intercom('trackEvent', 'web-shelled-in-pod', {
+                        flow: $scope.environment.flow.uuid,
+                        namespace: $scope.environment.identifier,
+                        pod: $scope.pod.identifier,
+                        cluster: $scope.environment.cluster
+                    });
                 };
             }
         };
