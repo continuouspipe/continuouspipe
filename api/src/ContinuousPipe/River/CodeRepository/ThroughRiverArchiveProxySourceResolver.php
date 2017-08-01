@@ -55,7 +55,8 @@ class ThroughRiverArchiveProxySourceResolver implements BuildRequestSourceResolv
             'https://'.$this->riverUrl.$this->urlGenerator->generate('flow_source_code_archive', [
                 'flowUuid' => $flowUuid->toString(),
                 'reference' => $codeReference->getCommitSha() ?: $codeReference->getBranch(),
-            ]), [
+            ]),
+            [
                 'Authorization' => 'Bearer '.$token
             ]
         );

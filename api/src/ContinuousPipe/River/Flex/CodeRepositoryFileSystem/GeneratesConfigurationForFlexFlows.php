@@ -4,9 +4,8 @@ namespace ContinuousPipe\River\Flex\CodeRepositoryFileSystem;
 
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
-use ContinuousPipe\River\Flex\ConfigurationGenerator;
+use ContinuousPipe\River\Flex\FlowConfigurationGenerator;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 class GeneratesConfigurationForFlexFlows implements FileSystemResolver
@@ -16,11 +15,11 @@ class GeneratesConfigurationForFlexFlows implements FileSystemResolver
      */
     private $decoratedFileSystemResolver;
     /**
-     * @var ConfigurationGenerator
+     * @var FlowConfigurationGenerator
      */
     private $configurationGenerator;
 
-    public function __construct(FileSystemResolver $decoratedFileSystemResolver, ConfigurationGenerator $configurationGenerator)
+    public function __construct(FileSystemResolver $decoratedFileSystemResolver, FlowConfigurationGenerator $configurationGenerator)
     {
         $this->decoratedFileSystemResolver = $decoratedFileSystemResolver;
         $this->configurationGenerator = $configurationGenerator;

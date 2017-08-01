@@ -8,6 +8,8 @@
         <!-- Flex activation -->
         <service id="river.flex.availability_detector" class="ContinuousPipe\River\Flex\FlexAvailabilityDetector">
             <argument type="service" id="river.file_system_resolver" />
+            <argument type="service" id="river.flex.configuration_generation.generator_for_flow" />
+            <argument type="service" id="logger" />
         </service>
         <service id="river.flex.cluster_resolver" class="ContinuousPipe\River\Flex\Cluster\ClusterResolver">
             <argument>%flex_cluster_address%</argument>
@@ -24,13 +26,16 @@
         </service>
 
         <!-- Configuration generation -->
-        <service id="river.flex.configuration_generator" class="ContinuousPipe\River\Flex\ConfigurationGenerator">
+        <service id="river.flex.configuration_generation.generator_for_flow" class="ContinuousPipe\River\Flex\ConfigurationGeneration\GeneratorForFlow">
             <argument type="service" id="river.flow.encrypted_variable_vault"/>
             <argument type="collection">
                 <argument key="CLOUD_FLARE_ZONE">%flex_cloud_flare_zone%</argument>
                 <argument key="CLOUD_FLARE_EMAIL">%flex_cloud_flare_email%</argument>
                 <argument key="CLOUD_FLARE_API_KEY">%flex_cloud_flare_api_key%</argument>
             </argument>
+        </service>
+        <service id="river.flex.configuration_generator" class="ContinuousPipe\River\Flex\GenerateConfigurationFromFlexGenerator">
+            <argument type="service" id="river.flex.configuration_generation.generator_for_flow" />
         </service>
         <service id="river.flex.generates_configuration_per_flow"
                  class="ContinuousPipe\River\Flex\CodeRepositoryFileSystem\GeneratesConfigurationForFlexFlows"
@@ -47,5 +52,20 @@
             <argument type="service" id="river.flow.projections.flat_flow_repository"/>
             <argument type="service" id="river.flex.configuration_generator" />
         </service>
+
+        <!-- Display generated configuration -->
+        <service id="river.flex.configuration_generator.recorded"
+                 class="ContinuousPipe\River\Flex\DisplayGeneratedConfiguration\RecordedConfigurationGeneration"
+                 decorates="river.flex.configuration_generator">
+            <argument type="service" id="river.flex.configuration_generator.recorded.inner" />
+        </service>
+
+        <service id="river.flex.configuration_generator.add_generated_configuration_to_logs" class="ContinuousPipe\River\Flex\DisplayGeneratedConfiguration\DisplayedGeneratedConfigurationWhenTideIsCreated">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="river.flex.configuration_generator.recorded" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated" />
+         </service>
     </services>
 </container>

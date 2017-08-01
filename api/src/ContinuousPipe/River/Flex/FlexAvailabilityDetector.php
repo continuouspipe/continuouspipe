@@ -3,10 +3,15 @@
 namespace ContinuousPipe\River\Flex;
 
 use ContinuousPipe\DockerCompose\FileNotFound;
+use ContinuousPipe\Flex\ConfigurationFileCollectionGenerator;
+use ContinuousPipe\Flex\ConfigurationGeneration\GenerationException;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
+use ContinuousPipe\River\Flex\ConfigurationGeneration\GeneratorForFlow;
+use ContinuousPipe\River\Flex\FileSystem\FlySystemAdapter;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use Psr\Log\LoggerInterface;
 
 class FlexAvailabilityDetector
 {
@@ -16,11 +21,24 @@ class FlexAvailabilityDetector
     private $fileSystemResolver;
 
     /**
-     * @param FileSystemResolver $fileSystemResolver
+     * @var GeneratorForFlow
      */
-    public function __construct(FileSystemResolver $fileSystemResolver)
+    private $generatorForFlow;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @param FileSystemResolver $fileSystemResolver
+     * @param GeneratorForFlow $generatorForFlow
+     * @param LoggerInterface $logger
+     */
+    public function __construct(FileSystemResolver $fileSystemResolver, GeneratorForFlow $generatorForFlow, LoggerInterface $logger)
     {
         $this->fileSystemResolver = $fileSystemResolver;
+        $this->generatorForFlow = $generatorForFlow;
+        $this->logger = $logger;
     }
 
     /**
@@ -41,19 +59,25 @@ class FlexAvailabilityDetector
         }
 
         try {
-            $composerFile = $fileSystem->getContents('composer.json');
-        } catch (FileNotFound $e) {
-            throw new FlexException('File `composer.json` not found in the repository', $e->getCode(), $e);
+            $generatedConfiguration = $this->generatorForFlow->get($flow)->generate(new FlySystemAdapter($fileSystem));
+        } catch (GenerationException $e) {
+            $this->logger->warning('Flex is not available following an exception', [
+                'exception' => $e,
+                'flow_uuid' => $flow->getUuid()->toString(),
+            ]);
+
+            return false;
         }
 
-        try {
-            $composer = \GuzzleHttp\json_decode($composerFile, true);
-        } catch (\InvalidArgumentException $e) {
-            throw new FlexException('File `composer.json` is not a valid JSON file');
-        }
+        foreach ($generatedConfiguration->getGeneratedFiles() as $generatedFile) {
+            if ($generatedFile->hasFailed()) {
+                $this->logger->warning('Flex is not available following a failed generated file', [
+                    'file' => $generatedFile->getPath(),
+                    'failure_reason' => $generatedFile->getFailureReason(),
+                ]);
 
-        if (!isset($composer['require']) || !isset($composer['require']['symfony/flex'])) {
-            throw new FlexException('`symfony/flex` is not a dependency of your project');
+                return false;
+            }
         }
 
         return true;

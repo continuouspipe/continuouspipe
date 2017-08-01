@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bfb6f769a7084edcd29e044f59d97498",
+    "content-hash": "b07b65bc16380a6fb32dbea7f644ce22",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -278,6 +278,45 @@
                 "issues": "https://github.com/continuouspipe/events/issues"
             },
             "time": "2017-03-02T13:13:17+00:00"
+        },
+        {
+            "name": "continuous-pipe/flex",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/flex.git",
+                "reference": "01ac0265ef9587c2868cc1b0a72917a649894a5f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/flex/zipball/01ac0265ef9587c2868cc1b0a72917a649894a5f",
+                "reference": "01ac0265ef9587c2868cc1b0a72917a649894a5f",
+                "shasum": ""
+            },
+            "require": {
+                "league/flysystem": "^1.0",
+                "symfony/dotenv": "^3.3",
+                "symfony/finder": "^2.7 || ^3.0"
+            },
+            "require-dev": {
+                "behat/behat": "^3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ContinuousPipe\\Flex\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "ContinuousPipe\\Flex\\": "tests/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/continuouspipe/flex/tree/master",
+                "issues": "https://github.com/continuouspipe/flex/issues"
+            },
+            "time": "2017-08-01 12:44:03"
         },
         {
             "name": "continuous-pipe/message",
@@ -3241,6 +3280,89 @@
                 "jwt"
             ],
             "time": "2016-10-31T20:09:32+00:00"
+        },
+        {
+            "name": "league/flysystem",
+            "version": "1.0.40",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/flysystem.git",
+                "reference": "3828f0b24e2c1918bb362d57a53205d6dc8fde61"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/3828f0b24e2c1918bb362d57a53205d6dc8fde61",
+                "reference": "3828f0b24e2c1918bb362d57a53205d6dc8fde61",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "conflict": {
+                "league/flysystem-sftp": "<1.0.6"
+            },
+            "require-dev": {
+                "ext-fileinfo": "*",
+                "mockery/mockery": "~0.9",
+                "phpspec/phpspec": "^2.2",
+                "phpunit/phpunit": "~4.8"
+            },
+            "suggest": {
+                "ext-fileinfo": "Required for MimeType",
+                "league/flysystem-aws-s3-v2": "Allows you to use S3 storage with AWS SDK v2",
+                "league/flysystem-aws-s3-v3": "Allows you to use S3 storage with AWS SDK v3",
+                "league/flysystem-azure": "Allows you to use Windows Azure Blob storage",
+                "league/flysystem-cached-adapter": "Flysystem adapter decorator for metadata caching",
+                "league/flysystem-copy": "Allows you to use Copy.com storage",
+                "league/flysystem-eventable-filesystem": "Allows you to use EventableFilesystem",
+                "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",
+                "league/flysystem-sftp": "Allows you to use SFTP server storage via phpseclib",
+                "league/flysystem-webdav": "Allows you to use WebDAV storage",
+                "league/flysystem-ziparchive": "Allows you to use ZipArchive adapter",
+                "spatie/flysystem-dropbox": "Allows you to use Dropbox storage"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Flysystem\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Frank de Jonge",
+                    "email": "info@frenky.net"
+                }
+            ],
+            "description": "Filesystem abstraction: Many filesystems, one API.",
+            "keywords": [
+                "Cloud Files",
+                "WebDAV",
+                "abstraction",
+                "aws",
+                "cloud",
+                "copy.com",
+                "dropbox",
+                "file systems",
+                "files",
+                "filesystem",
+                "filesystems",
+                "ftp",
+                "rackspace",
+                "remote",
+                "s3",
+                "sftp",
+                "storage"
+            ],
+            "time": "2017-04-28T10:15:08+00:00"
         },
         {
             "name": "lexik/jwt-authentication-bundle",
@@ -8545,7 +8667,8 @@
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
         "continuous-pipe/worker-bundle": 20,
-        "continuous-pipe/message": 20
+        "continuous-pipe/message": 20,
+        "continuous-pipe/flex": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

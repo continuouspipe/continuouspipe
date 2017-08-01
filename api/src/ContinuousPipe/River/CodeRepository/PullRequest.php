@@ -32,7 +32,10 @@ class PullRequest
     public static function github(string $identifier, string $address, string $title = null, Branch $branch = null)
     {
         return new self(
-            $identifier, $title, $branch, str_replace(
+            $identifier,
+            $title,
+            $branch,
+            str_replace(
                 'api.github.com/repos/',
                 'github.com/',
                 $address
@@ -43,7 +46,10 @@ class PullRequest
     public static function bitbucket(string $identifier, string $address, string $title = null, Branch $branch = null)
     {
         return new self(
-            $identifier, $title, $branch, str_replace(
+            $identifier,
+            $title,
+            $branch,
+            str_replace(
                 'https://api.bitbucket.org/2.0/repositories/',
                 'https://bitbucket.org/',
                 $address . '/pull-requests/' . $identifier

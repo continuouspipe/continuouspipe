@@ -19,13 +19,13 @@ Feature:
           encrypted_value: YXBpX2tleQ==
 
     tasks:
-        0_images:
+        00_images:
             build:
                 services:
                     app:
                         image: quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000
 
-        2_app_deployment:
+        10_app_deployment:
             deploy:
                 services:
                     app:
@@ -76,7 +76,7 @@ Feature:
     Then the generated configuration should contain at least:
     """
     tasks:
-        1_database_deployment:
+        05_database_deployment:
             deploy:
                 services:
                     database:
@@ -84,7 +84,7 @@ Feature:
                             ports:
                                 - { identifier: database5432, port: 5432, protocol: TCP }
 
-        2_app_deployment:
+        10_app_deployment:
             deploy:
                 services:
                     app:
@@ -104,7 +104,7 @@ Feature:
     Then the generated configuration should contain at least:
     """
     tasks:
-        0_images:
+        00_images:
             build:
                 services:
                     app:
@@ -138,7 +138,7 @@ Feature:
     Then the generated configuration should contain at least:
     """
     tasks:
-        0_images:
+        00_images:
             build:
                 services:
                     app:
@@ -151,3 +151,42 @@ Feature:
                             - name: BAR
                               value: bar
     """
+
+  Scenario: It displays the generated configuration on the tide's logs
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
+    And the code repository contains the fixtures folder "flex-skeleton"
+    When a tide is started
+    Then a log containing "Generating configuration" should be created
+    And this log should be successful
+    And a log of type "tabs" should be created under the log "Generating configuration"
+    And this log should contain a tab "Dockerfile" with a content of type "raw"
+    And this log should contain a tab "docker-compose.yml" with a content of type "raw"
+    And this log should contain a tab "continuous-pipe.yml" with a content of type "raw"
+
+  Scenario: It only generates the DockerCompose and CP configuration if Dockerfile already exists
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
+    And the code repository contains the fixtures folder "flex-skeleton"
+    And the "Dockerfile" file in the code repository contains:
+    """
+    FROM php
+    RUN my-build-command
+    """
+    When a tide is started
+    Then a log containing "Generating configuration" should be created
+    And this log should be successful
+    And a log of type "tabs" should be created under the log "Generating configuration"
+    And this log should not contain a tab "Dockerfile"
+    And this log should contain a tab "docker-compose.yml" with a content of type "raw"
+    And this log should contain a tab "continuous-pipe.yml" with a content of type "raw"
+
+  Scenario: It fails to generate the configuration
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
+    When a tide is started
+    Then a log containing "Generating configuration" should be created
+    And this log should be failed
+    And a log of type "tabs" should be created under the log "Generating configuration"
+    And this log should contain a tab "Dockerfile" with a content of type "text"
+    And this log should contain a tab "Dockerfile" containing "File `composer.json` not found in the repository"

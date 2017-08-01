@@ -74,7 +74,8 @@ class FirebaseTideViewStorage implements TideViewStorage
                     'flows/%s/pipelines/%s',
                     (string) $tide->getFlowUuid(),
                     (string) $pipeline->getUuid()
-                ), [
+                ),
+                [
                     'uuid' => (string) $pipeline->getUuid(),
                     'name' => $pipeline->getName(),
                 ]

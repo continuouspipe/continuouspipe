@@ -170,7 +170,8 @@ class TideSummaryCreator
      */
     private function getDeploymentSuccessfulEventsForTide(Tide $tide): array
     {
-        return $this->getFilteredEvents($tide,
+        return $this->getFilteredEvents(
+            $tide,
             function ($event) {
                 return $event instanceof DeploymentSuccessful;
             }
@@ -182,7 +183,8 @@ class TideSummaryCreator
      */
     private function getDeploymentStartedEventsForTide(Tide $tide): array
     {
-        return $this->getFilteredEvents($tide,
+        return $this->getFilteredEvents(
+            $tide,
             function ($event) {
                 return $event instanceof DeploymentStarted;
             }

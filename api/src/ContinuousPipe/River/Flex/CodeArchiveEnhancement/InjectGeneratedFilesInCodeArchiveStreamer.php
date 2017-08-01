@@ -6,7 +6,7 @@ use ContinuousPipe\Archive\Archive;
 use ContinuousPipe\Archive\FileSystemArchive;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeArchiveStreamer;
-use ContinuousPipe\River\Flex\ConfigurationGenerator;
+use ContinuousPipe\River\Flex\FlowConfigurationGenerator;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use Psr\Http\Message\StreamInterface;
 use Ramsey\Uuid\UuidInterface;
@@ -24,14 +24,14 @@ class InjectGeneratedFilesInCodeArchiveStreamer implements CodeArchiveStreamer
     private $flowRepository;
 
     /**
-     * @var ConfigurationGenerator
+     * @var FlowConfigurationGenerator
      */
     private $configurationGenerator;
 
     public function __construct(
         CodeArchiveStreamer $decoratedStreamer,
         FlatFlowRepository $flowRepository,
-        ConfigurationGenerator $configurationGenerator
+        FlowConfigurationGenerator $configurationGenerator
     ) {
         $this->decoratedStreamer = $decoratedStreamer;
         $this->flowRepository = $flowRepository;
@@ -52,10 +52,10 @@ class InjectGeneratedFilesInCodeArchiveStreamer implements CodeArchiveStreamer
         }
 
         $archive = FileSystemArchive::fromStream($stream, FileSystemArchive::TAR_GZ);
-        $generateFiles = $this->configurationGenerator->generate($archive->getFilesystem(), $flow);
+        $generatedConfiguration = $this->configurationGenerator->generate($archive->getFilesystem(), $flow);
 
-        foreach ($generateFiles as $filePath => $contents) {
-            $archive->writeFile($filePath, $contents);
+        foreach ($generatedConfiguration->getGeneratedFiles() as $generatedFile) {
+            $archive->writeFile($generatedFile->getPath(), $generatedFile->getContents());
         }
 
         return $archive->read(Archive::TAR_GZ);

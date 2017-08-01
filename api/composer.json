@@ -58,7 +58,8 @@
         "continuous-pipe/events": "~0.2.0",
         "sroze/kubernetes-client": "~1.7.1",
         "continuous-pipe/message": "dev-add-transactions-and-delayed-messages",
-        "symfony/dotenv": "^3.3"
+        "symfony/dotenv": "^3.3",
+        "continuous-pipe/flex": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -161,6 +162,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/continuouspipe/events"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/continuouspipe/flex"
         }
     ]
 }
