@@ -30,6 +30,7 @@ use GitHub\Integration\InstallationTokenResolver;
 use GitHub\Integration\TraceableInstallationRepository;
 use GitHub\Integration\TraceableInstallationTokenResolver;
 use GitHub\WebHook\Model\Repository;
+use GuzzleHttp\Exception\ServerException;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Kernel;
@@ -283,6 +284,21 @@ class GitHubContext implements CodeRepositoryContext
     public function iHaveAFileInMyRepositoryThatContains($filePath, PyStringNode $string)
     {
         $this->thereIsAFileContaining($filePath, $string->getRaw());
+    }
+
+    /**
+     * @Given the code repository will return a :statusCode status code with the following response:
+     */
+    public function theCodeRepositoryWillReturnAStatusCodeWithTheFollowingResponse($statusCode, PyStringNode $string)
+    {
+        $contents = $string->getRaw();
+
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod) use ($statusCode, $contents) {
+            throw ServerException::create(
+                new \GuzzleHttp\Psr7\Request($httpMethod, $path),
+                new \GuzzleHttp\Psr7\Response($statusCode, ['Content-Type' => 'application/json'], $contents)
+            );
+        });
     }
 
     public function thereIsAFileContaining(string $filePath, string $contents)

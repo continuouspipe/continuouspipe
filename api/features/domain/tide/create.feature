@@ -67,3 +67,14 @@ Feature:
     When the tide for the branch "feature" and commit "3b0110193e36b317207909163d0a582f6f568qwe" is tentatively started
     And the tide should be failed
     Then a log containing "No `continuous-pipe.yml` file was found in the code repository." should be created
+
+  Scenario: It should display that the code repository does not work
+    Given the code repository will return a 502 status code with the following response:
+    """
+    {"message": "Server Error"}
+    """
+    And I have a flow
+    And the commit "3b0110193e36b317207909163d0a582f6f568qwe" was pushed to the branch "feature"
+    When the tide for the branch "feature" and commit "3b0110193e36b317207909163d0a582f6f568qwe" is tentatively started
+    And the tide should be failed
+    Then a log containing "Could not check the existence of the configuration file `continuous-pipe.yml`: " should be created

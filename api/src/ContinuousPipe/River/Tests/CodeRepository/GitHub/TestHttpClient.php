@@ -73,10 +73,18 @@ class TestHttpClient implements HttpClientInterface
             }
         }
 
+        if (preg_match('#^repos\/([a-z0-9-]+)\/([a-z0-9-]+)\/contents\/#i', $path)) {
+            $body = \GuzzleHttp\json_encode([
+                'content' => '',
+            ]);
+        } else {
+            $body = '';
+        }
+
         return new \Guzzle\Http\Message\Response(
             $httpMethod == 'HEAD' ? 404 : 200,
-            [],
-            ''
+            ['Content-Type' => 'application/json'],
+            $body
         );
     }
 

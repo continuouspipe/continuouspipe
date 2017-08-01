@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\BitBucket\Filesystem;
 
+use ContinuousPipe\DockerCompose\FileException;
 use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
@@ -49,7 +50,11 @@ class BitBucketRepositoryFilesystem implements RelativeFileSystem
                 $filePath
             );
         } catch (BitBucketClientException $e) {
-            throw new FileNotFound($e->getMessage(), $e->getCode(), $e);
+            if ($e->getCode() == 404) {
+                throw new FileNotFound($e->getMessage(), $e->getCode(), $e);
+            }
+
+            throw new FileException($e->getMessage(), $e->getCode(), $e);
         }
     }
 }

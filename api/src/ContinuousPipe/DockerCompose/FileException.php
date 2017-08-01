@@ -2,6 +2,6 @@
 
 namespace ContinuousPipe\DockerCompose;
 
-class FileNotFound extends FileException
+class FileException extends DockerComposeException
 {
 }
