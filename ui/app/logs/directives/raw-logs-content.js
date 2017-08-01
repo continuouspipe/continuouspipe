@@ -10,6 +10,10 @@ angular.module('continuousPipeRiver')
                     var value = '';
 
                     if (!log.children || log.children.length <= 0) {
+                        if (log.contents) {
+                            value = log.contents;
+                        }
+                        
                         return value;
                     }
 

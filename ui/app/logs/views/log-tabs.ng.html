@@ -1,0 +1,6 @@
+<md-tabs md-autoselect>
+    <md-tab ng-repeat="tab in log.tabs" label="{{ tab.name }}">
+        <pre ng-if="tab.contents.type == 'raw'" class="raw" raw-logs-content="tab.contents"></pre>
+        <div ng-if="tab.contents.type == 'text'" class="content" ng-bind-html="tab.contents.contents"></div>
+    </md-tab>
+</md-tabs>
