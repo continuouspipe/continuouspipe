@@ -18,7 +18,7 @@ class GenerateDocumentationCommand extends Command
      */
     private $configuration;
 
-    public function __construct($name = null, ConfigurationInterface $configuration)
+    public function __construct($name, ConfigurationInterface $configuration)
     {
         parent::__construct($name);
 
