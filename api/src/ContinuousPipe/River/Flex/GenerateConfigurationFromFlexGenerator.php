@@ -1,25 +1,16 @@
 <?php
 
+
 namespace ContinuousPipe\River\Flex;
 
-use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
 use ContinuousPipe\Flex\ConfigurationGeneration\GeneratedConfiguration;
 use ContinuousPipe\Flex\ConfigurationGeneration\GenerationException;
-use ContinuousPipe\Flex\GenerateFilesAsPerGeneratorMapping;
-use ContinuousPipe\Flex\Symfony\ContinuousPipeGenerator;
-use ContinuousPipe\Flex\Symfony\DockerComposeGenerator;
-use ContinuousPipe\Flex\Symfony\DockerGenerator;
-use ContinuousPipe\Flex\Symfony\GenerateFilesWithSymfonyContext;
-use ContinuousPipe\River\Flex\ConfigurationGeneration\EncryptedVariableDefinitionGenerator;
 use ContinuousPipe\River\Flex\ConfigurationGeneration\GeneratorForFlow;
 use ContinuousPipe\River\Flex\FileSystem\FlySystemAdapter;
-use ContinuousPipe\River\Flow\EncryptedVariable\EncryptedVariableVault;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use Symfony\Component\Dotenv\Dotenv;
-use Symfony\Component\Yaml\Yaml;
 
-class ConfigurationGenerator
+class GenerateConfigurationFromFlexGenerator implements FlowConfigurationGenerator
 {
     /**
      * @var GeneratorForFlow
@@ -35,12 +26,7 @@ class ConfigurationGenerator
     }
 
     /**
-     * @param RelativeFileSystem $fileSystem
-     * @param FlatFlow $flow
-     *
-     * @throws GenerationException
-     *
-     * @return GeneratedConfiguration
+     * {@inheritdoc}
      */
     public function generate(RelativeFileSystem $fileSystem, FlatFlow $flow) : GeneratedConfiguration
     {

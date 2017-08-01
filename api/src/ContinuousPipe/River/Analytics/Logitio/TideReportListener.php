@@ -114,7 +114,9 @@ class TideReportListener
         $createdAt = $tideView->getCreationDate();
         $finishedAt = $tideView->getFinishDate() ?: $tideView->getStartDate() ?: $createdAt;
 
-        $this->logitioClient->addEvent('tides', [
+        $this->logitioClient->addEvent(
+            'tides',
+            [
                 'flow_uuid' => (string) $tide->getFlowUuid(),
                 'username' => $tide->getUser()->getUsername(),
                 'project' => $tide->getTeam()->getName(),

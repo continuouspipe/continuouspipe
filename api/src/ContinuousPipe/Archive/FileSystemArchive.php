@@ -40,7 +40,8 @@ class FileSystemArchive implements Archive
         foreach (
             $iterator = new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
-                \RecursiveIteratorIterator::SELF_FIRST) as $item
+                \RecursiveIteratorIterator::SELF_FIRST
+            ) as $item
         ) {
             if ($item->isDir()) {
                 mkdir($directory . DIRECTORY_SEPARATOR . $iterator->getSubPathName());

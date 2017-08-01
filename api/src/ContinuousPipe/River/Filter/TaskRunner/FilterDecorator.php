@@ -130,7 +130,8 @@ class FilterDecorator implements TaskRunner
         foreach ($configuration['tasks'] as $key => $task) {
             if ((isset($task['identifier']) && $task['identifier'] == $identifier)
                     ||
-                (is_string($key) && $key === $identifier
+                (
+                    is_string($key) && $key === $identifier
                 )
             ) {
                 return $task;

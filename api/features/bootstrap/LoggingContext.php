@@ -28,6 +28,11 @@ class LoggingContext implements Context
     private $logger;
 
     /**
+     * @var array|null
+     */
+    private $foundLog;
+
+    /**
      * @param KernelInterface $kernel
      * @param InMemoryLogClient $inMemoryLogClient
      * @param DebugLoggerInterface $logger
@@ -77,7 +82,7 @@ class LoggingContext implements Context
 
         $parentLog = $this->findLogByContents($parentContents, $this->findAllLogs());
         $children = $this->findAllLogsByParent($parentLog);
-        $this->findLogByType($type, $children);
+        $this->foundLog = $this->findLogByType($type, $children);
     }
 
     /**
@@ -165,6 +170,8 @@ class LoggingContext implements Context
         if (0 === count($matchingLogs)) {
             throw new \RuntimeException('No matching logs found');
         }
+
+        $this->foundLog = $matchingLogs[0];
     }
 
     /**
@@ -290,6 +297,79 @@ class LoggingContext implements Context
         }
 
         throw new \RuntimeException('The specified message not found in the log.');
+    }
+
+    /**
+     * @Then this log should be successful
+     */
+    public function thisLogShouldBeSuccessful()
+    {
+        if ($this->foundLog['status'] != Log::SUCCESS) {
+            throw new \RuntimeException(sprintf('Found status %s instead', $this->foundLog['status']));
+        }
+    }
+
+    /**
+     * @Then this log should be failed
+     */
+    public function thisLogShouldBeFailed()
+    {
+        if ($this->foundLog['status'] != Log::FAILURE) {
+            throw new \RuntimeException(sprintf('Found status %s instead', $this->foundLog['status']));
+        }
+    }
+
+    /**
+     * @Then this log should not contain a tab :tabName
+     */
+    public function thisLogShouldNotContainATab($tabName)
+    {
+        if (!isset($this->foundLog['tabs'])) {
+            throw new \RuntimeException('No tabs found in the log');
+        }
+
+        foreach ($this->foundLog['tabs'] as $tab) {
+            if ($tab['name'] == $tabName) {
+                throw new \RuntimeException('Tab has been found');
+            }
+        }
+    }
+
+    /**
+     * @Then this log should contain a tab :tabName with a content of type :tabContentType
+     */
+    public function thisLogShouldContainATabWithAContentOfType($tabName, $tabContentType)
+    {
+        $tab = $this->getTabCalledFromLastLog($tabName);
+        if ($tab['contents']['type'] != $tabContentType) {
+            throw new \RuntimeException(sprintf('Found content type %s instead', $tab['contents']['type']));
+        }
+    }
+
+    /**
+     * @Then this log should contain a tab :tabName containing :contents
+     */
+    public function thisLogShouldContainATabContaining($tabName, $contents)
+    {
+        $tab = $this->getTabCalledFromLastLog($tabName);
+        if ($tab['contents']['contents'] != $contents) {
+            throw new \RuntimeException(sprintf('Found content %s instead', $tab['contents']['contents']));
+        }
+    }
+
+    private function getTabCalledFromLastLog(string $tabName)
+    {
+        if (!isset($this->foundLog['tabs'])) {
+            throw new \RuntimeException('No tabs found in the log');
+        }
+
+        foreach ($this->foundLog['tabs'] as $tab) {
+            if ($tab['name'] == $tabName) {
+                return $tab;
+            }
+        }
+
+        throw new \RuntimeException('Tab not found');
     }
 
     /**

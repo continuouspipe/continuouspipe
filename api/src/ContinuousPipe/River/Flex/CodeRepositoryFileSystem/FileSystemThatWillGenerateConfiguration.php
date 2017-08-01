@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Flex\CodeRepositoryFileSystem;
 
 use ContinuousPipe\DockerCompose\FileNotFound;
 use ContinuousPipe\DockerCompose\RelativeFileSystem;
-use ContinuousPipe\River\Flex\ConfigurationGenerator;
+use ContinuousPipe\River\Flex\FlowConfigurationGenerator;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
@@ -26,11 +26,11 @@ class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
     private $flow;
 
     /**
-     * @var ConfigurationGenerator
+     * @var FlowConfigurationGenerator
      */
     private $configurationGenerator;
 
-    public function __construct(ConfigurationGenerator $configurationGenerator, RelativeFileSystem $decoratedFileSystem, FlatFlow $flow)
+    public function __construct(FlowConfigurationGenerator $configurationGenerator, RelativeFileSystem $decoratedFileSystem, FlatFlow $flow)
     {
         $this->configurationGenerator = $configurationGenerator;
         $this->decoratedFileSystem = $decoratedFileSystem;
