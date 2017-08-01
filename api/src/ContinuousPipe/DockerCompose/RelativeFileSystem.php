@@ -9,6 +9,8 @@ interface RelativeFileSystem
      *
      * @param string $filePath
      *
+     * @throws FileException
+     *
      * @return bool
      */
     public function exists($filePath);
@@ -19,6 +21,7 @@ interface RelativeFileSystem
      * @param string $filePath
      *
      * @throws FileNotFound
+     * @throws FileException
      *
      * @return string
      */
