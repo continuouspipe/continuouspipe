@@ -65,6 +65,7 @@
             <argument type="service" id="command_bus" />
             <argument type="service" id="river.tide.external_relations.resolver" />
             <argument type="service" id="river.commit_resolver" />
+            <argument type="service" id="river.code_repository.branch_query" />
         </service>
         <service id="app.controller.flow_environment" class="AppBundle\Controller\FlowEnvironmentController">
             <argument type="service" id="river.flow.environment_client" />
