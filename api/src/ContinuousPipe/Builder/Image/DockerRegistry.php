@@ -60,7 +60,7 @@ class DockerRegistry implements Registry
         );
     }
 
-    private function fetchAuthDetails(Image $image, DockerRegistryCredentials $credentials)
+    private function fetchAuthDetails(Image $image, DockerRegistryCredentials $credentials) : array
     {
         $initialResponse = $this->requestManifest($image, $credentials->getServerAddress());
 
@@ -78,9 +78,9 @@ class DockerRegistry implements Registry
         return array_column($matches, 2, 1);
     }
 
-    private function fetchToken($authDetails, $credentials): string
+    private function fetchToken(array $authDetails, DockerRegistryCredentials $credentials): string
     {
-        $tokenResposne = $this->client->request(
+        $tokenResponse = $this->client->request(
             'get',
             sprintf('%s?service=%s&scope=%s', $authDetails['realm'], $authDetails['service'], $authDetails['scope']),
             [
@@ -92,11 +92,10 @@ class DockerRegistry implements Registry
             ]
         );
 
-        if ($tokenResposne->getStatusCode() != 200) {
+        if ($tokenResponse->getStatusCode() != 200) {
             //throw exception or just return false?
         }
 
-        return \GuzzleHttp\json_decode($tokenResposne->getBody(), true)['token'];
+        return \GuzzleHttp\json_decode($tokenResponse->getBody(), true)['token'];
     }
-
 }
