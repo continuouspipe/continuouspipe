@@ -74,7 +74,12 @@
             </argument>
         </service>
 
-        <service id="builder.image.registry" class="ContinuousPipe\Builder\Image\InMemoryRegistry" />
+        <service id="builder.image.registry" class="ContinuousPipe\Builder\Image\DockerRegistry">
+            <argument type="service" id="builder.image.registry.http_client"/>
+            <argument type="service" id="builder.docker.authenticator_credentials_repository"/>
+        </service>
+
+        <service id="builder.image.registry.http_client" class="GuzzleHttp\Client"/>
 
         <service id="builder.existing_image_checker" class="ContinuousPipe\Builder\Image\ExistingImageChecker">
             <argument type="service" id="log_stream.logger_factory"/>
