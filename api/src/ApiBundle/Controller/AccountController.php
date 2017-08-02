@@ -63,7 +63,7 @@ class AccountController
     }
 
     /**
-     * @Route("/accounts/unlink/{accountUuid}", methods={"GET"})
+     * @Route("/accounts/{accountUuid}/unlink", methods={"POST"})
      * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
      * @ParamConverter("account", converter="account", options={"uuid"="accountUuid"})
      * @View
@@ -71,7 +71,6 @@ class AccountController
     public function unlinkAction(User $user, Account $account)
     {
         $this->accountRepository->unlink($user->getUsername(), $account);
-        return $account;
     }
 
 }

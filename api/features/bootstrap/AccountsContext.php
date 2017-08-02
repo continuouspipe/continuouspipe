@@ -368,7 +368,7 @@ class AccountsContext implements Context
      */
     public function iUnlinkMyGithubAccount($uuid)
     {
-        $this->kernel->handle(Request::create('/api/accounts/unlink/'.$uuid));
+        $this->kernel->handle(Request::create('/api/accounts/'.$uuid.'/unlink', Request::METHOD_POST));
     }
 
     /**
