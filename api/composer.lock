@@ -285,12 +285,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/flex.git",
-                "reference": "01ac0265ef9587c2868cc1b0a72917a649894a5f"
+                "reference": "ee2faeb972aaae03d3ddebde9ee39462be0762e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/flex/zipball/01ac0265ef9587c2868cc1b0a72917a649894a5f",
-                "reference": "01ac0265ef9587c2868cc1b0a72917a649894a5f",
+                "url": "https://api.github.com/repos/continuouspipe/flex/zipball/ee2faeb972aaae03d3ddebde9ee39462be0762e4",
+                "reference": "ee2faeb972aaae03d3ddebde9ee39462be0762e4",
                 "shasum": ""
             },
             "require": {
@@ -316,7 +316,7 @@
                 "source": "https://github.com/continuouspipe/flex/tree/master",
                 "issues": "https://github.com/continuouspipe/flex/issues"
             },
-            "time": "2017-08-01 12:44:03"
+            "time": "2017-08-03 11:14:45"
         },
         {
             "name": "continuous-pipe/message",
