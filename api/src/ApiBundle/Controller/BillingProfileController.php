@@ -3,15 +3,20 @@
 namespace ApiBundle\Controller;
 
 use ContinuousPipe\Billing\BillingProfile\Request\UserBillingProfileCreationRequest;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileCreator;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
+use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use ContinuousPipe\Security\User\User;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -34,14 +39,28 @@ class BillingProfileController
      */
     private $validator;
 
+    /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
+
+    /**
+     * @var SubscriptionClient
+     */
+    private $subscriptionClient;
+
     public function __construct(
         UserBillingProfileRepository $userBillingProfileRepository,
         UserBillingProfileCreator $userBillingProfileCreator,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        AuthorizationCheckerInterface $authorizationChecker,
+        SubscriptionClient $subscriptionClient
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
         $this->userBillingProfileCreator = $userBillingProfileCreator;
         $this->validator = $validator;
+        $this->authorizationChecker = $authorizationChecker;
+        $this->subscriptionClient = $subscriptionClient;
     }
 
     /**
@@ -91,5 +110,40 @@ class BillingProfileController
         }
 
         return $this->userBillingProfileCreator->create($creationRequest, $user);
+    }
+
+    /**
+     * @Route("/billing-profile/{uuid}", methods={"GET"})
+     * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @View
+     */
+    public function getBillingProfileAction(User $user, string $uuid)
+    {
+        $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
+        if (!$this->hasAccess($billingProfile)) {
+            throw new AccessDeniedHttpException('You are not authorized to access this billing profile');
+        }
+
+        return $billingProfile;
+    }
+
+    /**
+     * @Route("/billing-profile/{uuid}/subscriptions", methods={"GET"})
+     * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @View
+     */
+    public function getSubscriptionsAction(User $user, string $uuid)
+    {
+        $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
+        if (!$this->hasAccess($billingProfile)) {
+            throw new AccessDeniedHttpException('You are not authorized to access this billing profile');
+        }
+
+        return $this->subscriptionClient->findSubscriptionsForBillingProfile($billingProfile);
+    }
+
+    private function hasAccess(UserBillingProfile $billingProfile)
+    {
+        return $this->authorizationChecker->isGranted(['view'], $billingProfile);
     }
 }

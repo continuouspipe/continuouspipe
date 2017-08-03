@@ -300,6 +300,43 @@ class SubscriptionContext implements Context
         $this->assertStatusCode(403);
     }
 
+    /**
+     * @When I request the subscriptions for billing profile :uuid
+     */
+    public function iRequestTheSubscriptionsForBillingProfile($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create('/api/billing-profile/' . $uuid . '/subscriptions'));
+    }
+
+    /**
+     * @Then I should not be authorized to view the subscriptions
+     */
+    public function iShouldNotBeAuthorizedToViewTheSubscriptions()
+    {
+        $this->assertStatusCode(403);
+    }
+
+    /**
+     * @Then I should see the following subscriptions:
+     */
+    public function iShouldSeeTheFollowingSubscriptions(TableNode $table)
+    {
+        $this->assertStatusCode(200);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        $plans = array_map(function($subscription){
+            return $subscription['plan'];
+        }, $json);
+
+        foreach ($table->getColumnsHash() as $row) {
+            if (!in_array($row['plan'], $plans)) {
+                throw new \RuntimeException(sprintf('The plan %s should be one of the subscriptions', $row['plan']));
+            }
+        }
+    }
+
+
     private function assertStatusCode(int $code)
     {
         if ($this->response->getStatusCode() != $code) {

@@ -27,6 +27,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * @Route(service="app.controller.billing_profile")
@@ -76,6 +77,11 @@ class BillingProfileController
      */
     private $recurlySubdomain;
 
+    /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
+
     public function __construct(
         UserBillingProfileRepository $userBillingProfileRepository,
         SubscriptionClient $subscriptionClient,
@@ -86,6 +92,7 @@ class BillingProfileController
         TeamMembershipRepository $teamMembershipRepository,
         LoggerInterface $logger,
         UserBillingProfileCreator $userBillingProfileCreator,
+        AuthorizationCheckerInterface $authorizationChecker,
         string $recurlySubdomain
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
@@ -98,6 +105,7 @@ class BillingProfileController
         $this->teamMembershipRepository = $teamMembershipRepository;
         $this->logger = $logger;
         $this->userBillingProfileCreator = $userBillingProfileCreator;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     /**
@@ -146,7 +154,7 @@ class BillingProfileController
     public function configureAction(User $user, string $uuid, Request $request)
     {
         $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
-        if (!$this->userHasAccess($user, $billingProfile)) {
+        if (!$this->hasAccess($billingProfile)) {
             throw new AccessDeniedHttpException('You are not authorized to access this billing profile');
         }
 
@@ -281,23 +289,8 @@ class BillingProfileController
         return $this->userBillingProfileCreator->create($userBillingProfileCreationRequest, $user);
     }
 
-    private function userHasAccess(User $user, UserBillingProfile $billingProfile)
+    private function hasAccess(UserBillingProfile $billingProfile)
     {
-        if ($billingProfile->getUser()->getUsername() == $user->getUsername()) {
-            return true;
-        }
-
-        $teams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
-        $teamsUserIsAdmin = array_filter($teams, function (Team $team) use ($user) {
-            $adminUserMemberships = $team->getMemberships()->filter(function (TeamMembership $membership) use ($user) {
-                return $membership->getUser()->getUsername() == $user->getUsername();
-            })->filter(function (TeamMembership $membership) {
-                return in_array(TeamMembership::PERMISSION_ADMIN, $membership->getPermissions());
-            });
-
-            return $adminUserMemberships->count() > 0;
-        });
-
-        return count($teamsUserIsAdmin) > 0;
+        return $this->authorizationChecker->isGranted(['view'], $billingProfile);
     }
 }

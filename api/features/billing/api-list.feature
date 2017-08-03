@@ -24,6 +24,19 @@ Feature:
       | 00000000-0000-0000-0000-000000000000 |
       | 00000000-0000-0000-0000-000000000002 |
 
+  Scenario: I can see a specific billing profile
+    Given I am authenticated as user "samuel"
+    And there is a billing profile "00000000-0000-0000-0000-000000000001" for the user "samuel"
+    When I request the billing profile "00000000-0000-0000-0000-000000000001"
+    Then I should see that the billing profile is "00000000-0000-0000-0000-000000000001"
+
+  Scenario: I cannot see someone else's specific billing profile
+    Given I am authenticated as user "samuel"
+    And there is a user "mike"
+    And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "mike"
+    When I request the billing profile "00000000-0000-0000-0000-000000000000"
+    Then I should be told that I don't have the authorization
+
   Scenario: No user profile is a 404
     Given I am authenticated as user "unknown"
     When I request my billing profiles
