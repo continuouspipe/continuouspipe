@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\AccountRepository;
@@ -488,5 +489,45 @@ class AccountsContext implements Context
 
             throw new \RuntimeException(sprintf('Got status %d while expected to see %d', $this->response->getStatusCode(), $expectedStatus));
         }
+    }
+
+    /**
+     * @When I create a billing profile :name
+     */
+    public function iCreateABillingProfile($name)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/me/billing-profiles',
+            'POST',
+            [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'name' => $name,
+            ])
+        ));
+    }
+
+    /**
+     * @Then the billing profile :name for :username should have been created
+     */
+    public function theBillingProfileForShouldHaveBeenCreated($name, $username)
+    {
+        $this->assertResponseCode(201);
+
+        $profiles = $this->userBillingProfileRepository->findAllByUser(
+            $this->securityContext->thereIsAUser($username)->getUser()
+        );
+
+        foreach ($profiles as $profile) {
+            if ($name === $profile->getName()) {
+                return;
+            }
+        }
+
+        throw new UserBillingProfileNotFound(sprintf(
+            'billing profile %s not found for user %s',
+            $name,
+            $username
+        ));
     }
 }

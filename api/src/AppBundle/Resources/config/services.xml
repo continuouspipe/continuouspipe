@@ -114,5 +114,10 @@
 
             <tag name="validator.constraint_validator" />
         </service>
+
+        <service id="app.user_billing_profile_creator" class="ContinuousPipe\Billing\BillingProfile\UserBillingProfileCreator">
+            <argument type="service" id="app.repository.billing_profile" />
+        </service>
+
     </services>
 </container>
