@@ -22,7 +22,7 @@ Then you can just run the following command and it will set the correct node ver
 nvm use
 ```
 
-Once you have node setup correctly you can install the dependecies.
+Once you have node setup correctly you can install the dependencies.
 ```
 npm install
 ```
@@ -38,9 +38,7 @@ sudo gem install compass
 npm install -g compass
 ```
 
-Finally you can start the application. It requires 2 environment vairables, the API to authenticate against and the river API url.
+Finally you can start the application. It requires 2 environment vairables, the API to authenticate against and the River API url.
 ```
 AUTHENTICATOR_API_URL=https://authenticator-staging.continuouspipe.io RIVER_API_URL=https://river-staging.continuouspipe.io grunt serve
 ```
-
-Note: The command above might be split over 2 lines depending on your display but it's one command!
