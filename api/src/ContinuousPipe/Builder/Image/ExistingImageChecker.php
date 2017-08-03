@@ -5,6 +5,7 @@ namespace ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Aggregate\Build;
 use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Request\BuildRequest;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 
@@ -73,7 +74,7 @@ class ExistingImageChecker
     private function logReusingImages(array $steps)
     {
         foreach ($steps as $step) {
-            $this->loggerFactory->fromId($step)->child(
+            $child = $this->loggerFactory->fromId($step)->child(
                 new Text(
                     sprintf(
                         'Re-using pre-built Docker image %s:%s',
@@ -82,6 +83,7 @@ class ExistingImageChecker
                     )
                 )
             );
+            $child->updateStatus(Log::SUCCESS);
         }
     }
 }
