@@ -1,13 +1,8 @@
-FROM nginx as build
-
-# Install NodeJS
-RUN apt-get update \
- && apt-get install -y curl gnupg \
- && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
- && apt-get install -y nodejs build-essential
+FROM quay.io/continuouspipe/nodejs7:stable as build
 
 # Install prerequisites build tools
-RUN apt-get install -y ruby ruby-dev build-essential git \
+RUN apt-get update \
+  && apt-get install -y ruby ruby-dev build-essential git \
   && gem install --no-rdoc --no-ri sass -v 3.4.22 \
   && gem install --no-rdoc --no-ri compass \
   && npm install -g grunt-cli bower
