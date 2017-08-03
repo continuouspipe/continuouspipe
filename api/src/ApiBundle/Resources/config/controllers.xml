@@ -16,6 +16,7 @@
             <argument type="service" id="builder.view.build_repository" />
             <argument type="service" id="builder.request_transformer" />
             <argument type="service" id="builder.existing_image_checker" />
+            <argument type="service" id="logger" />
         </service>
 
         <service id="api.controller.complete_build" class="ApiBundle\Controller\CompleteBuildController">
