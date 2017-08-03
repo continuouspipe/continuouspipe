@@ -112,7 +112,7 @@ class CreateBuildController
             if ($this->imageChecker->checkIfImagesExist($build)) {
                 return $build;
             }
-        } catch (SearchingForExistingImageException $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->warning('Something went wrong while checking for existing image', [$exception]);
         }
 
