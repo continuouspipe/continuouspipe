@@ -18,4 +18,16 @@ angular.module('continuousPipeRiver')
                 projectId: projectId
             }).$promise;
         };
+
+        this.unlinkAccount = function(accountUuid) {
+            return $resource(
+                AUTHENTICATOR_API_URL+'/api/accounts/:uuid/unlink',
+                {uuid:accountUuid},
+                {unlink: {method:'POST'}}
+            ).unlink().$promise;
+        };
+
+        this.connectAccount = function(type) {
+            window.location.href = AUTHENTICATOR_API_URL+'/connect/'+ type + '?redirectUrl=' + window.location.href;
+        }
     });
