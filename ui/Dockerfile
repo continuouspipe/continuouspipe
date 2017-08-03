@@ -1,4 +1,4 @@
-FROM nginx
+FROM nginx as build
 
 # Install NodeJS
 RUN apt-get update \
@@ -13,12 +13,7 @@ RUN apt-get install -y ruby ruby-dev build-essential git \
   && npm install -g grunt-cli bower
 
 # Build the application
-RUN mkdir /app
 WORKDIR /app
-
-# Copy configuration
-COPY /docker/run.sh /run.sh
-COPY /docker/nginx/vhost.conf /etc/nginx/conf.d/default.conf
 
 # Install node dependencies
 ADD package.json /app/package.json
@@ -33,5 +28,14 @@ RUN bower install --config.interactive=false --allow-root
 COPY . /app
 RUN grunt build
 
-# Copy the runnable
+FROM nginx
+
+# Copy configuration
+COPY /docker/run.sh /run.sh
+COPY /docker/nginx/vhost.conf /etc/nginx/conf.d/default.conf
+
+# Copy code
+WORKDIR /app/dist
+COPY --from=build /app/dist /app/dist
+
 CMD ["/run.sh"]

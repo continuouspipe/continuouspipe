@@ -34,16 +34,7 @@ tasks:
         build:
             services:
                 ui:
-                    steps:
-                        - docker_file_path: ./docker/build/Buildfile
-                          write_artifacts:
-                              - name: dist
-                                path: /app/dist
-                        - docker_file_path: ./docker/build/Productionfile
-                          image: inviqasession/cp-river-ui
-                          read_artifacts:
-                              - name: dist
-                                path: /dist
+                    image: inviqasession/cp-river-ui
 
     deployment:
         deploy:
