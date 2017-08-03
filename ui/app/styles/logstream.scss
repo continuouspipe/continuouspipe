@@ -374,6 +374,23 @@ pre {
             }
         }
     }
+
+    &.type-tabs {
+        margin: 0;
+
+        md-tab-content {
+            display: flex;
+
+            > div {
+                display: flex;
+                flex: 1;
+
+                > pre {
+                    flex: 1;
+                }
+            }
+        }
+    }
 }
 
 md-dialog.logs-dialog {
