@@ -355,13 +355,20 @@ class AccountsContext implements Context
         $this->response = $this->kernel->handle(Request::create('/api/me/accounts'));
     }
 
-
     /**
      * @When I request the details of the account :uuid
      */
     public function iRequestTheDetailsOfTheAccount($uuid)
     {
         $this->response = $this->kernel->handle(Request::create('/api/accounts/'.$uuid));
+    }
+
+    /**
+     * @When I unlink my GitHub account :arg1
+     */
+    public function iUnlinkMyGithubAccount($uuid)
+    {
+        $this->kernel->handle(Request::create('/api/accounts/'.$uuid.'/unlink', Request::METHOD_POST));
     }
 
     /**
