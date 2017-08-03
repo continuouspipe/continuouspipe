@@ -65,11 +65,11 @@ class DockerRegistry implements Registry
         $initialResponse = $this->requestManifest($image, $credentials->getServerAddress());
 
         if ($initialResponse->getStatusCode() != 401) {
-            //throw exception or just return false?
+            throw new SearchingForExistingImageException('Error requesting auth details');
         }
 
         if (null === $authHeader = $initialResponse->getHeader('WWW-Authenticate')) {
-            //throw exception or just return false?
+            throw new SearchingForExistingImageException('Error retrieving auth details from response header');
         }
 
         preg_match_all('/(\w+)="([^"]+)"/', $authHeader, $matches, PREG_SET_ORDER);
@@ -93,7 +93,7 @@ class DockerRegistry implements Registry
         );
 
         if ($tokenResponse->getStatusCode() != 200) {
-            //throw exception or just return false?
+            throw new SearchingForExistingImageException('Token unavailable');
         }
 
         return \GuzzleHttp\json_decode($tokenResponse->getBody(), true)['token'];
