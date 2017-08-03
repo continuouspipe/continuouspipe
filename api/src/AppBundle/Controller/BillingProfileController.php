@@ -3,8 +3,10 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\Billing\ActivityTracker\ActivityTracker;
+use ContinuousPipe\Billing\BillingProfile\Request\UserBillingProfileCreationRequest;
 use ContinuousPipe\Billing\BillingProfile\Trial\TrialResolver;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileCreator;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Billing\Subscription\Subscription;
 use ContinuousPipe\Billing\Subscription\SubscriptionClient;
@@ -63,6 +65,12 @@ class BillingProfileController
      * @var LoggerInterface
      */
     private $logger;
+
+    /**
+     * @var UserBillingProfileCreator
+     */
+    private $userBillingProfileCreator;
+
     /**
      * @var string
      */
@@ -77,6 +85,7 @@ class BillingProfileController
         UsageTracker $usageTracker,
         TeamMembershipRepository $teamMembershipRepository,
         LoggerInterface $logger,
+        UserBillingProfileCreator $userBillingProfileCreator,
         string $recurlySubdomain
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
@@ -88,6 +97,7 @@ class BillingProfileController
         $this->usageTracker = $usageTracker;
         $this->teamMembershipRepository = $teamMembershipRepository;
         $this->logger = $logger;
+        $this->userBillingProfileCreator = $userBillingProfileCreator;
     }
 
     /**
@@ -265,17 +275,10 @@ class BillingProfileController
      */
     private function createBillingProfile(User $user, string $name): UserBillingProfile
     {
-        $billingProfile = new UserBillingProfile(
-            Uuid::uuid4(),
-            $user,
-            $name,
-            new \DateTime(),
-            true
-        );
+        $userBillingProfileCreationRequest = new userBillingProfileCreationRequest;
+        $userBillingProfileCreationRequest->name = $name;
 
-        $this->userBillingProfileRepository->save($billingProfile);
-
-        return $billingProfile;
+        return $this->userBillingProfileCreator->create($userBillingProfileCreationRequest, $user);
     }
 
     private function userHasAccess(User $user, UserBillingProfile $billingProfile)

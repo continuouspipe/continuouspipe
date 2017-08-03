@@ -25,6 +25,7 @@
             <argument type="service" id="app.billing.usage_tracker" />
             <argument type="service" id="app.repository.team_membership" />
             <argument type="service" id="logger" />
+            <argument type="service" id="app.user_billing_profile_creator" />
             <argument>%recurly_subdomain%</argument>
         </service>
 
