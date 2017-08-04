@@ -35,8 +35,7 @@ Feature:
     Then an intercom lead should be merged into the user "new-user@example.com"
 
   Scenario: Update user's companies when adding to a team
-    Given there is a user "another"
-    And the user "another" has email "user@example.com"
+    Given there is a user "another" with email "user@example.com"
     When I add the user "another" in the team "my-team"
     Then an intercom user "another" should be updated with its companies
     And an intercom event "added-to-team" should be created

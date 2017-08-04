@@ -279,13 +279,21 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Given the user :username has email :email
+     * @Given there is a user :username with email :email
      */
-    public function theUserHasEmail($username, $email)
+    public function thereIsAUserWithEmail($username, $email)
     {
-        $user = $this->securityUserRepository->findOneByUsername($username);
+        try {
+            $user = $this->securityUserRepository->findOneByUsername($username);
+        } catch (UserNotFound $e) {
+            $user = $this->userProvider->createUserFromUsername($username);
+        }
+
         $user->getUser()->setEmail($email);
         $this->securityUserRepository->save($user);
+
+        return $user;
     }
+
 
 }
