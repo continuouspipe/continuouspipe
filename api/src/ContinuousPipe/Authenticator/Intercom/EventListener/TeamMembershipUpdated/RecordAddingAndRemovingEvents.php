@@ -8,6 +8,7 @@ use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipRemoved;
 use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipSaved;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Templating\EngineInterface;
 
 class RecordAddingAndRemovingEvents implements EventSubscriberInterface
 {
@@ -19,15 +20,24 @@ class RecordAddingAndRemovingEvents implements EventSubscriberInterface
      * @var TeamMembershipRepository
      */
     private $teamMembershipRepository;
+    /**
+     * @var EngineInterface
+     */
+    private $templatingEngine;
 
     /**
-     * @param IntercomClient           $intercomClient
+     * @param IntercomClient $intercomClient
      * @param TeamMembershipRepository $teamMembershipRepository
+     * @param EngineInterface $templatingEngine
      */
-    public function __construct(IntercomClient $intercomClient, TeamMembershipRepository $teamMembershipRepository)
-    {
+    public function __construct(
+        IntercomClient $intercomClient,
+        TeamMembershipRepository $teamMembershipRepository,
+        EngineInterface $templatingEngine
+    ) {
         $this->intercomClient = $intercomClient;
         $this->teamMembershipRepository = $teamMembershipRepository;
+        $this->templatingEngine = $templatingEngine;
     }
 
     /**
@@ -63,6 +73,23 @@ class RecordAddingAndRemovingEvents implements EventSubscriberInterface
                 'team_slug' => $team->getSlug(),
                 'team_name' => $team->getName(),
                 'as_administrator' => in_array('ADMIN', $membership->getPermissions()),
+            ],
+        ]);
+
+        $this->intercomClient->message([
+            'message_type' => 'email',
+            'subject' => sprintf('You\'ve been added to the team "%s"', $team->getName()),
+            'template' => 'personal',
+            'body' => $this->templatingEngine->render(
+                '@intercom/user_added.html.twig',
+                [
+                    'team' => $team,
+                    'membership' => $membership,
+                ]
+            ),
+            'to' => [
+                'type' => 'user',
+                'email' => $user->getEmail(),
             ],
         ]);
     }
