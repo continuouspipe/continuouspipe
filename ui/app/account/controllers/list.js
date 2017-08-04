@@ -1,16 +1,19 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('AccountsController', function($scope, AccountRepository, AUTHENTICATOR_API_URL) {
+    .controller('AccountsController', function($scope, $remoteResource, $http, AccountRepository, AUTHENTICATOR_API_URL) {
 
-        $scope.connectAccountUrl = AUTHENTICATOR_API_URL + '/account/connected-accounts';
         $scope.accounts = [];
 
-        AccountRepository.findMine().then(function(accounts) {
-            $scope.accounts = accounts;
-        }, function(error) {
-            swal("Error !", $http.getError(error) || "An unknown error occured while loading your connected accounts", "error");
-        });
+        var load = function() {
+            $remoteResource.load('accounts', AccountRepository.findMine()).then(function (accounts) {
+                $scope.accounts = accounts;
+            });
+        };
+
+        var handleError = function(error) {
+            swal("Error !", $http.getError(error) || "An unknown error occured while unlinking the account", "error");
+        };
 
         $scope.unlinkAccount = function (account) {
             swal({
@@ -22,10 +25,7 @@ angular.module('continuousPipeRiver')
                 confirmButtonText: "Yes, unlink it!",
                 closeOnConfirm: true
             }, function() {
-                AccountRepository.unlinkAccount(account.uuid)
-                    .then(function(res) {
-                        removeAccount(account.uuid);
-                    });
+                AccountRepository.unlinkAccount(account.uuid).then(load, handleError);
             });
         };
 
@@ -33,10 +33,5 @@ angular.module('continuousPipeRiver')
             AccountRepository.connectAccount(type);
         };
 
-        var removeAccount = function(accountUuid) {
-            $scope.accounts = $scope.accounts.filter(function(account) {
-                return account.uuid != accountUuid;
-            });
-        }
-
+        load();
     });
