@@ -40,7 +40,7 @@ Feature:
     Then an intercom user "another" should be updated with its companies
     And an intercom event "added-to-team" should be created
 
-  Scenario: Update user's compagnies when removing from a team
+  Scenario: Update user's companies when removing from a team
     When I remove the user "samuel" in the team "my-team"
     Then an intercom user "samuel" should be updated with its companies
     And an intercom event "removed-from-team" should be created
