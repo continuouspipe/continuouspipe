@@ -22,7 +22,7 @@ angular.module('continuousPipeRiver')
                         controller: 'AccountsController'
                     },
                     'title@layout': {
-                        template: 'Accounts'
+                        template: 'My Account'
                     }
                 }
             })

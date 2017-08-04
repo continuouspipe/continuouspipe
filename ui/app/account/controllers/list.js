@@ -5,12 +5,11 @@ angular.module('continuousPipeRiver')
 
         $scope.connectAccountUrl = AUTHENTICATOR_API_URL + '/account/connected-accounts';
         $scope.accounts = [];
-        $scope.isAdmin = true;
 
         AccountRepository.findMine().then(function(accounts) {
             $scope.accounts = accounts;
         }, function(error) {
-            swal("Error !", $http.getError(error) || "An unknown error occured while loading your Google accounts", "error");
+            swal("Error !", $http.getError(error) || "An unknown error occured while loading your connected accounts", "error");
         });
 
         $scope.unlinkAccount = function (account) {
