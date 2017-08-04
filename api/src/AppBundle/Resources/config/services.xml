@@ -80,6 +80,12 @@
             <tag name="request.param_converter" converter="user" />
         </service>
 
+        <service id="request.param_converter.user_billing_profile" class="ContinuousPipe\Billing\BillingProfile\Request\ParamConverter\UserBillingProfileParamConverter">
+            <argument type="service" id="app.repository.billing_profile" />
+
+            <tag name="request.param_converter" converter="billingProfile" />
+        </service>
+
         <service id="app.controller.authenticate" class="AppBundle\Controller\AuthenticateController">
             <argument type="service" id="app.security.authentication_provider" />
         </service>

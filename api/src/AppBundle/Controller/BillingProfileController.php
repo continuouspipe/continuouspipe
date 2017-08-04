@@ -16,17 +16,16 @@ use ContinuousPipe\Message\UserActivity;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
-use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * @Route(service="app.controller.billing_profile")
@@ -75,6 +74,11 @@ class BillingProfileController
      * @var string
      */
     private $recurlySubdomain;
+
+    /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
 
     public function __construct(
         UserBillingProfileRepository $userBillingProfileRepository,
@@ -141,15 +145,12 @@ class BillingProfileController
     /**
      * @Route("/account/billing-profile/{uuid}", name="account_billing_profile")
      * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @ParamConverter("billingProfile", converter="billingProfile")
+     * @Security("is_granted('READ', billingProfile)")
      * @Template
      */
-    public function configureAction(User $user, string $uuid, Request $request)
+    public function configureAction(User $user, UserBillingProfile $billingProfile, Request $request)
     {
-        $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
-        if (!$this->userHasAccess($user, $billingProfile)) {
-            throw new AccessDeniedHttpException('You are not authorized to access this billing profile');
-        }
-
         $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
 
         $activities = [];
@@ -279,25 +280,5 @@ class BillingProfileController
         $userBillingProfileCreationRequest->name = $name;
 
         return $this->userBillingProfileCreator->create($userBillingProfileCreationRequest, $user);
-    }
-
-    private function userHasAccess(User $user, UserBillingProfile $billingProfile)
-    {
-        if ($billingProfile->getUser()->getUsername() == $user->getUsername()) {
-            return true;
-        }
-
-        $teams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
-        $teamsUserIsAdmin = array_filter($teams, function (Team $team) use ($user) {
-            $adminUserMemberships = $team->getMemberships()->filter(function (TeamMembership $membership) use ($user) {
-                return $membership->getUser()->getUsername() == $user->getUsername();
-            })->filter(function (TeamMembership $membership) {
-                return in_array(TeamMembership::PERMISSION_ADMIN, $membership->getPermissions());
-            });
-
-            return $adminUserMemberships->count() > 0;
-        });
-
-        return count($teamsUserIsAdmin) > 0;
     }
 }

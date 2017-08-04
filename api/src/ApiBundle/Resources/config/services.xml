@@ -47,6 +47,7 @@
             <argument type="service" id="app.repository.billing_profile" />
             <argument type="service" id="app.user_billing_profile_creator" />
             <argument type="service" id="validator" />
+            <argument type="service" id="builder.billing.subscription_client" />
         </service>
         <service id="api.controller.api_key" class="ApiBundle\Controller\ApiKeyController">
             <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
@@ -94,6 +95,12 @@
         </service>
 
         <!-- Security Voter -->
+        <service id="security.access.user_billing_profile_voter"
+                 class="ContinuousPipe\Authenticator\Security\Voter\UserBillingProfileVoter"
+                 public="false">
+            <argument type="service" id="app.repository.billing_profile" />
+            <tag name="security.voter" />
+        </service>
         <service id="security.access.team_voter"
                  class="ContinuousPipe\Security\Voter\TeamPermissionVoter"
                  public="false">

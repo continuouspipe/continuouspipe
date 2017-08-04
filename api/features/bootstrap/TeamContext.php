@@ -258,6 +258,14 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I request the billing profile :uuid
+     */
+    public function iRequestTheBillingProfile($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create('/api/billing-profile/' . $uuid));
+    }
+
+    /**
      * @Then I should see that the billing profile is :profileUuid
      */
     public function iShouldSeeThatTheBillingProfileIs($profileUuid)

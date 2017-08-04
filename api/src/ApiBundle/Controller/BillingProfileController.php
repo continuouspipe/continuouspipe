@@ -3,9 +3,11 @@
 namespace ApiBundle\Controller;
 
 use ContinuousPipe\Billing\BillingProfile\Request\UserBillingProfileCreationRequest;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileCreator;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
+use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use ContinuousPipe\Security\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -34,14 +36,21 @@ class BillingProfileController
      */
     private $validator;
 
+    /**
+     * @var SubscriptionClient
+     */
+    private $subscriptionClient;
+
     public function __construct(
         UserBillingProfileRepository $userBillingProfileRepository,
         UserBillingProfileCreator $userBillingProfileCreator,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        SubscriptionClient $subscriptionClient
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
         $this->userBillingProfileCreator = $userBillingProfileCreator;
         $this->validator = $validator;
+        $this->subscriptionClient = $subscriptionClient;
     }
 
     /**
@@ -91,5 +100,27 @@ class BillingProfileController
         }
 
         return $this->userBillingProfileCreator->create($creationRequest, $user);
+    }
+
+    /**
+     * @Route("/billing-profile/{uuid}", methods={"GET"})
+     * @ParamConverter("billingProfile", converter="billingProfile")
+     * @Security("is_granted('READ', billingProfile)")
+     * @View
+     */
+    public function getBillingProfileAction(UserBillingProfile $billingProfile)
+    {
+        return $billingProfile;
+    }
+
+    /**
+     * @Route("/billing-profile/{uuid}/subscriptions", methods={"GET"})
+     * @ParamConverter("billingProfile", converter="billingProfile")
+     * @Security("is_granted('READ', billingProfile)")
+     * @View
+     */
+    public function getSubscriptionsAction(UserBillingProfile $billingProfile)
+    {
+        return $this->subscriptionClient->findSubscriptionsForBillingProfile($billingProfile);
     }
 }
