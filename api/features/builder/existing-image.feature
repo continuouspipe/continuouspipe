@@ -30,6 +30,11 @@ Feature:
           }
         }
       ],
+      "notification": {
+        "http": {
+          "address": "https://example.com"
+        }
+      },
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
       "engine": {
         "type": "gcb"
@@ -38,6 +43,7 @@ Feature:
     """
     Then a log containing "Re-using pre-built Docker image sroze/php-example:continuous" should be created
     And the archive details should not be sent to Google Cloud Builder
+    And the notification should be sent
 
   Scenario: Reuse existing images when multiple steps
     Given the bucket "00000000-0000-0000-0000-000000000000" contains the following docker registry credentials:
@@ -70,6 +76,11 @@ Feature:
           }
         }
       ],
+      "notification": {
+        "http": {
+          "address": "https://example.com"
+        }
+      },
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
       "engine": {
         "type": "gcb"
@@ -110,6 +121,11 @@ Feature:
           }
         }
       ],
+      "notification": {
+        "http": {
+          "address": "https://example.com"
+        }
+      },
       "credentialsBucket": "00000000-0000-0000-0000-000000000000",
       "engine": {
         "type": "gcb"
