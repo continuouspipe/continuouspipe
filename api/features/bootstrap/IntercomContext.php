@@ -61,6 +61,20 @@ class IntercomContext implements Context
     }
 
     /**
+     * @Then an intercom message should have been sent to the email :email
+     */
+    public function anIntercomMessageShouldHaveBeenSentToTheEmail($email)
+    {
+        $matchingMessages = array_filter($this->traceableIntercomClient->getSentMessages(), function(array $message) use ($email) {
+            return $message['to']['email'] == $email;
+        });
+
+        if (count($matchingMessages) == 0) {
+            throw new \RuntimeException('No matching message found');
+        }
+    }
+
+    /**
      * @Then an intercom user :username should be created or updated
      */
     public function anIntercomUserShouldBeCreatedOrUpdated($username)

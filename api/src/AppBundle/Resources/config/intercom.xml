@@ -43,6 +43,8 @@
         <service id="app.intercom.invitation.team_membership_updated.record_events" class="ContinuousPipe\Authenticator\Intercom\EventListener\TeamMembershipUpdated\RecordAddingAndRemovingEvents">
             <argument type="service" id="app.intercom.client" />
             <argument type="service" id="app.repository.team_membership" />
+            <argument type="service" id="templating.engine.twig" />
+            <argument type="service" id="logger" />
 
             <tag name="kernel.event_subscriber" />
         </service>

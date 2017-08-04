@@ -3,11 +3,14 @@
 namespace ContinuousPipe\Authenticator\Intercom\EventListener\TeamMembershipUpdated;
 
 use ContinuousPipe\Authenticator\Intercom\Client\IntercomClient;
+use ContinuousPipe\Authenticator\Intercom\Client\IntercomException;
 use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipEvent;
 use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipRemoved;
 use ContinuousPipe\Authenticator\TeamMembership\Event\TeamMembershipSaved;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Templating\EngineInterface;
 
 class RecordAddingAndRemovingEvents implements EventSubscriberInterface
 {
@@ -19,15 +22,30 @@ class RecordAddingAndRemovingEvents implements EventSubscriberInterface
      * @var TeamMembershipRepository
      */
     private $teamMembershipRepository;
+    /**
+     * @var EngineInterface
+     */
+    private $templatingEngine;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
-     * @param IntercomClient           $intercomClient
+     * @param IntercomClient $intercomClient
      * @param TeamMembershipRepository $teamMembershipRepository
+     * @param EngineInterface $templatingEngine
      */
-    public function __construct(IntercomClient $intercomClient, TeamMembershipRepository $teamMembershipRepository)
-    {
+    public function __construct(
+        IntercomClient $intercomClient,
+        TeamMembershipRepository $teamMembershipRepository,
+        EngineInterface $templatingEngine,
+        LoggerInterface $logger
+    ) {
         $this->intercomClient = $intercomClient;
         $this->teamMembershipRepository = $teamMembershipRepository;
+        $this->templatingEngine = $templatingEngine;
+        $this->logger = $logger;
     }
 
     /**
@@ -65,6 +83,32 @@ class RecordAddingAndRemovingEvents implements EventSubscriberInterface
                 'as_administrator' => in_array('ADMIN', $membership->getPermissions()),
             ],
         ]);
+
+        try {
+            $this->intercomClient->message([
+                'message_type' => 'email',
+                'subject' => sprintf('You\'ve been added to the team "%s"', $team->getName()),
+                'template' => 'personal',
+                'body' => $this->templatingEngine->render(
+                    '@intercom/user_added.html.twig',
+                    [
+                        'team' => $team,
+                        'membership' => $membership,
+                    ]
+                ),
+                'to' => [
+                    'type' => 'user',
+                    'email' => $user->getEmail(),
+                ],
+            ]);
+        } catch (IntercomException $e) {
+            $this->logger->warning('Unable to send Intercom email', [
+                'team' => $team->getName(),
+                'user' => $user->getUsername(),
+                'email' => $user->getEmail(),
+                'errorMessage' => $e->getMessage()
+            ]);
+        }
     }
 
     /**

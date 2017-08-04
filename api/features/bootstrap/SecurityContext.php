@@ -277,4 +277,23 @@ class SecurityContext implements Context, SnippetAcceptingContext
             throw new \RuntimeException('An exception was found');
         }
     }
+
+    /**
+     * @Given there is a user :username with email :email
+     */
+    public function thereIsAUserWithEmail($username, $email)
+    {
+        try {
+            $user = $this->securityUserRepository->findOneByUsername($username);
+        } catch (UserNotFound $e) {
+            $user = $this->userProvider->createUserFromUsername($username);
+        }
+
+        $user->getUser()->setEmail($email);
+        $this->securityUserRepository->save($user);
+
+        return $user;
+    }
+
+
 }
