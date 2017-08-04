@@ -36,9 +36,11 @@ Feature:
 
   Scenario: Update user's companies when adding to a team
     Given there is a user "another"
+    And the user "another" has email "user@example.com"
     When I add the user "another" in the team "my-team"
     Then an intercom user "another" should be updated with its companies
     And an intercom event "added-to-team" should be created
+    And an intercom message should have been sent to the email "user@example.com"
 
   Scenario: Update user's companies when removing from a team
     When I remove the user "samuel" in the team "my-team"
