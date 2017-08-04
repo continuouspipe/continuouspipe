@@ -72,5 +72,4 @@ class AccountController
     {
         $this->accountRepository->unlink($user->getUsername(), $account);
     }
-
 }

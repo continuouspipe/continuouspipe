@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class UserBillingProfileVoter extends Voter
 {
-    const VIEW = 'view';
+    const READ = 'READ';
 
     /**
      * @var UserBillingProfileRepository
@@ -29,7 +29,7 @@ class UserBillingProfileVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        if (self::VIEW !== $attribute) {
+        if (self::READ !== $attribute) {
             return false;
         }
 
