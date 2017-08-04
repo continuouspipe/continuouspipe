@@ -13,10 +13,20 @@ angular.module('continuousPipeRiver')
         });
 
         $scope.unlinkAccount = function (account) {
-            AccountRepository.unlinkAccount(account.uuid)
-                .then(function(res) {
-                    removeAccount(account.uuid);
-                });
+            swal({
+                title: "Are you sure?",
+                text: "The "+ account.type +" account will be removed.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, unlink it!",
+                closeOnConfirm: true
+            }, function() {
+                AccountRepository.unlinkAccount(account.uuid)
+                    .then(function(res) {
+                        removeAccount(account.uuid);
+                    });
+            });
         };
 
         $scope.connectAccount = function (type) {
