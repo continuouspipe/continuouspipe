@@ -1,0 +1,46 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="accounts">{{ accounts.length }} Connected Accounts</span>
+            <span ng-hide="accounts">Loading...</span>
+        </h2>
+    </div>
+</md-toolbar>
+
+<md-content flex id="content" class="card-grid">
+    <remote-resource resource-name="accounts">
+        <table class="table hover">
+            <thead>
+            <tr>
+                <th>Type</th>
+                <th>User</th>
+                <th ng-show="isAdmin">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="account in accounts">
+                <td>{{ account.type }}</td>
+                <td>{{ account.username }}</td>
+                <td>
+                    <md-button ng-click="unlinkAccount(account)" class="md-raised md-warn">unlink</md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p>
+            <md-button ng-click="connectAccount('github')" class="md-raised">
+                <md-icon class="cp-icon-github"></md-icon>
+                Connect a GitHub account
+            </md-button>
+            <md-button ng-click="connectAccount('google')" class="md-raised">
+                <md-icon class="cp-icon-google"></md-icon>
+                Connect a Google account
+            </md-button>
+            <md-button ng-click="connectAccount('bitbucket')" class="md-raised">
+                <md-icon class="cp-icon-bitbucket"></md-icon>
+                Connect a BitBucket account
+            </md-button>
+        </p>
+    </remote-resource>
+</md-content>

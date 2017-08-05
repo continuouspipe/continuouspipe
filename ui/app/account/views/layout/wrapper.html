@@ -1,0 +1,8 @@
+<div class="tabs-toolbar" ng-class="{'open' : $root.toggle}">
+    <ul class="tabs">
+        <li class="tab">
+            <a ng-click="$root.toggle = !$root.toggle" ui-sref-active="selected" ui-sref="connected-accounts"><md-icon>device_hub</md-icon> <span>Connected Accounts</span></a>
+        </li>
+    </ul>
+</div>
+<md-content ui-view="content" class="content"></md-content>
