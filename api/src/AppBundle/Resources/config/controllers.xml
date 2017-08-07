@@ -21,6 +21,7 @@
             <argument type="service" id="validator" />
             <argument type="service" id="river.flow.configuration.missing_variables.configuration_resolver" />
             <argument type="service" id="river.flow.encrypted_variable_vault" />
+            <argument type="service" id="river.code_repository.branch_query" />
         </service>
         <service id="app.controller.pipeline_deletion" class="AppBundle\Controller\PipelineDeletionController">
             <argument type="service" id="event_bus"/>
@@ -65,7 +66,6 @@
             <argument type="service" id="command_bus" />
             <argument type="service" id="river.tide.external_relations.resolver" />
             <argument type="service" id="river.commit_resolver" />
-            <argument type="service" id="river.code_repository.branch_query" />
         </service>
         <service id="app.controller.flow_environment" class="AppBundle\Controller\FlowEnvironmentController">
             <argument type="service" id="river.flow.environment_client" />

@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\CodeRepository\BranchQuery;
 use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\Flow;
@@ -82,11 +81,6 @@ class TideController
     private $commitResolver;
 
     /**
-     * @var BranchQuery
-     */
-    private $branchQuery;
-
-    /**
      * @param TideRepository           $tideRepository
      * @param ValidatorInterface       $validator
      * @param TideFactory              $tideFactory
@@ -96,7 +90,6 @@ class TideController
      * @param MessageBus               $commandBus
      * @param ExternalRelationResolver $externalRelationResolver
      * @param CommitResolver           $commitResolver
-     * @param BranchQuery              $branchQuery
      */
     public function __construct(
         TideRepository $tideRepository,
@@ -107,8 +100,7 @@ class TideController
         PaginatorInterface $paginator,
         MessageBus $commandBus,
         ExternalRelationResolver $externalRelationResolver,
-        CommitResolver $commitResolver,
-        BranchQuery $branchQuery
+        CommitResolver $commitResolver
     ) {
         $this->tideRepository = $tideRepository;
         $this->validator = $validator;
@@ -119,7 +111,6 @@ class TideController
         $this->commandBus = $commandBus;
         $this->externalRelationResolver = $externalRelationResolver;
         $this->commitResolver = $commitResolver;
-        $this->branchQuery = $branchQuery;
     }
 
     /**
@@ -242,15 +233,5 @@ class TideController
     public function cancelAction(Tide $tide)
     {
         $this->commandBus->handle(new CancelTideCommand($tide->getUuid()));
-    }
-
-    /**
-     * @Route("/tides/branches/{uuid}", methods={"GET"})
-     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
-     * @View
-     */
-    public function listBranches(FlatFlow $flow)
-    {
-        return $this->branchQuery->findBranches($flow);
     }
 }

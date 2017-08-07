@@ -596,7 +596,7 @@ EOF;
                 Uuid::fromString($uuid),
                 new CodeRepository\BitBucket\BitBucketAccount($uuid, $owner, 'user'),
                 $repository,
-                'https://api.bitbucket.org/2.0/repositories/' . $owner . '/' . $repository,
+                "https://api.bitbucket.org/2.0/repositories/$owner/$repository",
                 'master',
                 false
             )
@@ -1246,7 +1246,7 @@ EOF;
     public function iRequestTheAccountsBranchesForTheFlow($uuid)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/tides/branches/' . $this->currentFlow->getUuid()
+            '/flows/' . $this->currentFlow->getUuid() . '/branches'
         ));
 
         $this->assertResponseCode(200);
