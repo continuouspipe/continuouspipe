@@ -152,15 +152,13 @@ angular.module('continuousPipeRiver')
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, encrypt it!",
-                closeOnConfirm: false,
+                closeOnConfirm: true,
                 showLoaderOnConfirm: true
             }, function() {
                 FlowRepository.encrypt(flow, $scope.variables[key]).then(function(encryptedValue) {
                     $scope.variables[key].encrypted_value = encryptedValue;
 
                     delete $scope.variables[key].value;
-
-                    swal("Variable encrypted!");
                 }, function(error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while encrypting the variable", "error");
                 });
@@ -276,7 +274,7 @@ angular.module('continuousPipeRiver')
                                 'summary': 'disabled',
                                 'icon': 'warning',
                                 'message': $scope.flexFeature.reason || 'Your application is not supported'
-                            } 
+                            }
                             :   (
                                 $scope.flexFeature.enabled ? {'summary': 'success', 'icon': 'done'}
                                     : {
