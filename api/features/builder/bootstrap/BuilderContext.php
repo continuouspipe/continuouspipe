@@ -18,6 +18,7 @@ use ContinuousPipe\Builder\Article\TraceableArchiveBuilder;
 use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\GoogleContainerBuilder\HttpGoogleContainerBuildClient;
 use ContinuousPipe\Builder\Image;
+use ContinuousPipe\Builder\Image\Registry;
 use ContinuousPipe\Builder\Notifier\HookableNotifier;
 use ContinuousPipe\Builder\Notifier\NotificationException;
 use ContinuousPipe\Builder\Notifier\TraceableNotifier;
@@ -118,6 +119,10 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var TraceableBuildCreator
      */
     private $traceableBuildCreator;
+    /**
+     * @var Registry
+     */
+    private $registry;
 
     public function __construct(
         Kernel $kernel,
@@ -135,7 +140,8 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         BuildRequestTransformer $buildRequestTransformer,
         TracedPublisher $tracedPublisher,
         TraceableArtifactManager $traceableArtifactManager,
-        TraceableBuildCreator $traceableBuildCreator
+        TraceableBuildCreator $traceableBuildCreator,
+        Registry $registry 
     ) {
         $this->kernel = $kernel;
         $this->traceableDockerClient = $traceableDockerClient;
@@ -153,6 +159,7 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         $this->tracedPublisher = $tracedPublisher;
         $this->traceableArtifactManager = $traceableArtifactManager;
         $this->traceableBuildCreator = $traceableBuildCreator;
+        $this->registry = $registry;
     }
 
     /**
@@ -603,6 +610,24 @@ EOF;
         if (!isset($this->traceableBuildCreator->getRequests()[0]) || $this->traceableBuildCreator->getRequests()[0]['source'] != $this->traceableArtifactManager->getWritten()[0]['archive']->contains(HttpGoogleContainerBuildClient::MANIFEST_FILENAME)) {
             throw new \RuntimeException('Archive not send to GCB when starting build');
         }
+    }
+
+    /**
+     * @Then the archive details should not be sent to Google Cloud Builder
+     */
+    public function theArchiveDetailsShouldNotBeSentToGoogleCloudBuilder()
+    {
+        if (isset($this->traceableBuildCreator->getRequests()[0])) {
+            throw new \RuntimeException('Archive was sent to GCB');
+        }
+    }
+
+    /**
+     * @Given the image :image exists in the docker registry
+     */
+    public function theImageExistsInTheDockerRegistry($image)
+    {
+        $this->registry->addImage($image);
     }
 
     /**

@@ -2,15 +2,20 @@
 
 namespace ApiBundle\Controller;
 
-use ContinuousPipe\Builder\Aggregate\Build;
+use ContinuousPipe\Builder\Aggregate\Build as AggregateBuild;
+use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\Command\StartGcbBuild;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Engine;
+use ContinuousPipe\Builder\Image\ExistingImageChecker;
+use ContinuousPipe\Builder\Image\SearchingForExistingImageException;
+use ContinuousPipe\Builder\Notifier;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\View\BuildViewRepository;
 use FOS\RestBundle\Controller\Annotations\View;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use SimpleBus\Message\Bus\MessageBus;
@@ -43,6 +48,18 @@ class CreateBuildController
      * @var MessageBus
      */
     private $commandBus;
+    /**
+     * @var ExistingImageChecker
+     */
+    private $imageChecker;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
+     * @var Notifier
+     */
+    private $notifier;
 
     /**
      * @param MessageBus $commandBus
@@ -50,19 +67,26 @@ class CreateBuildController
      * @param BuildFactory $buildFactory
      * @param BuildViewRepository $buildViewRepository
      * @param BuildRequestTransformer $buildRequestTransformer
+     * @param ExistingImageChecker $imageChecker
      */
     public function __construct(
         MessageBus $commandBus,
         ValidatorInterface $validator,
         BuildFactory $buildFactory,
         BuildViewRepository $buildViewRepository,
-        BuildRequestTransformer $buildRequestTransformer
+        BuildRequestTransformer $buildRequestTransformer,
+        ExistingImageChecker $imageChecker,
+        LoggerInterface $logger,
+        Notifier $notifier
     ) {
         $this->commandBus = $commandBus;
         $this->validator = $validator;
         $this->buildFactory = $buildFactory;
         $this->buildViewRepository = $buildViewRepository;
         $this->buildRequestTransformer = $buildRequestTransformer;
+        $this->imageChecker = $imageChecker;
+        $this->logger = $logger;
+        $this->notifier = $notifier;
     }
 
     /**
@@ -86,15 +110,38 @@ class CreateBuildController
         return $this->buildViewRepository->find($build->getIdentifier());
     }
 
-    private function createAndStartBuild(BuildRequest $request) : Build
+    private function createAndStartBuild(BuildRequest $request) : AggregateBuild
     {
         $build = $this->buildFactory->fromRequest(
             $this->buildRequestTransformer->transform($request)
         );
+
+        try {
+            if ($this->imageChecker->checkIfImagesExist($build)) {
+                $notification = $build->getRequest()->getNotification();
+                $this->notifier->notify($notification, $this->convertToSimpleBuild($build));
+
+                return $build;
+            }
+        } catch (\Throwable $exception) {
+            $this->logger->warning(
+                'Something went wrong while checking for existing image',
+                ['exception' => $exception]
+            );
+        }
 
         $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
 
         return $build;
     }
 
+    private function convertToSimpleBuild(AggregateBuild $aggregateBuild) : Build
+    {
+        return new Build(
+            $aggregateBuild->getIdentifier(),
+            $aggregateBuild->getRequest(),
+            $aggregateBuild->getUser(),
+            $aggregateBuild->getStatus()
+        );
+    }
 }

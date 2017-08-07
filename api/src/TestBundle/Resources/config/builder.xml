@@ -36,5 +36,8 @@
                  decoration-priority="5">
             <argument type="service" id="builder.archive_builder.traceable.inner" />
         </service>
+
+        <service id="builder.image.registry" class="ContinuousPipe\Builder\Image\InMemoryRegistry" />
+
     </services>
 </container>
