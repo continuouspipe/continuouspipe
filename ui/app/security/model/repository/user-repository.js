@@ -20,7 +20,7 @@ angular.module('continuousPipeRiver')
         };
 
         this.findApiKeysByUsername = function(username) {
-            return $resource(AUTHENTICATOR_API_URL+'/api/user/asimlqt/api-keys').query().$promise;
+            return $resource(AUTHENTICATOR_API_URL+'/api/user/'+username+'/api-keys').query().$promise;
         };
 
         this.createApiKey = function(username, apiKey) {

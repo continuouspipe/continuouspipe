@@ -1,20 +1,20 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ApiKeysController', function($scope, $state, $remoteResource, $http, AccountRepository, UserRepository) {
+    .controller('ApiKeysController', function($scope, $state, $remoteResource, $http, user, AccountRepository, UserRepository) {
 
         $scope.apiKeys = [];
         $scope.apiKey = {};
 
         var load = function() {
-            $remoteResource.load('apiKeys', UserRepository.findApiKeysByUsername('asimlqt')).then(function (apiKeys) {
+            $remoteResource.load('apiKeys', UserRepository.findApiKeysByUsername(user.username)).then(function (apiKeys) {
                 $scope.apiKeys = apiKeys;
             });
         };
 
         $scope.create = function (apiKey) {
             $scope.isLoading = true;
-            UserRepository.createApiKey('asimlqt', apiKey).then(function () {
+            UserRepository.createApiKey(user.username, apiKey).then(function () {
                 load();
 
                 Intercom('trackEvent', 'created-api-key', {
