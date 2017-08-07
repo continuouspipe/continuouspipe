@@ -194,6 +194,7 @@ class FlowController
     /**
      * @Route("/flows/{uuid}/branches", methods={"GET"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
+     * @Security("is_granted('READ', flow)")
      * @View
      */
     public function listBranches(FlatFlow $flow)

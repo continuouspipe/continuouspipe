@@ -5,6 +5,9 @@ Feature:
 
   Background:
     Given I am authenticated as "samuel"
+    And the team "samuel" exists
+    And I have a flow in the team "samuel"
+    And the user "samuel" is "USER" of the team "samuel"
 
   Scenario: I can list branches from a Github account in order to auto complete when manually creating a tide
     Given the GitHub account "sroze" has the installation "0000"
