@@ -124,7 +124,10 @@ class CreateBuildController
                 return $build;
             }
         } catch (\Throwable $exception) {
-            $this->logger->warning('Something went wrong while checking for existing image', [$exception]);
+            $this->logger->warning(
+                'Something went wrong while checking for existing image',
+                ['exception' => $exception]
+            );
         }
 
         $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));

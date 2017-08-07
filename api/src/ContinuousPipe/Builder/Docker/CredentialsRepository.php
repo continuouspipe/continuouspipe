@@ -22,5 +22,8 @@ interface CredentialsRepository
      */
     public function findByImage(Image $image, Uuid $credentialsBucketUuid);
 
+    /**
+     * @throws CredentialsNotFound
+     */
     public function findRegistryByImage(Image $image, Uuid $credentialsBucketUuid): DockerRegistry;
 }

@@ -22,15 +22,30 @@ class DockerRegistry implements Registry
         $this->credentialsRepository = $credentialsRepository;
     }
 
+    /**
+     * @throws SearchingForExistingImageException
+     */
     public function containsImage(Uuid $credentialsBucket, Image $image): bool
     {
-        $credentials = $this->getCredentials($credentialsBucket, $image);
+        try {
 
-        return $this->requestManifest(
-            $image,
-            $credentials->getServerAddress(),
-            $this->fetchToken($this->fetchAuthDetails($image, $credentials), $credentials)
-        )->getStatusCode() == 200;
+            $credentials = $this->getCredentials($credentialsBucket, $image);
+
+            return $this->requestManifest(
+                    $image,
+                    $credentials->getServerAddress(),
+                    $this->fetchToken($this->fetchAuthDetails($image, $credentials), $credentials)
+                )->getStatusCode() == 200;
+
+        } catch (SearchingForExistingImageException $searchingForExistingImageException) {
+
+            throw $searchingForExistingImageException;
+
+        } catch (\Throwable $throwable) {
+
+            throw new SearchingForExistingImageException('Error occurred while checking for an existing docker image for the build', 0, $throwable);
+
+        }
     }
 
     private function manifestUrl(string $serverAddress, Image $image)
