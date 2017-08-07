@@ -23,7 +23,20 @@ angular.module('continuousPipeRiver')
     .controller('FlowCreateTideController', function($scope, $state, $http, TideRepository, flow) {
         $scope.flow = flow;
 
+        $scope.branches = [];
+        $scope.searchText;
+
+        TideRepository.findBranches(flow).then(function(branches) {
+            angular.forEach(branches, function(value, key) {
+                $scope.branches.push(value.name);
+            });
+        }, function(error) {
+            swal("Error !", $http.getError(error) || "An unknown error occured while retrieving branches", "error");
+        });
+
         $scope.create = function(tide) {
+            tide.branch = tide.branch ? tide.branch : $scope.searchText;
+
             $scope.isLoading = true;
             $scope.error = null;
 

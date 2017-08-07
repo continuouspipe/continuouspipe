@@ -8,10 +8,21 @@
 <md-content flex id="content">
     <form name="tideForm">
         <div class="form-container">
-            <md-input-container class="md-block" flex-gt-xs>
-                <label>Branch</label>
-                <input ng-model="tide.branch" required />
-            </md-input-container>
+            <md-autocomplete class="md-block" flex-gt-xs required
+                ng-input="tide.branch"
+                md-search-text="searchText"
+                md-selected-item="tide.branch"
+                md-items="branch in branches | filter:searchText"
+                md-item-text="branch"
+                placeholder="Branch">
+                <md-item-template>
+                    <span md-highlight-text="searchText" md-highlight-flags="^i">{{branch}}</span>
+                </md-item-template>
+                <md-not-found>
+                    No branches matching "{{searchText}}" were found.
+                </md-not-found>
+            </md-autocomplete>
+
             <md-input-container class="md-block" flex-gt-xs>
                 <label>SHA1 (optional)</label>
                 <input ng-model="tide.sha1" />
