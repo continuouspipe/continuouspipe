@@ -8,12 +8,11 @@ Feature:
     And the team "samuel" exists
     And I have a flow in the team "samuel"
 
-  Scenario: I can list branches from a Github account in order to auto complete when manually creating a tide
+  Scenario: I can list branches from a BitBucket account in order to auto complete when manually creating a tide
     Given the user "samuel" is "USER" of the team "samuel"
-    And the GitHub account "sroze" has the installation "0000"
-    And the token of the GitHub installation "0000" is "1234"
-    And I have a flow "00000000-0000-0000-0000-000000000000" with a GitHub repository "docker-php-example" owned by "sroze"
-    And the following branches exists in the github repository:
+    And I have a flow "00000000-0000-0000-0000-000000000000" with a Bitbucket repository "my-example" owned by "samuel"
+    And there is the add-on installed for the BitBucket repository "my-example" owned by user "samuel"
+    And the following branches exist in the bitbucket repository with slug "my-example" for user "samuel":
       | name    |
       | master  |
       | develop |
@@ -25,10 +24,9 @@ Feature:
 
   Scenario: I can't list branches when I don't have the correct permissions
     Given the user "samuel" is not in the team "samuel"
-    And the GitHub account "sroze" has the installation "0000"
-    And the token of the GitHub installation "0000" is "1234"
-    And I have a flow "00000000-0000-0000-0000-000000000000" with a GitHub repository "docker-php-example" owned by "sroze"
-    And the following branches exists in the github repository:
+    And I have a flow "00000000-0000-0000-0000-000000000000" with a Bitbucket repository "my-example" owned by "samuel"
+    And there is the add-on installed for the BitBucket repository "my-example" owned by user "samuel"
+    And the following branches exist in the bitbucket repository with slug "my-example" for user "samuel":
       | name    |
       | master  |
       | develop |

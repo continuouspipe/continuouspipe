@@ -1246,10 +1246,8 @@ EOF;
     public function iRequestTheAccountsBranchesForTheFlow($uuid)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/flows/' . $this->currentFlow->getUuid() . '/branches'
+            "/flows/$uuid/branches"
         ));
-
-        $this->assertResponseCode(200);
     }
 
     /**
@@ -1257,6 +1255,8 @@ EOF;
      */
     public function iShouldSeeTheFollowingBranches(TableNode $table)
     {
+        $this->assertResponseCode(200);
+
         $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
 
         $expectedValues = $table->getRowsHash();

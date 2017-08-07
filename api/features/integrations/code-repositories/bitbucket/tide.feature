@@ -39,16 +39,3 @@ Feature:
     And there is the add-on installed for the BitBucket repository "example" owned by user "foo"
     When I push the anonymous commit "12345" to the branch "master" of the BitBucket repository "example" owned by user "foo"
     Then the tide should be created
-
-  Scenario: I can list branches from a BitBucket account in order to auto complete when manually creating a tide
-    Given I have a flow "00000000-0000-0000-0000-000000000000" with a Bitbucket repository "my-example" owned by "samuel"
-    And there is the add-on installed for the BitBucket repository "my-example" owned by user "samuel"
-    And the following branches exist in the bitbucket repository with slug "my-example" for user "samuel":
-      | name    |
-      | master  |
-      | develop |
-    When I request the account's branches for the flow "00000000-0000-0000-0000-000000000000"
-    Then I should see the following branches:
-      | name |
-      | master  |
-      | develop  |
