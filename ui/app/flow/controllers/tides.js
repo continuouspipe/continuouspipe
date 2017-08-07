@@ -31,7 +31,7 @@ angular.module('continuousPipeRiver')
                 $scope.branches.push(value.name);
             });
         }, function(error) {
-            swal("Error !", $http.getError(error) || "An unknown error occured while retrieving branches", "error");
+            console.error($http.getError(error) || "An unknown error occured while retrieving branches");
         });
 
         $scope.create = function(tide) {
