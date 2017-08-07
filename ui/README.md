@@ -30,12 +30,11 @@ npm install
 You will also need the following additional packages:
 ```
 npm install -g grunt-cli
-
 npm install -g bower
-bower install
-
-sudo gem install compass
 npm install -g compass
+
+bower install
+gem install compass
 ```
 
 Finally you can start the application. It requires 2 environment vairables, the API to authenticate against and the River API url.
