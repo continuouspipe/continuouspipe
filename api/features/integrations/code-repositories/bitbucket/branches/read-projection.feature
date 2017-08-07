@@ -23,7 +23,7 @@ Feature:
                 services: []
 
     """
-    And the following branches exist in the bitbucket repository with slug "my-example":
+    And the following branches exist in the bitbucket repository with slug "my-example" for user "sroze":
       | name    |
       | master  |
       | develop |
@@ -67,7 +67,7 @@ Feature:
                 services: []
 
     """
-    And the following branches exist in the bitbucket repository with slug "my-example":
+    And the following branches exist in the bitbucket repository with slug "my-example" for user "sroze":
       | name    | sha   | commit-url                                           |
       | master  | 12345 | https://bitbucket.org/sroze/my-example/commits/12345 |
       | develop | abcde | https://bitbucket.org/sroze/my-example/commits/abcde |
@@ -91,7 +91,7 @@ Feature:
                 services: []
 
     """
-    And the following branches exist in the bitbucket repository with slug "my-example":
+    And the following branches exist in the bitbucket repository with slug "my-example" for user "sroze":
       | name    |
       | master  |
       | develop |
@@ -115,7 +115,7 @@ Feature:
                 services: []
 
     """
-    And the following branches exist in the bitbucket repository with slug "my-example":
+    And the following branches exist in the bitbucket repository with slug "my-example" for user "sroze":
       | name    | sha   | commit-url                                           | datetime                  |
       | master  | 12345 | https://bitbucket.org/sroze/my-example/commits/12345 | 2016-12-27T13:04:07+00:00 |
     When the commit "12345" is pushed to the branch "master"

@@ -584,6 +584,26 @@ EOF;
     }
 
     /**
+     * @Given I have a flow :uuid with a Bitbucket repository :repository owned by :owner
+     */
+    public function iHaveAFlowWithABitbucketRepositoryOwnedBy($uuid, $repository, $owner)
+    {
+        $this->createFlow(
+            Uuid::fromString($uuid),
+            [],
+            null,
+            new CodeRepository\BitBucket\BitBucketCodeRepository(
+                Uuid::fromString($uuid),
+                new CodeRepository\BitBucket\BitBucketAccount($uuid, $owner, 'user'),
+                $repository,
+                "https://api.bitbucket.org/2.0/repositories/$owner/$repository",
+                'master',
+                false
+            )
+        );
+    }
+
+    /**
      * @Given I have a flow with UUID :uuid
      * @Given there is a flow with UUID :uuid
      */
@@ -1218,5 +1238,37 @@ EOF;
     public function getResponse()
     {
         return $this->response;
+    }
+
+    /**
+     * @When I request the account's branches for the flow :uuid
+     */
+    public function iRequestTheAccountsBranchesForTheFlow($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            "/flows/$uuid/branches"
+        ));
+    }
+
+    /**
+     * @Then I should see the following branches:
+     */
+    public function iShouldSeeTheFollowingBranches(TableNode $table)
+    {
+        $this->assertResponseCode(200);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        $expectedValues = $table->getRowsHash();
+        array_shift($expectedValues);
+
+        foreach ($json as $foundBranches) {
+            if (!array_key_exists($foundBranches['name'], $expectedValues)) {
+                throw new \RuntimeException(sprintf(
+                    'Expected the following branch to exist %s but not found',
+                    $foundBranches['name']
+                ));
+            }
+        }
     }
 }

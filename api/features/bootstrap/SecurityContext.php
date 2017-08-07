@@ -203,6 +203,25 @@ class SecurityContext implements Context
     }
 
     /**
+     * @Given the user :user is not in the team :team
+     */
+    public function theUserIsNotInTheTeam($user, $team)
+    {
+        $teams = $this->inMemoryAuthenticatorClient->findAllTeams();
+
+        if (!isset($teams[$team])) {
+            throw new \RuntimeException(sprintf('Team %s not found', $team));
+        }
+        $selectedTeam = $teams[$team];
+        $memberships = $selectedTeam->getMemberships()->filter(function(TeamMembership $membership) use ($user) {
+            return $membership->getUser()->getUsername() === $user;
+        });
+        if ($memberships) {
+            $this->inMemoryAuthenticatorClient->deleteTeam($selectedTeam);
+        }
+    }
+
+    /**
      * @Given the team :team have the credentials of a cluster :cluster
      * @Given the team :team have the credentials of a cluster :cluster with address :address
      */

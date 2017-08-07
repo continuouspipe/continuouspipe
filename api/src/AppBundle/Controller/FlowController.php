@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Request\EncryptVariableRequest;
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\BranchQuery;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Flow\Projections\FlatFlow as FlowView;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
@@ -54,13 +55,19 @@ class FlowController
      */
     private $encryptedVariableVault;
 
+    /**
+     * @var BranchQuery
+     */
+    private $branchQuery;
+
     public function __construct(
         Flow\Projections\FlatFlowRepository $flowRepository,
         FlowFactory $flowFactory,
         TideRepository $tideRepository,
         ValidatorInterface $validator,
         Flow\MissingVariables\MissingVariableResolver $missingVariableResolver,
-        Flow\EncryptedVariable\EncryptedVariableVault $encryptedVariableVault
+        Flow\EncryptedVariable\EncryptedVariableVault $encryptedVariableVault,
+        BranchQuery $branchQuery
     ) {
         $this->flowRepository = $flowRepository;
         $this->flowFactory = $flowFactory;
@@ -68,6 +75,7 @@ class FlowController
         $this->validator = $validator;
         $this->missingVariableResolver = $missingVariableResolver;
         $this->encryptedVariableVault = $encryptedVariableVault;
+        $this->branchQuery = $branchQuery;
     }
 
     /**
@@ -181,5 +189,16 @@ class FlowController
         return new JsonResponse([
             'encrypted' => $this->encryptedVariableVault->encrypt($flow->getUuid(), $request->getPlain()),
         ]);
+    }
+
+    /**
+     * @Route("/flows/{uuid}/branches", methods={"GET"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
+     * @Security("is_granted('READ', flow)")
+     * @View
+     */
+    public function listBranches(FlatFlow $flow)
+    {
+        return $this->branchQuery->findBranches($flow);
     }
 }

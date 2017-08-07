@@ -858,11 +858,11 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
-     * @Given the following branches exist in the bitbucket repository with slug :slug:
+     * @Given the following branches exist in the bitbucket repository with slug :slug for user :user:
      */
-    public function theFollowingBranchesExistsInTheBitbucketRepository(TableNode $table, $slug)
+    public function theFollowingBranchesExistInTheBitbucketRepositoryWithSlugForUser(TableNode $table, $slug, $user)
     {
-        $url = 'https://api.bitbucket.org/2.0/repositories/sroze/' . $slug . '/refs/branches';
+        $url = "https://api.bitbucket.org/2.0/repositories/$user/$slug/refs/branches";
 
         $branches = array_map(function(array $b) {
             $branch =  [

@@ -6,6 +6,7 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CommitResolver;
 use ContinuousPipe\River\CodeRepository\CommitResolverException;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Pipeline\Command\GenerateTides;
 use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Pipeline\TideGenerationTrigger;
@@ -90,8 +91,17 @@ class TideController
      * @param ExternalRelationResolver $externalRelationResolver
      * @param CommitResolver           $commitResolver
      */
-    public function __construct(TideRepository $tideRepository, ValidatorInterface $validator, TideFactory $tideFactory, MessageBus $eventBus, TideSummaryCreator $tideSummaryCreator, PaginatorInterface $paginator, MessageBus $commandBus, ExternalRelationResolver $externalRelationResolver, CommitResolver $commitResolver)
-    {
+    public function __construct(
+        TideRepository $tideRepository,
+        ValidatorInterface $validator,
+        TideFactory $tideFactory,
+        MessageBus $eventBus,
+        TideSummaryCreator $tideSummaryCreator,
+        PaginatorInterface $paginator,
+        MessageBus $commandBus,
+        ExternalRelationResolver $externalRelationResolver,
+        CommitResolver $commitResolver
+    ) {
         $this->tideRepository = $tideRepository;
         $this->validator = $validator;
         $this->tideFactory = $tideFactory;
@@ -111,7 +121,7 @@ class TideController
      * @Security("is_granted('READ', flow)")
      * @View
      */
-    public function findByFlowAction(Request $request, Flow\Projections\FlatFlow $flow)
+    public function findByFlowAction(Request $request, FlatFlow $flow)
     {
         /** @var SlidingPagination $paginated */
         $paginated = $this->paginator->paginate(
@@ -133,7 +143,7 @@ class TideController
      * @Security("is_granted('CREATE_TIDE', flow)")
      * @View(statusCode=201)
      */
-    public function createAction(Flow\Projections\FlatFlow $flow, TideCreationRequest $creationRequest, User $user)
+    public function createAction(FlatFlow $flow, TideCreationRequest $creationRequest, User $user)
     {
         $errors = $this->validator->validate($creationRequest);
         if ($errors->count() > 0) {
