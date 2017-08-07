@@ -18,4 +18,13 @@ angular.module('continuousPipeRiver')
         this.findBillingProfilesForCurrentUser = function() {
             return $resource(AUTHENTICATOR_API_URL+'/api/me/billing-profiles').query().$promise;
         };
+
+        this.findApiKeysByUsername = function(username) {
+            return $resource(AUTHENTICATOR_API_URL+'/api/user/asimlqt/api-keys').query().$promise;
+        };
+
+        this.createApiKey = function(username, apiKey) {
+            return $resource(AUTHENTICATOR_API_URL+'/api/user/'+username+'/api-keys')
+                .save(apiKey).$promise;
+        };
     });

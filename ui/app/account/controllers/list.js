@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('AccountsController', function($scope, $remoteResource, $http, AccountRepository, AUTHENTICATOR_API_URL) {
+    .controller('AccountsController', function($scope, $remoteResource, $http, AccountRepository, UserRepository) {
 
         $scope.accounts = [];
 
