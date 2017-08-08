@@ -456,7 +456,7 @@ module.exports = function (grunt) {
           usemin: 'scripts/app.js'
         }
       },
-      vendors: {
+      kubeStatusDashboard: {
         cwd: '',
         src: [
           'bower_components/kube-status/ui/app/dashboard/views/status/full.html',
