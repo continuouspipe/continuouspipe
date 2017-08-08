@@ -52,6 +52,11 @@
         <service id="api.controller.api_key" class="ApiBundle\Controller\ApiKeyController">
             <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
         </service>
+        <service id="api.controller.kube_status_proxy" class="ApiBundle\Controller\KubeStatusProxyController">
+            <argument type="service" id="kube_status.http_client" />
+            <argument type="service" id="app.repository.team"/>
+            <argument type="service" id="security.authorization_checker"/>
+        </service>
 
         <!-- Authentication -->
         <service id="api.security.api_key.system_user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\SystemUserApiKey">
@@ -196,5 +201,17 @@
             <argument type="service" id="jms_serializer" />
         </service>
         <service id="google.cluster_repository" alias="google.cluster_repository.http" />
+
+        <!-- Kube Status proxy -->
+        <service id="kube_status.http.handler" class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+        </service>
+
+        <service id="kube_status.http_client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument key="handler" type="service" id="kube_status.http.handler" />
+                <argument key="base_uri">%kube_status_base_uri%</argument>
+            </argument>
+        </service>
     </services>
 </container>

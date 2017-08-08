@@ -12,5 +12,13 @@
         </service>
         <service id="builder.billing.subscription_client.in_memory" class="ContinuousPipe\Billing\Subscription\InMemorySubscriptionClient" />
         <service id="builder.billing.subscription_client" alias="builder.billing.subscription_client.in_memory" />
+
+        <service id="kube_status.http.middleware.predictable_request_mapping" class="GuzzleHttp\PredefinedRequestMappingMiddleware" />
+        <service id="kube_status.http.handler" class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+            <call method="unshift">
+                <argument type="service" id="kube_status.http.middleware.predictable_request_mapping" />
+            </call>
+        </service>
     </services>
 </container>
