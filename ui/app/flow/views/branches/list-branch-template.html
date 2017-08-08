@@ -25,7 +25,7 @@
         <span ng-show="tide.status=='failure'"><md-icon>clear</md-icon></span>
         <span ng-show="tide.status=='cancelled'"><md-icon>block</md-icon></span>
         <span ng-show="tide.status=='pending'"><md-icon>hourglass_empty</md-icon></span>
-        <md-progress-circular md-mode="indeterminate"  ng-show="tide.status=='running'"></md-progress-circular>
+        <md-progress-circular md-mode="indeterminate"  ng-show="tide.status=='running'" md-diameter="20px"></md-progress-circular>
     </li>
     <li ng-repeat="placeholder in [0, 1, 2, 3, 4]" ng-if="!(branch | branchLastTides)[placeholder]" class="placeholder-tide"></li>
     <li>

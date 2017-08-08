@@ -48,6 +48,10 @@ angular.module('continuousPipeRiver').factory("BranchFactory", function($firebas
             // we need to return true/false here or $watch listeners will not get triggered
             // luckily, our Widget.prototype.update() method already returns a boolean if
             // anything has changed
+            if (!snap.key) {
+                return true;
+            }
+            
             return this.$getRecord(snap.key()).update(snap);
         }
     });
