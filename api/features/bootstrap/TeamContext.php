@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\GitHubToken;
@@ -10,6 +11,7 @@ use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\User\User;
+use GuzzleHttp\PredefinedRequestMappingMiddleware;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,19 +46,23 @@ class TeamContext implements Context
      * @var BucketRepository
      */
     private $bucketRepository;
-
     /**
-     * @param Kernel $kernel
-     * @param TeamRepository $teamRepository
-     * @param TeamMembershipRepository $teamMembershipRepository
-     * @param BucketRepository $bucketRepository
+     * @var PredefinedRequestMappingMiddleware
      */
-    public function __construct(Kernel $kernel, TeamRepository $teamRepository, TeamMembershipRepository $teamMembershipRepository, BucketRepository $bucketRepository)
-    {
+    private $kubeStatusRequestMappingMiddleware;
+
+    public function __construct(
+        Kernel $kernel,
+        TeamRepository $teamRepository,
+        TeamMembershipRepository $teamMembershipRepository,
+        BucketRepository $bucketRepository,
+        PredefinedRequestMappingMiddleware $kubeStatusRequestMappingMiddleware
+    ) {
         $this->kernel = $kernel;
         $this->teamRepository = $teamRepository;
         $this->teamMembershipRepository = $teamMembershipRepository;
         $this->bucketRepository = $bucketRepository;
+        $this->kubeStatusRequestMappingMiddleware = $kubeStatusRequestMappingMiddleware;
     }
 
     /**
@@ -699,6 +705,41 @@ class TeamContext implements Context
                 $tidesPerHour,
                 $json['tides_per_hour']
             ));
+        }
+    }
+
+    /**
+     * @Given the kube-status response for the path :path will be a :responseStatusCode response with the following body:
+     */
+    public function theKubeStatusResponseForThePathWillBeAResponseWithTheFollowingBody($path, $responseStatusCode, PyStringNode $responseBody)
+    {
+        $this->kubeStatusRequestMappingMiddleware->addMapping([
+            'method' => 'GET',
+            'path' => '/^'.str_replace(['/', '+'], ['\\/', '\\+'], $path).'$/',
+            'response' => new \GuzzleHttp\Psr7\Response($responseStatusCode, [], $responseBody->getRaw()),
+        ]);
+    }
+
+    /**
+     * @When I request the proxied kube-status path :path
+     */
+    public function iRequestTheProxiedKubeStatusPath($path)
+    {
+        $this->response = $this->kernel->handle(Request::create('/api/kube-status'.$path));
+    }
+
+    /**
+     * @Then I should received a response :statusCode with the following content:
+     */
+    public function iShouldReceivedAResponseWithTheFollowingContent($responseStatusCode, PyStringNode $string)
+    {
+        $this->assertResponseCodeIs($this->response, $responseStatusCode);
+
+        $foundContents = trim($this->response->getContent());
+        $expectedContents = trim($string->getRaw());
+
+        if ($foundContents != $expectedContents) {
+            throw new \RuntimeException(sprintf('Got the following content instead: %s', $foundContents));
         }
     }
 
