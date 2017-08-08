@@ -9,7 +9,10 @@ use JMS\Serializer\SerializerInterface;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodStatus;
+use Kubernetes\Client\NamespaceClient;
+use Kubernetes\Client\Repository\PodRepository;
 use LogStream\Log;
+use LogStream\Logger;
 use LogStream\LoggerFactory;
 use LogStream\Node\Complex;
 use LogStream\Node\Raw;
@@ -101,57 +104,7 @@ class ComponentAttacher
 
             $rawLogger = $podLogger->child(new Raw());
 
-            $loop = React\EventLoop\Factory::create();
-
-            $podIsRunningPromise = (new PromiseBuilder($loop))
-                ->retry(
-                    $this->podInterval,
-                    function (React\Promise\Deferred $deferred) use ($podRepository, $podName) {
-                        $pod = $podRepository->findOneByName($podName);
-
-                        if ($pod->getStatus() !== PodStatus::PHASE_PENDING) {
-                            $deferred->resolve();
-                        }
-                    }
-                )
-                ->withTimeout($this->podTimeout)
-                ->getPromise();
-
-            $eventsLogger = $podLogger->child(new Complex('events'));
-            $updateEvents = function () use ($namespaceClient, $pod, $eventsLogger) {
-                $eventList = $namespaceClient->getEventRepository()->findByObject($pod);
-
-                $events = $eventList->getEvents();
-                $eventsLogger->update(
-                    new Complex(
-                        'events', [
-                            'events' => json_decode($this->serializer->serialize($events, 'json'), true),
-                        ]
-                    )
-                );
-            };
-
-            $timer = $loop->addPeriodicTimer($this->podInterval, $updateEvents);
-
-            $podIsRunningPromise->then(
-                function () use ($timer, $updateEvents) {
-                    $timer->cancel();
-                    $updateEvents();
-                },
-                function (\Throwable $reason) use ($timer, $updateEvents) {
-                    $timer->cancel();
-                    $updateEvents();
-
-                    $this->applicationLog->warning(
-                        'Something went wrong while waiting the pod to be running',
-                        [
-                            'exception' => $reason,
-                        ]
-                    );
-                }
-            );
-
-            $loop->run();
+            $this->logPodEventsWhilstItIsNotRunning($pod, $podRepository, $namespaceClient, $podLogger);
 
             try {
                 $pod = $podRepository->attach($pod, function ($output) use ($rawLogger) {
@@ -175,5 +128,66 @@ class ComponentAttacher
 
             $podLogger->updateStatus(Log::SUCCESS);
         }
+    }
+
+    private function logPodEventsWhilstItIsNotRunning(
+        Pod $pod,
+        PodRepository $podRepository,
+        NamespaceClient $namespaceClient,
+        Logger $podLogger
+    ) {
+        $podName = $pod->getMetadata()->getName();
+
+        $loop = React\EventLoop\Factory::create();
+
+        $podIsRunningPromise = (new PromiseBuilder($loop))
+            ->retry(
+                $this->podInterval,
+                function (React\Promise\Deferred $deferred) use ($podRepository, $podName) {
+                    $pod = $podRepository->findOneByName($podName);
+
+                    if ($pod->getStatus() !== PodStatus::PHASE_PENDING) {
+                        $deferred->resolve();
+                    }
+                }
+            )
+            ->withTimeout($this->podTimeout)
+            ->getPromise();
+
+        $eventsLogger = $podLogger->child(new Complex('events'));
+        $updateEvents = function () use ($namespaceClient, $pod, $eventsLogger) {
+            $eventList = $namespaceClient->getEventRepository()->findByObject($pod);
+
+            $events = $eventList->getEvents();
+            $eventsLogger->update(
+                new Complex(
+                    'events', [
+                        'events' => json_decode($this->serializer->serialize($events, 'json'), true),
+                    ]
+                )
+            );
+        };
+
+        $timer = $loop->addPeriodicTimer($this->podInterval, $updateEvents);
+
+        $podIsRunningPromise->then(
+            function () use ($timer, $updateEvents) {
+                $timer->cancel();
+                $updateEvents();
+            },
+            function (\Throwable $reason) use ($timer, $updateEvents) {
+                $timer->cancel();
+                $updateEvents();
+
+                $this->applicationLog->warning(
+                    'Something went wrong while waiting the pod to be running',
+                    [
+                        'exception' => $reason,
+                    ]
+                );
+            }
+        );
+
+        $loop->run();
     }
 }

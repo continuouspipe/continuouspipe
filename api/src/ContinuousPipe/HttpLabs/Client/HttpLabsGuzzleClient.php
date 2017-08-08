@@ -69,7 +69,6 @@ class HttpLabsGuzzleClient implements HttpLabsClient
                     'incoming' => $incoming,
                 ]
             ]);
-
         } catch (RequestException $e) {
             throw new HttpLabsException($e->getMessage(), $e->getCode(), $e);
         }

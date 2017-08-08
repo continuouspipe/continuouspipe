@@ -33,7 +33,6 @@ class HttpLabsComponentPublicEndpointResolver implements ComponentPublicEndpoint
                 if (isset($httpLabsMetadata['stack_address'])) {
                     $publicEndpoints[] = $httpLabsMetadata['stack_address'];
                 }
-                
             } catch (\InvalidArgumentException $exception) {
                 $this->logger->warning('Cannot gather HttpLabs data from annotation', ['service_or_ingress' => $serviceOrIngress, 'exception' => $exception]);
             }
