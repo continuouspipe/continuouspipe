@@ -388,6 +388,22 @@ body {
         }
     }
 
+    .card-grid {
+        padding: 20px 10px;
+
+        @include largeScreen {
+            padding: 20px;
+        }
+
+        &.half {
+            md-card {
+                @include largeScreen {
+                    width: 48%;
+                }
+            }
+        }
+    }
+
     log-frame {
         position: absolute;
         top: 0;
