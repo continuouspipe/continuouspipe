@@ -7,3 +7,4 @@ bower_components
 .vscode
 /.cp-remote-settings.yml
 cp-remote-logs
+/vendor.templates.js

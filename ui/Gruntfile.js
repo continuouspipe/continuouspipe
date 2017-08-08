@@ -455,6 +455,18 @@ module.exports = function (grunt) {
         options: {
           usemin: 'scripts/app.js'
         }
+      },
+      vendors: {
+        cwd: '',
+        src: [
+          'bower_components/kube-status/ui/app/dashboard/views/status/full.html',
+          'bower_components/kube-status/ui/app/dashboard/views/status/layout.html',
+          'bower_components/kube-status/ui/app/dashboard/views/pod/details.html'
+        ],
+        dest: 'vendor.templates.js',
+        options: {
+          usemin: 'scripts/vendor.js'
+        }
       }
     }
 
