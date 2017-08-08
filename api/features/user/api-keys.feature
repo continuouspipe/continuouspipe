@@ -25,3 +25,10 @@ Feature:
     And I am authenticated as user "samuel"
     When I create an API key described "Some usage" for the user "foo"
     Then I should be told that I don't have the authorization to access this user
+
+  Scenario: I can delete an API key
+    Given I am authenticated as user "samuel"
+    And the user "samuel" have the API key "1234567890"
+    When I delete the API key "1234567890" of the user "samuel"
+    And I request the list of API keys of the user "samuel"
+    Then I should not see the API key "1234567890"

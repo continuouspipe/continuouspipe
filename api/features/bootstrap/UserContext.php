@@ -160,6 +160,19 @@ class UserContext implements Context
     }
 
     /**
+     * @When I delete the API key :key of the user :username
+     */
+    public function iDeleteTheApiKeyOfTheUser($key, $username)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/user/%s/api-keys/%s', $username, $key),
+            'DELETE'
+        ));
+
+        $this->assertResponseCode(204);
+    }
+
+    /**
      * @Then the bucket of the user :username should contain the GitHub token :token
      */
     public function theBucketOfTheUserShouldContainTheGithubToken($username, $token)
@@ -204,6 +217,21 @@ class UserContext implements Context
         }
 
         throw new \RuntimeException('API key not found');
+    }
+
+    /**
+     * @Then I should not see the API key :apiKey
+     */
+    public function iShouldNotSeeTheApiKey($apiKey)
+    {
+        $this->assertResponseCode(200);
+
+        $keys = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        foreach ($keys as $key) {
+            if ($key['api_key'] == $apiKey) {
+                throw new \RuntimeException('API key found');
+            }
+        }
     }
 
     /**
