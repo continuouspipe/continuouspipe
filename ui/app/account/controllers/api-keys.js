@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ApiKeysController', function($scope, $state, $remoteResource, $http, user, AccountRepository, UserRepository) {
+    .controller('ApiKeysController', function($scope, $state, $remoteResource, $http, user, UserRepository) {
 
         $scope.apiKeys = [];
         $scope.apiKey = {};
@@ -37,7 +37,13 @@ angular.module('continuousPipeRiver')
                 confirmButtonText: "Yes, delete it!",
                 closeOnConfirm: true
             }, function() {
-                console.log('Delete key..... no api for it yet')
+                UserRepository.deleteApiKey(user.username, apiKey).then(function() {
+                    swal("Deleted!", "API key successfully deleted.", "success");
+
+                    load();
+                }, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the API key", "error");
+                });
             });
         };
 

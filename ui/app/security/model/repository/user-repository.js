@@ -3,6 +3,7 @@
 angular.module('continuousPipeRiver')
     .service('UserRepository', function($resource, AUTHENTICATOR_API_URL) {
         this.resource = $resource(AUTHENTICATOR_API_URL+'/api/user/:username');
+        this.apiKeyResource = $resource(AUTHENTICATOR_API_URL+'/api/user/:username/api-keys/:key');
 
         this.findByUsername = function(username) {
             return this.resource.get({username: username}).$promise.then(function(user) {
@@ -20,11 +21,14 @@ angular.module('continuousPipeRiver')
         };
 
         this.findApiKeysByUsername = function(username) {
-            return $resource(AUTHENTICATOR_API_URL+'/api/user/'+username+'/api-keys').query().$promise;
+            return this.apiKeyResource.query({username: username}).$promise;
         };
 
         this.createApiKey = function(username, apiKey) {
-            return $resource(AUTHENTICATOR_API_URL+'/api/user/'+username+'/api-keys')
-                .save(apiKey).$promise;
+            return this.apiKeyResource.save({username: username}, apiKey).$promise;
         };
+
+        this.deleteApiKey = function(username, apiKey) {
+            return this.apiKeyResource.delete({username: username, key: apiKey.api_key}).$promise;
+        }
     });
