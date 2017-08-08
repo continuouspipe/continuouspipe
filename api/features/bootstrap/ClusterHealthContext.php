@@ -79,6 +79,20 @@ class ClusterHealthContext implements Context
     private function findEvent($type, $message)
     {
         return array_filter($this->logStream->getLogs(), function (array $entry) use ($type, $message) {
+            if ($entry['type'] == 'events') {
+                if (empty($entry['events'])) {
+                    return false;
+                }
+
+                foreach($entry['events'] as $event) {
+                    if ($event['message'] == $message) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
             if (empty($entry['contents'])) {
                 return false;
             }
