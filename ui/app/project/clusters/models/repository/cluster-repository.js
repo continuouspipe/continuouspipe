@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('ClusterRepository', function($resource, $projectContext, AUTHENTICATOR_API_URL, RIVER_API_URL) {
+    .service('ClusterRepository', function($resource, $projectContext, $q, AUTHENTICATOR_API_URL, RIVER_API_URL) {
         this.resource = $resource(AUTHENTICATOR_API_URL+'/api/bucket/:bucket/clusters/:identifier');
 
         var getBucketUuid = function() {
@@ -10,6 +10,18 @@ angular.module('continuousPipeRiver')
 
         this.findAll = function() {
             return this.resource.query({bucket: getBucketUuid()}).$promise;
+        };
+
+        this.find = function(identifier) {
+            return this.findAll().then(function(clusters) {
+                for (var i = 0; i < clusters.length; i++) {
+                    if (clusters[i].identifier == identifier) {
+                        return clusters[i];
+                    }
+                }
+
+                return $q.reject(new Error('Cluster not found'));
+            });
         };
 
         this.remove = function(cluster) {

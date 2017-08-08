@@ -441,7 +441,8 @@ module.exports = function (grunt) {
           LOG_STREAM_API_URL: process.env.LOG_STREAM_API_URL,
           PIPE_API_URL: process.env.PIPE_API_URL,
           KUBE_PROXY_HOSTNAME: process.env.KUBE_PROXY_HOSTNAME,
-          SENTRY_DSN: process.env.SENTRY_DSN
+          SENTRY_DSN: process.env.SENTRY_DSN,
+          KUBE_STATUS_API_URL: process.env.KUBE_STATUS_API_URL
         }
       }
     },
@@ -453,6 +454,18 @@ module.exports = function (grunt) {
         dest: 'templates.js',
         options: {
           usemin: 'scripts/app.js'
+        }
+      },
+      kubeStatusDashboard: {
+        cwd: '',
+        src: [
+          'bower_components/kube-status/ui/app/dashboard/views/status/full.html',
+          'bower_components/kube-status/ui/app/dashboard/views/status/layout.html',
+          'bower_components/kube-status/ui/app/dashboard/views/pod/details.html'
+        ],
+        dest: 'vendor.templates.js',
+        options: {
+          usemin: 'scripts/vendor.js'
         }
       }
     }

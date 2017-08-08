@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectClustersController', function($scope, $remoteResource, $http, $mdDialog, ClusterRepository, project, user) {
+    .controller('ProjectClustersController', function($scope, $remoteResource, $http, $mdDialog, $state, ClusterRepository, project, user) {
         var controller = this;
 
         this.loadClusters = function() {
@@ -28,6 +28,10 @@ angular.module('continuousPipeRiver')
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting cluster", "error");
                 });
             });
+        };
+
+        $scope.showDashboard = function(cluster) {
+            $state.go('clusters.status', {identifier: cluster.identifier});
         };
 
         $scope.isAdmin = user.isAdmin(project);

@@ -98,6 +98,35 @@ angular.module('continuousPipeRiver')
                     }
                 }
             })
+            .state('clusters.status', {
+                url: '/:identifier/status',
+                resolve: {
+                    cluster: function(ClusterRepository, $stateParams, project) {
+                        return ClusterRepository.find($stateParams.identifier).then(function(cluster) {
+                            // Compatibility with kube-status and CP's setup
+                            cluster.identifier = project.slug + '+' + cluster.identifier;
+
+                            return cluster;
+                        });
+                    }
+                },
+                views: {
+                    'content@project': {
+                        templateUrl: 'bower_components/kube-status/ui/app/dashboard/views/status/layout.html',
+                        controller: 'ClusterStatusLayoutController'
+                    }
+                }
+            })
+            .state('cluster-status-view', {
+                parent: 'clusters.status',
+                url: '/{status}',
+                views: {
+                    status: {
+                        templateUrl: 'bower_components/kube-status/ui/app/dashboard/views/status/full.html',
+                        controller: 'ClusterStatusController'                    
+                    }
+                }
+            })
             .state('registry-credentials', {
                 parent: 'project',
                 url: '/registry-credentials',
