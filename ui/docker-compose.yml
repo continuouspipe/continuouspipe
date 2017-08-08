@@ -9,6 +9,7 @@ ui:
     - PIPE_API_URL=https://pipe-staging.continuouspipe.io
     - LOG_STREAM_API_URL=http://logstream-api.docker
     - KUBE_PROXY_HOSTNAME=kube-proxy-staging.continuouspipe.io
+    - KUBE_STATUS_API_URL=http://localhost:8080
   expose:
     - 80
     - 35729

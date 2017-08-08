@@ -9,7 +9,7 @@
     "angular-google-analytics": "~1.1.3",
     "angular-jwt": "~0.0.9",
     "angular-loading-bar": "~0.8.0",
-    "angular-material": "~1.0.6",
+    "angular-material": "~1.1.3",
     "angular-md5": "~0.1.8",
     "angular-messages": "~1.5.0",
     "angular-resource": "~1.5.0",
@@ -28,7 +28,8 @@
     "ansi_up": "^1.3.0",
     "raven-js": "^3.8.0",
     "angular-resizable": "^1.2.0",
-    "xterm.js": "^2.8.1"
+    "xterm.js": "^2.8.1",
+    "kube-status": "https://github.com/continuouspipe/kube-status.git#make-user-interface-bowerable"
   },
   "devDependencies": {
     "angular-mocks": "~1.5.0"
@@ -36,6 +37,7 @@
   "appPath": "app",
   "moduleName": "continuousPipeRiver",
   "resolutions": {
-    "angular": "~1.5.0"
+    "angular": "~1.5.0",
+    "angular-material": "~1.0.6"
   }
 }

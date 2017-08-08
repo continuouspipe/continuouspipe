@@ -27,8 +27,11 @@ angular
         'yaru22.angular-timeago',
         'firebase',
         'RecursionHelper',
-        'angularResizable'
+        'angularResizable',
+        'googlechart',
+        'kubeStatusDashboard'
     ])
+    .constant('KUBE_STATUS_TEMPLATE_URI_ROOT', 'bower_components/kube-status/ui/app/')
     .config(function ($urlRouterProvider, $breadcrumbProvider, $locationProvider, $mdThemingProvider, AnalyticsProvider) {
         $urlRouterProvider.otherwise('/');
         $locationProvider.html5Mode(true);
@@ -41,7 +44,7 @@ angular
             .setPageEvent('$stateChangeSuccess')
             ;
 
-        $mdThemingProvider.theme('blue');
+        //$mdThemingProvider.theme('blue');
 
         firebase.initializeApp({
             apiKey: "AIzaSyDIK_08syPHkRxcf2n8zJ48XAVPHWpTsp0",

@@ -68,3 +68,5 @@ tasks:
                               value: ${SENTRY_DSN}
                             - name: KUBE_PROXY_HOSTNAME
                               value: ${KUBE_PROXY_HOSTNAME}
+                            - name: KUBE_STATUS_API_URL
+                              value: ${AUTHENTICATOR_API_URL}/api/kube-status
