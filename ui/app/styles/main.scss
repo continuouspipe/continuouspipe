@@ -32,12 +32,14 @@
     }
 }
 
-.md-button {
-    align-items: center;
-    display: flex;
+.md-toolbar-tools {
+    .md-button {
+        align-items: center;
+        display: flex;
 
-    > * {
-        flex: 1;
+        > * {
+            flex: 1;
+        }
     }
 }
 
