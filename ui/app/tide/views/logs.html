@@ -1,6 +1,6 @@
 <md-toolbar class="status-container" ng-class="(summary.status || tide.status) | tideStatusClass">
     <div class="md-toolbar-tools">
-        <md-progress-circular md-mode="indeterminate"  ng-show="summary && summary.status == 'running'"></md-progress-circular>
+        <md-progress-circular md-mode="indeterminate"  ng-show="summary && summary.status == 'running'" md-diameter="30px"></md-progress-circular>
         <div class="status" flex>
             <h2 ng-hide="summary"><span>Loading...</span></h2>
             <h2 ng-show="summary && summary.status != 'running'">{{ summary.status | firstUpperCase }}</h2>

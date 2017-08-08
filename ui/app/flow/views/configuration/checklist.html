@@ -15,7 +15,7 @@
                 <p>{{ check.description }}</p>
             </div>
             <div class="status">
-                <md-progress-circular ng-if="check.status.summary == 'loading'" md-mode="indeterminate" md-diameter="40px"></md-progress-circular>
+                <md-progress-circular ng-if="check.status.summary == 'loading'" md-mode="indeterminate" md-diameter="20px"></md-progress-circular>
 
                 <md-icon ng-if="check.status.icon">{{ check.status.icon }}</md-icon>
                 <p ng-if="check.status.message">{{ check.status.message }}</p>

@@ -32,6 +32,17 @@
     }
 }
 
+.md-toolbar-tools {
+    .md-button {
+        align-items: center;
+        display: flex;
+
+        > * {
+            flex: 1;
+        }
+    }
+}
+
 table.table {
     border-top: 1px solid #F3F4F8;
     border-collapse: collapse;
@@ -323,6 +334,10 @@ body {
                     }
                     .icon-link--help {
                         padding-top: 7px;
+                    }
+
+                    md-progress-circular {
+                        margin: 0 10px;
                     }
 
                     @include smallScreen {
