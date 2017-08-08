@@ -175,6 +175,22 @@ class LoggingContext implements Context
     }
 
     /**
+     * @Then a log containing :contents should not be created
+     */
+    public function aLogContainingShouldNotBeCreated($contents)
+    {
+        $matchingLogs = array_values(array_filter($this->findAllLogs(), function (array $log) use ($contents) {
+            return array_key_exists('contents', $log) && false !== strpos($log['contents'], $contents);
+        }));
+
+        if (0 !== count($matchingLogs)) {
+            var_dump($matchingLogs);
+
+            throw new \RuntimeException(sprintf('%d matching logs found', count($matchingLogs)));
+        }
+    }
+
+    /**
      * @When a user opens a non-existent page
      */
     public function aUserOpensANonExistentPage()

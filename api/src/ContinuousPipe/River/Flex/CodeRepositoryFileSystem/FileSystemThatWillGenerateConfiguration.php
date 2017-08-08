@@ -55,7 +55,9 @@ class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
     public function getContents($filePath)
     {
         if (in_array($filePath, self::GENERATED_FILES)) {
-            return $this->generateFile($filePath);
+            if (null !== ($generated = $this->generateFile($filePath))) {
+                return $generated;
+            }
         }
 
         return $this->decoratedFileSystem->getContents($filePath);
@@ -75,6 +77,6 @@ class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
             }
         }
 
-        throw new FileNotFound('File '.$filePath.' was not generated');
+        return null;
     }
 }
