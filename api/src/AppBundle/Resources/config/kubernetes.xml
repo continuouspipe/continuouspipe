@@ -100,8 +100,9 @@
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="jms_serializer" />
-            <argument>%endpoint.wait.timeout%</argument>
-            <argument>%endpoint.wait.interval%</argument>
+            <argument type="service" id="logger" />
+            <argument>%pod.wait.timeout%</argument>
+            <argument>%pod.wait.interval%</argument>
         </service>
 
         <!-- Listeners -->

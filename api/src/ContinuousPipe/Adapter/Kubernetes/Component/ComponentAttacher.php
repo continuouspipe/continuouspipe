@@ -15,6 +15,7 @@ use LogStream\Node\Complex;
 use LogStream\Node\Raw;
 use LogStream\Node\Text;
 use Kubernetes\Client\Exception\Exception;
+use Psr\Log\LoggerInterface;
 use React;
 
 class ComponentAttacher
@@ -33,32 +34,40 @@ class ComponentAttacher
      */
     private $serializer;
     /**
-     * @var int
+     * @var LoggerInterface
      */
-    private $endpointTimeout;
+    private $applicationLog;
     /**
      * @var int
      */
-    private $endpointInterval;
+    private $podTimeout;
+    /**
+     * @var int
+     */
+    private $podInterval;
 
     /**
      * @param DeploymentClientFactory $clientFactory
      * @param LoggerFactory $loggerFactory
      * @param SerializerInterface $serializer
-     * @param int $endpointInterval
+     * @param LoggerInterface $applicationLog
+     * @param int $podTimeout
+     * @param int $podInterval
      */
     public function __construct(
         DeploymentClientFactory $clientFactory,
         LoggerFactory $loggerFactory,
         SerializerInterface $serializer,
-        int $endpointTimeout,
-        int $endpointInterval
+        LoggerInterface $applicationLog,
+        int $podTimeout,
+        int $podInterval
     ) {
         $this->clientFactory = $clientFactory;
         $this->loggerFactory = $loggerFactory;
         $this->serializer = $serializer;
-        $this->endpointTimeout = $endpointTimeout;
-        $this->endpointInterval = $endpointInterval;
+        $this->applicationLog = $applicationLog;
+        $this->podTimeout = $podTimeout;
+        $this->podInterval = $podInterval;
     }
 
     /**
@@ -96,8 +105,8 @@ class ComponentAttacher
 
             $podIsRunningPromise = (new PromiseBuilder($loop))
                 ->retry(
-                    $this->endpointInterval,
-                    function(React\Promise\Deferred $deferred) use ($podRepository, $podName) {
+                    $this->podInterval,
+                    function (React\Promise\Deferred $deferred) use ($podRepository, $podName) {
                         $pod = $podRepository->findOneByName($podName);
 
                         if ($pod->getStatus() !== PodStatus::PHASE_PENDING) {
@@ -105,7 +114,7 @@ class ComponentAttacher
                         }
                     }
                 )
-                ->withTimeout($this->endpointTimeout)
+                ->withTimeout($this->podTimeout)
                 ->getPromise();
 
             $eventsLogger = $podLogger->child(new Complex('events'));
@@ -122,7 +131,7 @@ class ComponentAttacher
                 );
             };
 
-            $timer = $loop->addPeriodicTimer($this->endpointInterval, $updateEvents);
+            $timer = $loop->addPeriodicTimer($this->podInterval, $updateEvents);
 
             $podIsRunningPromise->then(
                 function () use ($timer, $updateEvents) {
@@ -133,7 +142,7 @@ class ComponentAttacher
                     $timer->cancel();
                     $updateEvents();
 
-                    throw $reason;
+                    $this->applicationLog->warning($reason);
                 }
             );
 
