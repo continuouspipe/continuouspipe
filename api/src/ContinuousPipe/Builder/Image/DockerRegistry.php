@@ -53,7 +53,7 @@ class DockerRegistry implements Registry
         return sprintf(
             'https://%s/v2/%s/manifests/%s',
             $serverAddress,
-            $image->getName(),
+            $image->getTwoPartName(),
             $image->getTag()
         );
     }
