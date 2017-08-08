@@ -48,10 +48,54 @@ class KubeStatusProxyController
     }
 
     /**
+     * @Route("/kube-status/clusters/{clusterIdentifier}/status")
+     * @View
+     */
+    public function clusterStatusAction(string $clusterIdentifier)
+    {
+        $this->assertHasAccessToCluster($clusterIdentifier);
+
+        return $this->proxy('GET', '/clusters/' . $clusterIdentifier . '/status');
+    }
+
+    /**
      * @Route("/kube-status/clusters/{clusterIdentifier}/history")
      * @View
      */
     public function clusterHistoryAction(string $clusterIdentifier)
+    {
+        $this->assertHasAccessToCluster($clusterIdentifier);
+
+        return $this->proxy('GET', '/clusters/' . $clusterIdentifier . '/history');
+    }
+
+    /**
+     * @Route("/kube-status/clusters/{clusterIdentifier}/history/{entryUuid}")
+     * @View
+     */
+    public function clusterHistoryEntryAction(string $clusterIdentifier, string $entryUuid)
+    {
+        $this->assertHasAccessToCluster($clusterIdentifier);
+
+        return $this->proxy('GET', '/clusters/' . $clusterIdentifier . '/history/'.$entryUuid);
+    }
+
+    private function proxy(string $method, string $path)
+    {
+        try {
+            $response = $this->kubeStatusHttpClient->request($method, $path);
+        } catch (RequestException $e) {
+            if (null === ($response = $e->getResponse())) {
+                return new JsonResponse(['error' => $e->getMessage()], 500);
+            }
+        }
+
+        return new Response($response->getBody()->getContents(), $response->getStatusCode(), [
+            'Content-Type' => $response->getHeaderLine('Content-Type'),
+        ]);
+    }
+
+    private function assertHasAccessToCluster(string $clusterIdentifier)
     {
         $teamName = substr($clusterIdentifier, 0, strpos($clusterIdentifier, '+'));
 
@@ -64,20 +108,5 @@ class KubeStatusProxyController
         if (!$this->authorizationChecker->isGranted('READ', $team)) {
             throw new AccessDeniedHttpException(sprintf('You do not have access to the team "%s"', $teamName));
         }
-
-        try {
-            $response = $this->kubeStatusHttpClient->request(
-                'GET',
-                '/clusters/' . $clusterIdentifier . '/history'
-            );
-        } catch (RequestException $e) {
-            if (null === ($response = $e->getResponse())) {
-                return new JsonResponse(['error' => $e->getMessage()], 500);
-            }
-        }
-
-        return new Response($response->getBody()->getContents(), $response->getStatusCode(), [
-            'Content-Type' => $response->getHeaderLine('Content-Type'),
-        ]);
     }
 }

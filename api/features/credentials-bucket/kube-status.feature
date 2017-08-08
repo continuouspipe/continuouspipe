@@ -28,3 +28,27 @@ Feature:
     """
     []
     """
+
+  Scenario: Proxies the full cluster status
+    Given I am authenticated as user "samuel"
+    And the kube-status response for the path "/clusters/foo+cluster-identifier/status" will be a 200 response with the following body:
+    """
+    {"status": "OK"}
+    """
+    When I request the proxied kube-status path "/clusters/foo+cluster-identifier/status"
+    Then I should received a response 200 with the following content:
+    """
+    {"status": "OK"}
+    """
+
+  Scenario: Proxies the entry history
+    Given I am authenticated as user "samuel"
+    And the kube-status response for the path "/clusters/foo+cluster-identifier/history/00000000-0000-0000-0000-000000000000" will be a 200 response with the following body:
+    """
+    {"nodes": []}
+    """
+    When I request the proxied kube-status path "/clusters/foo+cluster-identifier/history/00000000-0000-0000-0000-000000000000"
+    Then I should received a response 200 with the following content:
+    """
+    {"nodes": []}
+    """
