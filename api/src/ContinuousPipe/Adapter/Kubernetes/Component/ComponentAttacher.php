@@ -142,7 +142,12 @@ class ComponentAttacher
                     $timer->cancel();
                     $updateEvents();
 
-                    $this->applicationLog->warning($reason);
+                    $this->applicationLog->warning(
+                        'Something went wrong while waiting the pod to be running',
+                        [
+                            'exception' => $reason,
+                        ]
+                    );
                 }
             );
 
