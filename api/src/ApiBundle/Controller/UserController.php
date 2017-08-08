@@ -13,6 +13,7 @@ use FOS\RestBundle\Controller\Annotations\View;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Debug\Tests\Fixtures\ClassAlias;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -86,5 +87,39 @@ class UserController
     public function listApiKeysAction(User $userObject)
     {
         return $this->userByApiKeyRepository->findByUser($userObject->getUsername());
+    }
+
+    /**
+     * @Route("/user/{username}/api-keys/{apiKey}", methods={"DELETE"})
+     * @ParamConverter("userObject", converter="user", options={"byUsername"="username"})
+     * @Security("is_granted('ADMIN', userObject)")
+     * @View
+     */
+    public function deleteApiKeyAction(User $userObject, string $apiKey)
+    {
+        if (null === ($key = $this->findApiKey($userObject, $apiKey))) {
+            throw new NotFoundHttpException(sprintf('API key "%s" not found', $apiKey));
+        }
+
+        $this->userByApiKeyRepository->delete($userObject->getUsername(), $key->getUuid());
+    }
+
+    /**
+     * @param User $user
+     * @param string $key
+     *
+     * @return UserApiKey|null
+     */
+    private function findApiKey(User $user, string $key)
+    {
+        $keys = $this->userByApiKeyRepository->findByUser($user->getUsername());
+
+        foreach ($keys as $userKey) {
+            if ($userKey->getApiKey() == $key) {
+                return $userKey;
+            }
+        }
+
+        return null;
     }
 }
