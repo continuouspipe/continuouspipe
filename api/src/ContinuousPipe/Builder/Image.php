@@ -31,6 +31,15 @@ class Image
         return $this->name;
     }
 
+    public function getTwoPartName() : string
+    {
+        $parts = explode('/', $this->getName());
+        if (count($parts) == 2) {
+            return $this->getName();
+        }
+        return $parts[1] . '/' . $parts[2];
+    }
+
     /**
      * @return string
      */
