@@ -1,0 +1,20 @@
+<md-content flex>
+    <form name="apiKeyForm">
+        <div class="form-container">
+            <p>Give a name to your API key.</p>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Name</label>
+                <input ng-model="apiKey.description" required />
+            </md-input-container>
+        </div>
+    </form>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create" ng-disabled="apiKeyForm.$invalid || isLoading" ng-click="create(apiKey)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
+            Create
+        </md-button>
+    </div>
+</md-toolbar>

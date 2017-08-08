@@ -2,28 +2,10 @@
 
 angular.module('continuousPipeRiver')
     .controller('ApiKeysController', function($scope, $state, $remoteResource, $http, user, UserRepository) {
-
         $scope.apiKeys = [];
-        $scope.apiKey = {};
-
         var load = function() {
             $remoteResource.load('apiKeys', UserRepository.findApiKeysByUsername(user.username)).then(function (apiKeys) {
                 $scope.apiKeys = apiKeys;
-            });
-        };
-
-        $scope.create = function (apiKey) {
-            $scope.isLoading = true;
-            UserRepository.createApiKey(user.username, apiKey).then(function () {
-                load();
-
-                Intercom('trackEvent', 'created-api-key', {
-                    apiKey: apiKey
-                });
-            }, function (error) {
-                 swal("Error !", $http.getError(error) || "An unknown error occured while create the project", "error");
-            })['finally'](function () {
-                 $scope.isLoading = false;
             });
         };
 
@@ -48,4 +30,23 @@ angular.module('continuousPipeRiver')
         };
 
         load();
-    });
+    })
+    .controller('CreateApiKeyController', function ($scope, $state, $remoteResource, $http, user, UserRepository) {
+        $scope.apiKey = {};
+
+        $scope.create = function (apiKey) {
+            $scope.isLoading = true;
+            UserRepository.createApiKey(user.username, apiKey).then(function () {
+                Intercom('trackEvent', 'created-api-key', {
+                    apiKey: apiKey
+                });
+
+                $state.go('api-keys');
+            }, function (error) {
+                 swal("Error !", $http.getError(error) || "An unknown error occured while create the project", "error");
+            })['finally'](function () {
+                 $scope.isLoading = false;
+            });
+        };
+    })
+;

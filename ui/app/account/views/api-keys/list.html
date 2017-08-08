@@ -4,6 +4,8 @@
             <span ng-show="apiKeys">{{ apiKeys.length }} API Keys</span>
             <span ng-hide="apiKeys">Loading...</span>
         </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create an API key" ui-sref="api-keys.create"><md-icon>add</md-icon> Create an API key</md-button>
     </div>
 </md-toolbar>
 
@@ -34,24 +36,5 @@
             </tr>
             </tbody>
         </table>
-
-        <p>
-            <hr />
-            <h2>Create a new key</h2>
-            <form name="apiKeysForm">
-                <div class="form-container">
-                    <md-input-container class="md-block" flex-gt-xs>
-                        <label>Description</label>
-                        <input ng-model="apiKey.description" required />
-                    </md-input-container>
-                    <md-input-container class="md-block" flex-gt-xs>
-                        <md-button class="md-raised" aria-label="Create" ng-disabled="apiKeysForm.$invalid || isLoading" ng-click="create(apiKey)">
-                            <md-progress-circular md-mode="indeterminate" md-diameter="40px" ng-show="isLoading"></md-progress-circular>
-                            Create
-                        </md-button>
-                    </md-input-container>
-                </div>
-            </form>
-        </p>
     </remote-resource>
 </md-content>
