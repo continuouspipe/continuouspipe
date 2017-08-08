@@ -49,7 +49,6 @@ class HttpLabsGuzzleClient implements HttpLabsClient
             );
 
             return $this->getStack($response->getHeaderLine('Location'), $httpClient);
-
         } catch (RequestException $e) {
             throw new HttpLabsException('Unable to create the HttpLabs stack', $e->getCode(), $e);
         }
@@ -70,7 +69,6 @@ class HttpLabsGuzzleClient implements HttpLabsClient
                     'incoming' => $incoming,
                 ]
             ]);
-
         } catch (RequestException $e) {
             throw new HttpLabsException($e->getMessage(), $e->getCode(), $e);
         }
