@@ -36,7 +36,6 @@ angular.module('continuousPipeRiver')
             });
         };
 
-        $scope.connectAccountUrl = AUTHENTICATOR_API_URL + '/account/connected-accounts';
         $scope.loadGoogleAccounts = function() {
             return AccountRepository.findMine().then(function(accounts) {
                 $scope.googleAccounts = accounts.filter(function(account) {

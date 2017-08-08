@@ -26,5 +26,30 @@ angular.module('continuousPipeRiver')
                     }
                 }
             })
+            .state('api-keys', {
+                url: '/api-keys',
+                parent: 'account',
+                views: {
+                    'content@account': {
+                        templateUrl: 'account/views/api-keys/list.html',
+                        controller: 'ApiKeysController'
+                    },
+                    'title@layout': {
+                        template: 'API Keys'
+                    }
+                }
+            })
+            .state('api-keys.create', {
+                url: '/create',
+                views: {
+                    'content@account': {
+                        templateUrl: 'account/views/api-keys/create.html',
+                        controller: 'CreateApiKeyController'
+                    },
+                    'title@layout': {
+                        template: 'Create an API Key'
+                    }
+                }
+            })
         ;
     });

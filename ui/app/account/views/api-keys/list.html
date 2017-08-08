@@ -1,0 +1,40 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="apiKeys">{{ apiKeys.length }} API Keys</span>
+            <span ng-hide="apiKeys">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create an API key" ui-sref="api-keys.create"><md-icon>add</md-icon> Create an API key</md-button>
+    </div>
+</md-toolbar>
+
+<md-content flex id="content" class="card-grid">
+    <remote-resource resource-name="apiKeys">
+        <table class="table hover">
+            <thead>
+            <tr>
+                <th>Key</th>
+                <th>Description</th>
+                <th>Creation date</th>
+                <th ng-show="isAdmin">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="apiKey in apiKeys">
+                <td>{{ apiKey.api_key }}</td>
+                <td>{{ apiKey.description }}</td>
+                <td>{{ apiKey.creation_date | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                <td>
+                    <md-button ng-click="deleteKey(apiKey)" class="md-raised md-warn">Remove</md-button>
+                </td>
+            </tr>
+            <tr ng-hide="apiKeys.length">
+                <td colspan="4">
+                    You currently have no keys. Please use the form below to create a new key
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>
