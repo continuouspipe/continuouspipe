@@ -108,7 +108,7 @@ class ComponentAttacher
                 ->withTimeout($this->endpointTimeout)
                 ->getPromise();
 
-            $eventsLogger = $logger->child(new Complex('events'));
+            $eventsLogger = $podLogger->child(new Complex('events'));
             $updateEvents = function () use ($namespaceClient, $pod, $eventsLogger) {
                 $eventList = $namespaceClient->getEventRepository()->findByObject($pod);
 

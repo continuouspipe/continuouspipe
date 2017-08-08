@@ -52,7 +52,7 @@ Feature:
     And the pod "app" should be deleted
 
   Scenario: It logs event whilst it waits for the pod to be ready
-    Given the pod "app" will emit the following events
+    Given the pod "app" will emit the following events:
       | message  |
       | Pod is doing something  |
       | Pod is doing something else  |

@@ -234,7 +234,7 @@ class PodContext implements Context
     }
 
     /**
-     * @Given the pod :podName will emit the following events
+     * @Given the pod :podName will emit the following events:
      */
     public function thePodWillEmitTheFollowingEvents($podName, TableNode $table)
     {
