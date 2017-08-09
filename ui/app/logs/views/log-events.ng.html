@@ -11,7 +11,7 @@
 		</thead>
 		<tbody>
 			<tbody>
-				<tr ng-if="!log.events || !log.events.length">
+				<tr ng-if="!log.events || 0 === log.events.length">
 					<td colspan="5">No events yet.</td>
 				</td>
 				<tr ng-repeat="event in log.events">

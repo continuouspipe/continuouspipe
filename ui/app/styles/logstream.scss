@@ -498,14 +498,23 @@ md-dialog.logs-dialog {
             }
         }
     }
+}
 
-    md-tab-content {
+md-tab-content {
+    display: flex;
+
+    > div {
+        flex: 1;
+        overflow: scroll;
         display: flex;
 
-        > div {
+        ng-include, proxy {
             flex: 1;
-            overflow: scroll;
             display: flex;
+
+            > pre, > div {
+                flex: 1;
+            }
         }
     }
 }

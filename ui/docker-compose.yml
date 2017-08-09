@@ -4,7 +4,7 @@ ui:
     - ./app:/app/app
   # command: /app/serve.sh
   environment:
-    - RIVER_API_URL=http://localhost:81/app_dev.php
+    - RIVER_API_URL=https://river-staging.continuouspipe.io
     - AUTHENTICATOR_API_URL=https://authenticator-staging.continuouspipe.io
     - PIPE_API_URL=https://pipe-staging.continuouspipe.io
     - LOG_STREAM_API_URL=http://logstream-api.docker
