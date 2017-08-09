@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Security\Credentials\DockerRegistry as DockerRegistryCredentials;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 class DockerRegistry implements Registry
@@ -14,12 +15,19 @@ class DockerRegistry implements Registry
     private $client;
     private $credentialsRepository;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         ClientInterface $client,
-        CredentialsRepository $credentialsRepository
+        CredentialsRepository $credentialsRepository,
+        LoggerInterface $logger
     ) {
         $this->client = $client;
         $this->credentialsRepository = $credentialsRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -60,6 +68,13 @@ class DockerRegistry implements Registry
 
     private function requestManifest(Image $image, string $serverAddress, string $token = null): ResponseInterface
     {
+        $this->logger->info(
+        'Requesting manifest',
+            [
+                'request-url' => $this->manifestUrl($serverAddress, $image),
+                'token' => $token
+            ]
+        );
         return $this->client->request(
             'head',
             $this->manifestUrl($serverAddress, $image),
@@ -80,7 +95,16 @@ class DockerRegistry implements Registry
         $initialResponse = $this->requestManifest($image, $credentials->getServerAddress());
 
         if ($initialResponse->getStatusCode() != 401) {
-            throw new SearchingForExistingImageException('Error requesting auth details');
+            $this->logger->warning(
+                'Retrieving auth details failed',
+                [
+                    'status-code' => $initialResponse->getStatusCode(),
+                    'response-body'=> $initialResponse->getBody()->getContents()
+                ]
+            );
+            throw new SearchingForExistingImageException(
+                'Error requesting auth details.  Expected 401, got ' . $initialResponse->getStatusCode() . ' with message ' . $initialResponse->getBody()->getContents()
+            );
         }
 
         if (null === $authHeader = $initialResponse->getHeader('WWW-Authenticate')) {
