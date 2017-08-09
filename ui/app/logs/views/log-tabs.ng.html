@@ -1,12 +1,12 @@
-<md-tabs md-selected="selectedIndex" md-autoselect>
-    <md-tab ng-repeat="tab in log.tabs" label="{{ tab.name }}">
-        <div ng-if="tab.contents.type == 'text'" class="content" ng-bind-html="tab.contents.contents"></div>
-        <proxy log="tab.contents" template="logs/views/log-events.ng.html" class="log type-events" ng-if="tab.contents.type == 'events'" />
+<md-tabs md-selected="selectedIndex" ng-init="staticTabs = log.tabs">
+    <md-tab ng-repeat="(key, staticTab) in staticTabs" label="{{ staticTab.name }}">
+        <div ng-if="log.tabs[key].contents.type == 'text'" class="content" ng-bind-html="log.tabs[key].contents.contents"></div>
+        <proxy log="log.tabs[key].contents" template="logs/views/log-events.ng.html" class="log type-events" ng-if="log.tabs[key].contents.type == 'events'" />
 
         <!-- Raw w/ children -->
-        <proxy log="tab.contents" template="logs/views/log-raw.ng.html" ng-if="tab.contents.type == 'raw' && tab.contents.children" class="log type-raw">
+        <proxy log="log.tabs[key].contents" template="logs/views/log-raw.ng.html" ng-if="tab.contents.type == 'raw' && log.tabs[key].contents.children" class="log type-raw" />
         
         <!-- Raw without children -->
-        <pre ng-if="tab.contents.type == 'raw' && !tab.contents.children" class="raw" raw-logs-content="tab.contents"></pre>
+        <pre ng-if="log.tabs[key].contents.type == 'raw' && log.tabs[key].contents.contents" class="raw" raw-logs-content="log.tabs[key].contents"></pre>
      </md-tab>
 </md-tabs>
