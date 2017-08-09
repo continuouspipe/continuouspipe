@@ -87,6 +87,24 @@ class HttpPipeClient implements Client
     /**
      * {@inheritdoc}
      */
+    public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName)
+    {
+        $url = sprintf(
+            $this->baseUrl.'/teams/%s/clusters/%s/namespaces/%s/pods/%s',
+            $team->getSlug(),
+            $clusterIdentifier,
+            $namespace,
+            $podName
+        );
+
+        $this->client->request('delete', $url, [
+            'headers' => $this->getRequestHeaders($authenticatedUser),
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
     {
         $url = sprintf(

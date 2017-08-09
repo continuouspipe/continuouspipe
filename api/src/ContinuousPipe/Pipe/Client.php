@@ -49,4 +49,15 @@ interface Client
      * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
      */
     public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels);
+
+    /**
+     * Delete a Pod.
+     *
+     * @param Team $team
+     * @param User $authenticatedUser
+     * @param string $clusterIdentifier
+     * @param string $namespace
+     * @param string $podName
+     */
+    public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName);
 }

@@ -22,4 +22,14 @@ interface DeployedEnvironmentRepository
      * @param DeployedEnvironment $environment
      */
     public function delete(FlatFlow $flow, DeployedEnvironment $environment);
+
+    /**
+     * Delete a Pod.
+     *
+     * @param FlatFlow $flow
+     * @param string $clusterIdentifier
+     * @param string $namespace
+     * @param string $podName
+     */
+    public function deletePod(FlatFlow $flow, string $clusterIdentifier, string $namespace, string $podName);
 }
