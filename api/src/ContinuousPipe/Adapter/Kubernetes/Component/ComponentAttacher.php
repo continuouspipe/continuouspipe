@@ -123,14 +123,14 @@ class ComponentAttacher
             ]));
 
             $eventsLogger = $this->loggerFactory->fromId(
-                $tabsLogger->getLog()->getId().'/tabs/events/contents'
+                $tabsLogger->getLog()->getId().'/tabs/2_events/contents'
             );
 
             $this->logPodEventsWhilstItIsNotRunning($pod, $podRepository, $namespaceClient, $eventsLogger);
 
             try {
                 $rawLogger = $this->loggerFactory->fromId(
-                    $tabsLogger->getLog()->getId().'/tabs/logs/contents'
+                    $tabsLogger->getLog()->getId().'/tabs/1_logs/contents'
                 );
 
                 $pod = $podRepository->attach($pod, function ($output) use ($rawLogger) {
