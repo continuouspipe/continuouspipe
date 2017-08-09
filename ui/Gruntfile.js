@@ -465,7 +465,7 @@ module.exports = function (grunt) {
         ],
         dest: 'vendor.templates.js',
         options: {
-          usemin: 'scripts/vendor.js'
+          usemin: 'scripts/app.js'
         }
       }
     }
