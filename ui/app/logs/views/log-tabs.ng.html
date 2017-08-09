@@ -1,6 +1,12 @@
 <md-tabs md-autoselect>
-    <md-tab ng-repeat="tab in ::log.tabs" label="{{ tab.name }}">
-        <pre ng-if="tab.contents.type == 'raw'" class="raw" raw-logs-content="tab.contents"></pre>
+    <md-tab ng-repeat="tab in log.tabs" label="{{ tab.name }}" ng-init="log = tab.contents">
         <div ng-if="tab.contents.type == 'text'" class="content" ng-bind-html="tab.contents.contents"></div>
-    </md-tab>
+        <ng-include class="log type-events" ng-if="tab.contents.type == 'events'" src="'logs/views/log-events.ng.html'" />
+
+        <!-- Raw w/ children -->
+        <ng-include ng-if="tab.contents.type == 'raw' && tab.contents.children" class="log type-raw" src="'logs/views/log-raw.ng.html'" />
+        
+        <!-- Raw without children -->
+        <pre ng-if="tab.contents.type == 'raw' && !tab.contents.children" class="raw" raw-logs-content="tab.contents"></pre>
+     </md-tab>
 </md-tabs>
