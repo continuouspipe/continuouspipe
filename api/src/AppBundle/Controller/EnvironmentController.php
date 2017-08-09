@@ -4,12 +4,16 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\EnvironmentNotFound;
+use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Model\Application;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\Team\Team;
+use Kubernetes\Client\Exception\PodNotFound;
 use Kubernetes\Client\Exception\ServerError;
+use Kubernetes\Client\Model\KubernetesNamespace;
+use Kubernetes\Client\Model\ObjectMetadata;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -43,17 +47,26 @@ class EnvironmentController extends Controller
     private $logger;
 
     /**
-     * @param BucketRepository         $bucketRepository
+     * @var KubernetesClientFactory
+     */
+    private $kubernetesClientFactory;
+
+    /**
+     * @param BucketRepository $bucketRepository
      * @param EnvironmentClientFactory $environmentClientFactory
+     * @param LoggerInterface $logger
+     * @param KubernetesClientFactory $kubernetesClientFactory
      */
     public function __construct(
         BucketRepository $bucketRepository,
         EnvironmentClientFactory $environmentClientFactory,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        KubernetesClientFactory $kubernetesClientFactory
     ) {
         $this->bucketRepository = $bucketRepository;
         $this->environmentClientFactory = $environmentClientFactory;
         $this->logger = $logger;
+        $this->kubernetesClientFactory = $kubernetesClientFactory;
     }
 
     /**
@@ -98,6 +111,30 @@ class EnvironmentController extends Controller
         }
 
         $client->delete($environment);
+    }
+
+    /**
+     *  @Route("/teams/{teamSlug}/clusters/{clusterIdentifier}/namespaces/{namespace}/pods/{podName}", methods={"DELETE"})
+     *  @ParamConverter("team", converter="team", options={"slug"="teamSlug"})
+     *  @View
+     */
+    public function deletePodAction(Team $team, $clusterIdentifier, $namespace, $podName)
+    {
+        $cluster = $this->getCluster($team, $clusterIdentifier);
+        $namespace = new KubernetesNamespace(new ObjectMetadata($namespace));
+        $client = $this->kubernetesClientFactory->getByCluster($cluster);
+        $namespaceClient = $client->getNamespaceClient($namespace);
+
+        try {
+            $podRepository = $namespaceClient->getPodRepository();
+            $pod = $podRepository->findOneByName($podName);
+
+            $podRepository->delete($pod);
+        } catch (PodNotFound $e) {
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+            ], 404);
+        }
     }
 
     /**
