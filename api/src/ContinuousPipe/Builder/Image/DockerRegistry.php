@@ -103,7 +103,7 @@ class DockerRegistry implements Registry
                 ]
             );
             throw new SearchingForExistingImageException(
-                'Error requesting auth details.  Expected 401, got ' . $initialResponse->getStatusCode() . ' with message ' . $initialResponse->getBody()->getContents()
+                'Error requesting auth details.  Expected 401, got ' . $initialResponse->getStatusCode() . ' with message "' . $initialResponse->getBody()->getContents() . '", headers: ' . var_export($initialResponse->getHeaders(), true)
             );
         }
 
