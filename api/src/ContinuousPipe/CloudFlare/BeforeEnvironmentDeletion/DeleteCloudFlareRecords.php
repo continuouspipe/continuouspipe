@@ -98,7 +98,8 @@ class DeleteCloudFlareRecords implements EventSubscriberInterface
                             'The CloudFlare record %s in zone %s could not be deleted',
                             $record['record_identifier'],
                             $record['zone_identifier']
-                        ), ['exception' => $e,]
+                        ),
+                        ['exception' => $e,]
                     );
                 }
             }

@@ -6,6 +6,7 @@ use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Promise\PromiseBuilder;
 use JMS\Serializer\SerializerInterface;
+use Kubernetes\Client\Model\Event;
 use Kubernetes\Client\Model\KubernetesObject;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodStatus;
@@ -162,6 +163,7 @@ class ComponentAttacher
         Logger $eventsLogger
     ) {
         $podName = $pod->getMetadata()->getName();
+        $displayLogsAfter = new \DateTime('-1 min');
 
         $loop = React\EventLoop\Factory::create();
 
@@ -179,9 +181,11 @@ class ComponentAttacher
             ->withTimeout($this->podTimeout)
             ->getPromise();
 
-        $updateEvents = function () use ($namespaceClient, $pod, $eventsLogger) {
+        $updateEvents = function () use ($namespaceClient, $pod, $eventsLogger, $displayLogsAfter) {
             $eventList = $namespaceClient->getEventRepository()->findByObject($pod);
-            $events = $eventList->getEvents();
+            $events = array_filter($eventList->getEvents(), function (Event $event) use ($displayLogsAfter) {
+                return $event->getLastTimestamp() === null || (new \DateTime($event->getLastTimestamp()) > $displayLogsAfter);
+            });
 
             $eventsLogger->update(new Complex('events', [
                 'events' => json_decode($this->serializer->serialize($events, 'json'), true),

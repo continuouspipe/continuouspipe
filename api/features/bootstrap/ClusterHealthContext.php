@@ -84,6 +84,7 @@ class ClusterHealthContext implements Context
             }
 
             if ($entry['type'] == 'events') {
+
                 if (empty($entry['events'])) {
                     return false;
                 }
