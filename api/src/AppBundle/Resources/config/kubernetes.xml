@@ -38,6 +38,7 @@
         <service id="kubernetes.reverse_transformer.chained_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ChainedComponentPublicEndpointResolver">
             <argument type="collection">
                 <argument type="service" id="pipe.cloud_flare.component_public_endpoint_resolver"/>
+                <argument type="service" id="pipe.httplabs.component_public_endpoint_resolver"/>
                 <argument type="service" id="kubernetes.reverse_transformer.ingress.ingress_public_endpoint_resolver" />
                 <argument type="service" id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver" />
             </argument>
@@ -98,6 +99,10 @@
         <service id="pipe.adapter.kubernetes.component.attacher" class="ContinuousPipe\Adapter\Kubernetes\Component\ComponentAttacher">
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="jms_serializer" />
+            <argument type="service" id="logger" />
+            <argument>%pod.wait.timeout%</argument>
+            <argument>%pod.wait.interval%</argument>
         </service>
 
         <!-- Listeners -->
@@ -182,6 +187,10 @@
             <argument type="service" id="security.encryption.vault" />
 
             <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="pipe.httplabs.component_public_endpoint_resolver" class="ContinuousPipe\HttpLabs\HttpLabsComponentPublicEndpointResolver">
+            <argument type="service" id="logger" />
         </service>
 
         <!-- ClusterHealthChecker -->

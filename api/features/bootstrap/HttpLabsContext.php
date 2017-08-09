@@ -77,7 +77,7 @@ class HttpLabsContext implements Context
             [
                 'match' => function (RequestInterface $request) use ($uuid) {
                     return $request->getMethod() == 'PUT' &&
-                    preg_match('#^https\:\/\/api\.httplabs\.io\/stacks\/' . $uuid . '$#i', (string) $request->getUri());
+                    preg_match('#^https\:\/\/api\.httplabs\.io\/projects\/([^\/]+)/complete-stacks/' . $uuid . '$#i', (string) $request->getUri());
                 },
                 'response' => new Response(204, ['Content-Type' => 'text/html; charset=UTF-8']),
             ]

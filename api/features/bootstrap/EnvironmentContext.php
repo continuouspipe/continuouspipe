@@ -380,6 +380,17 @@ class EnvironmentContext implements Context
     }
 
     /**
+     * @When I delete the pod named :podName for the team :teamName and the cluster :clusterId
+     */
+    public function iDeleteThePodNamedForTheTeamAndTheCluster($podName, $teamName, $clusterId)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/teams/%s/clusters/%s/namespaces/%s/pods/%s', $teamName, $clusterId, 'namespace', $podName),
+            'DELETE'
+        ));
+    }
+
+    /**
      * @param string $name
      * @return array
      */

@@ -73,7 +73,6 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
         Endpoint $endpointConfiguration,
         KubernetesObject $object
     ): PublicEndpoint {
-
         if (null === ($httpLabsConfiguration = $endpointConfiguration->getHttpLabs())) {
             return $publicEndpoint;
         }
@@ -197,6 +196,7 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
 
         $this->httpLabsClient->updateStack(
             $httpLabsConfiguration->getApiKey(),
+            $httpLabsConfiguration->getProjectIdentifier(),
             $metadata['stack_identifier'],
             $this->getBackendAddress($publicEndpoint),
             $httpLabsConfiguration->getMiddlewares(),
@@ -250,5 +250,4 @@ class HttpLabsEndpointTransformer implements PublicEndpointTransformer
             )
         );
     }
-
 }

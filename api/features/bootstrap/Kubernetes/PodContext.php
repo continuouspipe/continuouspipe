@@ -4,14 +4,18 @@ namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookablePodRepository;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryEventRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryPodRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePodRepository;
 use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\ContainerStatusState;
+use Kubernetes\Client\Model\Event;
 use Kubernetes\Client\Model\KeyValueObjectList;
 use Kubernetes\Client\Model\Label;
 use Kubernetes\Client\Model\ObjectMetadata;
+use Kubernetes\Client\Model\ObjectReference;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodSpecification;
 use Kubernetes\Client\Model\PodStatus;
@@ -32,17 +36,27 @@ class PodContext implements Context
      * @var HookablePodRepository
      */
     private $hookablePodRepository;
+    /**
+     * @var InMemoryEventRepository
+     */
+    private $inMemoryEventRepository;
 
     /**
      * @param TraceablePodRepository $podRepository
      * @param InMemoryPodRepository $inMemoryPodRepository
      * @param HookablePodRepository $hookablePodRepository
+     * @param InMemoryEventRepository $inMemoryEventRepository
      */
-    public function __construct(TraceablePodRepository $podRepository, InMemoryPodRepository $inMemoryPodRepository, HookablePodRepository $hookablePodRepository)
-    {
+    public function __construct(
+        TraceablePodRepository $podRepository,
+        InMemoryPodRepository $inMemoryPodRepository,
+        HookablePodRepository $hookablePodRepository,
+        InMemoryEventRepository $inMemoryEventRepository
+    ) {
         $this->podRepository = $podRepository;
         $this->inMemoryPodRepository = $inMemoryPodRepository;
         $this->hookablePodRepository = $hookablePodRepository;
+        $this->inMemoryEventRepository = $inMemoryEventRepository;
     }
 
     /**
@@ -218,4 +232,21 @@ class PodContext implements Context
             ));
         }
     }
+
+    /**
+     * @Given the pod :podName will emit the following events:
+     */
+    public function thePodWillEmitTheFollowingEvents($podName, TableNode $table)
+    {
+        $metaData = new ObjectMetadata($podName);
+        $reference = new ObjectReference($podName);
+
+        foreach ($table->getHash() as $eventData) {
+            $lastTimestamp = isset($eventData['lastTimestamp']) ? (new \DateTime($eventData['lastTimestamp']))->format(\DateTime::RFC3339) : null;
+
+            $event = new Event($metaData, $reference, null, $eventData['message'], null, null, $lastTimestamp, 1);
+            $this->inMemoryEventRepository->addObjectEvent($event);
+        }
+    }
+
 }

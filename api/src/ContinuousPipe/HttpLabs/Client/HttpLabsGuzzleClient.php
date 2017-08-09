@@ -49,7 +49,6 @@ class HttpLabsGuzzleClient implements HttpLabsClient
             );
 
             return $this->getStack($response->getHeaderLine('Location'), $httpClient);
-
         } catch (RequestException $e) {
             throw new HttpLabsException('Unable to create the HttpLabs stack', $e->getCode(), $e);
         }
@@ -58,10 +57,10 @@ class HttpLabsGuzzleClient implements HttpLabsClient
     /**
      * {@inheritdoc}
      */
-    public function updateStack(string $apiKey, string $stackIdentifier, string $backendUrl, array $middlewares, string $incoming = null)
+    public function updateStack(string $apiKey, string $projectIdentifier, string $stackIdentifier, string $backendUrl, array $middlewares, string $incoming = null)
     {
         try {
-            $stackUri = 'https://api.httplabs.io/stacks/'.$stackIdentifier;
+            $stackUri = sprintf('https://api.httplabs.io/projects/%s/complete-stacks/%s', $projectIdentifier, $stackIdentifier);
             $httpClient = $this->createClient($apiKey);
             $httpClient->request('put', $stackUri, [
                 'json' => [
@@ -70,7 +69,6 @@ class HttpLabsGuzzleClient implements HttpLabsClient
                     'incoming' => $incoming,
                 ]
             ]);
-
         } catch (RequestException $e) {
             throw new HttpLabsException($e->getMessage(), $e->getCode(), $e);
         }
