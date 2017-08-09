@@ -17,8 +17,8 @@ Feature:
                 image: busybox
     """
     When a tide is started
-    Then the component "testing" should be deployed as attached
-    And the component "testing" should be deployed as not scaling
+    Then the component "run-testing" should be deployed as attached
+    And the component "run-testing" should be deployed as not scaling
 
   Scenario: The component name should be a valid DNS name
     Given I have a "continuous-pipe.yml" file in my repository that contains:
@@ -34,7 +34,7 @@ Feature:
                 image: busybox
     """
     When a tide is started
-    Then the component "testing-command" should be deployed
+    Then the component "run-testing-command" should be deployed
 
   Scenario: I can use persistent volumes
     And I have a "continuous-pipe.yml" file in my repository that contains:
@@ -57,5 +57,5 @@ Feature:
                       mount_path: /var/lib/app
     """
     When a tide is started
-    Then the component "testing-command" should be deployed
-    And the component "testing-command" should have a persistent volume mounted at "/var/lib/app"
+    Then the component "run-testing-command" should be deployed
+    And the component "run-testing-command" should have a persistent volume mounted at "/var/lib/app"

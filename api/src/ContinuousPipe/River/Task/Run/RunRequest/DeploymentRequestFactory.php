@@ -166,6 +166,6 @@ class DeploymentRequestFactory
      */
     private function createComponentName(TaskDetails $taskDetails)
     {
-        return (new Slugify())->slugify($taskDetails->getIdentifier());
+        return (new Slugify())->slugify('run-'.$taskDetails->getIdentifier());
     }
 }
