@@ -15,6 +15,8 @@ interface DeploymentRequestFactory
      * @param TaskDetails             $taskDetails
      * @param DeployTaskConfiguration $configuration
      *
+     * @throws DeploymentRequestException
+     *
      * @return DeploymentRequest
      */
     public function create(Tide $tide, TaskDetails $taskDetails, DeployTaskConfiguration $configuration);

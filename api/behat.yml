@@ -11,6 +11,7 @@ default:
                     - @kernel
                     - @security.encryption.vault
                     - @lexik_jwt_authentication.jwt_manager
+                    - @jms_serializer
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -159,6 +160,7 @@ default:
                     - @kernel
                     - @security.encryption.vault
                     - @lexik_jwt_authentication.jwt_manager
+                    - @jms_serializer
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -267,6 +269,7 @@ default:
                     - @kernel
                     - @security.encryption.vault
                     - @lexik_jwt_authentication.jwt_manager
+                    - @jms_serializer
                 - TideConfigurationContext:
                     - @river.tide_configuration_factory
                 - TideContext:
@@ -369,6 +372,7 @@ smoke:
                     - @kernel
                     - @security.encryption.vault
                     - @lexik_jwt_authentication.jwt_manager
+                    - @jms_serializer
                 - FlowContext:
                     - @river.pipe_client.fake
                     - @river.hookable_pipe_client

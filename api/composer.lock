@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b07b65bc16380a6fb32dbea7f644ce22",
+    "content-hash": "ae87c0c5b92229ede7d92a0ceb185d85",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -284,7 +284,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:continuouspipe/flex.git",
+                "url": "https://github.com/continuouspipe/flex.git",
                 "reference": "ee2faeb972aaae03d3ddebde9ee39462be0762e4"
             },
             "dist": {
@@ -350,16 +350,16 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "2.4.3",
+            "version": "dev-add-setters-to-models",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
-                "reference": "1d4b6d02de170a9776cc8abf8de22ec92bd4dd9f"
+                "reference": "f0c3d78a3c4c6bfc07edd498a10a2965e0641470"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/1d4b6d02de170a9776cc8abf8de22ec92bd4dd9f",
-                "reference": "1d4b6d02de170a9776cc8abf8de22ec92bd4dd9f",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/f0c3d78a3c4c6bfc07edd498a10a2965e0641470",
+                "reference": "f0c3d78a3c4c6bfc07edd498a10a2965e0641470",
                 "shasum": ""
             },
             "require-dev": {
@@ -373,10 +373,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/model/tree/2.4.3",
+                "source": "https://github.com/continuouspipe/model/tree/add-setters-to-models",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2017-07-21T16:15:11+00:00"
+            "time": "2017-08-09 20:41:33"
         },
         {
             "name": "continuous-pipe/platform-bundle",
@@ -414,16 +414,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.8.0",
+            "version": "dev-add-cluster-policies",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "2a2ebcbeb8cb3da7a5c41e3aba521c9618662e5c"
+                "reference": "f3ccd35eb073979c09a44fc497706f30694bfc2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/2a2ebcbeb8cb3da7a5c41e3aba521c9618662e5c",
-                "reference": "2a2ebcbeb8cb3da7a5c41e3aba521c9618662e5c",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/f3ccd35eb073979c09a44fc497706f30694bfc2a",
+                "reference": "f3ccd35eb073979c09a44fc497706f30694bfc2a",
                 "shasum": ""
             },
             "require": {
@@ -444,10 +444,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.8.0",
+                "source": "https://github.com/continuouspipe/security/tree/add-cluster-policies",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-07-19T13:46:42+00:00"
+            "time": "2017-08-09 16:51:07"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -8666,6 +8666,8 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
+        "continuous-pipe/model": 20,
+        "continuous-pipe/security": 20,
         "continuous-pipe/worker-bundle": 20,
         "continuous-pipe/message": 20,
         "continuous-pipe/flex": 20

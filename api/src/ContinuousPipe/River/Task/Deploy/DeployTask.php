@@ -85,14 +85,18 @@ class DeployTask extends EventDrivenTask
         $this->context->setTaskLog($log);
         $this->events->raiseAndApply(TaskQueued::fromContext($this->context));
 
-        $deploymentRequest = $deploymentRequestFactory->create(
-            $tide,
-            new TaskDetails($this->context->getTaskId(), $log->getId()),
-            $this->configuration
-        );
+        try {
+            $deploymentRequest = $deploymentRequestFactory->create(
+                $tide,
+                new TaskDetails($this->context->getTaskId(), $log->getId()),
+                $this->configuration
+            );
+        } catch (DeploymentRequestException $e) {
+        }
 
         try {
             $deployment = $pipeClient->start($deploymentRequest, $tide->getUser());
+
             $this->events->raiseAndApply(new DeploymentStarted(
                 $this->context->getTideUuid(),
                 $deployment,
