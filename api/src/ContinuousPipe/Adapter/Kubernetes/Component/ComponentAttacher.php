@@ -102,11 +102,36 @@ class ComponentAttacher
             $podLogger = $logger->child(new Text(sprintf('Waiting component "%s"', $podName)));
             $podLogger->updateStatus(Log::RUNNING);
 
-            $rawLogger = $podLogger->child(new Raw());
+            // Create the tabs logging
+            $tabsLogger = $podLogger->child(new Complex('tabs', [
+                'tabs' => [
+                    'logs' => [
+                        'name' => 'Logs',
+                        'contents' => [
+                            'type' => 'raw',
+                        ],
+                    ],
+                    'events' => [
+                        'name' => 'Events',
+                        'contents' => [
+                            'type' => 'events',
+                            'events' => [],
+                        ],
+                    ],
+                ],
+            ]));
 
-            $this->logPodEventsWhilstItIsNotRunning($pod, $podRepository, $namespaceClient, $podLogger);
+            $eventsLogger = $this->loggerFactory->fromId(
+                $tabsLogger->getLog()->getId().'/tabs/events/contents'
+            );
+
+            $this->logPodEventsWhilstItIsNotRunning($pod, $podRepository, $namespaceClient, $eventsLogger);
 
             try {
+                $rawLogger = $this->loggerFactory->fromId(
+                    $tabsLogger->getLog()->getId().'/tabs/logs/contents'
+                );
+
                 $pod = $podRepository->attach($pod, function ($output) use ($rawLogger) {
                     $rawLogger->child(new Text($output));
                 });
@@ -134,7 +159,7 @@ class ComponentAttacher
         Pod $pod,
         PodRepository $podRepository,
         NamespaceClient $namespaceClient,
-        Logger $podLogger
+        Logger $eventsLogger
     ) {
         $podName = $pod->getMetadata()->getName();
 
@@ -154,18 +179,13 @@ class ComponentAttacher
             ->withTimeout($this->podTimeout)
             ->getPromise();
 
-        $eventsLogger = $podLogger->child(new Complex('events'));
         $updateEvents = function () use ($namespaceClient, $pod, $eventsLogger) {
             $eventList = $namespaceClient->getEventRepository()->findByObject($pod);
-
             $events = $eventList->getEvents();
-            $eventsLogger->update(
-                new Complex(
-                    'events', [
-                        'events' => json_decode($this->serializer->serialize($events, 'json'), true),
-                    ]
-                )
-            );
+
+            $eventsLogger->update(new Complex('events', [
+                'events' => json_decode($this->serializer->serialize($events, 'json'), true),
+            ]));
         };
 
         $timer = $loop->addPeriodicTimer($this->podInterval, $updateEvents);
