@@ -6,7 +6,7 @@
         <md-input-container>
             <label>Pod</label>
             <md-select ng-model="selectedPod">
-                <md-option ng-repeat="pod in component.status.containers" ng-value="pod">{{ pod.identifier }}</md-option>
+                <md-option ng-repeat="pod in component.status.containers" ng-value="pod">{{ pod.identifier }} ({{ pod.status }})</md-option>
             </md-select>
         </md-input-container>
         <md-button class="md-icon-button" ng-click="close()">
