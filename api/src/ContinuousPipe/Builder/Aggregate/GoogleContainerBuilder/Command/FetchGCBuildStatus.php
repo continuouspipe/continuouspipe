@@ -41,7 +41,7 @@ class FetchGCBuildStatus implements DelayedMessage
     ) {
         $this->buildIdentifier = $buildIdentifier;
         $this->googleContainerBuild = $googleContainerBuild;
-        $this->runAt = $runAt;
+        $this->runAt = $runAt ?: new \DateTime();
     }
 
     public function getBuildIdentifier() : string
