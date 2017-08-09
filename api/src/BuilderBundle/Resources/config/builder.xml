@@ -77,6 +77,7 @@
         <service id="builder.image.registry" class="ContinuousPipe\Builder\Image\DockerRegistry">
             <argument type="service" id="builder.image.registry.http_client"/>
             <argument type="service" id="builder.docker.authenticator_credentials_repository"/>
+            <argument type="service" id="logger" />
         </service>
 
         <service id="builder.image.registry.http_client" class="GuzzleHttp\Client"/>
