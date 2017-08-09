@@ -105,13 +105,13 @@ class ComponentAttacher
             // Create the tabs logging
             $tabsLogger = $podLogger->child(new Complex('tabs', [
                 'tabs' => [
-                    'logs' => [
+                    '1_logs' => [
                         'name' => 'Logs',
                         'contents' => [
                             'type' => 'raw',
                         ],
                     ],
-                    'events' => [
+                    '2_events' => [
                         'name' => 'Events',
                         'contents' => [
                             'type' => 'events',
