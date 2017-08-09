@@ -241,13 +241,8 @@ class CredentialsBucketContext implements Context
     {
         $content = $table->getHash()[0];
 
-        if (isset($content['features'])) {
-            $features = explode(',', $content['features']);
-
-            $content['features'] = array_combine(
-                $features,
-                array_fill(0, count($features), true)
-            );
+        if (isset($content['policies'])) {
+            $content['policies'] = json_decode($content['policies'], true);
         }
 
         $this->response = $this->kernel->handle(Request::create(
@@ -371,26 +366,40 @@ class CredentialsBucketContext implements Context
     }
 
     /**
-     * @Then the cluster :clusterIdentifier should have the feature :feature
+     * @Then the cluster :clusterIdentifier should have the policy :policyName
      */
-    public function theClusterShouldHaveTheFeatureRbac($clusterIdentifier, $feature)
+    public function theClusterShouldHaveThePolicy($clusterIdentifier, $policyName)
     {
         $cluster = $this->getClusterFromList($clusterIdentifier);
 
-        if (!isset($cluster['features'][$feature]) || !$cluster['features'][$feature]) {
-            throw new \RuntimeException('Feature is not activated');
+        if (!isset($cluster['policies'])) {
+            throw new \RuntimeException('Did not find policies');
         }
+
+        foreach ($cluster['policies'] as $policy) {
+            if ($policy['name'] == $policyName) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException(sprintf('Did not found policy %s', $policyName));
     }
 
     /**
-     * @Then the cluster :clusterIdentifier should not have the feature :feature
+     * @Then the cluster :clusterIdentifier should not have the policy :policyName
      */
-    public function theClusterShouldNotHaveTheFeatureRbac($clusterIdentifier, $feature)
+    public function theClusterShouldNotHaveThePolicy($clusterIdentifier, $policyName)
     {
         $cluster = $this->getClusterFromList($clusterIdentifier);
 
-        if (isset($cluster['features'][$feature]) && $cluster['features'][$feature]) {
-            throw new \RuntimeException('Feature is activated');
+        if (!isset($cluster['policies'])) {
+            throw new \RuntimeException('Did not find policies');
+        }
+
+        foreach ($cluster['policies'] as $policy) {
+            if ($policy['name'] == $policyName) {
+                throw new \RuntimeException(sprintf('Did not found policy %s', $policyName));
+            }
         }
     }
 
