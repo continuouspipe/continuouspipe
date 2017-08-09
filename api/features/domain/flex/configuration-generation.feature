@@ -190,3 +190,32 @@ Feature:
     And a log of type "tabs" should be created under the log "Generating configuration"
     And this log should contain a tab "Dockerfile" with a content of type "text"
     And this log should contain a tab "Dockerfile" containing "File `composer.json` not found in the repository"
+
+  Scenario: It allows to be flex and have all the configuration already
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
+    And the code repository contains the fixtures folder "flex-skeleton"
+    And the "Dockerfile" file in the code repository contains:
+    """
+    FROM php
+    RUN my-build-command
+    """
+    And the "docker-compose.yml" file in the code repository contains:
+    """
+    version: '2'
+    services:
+        app:
+            build: .
+    """
+    And the "continuous-pipe.yml" file in the code repository contains:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    app:
+                        image: my-image
+    """
+    When a tide is started
+    Then the build task should be started
+    And a log containing "Generating configuration" should not be created

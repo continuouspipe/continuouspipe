@@ -62,7 +62,7 @@ trait TaskLocator
         ];
 
         foreach ($configs as $config) {
-            if (!array_key_exists('tasks', $config)) {
+            if (!$config || !array_key_exists('tasks', $config)) {
                 continue;
             }
 

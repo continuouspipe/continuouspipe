@@ -14,7 +14,7 @@ class TaskListAsUnnamedArrayEnhancer implements ConfigurationEnhancer
     public function enhance(FlatFlow $flow, CodeReference $codeReference, array $configs)
     {
         foreach ($configs as &$config) {
-            if (!array_key_exists('tasks', $config)) {
+            if (!$config || !array_key_exists('tasks', $config)) {
                 continue;
             }
 

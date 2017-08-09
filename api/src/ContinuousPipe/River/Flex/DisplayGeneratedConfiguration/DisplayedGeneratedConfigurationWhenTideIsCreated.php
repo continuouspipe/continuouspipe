@@ -40,6 +40,11 @@ class DisplayedGeneratedConfigurationWhenTideIsCreated
             return;
         }
 
+        $generatedFiles = $configuration->getGeneratedFiles();
+        if (count($generatedFiles) === 0) {
+            return;
+        }
+
         $generationIsSuccessful = array_reduce($configuration->getGeneratedFiles(), function (bool $carry, GeneratedFile $item) {
             return $carry && !$item->hasFailed();
         }, true);
@@ -60,7 +65,7 @@ class DisplayedGeneratedConfigurationWhenTideIsCreated
                             'contents' => $generatedFile->hasFailed() ? $generatedFile->getFailureReason() : $generatedFile->getContents(),
                         ],
                     ];
-                }, $configuration->getGeneratedFiles())
+                }, $generatedFiles)
             ]))
         ;
     }
