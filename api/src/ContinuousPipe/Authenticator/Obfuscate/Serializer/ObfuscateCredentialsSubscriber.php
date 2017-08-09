@@ -54,6 +54,11 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
                 'class' => GitHubToken::class,
             ],
             [
+                'event' => 'serializer.pre_serialize',
+                'method' => 'preSerializeClusterPolicy',
+                'class' => Cluster\ClusterPolicy::class,
+            ],
+            [
                 'event' => 'serializer.post_serialize',
                 'method' => 'postSerialize',
             ],
@@ -67,6 +72,16 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
     {
         if ($this->shouldObfuscate($event)) {
             $this->override($event->getObject(), 'password', self::OBFUSCATE_PLACEHOLDER);
+        }
+    }
+
+    /**
+     * @param ObjectEvent $event
+     */
+    public function preSerializeClusterPolicy(ObjectEvent $event)
+    {
+        if ($this->shouldObfuscate($event)) {
+            $this->override($event->getObject(), 'secrets', null);
         }
     }
 
