@@ -149,7 +149,8 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
             $events = $eventList->getEvents();
             $eventsLogger->update(
                 new Complex(
-                    'events', [
+                    'events',
+                    [
                         'events' => json_decode($this->serializer->serialize($events, 'json'), true),
                     ]
                 )

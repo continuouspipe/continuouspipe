@@ -242,7 +242,9 @@ class PodContext implements Context
         $reference = new ObjectReference($podName);
 
         foreach ($table->getHash() as $eventData) {
-            $event = new Event($metaData, $reference, null, $eventData['message']);
+            $lastTimestamp = isset($eventData['lastTimestamp']) ? (new \DateTime($eventData['lastTimestamp']))->format(\DateTime::RFC3339) : null;
+
+            $event = new Event($metaData, $reference, null, $eventData['message'], null, null, $lastTimestamp, 1);
             $this->inMemoryEventRepository->addObjectEvent($event);
         }
     }

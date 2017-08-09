@@ -53,11 +53,22 @@ Feature:
 
   Scenario: It logs event whilst it waits for the pod to be ready
     Given the pod "app" will emit the following events:
-      | message  |
-      | Pod is doing something  |
+      | message                      |
+      | Pod is doing something       |
       | Pod is doing something else  |
     And the pod "app" will run successfully
     And the specification come from the template "attached-component"
     When I send the built deployment request
     And I should see a events log event in the log stream with message 'Pod is doing something'
     And I should see a events log event in the log stream with message 'Pod is doing something else'
+
+  Scenario: Do not display older events
+    Given the pod "app" will emit the following events:
+      | message                    | lastTimestamp |
+      | Pod was doing something    | -1 hour       |
+      | Pod is now doing something | +2 minutes    |
+    And the pod "app" will run successfully
+    And the specification come from the template "attached-component"
+    When I send the built deployment request
+    Then I should not see a events log event in the log stream with message 'Pod was doing something'
+    And I should see a events log event in the log stream with message 'Pod is now doing something'

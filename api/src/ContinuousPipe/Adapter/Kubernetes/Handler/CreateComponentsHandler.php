@@ -122,14 +122,19 @@ class CreateComponentsHandler implements DeploymentHandler
         foreach ($environment->getComponents() as $component) {
             try {
                 $this->eventDispatcher->dispatch(BeforeCreatingComponent::NAME, new BeforeCreatingComponent(
-                    $client, $context, $component
+                    $client,
+                    $context,
+                    $component
                 ));
 
                 $status = $this->createComponent($context->getCluster(), $client, $component);
                 $componentStatus[$component->getName()] = $status;
 
                 $this->eventDispatcher->dispatch(AfterCreatingComponent::NAME, new AfterCreatingComponent(
-                    $client, $context, $component, $status
+                    $client,
+                    $context,
+                    $component,
+                    $status
                 ));
             } catch (TransformationException $e) {
                 throw new ComponentException(sprintf(
