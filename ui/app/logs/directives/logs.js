@@ -55,4 +55,14 @@ angular.module('continuousPipeRiver')
             }
         }
     }])
+    .directive('proxy', function() {
+        return {
+            restrict: 'E',
+            scope: {
+                log: '=',
+                template: '@'
+            },
+            template: '<ng-include src="template" />'
+        }
+    })
 ;

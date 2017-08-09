@@ -508,7 +508,7 @@ md-tab-content {
         overflow: scroll;
         display: flex;
 
-        > ng-include {
+        ng-include, proxy {
             flex: 1;
             display: flex;
 

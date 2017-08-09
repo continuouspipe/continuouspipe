@@ -1,10 +1,10 @@
-<md-tabs md-autoselect>
-    <md-tab ng-repeat="tab in log.tabs" label="{{ tab.name }}" ng-init="log = tab.contents">
+<md-tabs md-selected="selectedIndex" md-autoselect>
+    <md-tab ng-repeat="tab in log.tabs" label="{{ tab.name }}">
         <div ng-if="tab.contents.type == 'text'" class="content" ng-bind-html="tab.contents.contents"></div>
-        <ng-include class="log type-events" ng-if="tab.contents.type == 'events'" src="'logs/views/log-events.ng.html'" />
+        <proxy log="tab.contents" template="logs/views/log-events.ng.html" class="log type-events" ng-if="tab.contents.type == 'events'" />
 
         <!-- Raw w/ children -->
-        <ng-include ng-if="tab.contents.type == 'raw' && tab.contents.children" class="log type-raw" src="'logs/views/log-raw.ng.html'" />
+        <proxy log="tab.contents" template="logs/views/log-raw.ng.html" ng-if="tab.contents.type == 'raw' && tab.contents.children" class="log type-raw">
         
         <!-- Raw without children -->
         <pre ng-if="tab.contents.type == 'raw' && !tab.contents.children" class="raw" raw-logs-content="tab.contents"></pre>
