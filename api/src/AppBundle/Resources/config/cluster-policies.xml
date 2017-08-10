@@ -12,7 +12,8 @@
                  decorates="river.task.deploy.deployment_request_factory">
             <argument type="service" id="river.cluster_policies.endpoint.enfore_policy_while_creating_deployment_request.inner" />
             <argument type="service" id="river.cluster_policies.policy_resolver" />
-            <argument type="service" id="river.task.deploy.configuration.hostname_resolver"/>
+            <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />
+            <argument type="service" id="logger" />
         </service>
     </services>
 </container>

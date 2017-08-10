@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\ClusterPolicies\Endpoint;
 
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\ClusterNotFound;
 use ContinuousPipe\River\ClusterPolicies\ClusterPolicyException;
 use ContinuousPipe\River\ClusterPolicies\ClusterResolution\ClusterPolicyResolver;
 use ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\HostnameResolver;
@@ -14,6 +15,7 @@ use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\Security\Credentials\Cluster\ClusterPolicy;
 use Kubernetes\Client\Model\IngressRule;
+use Psr\Log\LoggerInterface;
 
 class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentRequestFactory
 {
@@ -32,14 +34,21 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
      */
     private $hostnameResolver;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         DeploymentRequestFactory $decoratedFactory,
         ClusterPolicyResolver $clusterPolicyResolver,
-        HostnameResolver $hostnameResolver
+        HostnameResolver $hostnameResolver,
+        LoggerInterface $logger
     ) {
         $this->decoratedFactory = $decoratedFactory;
         $this->clusterPolicyResolver = $clusterPolicyResolver;
         $this->hostnameResolver = $hostnameResolver;
+        $this->logger = $logger;
     }
 
     /**
@@ -48,7 +57,21 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
     public function create(Tide $tide, TaskDetails $taskDetails, DeployTaskConfiguration $configuration)
     {
         $deploymentRequest = $this->decoratedFactory->create($tide, $taskDetails, $configuration);
-        if (null === ($policy = $this->clusterPolicyResolver->find($tide->getTeam(), $deploymentRequest->getTarget()->getClusterIdentifier(), 'endpoint'))) {
+
+        try {
+            $policy = $this->clusterPolicyResolver->find($tide->getTeam(), $deploymentRequest->getTarget()->getClusterIdentifier(), 'endpoint');
+        } catch (ClusterNotFound $e) {
+            $this->logger->warning('Cannot load policies, cluster is not found', [
+                'team' => $tide->getTeam()->getSlug(),
+                'clusterIdentifier' => $deploymentRequest->getTarget()->getClusterIdentifier(),
+                'tide' => $tide->getUuid()->toString(),
+                'exception' => $e,
+            ]);
+
+            return $deploymentRequest;
+        }
+
+        if (null === $policy) {
             return $deploymentRequest;
         }
 

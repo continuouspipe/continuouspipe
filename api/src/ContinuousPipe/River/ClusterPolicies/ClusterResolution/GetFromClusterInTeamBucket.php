@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\ClusterPolicies\ClusterResolution;
 
+use ContinuousPipe\Pipe\ClusterNotFound;
 use ContinuousPipe\River\ClusterPolicies\ClusterPolicyException;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
@@ -42,7 +43,7 @@ class GetFromClusterInTeamBucket implements ClusterPolicyResolver
      * @param Team $team
      * @param string $clusterIdentifier
      *
-     * @throws ClusterPolicyException
+     * @throws ClusterNotFound
      *
      * @return Cluster
      */
@@ -56,6 +57,6 @@ class GetFromClusterInTeamBucket implements ClusterPolicyResolver
             }
         }
 
-        throw new ClusterPolicyException(sprintf('Cluster "%s" was not found in team "%s"', $clusterIdentifier, $team->getName() ?: $team->getSlug()));
+        throw new ClusterNotFound(sprintf('Cluster "%s" was not found in team "%s"', $clusterIdentifier, $team->getName() ?: $team->getSlug()));
     }
 }
