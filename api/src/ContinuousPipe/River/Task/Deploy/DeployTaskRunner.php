@@ -39,7 +39,11 @@ class DeployTaskRunner implements TaskRunner
             throw new TaskRunnerException('This runner only runs the deploy tasks', 0, null, $task);
         }
 
-        $task->startDeployment($tide, $this->deploymentRequestFactory, $this->pipeClient);
+        try {
+            $task->startDeployment($tide, $this->deploymentRequestFactory, $this->pipeClient);
+        } catch (\Throwable $e) {
+            throw new TaskRunnerException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**

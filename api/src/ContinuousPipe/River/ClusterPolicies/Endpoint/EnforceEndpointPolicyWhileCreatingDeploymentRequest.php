@@ -7,6 +7,7 @@ use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\ClusterPolicies\ClusterPolicyException;
 use ContinuousPipe\River\ClusterPolicies\ClusterResolution\ClusterPolicyResolver;
 use ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\HostnameResolver;
+use ContinuousPipe\River\Task\Deploy\DeploymentRequestException;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
 use ContinuousPipe\River\Task\TaskDetails;
@@ -51,14 +52,18 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
             return $deploymentRequest;
         }
 
-        return new DeploymentRequest(
-            $deploymentRequest->getTarget(),
-            new DeploymentRequest\Specification(array_map(function (Component $component) use ($tide, $policy) {
-                return $this->enforcePolicyOnComponent($tide, $component, $policy);
-            }, $deploymentRequest->getSpecification()->getComponents())),
-            $deploymentRequest->getNotification(),
-            $deploymentRequest->getCredentialsBucket()
-        );
+        try {
+            return new DeploymentRequest(
+                $deploymentRequest->getTarget(),
+                new DeploymentRequest\Specification(array_map(function (Component $component) use ($tide, $policy) {
+                    return $this->enforcePolicyOnComponent($tide, $component, $policy);
+                }, $deploymentRequest->getSpecification()->getComponents())),
+                $deploymentRequest->getNotification(),
+                $deploymentRequest->getCredentialsBucket()
+            );
+        } catch (ClusterPolicyException $e) {
+            throw new DeploymentRequestException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     private function enforcePolicyOnComponent(Tide $tide, Component $component, ClusterPolicy $policy) : Component

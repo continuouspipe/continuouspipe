@@ -485,7 +485,7 @@ class DeployTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->scalarNode('class')->isRequired()->end()
+                ->scalarNode('class')->end()
                 ->arrayNode('host')
                     ->children()
                         ->scalarNode('expression')->isRequired()->end()
