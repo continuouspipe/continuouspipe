@@ -418,12 +418,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "f3ccd35eb073979c09a44fc497706f30694bfc2a"
+                "reference": "64b93fd35d26c1bc303de17ffa1effb946ab4d25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/f3ccd35eb073979c09a44fc497706f30694bfc2a",
-                "reference": "f3ccd35eb073979c09a44fc497706f30694bfc2a",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/64b93fd35d26c1bc303de17ffa1effb946ab4d25",
+                "reference": "64b93fd35d26c1bc303de17ffa1effb946ab4d25",
                 "shasum": ""
             },
             "require": {
@@ -447,7 +447,7 @@
                 "source": "https://github.com/continuouspipe/security/tree/add-cluster-policies",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-08-09 16:51:07"
+            "time": "2017-08-10 08:55:32"
         },
         {
             "name": "continuous-pipe/worker-bundle",

@@ -14,6 +14,7 @@ use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
 use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\Security\Credentials\Cluster\ClusterPolicy;
+use Kubernetes\Client\Model\IngressHttpRule;
 use Kubernetes\Client\Model\IngressRule;
 use Psr\Log\LoggerInterface;
 
@@ -96,6 +97,7 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
         }
 
         $policyConfiguration = $policy->getConfiguration();
+        $policySecrets = $policy->getSecrets();
 
         // Add deprecated accessibility compatibility
         if ($specification->getAccessibility()->isFromExternal()) {
@@ -111,7 +113,7 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
             }
         }
 
-        $component->setEndpoints(array_map(function (Component\Endpoint $endpoint) use ($tide, $policyConfiguration) {
+        $component->setEndpoints(array_map(function (Component\Endpoint $endpoint) use ($tide, $policyConfiguration, $policySecrets) {
             if (isset($policyConfiguration['type'])) {
                 if (null === $endpoint->getType()) {
                     $endpoint->setType($policyConfiguration['type']);
@@ -165,6 +167,27 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
                 }
             }
 
+            if (isset($policyConfiguration['cloud-flare-by-default'])) {
+                if (null === $endpoint->getCloudFlareZone()) {
+                    if (null === ($ingress = $endpoint->getIngress()) || 0 === count($ingress->getRules())) {
+                        throw new ClusterPolicyException('Cannot apply the CloudFlare by default rule without ingress hostname');
+                    }
+
+                    $endpoint->setCloudFlareZone(new Component\Endpoint\CloudFlareZone(
+                        $policySecrets['cloud-flare-zone-identifier'],
+                        new Component\Endpoint\CloudFlareAuthentication(
+                            $policySecrets['cloud-flare-email'],
+                            $policySecrets['cloud-flare-api-key']
+                        ),
+                        $endpoint->getIngress()->getRules()[0]->getHost(),
+                        null,
+                        null,
+                        isset($policyConfiguration['cloud-flare-proxied-by-default']) ? $policyConfiguration['cloud-flare-proxied-by-default'] == 'true' : null,
+                        null
+                    ));
+                }
+            }
+
             return $endpoint;
         }, $component->getEndpoints()));
 
@@ -178,7 +201,8 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
                 $tide->getFlowUuid(),
                 $tide->getCodeReference(),
                 $this->hostnameResolver->generateHostExpression($hostSuffix)
-            )
+            ),
+            new IngressHttpRule([])
         );
     }
 }
