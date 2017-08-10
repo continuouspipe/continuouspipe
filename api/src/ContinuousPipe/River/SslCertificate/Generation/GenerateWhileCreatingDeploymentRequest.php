@@ -3,7 +3,6 @@
 
 namespace ContinuousPipe\River\SslCertificate\Generation;
 
-
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\SslCertificate\SslCertificateException;
@@ -49,8 +48,8 @@ class GenerateWhileCreatingDeploymentRequest implements DeploymentRequestFactory
         return new DeploymentRequest(
             $deploymentRequest->getTarget(),
             new DeploymentRequest\Specification(array_map(function (Component $component) use ($tide) {
-                $component->setEndpoints(array_map(function(Component\Endpoint $endpoint) use ($tide) {
-                    $endpoint->setSslCertificates(array_map(function(Component\Endpoint\SslCertificate $certificate) use ($tide, $endpoint) {
+                $component->setEndpoints(array_map(function (Component\Endpoint $endpoint) use ($tide) {
+                    $endpoint->setSslCertificates(array_map(function (Component\Endpoint\SslCertificate $certificate) use ($tide, $endpoint) {
                         if ($certificate->getKey() == 'automatic' && $certificate->getCert() == 'automatic') {
                             return $this->generateCertificateForEndpoint($tide, $endpoint);
                         }
@@ -72,7 +71,7 @@ class GenerateWhileCreatingDeploymentRequest implements DeploymentRequestFactory
     {
         if (null === ($ingress = $endpoint->getIngress())) {
             throw new DeploymentRequestException('Can only generate SSL certificates with ingresses');
-        } else if (0 === count($rules = $ingress->getRules())) {
+        } elseif (0 === count($rules = $ingress->getRules())) {
             throw new DeploymentRequestException('Can only generate SSL certificates for ingresses with an hostname');
         }
 
