@@ -41,7 +41,7 @@ class DeployTaskRunner implements TaskRunner
 
         try {
             $task->startDeployment($tide, $this->deploymentRequestFactory, $this->pipeClient);
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             throw new TaskRunnerException($e->getMessage(), $e->getCode(), $e);
         }
     }
