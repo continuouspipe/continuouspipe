@@ -9,7 +9,8 @@
         </service>
         <service id="river.cluster_policies.endpoint.enfore_policy_while_creating_deployment_request"
                  class="ContinuousPipe\River\ClusterPolicies\Endpoint\EnforceEndpointPolicyWhileCreatingDeploymentRequest"
-                 decorates="river.task.deploy.deployment_request_factory">
+                 decorates="river.task.deploy.deployment_request_factory"
+                 decoration-priority="5">
             <argument type="service" id="river.cluster_policies.endpoint.enfore_policy_while_creating_deployment_request.inner" />
             <argument type="service" id="river.cluster_policies.policy_resolver" />
             <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />

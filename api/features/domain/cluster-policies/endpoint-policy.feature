@@ -182,7 +182,7 @@ Feature:
     Then the tide should be failed
     And a log containing 'Ingress hostname of component "app" is "master-foo.continuouspipe.net" while the suffix "-1234.continuouspipe.net" is enforced by the cluster policy' should be created
 
-  Scenario: It enables CloudFlare by default with the cluster policy
+  Scenario: It enables CloudFlare by default with the endpoint policy
     Given the cluster "flex" of the team "my-team" have the following policies:
     """
     [
@@ -223,3 +223,42 @@ Feature:
     Then the endpoint "app" of the component "app" should be deployed with an ingress with the host "master-app-1234.continuouspipe.net"
     And the endpoint "app" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "master-app-1234.continuouspipe.net"
     And the endpoint "app" of the component "app" should be deployed with a proxied CloudFlare DNS zone configuration
+
+  Scenario: It enables SSL certificates by default with the endpoint policy
+    Given the cluster "flex" of the team "my-team" have the following policies:
+    """
+    [
+      {
+        "name": "endpoint",
+        "configuration": {
+          "type": "ingress",
+          "ingress-class": "nginx",
+          "ingress-host-suffix": "-1234.continuouspipe.net",
+          "ssl-certificate-defaults": "true"
+        },
+        "secrets": {
+          "ssl-certificate-key": "automatic",
+          "ssl-certificate-cert": "automatic"
+        }
+      }
+    ]
+    """
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                cluster: flex
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+
+                        endpoints:
+                            - name: app
+    """
+    When a tide is started for the branch "master"
+    Then the endpoint "app" of the component "app" should be deployed with an ingress with the host "master-app-1234.continuouspipe.net"
+    And the endpoint "app" of the component "app" should be deployed with a SSL certificate for the hostname "master-app-1234.continuouspipe.net"

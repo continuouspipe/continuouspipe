@@ -188,6 +188,14 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
                 }
             }
 
+            if (isset($policyConfiguration['ssl-certificate-defaults']) && 'true' == $policyConfiguration['ssl-certificate-defaults']) {
+                if (empty($endpoint->getSslCertificates())) {
+                    $endpoint->setSslCertificates([
+                        new Component\Endpoint\SslCertificate($endpoint->getName(), $policySecrets['ssl-certificate-cert'], $policySecrets['ssl-certificate-key']),
+                    ]);
+                }
+            }
+
             return $endpoint;
         }, $component->getEndpoints()));
 
