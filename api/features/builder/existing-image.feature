@@ -41,7 +41,7 @@ Feature:
       }
     }
     """
-    Then a log containing "Re-using pre-built Docker image sroze/php-example:continuous" should be created
+    Then a log containing "Re-using already built Docker image <code>sroze/php-example:continuous</code>" should be created
     And the archive details should not be sent to Google Cloud Builder
     And the notification should be sent
 
@@ -87,8 +87,8 @@ Feature:
       }
     }
     """
-    Then a log containing "Re-using pre-built Docker image sroze/php-example:continuous" should be created
-    And a log containing "Re-using pre-built Docker image sroze/php-example:v2" should be created
+    Then a log containing "Re-using already built Docker image <code>sroze/php-example:continuous</code>" should be created
+    And a log containing "Re-using already built Docker image <code>sroze/php-example:v2</code>" should be created
     And the archive details should not be sent to Google Cloud Builder
 
   Scenario: Don't reuse existing images when any are missing
@@ -132,7 +132,5 @@ Feature:
       }
     }
     """
-    Then a log containing "Re-using pre-built Docker image sroze/php-example:continuous" should not be found
-    And a log containing "Re-using pre-built Docker image sroze/php-example:v2" should not be found
-
-
+    Then a log containing "Re-using already built Docker image <code>sroze/php-example:continuous</code>" should not be found
+    And a log containing "Re-using already built Docker image <code>sroze/php-example:v2</code>" should not be found

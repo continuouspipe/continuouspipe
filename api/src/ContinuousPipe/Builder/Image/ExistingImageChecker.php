@@ -80,7 +80,7 @@ class ExistingImageChecker
 
             $this->loggerFactory->fromId($step->getLogStreamIdentifier())
                 ->child(new Text(sprintf(
-                    'Re-using pre-built Docker image %s:%s',
+                    'Re-using already built Docker image <code>%s:%s</code>',
                     $step->getImage()->getName(),
                     $step->getImage()->getTag()
                 )))
