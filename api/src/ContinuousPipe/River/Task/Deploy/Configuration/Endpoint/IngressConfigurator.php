@@ -26,16 +26,7 @@ class IngressConfigurator implements EndpointConfigurationEnhancer
             return $endpointConfiguration;
         }
 
-        if (isset($endpointConfiguration['ingress']['host_suffix'])) {
-            if ($this->hostnameResolver->suffixTooLong($endpointConfiguration['ingress']['host_suffix'])) {
-                throw new TideGenerationException(
-                    sprintf(
-                        'The ingress host_suffix cannot be more than %s characters long',
-                        $this->hostnameResolver->maxSuffixLength()
-                    )
-                );
-            }
-        } elseif (!isset($endpointConfiguration['ingress']['host']['expression'])) {
+        if (!isset($endpointConfiguration['ingress']['host']['expression']) && !isset($endpointConfiguration['ingress']['host_suffix'])) {
             throw new TideGenerationException('The ingress needs a host_suffix or a host expression');
         }
 
@@ -49,8 +40,9 @@ class IngressConfigurator implements EndpointConfigurationEnhancer
                 [
                     [
                         'host' => $this->hostnameResolver->resolveHostname(
-                            $context,
-                            $endpointConfiguration['ingress']['host']
+                            $context->getFlowUuid(),
+                            $context->getCodeReference(),
+                            $endpointConfiguration['ingress']['host']['expression']
                         )
                     ]
                 ];

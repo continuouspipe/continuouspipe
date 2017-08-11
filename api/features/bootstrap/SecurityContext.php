@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\Security\Account\BitBucketAccount;
 use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Security\Credentials\Bucket;
@@ -18,6 +19,7 @@ use ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use Doctrine\Common\Collections\Collection;
+use JMS\Serializer\SerializerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Ramsey\Uuid\Uuid;
@@ -50,6 +52,10 @@ class SecurityContext implements Context
      * @var JWTManagerInterface
      */
     private $jwtManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
     /**
      * @var Response|null
@@ -66,13 +72,15 @@ class SecurityContext implements Context
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         KernelInterface $kernel,
         PreviouslyKnownValuesVault $previouslyKnownValuesVault,
-        JWTManagerInterface $jwtManager
+        JWTManagerInterface $jwtManager,
+        SerializerInterface $serializer
     ) {
         $this->tokenStorage = $tokenStorage;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->kernel = $kernel;
         $this->previouslyKnownValuesVault = $previouslyKnownValuesVault;
         $this->jwtManager = $jwtManager;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -232,6 +240,21 @@ class SecurityContext implements Context
         $address = $address ?: 'https://1.2.3.4';
 
         $bucket->getClusters()->add(new Kubernetes($cluster, $address, 'v1', '', ''));
+
+        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+    }
+
+    /**
+     * @Given the cluster :clusterIdentifier of the team :team have the following policies:
+     */
+    public function theClusterOfTheTeamHaveTheFollowingPolicies($clusterIdentifier, $team, PyStringNode $string)
+    {
+        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
+        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+
+        $bucket->getClusters()->add(new Kubernetes($clusterIdentifier, 'https://1.2.3.4', 'v1', '', '',
+            $this->serializer->deserialize($string->getRaw(), 'array<'.Cluster\ClusterPolicy::class.'>', 'json')
+        ));
 
         $this->inMemoryAuthenticatorClient->addBucket($bucket);
     }
