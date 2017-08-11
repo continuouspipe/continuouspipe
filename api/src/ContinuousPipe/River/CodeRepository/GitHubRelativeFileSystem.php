@@ -56,7 +56,11 @@ class GitHubRelativeFileSystem implements RelativeFileSystem
                 }
             }
 
-            throw new FileException($e->getMessage(), $e->getCode(), $e);
+            throw new FileException(
+                sprintf('Unable to read file "%s". Response from GitHub: %s', $filePath, $this->formatException($e)),
+                $e->getCode(),
+                $e
+            );
         }
     }
 
@@ -79,7 +83,11 @@ class GitHubRelativeFileSystem implements RelativeFileSystem
                 }
             }
 
-            throw new FileException($e->getMessage(), $e->getCode(), $e);
+            throw new FileException(
+                sprintf('Unable to read file "%s". Response from GitHub: %s', $filePath, $this->formatException($e)),
+                $e->getCode(),
+                $e
+            );
         }
 
         if (!isset($contentsResult['content'])) {
@@ -112,5 +120,14 @@ class GitHubRelativeFileSystem implements RelativeFileSystem
         ]);
 
         return $response->getStatusCode() == 200;
+    }
+
+    private function formatException(RequestException $e)
+    {
+        if (null !== ($response = $e->getResponse())) {
+            return $response->getStatusCode() . ' ' . $response->getReasonPhrase();
+        }
+
+        return $e->getMessage();
     }
 }

@@ -9,6 +9,8 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClient;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientException;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
+use ContinuousPipe\River\Handler\PinBranchHandler;
+use GuzzleHttp\Exception\RequestException;
 
 class BitBucketRepositoryFilesystem implements RelativeFileSystem
 {
@@ -31,11 +33,7 @@ class BitBucketRepositoryFilesystem implements RelativeFileSystem
 
             return true;
         } catch (FileNotFound $e) {
-            if ($e->getCode() == 404) {
-                return false;
-            }
-
-            throw new FileException($e->getMessage(), $e->getCode(), $e);
+            return false;
         }
     }
 
@@ -58,7 +56,25 @@ class BitBucketRepositoryFilesystem implements RelativeFileSystem
                 throw new FileNotFound($e->getMessage(), $e->getCode(), $e);
             }
 
-            throw new FileException($e->getMessage(), $e->getCode(), $e);
+            throw new FileException(
+                sprintf('Unable to read file "%s". Response from BitBucket: %s', $filePath, $this->formatException($e)),
+                $e->getCode(),
+                $e
+            );
         }
+    }
+
+    private function formatException(BitBucketClientException $e)
+    {
+        $previous = $e->getPrevious();
+        if (!$previous instanceof RequestException) {
+            return $e->getMessage();
+        }
+
+        if (null !== ($response = $previous->getResponse())) {
+            return $response->getStatusCode() . ' ' . $response->getReasonPhrase();
+        }
+
+        return $e->getMessage();
     }
 }

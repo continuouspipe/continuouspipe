@@ -301,6 +301,23 @@ class GitHubContext implements CodeRepositoryContext
         });
     }
 
+    /**
+     * @Given the code repository will return a :statusCode status code for the file :filePath with the following response:
+     */
+    public function theCodeRepositoryWillReturnAStatusCodeWithTheFollowingResponseForThePath($statusCode, $filePath, PyStringNode $string)
+    {
+        $contents = $string->getRaw();
+
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod) use ($statusCode, $filePath, $contents) {
+            if (preg_match('#repos/([^/]+)/([^/]+)/contents/'.$filePath.'$#', $path)) {
+                throw ServerException::create(
+                    new \GuzzleHttp\Psr7\Request($httpMethod, $path),
+                    new \GuzzleHttp\Psr7\Response($statusCode, ['Content-Type' => 'application/json'], $contents)
+                );
+            }
+        });
+    }
+
     public function thereIsAFileContaining(string $filePath, string $contents)
     {
         $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod) use ($filePath, $contents) {
