@@ -1,6 +1,8 @@
 <?php
 
-namespace ContinuousPipe\DockerCompose;
+namespace ContinuousPipe\River\CodeRepository\FileSystem;
+
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
 
 class LocalRelativeFileSystem implements RelativeFileSystem
 {

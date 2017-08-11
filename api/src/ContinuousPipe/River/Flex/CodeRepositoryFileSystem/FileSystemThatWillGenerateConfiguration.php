@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\Flex\CodeRepositoryFileSystem;
 
-use ContinuousPipe\DockerCompose\FileNotFound;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use ContinuousPipe\River\Flex\FlowConfigurationGenerator;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 

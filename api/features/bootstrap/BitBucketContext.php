@@ -392,7 +392,7 @@ class BitBucketContext implements CodeRepositoryContext
      */
     public function theBitbucketUserHaveTheFollowingRepositoriesOnThePageOf($username, TableNode $table, $page = 1, $pageCount = 1)
     {
-        $this->bitBucketMatchingClientHandler->pushMatcher([
+        $this->bitBucketMatchingClientHandler->shiftMatcher([
             'match' => function(RequestInterface $request) use ($username, $page) {
                 $uri = $request->getUri() == 'https://api.bitbucket.org/2.0/repositories/'.$username;
 
@@ -412,7 +412,7 @@ class BitBucketContext implements CodeRepositoryContext
      */
     public function theBitbucketTeamHaveTheFollowingRepositories($team, TableNode $table, $page = 1, $pageCount = 1)
     {
-        $this->bitBucketMatchingClientHandler->pushMatcher([
+        $this->bitBucketMatchingClientHandler->shiftMatcher([
             'match' => function(RequestInterface $request) use ($team, $page) {
                 $uri = 'https://api.bitbucket.org/2.0/teams/'.$team.'/repositories';
                 if ($page != 1) {

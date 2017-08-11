@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\Tests\CodeRepository;
 
-use ContinuousPipe\DockerCompose\FileNotFound;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 
 class PredictiveFileSystem implements RelativeFileSystem
 {
@@ -13,13 +13,13 @@ class PredictiveFileSystem implements RelativeFileSystem
     private $files;
 
     /**
-     * @var RelativeFileSystem
+     * @var \ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem
      */
     private $decoratedFileSystem;
 
     /**
      * @param array              $files
-     * @param RelativeFileSystem $decoratedFileSystem
+     * @param \ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem $decoratedFileSystem
      */
     public function __construct(array $files, RelativeFileSystem $decoratedFileSystem = null)
     {

@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Flex;
 
-use ContinuousPipe\DockerCompose\FileNotFound;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
 use ContinuousPipe\Flex\ConfigurationFileCollectionGenerator;
 use ContinuousPipe\Flex\ConfigurationGeneration\GenerationException;
 use ContinuousPipe\River\CodeReference;

@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\CodeRepository\FileSystem;
 
-use ContinuousPipe\DockerCompose\FileNotFound;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 
 class PartiallyOverwrittenFileSystem implements RelativeFileSystem
 {

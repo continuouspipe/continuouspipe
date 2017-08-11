@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\FileSystem;
 
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;

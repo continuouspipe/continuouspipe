@@ -3,7 +3,8 @@
 namespace ContinuousPipe\DockerCompose\Parser;
 
 use ContinuousPipe\DockerCompose\DockerComposeException;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileException;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 
 interface ProjectParser
 {
@@ -17,6 +18,7 @@ interface ProjectParser
      * @param string             $environment
      *
      * @throws DockerComposeException
+     * @throws FileException
      *
      * @return array
      */

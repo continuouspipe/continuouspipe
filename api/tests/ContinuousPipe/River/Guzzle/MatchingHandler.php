@@ -42,6 +42,14 @@ class MatchingHandler
                         'scopes' => 'email webhook',
                     ])),
                 ],
+                [
+                    'match' => function(RequestInterface $request) {
+                        return preg_match('#\/1\.0\/repositories\/([a-z0-9\/-]+)\/src\/([a-z0-9-]+)\/([a-z0-9\/\.-]+)$#', $request->getUri()->__toString());
+                    },
+                    'response' => new Response(200, ['Content-Type' => 'application/json'], \GuzzleHttp\json_encode([
+                        'data' => '',
+                    ]))
+                ]
             ];
         }
 
@@ -93,9 +101,17 @@ class MatchingHandler
         array_unshift($this->matchers, $matcher);
     }
 
-    public function pushMatcher(array $matcher)
+    public function shiftMatcher(array $matcher)
     {
         $this->matchers[] = $matcher;
+    }
+
+    /**
+     * @deprecated Because to obscure about the order
+     */
+    public function pushMatcher(array $matcher)
+    {
+        $this->unshiftMatcher($matcher);
     }
 
     private function invokeStats(

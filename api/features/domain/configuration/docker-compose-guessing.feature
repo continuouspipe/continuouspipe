@@ -804,3 +804,23 @@ Feature:
                     api:
                         image: docker.io/sroze/api
     """
+
+  Scenario: Fails the configuration if docker-compose.yml file can't be read
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        database_deployment:
+            deploy:
+                cluster: foo
+                services:
+                    database:
+                        deployment_strategy: { readiness_probe: { type: tcp, port: 5432 } }
+
+    """
+
+    And the code repository will return a 500 status code for the file "docker-compose.yml" with the following response:
+    """
+    {"error": "Something wrong happened"}
+    """
+    When the configuration of the tide is tentatively generated
+    Then the configuration generated should fail with 'Unable to read file "docker-compose.yml". Response from GitHub: 500 Internal Server Error'

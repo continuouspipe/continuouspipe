@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository\BitBucket\Filesystem;
 
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientException;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientFactory;

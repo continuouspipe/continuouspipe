@@ -27,6 +27,11 @@ class TideConfigurationContext implements Context
     private $configuration;
 
     /**
+     * @var \Throwable|null
+     */
+    private $configurationGenerationException;
+
+    /**
      * @param TideConfigurationFactory $tideConfigurationFactory
      */
     public function __construct(TideConfigurationFactory $tideConfigurationFactory)
@@ -52,6 +57,35 @@ class TideConfigurationContext implements Context
             $flow->getCodeRepository(),
             'sha1'
         ))->getConfiguration();
+    }
+
+    /**
+     * @When the configuration of the tide is tentatively generated
+     */
+    public function theConfigurationOfTheTideIsTentativelyGenerated()
+    {
+        try {
+            $this->theConfigurationOfTheTideIsGenerated();
+        } catch (\Throwable $e) {
+            $this->configurationGenerationException = $e;
+        }
+    }
+
+    /**
+     * @Then the configuration generated should fail with :message
+     */
+    public function theConfigurationGeneratedShouldFailWith($message)
+    {
+        if (null === $this->configurationGenerationException) {
+            throw new \RuntimeException('No exception found while generating configuration');
+        }
+
+        if ($this->configurationGenerationException->getMessage() != $message) {
+            throw new \RuntimeException(sprintf(
+                'Found message "%s" instead',
+                $this->configurationGenerationException->getMessage()
+            ));
+        }
     }
 
     /**

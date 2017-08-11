@@ -3,7 +3,7 @@
 namespace ContinuousPipe\DockerCompose\Loader;
 
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use ContinuousPipe\DockerCompose\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Model\Environment;
 
@@ -30,7 +30,7 @@ class ProjectLoader
     }
 
     /**
-     * @param RelativeFileSystem $fileSystem
+     * @param \ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem $fileSystem
      * @param string             $environment
      *
      * @return Environment

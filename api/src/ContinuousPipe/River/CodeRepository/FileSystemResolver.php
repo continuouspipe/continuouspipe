@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
@@ -14,7 +14,7 @@ interface FileSystemResolver
      * @param FlatFlow      $flow
      * @param CodeReference $codeReference
      *
-     * @return RelativeFileSystem
+     * @return \ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem
      *
      * @throws CodeRepositoryException
      */

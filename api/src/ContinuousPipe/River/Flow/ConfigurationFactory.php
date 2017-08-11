@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Flow;
 
-use ContinuousPipe\DockerCompose\FileException;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileException;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;

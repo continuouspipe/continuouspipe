@@ -2,13 +2,14 @@
 
 namespace ContinuousPipe\River\CodeRepository\BitBucket\Filesystem;
 
-use ContinuousPipe\DockerCompose\FileException;
-use ContinuousPipe\DockerCompose\FileNotFound;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileException;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClient;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientException;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
+use GuzzleHttp\Exception\RequestException;
 
 class BitBucketRepositoryFilesystem implements RelativeFileSystem
 {
@@ -54,7 +55,25 @@ class BitBucketRepositoryFilesystem implements RelativeFileSystem
                 throw new FileNotFound($e->getMessage(), $e->getCode(), $e);
             }
 
-            throw new FileException($e->getMessage(), $e->getCode(), $e);
+            throw new FileException(
+                sprintf('Unable to read file "%s". Response from BitBucket: %s', $filePath, $this->formatException($e)),
+                $e->getCode(),
+                $e
+            );
         }
+    }
+
+    private function formatException(BitBucketClientException $e)
+    {
+        $previous = $e->getPrevious();
+        if (!$previous instanceof RequestException) {
+            return $e->getMessage();
+        }
+
+        if (null !== ($response = $previous->getResponse())) {
+            return $response->getStatusCode() . ' ' . $response->getReasonPhrase();
+        }
+
+        return $e->getMessage();
     }
 }

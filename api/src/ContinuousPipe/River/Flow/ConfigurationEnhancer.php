@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\TideConfigurationException;
 
 interface ConfigurationEnhancer
 {
@@ -15,6 +16,8 @@ interface ConfigurationEnhancer
      * @param FlatFlow      $flow
      * @param CodeReference $codeReference
      * @param array         $configs
+     *
+     * @throws TideConfigurationException
      *
      * @return array
      */
