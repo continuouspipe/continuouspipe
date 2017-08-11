@@ -87,10 +87,14 @@ class WebHookTask extends EventDrivenTask
                 $context->getTideUuid(),
                 $this->getIdentifier(),
                 $webHook,
-                $e
+                $e->getMessage()
             ));
 
-            $logger->child(new Text(sprintf('Sending webhook to "%s" failed', $webHook->getUrl())));
+            $logger->child(new Text(sprintf(
+                'Sending webhook to "%s" failed: %s',
+                $webHook->getUrl(),
+                $e->getMessage()
+            )));
         }
     }
 
