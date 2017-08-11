@@ -9,7 +9,11 @@ use ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\CompositeConfigurato
 use ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\EndpointConfigurationEnhancer;
 use ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\EndpointConfigurator;
 use ContinuousPipe\River\Task\TaskContext;
+use ContinuousPipe\River\Tide\Configuration\ArrayObject;
+use ContinuousPipe\River\TideConfigurationException;
 use JMS\Serializer\SerializerInterface;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 class ComponentFactory
 {
@@ -34,10 +38,14 @@ class ComponentFactory
      * @param string $name
      * @param array $configuration
      *
-     * @return Component
+     * @return Component|null
      */
     public function createFromConfiguration(TaskContext $context, string $name, array $configuration)
     {
+        if ($this->shouldSkipService($context, $configuration)) {
+            return null;
+        }
+
         $component = new Component(
             $name,
             $name,
@@ -75,8 +83,16 @@ class ComponentFactory
             return [];
         }
 
+        $endpoints = array_values(array_filter($configuration['endpoints'], function (array $endpoint) use ($context) {
+            if (!isset($endpoint['condition'])) {
+                return true;
+            }
+
+            return $this->isConditionValid($endpoint['condition'], $context);
+        }));
+
         return $this->serializer->deserialize(
-            json_encode($this->addHostsToConfig($context, $configuration['endpoints'])),
+            json_encode($this->addHostsToConfig($context, $endpoints)),
             sprintf('array<%s>', Component\Endpoint::class),
             'json'
         );
@@ -137,5 +153,51 @@ class ComponentFactory
             },
             $configuration
         );
+    }
+
+    /**
+     * @param TaskContext $taskContext
+     * @param array       $configuration
+     *
+     * @return bool
+     */
+    private function shouldSkipService(TaskContext $taskContext, array $configuration)
+    {
+        if (array_key_exists('condition', $configuration)) {
+            return !$this->isConditionValid($configuration['condition'], $taskContext);
+        }
+
+        return $configuration['enabled'] === false;
+    }
+
+    /**
+     * @param string      $expression
+     * @param TaskContext $taskContext
+     *
+     * @return string
+     *
+     * @throws TideConfigurationException
+     */
+    private function isConditionValid($expression, TaskContext $taskContext)
+    {
+        $language = new ExpressionLanguage();
+        $context =  new ArrayObject([
+            'code_reference' => new ArrayObject([
+                'branch' => $taskContext->getCodeReference()->getBranch(),
+                'sha' => $taskContext->getCodeReference()->getCommitSha(),
+            ]),
+        ]);
+
+        try {
+            return (bool) $language->evaluate($expression, $context->asArray());
+        } catch (SyntaxError $e) {
+            throw new TideConfigurationException(sprintf(
+                'The expression provided ("%s") is not valid: %s',
+                $expression,
+                $e->getMessage()
+            ), $e->getCode(), $e);
+        } catch (\InvalidArgumentException $e) {
+            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

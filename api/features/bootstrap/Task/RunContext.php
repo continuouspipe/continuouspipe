@@ -313,6 +313,21 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the component :name should not be deployed with an endpoint named :endpointName
+     */
+    public function theComponentShouldNotBeDeployedWithAnEndpointNamed($name, $endpointName)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $matching = array_filter($component->getEndpoints(), function(Component\Endpoint $endpoint) use ($endpointName) {
+            return $endpoint->getName() == $endpointName;
+        });
+
+        if (count($matching) !== 0) {
+            throw new \RuntimeException('Endpoint found');
+        }
+    }
+
+    /**
      * @Then the component :name should be deployed with the following environment variables:
      */
     public function theComponentShouldBeDeployedWithTheFollowingEnvironmentVariables($name, TableNode $table)

@@ -695,3 +695,65 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an ingress with the host "docs.continuouspipe.io"
+
+  Scenario: Non-matching condition means the endpoint is not used
+    When a tide is started for the branch "master" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            - name: production
+                              ingress:
+                                class: nginx
+                                host: docs.continuouspipe.io
+                              condition: code_reference.branch == 'production'
+                            - name: http
+                              ingress:
+                                class: nginx
+                                host_suffix: -12357-flex.continuouspipe.net
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the component "app" should not be deployed with an endpoint named "production"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-12357-flex.continuouspipe.net"
+
+  Scenario: Matching condition means the endpoint is used
+    When a tide is started for the branch "production" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            - name: production
+                              ingress:
+                                class: nginx
+                                host: docs.continuouspipe.io
+                              condition: code_reference.branch == 'production'
+                            - name: http
+                              ingress:
+                                class: nginx
+                                host_suffix: -12357-flex.continuouspipe.net
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "production-12357-flex.continuouspipe.net"
+    And the endpoint "production" of the component "app" should be deployed with an ingress with the host "docs.continuouspipe.io"
