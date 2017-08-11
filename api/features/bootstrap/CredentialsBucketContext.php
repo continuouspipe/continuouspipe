@@ -241,13 +241,8 @@ class CredentialsBucketContext implements Context
     {
         $content = $table->getHash()[0];
 
-        if (isset($content['features'])) {
-            $features = explode(',', $content['features']);
-
-            $content['features'] = array_combine(
-                $features,
-                array_fill(0, count($features), true)
-            );
+        if (isset($content['policies'])) {
+            $content['policies'] = json_decode($content['policies'], true);
         }
 
         $this->response = $this->kernel->handle(Request::create(
@@ -371,27 +366,84 @@ class CredentialsBucketContext implements Context
     }
 
     /**
-     * @Then the cluster :clusterIdentifier should have the feature :feature
+     * @Then the cluster :clusterIdentifier should have the policy :policyName
      */
-    public function theClusterShouldHaveTheFeatureRbac($clusterIdentifier, $feature)
+    public function theClusterShouldHaveThePolicy($clusterIdentifier, $policyName)
     {
-        $cluster = $this->getClusterFromList($clusterIdentifier);
-
-        if (!isset($cluster['features'][$feature]) || !$cluster['features'][$feature]) {
-            throw new \RuntimeException('Feature is not activated');
+        if (null === $this->getClusterPolicy($clusterIdentifier, $policyName)) {
+            throw new \RuntimeException(sprintf('Did not found policy %s', $policyName));
         }
     }
 
     /**
-     * @Then the cluster :clusterIdentifier should not have the feature :feature
+     * @Then the cluster :clusterIdentifier should have the policy :policyName with the following configuration:
      */
-    public function theClusterShouldNotHaveTheFeatureRbac($clusterIdentifier, $feature)
+    public function theClusterShouldHaveThePolicyWithTheFollowingConfiguration($clusterIdentifier, $policyName, PyStringNode $configurationNode)
+    {
+        if (null === ($policy = $this->getClusterPolicy($clusterIdentifier, $policyName))) {
+            throw new \RuntimeException(sprintf('Did not found policy %s', $policyName));
+        }
+
+        $expectedConfiguration = json_decode($configurationNode->getRaw(), true);
+        if ($policy['configuration'] != $expectedConfiguration) {
+            throw new \RuntimeException('Found the following configuration instead: '.print_r($policy['configuration'], true));
+        }
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should have the policy :policyName but without visible secrets
+     */
+    public function theClusterShouldHaveThePolicyButWithoutVisibleSecrets($clusterIdentifier, $policyName)
+    {
+        if (null === ($policy = $this->getClusterPolicy($clusterIdentifier, $policyName))) {
+            throw new \RuntimeException(sprintf('Did not found policy %s', $policyName));
+        }
+
+        if (isset($policy['secrets'])) {
+            throw new \RuntimeException('Secrets are visible it looks like');
+        }
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should have the policy :policyName with the following secrets:
+     */
+    public function theClusterShouldHaveThePolicyWithTheFollowingSecrets($clusterIdentifier, $policyName, PyStringNode $secretsNode)
+    {
+        if (null === ($policy = $this->getClusterPolicy($clusterIdentifier, $policyName))) {
+            throw new \RuntimeException(sprintf('Did not found policy %s', $policyName));
+        }
+
+        $expectedSecrets = json_decode($secretsNode->getRaw(), true);
+        if ($policy['secrets'] != $expectedSecrets) {
+            throw new \RuntimeException('Found the following secrets instead: '.print_r($policy['secrets'], true));
+        }
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should not have the policy :policyName
+     */
+    public function theClusterShouldNotHaveThePolicy($clusterIdentifier, $policyName)
+    {
+        if (null !== $this->getClusterPolicy($clusterIdentifier, $policyName)) {
+            throw new \RuntimeException(sprintf('Did found policy %s', $policyName));
+        }
+    }
+
+    private function getClusterPolicy(string $clusterIdentifier, string $policyName)
     {
         $cluster = $this->getClusterFromList($clusterIdentifier);
 
-        if (isset($cluster['features'][$feature]) && $cluster['features'][$feature]) {
-            throw new \RuntimeException('Feature is activated');
+        if (!isset($cluster['policies'])) {
+            throw new \RuntimeException('Did not find policies');
         }
+
+        foreach ($cluster['policies'] as $policy) {
+            if ($policy['name'] == $policyName) {
+                return $policy;
+            }
+        }
+
+        return null;
     }
 
     /**
