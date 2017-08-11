@@ -7,13 +7,22 @@
         <service id="river.cluster_policies.policy_resolver" class="ContinuousPipe\River\ClusterPolicies\ClusterResolution\GetFromClusterInTeamBucket">
             <argument type="service" id="authenticator.bucket_repository" />
         </service>
-        <service id="river.cluster_policies.endpoint.enfore_policy_while_creating_deployment_request"
+        <service id="river.cluster_policies.endpoint.enforce_policy_while_creating_deployment_request"
                  class="ContinuousPipe\River\ClusterPolicies\Endpoint\EnforceEndpointPolicyWhileCreatingDeploymentRequest"
                  decorates="river.task.deploy.deployment_request_factory"
                  decoration-priority="5">
-            <argument type="service" id="river.cluster_policies.endpoint.enfore_policy_while_creating_deployment_request.inner" />
+            <argument type="service" id="river.cluster_policies.endpoint.enforce_policy_while_creating_deployment_request.inner" />
             <argument type="service" id="river.cluster_policies.policy_resolver" />
             <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.cluster_policies.environment.enforce_policy_while_creating_deployment_request"
+                 class="ContinuousPipe\River\ClusterPolicies\Environment\EnforceEnvironmentPolicyWhenDeploying"
+                 decorates="river.task.deploy.deployment_request_factory"
+                 decoration-priority="5">
+            <argument type="service" id="river.cluster_policies.environment.enforce_policy_while_creating_deployment_request.inner" />
+            <argument type="service" id="river.cluster_policies.policy_resolver" />
             <argument type="service" id="logger" />
         </service>
     </services>
