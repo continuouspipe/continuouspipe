@@ -12,6 +12,9 @@ use ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildFinishe
 use ContinuousPipe\Builder\Artifact\ArtifactRemover;
 use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuilderClient;
+use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuildStatus;
+use ContinuousPipe\Builder\Image\ExistingImageChecker;
+use ContinuousPipe\Builder\Image\SearchingForExistingImageException;
 use ContinuousPipe\Events\Transaction\TransactionManager;
 use Psr\Log\LoggerInterface;
 
@@ -30,6 +33,10 @@ class BuildSaga
      */
     private $googleContainerBuilderClient;
     /**
+     * @var ExistingImageChecker
+     */
+    private $existingImageChecker;
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -38,11 +45,13 @@ class BuildSaga
         TransactionManager $transactionManager,
         ArtifactRemover $artifactRemover,
         GoogleContainerBuilderClient $googleContainerBuilderClient,
+        ExistingImageChecker $existingImageChecker,
         LoggerInterface $logger
     ) {
         $this->transactionManager = $transactionManager;
         $this->artifactRemover = $artifactRemover;
         $this->googleContainerBuilderClient = $googleContainerBuilderClient;
+        $this->existingImageChecker = $existingImageChecker;
         $this->logger = $logger;
     }
 
@@ -56,6 +65,22 @@ class BuildSaga
         }
 
         $this->transactionManager->apply($event->getBuildIdentifier(), function (Build $build) use ($event) {
+            // Check if the image already exists
+            if ($event instanceof BuildStarted) {
+                try {
+                    if ($this->existingImageChecker->checkIfImagesExist($build)) {
+                        $build->completeBuild(new GoogleContainerBuildStatus(GoogleContainerBuildStatus::SUCCESS));
+
+                        return;
+                    }
+                } catch (SearchingForExistingImageException $e) {
+                    $this->logger->warning('Cannot determine whetever the Docker image already exists or not', [
+                        'build_identifier' => $build,
+                        'exception' => $e,
+                    ]);
+                }
+            }
+
             if ($build->isEngine(Engine::GOOGLE_CONTAINER_BUILDER)) {
                 if ($event instanceof BuildStarted) {
                     $build->startWithGoogleContainerBuilder($this->googleContainerBuilderClient);
