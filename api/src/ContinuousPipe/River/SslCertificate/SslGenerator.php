@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\SslCertificate;
 
 use ContinuousPipe\Archive\ArchiveException;
 use ContinuousPipe\Archive\FileSystemArchive;
-use ContinuousPipe\DockerCompose\FileNotFound;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
 use ContinuousPipe\Model\Component\Endpoint\SslCertificate;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Process;

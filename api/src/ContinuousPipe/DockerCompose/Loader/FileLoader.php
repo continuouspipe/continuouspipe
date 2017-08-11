@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\DockerCompose\Loader;
 
-use ContinuousPipe\DockerCompose\LocalRelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\LocalRelativeFileSystem;
 use ContinuousPipe\DockerCompose\Parser\FileParser;
 use ContinuousPipe\DockerCompose\Transformer\EnvironmentTransformer;
 use ContinuousPipe\Model\Environment;

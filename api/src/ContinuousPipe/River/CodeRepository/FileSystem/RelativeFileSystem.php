@@ -1,6 +1,9 @@
 <?php
 
-namespace ContinuousPipe\DockerCompose;
+namespace ContinuousPipe\River\CodeRepository\FileSystem;
+
+use ContinuousPipe\River\CodeRepository\FileSystem\FileException;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
 
 interface RelativeFileSystem
 {

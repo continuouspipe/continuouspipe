@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\Archive;
 
-use ContinuousPipe\DockerCompose\LocalRelativeFileSystem;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\LocalRelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use Psr\Http\Message\StreamInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;

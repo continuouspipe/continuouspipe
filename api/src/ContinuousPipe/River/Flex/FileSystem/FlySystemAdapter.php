@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\Flex\FileSystem;
 
-use ContinuousPipe\DockerCompose\FileNotFound;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use League\Flysystem\Handler;
@@ -17,7 +17,7 @@ class FlySystemAdapter implements FilesystemInterface
     private $fileSystem;
 
     /**
-     * @param RelativeFileSystem $fileSystem
+     * @param \ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem $fileSystem
      */
     public function __construct(RelativeFileSystem $fileSystem)
     {

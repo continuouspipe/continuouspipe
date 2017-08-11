@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Flex\DisplayGeneratedConfiguration;
 
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use ContinuousPipe\Flex\ConfigurationGeneration\GeneratedConfiguration;
 use ContinuousPipe\River\Flex\FlowConfigurationGenerator;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;

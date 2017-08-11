@@ -3,13 +3,16 @@
 namespace ContinuousPipe\River\Flow\ConfigurationEnhancer;
 
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\DockerCompose\ComponentsResolver;
 use ContinuousPipe\River\CodeRepository\DockerCompose\Configuration\PortIdentifier;
 use ContinuousPipe\River\CodeRepository\DockerCompose\DockerComposeComponent;
 use ContinuousPipe\River\CodeRepository\DockerCompose\ResolveException;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileException;
 use ContinuousPipe\River\Flow\ConfigurationEnhancer;
 use ContinuousPipe\River\Flow\ConfigurationEnhancer\Helper\TaskLocator;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\TideConfigurationException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -45,7 +48,7 @@ class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
         try {
             $dockerComposeComponents = $this->componentsResolver->resolve($flow, $codeReference);
         } catch (ResolveException $e) {
-            $this->logger->info('Unable to resolve the DockerCompose components', [
+            $this->logger->warning('Unable to resolve the DockerCompose components', [
                 'exception' => $e,
                 'message' => $e->getMessage(),
                 'flow_uuid' => (string) $flow->getUuid(),
@@ -53,6 +56,8 @@ class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
             ]);
 
             return $configs;
+        } catch (CodeRepositoryException $e) {
+            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
         }
 
         $propertyAccessor = PropertyAccess::createPropertyAccessor();

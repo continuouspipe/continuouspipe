@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\DockerCompose\Parser;
 
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 
 class MergedProjectParser implements ProjectParser
 {
