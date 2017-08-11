@@ -61,6 +61,6 @@ class FetchGCBuildStatus implements DelayedMessage
      */
     public function runAt() : \DateTimeInterface
     {
-        return $this->runAt;
+        return $this->runAt ?: new \DateTime();
     }
 }
