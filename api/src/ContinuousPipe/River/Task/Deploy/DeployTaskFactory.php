@@ -256,11 +256,9 @@ class DeployTaskFactory implements TaskFactory
         $services = [];
 
         foreach ($servicesConfiguration as $name => $configuration) {
-            if ($this->shouldSkipService($taskContext, $configuration)) {
-                continue;
+            if (null !== ($service = $this->componentFactory->createFromConfiguration($taskContext, $this->getIdentifier($name), $configuration))) {
+                $services[] = $service;
             }
-
-            $services[] = $this->componentFactory->createFromConfiguration($taskContext, $this->getIdentifier($name), $configuration);
         }
 
         return $services;
@@ -344,56 +342,12 @@ class DeployTaskFactory implements TaskFactory
                     ->append($this->getCloudflareNode())
                     ->append($this->getHttplabsNode())
                     ->append($this->getIngressNode())
+                    ->scalarNode('condition')->end()
                 ->end()
             ->end()
         ;
 
         return $node;
-    }
-
-    /**
-     * @param TaskContext $taskContext
-     * @param array       $configuration
-     *
-     * @return bool
-     */
-    private function shouldSkipService(TaskContext $taskContext, array $configuration)
-    {
-        if (array_key_exists('condition', $configuration)) {
-            return !$this->isConditionValid($configuration['condition'], new ArrayObject([
-                'code_reference' => new ArrayObject([
-                    'branch' => $taskContext->getCodeReference()->getBranch(),
-                    'sha' => $taskContext->getCodeReference()->getCommitSha(),
-                ]),
-            ]));
-        }
-
-        return $configuration['enabled'] === false;
-    }
-
-    /**
-     * @param string      $expression
-     * @param ArrayObject $context
-     *
-     * @return string
-     *
-     * @throws TideConfigurationException
-     */
-    private function isConditionValid($expression, ArrayObject $context)
-    {
-        $language = new ExpressionLanguage();
-
-        try {
-            return (bool) $language->evaluate($expression, $context->asArray());
-        } catch (SyntaxError $e) {
-            throw new TideConfigurationException(sprintf(
-                'The expression provided ("%s") is not valid: %s',
-                $expression,
-                $e->getMessage()
-            ), $e->getCode(), $e);
-        } catch (\InvalidArgumentException $e) {
-            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
-        }
     }
 
     /**
@@ -487,6 +441,14 @@ class DeployTaskFactory implements TaskFactory
             ->children()
                 ->scalarNode('class')->end()
                 ->arrayNode('host')
+                    ->beforeNormalization()
+                        ->ifString()
+                        ->then(function ($hostname) {
+                            return [
+                                'expression' => '\''.$hostname.'\'',
+                            ];
+                        })
+                    ->end()
                     ->children()
                         ->scalarNode('expression')->isRequired()->end()
                     ->end()
