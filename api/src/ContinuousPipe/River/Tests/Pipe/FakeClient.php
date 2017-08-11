@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Tests\Pipe;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\PodNotFound;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Promise;
@@ -16,6 +17,11 @@ class FakeClient implements Client
      * @var Environment[]
      */
     private $environmentsPerCluster = [];
+
+    /**
+     * @var array
+     */
+    private $pods;
 
     /**
      * {@inheritdoc}
@@ -43,6 +49,22 @@ class FakeClient implements Client
                 unset($this->environmentsPerCluster[$target->getClusterIdentifier()][$key]);
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName)
+    {
+        if (
+            !isset($this->pods[$team->getSlug()][$clusterIdentifier][$namespace])
+            ||
+            $this->pods[$team->getSlug()][$clusterIdentifier][$namespace] !== $podName
+        ) {
+            throw new PodNotFound(sprintf('Pod %s not found', $podName));
+        }
+
+        unset($this->pods[$team->getSlug()][$clusterIdentifier][$namespace]);
     }
 
     /**
@@ -91,5 +113,10 @@ class FakeClient implements Client
         }
 
         $this->environmentsPerCluster[$clusterIdentifier][] = $environment;
+    }
+
+    public function addPod(Team $team, string $podName, string $clusterIdentifier, string $namespace)
+    {
+        $this->pods[$team->getSlug()][$clusterIdentifier][$namespace] = $podName;
     }
 }

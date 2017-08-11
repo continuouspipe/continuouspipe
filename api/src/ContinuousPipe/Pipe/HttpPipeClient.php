@@ -9,6 +9,7 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise\PromiseInterface;
 use JMS\Serializer\Serializer;
@@ -82,6 +83,28 @@ class HttpPipeClient implements Client
         $this->client->request('delete', $url, [
             'headers' => $this->getRequestHeaders($authenticatedUser),
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName)
+    {
+        $url = sprintf(
+            $this->baseUrl.'/teams/%s/clusters/%s/namespaces/%s/pods/%s',
+            $team->getSlug(),
+            $clusterIdentifier,
+            $namespace,
+            $podName
+        );
+
+        try {
+            $this->client->request('delete', $url, [
+                'headers' => $this->getRequestHeaders($authenticatedUser),
+            ]);
+        } catch (ClientException $e) {
+            throw new PodNotFound(sprintf('Pod %s not found', $podName));
+        }
     }
 
     /**

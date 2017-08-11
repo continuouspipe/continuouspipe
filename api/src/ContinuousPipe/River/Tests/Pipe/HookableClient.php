@@ -49,6 +49,14 @@ class HookableClient implements Client
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName)
+    {
+        $this->decoratedClient->deletePod($team, $authenticatedUser, $clusterIdentifier, $namespace, $podName);
+    }
+
+    /**
      * List environments for that given flow.
      *
      * @param string $clusterIdentifier

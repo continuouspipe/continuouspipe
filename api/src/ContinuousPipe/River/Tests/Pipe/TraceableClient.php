@@ -15,6 +15,11 @@ class TraceableClient implements Client
     private $deletions = [];
 
     /**
+     * @var string[]
+     */
+    private $podDeletions = [];
+
+    /**
      * @var DeploymentRequest[]
      */
     private $requests = [];
@@ -62,6 +67,15 @@ class TraceableClient implements Client
     /**
      * {@inheritdoc}
      */
+    public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName)
+    {
+        $this->client->deletePod($team, $authenticatedUser, $clusterIdentifier, $namespace, $podName);
+        $this->podDeletions[] = $podName;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
     {
         return $this->client->getEnvironments($clusterIdentifier, $team, $authenticatedUser);
@@ -81,6 +95,14 @@ class TraceableClient implements Client
     public function getDeletions()
     {
         return $this->deletions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPodDeletions()
+    {
+        return $this->podDeletions;
     }
 
     /**

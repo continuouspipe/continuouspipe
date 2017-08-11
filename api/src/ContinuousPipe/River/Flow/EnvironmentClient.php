@@ -126,6 +126,20 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function deletePod(FlatFlow $flow, string $clusterIdentifier, string $namespace, string $podName)
+    {
+        $this->pipeClient->deletePod(
+            $flow->getTeam(),
+            $this->userContext->getCurrent(),
+            $clusterIdentifier,
+            $namespace,
+            $podName
+        );
+    }
+
+    /**
      * @param FlatFlow $flow
      *
      * @return string[]
