@@ -192,13 +192,13 @@ Feature:
           "type": "ingress",
           "ingress-class": "nginx",
           "ingress-host-suffix": "-1234.continuouspipe.net",
-          "cloud-flare-by-default": "true",
-          "cloud-flare-proxied-by-default": "true"
+          "cloudflare-by-default": "true",
+          "cloudflare-proxied-by-default": "true"
         },
         "secrets": {
-          "cloud-flare-zone-identifier": "123456",
-          "cloud-flare-email": "samuel@continuouspipe.io",
-          "cloud-flare-api-key": "qwertyuiopasdfghjklzxcvbnm"
+          "cloudflare-zone-identifier": "123456",
+          "cloudflare-email": "samuel@continuouspipe.io",
+          "cloudflare-api-key": "qwertyuiopasdfghjklzxcvbnm"
         }
       }
     ]
