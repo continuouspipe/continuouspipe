@@ -48,6 +48,7 @@ Feature:
     When a tide is started for the branch "master"
     Then a web-hook should be sent to "https://example.com/my-webhook"
     And the tide should be successful
+    And a 'Webhook sent to "https://example.com/my-webhook"' log should be created
 
   Scenario: If the web-hook failed, it fails the task and therefore the tide
     Given I have a flow with the following configuration:
@@ -55,6 +56,19 @@ Feature:
     tasks:
         - web_hook:
               url: https://example.com/my-webhook
+    """
+    And the web-hook will fail
+    When a tide is started for the branch "master"
+    Then the tide should be failed
+    And a 'Sending webhook to "https://example.com/my-webhook" failed: This is planned to fail' log should be created
+
+  Scenario: If the web-hook failed, it fails the task and therefore the tide
+    Given I have a flow with the following configuration:
+    """
+    tasks:
+        integration:
+            web_hook:
+                url: ${WEBHOOK_URL}
     """
     And the web-hook will fail
     When a tide is started for the branch "master"
