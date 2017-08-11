@@ -669,3 +669,29 @@ Feature:
     And the endpoint "app" of the component "app" should be deployed with a CloudFlare DNS zone configuration
     And the endpoint "app" of the component "app" should be deployed with 1 SSL certificate
     And the endpoint "app" of the component "app" should be deployed with a SSL certificate for the hostname "my-feature-12357-flex.continuouspipe.net"
+
+  Scenario: I can use directly the host, without an expression
+    When a tide is started for the branch "feature/my-very-long-shiny-new-branch-name" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                ingress:
+                                    class: nginx
+                                    host: docs.continuouspipe.io
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "docs.continuouspipe.io"

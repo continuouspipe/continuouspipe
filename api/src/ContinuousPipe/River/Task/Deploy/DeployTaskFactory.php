@@ -487,6 +487,14 @@ class DeployTaskFactory implements TaskFactory
             ->children()
                 ->scalarNode('class')->isRequired()->end()
                 ->arrayNode('host')
+                    ->beforeNormalization()
+                        ->ifString()
+                        ->then(function($hostname) {
+                            return [
+                                'expression' => '\''.$hostname.'\'',
+                            ];
+                        })
+                    ->end()
                     ->children()
                         ->scalarNode('expression')->isRequired()->end()
                     ->end()
