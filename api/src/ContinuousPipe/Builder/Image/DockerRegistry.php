@@ -4,8 +4,10 @@ namespace ContinuousPipe\Builder\Image;
 
 use ContinuousPipe\Builder\Docker\CredentialsRepository;
 use ContinuousPipe\Builder\Image;
+use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
 use ContinuousPipe\Security\Credentials\DockerRegistry as DockerRegistryCredentials;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
@@ -36,82 +38,65 @@ class DockerRegistry implements Registry
     public function containsImage(Uuid $credentialsBucket, Image $image): bool
     {
         try {
-
-            $credentials = $this->getCredentials($credentialsBucket, $image);
-
-            return $this->requestManifest(
-                    $image,
-                    $credentials->getServerAddress(),
-                    $this->fetchToken($this->fetchAuthDetails($image, $credentials), $credentials)
-                )->getStatusCode() == 200;
-
-        } catch (SearchingForExistingImageException $searchingForExistingImageException) {
-
-            throw $searchingForExistingImageException;
-
-        } catch (\Throwable $throwable) {
-
-            throw new SearchingForExistingImageException('Error occurred while checking for an existing docker image for the build', 0, $throwable);
-
+            $registry = $this->credentialsRepository->findRegistryByImage(
+                $image,
+                $credentialsBucket
+            );
+        } catch (CredentialsNotFound $e) {
+            throw new SearchingForExistingImageException('Cannot check image presence without credentials', $e->getCode(), $e);
         }
+
+        $manifestResponse = $this->requestManifest($image, $registry);
+
+        if ($manifestResponse->getStatusCode() == 200) {
+            return true;
+        } else if ($manifestResponse->getStatusCode() == 404) {
+            return false;
+        }
+
+        throw new SearchingForExistingImageException('Unable to get from registry if the image already exists. Received status: '.$manifestResponse->getStatusCode());
     }
 
-    private function manifestUrl(string $serverAddress, Image $image)
+    private function requestManifest(Image $image, DockerRegistryCredentials $credentials, string $token = null): ResponseInterface
     {
-        return sprintf(
+        $url = sprintf(
             'https://%s/v2/%s/manifests/%s',
-            $serverAddress,
+            $credentials->getServerAddress(),
             $image->getTwoPartName(),
             $image->getTag()
         );
-    }
 
-    private function requestManifest(Image $image, string $serverAddress, string $token = null): ResponseInterface
-    {
-        $this->logger->info(
-        'Requesting manifest',
-            [
-                'request-url' => $this->manifestUrl($serverAddress, $image),
-                'token' => $token
-            ]
-        );
-        return $this->client->request(
-            'head',
-            $this->manifestUrl($serverAddress, $image),
-            isset($token) ? ['headers' => ['Authorization', 'Bearer ' . $token]] : []
-        );
-    }
-
-    private function getCredentials(Uuid $credentialsBucket, Image $image): DockerRegistryCredentials
-    {
-        return $this->credentialsRepository->findRegistryByImage(
-            $image,
-            $credentialsBucket
-        );
-    }
-
-    private function fetchAuthDetails(Image $image, DockerRegistryCredentials $credentials) : array
-    {
-        $initialResponse = $this->requestManifest($image, $credentials->getServerAddress());
-
-        if ($initialResponse->getStatusCode() != 401) {
-            $this->logger->warning(
-                'Retrieving auth details failed',
-                [
-                    'status-code' => $initialResponse->getStatusCode(),
-                    'response-body'=> $initialResponse->getBody()->getContents()
-                ]
+        try {
+            return $this->client->request(
+                'head',
+                $url,
+                isset($token) ? ['headers' => ['Authorization', 'Bearer ' . $token]] : []
             );
-            throw new SearchingForExistingImageException(
-                'Error requesting auth details.  Expected 401, got ' . $initialResponse->getStatusCode() . ' with message "' . $initialResponse->getBody()->getContents() . '", headers: ' . var_export($initialResponse->getHeaders(), true)
-            );
+        } catch (RequestException $e) {
+            if (null === ($response = $e->getResponse())) {
+                throw new SearchingForExistingImageException('No response from Registry manifest request', $e->getCode(), $e);
+            }
+
+            if ($response->getStatusCode() == 401 && null === $token) {
+                // Manifest requests requires authentication.
+                $token = $this->fetchToken($this->fetchAuthDetails($response), $credentials);
+
+                return $this->requestManifest($image, $credentials, $token);
+            }
+
+            return $response;
         }
+    }
 
-        if (null === $authHeader = $initialResponse->getHeader('WWW-Authenticate')) {
+    private function fetchAuthDetails(ResponseInterface $response) : array
+    {
+        if (null === $authHeader = $response->getHeaderLine('WWW-Authenticate')) {
             throw new SearchingForExistingImageException('Error retrieving auth details from response header');
         }
 
-        preg_match_all('/(\w+)="([^"]+)"/', $authHeader, $matches, PREG_SET_ORDER);
+        if (false === preg_match_all('/(\w+)="([^"]+)"/', $authHeader, $matches, PREG_SET_ORDER)) {
+            throw new SearchingForExistingImageException('Cannot get authentication details from auth header: '.$authHeader);
+        }
 
         //should check all present before returning
         return array_column($matches, 2, 1);
@@ -119,22 +104,36 @@ class DockerRegistry implements Registry
 
     private function fetchToken(array $authDetails, DockerRegistryCredentials $credentials): string
     {
-        $tokenResponse = $this->client->request(
-            'get',
-            sprintf('%s?service=%s&scope=%s', $authDetails['realm'], $authDetails['service'], $authDetails['scope']),
-            [
-                'headers' => [
-                    'Authorization' => 'Basic ' . base64_encode(
-                            $credentials->getUsername() . ':' . $credentials->getPassword()
-                        )
-                ],
-            ]
-        );
-
-        if ($tokenResponse->getStatusCode() != 200) {
-            throw new SearchingForExistingImageException('Token unavailable');
+        try {
+            $tokenResponse = $this->client->request(
+                'get',
+                sprintf('%s?service=%s&scope=%s', $authDetails['realm'], $authDetails['service'], $authDetails['scope']),
+                [
+                    'headers' => [
+                        'Authorization' => 'Basic ' . base64_encode(
+                                $credentials->getUsername() . ':' . $credentials->getPassword()
+                            )
+                    ],
+                ]
+            );
+        } catch (RequestException $e) {
+            throw new SearchingForExistingImageException('Cannot get authentication token from registry', $e->getCode(), $e);
         }
 
-        return \GuzzleHttp\json_decode($tokenResponse->getBody(), true)['token'];
+        if ($tokenResponse->getStatusCode() != 200) {
+            throw new SearchingForExistingImageException('Expected response 200 from registry, got '.$tokenResponse->getStatusCode());
+        }
+
+        try {
+            $json = \GuzzleHttp\json_decode($tokenResponse->getBody(), true);
+        } catch (\InvalidArgumentException $e) {
+            throw new SearchingForExistingImageException('JSON from Docker registry invalid', $e->getCode(), $e);
+        }
+
+        if (!isset($json['token'])) {
+            throw new SearchingForExistingImageException('Cannot get token from registry\'s response');
+        }
+
+        return $json['token'];
     }
 }
