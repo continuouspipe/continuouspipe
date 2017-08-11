@@ -74,16 +74,18 @@ class ExistingImageChecker
     private function logReusingImages(array $steps)
     {
         foreach ($steps as $step) {
-            $child = $this->loggerFactory->fromId($step)->child(
-                new Text(
-                    sprintf(
-                        'Re-using pre-built Docker image %s:%s',
-                        $step->getImage()->getName(),
-                        $step->getImage()->getTag()
-                    )
-                )
-            );
-            $child->updateStatus(Log::SUCCESS);
+            if (null === ($logIdentifier = $step->getLogStreamIdentifier())) {
+                continue;
+            }
+
+            $this->loggerFactory->fromId($step->getLogStreamIdentifier())
+                ->child(new Text(sprintf(
+                    'Re-using already built Docker image <code>%s:%s</code>',
+                    $step->getImage()->getName(),
+                    $step->getImage()->getTag()
+                )))
+                ->updateStatus(Log::SUCCESS)
+            ;
         }
     }
 }
