@@ -51,6 +51,7 @@ class GuzzleBitBucketClient implements BitBucketClient
             $response = $this->client->request('GET', '/1.0/repositories/'.$codeRepository->getApiSlug().'/src/'.$reference.'/'.$filePath);
         } catch (RequestException $e) {
             $message = $e->getMessage();
+
             if ($e->getResponse() && $e->getResponse()->getStatusCode() == 404) {
                 $message = 'The file "'.$filePath.'" is not found in "'.$reference.'" of the repository';
             }

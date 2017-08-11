@@ -9,7 +9,6 @@ use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClient;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketClientException;
 use ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeRepository;
-use ContinuousPipe\River\Handler\PinBranchHandler;
 use GuzzleHttp\Exception\RequestException;
 
 class BitBucketRepositoryFilesystem implements RelativeFileSystem
