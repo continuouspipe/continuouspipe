@@ -20,6 +20,13 @@ class ExistingImageChecker
         $this->registry = $registry;
     }
 
+    /**
+     * @param Build $build
+     *
+     * @throws SearchingForExistingImageException
+     *
+     * @return bool
+     */
     public function checkIfImagesExist(Build $build): bool
     {
         $buildRequest = $build->getRequest();

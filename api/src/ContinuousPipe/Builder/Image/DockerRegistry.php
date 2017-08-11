@@ -33,7 +33,7 @@ class DockerRegistry implements Registry
     }
 
     /**
-     * @throws SearchingForExistingImageException
+     * {@inheritdoc}
      */
     public function containsImage(Uuid $credentialsBucket, Image $image): bool
     {

@@ -50,45 +50,19 @@ class CreateBuildController
      * @var MessageBus
      */
     private $commandBus;
-    /**
-     * @var ExistingImageChecker
-     */
-    private $imageChecker;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var Notifier
-     */
-    private $notifier;
 
-    /**
-     * @param MessageBus $commandBus
-     * @param ValidatorInterface $validator
-     * @param BuildFactory $buildFactory
-     * @param BuildViewRepository $buildViewRepository
-     * @param BuildRequestTransformer $buildRequestTransformer
-     * @param ExistingImageChecker $imageChecker
-     */
     public function __construct(
         MessageBus $commandBus,
         ValidatorInterface $validator,
         BuildFactory $buildFactory,
         BuildViewRepository $buildViewRepository,
-        BuildRequestTransformer $buildRequestTransformer,
-        ExistingImageChecker $imageChecker,
-        LoggerInterface $logger,
-        Notifier $notifier
+        BuildRequestTransformer $buildRequestTransformer
     ) {
         $this->commandBus = $commandBus;
         $this->validator = $validator;
         $this->buildFactory = $buildFactory;
         $this->buildViewRepository = $buildViewRepository;
         $this->buildRequestTransformer = $buildRequestTransformer;
-        $this->imageChecker = $imageChecker;
-        $this->logger = $logger;
-        $this->notifier = $notifier;
     }
 
     /**
@@ -117,22 +91,6 @@ class CreateBuildController
         $build = $this->buildFactory->fromRequest(
             $this->buildRequestTransformer->transform($request)
         );
-
-        try {
-            if ($this->imageChecker->checkIfImagesExist($build)) {
-                $this->commandBus->handle(new CompleteBuild(
-                    $build->getIdentifier(),
-                    new GoogleContainerBuildStatus(GoogleContainerBuildStatus::SUCCESS)
-                ));
-
-                return $build;
-            }
-        } catch (\Throwable $exception) {
-            $this->logger->warning(
-                'Something went wrong while checking for existing image',
-                ['exception' => $exception]
-            );
-        }
 
         $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
 
