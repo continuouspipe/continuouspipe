@@ -3,11 +3,13 @@
 namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Aggregate\Build as AggregateBuild;
+use ContinuousPipe\Builder\Aggregate\Command\CompleteBuild;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
 use ContinuousPipe\Builder\Aggregate\Command\StartGcbBuild;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Engine;
+use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuildStatus;
 use ContinuousPipe\Builder\Image\ExistingImageChecker;
 use ContinuousPipe\Builder\Image\SearchingForExistingImageException;
 use ContinuousPipe\Builder\Notifier;
@@ -118,8 +120,10 @@ class CreateBuildController
 
         try {
             if ($this->imageChecker->checkIfImagesExist($build)) {
-                $notification = $build->getRequest()->getNotification();
-                $this->notifier->notify($notification, $this->convertToSimpleBuild($build));
+                $this->commandBus->handle(new CompleteBuild(
+                    $build->getIdentifier(),
+                    new GoogleContainerBuildStatus(GoogleContainerBuildStatus::SUCCESS)
+                ));
 
                 return $build;
             }
@@ -133,15 +137,5 @@ class CreateBuildController
         $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
 
         return $build;
-    }
-
-    private function convertToSimpleBuild(AggregateBuild $aggregateBuild) : Build
-    {
-        return new Build(
-            $aggregateBuild->getIdentifier(),
-            $aggregateBuild->getRequest(),
-            $aggregateBuild->getUser(),
-            $aggregateBuild->getStatus()
-        );
     }
 }

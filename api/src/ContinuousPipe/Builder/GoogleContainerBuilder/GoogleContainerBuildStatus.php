@@ -6,6 +6,10 @@ use JMS\Serializer\Annotation as JMS;
 
 class GoogleContainerBuildStatus
 {
+    const SUCCESS = 'SUCCESS';
+    const QUEUED = 'QUEUED';
+    const WORKING = 'WORKING';
+
     /**
      * @JMS\Type("string")
      *
@@ -23,11 +27,11 @@ class GoogleContainerBuildStatus
 
     public function isSuccessful() : bool
     {
-        return 'SUCCESS' == $this->status;
+        return self::SUCCESS == $this->status;
     }
 
     public function isRunning() : bool
     {
-        return in_array($this->status, ['QUEUED', 'WORKING']);
+        return in_array($this->status, [self::QUEUED, self::WORKING]);
     }
 }
