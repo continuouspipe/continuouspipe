@@ -3,11 +3,13 @@
 namespace ContinuousPipe\River\Task\Deploy\Configuration\Endpoint;
 
 use ContinuousPipe\DomainName\Transformer;
+use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Flow\Variable\FlowVariableResolver;
 use ContinuousPipe\River\Pipeline\TideGenerationException;
 use ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\TideConfigurationException;
+use Ramsey\Uuid\UuidInterface;
 
 class HostnameResolver
 {
@@ -49,7 +51,7 @@ class HostnameResolver
         }
         if (isset($config['host'])) {
             $config[$hostKey] =
-                $this->resolveHostname($context, $config['host']);
+                $this->resolveHostname($context->getFlowUuid(), $context->getCodeReference(), $config['host']['expression']);
         }
 
         return $config;
@@ -57,10 +59,22 @@ class HostnameResolver
 
     /**
      * @param string $hostSuffix
+     *
+     * @throws TideGenerationException
+     *
      * @return string
      */
     public function generateHostExpression(string $hostSuffix): string
     {
+        if ($this->suffixTooLong($hostSuffix)) {
+            throw new TideGenerationException(
+                sprintf(
+                    'The ingress host_suffix cannot be more than %s characters long',
+                    $this->maxSuffixLength()
+                )
+            );
+        }
+
         return sprintf(
             'hash_long_domain_prefix(slugify(code_reference.branch), %s) ~ "%s"',
             ComponentFactory::MAX_HOST_LENGTH - mb_strlen($hostSuffix),
@@ -69,21 +83,30 @@ class HostnameResolver
     }
 
     /**
-     * @param TaskContext $context
-     * @param array $hostConfiguration
-     * @return mixed
+     * @param UuidInterface $flowUuid
+     * @param CodeReference $codeReference
+     * @param string        $expression
+     *
      * @throws TideGenerationException
+     *
+     * @return string
      */
-    public function resolveHostname(TaskContext $context, array $hostConfiguration)
+    public function resolveHostname(UuidInterface $flowUuid, CodeReference $codeReference, string $expression) : string
     {
         try {
-            return $this->flowVariableResolver->resolveExpression(
-                $hostConfiguration['expression'],
-                $this->flowVariableResolver->createContext($context->getFlowUuid(), $context->getCodeReference())
+            $hostname = $this->flowVariableResolver->resolveExpression(
+                $expression,
+                $this->flowVariableResolver->createContext($flowUuid, $codeReference)
             );
         } catch (TideConfigurationException $e) {
             throw new TideGenerationException($e->getMessage(), $e->getCode(), $e);
         }
+
+        if (!is_string($hostname)) {
+            throw new TideGenerationException('Generate hostname is not a string: '.$hostname);
+        }
+
+        return $hostname;
     }
 
     public function maxSuffixLength(): int

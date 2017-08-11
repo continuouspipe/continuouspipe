@@ -148,7 +148,7 @@ class DeployTaskFactory implements TaskFactory
                                         ->addDefaultsIfNotSet()
                                         ->children()
                                             ->booleanNode('enabled')->defaultTrue()->end()
-                                            ->integerNode('number_of_replicas')->defaultNull()->end()
+                                            ->scalarNode('number_of_replicas')->defaultNull()->end()
                                         ->end()
                                     ->end()
                                     ->arrayNode('runtime_policy')
@@ -439,7 +439,7 @@ class DeployTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->scalarNode('class')->isRequired()->end()
+                ->scalarNode('class')->end()
                 ->arrayNode('host')
                     ->beforeNormalization()
                         ->ifString()

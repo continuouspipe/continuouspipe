@@ -55,5 +55,6 @@ class AppExtension extends Extension
         $loader->load('branches.xml');
         $loader->load('flex.xml');
         $loader->load('quayio.xml');
+        $loader->load('cluster-policies.xml');
     }
 }

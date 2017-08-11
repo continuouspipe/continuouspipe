@@ -62,15 +62,11 @@
             <argument type="service" id="jms_serializer" />
         </service>
 
-        <service id="river.task.deploy.configuration.endpoint_enhancer.certificate_generation" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\CertificateGenerationEnhancer">
-            <argument type="service" id="river.ssl_certificates.manager" />
-        </service>
         <service id="river.task.deploy.configuration.composite_configurator" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\CompositeConfigurator">
             <argument type="collection">
                 <argument type="service" id="river.task.deploy.configuration.ingress_configurator" />
                 <argument type="service" id="river.task.deploy.configuration.httplabs_configurator" />
                 <argument type="service" id="river.task.deploy.configuration.cloudflare_configurator" />
-                <argument type="service" id="river.task.deploy.configuration.endpoint_enhancer.certificate_generation" />
             </argument>
         </service>
 
@@ -91,6 +87,13 @@
         </service>
 
         <!-- SSL certificates -->
+        <service id="river.ssl_certificates.generation.generates_while_creating_deployment_request"
+                 class="ContinuousPipe\River\SslCertificate\Generation\GenerateWhileCreatingDeploymentRequest"
+                 decorates="river.task.deploy.deployment_request_factory">
+            <argument type="service" id="river.ssl_certificates.generation.generates_while_creating_deployment_request.inner" />
+            <argument type="service" id="river.ssl_certificates.manager" />
+        </service>
+
         <service id="river.ssl_certificates.manager" class="ContinuousPipe\River\SslCertificate\SslCertificateManager">
             <argument type="service" id="river.ssl_certificates.repository"/>
             <argument type="service" id="river.ssl_certificates.generator"/>

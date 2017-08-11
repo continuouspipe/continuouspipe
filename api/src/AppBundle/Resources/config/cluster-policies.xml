@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.cluster_policies.policy_resolver" class="ContinuousPipe\River\ClusterPolicies\ClusterResolution\GetFromClusterInTeamBucket">
+            <argument type="service" id="authenticator.bucket_repository" />
+        </service>
+        <service id="river.cluster_policies.endpoint.enfore_policy_while_creating_deployment_request"
+                 class="ContinuousPipe\River\ClusterPolicies\Endpoint\EnforceEndpointPolicyWhileCreatingDeploymentRequest"
+                 decorates="river.task.deploy.deployment_request_factory"
+                 decoration-priority="5">
+            <argument type="service" id="river.cluster_policies.endpoint.enfore_policy_while_creating_deployment_request.inner" />
+            <argument type="service" id="river.cluster_policies.policy_resolver" />
+            <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />
+            <argument type="service" id="logger" />
+        </service>
+    </services>
+</container>
