@@ -74,6 +74,16 @@ class FlowEnvironmentController
     }
 
     /**
+     * @Route("/flows/{uuid}/clusters/{clusterIdentifier}/namespaces/{namespace}/pods/{podName}", methods={"DELETE"})
+     * @Security("is_granted('DELETE', flow)")
+     * @View
+     */
+    public function deletePodAction(FlatFlow $flow, $clusterIdentifier, $namespace, $podName)
+    {
+        $this->environmentClient->deletePod($flow, $clusterIdentifier, $namespace, $podName);
+    }
+
+    /**
      * @Route("/flows/{uuid}/environments/watch", methods={"POST"})
      * @ParamConverter("watchRequest", converter="fos_rest.request_body")
      * @Security("is_granted('READ', flow)")

@@ -1271,4 +1271,57 @@ EOF;
             }
         }
     }
+
+    /**
+     * @Given there is a pod named :podName in the flow :uuid and the cluster :clusterId and the namespace :namespace
+     */
+    public function thereIsAPodNamedInTheFlowAndTheClusterAndTheNamespace($podName, $uuid, $clusterId, $namespace)
+    {
+        $flow = $this->flowRepository->find(Uuid::fromString($uuid));
+        $team = $flow->getTeam();
+
+        $this->pipeClient->addPod($team, $podName, $clusterId, $namespace);
+    }
+
+    /**
+     * @When I delete the pod named :podName in the flow :uuid and the cluster :clusterId and the namespace :namespace
+     */
+    public function iDeleteThePodNamedInTheFlowAndTheClusterAndTheNamespace($podName, $uuid, $clusterId, $namespace)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf(
+                '/flows/%s/clusters/%s/namespaces/%s/pods/%s',
+                $uuid,
+                $clusterId,
+                $namespace,
+                $podName
+            ),
+            'DELETE'
+        ));
+    }
+
+    /**
+     * @Then the pod :podName should have been deleted
+     */
+    public function thePodShouldHaveBeenDeleted($podName)
+    {
+        $deletions = $this->traceablePipeClient->getPodDeletions();
+
+        if (!in_array($podName, $deletions)) {
+            throw new \RuntimeException(sprintf('Deleted pod not found in (%s)', implode(', ', $deletions)));
+        }
+    }
+
+    /**
+     * @Then the pod :podName should not have been deleted
+     */
+    public function thePodShouldNotHaveBeenDeleted($podName)
+    {
+        $deletions = $this->traceablePipeClient->getPodDeletions();
+
+        if (in_array($podName, $deletions)) {
+            throw new \RuntimeException(sprintf('Deleted pod found in (%s)', implode(', ', $deletions)));
+        }
+    }
+
 }
