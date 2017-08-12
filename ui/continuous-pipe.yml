@@ -19,6 +19,9 @@ variables:
     - name: KUBE_PROXY_HOSTNAME
       value: kube-proxy.continuouspipe.io
       condition: code_reference.branch == 'production'
+    - name: UI_HOSTNAME
+      value: ui.continuouspipe.io
+      condition: code_reference.branch == 'production'
 
     - name: AUTHENTICATOR_API_URL
       condition: code_reference.branch != 'production'
@@ -29,6 +32,10 @@ variables:
     - name: KUBE_PROXY_HOSTNAME
       value: kube-proxy-staging.continuouspipe.io
       condition: code_reference.branch != 'production'
+      
+    - name: UI_HOSTNAME
+      value: ui-staging.continuouspipe.io
+      condition: code_reference.branch == 'master'
 tasks:
     images:
         build:
@@ -45,14 +52,16 @@ tasks:
             services:
                 ui:
                     endpoints:
-                        -
-                            name: https
-                            type: NodePort
-                            ssl_certificates:
-                                -
-                                    name: continuouspipeio
-                                    cert: ${WILDCARD_SSL_CERT}
-                                    key: ${WILDCARD_SSL_KEY}
+                        - name: dev
+                          ingress:
+                              class: nginx
+                              host_suffix: '-ui-dev.continuouspipe.io'
+                          cloud_flare_zone: { zone_identifier: '${CLOUD_FLARE_ZONE}', proxied: true, authentication: { email: '${CLOUD_FLARE_EMAIL}', api_key: '${CLOUD_FLARE_API_KEY}' } }
+                        - name: stable
+                          ingress:
+                              class: nginx
+                              host: ${UI_HOSTNAME}
+                          condition: 'code_reference.branch in ["production", "master"]'
 
                     specification:
                         environment_variables:
