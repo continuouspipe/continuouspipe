@@ -7,7 +7,7 @@ use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\SslCertificate\SslCertificateException;
 use ContinuousPipe\River\SslCertificate\SslCertificateManager;
-use ContinuousPipe\River\Task\Deploy\DeploymentRequestException;
+use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
 use ContinuousPipe\River\Task\TaskDetails;

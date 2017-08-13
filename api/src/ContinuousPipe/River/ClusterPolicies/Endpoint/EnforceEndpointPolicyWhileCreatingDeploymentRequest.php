@@ -8,7 +8,7 @@ use ContinuousPipe\Pipe\ClusterNotFound;
 use ContinuousPipe\River\ClusterPolicies\ClusterPolicyException;
 use ContinuousPipe\River\ClusterPolicies\ClusterResolution\ClusterPolicyResolver;
 use ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\HostnameResolver;
-use ContinuousPipe\River\Task\Deploy\DeploymentRequestException;
+use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
 use ContinuousPipe\River\Task\TaskDetails;

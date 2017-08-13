@@ -10,7 +10,7 @@ interface EnvironmentAwareConfiguration
     public function getEnvironmentName();
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getClusterIdentifier();
 }
