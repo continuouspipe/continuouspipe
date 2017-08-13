@@ -58,6 +58,10 @@ class SetDefaultClusterOnDeploymentTargets implements TargetEnvironmentFactory
         }
 
         if ($clusters->count() === 0) {
+            throw new DeploymentRequestException('You do not have any cluster to deploy to. Add a cluster in your project.');
+        }
+
+        if ($clusters->count() === 1) {
             return $clusters[0]->getIdentifier();
         }
 

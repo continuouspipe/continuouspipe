@@ -14,7 +14,7 @@ Feature:
     """
     [{"name": "default"}]
     """
-    Given the team "my-team" have the credentials of a cluster "foo"
+    And the team "my-team" have the credentials of a cluster "foo"
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -28,3 +28,53 @@ Feature:
     """
     When a tide is started for the branch "master"
     Then the environment should have been deployed on the cluster "flex"
+
+  Scenario: It fails with no cluster in the team
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+    """
+    When a tide is started for the branch "master"
+    Then the tide should be failed
+    And a log containing "You do not have any cluster to deploy to. Add a cluster in your project." should be created
+
+  Scenario: If only one cluster, it is using it
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+    """
+    When a tide is started for the branch "master"
+    Then the environment should have been deployed on the cluster "foo"
+
+  Scenario: It fails if there is more than one cluster and no default
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And the team "my-team" have the credentials of a cluster "bar"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+    """
+    When a tide is started for the branch "master"
+    Then the tide should be failed
+    And a log containing "You have multiple clusters, and no default cluster. Please set a default cluster or specify the cluster in your deployment configuration." should be created
