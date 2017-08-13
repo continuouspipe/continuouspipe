@@ -95,13 +95,14 @@ tasks:
                 api:
                     endpoints:
                         -
-                            name: https
-                            type: NodePort
+                            name: ingress
+                            ingress:
+                                class: nginx
+                                host: ${RIVER_HOST}
                             ssl_certificates:
-                                -
-                                    name: continuouspipeio
-                                    cert: ${WILDCARD_SSL_CERT}
-                                    key: ${WILDCARD_SSL_KEY}
+                                - name: auto
+                                  cert: automatic
+                                  key: automatic
 
                     specification:
                         environment_variables: &ENV
