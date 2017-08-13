@@ -52,7 +52,7 @@ class CompleteBuildController
     }
 
     /**
-     * @Route("/complete/{id}", methods={"POST"}, name="complete_build")
+     * @Route("/complete/{id}", methods={"POST"}, schemes={"https"}, name="complete_build")
      * @View
      */
     public function postAction($id, Request $request)
@@ -66,7 +66,4 @@ class CompleteBuildController
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
-
 }
-
-
