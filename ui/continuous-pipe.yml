@@ -57,11 +57,13 @@ tasks:
                               class: nginx
                               host_suffix: '-ui-dev.continuouspipe.io'
                           cloud_flare_zone: { zone_identifier: '${CLOUD_FLARE_ZONE}', proxied: true, authentication: { email: '${CLOUD_FLARE_EMAIL}', api_key: '${CLOUD_FLARE_API_KEY}' } }
+                          ssl_certificates: [{ name: auto, cert: automatic, key: automatic }]
                         - name: stable
                           ingress:
                               class: nginx
                               host: ${UI_HOSTNAME}
                           condition: 'code_reference.branch in ["production", "master"]'
+                          ssl_certificates: [{ name: auto, cert: automatic, key: automatic }]
 
                     specification:
                         environment_variables:
