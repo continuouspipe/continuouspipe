@@ -59,11 +59,14 @@ class HttpClientFactory implements KubernetesClientFactory
         $httpClient = new GuzzleHttpClient(
             $this->guzzleClient,
             $cluster->getAddress(),
-            $this->getClusterVersion($cluster)
+            $this->getClusterVersion($cluster),
+            $cluster->getCaCertificate()
         );
 
-        if (null !== $cluster->getUsername()) {
-            $httpClient = new AuthenticationMiddleware($httpClient, $cluster->getUsername(), $cluster->getPassword());
+        if (null !== $cluster->getClientCertificate()) {
+            $httpClient = new AuthenticationMiddleware($httpClient, AuthenticationMiddleware::CERTIFICATE, $cluster->getClientCertificate());
+        } else if (null !== $cluster->getUsername()) {
+            $httpClient = new AuthenticationMiddleware($httpClient, AuthenticationMiddleware::USERNAME_PASSWORD, sprintf('%s:%s', $cluster->getUsername(), $cluster->getPassword()));
         }
 
         return new Client(
