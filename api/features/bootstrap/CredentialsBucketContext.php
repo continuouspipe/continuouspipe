@@ -343,6 +343,18 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @Then the cluster :clusterIdentifier should have a client certificate
+     */
+    public function theClusterShouldHaveAClientCertificate($clusterIdentifier)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (!isset($cluster['client_certificate'])) {
+            throw new \RuntimeException('No client certificate found in cluster');
+        }
+    }
+
+    /**
      * @param string $identifier
      *
      * @return array|null
