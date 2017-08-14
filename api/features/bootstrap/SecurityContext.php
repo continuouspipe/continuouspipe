@@ -14,6 +14,7 @@ use ContinuousPipe\Security\Team\TeamNotFound;
 use ContinuousPipe\Security\Team\TeamRepository;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class SecurityContext implements Context
 {
@@ -70,6 +71,17 @@ class SecurityContext implements Context
     }
 
     /**
+     * @Given the cluster :clusterIdentifier of the bucket :bucketUuid has the :policyName policy
+     */
+    public function theClusterHasThePolicy($clusterIdentifier, $bucketUuid, $policyName)
+    {
+        $cluster = $this->clusterFromBucket(Uuid::fromString($bucketUuid), $clusterIdentifier);
+        $cluster->setPolicies([
+            new Cluster\ClusterPolicy($policyName),
+        ]);
+    }
+
+    /**
      * @Given the bucket of the team :teamName is the bucket :bucketUuid
      */
     public function theBucketOfTheTeamIsTheBucket($teamName, $bucketUuid)
@@ -92,5 +104,26 @@ class SecurityContext implements Context
     public function theEncryptedValueInTheNamespaceWillBeDecryptedAsTheFollowingByTheVault($encryptedValue, $namespace, PyStringNode $string)
     {
         $this->previouslyKnownValuesVault->addDecryptionMapping($namespace, $encryptedValue, $string->getRaw());
+    }
+
+    /**
+     * @param UuidInterface $bucketUuid
+     * @param string $clusterIdentifier
+     *
+     * @return Cluster
+     */
+    private function clusterFromBucket(UuidInterface $bucketUuid, $clusterIdentifier)
+    {
+        $bucket = $this->bucketRepository->find($bucketUuid);
+        foreach ($bucket->getClusters() as $cluster) {
+            if ($cluster->getIdentifier() == $clusterIdentifier) {
+                return $cluster;
+            }
+        }
+
+        throw new \RuntimeException(sprintf(
+            'Cluster "%s" not found in bucket',
+            $clusterIdentifier
+        ));
     }
 }
