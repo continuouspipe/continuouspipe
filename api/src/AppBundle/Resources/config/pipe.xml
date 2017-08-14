@@ -21,7 +21,7 @@
         </service>
         <service id="river.pipe.cluster_identifier_resolver" class="ContinuousPipe\River\Pipe\ClusterIdentifierResolver" />
 
-        <service id="river.pipe.target_environment_factory" class="ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory">
+        <service id="river.pipe.target_environment_factory" class="ContinuousPipe\River\Pipe\DeploymentRequest\DefaultTargetEnvironmentFactory">
             <argument type="service" id="river.task.deploy.naming.environment_strategy" />
         </service>
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\River\Task\Deploy;
+namespace ContinuousPipe\River\Pipe\DeploymentRequest;
 
 class DeploymentRequestException extends \Exception
 {

@@ -7,6 +7,7 @@ use ContinuousPipe\Pipe\Client\ComponentStatus;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
+use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;

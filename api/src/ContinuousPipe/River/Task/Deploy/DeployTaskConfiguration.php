@@ -11,7 +11,7 @@ class DeployTaskConfiguration implements EnvironmentAwareConfiguration
     /**
      * @JMS\Type("string")
      *
-     * @var string
+     * @var string|null
      */
     private $clusterIdentifier;
 
@@ -42,7 +42,7 @@ class DeployTaskConfiguration implements EnvironmentAwareConfiguration
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getClusterIdentifier()
     {

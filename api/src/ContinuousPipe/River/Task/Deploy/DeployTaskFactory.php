@@ -87,7 +87,7 @@ class DeployTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->scalarNode('cluster')->isRequired()->end()
+                ->scalarNode('cluster')->defaultValue('')->end()
                 ->arrayNode('environment')
                     ->addDefaultsIfNotSet()
                     ->children()

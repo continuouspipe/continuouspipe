@@ -241,6 +241,21 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the environment should have been deployed on the cluster :clusterIdentifier
+     */
+    public function theComponentShouldHaveBeenDeployedOnTheCluster($clusterIdentifier)
+    {
+        $foundCluster = $this->getDeploymentRequest()->getTarget()->getClusterIdentifier();
+
+        if ($foundCluster != $clusterIdentifier) {
+            throw new \RuntimeException(sprintf(
+                'Found cluster "%s" instead',
+                $foundCluster
+            ));
+        }
+    }
+
+    /**
      * @Then the component :name should be deployed as not scaling
      */
     public function theComponentShouldBeDeployedAsNotScaling($name)
