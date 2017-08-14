@@ -106,7 +106,7 @@ class RecordAddingAndRemovingEvents implements EventSubscriberInterface
                 'team' => $team->getName(),
                 'user' => $user->getUsername(),
                 'email' => $user->getEmail(),
-                'errorMessage' => $e->getMessage()
+                'exception' => $e,
             ]);
         }
     }
