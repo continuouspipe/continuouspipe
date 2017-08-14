@@ -29,7 +29,7 @@ class ViewRepositoryBasedConcurrencyManager implements TideConcurrencyManager
      * @param MessageBus $commandBus
      * @param int               $retryStartInterval
      */
-    public function __construct(TideRepository $tideRepository, MessageBus $commandBus, $retryStartInterval = 60000)
+    public function __construct(TideRepository $tideRepository, MessageBus $commandBus, $retryStartInterval)
     {
         $this->tideRepository = $tideRepository;
         $this->commandBus = $commandBus;
