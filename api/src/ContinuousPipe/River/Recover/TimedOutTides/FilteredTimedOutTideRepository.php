@@ -42,9 +42,9 @@ class FilteredTimedOutTideRepository implements TimedOutTideRepository
                 return false;
             }
 
-            $runningMilliSeconds = (time() - $start->getTimestamp()) * 1000;
+            $runningSeconds = time() - $start->getTimestamp();
 
-            return $runningMilliSeconds > $this->tideTimeout;
+            return $runningSeconds > $this->tideTimeout;
         });
     }
 }
