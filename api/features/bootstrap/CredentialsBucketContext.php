@@ -367,6 +367,18 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @Then the cluster :clusterIdentifier should have a Google Cloud service account
+     */
+    public function theClusterShouldHaveAGoogleCloudServiceAccount($clusterIdentifier)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (!isset($cluster['google_cloud_service_account'])) {
+            throw new \RuntimeException('No Google Cloud service account found in cluster');
+        }
+    }
+
+    /**
      * @param string $identifier
      *
      * @return array|null
