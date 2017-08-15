@@ -2,12 +2,12 @@
 
 namespace ContinuousPipe\Authenticator\Security\Jwt;
 
-use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
+use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class AddUserRolesInToken
 {
-    public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
+    public function onJwtCreated(JWTCreatedEvent $event)
     {
         $data = $event->getData();
         $user = $event->getUser();
@@ -16,9 +16,7 @@ class AddUserRolesInToken
             return;
         }
 
-        $data['data'] = array(
-            'roles' => $user->getRoles(),
-        );
+        $data['roles'] = $user->getRoles();
 
         $event->setData($data);
     }
