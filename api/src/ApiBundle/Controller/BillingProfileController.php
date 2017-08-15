@@ -95,7 +95,8 @@ class BillingProfileController
             return new JsonResponse(
                 [
                     'message' => $errors->get(0)->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
 

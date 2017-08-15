@@ -76,3 +76,21 @@ Feature:
       | identifier | type       | address         | username | password | version |
       | my-kube    | kubernetes | https://1.2.3.4 | username | password | v1.4    |
     Then the new cluster should have been saved successfully
+
+  Scenario: Create a cluster with a client certificate
+    Given I am authenticated as user "samuel"
+    When I create a cluster with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | identifier | type       | address             | username | client_certificate | version |
+      | my-kube    | kubernetes | https://1.2.3.4/foo | username | [this is long...]  | v1.6    |
+    Then the new cluster should have been saved successfully
+    And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
+    And the cluster "my-kube" should have a client certificate
+
+  Scenario: Create a cluster with a CA certificate
+    Given I am authenticated as user "samuel"
+    When I create a cluster with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | identifier | type       | address             | username | client_certificate | ca_certificate     | version |
+      | my-kube    | kubernetes | https://1.2.3.4/foo | username | [this is long...]  | [this is long...]  | v1.6    |
+    Then the new cluster should have been saved successfully
+    And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
+    And the cluster "my-kube" should have a CA certificate
