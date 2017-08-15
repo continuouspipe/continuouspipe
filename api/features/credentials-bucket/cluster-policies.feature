@@ -5,9 +5,9 @@ Feature:
 
   Background:
     Given the user "samuel" have access to the bucket "00000000-0000-0000-0000-000000000000"
-    And I am authenticated as user "samuel"
 
   Scenario: I create a cluster with the policies
+    Given I am authenticated as user "samuel"
     Given I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
       | identifier | type       | address         | username | password | version | policies          |
       | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    | [{"name":"rbac"}] |
@@ -17,7 +17,8 @@ Feature:
 
   @smoke
   Scenario: I update the cluster's policies
-    Given I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
+    Given I am authenticated as user "samuel"
+    And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
       | identifier | type       | address         | username | password | version |
       | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    |
     When I update the cluster "my-kube" of the bucket "00000000-0000-0000-0000-000000000000" with the following request:
@@ -29,7 +30,8 @@ Feature:
     And the cluster "my-kube" should have the policy "network-policies"
 
   Scenario: I cannot update the cluster's policies of a managed cluster
-    Given I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
+    Given I am authenticated as user "samuel"
+    And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
       | identifier | type       | address         | username | password | version | policies              |
       | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    | [{"name": "managed"}] |
     When I update the cluster "my-kube" of the bucket "00000000-0000-0000-0000-000000000000" with the following request:
@@ -38,8 +40,23 @@ Feature:
     """
     Then I should be told that I don't have the authorization for this
 
+  Scenario: Only system admins can update the policies of a managed cluster
+    Given I am authenticated as admin "samuel"
+    And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
+      | identifier | type       | address         | username | password | version | policies              |
+      | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    | [{"name": "managed"}] |
+    When I update the cluster "my-kube" of the bucket "00000000-0000-0000-0000-000000000000" with the following request:
+    """
+    {"policies": [{"name": "managed"}, {"name": "network-policies"}]}
+    """
+    Then the cluster should have been saved successfully
+    And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
+    And the cluster "my-kube" should have the policy "managed"
+    And the cluster "my-kube" should have the policy "network-policies"
+
   Scenario: I remove some policies from the cluster
-    Given I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
+    Given I am authenticated as user "samuel"
+    And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
       | identifier | type       | address         | username | password | version | policies                                         |
       | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    | [{"name": "rbac"}, {"name": "network-policies"}] |
     When I update the cluster "my-kube" of the bucket "00000000-0000-0000-0000-000000000000" with the following request:
@@ -51,7 +68,8 @@ Feature:
     And the cluster "my-kube" should not have the policy "network-policies"
 
   Scenario: Policies have a configuration
-    Given I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
+    Given I am authenticated as user "samuel"
+    And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
       | identifier | type       | address         | username | password | version |
       | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    |
     When I update the cluster "my-kube" of the bucket "00000000-0000-0000-0000-000000000000" with the following request:
@@ -65,7 +83,8 @@ Feature:
     """
 
   Scenario: Policies have secret not accessible by users
-    Given I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
+    Given I am authenticated as user "samuel"
+    And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
       | identifier | type       | address         | username | password | version |
       | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    |
     When I update the cluster "my-kube" of the bucket "00000000-0000-0000-0000-000000000000" with the following request:
@@ -83,7 +102,8 @@ Feature:
     """
 
   Scenario: Policies have secret accessible by system users
-    Given there is the system api key "1234567890"
+    Given I am authenticated as user "samuel"
+    And there is the system api key "1234567890"
     And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
       | identifier | type       | address         | username | password | version |
       | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    |

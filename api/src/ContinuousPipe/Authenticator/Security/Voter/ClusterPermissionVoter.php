@@ -6,6 +6,7 @@ namespace ContinuousPipe\Authenticator\Security\Voter;
 use ContinuousPipe\Security\Credentials\Cluster;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Role\RoleInterface;
 
 class ClusterPermissionVoter extends Voter
 {
@@ -35,7 +36,7 @@ class ClusterPermissionVoter extends Voter
         /** @var Cluster $cluster */
         $cluster = $subject;
 
-        if ($this->isManagedCluster($cluster)) {
+        if ($this->isManagedCluster($cluster) && !$this->isAdmin($token)) {
             return false;
         }
 
@@ -56,5 +57,12 @@ class ClusterPermissionVoter extends Voter
         }
 
         return false;
+    }
+
+    private function isAdmin(TokenInterface $token)
+    {
+        return in_array('ROLE_ADMIN', array_map(function(RoleInterface $role) {
+            return $role->getRole();
+        }, $token->getRoles()));
     }
 }
