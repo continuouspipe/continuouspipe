@@ -5,6 +5,7 @@ namespace ContinuousPipe\Adapter\Kubernetes;
 use ContinuousPipe\Adapter\ClusterNotSupported;
 use ContinuousPipe\Adapter\DispatchEventClientDecorator;
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
+use ContinuousPipe\Adapter\Kubernetes\Client\ClientException;
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Security\Credentials\Cluster;
@@ -54,11 +55,15 @@ class KubernetesEnvironmentClientFactory implements EnvironmentClientFactory
             throw new ClusterNotSupported('Only Kubernetes clusters supported');
         }
 
-        return new KubernetesEnvironmentClient(
-            $this->clientFactory->getByCluster($cluster),
-            $this->namespaceInspector,
-            $this->eventDispatcher,
-            $this->logger
-        );
+        try {
+            return new KubernetesEnvironmentClient(
+                $this->clientFactory->getByCluster($cluster),
+                $this->namespaceInspector,
+                $this->eventDispatcher,
+                $this->logger
+            );
+        } catch (ClientException $e) {
+            throw new ClusterNotSupported($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }
