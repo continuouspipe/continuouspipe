@@ -87,9 +87,9 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     public function handle(PrepareEnvironmentCommand $command)
     {
         $context = $command->getContext();
-        $client = $this->kubernetesClientFactory->getByCluster($context->getCluster());
 
         try {
+            $client = $this->kubernetesClientFactory->getByCluster($context->getCluster());
             $namespace = $this->createNamespaceIfNotExists($client, $context);
             $this->createOrUpdateNamespaceCredentials($client, $context, $namespace);
         } catch (\Exception $e) {

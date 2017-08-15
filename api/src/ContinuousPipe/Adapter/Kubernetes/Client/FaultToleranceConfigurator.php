@@ -1,9 +1,9 @@
 <?php
-declare(strict_types=1);
 
 namespace ContinuousPipe\Adapter\Kubernetes\Client;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\ResponseInterface;
@@ -11,7 +11,7 @@ use Psr\Http\Message\RequestInterface;
 
 class FaultToleranceConfigurator
 {
-    public function configureToBeFaultTolerant(Client $client)
+    public function configureToBeFaultTolerant(ClientInterface $client)
     {
         $handlerStack = $client->getConfig('handler');
         $handlerStack->push($this->getRetryMiddleware());
