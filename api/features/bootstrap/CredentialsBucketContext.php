@@ -243,6 +243,8 @@ class CredentialsBucketContext implements Context
 
         if (isset($content['policies'])) {
             $content['policies'] = json_decode($content['policies'], true);
+        } else if (isset($content['management_credentials'])) {
+            $content['management_credentials'] = json_decode($content['management_credentials'], true);
         }
 
         $this->response = $this->kernel->handle(Request::create(
@@ -363,6 +365,74 @@ class CredentialsBucketContext implements Context
 
         if (!isset($cluster['ca_certificate'])) {
             throw new \RuntimeException('No CA certificate found in cluster');
+        }
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should have a Google Cloud service account
+     */
+    public function theClusterShouldHaveAGoogleCloudServiceAccount($clusterIdentifier)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (!isset($cluster['google_cloud_service_account'])) {
+            throw new \RuntimeException('No Google Cloud service account found in cluster');
+        }
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should have management credentials
+     */
+    public function theClusterShouldHaveManagementCredentials($clusterIdentifier)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (!isset($cluster['management_credentials'])) {
+            throw new \RuntimeException('No management credentials found in cluster');
+        }
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should have credentials
+     */
+    public function theClusterShouldHaveCredentials($clusterIdentifier)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (!isset($cluster['credentials'])) {
+            throw new \RuntimeException('No credentials found in cluster');
+        }
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should have credentials containing a username :username and a password :password
+     */
+    public function theClusterShouldHaveCredentialsContainingAUsernameAndAPassword($clusterIdentifier, $username, $password)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (!isset($cluster['credentials']) || !isset($cluster['credentials']['username']) || !isset($cluster['credentials']['password'])) {
+            throw new \RuntimeException('No credentials found in cluster');
+        }
+
+        if ($cluster['credentials']['username'] != $username) {
+            throw new \RuntimeException('Found username '.$cluster['credentials']['username'].' instead');
+        }
+
+        if ($cluster['credentials']['password'] != $password) {
+            throw new \RuntimeException('Found password '.$cluster['credentials']['password'].' instead');
+        }
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should have a Google Cloud service account for its management credentials
+     */
+    public function theClusterShouldHaveAGoogleCloudServiceAccountForItsManagementCredentials($clusterIdentifier)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (!isset($cluster['management_credentials']['google_cloud_service_account'])) {
+            throw new \RuntimeException('No Google Cloud service account found in management credentials of the cluster');
         }
     }
 
