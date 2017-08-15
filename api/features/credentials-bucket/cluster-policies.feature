@@ -28,6 +28,16 @@ Feature:
     Then the cluster "my-kube" should have the policy rbac
     And the cluster "my-kube" should have the policy "network-policies"
 
+  Scenario: I cannot update the cluster's policies of a managed cluster
+    Given I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
+      | identifier | type       | address         | username | password | version | policies              |
+      | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    | [{"name": "managed"}] |
+    When I update the cluster "my-kube" of the bucket "00000000-0000-0000-0000-000000000000" with the following request:
+    """
+    {"policies": [{"name": "rbac"}, {"name": "network-policies"}]}
+    """
+    Then I should be told that I don't have the authorization for this
+
   Scenario: I remove some policies from the cluster
     Given I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
       | identifier | type       | address         | username | password | version | policies                                         |

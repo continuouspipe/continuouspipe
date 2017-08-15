@@ -266,8 +266,6 @@ class CredentialsBucketContext implements Context
             ['CONTENT_TYPE' => 'application/json'],
             $request->getRaw()
         ));
-
-        $this->assertResponseCodeIs($this->response, 200);
     }
 
     /**
@@ -604,6 +602,7 @@ class CredentialsBucketContext implements Context
 
     /**
      * @Then I should be told that I don't have the authorization for this bucket
+     * @Then I should be told that I don't have the authorization for this
      */
     public function iShouldBeToldThatIDonTHaveTheAuthorizationForThisBucket()
     {
