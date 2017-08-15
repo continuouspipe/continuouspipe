@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ClusterPoliciesController', function($scope, $mdToast, $http, ClusterRepository, cluster) {
-        $scope.isAdmin = true;
+    .controller('ClusterPoliciesController', function($scope, $mdToast, $http, $userContext, ClusterRepository, cluster) {
+        $scope.isAdmin = $userContext.isAdmin();
         $scope.cluster = cluster;
 
         $scope.availablePolicies = [

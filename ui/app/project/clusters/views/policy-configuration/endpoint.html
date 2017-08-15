@@ -1,7 +1,7 @@
 <div ng-controller="EndpointClusterPolicyController">
     <p>
         <strong>Endpoint type</strong>
-        <md-select ng-model="policy.configuration.type" style="display: inline-block;">
+        <md-select ng-model="policy.configuration.type" style="display: inline-block;" ng-disabled="!isAdmin">
             <md-option ng-value="null"><em>None</em></md-option>
             <md-option ng-value="'ingress'">Ingress</md-option>
         </md-select>
@@ -9,20 +9,20 @@
 
     <p ng-show="policy.configuration.type == 'ingress'">
         <strong>Ingress class</strong>
-        <input type="text" ng-model="policy.configuration['ingress-class']" />
+        <input type="text" ng-model="policy.configuration['ingress-class']" ng-disabled="!isAdmin" />
     </p>
 
     <p ng-show="policy.configuration.type == 'ingress'">
         <strong>Ingress host suffix</strong>
-        <input type="text" ng-model="policy.configuration['ingress-host-suffix']" />
+        <input type="text" ng-model="policy.configuration['ingress-host-suffix']" ng-disabled="!isAdmin" />
     </p>
 
     <p>
         <strong>CloudFlare by default</strong>
-        <input type="checkbox" ng-model="policy.configuration['cloudflare-by-default']" ng-change="onChange()" />
+        <input type="checkbox" ng-model="policy.configuration['cloudflare-by-default']" ng-change="onChange()" ng-disabled="!isAdmin" />
     </p>
     <p ng-show="policy.configuration['cloudflare-by-default']">
         <strong>CF proxied by default</strong>
-        <input type="checkbox" ng-model="policy.configuration['cloudflare-proxied-by-default']" />
+        <input type="checkbox" ng-model="policy.configuration['cloudflare-proxied-by-default']" ng-disabled="!isAdmin" />
     </p>
 </div>

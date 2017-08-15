@@ -21,4 +21,14 @@ angular.module('continuousPipeRiver')
                 return $q.reject(error);
             });
         };
+
+        this.getRoles = function() {
+            var decoded = jwtHelper.decodeToken($tokenStorage.get());
+
+            return decoded.roles || [];
+        };
+
+        this.isAdmin = function() {
+            return this.getRoles().indexOf('ROLE_ADMIN') !== -1;
+        }
     });
