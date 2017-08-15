@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Client;
 
+use ContinuousPipe\Adapter\Kubernetes\Client\Authentication\AuthenticatedHttpClientFactory;
 use ContinuousPipe\Security\Credentials\Cluster;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 use GuzzleHttp\ClientInterface as GuzzleClient;
@@ -35,17 +36,23 @@ class HttpClientFactory implements KubernetesClientFactory
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var AuthenticatedHttpClientFactory
+     */
+    private $authenticatedHttpClientFactory;
 
     public function __construct(
         SerializerInterface        $serializer,
         GuzzleClient               $guzzleClient,
         FaultToleranceConfigurator $faultToleranceConfigurator,
+        AuthenticatedHttpClientFactory $authenticatedHttpClientFactory,
         LoggerInterface            $logger
     ) {
         $this->serializer = $serializer;
         $this->guzzleClient = $guzzleClient;
         $this->faultToleranceConfigurator = $faultToleranceConfigurator;
         $this->logger = $logger;
+        $this->authenticatedHttpClientFactory = $authenticatedHttpClientFactory;
     }
 
     /**
@@ -64,18 +71,10 @@ class HttpClientFactory implements KubernetesClientFactory
             $cluster->getCaCertificate()
         );
 
-        if (null !== $cluster->getGoogleCloudServiceAccount()) {
-            $httpClient = new AuthenticationMiddleware($httpClient, AuthenticationMiddleware::TOKEN, $this->getTokenFromGoogleCloudServiceAccount($cluster->getGoogleCloudServiceAccount()));
-        } elseif (null !== $cluster->getClientCertificate()) {
-            $httpClient = new AuthenticationMiddleware($httpClient, AuthenticationMiddleware::CERTIFICATE, $cluster->getClientCertificate());
-        } else if (null !== $cluster->getUsername()) {
-            $httpClient = new AuthenticationMiddleware($httpClient, AuthenticationMiddleware::USERNAME_PASSWORD, sprintf('%s:%s', $cluster->getUsername(), $cluster->getPassword()));
-        }
-
         return new Client(
             new HttpAdapter(
                 new HttpConnector(
-                    $httpClient,
+                    $this->authenticatedHttpClientFactory->authenticatedClient($httpClient, $cluster),
                     new JmsSerializerAdapter($this->serializer),
                     $this->logger
                 )
@@ -86,27 +85,5 @@ class HttpClientFactory implements KubernetesClientFactory
     private function getClusterVersion(Cluster\Kubernetes $cluster) : string
     {
         return explode('.', $cluster->getVersion())[0];
-    }
-
-    private function getTokenFromGoogleCloudServiceAccount(string $serviceAccountAsString) : string
-    {
-        try {
-            $serviceAccount = \GuzzleHttp\json_decode(base64_decode($serviceAccountAsString), true);
-        } catch (\InvalidArgumentException $e) {
-            throw new ClientException('Service account is not a valid JSON: '.$e->getMessage(), $e->getCode(), $e);
-        }
-
-        $credentials = new ServiceAccountCredentials('https://www.googleapis.com/auth/cloud-platform', $serviceAccount);
-        try {
-            $token = $credentials->fetchAuthToken();
-        } catch (\RuntimeException $e) {
-            throw new ClientException('Can\'t get token from Google Cloud: '.$e->getMessage(), $e->getCode(), $e);
-        }
-
-        if (!isset($token['access_token'])) {
-            throw new ClientException('Access token could not be found in Google Auth response');
-        }
-
-        return $token['access_token'];
     }
 }
