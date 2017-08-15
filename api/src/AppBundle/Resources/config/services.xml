@@ -73,7 +73,7 @@
             <argument>%default_redirection_url%</argument>
         </service>
         <service id="app.security.jwt.add_user_roles_to_token" class="ContinuousPipe\Authenticator\Security\Jwt\AddUserRolesInToken">
-            <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_authentication_success" method="onAuthenticationSuccessResponse" />
+            <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_jwt_created" method="onJwtCreated" />
         </service>
 
         <service id="request.param_converter.security_user" class="ContinuousPipe\Authenticator\Request\ParamConverter\UserParamConverter">
