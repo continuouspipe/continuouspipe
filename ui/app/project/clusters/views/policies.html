@@ -1,0 +1,65 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Policies</span>
+        </h2>
+        <span flex></span>
+        <md-menu>
+            <md-button ng-show="isAdmin" class="md-raised" aria-label="Add" aria-label="Open menu with custom trigger" class="md-icon-button" ng-click="$mdMenu.open()">Add policy</md-button>
+            <md-menu-content width="4" ng-mouseleave="$mdMenu.close()">
+                <md-menu-item ng-repeat="policy in availablePolicies">
+                    <md-button ng-click="addPolicy(policy)">
+                        Add <code>{{ policy.name }}</code>
+                    </md-button>
+                </md-menu-item>
+            </md-menu-content>
+        </md-menu>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <div class="zero-content-help" ng-if="!cluster.policies.length">
+        <i class="cp-icon-arrow-right-up top-right-arrow"></i>
+        <h3>No policies found</h3>
+        <p>Add policies to your cluster to enforce and provide default behaviours.</p>
+    </div>
+    <table class="table responsive-table hover" ng-show="cluster.policies.length > 0">
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Configuration</th>
+            <th>Secrets</th>
+            <td>Actions</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="policy in cluster.policies">
+            <td data-th="Name">{{ policy.name }}</td>
+
+            <td data-th="Configuration" ng-include="'project/clusters/views/policy-configuration/'+policy.name+'.html'"></td>
+
+            <td data-th="Secrets">
+                <span ng-if="!policy.secrets">No secret</span>
+                <div ng-if="isAdmin">
+                    <div class="input" ng-repeat="(key, secret) in policy.secrets">
+                        <label>{{ key }}</label>
+                        <input type="text" ng-value="policy.secrets[key]" />
+                    </div>
+                </div>
+                <div ng-if="!isAdmin">
+                    <span ng-repeat="(key, secret) in policy.secrets">{{ key }}</span>
+                </div>
+            </td>
+
+            <td data-th="Actions">
+                <md-button ng-show="isAdmin" ng-click="removePolicy(policy)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Save" ng-click="save()" ng-disabled="isLoading"><md-icon>save</md-icon> Save</md-button>
+    </div>
+</md-toolbar>

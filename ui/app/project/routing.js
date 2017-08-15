@@ -98,6 +98,24 @@ angular.module('continuousPipeRiver')
                     }
                 }
             })
+            .state('cluster', {
+                parent: 'clusters',
+                url: '/:identifier',
+                resolve: {
+                    cluster: function(ClusterRepository, $stateParams, project) {
+                        return ClusterRepository.find($stateParams.identifier, project);
+                    }
+                }
+            })
+            .state('cluster.policies', {
+                url: '/policies',
+                views: {
+                    'content@project': {
+                        templateUrl: 'project/clusters/views/policies.html',
+                        controller: 'ClusterPoliciesController'
+                    }
+                }
+            })
             .state('clusters.status', {
                 url: '/:identifier/status',
                 resolve: {

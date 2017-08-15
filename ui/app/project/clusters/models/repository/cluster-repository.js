@@ -2,18 +2,24 @@
 
 angular.module('continuousPipeRiver')
     .service('ClusterRepository', function($resource, $projectContext, $q, AUTHENTICATOR_API_URL, RIVER_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/bucket/:bucket/clusters/:identifier');
+        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/bucket/:bucket/clusters/:identifier', null, {
+            update: { method: 'PATCH' }
+        });
 
-        var getBucketUuid = function() {
-            return $projectContext.getCurrentProject().bucket_uuid;
+        var getBucketUuid = function(project) {
+            if (!project) {
+                project = $projectContext.getCurrentProject();
+            }
+
+            return project.bucket_uuid;
         };
 
-        this.findAll = function() {
-            return this.resource.query({bucket: getBucketUuid()}).$promise;
+        this.findAll = function(project) {
+            return this.resource.query({bucket: getBucketUuid(project)}).$promise;
         };
 
-        this.find = function(identifier) {
-            return this.findAll().then(function(clusters) {
+        this.find = function(identifier, project) {
+            return this.findAll(project).then(function(clusters) {
                 for (var i = 0; i < clusters.length; i++) {
                     if (clusters[i].identifier == identifier) {
                         return clusters[i];
@@ -22,6 +28,12 @@ angular.module('continuousPipeRiver')
 
                 return $q.reject(new Error('Cluster not found'));
             });
+        };
+
+        this.updatePolicies = function(cluster) {
+            return this.resource.update({bucket: getBucketUuid(), identifier: cluster.identifier}, {
+                policies: cluster.policies
+            }).$promise;
         };
 
         this.remove = function(cluster) {

@@ -36,6 +36,7 @@
                 <td data-th="Credentials">User <small>{{ cluster.username }}</small></td>
                 <td data-th="Actions">
                     <md-button ng-show="isAdmin" ng-click="deleteCluster(cluster)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+                    <md-button ng-click="showPolicies(cluster)" class="md-icon-button"><i class="material-icons">security</i></md-button>
                     <md-button ng-click="inspectCluster(cluster)" class="md-icon-button"><i class="material-icons">lightbulb_outline</i></md-button>
                     <md-button ng-click="showDashboard(cluster)" class="md-icon-button"><i class="material-icons">dashboard</i></md-button>
                 </td>
