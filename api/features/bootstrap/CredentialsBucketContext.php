@@ -485,20 +485,6 @@ class CredentialsBucketContext implements Context
     }
 
     /**
-     * @Then the cluster :clusterIdentifier should have the policy :policyName but without visible secrets
-     */
-    public function theClusterShouldHaveThePolicyButWithoutVisibleSecrets($clusterIdentifier, $policyName)
-    {
-        if (null === ($policy = $this->getClusterPolicy($clusterIdentifier, $policyName))) {
-            throw new \RuntimeException(sprintf('Did not found policy %s', $policyName));
-        }
-
-        if (isset($policy['secrets'])) {
-            throw new \RuntimeException('Secrets are visible it looks like');
-        }
-    }
-
-    /**
      * @Then the cluster :clusterIdentifier should have the policy :policyName with the following secrets:
      */
     public function theClusterShouldHaveThePolicyWithTheFollowingSecrets($clusterIdentifier, $policyName, PyStringNode $secretsNode)

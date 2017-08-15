@@ -67,7 +67,10 @@ Feature:
     """
     {"proxied": "true"}
     """
-    And the cluster "my-kube" should have the policy "cloud-flare" but without visible secrets
+    And the cluster "my-kube" should have the policy "cloud-flare" with the following secrets:
+    """
+    {"api_key": "OBFUSCATED"}
+    """
 
   Scenario: Policies have secret accessible by system users
     Given there is the system api key "1234567890"
