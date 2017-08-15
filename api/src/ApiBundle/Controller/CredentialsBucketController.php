@@ -13,9 +13,11 @@ use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -45,15 +47,22 @@ class CredentialsBucketController
     private $serializer;
 
     /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
+
+    /**
      * @param BucketRepository $bucketRepository
      * @param ValidatorInterface $validator
      * @param SerializerInterface $serializer
+     * @param AuthorizationCheckerInterface $authorizationChecker
      */
-    public function __construct(BucketRepository $bucketRepository, ValidatorInterface $validator, SerializerInterface $serializer)
+    public function __construct(BucketRepository $bucketRepository, ValidatorInterface $validator, SerializerInterface $serializer, AuthorizationCheckerInterface $authorizationChecker)
     {
         $this->validator = $validator;
         $this->bucketRepository = $bucketRepository;
         $this->serializer = $serializer;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     /**
@@ -225,6 +234,12 @@ class CredentialsBucketController
     {
         if (null === ($cluster = $this->getClusterIdentified($bucket, $clusterIdentifier))) {
             throw new NotFoundHttpException(sprintf('Cluster "%s" not found', $clusterIdentifier));
+        }
+
+        if (!$this->authorizationChecker->isGranted('EDIT', $cluster)) {
+            return new JsonResponse([
+                'error' => 'You cannot update the policies of a managed cluster'
+            ], 403);
         }
 
         $updatedCluster = $this->applyPatch($cluster, \GuzzleHttp\json_decode($request->getContent(), true));

@@ -118,6 +118,17 @@ class SecurityContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Given I am authenticated as admin :username
+     */
+    public function iAmAuthenticatedAsAdmin($username)
+    {
+        $token = new JWTUserToken(['ROLE_USER', 'ROLE_ADMIN']);
+        $token->setUser($this->thereIsAUser($username));
+
+        $this->tokenStorage->setToken($token);
+    }
+
+    /**
      * @Given I am authenticated
      */
     public function iAmAuthenticated()

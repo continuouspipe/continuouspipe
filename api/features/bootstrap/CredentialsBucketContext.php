@@ -266,8 +266,6 @@ class CredentialsBucketContext implements Context
             ['CONTENT_TYPE' => 'application/json'],
             $request->getRaw()
         ));
-
-        $this->assertResponseCodeIs($this->response, 200);
     }
 
     /**
@@ -485,20 +483,6 @@ class CredentialsBucketContext implements Context
     }
 
     /**
-     * @Then the cluster :clusterIdentifier should have the policy :policyName but without visible secrets
-     */
-    public function theClusterShouldHaveThePolicyButWithoutVisibleSecrets($clusterIdentifier, $policyName)
-    {
-        if (null === ($policy = $this->getClusterPolicy($clusterIdentifier, $policyName))) {
-            throw new \RuntimeException(sprintf('Did not found policy %s', $policyName));
-        }
-
-        if (isset($policy['secrets'])) {
-            throw new \RuntimeException('Secrets are visible it looks like');
-        }
-    }
-
-    /**
      * @Then the cluster :clusterIdentifier should have the policy :policyName with the following secrets:
      */
     public function theClusterShouldHaveThePolicyWithTheFollowingSecrets($clusterIdentifier, $policyName, PyStringNode $secretsNode)
@@ -546,6 +530,14 @@ class CredentialsBucketContext implements Context
     public function theNewClusterShouldHaveBeenSavedSuccessfully()
     {
         $this->assertResponseCodeIs($this->response, 201);
+    }
+
+    /**
+     * @Then the cluster should have been saved successfully
+     */
+    public function theClusterShouldHaveBeenSavedSuccessfully()
+    {
+        $this->assertResponseCodeIs($this->response, 200);
     }
 
     /**
@@ -618,6 +610,7 @@ class CredentialsBucketContext implements Context
 
     /**
      * @Then I should be told that I don't have the authorization for this bucket
+     * @Then I should be told that I don't have the authorization for this
      */
     public function iShouldBeToldThatIDonTHaveTheAuthorizationForThisBucket()
     {
