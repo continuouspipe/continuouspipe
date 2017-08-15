@@ -103,3 +103,15 @@ Feature:
     Then the new cluster should have been saved successfully
     And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
     And the cluster "my-kube" should have a Google Cloud service account
+
+  @smoke
+  Scenario: Create a cluster with management credentials as well
+    Given I am authenticated as user "samuel"
+    When I create a cluster with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | identifier | type       | address             | username | google_cloud_service_account | management_credentials                         | version |
+      | my-kube    | kubernetes | https://1.2.3.4/foo | username | [this is long...]            | {"google_cloud_service_account": "base64..."} | v1.6    |
+    Then the new cluster should have been saved successfully
+    And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
+    And the cluster "my-kube" should have a Google Cloud service account
+    And the cluster "my-kube" should have management credentials
+    And the cluster "my-kube" should have a Google Cloud service account for its management credentials
