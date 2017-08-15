@@ -61,7 +61,7 @@ class ClusterPermissionVoter extends Voter
 
     private function isAdmin(TokenInterface $token)
     {
-        return in_array('ROLE_ADMIN', array_map(function(RoleInterface $role) {
+        return in_array('ROLE_ADMIN', array_map(function (RoleInterface $role) {
             return $role->getRole();
         }, $token->getRoles()));
     }

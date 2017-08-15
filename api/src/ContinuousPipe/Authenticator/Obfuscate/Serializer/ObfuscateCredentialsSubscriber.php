@@ -98,7 +98,7 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
             /** @var Cluster\ClusterPolicy $clusterPolicy */
             $clusterPolicy = $event->getObject();
 
-            $this->override($event->getObject(), 'secrets', array_map(function() {
+            $this->override($event->getObject(), 'secrets', array_map(function () {
                 return self::OBFUSCATE_PLACEHOLDER;
             }, $clusterPolicy->getSecrets()));
         }
