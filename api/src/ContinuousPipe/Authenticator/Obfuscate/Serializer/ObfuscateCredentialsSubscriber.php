@@ -72,6 +72,20 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
     {
         if ($this->shouldObfuscate($event)) {
             $this->override($event->getObject(), 'password', self::OBFUSCATE_PLACEHOLDER);
+            $this->override($event->getObject(), 'clientCertificate', self::OBFUSCATE_PLACEHOLDER);
+            $this->override($event->getObject(), 'googleCloudServiceAccount', self::OBFUSCATE_PLACEHOLDER);
+        }
+    }
+
+    /**
+     * @param ObjectEvent $event
+     */
+    public function preSerializeClusterCredentials(ObjectEvent $event)
+    {
+        if ($this->shouldObfuscate($event)) {
+            $this->override($event->getObject(), 'password', self::OBFUSCATE_PLACEHOLDER);
+            $this->override($event->getObject(), 'clientCertificate', self::OBFUSCATE_PLACEHOLDER);
+            $this->override($event->getObject(), 'googleCloudServiceAccount', self::OBFUSCATE_PLACEHOLDER);
         }
     }
 
@@ -108,8 +122,14 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
     /**
      * @param ObjectEvent $event
      */
-    public function postSerialize()
+    public function postSerialize(ObjectEvent $event)
     {
+        $object = $event->getObject();
+
+        if (!in_array(get_class($object), [DockerRegistry::class, GitHubToken::class, Cluster\Kubernetes::class])) {
+            return;
+        }
+
         while (null !== ($override = array_pop($this->overrides))) {
             $property = $this->getProperty($override[0], $override[1]);
             $property->setValue($override[0], $override[2]);

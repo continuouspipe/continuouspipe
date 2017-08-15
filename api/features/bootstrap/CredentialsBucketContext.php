@@ -393,6 +393,38 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @Then the cluster :clusterIdentifier should have credentials
+     */
+    public function theClusterShouldHaveCredentials($clusterIdentifier)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (!isset($cluster['credentials'])) {
+            throw new \RuntimeException('No credentials found in cluster');
+        }
+    }
+
+    /**
+     * @Then the cluster :clusterIdentifier should have credentials containing a username :username and a password :password
+     */
+    public function theClusterShouldHaveCredentialsContainingAUsernameAndAPassword($clusterIdentifier, $username, $password)
+    {
+        $cluster = $this->getClusterFromList($clusterIdentifier);
+
+        if (!isset($cluster['credentials']) || !isset($cluster['credentials']['username']) || !isset($cluster['credentials']['password'])) {
+            throw new \RuntimeException('No credentials found in cluster');
+        }
+
+        if ($cluster['credentials']['username'] != $username) {
+            throw new \RuntimeException('Found username '.$cluster['credentials']['username'].' instead');
+        }
+
+        if ($cluster['credentials']['password'] != $password) {
+            throw new \RuntimeException('Found password '.$cluster['credentials']['password'].' instead');
+        }
+    }
+
+    /**
      * @Then the cluster :clusterIdentifier should have a Google Cloud service account for its management credentials
      */
     public function theClusterShouldHaveAGoogleCloudServiceAccountForItsManagementCredentials($clusterIdentifier)

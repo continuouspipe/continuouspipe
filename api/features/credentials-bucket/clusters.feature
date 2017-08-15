@@ -115,3 +115,12 @@ Feature:
     And the cluster "my-kube" should have a Google Cloud service account
     And the cluster "my-kube" should have management credentials
     And the cluster "my-kube" should have a Google Cloud service account for its management credentials
+
+  Scenario: Clusters are now exposing credentials under credentials
+    Given there is the system api key "1234"
+    When I create a cluster with the following configuration in the bucket "00000000-0000-0000-0000-000000000000" with the API key "1234":
+      | identifier | type       | address         | username | password | version |
+      | my-kube    | kubernetes | https://1.2.3.4 | username | password | v1.4    |
+    And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000" with the API key "1234"
+    Then the cluster "my-kube" should have credentials
+    And the cluster "my-kube" should have credentials containing a username "username" and a password "password"
