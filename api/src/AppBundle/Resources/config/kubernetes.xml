@@ -67,12 +67,19 @@
         <service id="pipe.adapter.kubernetes.jms_serializer.rolling_update_deployment_handler" class="Kubernetes\Client\Serializer\JmsSerializerRollingUpdateDeploymentHandler">
             <tag name="jms_serializer.subscribing_handler" />
         </service>
+        <service id="pipe.adapter.kubernetes.client_factory.authenticated_http_factory.google_service_account_resolver" class="ContinuousPipe\Adapter\Kubernetes\Client\Authentication\GoogleCloud\GoogleCloudServiceAccountResolver" />
+        <service id="pipe.adapter.kubernetes.client_factory.authenticated_http_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\Authentication\AuthenticatedHttpClientFactory">
+            <argument type="service"
+                      id="pipe.adapter.kubernetes.client_factory.authenticated_http_factory.google_service_account_resolver"/>
+        </service>
         <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\HttpClientFactory">
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="pipe.adapter.kubernetes.guzzle_client" />
             <argument type="service" id="pipe.adapter.kubernetes.fault_tolerance_configurator" />
+            <argument type="service" id="pipe.adapter.kubernetes.client_factory.authenticated_http_factory"/>
             <argument type="service" id="logger" />
         </service>
+
         <service id="pipe.adapter.kubernetes.fault_tolerance_configurator" class="ContinuousPipe\Adapter\Kubernetes\Client\FaultToleranceConfigurator">
         </service>
         <service id="pipe.adapter.kubernetes.environment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\KubernetesEnvironmentClientFactory">
