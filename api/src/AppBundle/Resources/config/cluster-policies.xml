@@ -32,5 +32,13 @@
             <argument type="service" id="river.cluster_policies.default.set_default_cluster_when_creating_target.inner" />
             <argument type="service" id="authenticator.bucket_repository" />
         </service>
+
+        <service id="river.cluster_policies.resources.add_resources_when_building_request"
+                 class="ContinuousPipe\River\ClusterPolicies\Resources\AddDefaultComponentResources"
+                 decorates="river.pipe.deployment_request_enhancer">
+            <argument type="service" id="river.cluster_policies.resources.add_resources_when_building_request.inner" />
+            <argument type="service" id="river.cluster_policies.policy_resolver" />
+            <argument type="service" id="logger" />
+        </service>
     </services>
 </container>
