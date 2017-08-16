@@ -60,6 +60,10 @@ class AddDefaultComponentResources implements DeploymentRequestEnhancer
             return $request;
         }
 
+        if (null === $policy) {
+            return $request;
+        }
+
         $policyConfiguration = $policy->getConfiguration();
         array_map(function (Component $component) use ($policyConfiguration) {
             if (null === ($resources = $component->getSpecification()->getResources())) {
