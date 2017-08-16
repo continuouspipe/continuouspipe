@@ -128,7 +128,7 @@ class ReplaceEnvironmentVariableValues implements ConfigurationFinalizer
     public static function replaceVariables(string $value, array $mapping, bool $applyDefaults = true)
     {
         return preg_replace_callback(
-            '/\$\{(?<variable>[a-z0-9_]+)(\?\:(?<default>[^\}]+))?\}/i',
+            '/\$\{(?<variable>[a-z0-9_]+)(\?\:(?<default>[^\}]*))?\}/i',
             function (array $matches) use ($mapping, $applyDefaults) {
                 $variable = $matches['variable'];
                 $line = $matches[0];

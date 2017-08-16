@@ -263,3 +263,25 @@ Feature:
             deploy:
                 cluster: my-cluster
     """
+  Scenario: I can use an empty value if variable is not found
+    Given I have a flow with the following configuration:
+    """
+    variables: []
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: my-cluster${UNSET_VAR?:}
+                services: []
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: my-cluster
+                services: []
+    """
