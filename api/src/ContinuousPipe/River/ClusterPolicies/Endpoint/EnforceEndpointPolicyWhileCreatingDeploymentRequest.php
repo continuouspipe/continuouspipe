@@ -155,7 +155,7 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
                     }
 
                     foreach ($rules as $rule) {
-                        if (substr($rule->getHost(), 0, -strlen($policyConfiguration['ingress-host-suffix'])) != $policyConfiguration['ingress-host-suffix']) {
+                        if (substr($rule->getHost(), -strlen($policyConfiguration['ingress-host-suffix'])) != $policyConfiguration['ingress-host-suffix']) {
                             throw new ClusterPolicyException(sprintf(
                                 'Ingress hostname of component "%s" is "%s" while the suffix "%s" is enforced by the cluster policy',
                                 $endpoint->getName(),
