@@ -46,6 +46,13 @@ angular.module('continuousPipeRiver')
                     'cloudflare-api-key': ''
                 }, $scope.policy.secrets || {});
             }
+
+            if ($scope.policy.configuration['ssl-certificate-defaults']) {
+                $scope.policy.secrets = $.extend({
+                    'ssl-certificate-key': '',
+                    'ssl-certificate-cert': ''
+                }, $scope.policy.secrets || {});
+            }
         };
 
         $scope.onChange = function() {
