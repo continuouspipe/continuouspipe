@@ -1,0 +1,32 @@
+<div ng-controller="EndpointClusterPolicyController">
+    <md-input-container class="md-block" flex-gt-sm>
+        <label>Endpoint type</label>
+        <md-select ng-model="policy.configuration.type" style="display: inline-block;" ng-disabled="!isAdmin">
+            <md-option ng-value="null"><em>None</em></md-option>
+            <md-option ng-value="'ingress'">Ingress</md-option>
+        </md-select>
+    </md-input-container>
+
+    <md-input-container class="md-block" ng-show="policy.configuration.type == 'ingress'">
+        <label>Ingress class</label>
+        <input ng-model="policy.configuration['ingress-class']" ng-disabled="!isAdmin" required>
+    </md-input-container>
+
+    <md-input-container class="md-block" ng-show="policy.configuration.type == 'ingress'">
+        <label>Ingress host suffix</label>
+        <input ng-model="policy.configuration['ingress-host-suffix']" ng-disabled="!isAdmin">
+    </md-input-container>
+
+
+    <md-input-container class="md-block">
+        <md-checkbox ng-model="policy.configuration['cloudflare-by-default']" ng-change="onChange()" ng-disabled="!isAdmin" >
+          CloudFlare enabled by default.
+        </md-checkbox>
+    </md-input-container>
+
+    <md-input-container class="md-block" ng-show="policy.configuration['cloudflare-by-default']">
+        <md-checkbox ng-model="policy.configuration['cloudflare-proxied-by-default']" ng-change="onChange()" ng-disabled="!isAdmin" >
+          CloudFlare is proxying requests by default
+        </md-checkbox>
+    </md-input-container>
+</div>

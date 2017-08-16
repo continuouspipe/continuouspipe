@@ -34,6 +34,10 @@ angular.module('continuousPipeRiver')
             $state.go('clusters.status', {identifier: cluster.identifier});
         };
 
+        $scope.showPolicies = function(cluster) {
+            $state.go('cluster.policies', {identifier: cluster.identifier});
+        };
+
         $scope.isAdmin = user.isAdmin(project);
         
         this.loadClusters();
