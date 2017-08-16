@@ -17,7 +17,6 @@
         <input ng-model="policy.configuration['ingress-host-suffix']" ng-disabled="!isAdmin">
     </md-input-container>
 
-
     <md-input-container class="md-block">
         <md-checkbox ng-model="policy.configuration['cloudflare-by-default']" ng-change="onChange()" ng-disabled="!isAdmin" >
           CloudFlare enabled by default.
@@ -29,4 +28,10 @@
           CloudFlare is proxying requests by default
         </md-checkbox>
     </md-input-container>
+
+    <md-input-container class="md-block">
+        <md-checkbox ng-model="policy.configuration['ssl-certificate-defaults']" ng-change="onChange()" ng-disabled="!isAdmin" >
+          Add default SSL certificate
+        </md-checkbox>
+    </md-input-container>    
 </div>
