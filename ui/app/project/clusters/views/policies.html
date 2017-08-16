@@ -40,10 +40,10 @@
             <td data-th="Secrets">
                 <span ng-if="!policy.secrets">No secret</span>
                 <div ng-if="isAdmin">
-                    <div class="input" ng-repeat="(key, secret) in policy.secrets">
+                    <md-input-container class="md-block" ng-repeat="(key, secret) in policy.secrets">
                         <label>{{ key }}</label>
-                        <input type="text" ng-value="policy.secrets[key]" />
-                    </div>
+                        <input required name="description" ng-model="policy.secrets[key]">
+                    </md-input-container>
                 </div>
                 <div ng-if="!isAdmin">
                     <span ng-repeat="(key, secret) in policy.secrets">{{ key }}</span>
