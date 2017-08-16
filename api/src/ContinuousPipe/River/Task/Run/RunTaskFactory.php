@@ -63,7 +63,7 @@ class RunTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->scalarNode('cluster')->isRequired()->end()
+                ->scalarNode('cluster')->defaultValue('')->end()
                 ->arrayNode('image')
                     ->isRequired()
                     ->beforeNormalization()

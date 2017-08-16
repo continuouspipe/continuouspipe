@@ -78,3 +78,16 @@ Feature:
     When a tide is started for the branch "master"
     Then the tide should be failed
     And a log containing "You have multiple clusters, and no default cluster. Please set a default cluster or specify the cluster in your deployment configuration." should be created
+
+  Scenario: It default cluster for run tasks as well
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_task:
+            run:
+                image: ubuntu
+                commands: [ 'echo OK' ]
+    """
+    When a tide is started for the branch "master"
+    Then the environment should have been deployed on the cluster "foo"
