@@ -121,3 +121,23 @@ Feature:
     """
     {"api_key": "1234"}
     """
+
+  Scenario: Policies have secret accessible by admin users
+    Given I am authenticated as admin "samuel"
+    And I have the following clusters in the bucket "00000000-0000-0000-0000-000000000000":
+      | identifier | type       | address         | username | password | version |
+      | my-kube    | kubernetes | https://1.2.3.4 | samuel   | roze     | v1.4    |
+    When I update the cluster "my-kube" of the bucket "00000000-0000-0000-0000-000000000000" with the following request:
+    """
+    {"policies": [{"name": "cloud-flare", "configuration": {"proxied": "true"}, "secrets": {"api_key": "1234"}}]}
+    """
+    And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
+    Then the cluster "my-kube" should have the policy "cloud-flare" with the following configuration:
+    """
+    {"proxied": "true"}
+    """
+    And the cluster "my-kube" should have the policy "cloud-flare" with the following secrets:
+    """
+    {"api_key": "1234"}
+    """
+

@@ -9,6 +9,7 @@ use ContinuousPipe\Security\Credentials\GitHubToken;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
 {
@@ -169,9 +170,7 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
             return true;
         }
 
-        $isSystemUser = $token->getUser() instanceof SystemUser;
-
-        return !$isSystemUser;
+        return !$token->getUser() instanceof SystemUser && !$this->isAdmin($token);
     }
 
     /**
@@ -186,5 +185,16 @@ class ObfuscateCredentialsSubscriber implements EventSubscriberInterface
         $property->setAccessible(true);
 
         return $property;
+    }
+
+    private function isAdmin(TokenInterface $token)
+    {
+        foreach ($token->getRoles() as $role) {
+            if ($role->getRole() == 'ROLE_ADMIN') {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
