@@ -13,12 +13,40 @@ import (
     "github.com/docker/docker/reference"
     "github.com/docker/docker/builder"
     "github.com/docker/docker/builder/dockerignore"
+    "github.com/docker/engine-api/client"
+    "golang.org/x/net/context"
     "encoding/base64"
     "encoding/json"
+    "github.com/docker/engine-api/types"
     "net/http"
     "compress/gzip"
     "archive/tar"
 )
+
+
+// ImagePusher allow to push a Docker image
+type ImagePusher interface {
+    Push(imageName string, authConfig string, output io.Writer) error
+}
+
+// DockerImagePush is an implementation of ImagePusher using the docker client
+type DockerImagePush struct {
+    dockerClient *client.Client
+}
+
+func (dip *DockerImagePush) Push(imageName string, authConfig string, output io.Writer) error {
+    ctx := context.Background()
+    response, err := dip.dockerClient.ImagePush(ctx, imageName, types.ImagePushOptions{
+        RegistryAuth: authConfig,
+    })
+
+    if err != nil {
+        return err
+    }
+
+    return ReadDockerResponse(response, output)
+}
+
 
 // CreateBuildContext will create the Docker build context from the current directory,
 // based on the manifest configuration.

@@ -26,13 +26,17 @@ type StepRunner interface {
 
 // DockerStepRunner is a step runner based on the docker client
 type DockerStepRunner struct {
-    dockerClient *client.Client
+    dockerClient    *client.Client
+    imagePusher     ImagePusher
     artifactManager ArtifactManager
 }
 
 // DockerStepRunner creates an instance of DockerStepRunner
 func NewDockerStepRunner(client *client.Client, artifactManager ArtifactManager) (*DockerStepRunner, error) {
     return &DockerStepRunner{
+        imagePusher: &DockerImagePush{
+            dockerClient: client,
+        },
         dockerClient: client,
         artifactManager: artifactManager,
     }, nil
@@ -126,21 +130,12 @@ func (sr DockerStepRunner) BuildImage(manifest Manifest, step ManifestStep, outp
 }
 
 func (sr DockerStepRunner) PushImage(manifest Manifest, step ManifestStep, output io.Writer) error {
-    ctx := context.Background()
     authConfig, err := CreatePushRegistryAuth(manifest, step.ImageName)
     if err != nil {
         return err
     }
 
-    response, err := sr.dockerClient.ImagePush(ctx, step.ImageName, types.ImagePushOptions{
-        RegistryAuth: authConfig,
-    })
-
-    if err != nil {
-        return err
-    }
-
-    return ReadDockerResponse(response, output)
+    return sr.imagePusher.Push(step.ImageName, authConfig, output)
 }
 
 func GetLocalArtifactTarget(step ManifestStep, artifact Artifact) string {
