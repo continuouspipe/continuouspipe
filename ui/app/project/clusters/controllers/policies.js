@@ -8,7 +8,8 @@ angular.module('continuousPipeRiver')
         $scope.availablePolicies = [
             {name: 'default'},
             {name: 'environment', configuration: {}, secrets: {}},
-            {name: 'endpoint', configuration: {}, secrets: {}}
+            {name: 'endpoint', configuration: {}, secrets: {}},
+            {name: 'resources', configuration: {}, secrets: {}}
         ];
 
         $scope.addPolicy = function(policy) {
