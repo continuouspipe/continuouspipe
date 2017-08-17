@@ -1,1 +1,4 @@
-<p><strong>Required environment prefix:</strong> <input type="text" ng-value="policy.configuration.prefix" /></p>
+<md-input-container class="md-block">
+    <label>Required environment prefix</label>
+    <input ng-model="policy.configuration.prefix" ng-disabled="!isAdmin" required>
+</md-input-container>
