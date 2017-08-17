@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bdadaf49315dfb382fcf2c46f90ad0d8",
+    "content-hash": "ce7eea169d9d2ae6dde682a02c0306fe",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -320,16 +320,16 @@
         },
         {
             "name": "continuous-pipe/message",
-            "version": "dev-add-transactions-and-delayed-messages",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/message.git",
-                "reference": "485e99d12005287f7e0c61e042342d2476380101"
+                "reference": "b53fc9ad77cb599d558bbe64d36e0c66c87e80ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/485e99d12005287f7e0c61e042342d2476380101",
-                "reference": "485e99d12005287f7e0c61e042342d2476380101",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/b53fc9ad77cb599d558bbe64d36e0c66c87e80ab",
+                "reference": "b53fc9ad77cb599d558bbe64d36e0c66c87e80ab",
                 "shasum": ""
             },
             "require": {
@@ -343,10 +343,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/message/tree/add-transactions-and-delayed-messages",
+                "source": "https://github.com/continuouspipe/message/tree/master",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2017-05-09 08:42:37"
+            "time": "2017-08-17 16:08:18"
         },
         {
             "name": "continuous-pipe/model",

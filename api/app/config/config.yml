@@ -360,9 +360,10 @@ tolerance:
 message:
     simple_bus:
         connection: default
+
     command:
         connection: default
-        message_dealine_expiration_manager: continuouspipe.message.default.message_puller
+        message_deadline_expiration_manager: continuouspipe.message.default.message_puller
 
     connections:
         default:
@@ -372,3 +373,6 @@ message:
                     service_account_path: %google_pub_sub_service_account_path%
                     topic: %google_pub_sub_topic%
                     subscription: %google_pub_sub_subscription_name%
+
+    tideways:
+        api_key: %tideways_api_key%
