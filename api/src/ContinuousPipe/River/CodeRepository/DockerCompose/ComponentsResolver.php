@@ -13,8 +13,8 @@ interface ComponentsResolver
      * @param FlatFlow      $flow
      * @param CodeReference $codeReference
      *
-     * @throws ResolveException
-     * @throws CodeRepositoryException
+     * @throws ResolveException        If something not obvious happened, that is very likely to be a user error.
+     * @throws CodeRepositoryException If something wrong with the communication to the code repository.
      *
      * @return DockerComposeComponent[]
      */

@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\CodeRepository\DockerCompose;
 use ContinuousPipe\DockerCompose\DockerComposeException;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
 use ContinuousPipe\River\CodeRepository\FileSystem\FileException;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
 use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
@@ -39,20 +40,22 @@ class RepositoryComponentsResolver implements ComponentsResolver
     public function resolve(FlatFlow $flow, CodeReference $codeReference)
     {
         $fileSystem = $this->fileSystemResolver->getFileSystem($flow, $codeReference);
-        $dockerComposeComponents = [];
 
         try {
-            foreach ($this->projectParser->parse($fileSystem, $codeReference->getBranch()) as $name => $raw) {
-                if (!is_array($raw)) {
-                    continue;
-                }
-
-                $dockerComposeComponents[] = DockerComposeComponent::fromParsed($name, $raw);
-            }
-        } catch (FileException $e) {
-            throw new CodeRepositoryException($e->getMessage(), $e->getCode(), $e);
+            $components = $this->projectParser->parse($fileSystem, $codeReference->getBranch());
         } catch (DockerComposeException $e) {
             throw new ResolveException($e->getMessage(), $e->getCode(), $e);
+        } catch (FileNotFound $e) {
+            return [];
+        }
+
+        $dockerComposeComponents = [];
+        foreach ($components as $name => $raw) {
+            if (!is_array($raw)) {
+                continue;
+            }
+
+            $dockerComposeComponents[] = DockerComposeComponent::fromParsed($name, $raw);
         }
 
         return $dockerComposeComponents;

@@ -9,6 +9,7 @@ use ContinuousPipe\River\CodeRepository\DockerCompose\Configuration\PortIdentifi
 use ContinuousPipe\River\CodeRepository\DockerCompose\DockerComposeComponent;
 use ContinuousPipe\River\CodeRepository\DockerCompose\ResolveException;
 use ContinuousPipe\River\CodeRepository\FileSystem\FileException;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
 use ContinuousPipe\River\Flow\ConfigurationEnhancer;
 use ContinuousPipe\River\Flow\ConfigurationEnhancer\Helper\TaskLocator;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
@@ -47,6 +48,8 @@ class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
     {
         try {
             $dockerComposeComponents = $this->componentsResolver->resolve($flow, $codeReference);
+        } catch (CodeRepositoryException $e) {
+            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
         } catch (ResolveException $e) {
             $this->logger->warning('Unable to resolve the DockerCompose components', [
                 'exception' => $e,
@@ -55,9 +58,11 @@ class DockerComposeConfigurationAsDefault implements ConfigurationEnhancer
                 'code_reference' => $codeReference,
             ]);
 
+            $dockerComposeComponents = [];
+        }
+
+        if (empty($dockerComposeComponents)) {
             return $configs;
-        } catch (CodeRepositoryException $e) {
-            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
         }
 
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
