@@ -24,7 +24,7 @@ func (rip *RetryImagePusher) Push(imageName string, authConfig string, output io
             return err
         }
 
-        if numberOfCalls > 5 {
+        if numberOfCalls >= 3 {
             break
         }
     }

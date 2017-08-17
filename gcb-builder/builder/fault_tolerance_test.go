@@ -102,6 +102,24 @@ func TestItRetriesNetworkErrors(t *testing.T) {
     }
 }
 
+func TestItRetriesAMaximumNumberOfTimes(t *testing.T) {
+    pusher := NewRetryImagePush((&PushCallbackFactory{
+        error: errors.New("Head https://quay.io/v2/inviqa_images/ft/blobs/sha256:83aa9bf0098d040f87211c18b37a63bffd79ddfcb75b6ec2549ccee4a69bd72a: net/http: TLS handshake timeout [1]"),
+        callThreshold: 5,
+        afterThresholdError: nil,
+    }).callback)
+
+    var b bytes.Buffer
+    err := pusher.Push("foo", "bar", &b)
+
+    if err == nil {
+        t.Error("Should have returned error, returned nil")
+    }
+    if (b.String() != "PUSHPUSHPUSH") {
+        t.Errorf("Got %s instead of PUSHPUSHPUSH", b.String())
+    }
+}
+
 func NewRetryImagePush(callback PushCallback) RetryImagePusher {
     return RetryImagePusher{
         decoratedPusher: &PredictableImagePusher{
