@@ -75,7 +75,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
 
         $sourceArtifact = new Artifact($build->getIdentifier() . '.tar.gz');
         $this->writeArtifact($sourceArchive, $sourceArtifact);
-        $response = $this->startBuild($sourceArtifact, 'v5');
+        $response = $this->startBuild($sourceArtifact, 'v7');
 
         return new GoogleContainerBuild($this->getGcbBuildId($response));
     }
