@@ -1,25 +1,34 @@
+defaults:
+    cluster: ${CLUSTER}
+    environment:
+        name: '"documentation-" ~ code_reference.branch'
+
 tasks:
-  build:
-    build:
-      services:
-        web:
-          image: docker.io/inviqasession/cp-documentation
-  deployment:
-      deploy:
-        cluster: ${CLUSTER}
-        environment:
-          name: '"documentation-" ~ code_reference.branch'
-        services:
-          web:
-            endpoints:
-              - name: https
-                type: NodePort
-                ssl_certificates:
-                  - name: continuouspipeio
-                    cert: ${WILDCARD_SSL_CERT}
-                    key: ${WILDCARD_SSL_KEY}
-            deployment_strategy:
-                readiness_probe:
-                    type: http
-                    port: 80
-                    path: /
+    image:
+        build:
+            services:
+                web:
+                    image: docker.io/inviqasession/cp-documentation
+
+    deployment:
+        deploy:
+            services:
+                web:
+                    endpoints:
+                        - name: dev
+                          ingress:
+                              class: nginx
+                              host_suffix: 'documentation-dev.continuouspipe.io'
+                          cloud_flare_zone: { zone_identifier: '${CLOUD_FLARE_ZONE}', proxied: true, authentication: { email: '${CLOUD_FLARE_EMAIL}', api_key: '${CLOUD_FLARE_API_KEY}' } }
+                          ssl_certificates: [{ name: auto, cert: automatic, key: automatic }]
+                        - name: stable
+                          ingress:
+                              class: nginx
+                              host: docs.continuouspipe.io
+                          condition: 'code_reference.branch == "master"'
+                          ssl_certificates: [{ name: auto, cert: automatic, key: automatic }]
+                    deployment_strategy:
+                        readiness_probe:
+                            type: http
+                            port: 80
+                            path: /
