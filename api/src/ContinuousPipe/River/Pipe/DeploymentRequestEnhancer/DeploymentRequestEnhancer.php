@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Pipe\DeploymentRequestEnhancer;
 
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Tide;
 
 interface DeploymentRequestEnhancer
@@ -10,6 +11,8 @@ interface DeploymentRequestEnhancer
     /**
      * @param Tide              $tide
      * @param DeploymentRequest $deploymentRequest
+     *
+     * @throws DeploymentRequestException
      *
      * @return DeploymentRequest
      */
