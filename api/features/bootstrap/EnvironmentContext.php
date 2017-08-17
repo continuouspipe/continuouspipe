@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableNamespaceRepository;
 use ContinuousPipe\Model\Environment;
@@ -388,6 +389,27 @@ class EnvironmentContext implements Context
             sprintf('/teams/%s/clusters/%s/namespaces/%s/pods/%s', $teamName, $clusterId, 'namespace', $podName),
             'DELETE'
         ));
+    }
+
+    /**
+     * @Then the resources of the component :component should have the following :attribute:
+     */
+    public function theResourcesOfTheComponentShouldHaveTheFollowing($component, $attribute, TableNode $table)
+    {
+        $specification = $this->getComponentFromListResponse($component)['specification'];
+
+        foreach ($table->getHash() as $tableRow) {
+            if (
+                !isset($specification['resources'][$attribute][$tableRow['type']])
+                ||
+                $specification['resources'][$attribute][$tableRow['type']] != $tableRow['value']
+            ) {
+                throw new \RuntimeException(
+                    sprintf($tableRow['type'] . ' ' . $attribute .' %s not found.', $tableRow['value'])
+                );
+            }
+        }
+
     }
 
     /**

@@ -53,6 +53,17 @@ Feature:
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should contain container "app-1"
 
+  Scenario: It returns the resources of the containers
+    When I request the environment list of the cluster "my-cluster" of the team "my-team"
+    Then the resources of the component "app" should have the following limits:
+      | type   | value |
+      | cpu    | 250m  |
+      | memory | 300Mi |
+    And the resources of the component "app" should have the following requests:
+      | type   | value |
+      | cpu    | 100m  |
+      | memory | 250Mi |
+
   Scenario: It returns the CloudFlare DNS from the deprecated `com.continuouspipe.io.cloudflare.zone` annotation
     Given the service "app" have the following annotations:
       | name                                  | value                                                                 |
