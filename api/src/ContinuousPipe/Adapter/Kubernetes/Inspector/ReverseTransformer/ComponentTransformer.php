@@ -86,19 +86,14 @@ class ComponentTransformer
 
     private function getComponentResources(Container $container)
     {
-        $resources = $container->getResources();
-
-        if (is_null($resources)) {
+        if (null === ($resources = $container->getResources())) {
             return null;
         }
 
-        $requests = $resources->getRequests();
-        $requests = new ResourcesRequest($requests->getCpu(), $requests->getMemory());
-
-        $limits = $resources->getLimits();
-        $limits = new ResourcesRequest($limits->getCpu(), $limits->getMemory());
-
-        return new Component\Resources($requests, $limits);
+        return new Component\Resources(
+            null !== ($containerRequests = $resources->getRequests()) ? new ResourcesRequest($containerRequests->getCpu(), $containerRequests->getMemory()) : null,
+            null !== ($containerLimits = $resources->getLimits()) ? new ResourcesRequest($containerLimits->getCpu(), $containerLimits->getMemory()) : null
+        );
     }
 
     /**
