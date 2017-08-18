@@ -9,6 +9,7 @@ use JMS\Serializer\Annotation as JMS;
 class BitBucketCodeRepository extends AbstractCodeRepository
 {
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("ContinuousPipe\River\CodeRepository\BitBucket\BitBucketAccount")
      *
      * @var BitBucketAccount
@@ -16,6 +17,7 @@ class BitBucketCodeRepository extends AbstractCodeRepository
     private $owner;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("string")
      *
      * @var string
@@ -23,6 +25,7 @@ class BitBucketCodeRepository extends AbstractCodeRepository
     private $name;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("string")
      *
      * @var string
@@ -30,6 +33,7 @@ class BitBucketCodeRepository extends AbstractCodeRepository
     private $address;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("string")
      *
      * @var string
@@ -37,6 +41,7 @@ class BitBucketCodeRepository extends AbstractCodeRepository
     private $defaultBranch;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("boolean")
      *
      * @var bool

@@ -119,7 +119,7 @@ class TideController
      * @Route("/flows/{uuid}/tides", methods={"GET"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
      * @Security("is_granted('READ', flow)")
-     * @View
+     * @View(serializerGroups={"Default"})
      */
     public function findByFlowAction(Request $request, FlatFlow $flow)
     {
@@ -141,7 +141,7 @@ class TideController
      * @ParamConverter("creationRequest", converter="fos_rest.request_body")
      * @ParamConverter("user", converter="user")
      * @Security("is_granted('CREATE_TIDE', flow)")
-     * @View(statusCode=201)
+     * @View(statusCode=201, serializerGroups={"Default"})
      */
     public function createAction(FlatFlow $flow, TideCreationRequest $creationRequest, User $user)
     {
@@ -191,7 +191,7 @@ class TideController
      * @Route("/tides/{uuid}", methods={"GET"})
      * @ParamConverter("tide", converter="tide", options={"identifier"="uuid"})
      * @Security("is_granted('READ', tide)")
-     * @View
+     * @View(serializerGroups={"Default"})
      */
     public function getAction(Tide $tide)
     {

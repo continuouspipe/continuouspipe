@@ -4,25 +4,38 @@ namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
 use ContinuousPipe\AtlassianAddon\BitBucket\Actor;
 use ContinuousPipe\AtlassianAddon\BitBucket\Team;
+use JMS\Serializer\Annotation as JMS;
 
 class BitBucketAccount
 {
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $uuid;
 
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $username;
 
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $type;
 
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("string")
+     *
      * @var string|null
      */
     private $displayName;
