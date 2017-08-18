@@ -53,12 +53,14 @@
 </md-toolbar>
 
 <div ng-show="summary.deployed_services" class="relations open-btns mobile">
-    <md-button ng-repeat="(serviceName, service) in summary.deployed_services"
+    <div class="open-btns-scroll">
+        <md-button ng-repeat="(serviceName, service) in summary.deployed_services"
                class="md-raised md-primary"
                ng-if="service.public_endpoint"
                ng-click="openEndpoint(service.public_endpoint)">
-        Open <code>{{ serviceName }}</code>
-    </md-button>
+            Open <code>{{ serviceName }}</code>
+        </md-button>
+    </div>
 </div>
 
 <md-content flex id="content" class="card-grid log-container">
