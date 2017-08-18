@@ -40,7 +40,7 @@
         > * {
             flex: 1;
         }
-        
+
         code {
             margin-left: 5px;
         }
@@ -298,7 +298,7 @@ body {
 
                 md-content {
                     z-index: 45;
-                    
+
                     md-toolbar {
                         z-index: 50;
                     }
@@ -1123,4 +1123,28 @@ code {
             padding: 0 10px;
         }
     }
+
+    .md-toolbar-tools .md-button.expand-btn {
+        display: none;
+    }
+}
+
+.console-popup {
+    .md-button.md-icon-button {
+        margin: 0 0px 0 7px;
+        width: 26px;
+        padding: 0;
+
+        &:last-child {
+            margin: 0;
+        }
+    }
+}
+
+.modal-buttons {
+    display: flex;
+}
+
+md-tabs:not(.md-no-tab-content):not(.md-dynamic-height) {
+    min-height: 650px;
 }

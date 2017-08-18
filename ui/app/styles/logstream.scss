@@ -18,7 +18,7 @@ pre {
     border: 1px solid #ccc;
     border-radius: 4px;
     overflow: auto;
-    
+
     &.raw {
         background: #002b36;
         color: #839496;
@@ -393,11 +393,25 @@ pre {
     }
 }
 
+.expanded-modal md-dialog.logs-dialog {
+    max-width: 98%;
+    max-height: 98%;
+    width: 98%;
+    height: 98%;
+}
+
+
 md-dialog.logs-dialog {
-    @media only screen and (min-width: 600px) {
-        min-width: 600px;
-        width: 80%;
-        height: 80%;
+    min-width: 600px;
+    width: 80%;
+    height: 80%;
+
+    @media only screen and (max-width: 900px) {
+        max-width: 98%;
+        min-width: 98%;
+        max-height: 98%;
+        width: 98%;
+        height: 98%;
     }
 
     pod-selector {
