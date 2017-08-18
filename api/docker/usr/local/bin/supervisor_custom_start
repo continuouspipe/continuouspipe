@@ -1,6 +1,0 @@
-#!/bin/sh
-
-set -xe
-
-# Update parameters based on environment
-composer run-script update-parameters
