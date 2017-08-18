@@ -1289,13 +1289,9 @@ EOF;
      */
     public function iShouldNotSeeTheTide($uuid)
     {
-        $this->assertResponseStatus(200);
-        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
-        $matchingTides = array_filter($tides, function(array $tide) use ($uuid) {
-            return $tide['uuid'] == $uuid;
-        });
+        $tide = $this->getTideFromResponse($uuid);
 
-        if (count($matchingTides) != 0) {
+        if ($tide !== null) {
             throw new \RuntimeException(sprintf('Found tide %s', $uuid));
         }
     }
@@ -1305,14 +1301,24 @@ EOF;
      */
     public function iShouldSeeTheTide($uuid)
     {
-        $this->assertResponseStatus(200);
-        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
-        $matchingTides = array_filter($tides, function(array $tide) use ($uuid) {
-            return $tide['uuid'] == $uuid;
-        });
+        $tide = $this->getTideFromResponse($uuid);
 
-        if (count($matchingTides) == 0) {
+        if (null === $tide) {
             throw new \RuntimeException(sprintf('Tide %s not found', $uuid));
+        }
+    }
+
+    /**
+     * @When I should not see the configuration of the tide :tideUuid
+     */
+    public function iShouldNotSeeTheConfigurationOfTheTide($tideUuid)
+    {
+        if (null === ($tide = $this->getTideFromResponse($tideUuid))) {
+            throw new \RuntimeException('Tide not found');
+        }
+
+        if (isset($tide['configuration'])) {
+            throw new \RuntimeException('Got the tide configuration as well');
         }
     }
 
@@ -1412,6 +1418,21 @@ EOF;
         }
 
         return $tides[0];
+    }
+
+    private function getTideFromResponse(string $tideUuid)
+    {
+        $this->assertResponseStatus(200);
+        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingTides = array_filter($tides, function(array $tide) use ($tideUuid) {
+            return $tide['uuid'] == $tideUuid;
+        });
+
+        if (count($matchingTides) == 0) {
+            return null;
+        }
+
+        return current($matchingTides);
     }
 
     private function getTideUuid()

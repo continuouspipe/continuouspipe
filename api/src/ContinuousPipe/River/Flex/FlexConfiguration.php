@@ -8,6 +8,7 @@ class FlexConfiguration
 {
     /**
      * @JMS\Type("string")
+     * @JMS\Groups({"Default"})
      *
      * @var string
      */

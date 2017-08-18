@@ -84,7 +84,7 @@ class FlowController
      * @Route("/teams/{slug}/flows", methods={"POST"})
      * @ParamConverter("team", converter="team", options={"slug"="slug"})
      * @ParamConverter("creationRequest", converter="fos_rest.request_body")
-     * @View
+     * @View(serializerGroups={"Default"})
      */
     public function fromRepositoryAction(Team $team, Flow\Request\FlowCreationRequest $creationRequest)
     {
@@ -101,7 +101,7 @@ class FlowController
      *
      * @Route("/teams/{slug}/flows", methods={"GET"})
      * @ParamConverter("team", converter="team", options={"slug"="slug"})
-     * @View
+     * @View(serializerGroups={"Default"})
      */
     public function listAction(Team $team)
     {
@@ -118,7 +118,7 @@ class FlowController
      * @Route("/flows/{uuid}", methods={"GET"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
      * @Security("is_granted('READ', flow)")
-     * @View
+     * @View(serializerGroups={"Default"})
      */
     public function getAction(FlatFlow $flow)
     {
@@ -150,7 +150,7 @@ class FlowController
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid"})
      * @ParamConverter("updateRequest", converter="fos_rest.request_body")
      * @Security("is_granted('UPDATE', flow)")
-     * @View
+     * @View(serializerGroups={"Default"})
      */
     public function updateAction(Flow $flow, Flow\Request\FlowUpdateRequest $updateRequest)
     {

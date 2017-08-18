@@ -18,46 +18,71 @@ use JMS\Serializer\Annotation as JMS;
 class FlatFlow
 {
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("uuid")
+     *
      * @var Uuid
      */
     private $uuid;
 
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("ContinuousPipe\Security\Team\Team")
+     *
      * @var Team
      */
     private $team;
 
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("ContinuousPipe\Security\User\User")
+     *
      * @var User
      */
     private $user;
 
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("array")
+     *
      * @var array
      */
     private $configuration;
 
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("array<ContinuousPipe\River\Flow\Projections\FlatPipeline>")
+     *
      * @var Collection|FlatPipeline[]
      */
     private $pipelines;
 
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("array<ContinuousPipe\River\View\Tide>")
+     *
      * @var Tide[]
      */
     private $tides;
 
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("ContinuousPipe\River\CodeRepository")
+     *
      * @var CodeRepository|null
      */
     private $repository;
 
     /**
+     * @JMS\Groups({"Default"})
+     * @JMS\Type("array<string>")
+     *
      * @var string[]
      */
     private $pinnedBranches;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("ContinuousPipe\River\Flex\FlexConfiguration")
      * @JMS\Accessor(getter="getFlexConfiguration")
      *
