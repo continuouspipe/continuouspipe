@@ -6,3 +6,4 @@ export START_CRON=${START_CRON:-false}
 export START_WORKER=${START_WORKER:-false}
 
 export PHP_MEMORY_LIMIT=1G
+export TIDEWAYS_ENABLED="true"
