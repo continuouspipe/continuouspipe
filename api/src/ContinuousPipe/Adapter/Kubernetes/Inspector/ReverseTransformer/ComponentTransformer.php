@@ -4,6 +4,7 @@ namespace ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer;
 
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceSnapshot;
 use ContinuousPipe\Model\Component;
+use ContinuousPipe\Model\Component\ResourcesRequest;
 use ContinuousPipe\Model\Status;
 use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\ContainerStatus;
@@ -67,12 +68,31 @@ class ComponentTransformer
             new Component\Specification(
                 $this->getComponentSource($containers[0]),
                 $this->getComponentAccessibility($snapshot, $name),
-                new Component\Scalability(true, $replicas)
+                new Component\Scalability(true, $replicas),
+                [],
+                [],
+                [],
+                [],
+                null,
+                null,
+                $this->getComponentResources($containers[0])
             ),
             [],
             [],
             $this->getComponentStatus($snapshot, $object),
             new Component\DeploymentStrategy(null, null, false, false)
+        );
+    }
+
+    private function getComponentResources(Container $container)
+    {
+        if (null === ($resources = $container->getResources())) {
+            return null;
+        }
+
+        return new Component\Resources(
+            null !== ($containerRequests = $resources->getRequests()) ? new ResourcesRequest($containerRequests->getCpu(), $containerRequests->getMemory()) : null,
+            null !== ($containerLimits = $resources->getLimits()) ? new ResourcesRequest($containerLimits->getCpu(), $containerLimits->getMemory()) : null
         );
     }
 
