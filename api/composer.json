@@ -57,7 +57,7 @@
         "continuous-pipe/platform-bundle": "~1.0.0",
         "continuous-pipe/events": "~0.2.0",
         "sroze/kubernetes-client": "~1.7.1",
-        "continuous-pipe/message": "dev-add-transactions-and-delayed-messages",
+        "continuous-pipe/message": "dev-master",
         "symfony/dotenv": "^3.3",
         "continuous-pipe/flex": "dev-master"
     },
