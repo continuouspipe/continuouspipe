@@ -60,5 +60,4 @@ class AuthenticatorCredentialsRepository implements CredentialsRepository
 
         return $matchingCredentials->first();
     }
-
 }

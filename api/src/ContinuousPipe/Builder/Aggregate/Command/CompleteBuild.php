@@ -44,5 +44,4 @@ class CompleteBuild implements Message
     {
         return $this->status;
     }
-    
 }

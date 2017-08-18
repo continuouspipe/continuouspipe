@@ -8,7 +8,6 @@ use ContinuousPipe\Builder\Artifact\ArtifactManager;
 
 class TraceableArtifactManager implements ArtifactManager
 {
-
     private $written = [];
 
     public function read(Artifact $artifact) : Archive
@@ -34,5 +33,4 @@ class TraceableArtifactManager implements ArtifactManager
     {
         return $this->written;
     }
-    
 }
