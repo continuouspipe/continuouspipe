@@ -428,6 +428,21 @@ class BuildContext implements Context
     }
 
     /**
+     * @Then the build should be started without reusing the built docker image
+     */
+    public function theBuildShouldBeStartedWithoutReusingTheBuiltDockerImage()
+    {
+        $step = $this->getBuildRequestStep();
+        if (null === ($image = $step->getImage())) {
+            throw new \RuntimeException('No image found for this build step');
+        }
+
+        if ($image->getReuse() !== false) {
+            throw new \RuntimeException(sprintf('Found value "%s" instead', $image->getReuse()));
+        }
+    }
+
+    /**
      * @Then the build should be started with the tag :tag
      * @Then the build #:buildIndex should be started with the tag :tag
      * @Then the step #:stepIndex of the build should be started with the tag :tag

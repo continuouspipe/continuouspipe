@@ -12,15 +12,21 @@ class Image
      * @var string
      */
     private $tag;
+    /**
+     * @var bool|null
+     */
+    private $reuse;
 
     /**
      * @param string $name
      * @param string $tag
+     * @param bool $reuse
      */
-    public function __construct($name, $tag)
+    public function __construct($name, $tag, bool $reuse = null)
     {
         $this->name = $name;
         $this->tag = $tag;
+        $this->reuse = $reuse;
     }
 
     /**
@@ -37,5 +43,13 @@ class Image
     public function getTag()
     {
         return $this->tag;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getReuse()
+    {
+        return $this->reuse;
     }
 }
