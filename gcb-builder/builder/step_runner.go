@@ -34,8 +34,10 @@ type DockerStepRunner struct {
 // DockerStepRunner creates an instance of DockerStepRunner
 func NewDockerStepRunner(client *client.Client, artifactManager ArtifactManager) (*DockerStepRunner, error) {
     return &DockerStepRunner{
-        imagePusher: &DockerImagePush{
-            dockerClient: client,
+        imagePusher: &RetryImagePusher{
+            decoratedPusher: &DockerImagePush{
+                dockerClient: client,
+            },
         },
         dockerClient: client,
         artifactManager: artifactManager,
