@@ -50,7 +50,7 @@ class DockerRegistry implements Registry
 
         if ($manifestResponse->getStatusCode() == 200) {
             return true;
-        } else if ($manifestResponse->getStatusCode() == 404) {
+        } elseif ($manifestResponse->getStatusCode() == 404) {
             return false;
         }
 

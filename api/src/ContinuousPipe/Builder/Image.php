@@ -8,19 +8,29 @@ class Image
      * @var string
      */
     private $name;
+
     /**
      * @var string
      */
     private $tag;
 
     /**
+     * Re-use the existing built image.
+     *
+     * @var bool|null
+     */
+    private $reuse;
+
+    /**
      * @param string $name
      * @param string $tag
+     * @param bool $reuse
      */
-    public function __construct($name, $tag)
+    public function __construct($name, $tag, bool $reuse = null)
     {
         $this->name = $name;
         $this->tag = $tag;
+        $this->reuse = $reuse;
     }
 
     /**
@@ -38,6 +48,14 @@ class Image
             return $this->getName();
         }
         return $parts[1] . '/' . $parts[2];
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function shouldReuse()
+    {
+        return $this->reuse;
     }
 
     /**

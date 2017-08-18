@@ -66,7 +66,8 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
     {
         try {
             $sourceArchive = new Archive\FileSystemArchive(Archive\FileSystemArchive::createDirectory('mani-only'));
-            $sourceArchive->writeFile(self::MANIFEST_FILENAME,
+            $sourceArchive->writeFile(
+                self::MANIFEST_FILENAME,
                 \GuzzleHttp\json_encode($this->manifestFactory->create($build))
             );
         } catch (Archive\ArchiveException $e) {
@@ -152,11 +153,12 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
             }
         } catch (\InvalidArgumentException $e) {
             throw new GoogleContainerBuilderException(
-                'Something went wrong while creating the build', $e->getCode(), $e
+                'Something went wrong while creating the build',
+                $e->getCode(),
+                $e
             );
         }
 
         return $json['metadata']['build']['id'];
     }
-
 }

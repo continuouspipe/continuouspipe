@@ -38,7 +38,7 @@ class ExistingImageChecker
             return false;
         }
 
-        if (!$this->allImagesExist($imageSteps, $buildRequest)) {
+        if (!$this->allImagesExistAndShouldReuse($imageSteps, $buildRequest)) {
             return false;
         }
 
@@ -61,14 +61,18 @@ class ExistingImageChecker
         );
     }
 
-    private function allImagesExist(array $imageSteps, BuildRequest $buildRequest): bool
+    private function allImagesExistAndShouldReuse(array $imageSteps, BuildRequest $buildRequest): bool
     {
         return array_reduce(
             $imageSteps,
             function (bool $allExist, BuildStepConfiguration $step) use ($buildRequest) {
-                return $allExist && $this->registry->containsImage(
+                if (null === ($image = $step->getImage())) {
+                    return $allExist;
+                }
+
+                return $allExist && $image->shouldReuse() !== false && $this->registry->containsImage(
                     $buildRequest->getCredentialsBucket(),
-                    $step->getImage()
+                    $image
                 );
             },
             true

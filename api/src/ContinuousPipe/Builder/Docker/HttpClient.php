@@ -105,7 +105,8 @@ class HttpClient implements DockerFacade, DockerImageReader
     {
         try {
             $createImageStream = $this->docker->getImageManager()->push(
-                $image->getName(), [
+                $image->getName(),
+                [
                     'tag' => $image->getTag(),
                     'X-Registry-Auth' => $context->getCredentials()->getAuthenticationString(),
                 ],

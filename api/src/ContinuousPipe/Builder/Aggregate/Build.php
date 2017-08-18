@@ -151,7 +151,8 @@ class Build implements Aggregate
     }
 
     private function applyGCBuildStarted(GCBuildStarted $event)
-    {}
+    {
+    }
 
     private function applyBuildStepStarted(BuildStepStarted $started)
     {

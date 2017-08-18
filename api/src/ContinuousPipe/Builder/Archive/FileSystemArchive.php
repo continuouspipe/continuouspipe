@@ -26,7 +26,8 @@ class FileSystemArchive extends Context implements Archive
         foreach (
             $iterator = new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
-                \RecursiveIteratorIterator::SELF_FIRST) as $item
+                \RecursiveIteratorIterator::SELF_FIRST
+            ) as $item
         ) {
             if ($item->isDir()) {
                 mkdir($directory . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
@@ -103,9 +104,9 @@ class FileSystemArchive extends Context implements Archive
         return file_exists($this->getDirectory().DIRECTORY_SEPARATOR.$path);
     }
 
-/**
-     * {@inheritdoc}
-     */
+    /**
+         * {@inheritdoc}
+         */
     public function write(string $path, Archive $archive)
     {
         $this->writeStream($path, $archive->read());
