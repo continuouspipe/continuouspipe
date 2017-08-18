@@ -484,6 +484,24 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the endpoint :endpointName of the component :componentName should be an ingress without http rule
+     */
+    public function theEndpointOfTheComponentShouldBeAnIngressWithoutHttpRule($componentName, $endpointName)
+    {
+        $endpoint = $this->getEndpointOfComponent($componentName, $endpointName);
+
+        if (null === ($ingress = $endpoint->getIngress())) {
+            throw new \RuntimeException('The ingress configuration is null');
+        }
+
+        foreach ($ingress->getRules() as $rule) {
+            if ($rule->getHttp() !== null) {
+                throw new \RuntimeException('Found an HTTP rule');
+            }
+        }
+    }
+
+    /**
      * @Then the endpoint :endpointName of the component :name should be deployed with an HttpLabs configuration for the project :project and API key :apiKey
      */
     public function theEndpointOfTheComponentShouldBeDeployedWithAnHttplabsConfigurationForTheProjectAndApiKey($endpointName, $name, $project, $apiKey)
