@@ -209,8 +209,7 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
                 $tide->getFlowUuid(),
                 $tide->getCodeReference(),
                 $this->hostnameResolver->generateHostExpression($hostSuffix)
-            ),
-            new IngressHttpRule([])
+            )
         );
     }
 }
