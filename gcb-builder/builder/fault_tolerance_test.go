@@ -80,6 +80,7 @@ func TestItRetriesNetworkErrors(t *testing.T) {
         "Get https://quay.io/v2/auth?account=sroze&scope=repository%3Asroze%2Fft%3Apush%2Cpull&service=quay.io: net/http: request canceled (Client.Timeout exceeded while awaiting headers)",
         "Get https://quay.io/v2/continuouspipe/magento2-nginx-php7/manifests/v1.0: Get https://quay.io/v2/auth?scope=repository%3Acontinuouspipe%2Fmagento2-nginx-php7%3Apull&service=quay.io: net/http: request canceled (Client.Timeout exceeded while awaiting headers)",
         "Head https://quay.io/v2/inviqa_images/ft/blobs/sha256:83aa9bf0098d040f87211c18b37a63bffd79ddfcb75b6ec2549ccee4a69bd72a: net/http: TLS handshake timeout [1]",
+        "error parsing HTTP 413 response body: invalid character '&lt;' looking for beginning of value: \"\r\n413 Request Entity Too Large\r\n\r\n<center><h1>413 Request Entity Too Large</h1></center>\r\n<hr><center>nginx/1.13.3</center>\r\n\r\n\r\n\" [1]</span>",
     }
 
     for _, errorString := range errorStrings {
