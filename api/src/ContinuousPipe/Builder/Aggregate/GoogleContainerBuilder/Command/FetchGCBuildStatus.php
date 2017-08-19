@@ -55,12 +55,10 @@ class FetchGCBuildStatus implements DelayedMessage
     }
 
     /**
-     * Date/time at which the message have to be run.
-     *
-     * @return \DateTimeInterface
+     * {@inheritdoc}
      */
     public function runAt() : \DateTimeInterface
     {
-        return $this->runAt ?: new \DateTime();
+        return $this->runAt ?: new \DateTime('-1 min');
     }
 }
