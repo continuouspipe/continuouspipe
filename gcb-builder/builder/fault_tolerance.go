@@ -44,6 +44,7 @@ func shouldRetryAfterError (err error) bool {
         "^push (or pull )?([^ ]+) is already in progress",
         "net/http: TLS handshake timeout",
         "(?i)^Received unexpected HTTP status: 500 Internal Server Error",
+        "^error parsing HTTP 413 response body:",
     }
 
     for _, matchingRegex := range matchingRegexes {
