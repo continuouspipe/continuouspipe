@@ -127,6 +127,11 @@ class DeployTaskFactory implements TaskFactory
                             ->arrayNode('specification')
                                 ->isRequired()
                                 ->addDefaultsIfNotSet()
+                                ->beforeNormalization()
+                                    ->always()->then(function ($configuration) {
+                                        return self::normalizeVolumesConfiguration($configuration);
+                                    })
+                                ->end()
                                 ->children()
                                     ->arrayNode('source')
                                         ->isRequired()
@@ -159,11 +164,11 @@ class DeployTaskFactory implements TaskFactory
                                     ->arrayNode('volumes')
                                         ->prototype('array')
                                             ->children()
-                                                ->scalarNode('type')->isRequired()->end()
+                                                ->scalarNode('type')->defaultValue('persistent')->end()
                                                 ->scalarNode('name')->isRequired()->end()
                                                 ->scalarNode('path')->end()
                                                 ->scalarNode('capacity')->end()
-                                                ->scalarNode('storage_class')->end()
+                                                ->scalarNode('storage_class')->defaultValue('default')->end()
                                             ->end()
                                         ->end()
                                     ->end()
@@ -457,5 +462,25 @@ class DeployTaskFactory implements TaskFactory
             ->end();
 
         return $node;
+    }
+
+    public static function normalizeVolumesConfiguration($configuration)
+    {
+        if (isset($configuration['volumes']) && !isset($configuration['volume_mounts']) && is_array($configuration['volumes'])) {
+            $configuration['volume_mounts'] = [];
+
+            foreach ($configuration['volumes'] as $key => $volume) {
+                if (isset($volume['mount_path'])) {
+                    $configuration['volume_mounts'][]  = [
+                        'name' => $volume['name'],
+                        'mount_path'  => $volume['mount_path'],
+                    ];
+
+                    unset($configuration['volumes'][$key]['mount_path']);
+                }
+            }
+        }
+
+        return $configuration;
     }
 }

@@ -59,3 +59,24 @@ Feature:
     When a tide is started
     Then the component "run-testing-command" should be deployed
     And the component "run-testing-command" should have a persistent volume mounted at "/var/lib/app"
+
+  Scenario: I can use the simple persistent volumes notation in run tasks as well
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        testing_command:
+            run:
+                cluster: foo
+                commands:
+                    - echo testing
+                    - sleep 10
+                    - echo done
+                image: busybox
+                volumes:
+                    - name: api-volume
+                      capacity: 5Gi
+                      mount_path: /var/lib/app
+    """
+    When a tide is started
+    Then the component "run-testing-command" should be deployed
+    And the component "run-testing-command" should have a persistent volume mounted at "/var/lib/app"
