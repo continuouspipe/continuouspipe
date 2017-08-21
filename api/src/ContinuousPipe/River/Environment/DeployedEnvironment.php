@@ -64,4 +64,12 @@ class DeployedEnvironment
     {
         return $this->cluster;
     }
+
+    /**
+     * @return Component[]
+     */
+    public function getComponents()
+    {
+        return $this->components;
+    }
 }

@@ -38,6 +38,8 @@ use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use GitHub\WebHook\Model\Repository;
 use Symfony\Component\VarDumper\Test\VarDumperTestTrait;
 use Symfony\Component\Yaml\Yaml;
+use ContinuousPipe\Model\Component;
+use Jms\Serializer\SerializerInterface;
 
 class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
@@ -123,6 +125,11 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      */
     private $hookablePipeClient;
 
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
     public function __construct(
         FakeClient $pipeClient,
         HookableClient $hookablePipeClient,
@@ -132,7 +139,8 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         InMemoryCodeRepositoryRepository $codeRepositoryRepository,
         InMemoryAuthenticatorClient $authenticatorClient,
         TeamRepository $teamRepository,
-        MessageBus $eventBus
+        MessageBus $eventBus,
+        SerializerInterface $serializer
     ) {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
@@ -143,6 +151,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         $this->traceablePipeClient = $traceablePipeClient;
         $this->eventBus = $eventBus;
         $this->hookablePipeClient = $hookablePipeClient;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -1324,4 +1333,85 @@ EOF;
         }
     }
 
+    /**
+     * @When I request the usage of the flow :uuid
+     */
+    public function iRequestTheUsageOfTheFlow($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$uuid.'/usage'
+        ));
+    }
+
+    /**
+     * @Given the environment :environmentName on the cluster :cluster has component :component with specification:
+     */
+    public function theEnvironmentOnTheClusterHasComponentWithSpecification($environmentName, $cluster, $component, PyStringNode $specification)
+    {
+        $environmentFound = false;
+
+        $environmentPromise = $this->traceablePipeClient->getEnvironments(
+            $cluster,
+            new Team('fake', 'fake'),
+            new User('fake', Uuid::uuid1())
+        );
+
+        /** @var Environment[] $environments */
+        $environments = $environmentPromise->wait(true);
+
+        foreach ($environments as $environment) {
+            if ($environmentName == $environment->getName()) {
+                $environmentFound = true;
+                $environment->addComponent(
+                    new Component(
+                        $component,
+                        $component,
+                        $this->serializer->deserialize($specification->getRaw(), Component\Specification::class, 'json')
+                    )
+                );
+            }
+        }
+
+        if (!$environmentFound) {
+            throw new \RuntimeException(sprintf('Environment (%s) not found', $environmentName));
+        }
+    }
+
+    /**
+     * @Then I should see limits for cpu of :cpu and memory of :memory
+     */
+    public function iShouldSeeLimitsForCpuOfAndMemoryOf($cpu, $memory)
+    {
+        /** @var Component\Resources $resources */
+        $resources = $this->serializer->deserialize($this->response->getContent(), Component\Resources::class, 'json');
+
+        $limits = $resources->getLimits();
+
+        if ($limits->getCpu() != $cpu) {
+            throw new \RuntimeException(sprintf('Expected cpu limit %s but got %s', $cpu, $limits->getCpu()));
+        }
+
+        if ($limits->getMemory() != $memory) {
+            throw new \RuntimeException(sprintf('Expected memory limit %s but got %s', $memory, $limits->getMemory()));
+        }
+    }
+
+    /**
+     * @Then I should see requests for cpu of :cpu and memory of :memory
+     */
+    public function iShouldSeeRequestsForCpuOfAndMemoryOf($cpu, $memory)
+    {
+        /** @var Component\Resources $resources */
+        $resources = $this->serializer->deserialize($this->response->getContent(), Component\Resources::class, 'json');
+
+        $requests = $resources->getRequests();
+
+        if ($requests->getCpu() != $cpu) {
+            throw new \RuntimeException(sprintf('Expected cpu requests %s but got %s', $cpu, $requests->getCpu()));
+        }
+
+        if ($requests->getMemory() != $memory) {
+            throw new \RuntimeException(sprintf('Expected memory requests %s but got %s', $memory, $requests->getMemory()));
+        }
+    }
 }

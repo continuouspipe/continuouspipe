@@ -50,6 +50,7 @@ default:
                     - @security.authenticator.client.in_memory
                     - @authenticator.team_repository
                     - @event_bus
+                    - @jms_serializer
                 - Task\BuildContext:
                     - @builder.client
                     - @builder.client.traceable
@@ -199,6 +200,7 @@ default:
                     - @security.authenticator.client.in_memory
                     - @authenticator.team_repository
                     - @event_bus
+                    - @jms_serializer
                 - Task\BuildContext:
                     - @builder.client
                     - @builder.client.traceable
@@ -308,6 +310,7 @@ default:
                     - @security.authenticator.client.in_memory
                     - @authenticator.team_repository
                     - @event_bus
+                    - @jms_serializer
                 - Task\BuildContext:
                     - @builder.client
                     - @builder.client.traceable
@@ -383,6 +386,7 @@ smoke:
                     - @security.authenticator.client.in_memory
                     - @authenticator.team_repository
                     - @event_bus
+                    - @jms_serializer
                 - TideContext:
                     - @command_bus
                     - @event_bus
