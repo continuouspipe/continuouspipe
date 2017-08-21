@@ -72,6 +72,7 @@ func shouldRetryAfterError (err error) bool {
         "net/http: TLS handshake timeout",
         "(?i)^Received unexpected HTTP status: 500 Internal Server Error",
         "^error parsing HTTP 413 response body:",
+        ": io: read/write on closed pipe$",
     }
 
     for _, matchingRegex := range matchingRegexes {
