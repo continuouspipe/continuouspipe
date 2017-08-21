@@ -5,15 +5,21 @@ import (
     "bytes"
     "testing"
     "errors"
+    "github.com/docker/engine-api/types"
+    "strings"
 )
 
 type PushCallback func(output io.Writer) error
 type PredictableImagePusher struct {
     callback PushCallback
 }
+type PredictableImageBuilder struct {
+    callback PushCallback
+}
 
 type PushCallbackFactory struct {
     error error
+    message   string
 
     callThreshold int
     afterThresholdError error
@@ -24,7 +30,11 @@ type PushCallbackFactory struct {
 func (pcf *PushCallbackFactory) callback(output io.Writer) error {
     pcf.callCount++
 
-    output.Write([]byte("PUSH"))
+    if pcf.message == "" {
+        pcf.message = "PUSH"
+    }
+
+    output.Write([]byte(pcf.message))
 
     if (0 != pcf.callThreshold && pcf.callCount > pcf.callThreshold) {
         return pcf.afterThresholdError
@@ -35,6 +45,10 @@ func (pcf *PushCallbackFactory) callback(output io.Writer) error {
 
 func (pip *PredictableImagePusher) Push(imageName string, authConfig string, output io.Writer) error {
     return pip.callback(output)
+}
+
+func (pib *PredictableImageBuilder) Build(buildContext io.Reader, options types.ImageBuildOptions, output io.Writer) error {
+    return pib.callback(output)
 }
 
 func TestItDoNotRetryWhenPushWorks(t *testing.T) {
@@ -121,9 +135,55 @@ func TestItRetriesAMaximumNumberOfTimes(t *testing.T) {
     }
 }
 
+func TestItRetriesWhenBuildingFailsWithSpecificExceptions(t *testing.T) {
+    builder := NewRetryImageBuilder((&PushCallbackFactory{
+        error: errors.New("Get https://quay.io/v2/continuouspipe/symfony-php7.1-apache/manifests/latest: net/http: TLS handshake timeout [1]"),
+        callThreshold: 1,
+        afterThresholdError: nil,
+        message: "BUILD",
+    }).callback)
+
+    var reader = strings.NewReader("foo")
+    var b bytes.Buffer
+    err := builder.Build(reader, types.ImageBuildOptions{}, &b)
+
+    if err != nil {
+        t.Errorf("Should not have returned error, returned: %s", err.Error())
+    }
+    if (b.String() != "BUILDBUILD") {
+        t.Errorf("Got %s instead of BUILDBUILD", b.String())
+    }
+}
+
+func TestItDoNotRetryWithANormalErrorFromBuilds(t *testing.T) {
+    builder := NewRetryImageBuilder((&PushCallbackFactory{
+        error: errors.New("Command container build returned status 1"),
+        message: "BUILD",
+    }).callback)
+
+    var reader = strings.NewReader("foo")
+    var b bytes.Buffer
+    err := builder.Build(reader, types.ImageBuildOptions{}, &b)
+
+    if err == nil {
+        t.Error("Should have returned error, returned nil")
+    }
+    if (b.String() != "BUILD") {
+        t.Errorf("Got %s instead of BUILD", b.String())
+    }
+}
+
 func NewRetryImagePush(callback PushCallback) RetryImagePusher {
     return RetryImagePusher{
         decoratedPusher: &PredictableImagePusher{
+            callback: callback,
+        },
+    }
+}
+
+func NewRetryImageBuilder(callback PushCallback) RetryImageBuilder {
+    return RetryImageBuilder{
+        decoratedBuilder: &PredictableImageBuilder{
             callback: callback,
         },
     }

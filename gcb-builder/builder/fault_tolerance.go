@@ -4,10 +4,15 @@ import (
     "io"
     "regexp"
     "fmt"
+    "github.com/docker/engine-api/types"
 )
 
 type RetryImagePusher struct {
     decoratedPusher ImagePusher
+}
+
+type RetryImageBuilder struct {
+    decoratedBuilder ImageBuilder
 }
 
 func (rip *RetryImagePusher) Push(imageName string, authConfig string, output io.Writer) error {
@@ -17,6 +22,28 @@ func (rip *RetryImagePusher) Push(imageName string, authConfig string, output io
     for {
         numberOfCalls++
         if err = rip.decoratedPusher.Push(imageName, authConfig, output); err == nil {
+            return err
+        }
+
+        if !shouldRetryAfterError(err) {
+            return err
+        }
+
+        if numberOfCalls >= 3 {
+            break
+        }
+    }
+
+    return err
+}
+
+func (rib *RetryImageBuilder) Build(buildContext io.Reader, options types.ImageBuildOptions, output io.Writer) error {
+    var err error
+    numberOfCalls := 0
+
+    for {
+        numberOfCalls++
+        if err = rib.decoratedBuilder.Build(buildContext, options, output); err == nil {
             return err
         }
 
