@@ -188,8 +188,10 @@ class HttpPipeClient implements Client
                 return $environments;
             },
             function (RequestException $e) {
-                if ($e->getResponse()->getStatusCode() == 404) {
-                    throw new ClusterNotFound('Unable to get the environment list');
+                if (null !== ($response = $e->getResponse())) {
+                    if ($response->getStatusCode() == 404) {
+                        throw new ClusterNotFound('Unable to get the environment list');
+                    }
                 }
 
                 throw $e;
