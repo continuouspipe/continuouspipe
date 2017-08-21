@@ -39,7 +39,7 @@ variables:
       value: projects/continuous-pipe-1042/subscriptions/production-river-worker
     - name: REDIS_HOST
       condition: code_reference.branch == 'production'
-      value: redis.stack-production.svc.cluster.local
+      value: redis.stack-production.svc.cluster.local:26379
 
     - name: BUILDER_URL
       condition: code_reference.branch != 'production'
@@ -67,7 +67,7 @@ variables:
       value: projects/continuous-pipe-1042/subscriptions/staging-river-worker
     - name: REDIS_HOST
       condition: code_reference.branch == 'master'
-      value: redis.stack-master.svc.cluster.local
+      value: redis.stack-master.svc.cluster.local:26379
 
 tasks:
     images:
