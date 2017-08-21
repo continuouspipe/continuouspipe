@@ -2,9 +2,11 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes\Client;
 
+use ContinuousPipe\Adapter\Kubernetes\Client\Authentication\AuthenticatedHttpClientFactory;
 use ContinuousPipe\Security\Credentials\Cluster;
-use GuzzleHttp\Client as GuzzleClient;
-use JMS\Serializer\Serializer;
+use Google\Auth\Credentials\ServiceAccountCredentials;
+use GuzzleHttp\ClientInterface as GuzzleClient;
+use JMS\Serializer\SerializerInterface;
 use Kubernetes\Client\Adapter\Http\AuthenticationMiddleware;
 use Kubernetes\Client\Adapter\Http\GuzzleHttpClient;
 use Kubernetes\Client\Adapter\Http\HttpConnector;
@@ -16,7 +18,7 @@ use Psr\Log\LoggerInterface;
 class HttpClientFactory implements KubernetesClientFactory
 {
     /**
-     * @var Serializer
+     * @var SerializerInterface
      */
     private $serializer;
 
@@ -34,17 +36,23 @@ class HttpClientFactory implements KubernetesClientFactory
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var AuthenticatedHttpClientFactory
+     */
+    private $authenticatedHttpClientFactory;
 
     public function __construct(
-        Serializer                 $serializer,
+        SerializerInterface        $serializer,
         GuzzleClient               $guzzleClient,
         FaultToleranceConfigurator $faultToleranceConfigurator,
+        AuthenticatedHttpClientFactory $authenticatedHttpClientFactory,
         LoggerInterface            $logger
     ) {
         $this->serializer = $serializer;
         $this->guzzleClient = $guzzleClient;
         $this->faultToleranceConfigurator = $faultToleranceConfigurator;
         $this->logger = $logger;
+        $this->authenticatedHttpClientFactory = $authenticatedHttpClientFactory;
     }
 
     /**
@@ -59,17 +67,14 @@ class HttpClientFactory implements KubernetesClientFactory
         $httpClient = new GuzzleHttpClient(
             $this->guzzleClient,
             $cluster->getAddress(),
-            $this->getClusterVersion($cluster)
+            $this->getClusterVersion($cluster),
+            $cluster->getCaCertificate()
         );
-
-        if (null !== $cluster->getUsername()) {
-            $httpClient = new AuthenticationMiddleware($httpClient, $cluster->getUsername(), $cluster->getPassword());
-        }
 
         return new Client(
             new HttpAdapter(
                 new HttpConnector(
-                    $httpClient,
+                    $this->authenticatedHttpClientFactory->authenticatedClient($httpClient, $cluster),
                     new JmsSerializerAdapter($this->serializer),
                     $this->logger
                 )
@@ -77,12 +82,7 @@ class HttpClientFactory implements KubernetesClientFactory
         );
     }
 
-    /**
-     * @param Cluster\Kubernetes $cluster
-     *
-     * @return string
-     */
-    private function getClusterVersion(Cluster\Kubernetes $cluster)
+    private function getClusterVersion(Cluster\Kubernetes $cluster) : string
     {
         return explode('.', $cluster->getVersion())[0];
     }
