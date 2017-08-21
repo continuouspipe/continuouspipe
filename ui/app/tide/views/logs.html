@@ -1,5 +1,5 @@
 <md-toolbar class="status-container" ng-class="(summary.status || tide.status) | tideStatusClass">
-    <div class="md-toolbar-tools">
+    <div class="md-toolbar-tools tools-bar">
         <md-progress-circular md-mode="indeterminate"  ng-show="summary && summary.status == 'running'" md-diameter="30px"></md-progress-circular>
         <div class="status" flex>
             <h2 ng-hide="summary"><span>Loading...</span></h2>
@@ -9,7 +9,7 @@
                 <span>{{ summary.current_task.log }}</span>
             </h2>
         </div>
-        <div ng-show="summary.deployed_services" class="relations">
+        <div ng-show="summary.deployed_services" class="relations open-btns">
           <md-button ng-repeat="(serviceName, service) in summary.deployed_services"
                      class="md-raised md-primary"
                      ng-if="service.public_endpoint"
@@ -51,6 +51,18 @@
 
     </div>
 </md-toolbar>
+
+<div ng-show="summary.deployed_services" class="relations open-btns mobile">
+    <div class="open-btns-scroll">
+        <md-button ng-repeat="(serviceName, service) in summary.deployed_services"
+               class="md-raised md-primary"
+               ng-if="service.public_endpoint"
+               ng-click="openEndpoint(service.public_endpoint)">
+            Open <code>{{ serviceName }}</code>
+        </md-button>
+    </div>
+</div>
+
 <md-content flex id="content" class="card-grid log-container">
   <logs parent="log" level="1"></logs>
 </md-content>
