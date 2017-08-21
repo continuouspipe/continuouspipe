@@ -1,10 +1,10 @@
 <md-tabs md-selected="selectedIndex" ng-init="staticTabs = log.tabs">
     <md-tab ng-repeat="(key, staticTab) in staticTabs" label="{{ staticTab.name }}">
         <div ng-if="log.tabs[key].contents.type == 'text'" class="content" ng-bind-html="log.tabs[key].contents.contents"></div>
-        <proxy ng-if="log.tabs[key].contents.type == 'events'" log="log.tabs[key].contents" template="logs/views/log-events.ng.html" class="log type-events" />
+        <proxy ng-if="log.tabs[key].contents.type == 'events'" log="log.tabs[key].contents" template="logs/views/log-events.ng.html" class="log type-events" follow="{{ follow }}" />
 
         <!-- Raw w/ children -->
-        <proxy ng-if="log.tabs[key].contents.type == 'raw' && log.tabs[key].contents.children" log="log.tabs[key].contents" template="logs/views/log-raw.ng.html" class="log type-raw" />
+        <proxy ng-if="log.tabs[key].contents.type == 'raw' && log.tabs[key].contents.children" log="log.tabs[key].contents" template="logs/views/log-raw.ng.html" follow="{{ follow }}" class="log type-raw" />
         
         <!-- Raw without children -->
         <pre ng-if="log.tabs[key].contents.type == 'raw' && log.tabs[key].contents.contents" class="raw" raw-logs-content="log.tabs[key].contents"></pre>

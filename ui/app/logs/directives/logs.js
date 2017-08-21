@@ -5,11 +5,12 @@ angular.module('continuousPipeRiver')
             scope: {
                 parent: '=',
                 level: '@',
-                scope: '@'
+                scope: '@',
+                follow: '@'
             },
             templateUrl: 'logs/views/logs.ng.html',
             controller: ['$scope', function ($scope) {
-                $scope.follow = false;
+                $scope.follow = true;
                 $scope.displayChildrenOf = [];
                 $scope.shouldDisplayChildrenOf = function(logId) {
                     return $scope.level == 1 || $scope.displayChildrenOf[logId];
@@ -60,7 +61,8 @@ angular.module('continuousPipeRiver')
             restrict: 'E',
             scope: {
                 log: '=',
-                template: '@'
+                template: '@',
+                follow: '@'
             },
             template: '<ng-include src="template" />'
         }
