@@ -23,8 +23,28 @@ import (
     "archive/tar"
 )
 
+// Image builder will build the image
+type ImageBuilder interface {
+    Build(buildContext io.Reader, options types.ImageBuildOptions, output io.Writer) error
+}
 
-// ImagePusher allow to push a Docker image
+// DockerImageBuilder is an implementation of ImageBuilder using the docker client
+type DockerImageBuilder struct {
+    dockerClient *client.Client
+}
+
+func (dib *DockerImageBuilder) Build(buildContext io.Reader, options types.ImageBuildOptions, output io.Writer) error {
+    ctx := context.Background()
+    response, err := dib.dockerClient.ImageBuild(ctx, buildContext, options)
+
+    if err != nil {
+        return err
+    }
+
+    return ReadDockerResponse(response.Body, output)
+}
+
+// ImagePusher allow to push the image
 type ImagePusher interface {
     Push(imageName string, authConfig string, output io.Writer) error
 }

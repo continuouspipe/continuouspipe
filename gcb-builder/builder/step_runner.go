@@ -28,6 +28,7 @@ type StepRunner interface {
 type DockerStepRunner struct {
     dockerClient    *client.Client
     imagePusher     ImagePusher
+    imageBuilder    ImageBuilder
     artifactManager ArtifactManager
 }
 
@@ -36,6 +37,11 @@ func NewDockerStepRunner(client *client.Client, artifactManager ArtifactManager)
     return &DockerStepRunner{
         imagePusher: &RetryImagePusher{
             decoratedPusher: &DockerImagePush{
+                dockerClient: client,
+            },
+        },
+        imageBuilder: &RetryImageBuilder{
+            decoratedBuilder: &DockerImageBuilder{
                 dockerClient: client,
             },
         },
@@ -105,8 +111,6 @@ func (sr DockerStepRunner) WriteArtifact(step ManifestStep, builtImage string, a
 }
 
 func (sr DockerStepRunner) BuildImage(manifest Manifest, step ManifestStep, output io.Writer) (string, error) {
-    ctx := context.Background()
-
     buildCtx, err := CreateBuildContext(step)
     if err != nil {
         return "", err
@@ -116,19 +120,17 @@ func (sr DockerStepRunner) BuildImage(manifest Manifest, step ManifestStep, outp
         step.ImageName = "step"
     }
 
-    response, err := sr.dockerClient.ImageBuild(ctx, buildCtx, types.ImageBuildOptions{
-        AuthConfigs: manifest.AuthConfigs,
+    return step.ImageName, sr.imageBuilder.Build(
+        buildCtx,
+        types.ImageBuildOptions{
+            AuthConfigs: manifest.AuthConfigs,
 
-        Tags: []string{step.ImageName},
-        Dockerfile: step.DockerfilePath,
-        BuildArgs: step.BuildArgs,
-    })
-
-    if err != nil {
-        return "", err
-    }
-
-    return step.ImageName, ReadDockerResponse(response.Body, output)
+            Tags: []string{step.ImageName},
+            Dockerfile: step.DockerfilePath,
+            BuildArgs: step.BuildArgs,
+        },
+        output,
+    )
 }
 
 func (sr DockerStepRunner) PushImage(manifest Manifest, step ManifestStep, output io.Writer) error {
