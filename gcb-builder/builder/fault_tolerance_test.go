@@ -136,22 +136,29 @@ func TestItRetriesAMaximumNumberOfTimes(t *testing.T) {
 }
 
 func TestItRetriesWhenBuildingFailsWithSpecificExceptions(t *testing.T) {
-    builder := NewRetryImageBuilder((&PushCallbackFactory{
-        error: errors.New("Get https://quay.io/v2/continuouspipe/symfony-php7.1-apache/manifests/latest: net/http: TLS handshake timeout [1]"),
-        callThreshold: 1,
-        afterThresholdError: nil,
-        message: "BUILD",
-    }).callback)
-
-    var reader = strings.NewReader("foo")
-    var b bytes.Buffer
-    err := builder.Build(reader, types.ImageBuildOptions{}, &b)
-
-    if err != nil {
-        t.Errorf("Should not have returned error, returned: %s", err.Error())
+    errorStrings := []string{
+        "Get https://quay.io/v2/continuouspipe/symfony-php7.1-apache/manifests/latest: net/http: TLS handshake timeout [1]",
+        "An error occurred trying to connect: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.23/build?buildargs=%7B%22BUILD_APPLICATION_ENV%22%3A%22development-continuouspipe%22%2C%22BUILD_DEVELOPMENT_MODE%22%3A%22false%22%7D&cgroupparent=&cpuperiod=0&cpuquota=0&cpusetcpus=&cpusetmems=&cpushares=0&dockerfile=.%2FDockerfile&labels=null&memory=0&memswap=0&rm=0&shmsize=0&t=quay.io%2Finviqa_images%2Feigensonne%3A83ea3dccdddf0b9656684c9f1edcb5ce24a48a9a&ulimits=null: io: read/write on closed pipe",
     }
-    if (b.String() != "BUILDBUILD") {
-        t.Errorf("Got %s instead of BUILDBUILD", b.String())
+
+    for _, errorString := range errorStrings {
+        builder := NewRetryImageBuilder((&PushCallbackFactory{
+            error: errors.New(errorString),
+            callThreshold: 1,
+            afterThresholdError: nil,
+            message: "BUILD",
+        }).callback)
+
+        var reader = strings.NewReader("foo")
+        var b bytes.Buffer
+        err := builder.Build(reader, types.ImageBuildOptions{}, &b)
+
+        if err != nil {
+            t.Errorf("Should not have returned error, returned: %s", err.Error())
+        }
+        if (b.String() != "BUILDBUILD") {
+            t.Errorf("Got %s instead of BUILDBUILD", b.String())
+        }
     }
 }
 
