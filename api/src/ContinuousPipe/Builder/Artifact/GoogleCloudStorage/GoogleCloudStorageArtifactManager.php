@@ -5,8 +5,8 @@ namespace ContinuousPipe\Builder\Artifact\GoogleCloudStorage;
 use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Artifact\ArtifactException;
-use Google\Cloud\Exception\GoogleException;
-use Google\Cloud\Exception\NotFoundException;
+use Google\Cloud\Core\Exception\GoogleException;
+use Google\Cloud\Core\Exception\NotFoundException;
 use GuzzleHttp\Psr7\StreamWrapper;
 
 class GoogleCloudStorageArtifactManager implements Artifact\ArtifactManager

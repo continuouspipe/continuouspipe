@@ -9,8 +9,6 @@ use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Artifact\ArtifactManager;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
-use Inviqa\LaunchDarklyBundle\Client\ExplicitUser\StaticClient;
-use LaunchDarkly\LDUser;
 use Psr\Http\Message\ResponseInterface;
 
 class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
