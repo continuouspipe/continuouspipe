@@ -37,6 +37,9 @@ variables:
     - name: GOOGLE_PUB_SUB_SUBSCRIPTION_NAME
       condition: code_reference.branch == 'production'
       value: projects/continuous-pipe-1042/subscriptions/production-river-worker
+    - name: REDIS_HOST
+      condition: code_reference.branch == 'production'
+      value: redis.stack-production.svc.cluster.local
 
     - name: BUILDER_URL
       condition: code_reference.branch != 'production'
@@ -62,6 +65,9 @@ variables:
     - name: GOOGLE_PUB_SUB_SUBSCRIPTION_NAME
       condition: code_reference.branch != 'production'
       value: projects/continuous-pipe-1042/subscriptions/staging-river-worker
+    - name: REDIS_HOST
+      condition: code_reference.branch == 'master'
+      value: redis.stack-master.svc.cluster.local
 
 tasks:
     images:
@@ -180,6 +186,8 @@ tasks:
                               value: ${FLEX_CLOUD_FLARE_EMAIL}
                             - name: FLEX_CLOUD_FLARE_API_KEY
                               value: ${FLEX_CLOUD_FLARE_API_KEY}
+                            - name: REDIS_HOST
+                              value: ${REDIS_HOST}
 
                     deployment_strategy:
                         readiness_probe:
@@ -211,21 +219,6 @@ tasks:
                             limits:
                                 cpu: 50m
                                 memory: 100Mi
-
-                redis:
-                    deployment_strategy:
-                        readiness_probe:
-                            type: tcp
-                            port: 6379
-
-                    specification:
-                        resources:
-                            requests:
-                                cpu: 50m
-                                memory: 100Mi
-                            limits:
-                                cpu: 250m
-                                memory: 250Mi
 
                 cron:
                     specification:
