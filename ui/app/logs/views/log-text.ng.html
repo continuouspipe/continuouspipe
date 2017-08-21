@@ -6,5 +6,5 @@
     <span ng-if="level == 2" class="duration" log-duration="log"></span>
 </div>
 <div class="children">
-    <logs ng-if="shouldDisplayChildrenOf(logId)" parent="log" level="{{ level + 1 }}"></logs>
+    <logs ng-if="shouldDisplayChildrenOf(logId)" parent="log" level="{{ level + 1 }}" follow="{{ follow }}"></logs>
 </div>

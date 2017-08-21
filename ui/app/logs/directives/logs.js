@@ -5,7 +5,8 @@ angular.module('continuousPipeRiver')
             scope: {
                 parent: '=',
                 level: '@',
-                scope: '@'
+                scope: '@',
+                follow: '@'
             },
             templateUrl: 'logs/views/logs.ng.html',
             controller: ['$scope', function ($scope) {
@@ -60,7 +61,8 @@ angular.module('continuousPipeRiver')
             restrict: 'E',
             scope: {
                 log: '=',
-                template: '@'
+                template: '@',
+                follow: '@'
             },
             template: '<ng-include src="template" />'
         }
