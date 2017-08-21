@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Task\Run;
 use ContinuousPipe\Model\Component\Volume;
 use ContinuousPipe\Model\Component\VolumeMount;
 use ContinuousPipe\River\EventCollection;
+use ContinuousPipe\River\Task\Deploy\DeployTaskFactory;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
 use JMS\Serializer\SerializerInterface;
@@ -62,6 +63,11 @@ class RunTaskFactory implements TaskFactory
         $node = $builder->root('run');
 
         $node
+            ->beforeNormalization()
+            ->always()->then(function ($configuration) {
+                return DeployTaskFactory::normalizeVolumesConfiguration($configuration);
+            })
+            ->end()
             ->children()
                 ->scalarNode('cluster')->defaultValue('')->end()
                 ->arrayNode('image')
@@ -111,11 +117,11 @@ class RunTaskFactory implements TaskFactory
                 ->arrayNode('volumes')
                     ->prototype('array')
                         ->children()
-                            ->scalarNode('type')->isRequired()->end()
+                            ->scalarNode('type')->defaultValue('persistent')->end()
                             ->scalarNode('name')->isRequired()->end()
                             ->scalarNode('path')->end()
                             ->scalarNode('capacity')->end()
-                            ->scalarNode('storage_class')->end()
+                            ->scalarNode('storage_class')->defaultValue('default')->end()
                         ->end()
                     ->end()
                 ->end()
