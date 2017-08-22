@@ -25,6 +25,33 @@
         </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Usage</div>
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>CPU Requests</th>
+                    <th>Memory Requests</th>
+                    <th>CPU Limits</th>
+                    <th>Memory Limits</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ usage.requests.cpu|default('') }}</td>
+                    <td>{{ usage.requests.memory|default('') }}</td>
+                    <td>{{ usage.limits.cpu|default('') }}</td>
+                    <td>{{ usage.limits.memory|default('') }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <table class="table table-bordered table-hover">
     <thead>
         <tr>

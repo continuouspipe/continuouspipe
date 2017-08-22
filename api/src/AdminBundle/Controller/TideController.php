@@ -2,6 +2,7 @@
 
 namespace AdminBundle\Controller;
 
+use ContinuousPipe\River\ClusterPolicies\Resources\ResourceCalculator;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\TideRepository;
@@ -35,22 +36,34 @@ class TideController
     private $paginator;
 
     /**
+     * @var Flow\EnvironmentClient
+     */
+    private $environmentClient;
+
+    /**
      * @var string
      */
     private $uiUrl;
 
     /**
-     * @param TideRepository     $tideRepository
-     * @param EventStore         $eventStore
+     * @param TideRepository $tideRepository
+     * @param EventStore $eventStore
      * @param PaginatorInterface $paginator
-     * @param string             $uiUrl
+     * @param Flow\EnvironmentClient $environmentClient
+     * @param string $uiUrl
      */
-    public function __construct(TideRepository $tideRepository, EventStore $eventStore, PaginatorInterface $paginator, string $uiUrl)
-    {
+    public function __construct(
+        TideRepository $tideRepository,
+        EventStore $eventStore,
+        PaginatorInterface $paginator,
+        Flow\EnvironmentClient $environmentClient,
+        string $uiUrl
+    ) {
         $this->tideRepository = $tideRepository;
         $this->eventStore = $eventStore;
-        $this->uiUrl = $uiUrl;
         $this->paginator = $paginator;
+        $this->environmentClient = $environmentClient;
+        $this->uiUrl = $uiUrl;
     }
 
     /**
@@ -61,9 +74,13 @@ class TideController
      */
     public function listAction(Team $team, Flow\Projections\FlatFlow $flow, Request $request)
     {
+        $environments = $this->environmentClient->findByFlow($flow);
+        $usage = ResourceCalculator::sumEnvironmentResources($environments);
+
         return [
             'team' => $team,
             'flow' => $flow,
+            'usage' => $usage,
             'pagination' => $this->paginator->paginate(
                 $this->tideRepository->findByFlowUuid($flow->getUuid()),
                 $request->query->getInt('page', 1),

@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Request\WatchRequest;
+use ContinuousPipe\River\ClusterPolicies\Resources\ResourceCalculator;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
 use ContinuousPipe\River\Flow\EnvironmentClient;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
@@ -59,6 +60,18 @@ class FlowEnvironmentController
     public function listAction(FlatFlow $flow)
     {
         return $this->environmentClient->findByFlow($flow);
+    }
+
+    /**
+     * @Route("/flows/{uuid}/usage", methods={"GET"})
+     * @Security("is_granted('READ', flow)")
+     * @View
+     */
+    public function usageAction(FlatFlow $flow)
+    {
+        $environments = $this->environmentClient->findByFlow($flow);
+
+        return ResourceCalculator::sumEnvironmentResources($environments);
     }
 
     /**

@@ -30,6 +30,7 @@
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="knp_paginator" />
+            <argument type="service" id="river.flow.environment_client" />
             <argument>%river_ui_url%</argument>
         </service>
 
