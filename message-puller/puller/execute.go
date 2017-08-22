@@ -12,8 +12,8 @@ type CommandFactory struct {
     Args []string
 }
 
-func (me CommandFactory) Create(body string) *exec.Cmd {
-    return exec.Command(me.Cmd, append(me.Args, body)...)
+func (me CommandFactory) Create(args ...string) *exec.Cmd {
+    return exec.Command(me.Cmd, append(me.Args, args...)...)
 }
 
 type CommandExecuter struct {
@@ -53,7 +53,6 @@ func (me CommandExecuter) Execute(cmd *exec.Cmd, output bool) int {
     }
 
     if err != nil {
-        me.infLogger.Println("Failed. Check error log for details.")
         me.errLogger.Printf("Error: %s\n", err)
 
         if exiterr, ok := err.(*exec.ExitError); ok {
