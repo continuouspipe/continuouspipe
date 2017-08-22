@@ -59,7 +59,8 @@
         "sroze/kubernetes-client": "dev-master",
         "continuous-pipe/message": "dev-master",
         "symfony/dotenv": "^3.3",
-        "continuous-pipe/flex": "dev-master"
+        "continuous-pipe/flex": "dev-master",
+        "google/cloud": "^0.36.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
