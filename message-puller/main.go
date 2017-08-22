@@ -10,6 +10,8 @@ import (
     "encoding/base64"
     "fmt"
     "io/ioutil"
+    "google.golang.org/api/option"
+    "time"
 )
 
 func main() {
@@ -30,58 +32,45 @@ func main() {
         googleServiceAccountFilePath = &filePath
     }
 
-    /*
-    data, err := ioutil.ReadFile(*googleServiceAccountFilePath)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    //conf, err := google.JWTConfigFromJSON(data, "https://www.googleapis.com/auth/pubsub")
-    if err != nil {
-        log.Fatal(err)
-    }
-    */
-    ctx := context.Background()
-    //ts := conf.TokenSource(ctx)
-    client, err := pubsub.NewClient(ctx, *googleCloudProjectId)//, option.WithTokenSource(ts))
-    //if err != nil {
-    //    log.Fatal("new client:", err)
-    //}
-
-    //ctx := context.Background()
-    //client, err := pubsub.NewClient(ctx, *googleCloudProjectId, option.WithServiceAccountFile(*googleServiceAccountFilePath))
+    // Get PubSub client
+    client, err := NewPubSubClient(*googleCloudProjectId, *googleServiceAccountFilePath)
     if err != nil {
         log.Fatal(err)
         return
     }
 
+    handler := puller.NewAcknowledgeIfNoErrorHandler(
+        puller.NewExecuteMessageHandler(
+            puller.NewCommandExecuter(
+                log.New(os.Stderr, "", log.Ldate | log.Ltime),
+                log.New(os.Stdout, "", log.Ldate | log.Ltime),
+            ),
+            puller.NewCommandFactory(*scriptPath),
+        ),
+    )
+
     subscription := client.Subscription(*subscriptionIdentifier)
+    subscription.ReceiveSettings.MaxExtension = 60 * time.Minute
+
     fmt.Println("Receiving messages...")
-    err = subscription.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
-        executer := puller.NewCommandExecuter(
-            log.New(os.Stderr, "", log.Ldate|log.Ltime),
-            log.New(os.Stdout, "", log.Ldate|log.Ltime),
-        )
-
-        body := base64.StdEncoding.EncodeToString(msg.Data)
-        cmd := puller.NewCommandFactory(*scriptPath).Create(body)
-
-        result := executer.Execute(cmd, true)
-        var err error = nil
-        if 0 != result {
-            err = fmt.Errorf("Command finished with status %d", result)
-        }
-
-        // If no error, we acknowledge the message. If not, then we simply do not acknowledge it,
-        // log the exception and it will be re-queued later.
-        if err == nil {
-            msg.Ack()
-        }
+    err = subscription.Receive(context.Background(), func(ctx context.Context, msg *pubsub.Message) {
+        handler.Handle(msg)
     })
 
     if (err != nil) {
         log.Fatal(err)
     }
+}
+
+func NewPubSubClient(googleCloudProjectId string, googleServiceAccountFilePath string) (*pubsub.Client, error) {
+    options := []option.ClientOption{}
+    if (googleServiceAccountFilePath != "") {
+        options = append(options, option.WithServiceAccountFile(googleServiceAccountFilePath))
+    }
+
+    ctx := context.Background()
+
+    return pubsub.NewClient(ctx, googleCloudProjectId, options...)
 }
 
 func ServiceAccountFilePathFromBase64String(base64EncodedServiceAccount string) (string, error) {
@@ -102,3 +91,4 @@ func ServiceAccountFilePathFromBase64String(base64EncodedServiceAccount string) 
 
     return file.Name(), nil
 }
+
