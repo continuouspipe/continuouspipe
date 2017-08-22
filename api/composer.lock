@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "cab6ae01946e077d31708c21c647ba7d",
+    "content-hash": "c55b7a8d0a61a9f6213df80bcb8cd88b",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -324,20 +324,17 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/message.git",
-                "reference": "9399c14ef95434e62a2e3deca5b031899a5850b4"
+                "reference": "b53fc9ad77cb599d558bbe64d36e0c66c87e80ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/9399c14ef95434e62a2e3deca5b031899a5850b4",
-                "reference": "9399c14ef95434e62a2e3deca5b031899a5850b4",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/b53fc9ad77cb599d558bbe64d36e0c66c87e80ab",
+                "reference": "b53fc9ad77cb599d558bbe64d36e0c66c87e80ab",
                 "shasum": ""
             },
             "require": {
-                "google/cloud": "^0.36.0",
+                "google/cloud": "^0.20.2",
                 "tolerance/tolerance": "dev-master"
-            },
-            "require-dev": {
-                "phpspec/phpspec": "^4.0"
             },
             "type": "library",
             "autoload": {
@@ -349,7 +346,7 @@
                 "source": "https://github.com/continuouspipe/message/tree/master",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2017-08-22 16:01:30"
+            "time": "2017-08-17 16:08:18"
         },
         {
             "name": "continuous-pipe/model",
@@ -1844,75 +1841,45 @@
         },
         {
             "name": "google/cloud",
-            "version": "v0.36.0",
+            "version": "v0.20.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GoogleCloudPlatform/google-cloud-php.git",
-                "reference": "eebf5291ab903647c7e8422f1b2361355db66b59"
+                "reference": "7175deb3c4b07d790a52214ba209986404857d51"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GoogleCloudPlatform/google-cloud-php/zipball/eebf5291ab903647c7e8422f1b2361355db66b59",
-                "reference": "eebf5291ab903647c7e8422f1b2361355db66b59",
+                "url": "https://api.github.com/repos/GoogleCloudPlatform/google-cloud-php/zipball/7175deb3c4b07d790a52214ba209986404857d51",
+                "reference": "7175deb3c4b07d790a52214ba209986404857d51",
                 "shasum": ""
             },
             "require": {
-                "google/auth": "~0.9|^1.0",
+                "google/auth": "^0.11",
                 "guzzlehttp/guzzle": "^5.3|^6.0",
                 "guzzlehttp/psr7": "^1.2",
                 "monolog/monolog": "~1",
                 "php": ">=5.5",
                 "psr/http-message": "1.0.*",
-                "ramsey/uuid": "~3",
                 "rize/uri-template": "~0.3"
-            },
-            "replace": {
-                "google/cloud-bigquery": "0.2.2",
-                "google/cloud-core": "1.8.0",
-                "google/cloud-datastore": "1.0.0",
-                "google/cloud-error-reporting": "0.4.1",
-                "google/cloud-language": "0.4.0",
-                "google/cloud-logging": "1.3.1",
-                "google/cloud-monitoring": "0.4.1",
-                "google/cloud-pubsub": "0.6.1",
-                "google/cloud-spanner": "0.4.0",
-                "google/cloud-speech": "0.6.1",
-                "google/cloud-storage": "1.1.3",
-                "google/cloud-trace": "0.3.1",
-                "google/cloud-translate": "1.0.0",
-                "google/cloud-videointelligence": "0.3.1",
-                "google/cloud-vision": "0.4.0"
             },
             "require-dev": {
                 "erusev/parsedown": "^1.6",
-                "google/gax": "^0.21.0",
-                "google/proto-client": "^0.21.0",
+                "google/gax": "^0.6",
+                "google/proto-client-php": "^0.7",
+                "james-heinrich/getid3": "^1.9",
                 "league/json-guard": "^0.3",
                 "phpdocumentor/reflection": "^3.0",
-                "phpseclib/phpseclib": "^2",
                 "phpunit/phpunit": "4.8.*",
                 "squizlabs/php_codesniffer": "2.*",
                 "symfony/console": "^3.0",
-                "symfony/lock": "3.3.x-dev#1ba6ac9",
                 "vierbergenlars/php-semver": "^3.0"
             },
             "suggest": {
                 "google/gax": "Required to support gRPC",
-                "google/proto-client": "Required to support gRPC",
-                "phpseclib/phpseclib": "May be used in place of OpenSSL for creating signed Cloud Storage URLs. Please require version ^2."
+                "google/proto-client-php": "Required to support gRPC",
+                "james-heinrich/getid3": "Allows the Google Cloud Speech client to determine sample rate and encoding of audio inputs"
             },
-            "bin": [
-                "src/Core/bin/google-cloud-batch"
-            ],
             "type": "library",
-            "extra": {
-                "component": {
-                    "id": "google-cloud",
-                    "target": "git@github.com:jdpedrie-gcp/google-cloud-php.git",
-                    "path": "src",
-                    "entry": "ServiceBuilder.php"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Google\\Cloud\\": "src"
@@ -1947,11 +1914,9 @@
                 "google apis client",
                 "google cloud",
                 "google cloud platform",
-                "language",
                 "natural language",
                 "pub sub",
                 "pubsub",
-                "spanner",
                 "speech",
                 "stackdriver logging",
                 "storage",
@@ -1959,7 +1924,7 @@
                 "translation",
                 "vision"
             ],
-            "time": "2017-08-02T20:02:30+00:00"
+            "time": "2017-02-10T15:09:33+00:00"
         },
         {
             "name": "guzzle/guzzle",

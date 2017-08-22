@@ -4,7 +4,9 @@ namespace ContinuousPipe\River\Infrastructure\Firebase;
 
 use Firebase\Database;
 use Firebase\Http\Middleware as FirebaseMiddleware;
+use Firebase\ServiceAccount;
 use Firebase\V3\Auth\CustomToken;
+use Google\Auth\Credentials\ServiceAccountCredentials;
 use Google\Auth\FetchAuthTokenInterface;
 use Google\Auth\Middleware\AuthTokenMiddleware;
 use GuzzleHttp\Client;
