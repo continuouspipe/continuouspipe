@@ -18,6 +18,14 @@ class RedisClientFactory
             );
         }
 
+        if (strpos($dsn, ':') === false) {
+            $dsn = $dsn.':6379';
+        }
+
+        if (strpos($dsn, 'tcp://') !== 0) {
+            $dsn = 'tcp://'.$dsn;
+        }
+
         return new Client($dsn);
     }
 }

@@ -10,9 +10,14 @@ use Prophecy\Argument;
 
 class RedisClientFactorySpec extends ObjectBehavior
 {
-    function it_create_a_simple_redis_client()
+    function it_uses_the_dsn()
     {
-        $this::create('redis')->shouldBeLike(new Client('redis'));
+        $this::create('tcp://redis:6379')->shouldBeLike(new Client('tcp://redis:6379'));
+    }
+
+    function it_adds_the_protocol_and_port()
+    {
+        $this::create('redis')->shouldBeLike(new Client('tcp://redis:6379'));
     }
 
     function it_creates_a_sentinel_configured_client()
