@@ -174,7 +174,6 @@
         </service>
 
         <service id="river.view.storage.firebase_client" alias="river.view.storage.firebase_client.predis_cached"/>
-
         <service id="river.view.storage.firebase_client.main" class="ContinuousPipe\River\Infrastructure\Firebase\DatabaseFirebaseClient">
             <argument type="service" id="river.view.storage.firebase.database_factory" />
         </service>
@@ -197,6 +196,21 @@
                  runner="tolerance.operation_runners.firebase" />
         </service>
 
+        <!-- Firebase as asynchronous -->
+        <service id="river.view.storage.firebase_client.asychronous.calls_to_commands"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Asynchronous\TransformCallsToCommandsClient"
+                 decorates="river.view.storage.firebase_client.main">
+            <argument type="service" id="command_bus" />
+        </service>
+
+        <service id="river.view.storage.firebase_client.asychronous.handle_commands" class="ContinuousPipe\River\Infrastructure\Firebase\Asynchronous\Handler\DoFirebaseUpdates">
+            <argument type="service" id="river.view.storage.firebase_client.asychronous.calls_to_commands.inner" />
+            <argument type="service" id="logger" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Infrastructure\Firebase\Asynchronous\Command\UpdateFirebaseCommand" />
+        </service>
+
+        <!-- View storage -->
         <service id="river.view.storage" class="ContinuousPipe\River\View\Storage\DuplicateViewToManyStorages">
             <argument type="collection">
                 <argument type="service" id="river.view.tide_repository" />
