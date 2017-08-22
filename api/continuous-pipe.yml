@@ -240,28 +240,6 @@ tasks:
                         accessibility:
                             from_cluster: false
 
-                eventstore:
-                    specification:
-                        volumes:
-                            - type: persistent
-                              name: eventstore-volume
-                              capacity: 5Gi
-                              storage_class: default
-
-                        volume_mounts:
-                            - name: eventstore-volume
-                              mount_path: /var/lib/eventstore
-
-                        resources:
-                            requests:
-                                cpu: 50m
-                                memory: 150Mi
-
-                    deployment_strategy:
-                        readiness_probe:
-                            type: tcp
-                            port: 2113
-
     migrations:
         run:
             cluster: ${CLUSTER}
