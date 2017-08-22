@@ -7,3 +7,4 @@ export START_WORKER=${START_WORKER:-false}
 
 export PHP_MEMORY_LIMIT=1G
 export TIDEWAYS_ENABLED="true"
+export TIDEWAYS_FRAMEWORK="symfony2"
