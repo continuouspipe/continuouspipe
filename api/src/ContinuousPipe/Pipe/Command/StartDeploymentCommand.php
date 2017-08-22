@@ -2,10 +2,10 @@
 
 namespace ContinuousPipe\Pipe\Command;
 
-use ContinuousPipe\Message\Transaction\LongRunningMessage;
+use ContinuousPipe\Message\Message;
 use ContinuousPipe\Pipe\View\Deployment;
 
-class StartDeploymentCommand implements LongRunningMessage
+class StartDeploymentCommand implements Message
 {
     /**
      * @var Deployment
