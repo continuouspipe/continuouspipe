@@ -13,7 +13,7 @@ class RepositoryAddressDescriptor
             sprintf('#https?://github.com/%s/%s\.git#', self::USER_REGEX, self::REPOSITORY_REGEX),
             sprintf('#https?://github.com/%s/%s#', self::USER_REGEX, self::REPOSITORY_REGEX),
             sprintf('#git@github.com:%s/%s.git#', self::USER_REGEX, self::REPOSITORY_REGEX),
-            sprintf('#https://api\.github\.com/repos/%s/%s\GitHubCommitResolver.git#', self::USER_REGEX, self::REPOSITORY_REGEX),
+            sprintf('#https://api\.github\.com/repos/%s/%s.git#', self::USER_REGEX, self::REPOSITORY_REGEX),
             sprintf('#https://api\.github\.com/repos/%s/%s#', self::USER_REGEX, self::REPOSITORY_REGEX),
         ];
 
