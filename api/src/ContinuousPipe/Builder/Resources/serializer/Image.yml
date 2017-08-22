@@ -4,3 +4,5 @@ ContinuousPipe\Builder\Image:
             type: string
         tag:
             type: string
+        reuse:
+            type: boolean
