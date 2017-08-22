@@ -12,22 +12,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class UpdateTideViewWhenTideEventPublished implements MessageBusMiddleware
 {
     /**
-     * @var TideViewStorage
-     */
-    private $tideViewStorage;
-
-    /**
      * @var ContainerInterface
      */
     private $container;
 
     /**
-     * @param TideViewStorage    $tideViewStorage
      * @param ContainerInterface $container
      */
-    public function __construct(TideViewStorage $tideViewStorage, ContainerInterface $container)
+    public function __construct(ContainerInterface $container)
     {
-        $this->tideViewStorage = $tideViewStorage;
         $this->container = $container;
     }
 
@@ -48,20 +41,18 @@ class UpdateTideViewWhenTideEventPublished implements MessageBusMiddleware
      */
     private function updateTideView(UuidInterface $uuid)
     {
-        $this->tideViewStorage->save(
+        $this->getTideViewStorage()->save(
             $this->getTideViewFactory()->create($uuid)
         );
     }
 
-    /**
-     * This has been added because of a circular dependency with the TideFactory. Once the `Tide`
-     * object will have been refactored to have dependencies coming as method arguments, that should
-     * be a LOT better.
-     *
-     * @return TideViewFactory
-     */
-    private function getTideViewFactory()
+    private function getTideViewFactory() : TideViewFactory
     {
         return $this->container->get('river.view.tide_view_factory');
+    }
+
+    private function getTideViewStorage() : TideViewStorage
+    {
+        return $this->container->get('river.view.storage');
     }
 }
