@@ -71,6 +71,7 @@ func shouldRetryAfterError (err error) bool {
         "^push (or pull )?([^ ]+) is already in progress",
         "net/http: TLS handshake timeout",
         "(?i)^Received unexpected HTTP status: 500 Internal Server Error",
+        "(?i)^Received unexpected HTTP status: 502 Bad Gateway",
         "^error parsing HTTP 413 response body:",
         ": io: read/write on closed pipe$",
     }
