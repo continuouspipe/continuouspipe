@@ -254,8 +254,10 @@
         </service>
 
         <service id="predis_client" class="Predis\Client">
-            <argument>redis://%redis_host%</argument>
+            <factory class="ContinuousPipe\River\Cache\Redis\RedisClientFactory" method="create"/>
+            <argument>%redis_host%</argument>
         </service>
+
         <service id="river.cache" class="Doctrine\Common\Cache\PredisCache">
             <argument type="service" id="predis_client" />
         </service>
