@@ -2,6 +2,6 @@
 
 namespace ContinuousPipe\Billing\BillingProfile;
 
-class UserBillingProfileNotFound extends \Exception
+class UserBillingProfileNotFound extends UserBillingProfileException
 {
 }

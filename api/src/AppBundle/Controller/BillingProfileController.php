@@ -119,7 +119,7 @@ class BillingProfileController
      */
     public function billingProfilesAction(User $user, Request $request)
     {
-        $billingProfiles = $this->userBillingProfileRepository->findAllByUser($user);
+        $billingProfiles = $this->userBillingProfileRepository->findByUser($user);
         if (count($billingProfiles) == 0) {
             $this->createBillingProfile($user, $user->getUsername());
         }
@@ -137,7 +137,7 @@ class BillingProfileController
         });
 
         return [
-            'billingProfiles' => $this->userBillingProfileRepository->findAllByUser($user),
+            'billingProfiles' => $this->userBillingProfileRepository->findByUser($user),
             'relatedTeamsBillingProfiles' => $billingProfilesOfTeamsUserIsAdmin,
         ];
     }

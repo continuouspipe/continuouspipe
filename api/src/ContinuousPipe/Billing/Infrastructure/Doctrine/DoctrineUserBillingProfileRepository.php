@@ -32,21 +32,15 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
     /**
      * {@inheritdoc}
      */
-    public function findByUser(User $user): UserBillingProfile
+    public function findByUser(User $user): array
     {
-        if (null === ($billingProfile = $this->getUserBillingProfileRepository()->findOneBy(['user' => $user]))) {
-            throw new UserBillingProfileNotFound(sprintf('No billing profile found for user "%s"', $user->getUsername()));
-        }
-
-        return $billingProfile;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findAllByUser(User $user): array
-    {
-        return $this->getUserBillingProfileRepository()->findBy(['user' => $user]);
+        return $this->getUserBillingProfileRepository()->createQueryBuilder('bp')
+            ->join('bp.admins', 'admins')
+            ->where('admins.username := :username')
+            ->setParameter('username', $user->getUsername())
+            ->getQuery()
+            ->getResult()
+        ;
     }
 
     /**

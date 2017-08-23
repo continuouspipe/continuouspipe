@@ -49,28 +49,11 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
     /**
      * {@inheritdoc}
      */
-    public function findByUser(User $user): UserBillingProfile
-    {
-        foreach ($this->profiles as $profile) {
-            if ($profile->getUser()->getUsername() == $user->getUsername()) {
-                return $profile;
-            }
-        }
-
-        throw new UserBillingProfileNotFound(sprintf(
-            'No billing profile found for user %s',
-            $user->getUsername()
-        ));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findAllByUser(User $user): array
+    public function findByUser(User $user): array
     {
         $profiles = [];
         foreach ($this->profiles as $profile) {
-            if ($profile->getUser()->getUsername() == $user->getUsername()) {
+            if ($profile->isAdmin($user)) {
                 $profiles[] = $profile;
             }
         }

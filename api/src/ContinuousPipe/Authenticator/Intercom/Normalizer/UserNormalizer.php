@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Intercom\Normalizer;
 
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\User\User;
@@ -74,12 +75,20 @@ class UserNormalizer
     /**
      * @param User $user
      *
+     * @throws UserBillingProfileNotFound
+     *
      * @return \DateTimeInterface
      */
     private function getUserTrialExpiryDate(User $user) : \DateTimeInterface
     {
-        return $this->trialResolver->getTrialPeriodExpirationDate(
-            $this->userBillingPorfileRepository->findByUser($user)
-        );
+        $billingProfiles = $this->userBillingPorfileRepository->findByUser($user);
+
+        if (count($billingProfiles) == 0) {
+            throw new UserBillingProfileNotFound('No billing profile found');
+        }
+
+        return max(array_map(function (UserBillingProfile $billingProfile) {
+            return $this->trialResolver->getTrialPeriodExpirationDate($billingProfile);
+        }, $billingProfiles));
     }
 }

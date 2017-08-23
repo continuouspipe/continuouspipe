@@ -20,13 +20,6 @@ class UserBillingProfile
     private $uuid;
 
     /**
-     * @JMS\Type("ContinuousPipe\Security\User\User")
-     *
-     * @var User
-     */
-    private $user;
-
-    /**
      * @JMS\Type("string")
      *
      * @var string
@@ -54,12 +47,19 @@ class UserBillingProfile
      */
     private $tidesPerHour;
 
-    public function __construct(UuidInterface $uuid, User $user, string $name, \DateTimeInterface $creationDate, bool $hasTrial, int $tidesPerHour = 0)
+    /**
+     * @JMS\Type("array<ContinuousPipe\Security\User\User>")
+     *
+     * @var User[]|Collection
+     */
+    private $admins;
+
+    public function __construct(UuidInterface $uuid, string $name, \DateTimeInterface $creationDate, $admins = null, bool $hasTrial = false, int $tidesPerHour = 0)
     {
         $this->uuid = $uuid;
-        $this->user = $user;
         $this->name = $name;
         $this->creationDate = $creationDate;
+        $this->admins = !$admins instanceof Collection ? new ArrayCollection($admins) : $admins;
         $this->hasTrial = $hasTrial;
         $this->tidesPerHour = $tidesPerHour;
     }
@@ -73,11 +73,15 @@ class UserBillingProfile
     }
 
     /**
-     * @return User
+     * @return User[]|Collection
      */
-    public function getUser(): User
+    public function getAdmins()
     {
-        return $this->user;
+        if (null === $this->admins) {
+            $this->admins = new ArrayCollection();
+        }
+
+        return $this->admins;
     }
 
     /**
@@ -115,5 +119,16 @@ class UserBillingProfile
     public function setTidesPerHour(int $tiderPerHour)
     {
         $this->tidesPerHour = $tiderPerHour;
+    }
+
+    public function isAdmin(User $user) : bool
+    {
+        foreach ($this->getAdmins() as $admin) {
+            if ($admin->getUsername() == $user->getUsername()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

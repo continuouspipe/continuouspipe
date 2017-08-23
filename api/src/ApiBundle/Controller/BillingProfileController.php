@@ -70,7 +70,7 @@ class BillingProfileController
      */
     public function billingProfiles(User $user)
     {
-        $billingProfiles = $this->userBillingProfileRepository->findAllByUser($user);
+        $billingProfiles = $this->userBillingProfileRepository->findByUser($user);
 
         if (count($billingProfiles) == 0) {
             throw new UserBillingProfileNotFound(
@@ -111,6 +111,44 @@ class BillingProfileController
      */
     public function getBillingProfileAction(UserBillingProfile $billingProfile)
     {
+        return $billingProfile;
+    }
+
+    /**
+     * @Route("/billing-profile/{uuid}/admins/{username}", methods={"POST"})
+     * @ParamConverter("billingProfile", converter="billingProfile")
+     * @ParamConverter("user", converter="user", options={"byUsername": "username"})
+     * @Security("is_granted('READ', billingProfile)")
+     * @View
+     */
+    public function addBillingProfileAdminAction(UserBillingProfile $billingProfile, User $user)
+    {
+        $billingProfile->getAdmins()->add($user);
+
+        $this->userBillingProfileRepository->save($billingProfile);
+
+        return $billingProfile;
+    }
+
+    /**
+     * @Route("/billing-profile/{uuid}/admins/{username}", methods={"DELETE"})
+     * @ParamConverter("billingProfile", converter="billingProfile")
+     * @ParamConverter("user", converter="user", options={"byUsername": "username"})
+     * @Security("is_granted('READ', billingProfile)")
+     * @View
+     */
+    public function removeBillingProfileAdminAction(UserBillingProfile $billingProfile, User $user)
+    {
+        $matchingUsers = $billingProfile->getAdmins()->filter(function (User $admin) use ($user) {
+            return $admin->getUsername() == $user->getUsername();
+        });
+
+        foreach ($matchingUsers as $matchingUser) {
+            $billingProfile->getAdmins()->removeElement($matchingUser);
+        }
+
+        $this->userBillingProfileRepository->save($billingProfile);
+
         return $billingProfile;
     }
 
