@@ -1,6 +1,5 @@
 <?php
 
-
 namespace ContinuousPipe\River\Managed\Resources\Calculation;
 
 class ResourceConverter

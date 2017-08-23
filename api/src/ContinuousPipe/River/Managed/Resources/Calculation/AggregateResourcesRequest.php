@@ -3,7 +3,6 @@
 namespace ContinuousPipe\River\Managed\Resources\Calculation;
 
 use ContinuousPipe\Model\Component\ResourcesRequest;
-use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
 
 class AggregateResourcesRequest
 {

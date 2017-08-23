@@ -1410,6 +1410,8 @@ EOF;
      */
     public function iShouldSeeLimitsForCpuOfAndMemoryOf($cpu, $memory)
     {
+        $this->assertResponseCode(200);
+
         /** @var Component\Resources $resources */
         $resources = $this->serializer->deserialize($this->response->getContent(), Component\Resources::class, 'json');
 

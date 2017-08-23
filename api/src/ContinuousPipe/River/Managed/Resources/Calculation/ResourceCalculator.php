@@ -1,11 +1,9 @@
 <?php
 
-
 namespace ContinuousPipe\River\Managed\Resources\Calculation;
 
 use ContinuousPipe\Model\Component\Resources;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
-use ContinuousPipe\River\Managed\Resources\Calculation\AggregateResourcesRequest;
 
 class ResourceCalculator
 {
