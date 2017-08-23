@@ -190,7 +190,6 @@ class EnvironmentClient implements DeployedEnvironmentRepository
             return $this->pipeClient->getEnvironmentsLabelled(
                 $clusterIdentifier,
                 $flow->getTeam(),
-                $this->userContext->getCurrent(),
                 [
                     'flow' => (string)$flow->getUuid(),
                 ]

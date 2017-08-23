@@ -70,7 +70,7 @@ class FakeClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
+    public function getEnvironments($clusterIdentifier, Team $team)
     {
         if (!array_key_exists($clusterIdentifier, $this->environmentsPerCluster)) {
             return Promise\promise_for([]);
@@ -82,9 +82,9 @@ class FakeClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels)
+    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, array $labels)
     {
-        $environments = $this->getEnvironments($clusterIdentifier, $team, $authenticatedUser);
+        $environments = $this->getEnvironments($clusterIdentifier, $team);
 
         return $environments->then(function (array $environments) use ($labels) {
             return array_values(array_filter($environments, function (Environment $environment) use ($labels) {

@@ -1,7 +1,6 @@
 <?php
 
-
-namespace ContinuousPipe\River\ClusterPolicies\Resources;
+namespace ContinuousPipe\River\Managed\Resources\Calculation;
 
 class ResourceConverter
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace spec\ContinuousPipe\River\ClusterPolicies\Resources;
+namespace spec\ContinuousPipe\Managed\Resources\Calculator;
 
-use ContinuousPipe\River\ClusterPolicies\Resources\ResourceConverter;
+use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 

@@ -1381,8 +1381,7 @@ EOF;
 
         $environmentPromise = $this->traceablePipeClient->getEnvironments(
             $cluster,
-            new Team('fake', 'fake'),
-            new User('fake', Uuid::uuid1())
+            new Team('fake', 'fake')
         );
 
         /** @var Environment[] $environments */
@@ -1411,6 +1410,8 @@ EOF;
      */
     public function iShouldSeeLimitsForCpuOfAndMemoryOf($cpu, $memory)
     {
+        $this->assertResponseCode(200);
+
         /** @var Component\Resources $resources */
         $resources = $this->serializer->deserialize($this->response->getContent(), Component\Resources::class, 'json');
 
