@@ -325,15 +325,19 @@ class FirebaseContext implements Context
                 hash('sha256', $branch)
             );
 
+            $expectedBody =[
+                'identifier' => $number,
+                'title' => $title,
+            ];
+
+            if (null !== $url) {
+                $expectedBody['url'] = $url;
+            }
+
             if (0 === strpos($uri, $fullRequestBase)) {
                 $branchHash = hash('sha256', $branch);
 
-                if (isset($body[$branchHash]) && $body[$branchHash] == [
-                        'identifier' => $number,
-                        'title' => $title,
-                        'url' => $url,
-                    ]
-                ) {
+                if (isset($body[$branchHash]) && $body[$branchHash] == $expectedBody) {
                     return;
                 }
             }
@@ -346,12 +350,7 @@ class FirebaseContext implements Context
             );
 
             if (0 === strpos($uri, $requestBase)) {
-                if ($body == [
-                        'identifier' => $number,
-                        'title' => $title,
-                        'url' => $url,
-                    ]
-                ) {
+                if ($body == $expectedBody) {
                     return;
                 }
             }
