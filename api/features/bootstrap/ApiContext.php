@@ -59,6 +59,14 @@ class ApiContext implements Context
     }
 
     /**
+     * @Given I am not authenticated
+     */
+    public function iAmNotAuthenticated()
+    {
+        $this->tokenStorage->setToken(null);
+    }
+
+    /**
      * @When I request the page at :path
      */
     public function iRequestThePageAt($path)
