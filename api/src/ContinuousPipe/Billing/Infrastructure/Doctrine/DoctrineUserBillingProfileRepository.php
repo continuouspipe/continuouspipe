@@ -36,7 +36,7 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
     {
         return $this->getUserBillingProfileRepository()->createQueryBuilder('bp')
             ->join('bp.admins', 'admins')
-            ->where('admins.username := :username')
+            ->where('admins.username = :username')
             ->setParameter('username', $user->getUsername())
             ->getQuery()
             ->getResult()
