@@ -1,3 +1,12 @@
+<div class="tabs-toolbar mobile-tabs-toolbar" ng-class="{'open': $root.toggle}">
+    <ul class="tabs">
+        <li class="tab">
+            <a ng-click="$root.toggle = !$root.toggle" ui-sref="flow.dashboard">
+                <md-icon class="material-icons">dashboard</md-icon> <span>Back to flow</span>
+            </a>
+        </li>
+    </ul>
+</div>
 <md-toolbar class="status-container" ng-class="(summary.status || tide.status) | tideStatusClass">
     <div class="md-toolbar-tools tools-bar">
         <md-progress-circular md-mode="indeterminate"  ng-show="summary && summary.status == 'running'" md-diameter="30px"></md-progress-circular>
