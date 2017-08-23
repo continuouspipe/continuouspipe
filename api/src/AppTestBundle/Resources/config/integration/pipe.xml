@@ -14,5 +14,11 @@
         <service id="river.hookable_pipe_client" class="ContinuousPipe\River\Tests\Pipe\HookableClient">
             <argument type="service" id="river.pipe_client.fake" />
         </service>
+
+        <service id="river.flow.environment_client.callback"
+                 class="ContinuousPipe\River\Environment\CallbackEnvironmentRepository"
+                 decorates="river.flow.environment_client">
+            <argument type="service" id="river.flow.environment_client.callback.inner" />
+        </service>
     </services>
 </container>

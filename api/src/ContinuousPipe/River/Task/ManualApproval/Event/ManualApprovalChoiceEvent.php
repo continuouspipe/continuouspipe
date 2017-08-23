@@ -2,10 +2,11 @@
 
 namespace ContinuousPipe\River\Task\ManualApproval\Event;
 
+use ContinuousPipe\River\Task\AbstractTaskEvent;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
 
-class ManualApprovalChoiceEvent extends ManualApprovalEvent
+class ManualApprovalChoiceEvent extends AbstractTaskEvent
 {
     private $user;
 

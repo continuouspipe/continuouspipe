@@ -21,7 +21,7 @@ class AddDefaultValues implements ConfigurationEnhancer
 
         if (!empty($defaults)) {
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
-            $deployAndRunTaskPaths = $this->getTaskPathsOfType($configs, ['deploy', 'run']);
+            $deployAndRunTaskPaths = $this->getTaskPathsOfType($configs, ['deploy', 'run', 'delete']);
 
             foreach ($deployAndRunTaskPaths as $path) {
                 $propertyAccessor->setValue($defaultConfiguration, $path, $defaults);

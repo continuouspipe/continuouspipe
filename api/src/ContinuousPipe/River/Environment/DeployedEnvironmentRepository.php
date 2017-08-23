@@ -3,6 +3,8 @@
 namespace ContinuousPipe\River\Environment;
 
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
 
 interface DeployedEnvironmentRepository
 {
@@ -11,6 +13,8 @@ interface DeployedEnvironmentRepository
      *
      * @param FlatFlow $flow
      *
+     * @throws DeployedEnvironmentException
+     *
      * @return DeployedEnvironment[]
      */
     public function findByFlow(FlatFlow $flow);
@@ -18,10 +22,13 @@ interface DeployedEnvironmentRepository
     /**
      * Delete a deployed environment.
      *
-     * @param FlatFlow            $flow
+     * @param Team $team
+     * @param User $user
      * @param DeployedEnvironment $environment
+     *
+     * @throws DeployedEnvironmentException
      */
-    public function delete(FlatFlow $flow, DeployedEnvironment $environment);
+    public function delete(Team $team, User $user, DeployedEnvironment $environment);
 
     /**
      * Delete a Pod.
@@ -30,6 +37,8 @@ interface DeployedEnvironmentRepository
      * @param string $clusterIdentifier
      * @param string $namespace
      * @param string $podName
+     *
+     * @throws DeployedEnvironmentException
      */
     public function deletePod(FlatFlow $flow, string $clusterIdentifier, string $namespace, string $podName);
 }

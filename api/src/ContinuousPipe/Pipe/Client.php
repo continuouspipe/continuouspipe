@@ -14,6 +14,8 @@ interface Client
      * @param DeploymentRequest $deploymentRequest
      * @param User              $user
      *
+     * @throws PipeClientException
+     *
      * @return Deployment
      */
     public function start(DeploymentRequest $deploymentRequest, User $user);
@@ -22,6 +24,8 @@ interface Client
      * @param DeploymentRequest\Target $target
      * @param Team                     $team
      * @param User                     $authenticatedUser
+     *
+     * @throws PipeClientException
      */
     public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser);
 
@@ -33,6 +37,7 @@ interface Client
      * @param User   $authenticatedUser
      *
      * @throws ClusterNotFound
+     * @throws PipeClientException
      *
      * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
      */
@@ -45,6 +50,7 @@ interface Client
      * @param array  $labels
      *
      * @throws ClusterNotFound
+     * @throws PipeClientException
      *
      * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
      */
@@ -58,6 +64,8 @@ interface Client
      * @param string $clusterIdentifier
      * @param string $namespace
      * @param string $podName
+     *
+     * @throws PipeClientException
      */
     public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName);
 }

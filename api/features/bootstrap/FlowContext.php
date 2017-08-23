@@ -737,6 +737,35 @@ EOF;
     }
 
     /**
+     * @Then the environment :name should have been deleted from the cluster :cluster
+     */
+    public function theEnvironmentShouldHaveBeenDeletedFromTheCluster($name, $cluster)
+    {
+        $foundDeletions = [];
+        foreach ($this->traceablePipeClient->getDeletions() as $deletion) {
+            if ($deletion->getEnvironmentName() == $name && $deletion->getClusterIdentifier() == $cluster) {
+                return;
+            }
+
+            $foundDeletions[] = $deletion->getEnvironmentName().' (cluster: '.$deletion->getClusterIdentifier().')';
+        }
+
+        throw new \RuntimeException('No matching deletion found. Found: '.implode(', ', $foundDeletions));
+    }
+
+    /**
+     * @Then the environment :name should not have been deleted from the cluster :cluster
+     */
+    public function theEnvironmentShouldNotHaveBeenDeletedFromTheCluster($name, $cluster)
+    {
+        foreach ($this->traceablePipeClient->getDeletions() as $deletion) {
+            if ($deletion->getEnvironmentName() == $name && $deletion->getClusterIdentifier() == $cluster) {
+                throw new \RuntimeException('Found such deletion');
+            }
+        }
+    }
+
+    /**
      * @Then I should see the environment :name
      */
     public function iShouldSeeTheEnvironment($name)

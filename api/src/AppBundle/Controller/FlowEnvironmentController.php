@@ -5,10 +5,11 @@ namespace AppBundle\Controller;
 use AppBundle\Request\WatchRequest;
 use ContinuousPipe\River\ClusterPolicies\Resources\ResourceCalculator;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
-use ContinuousPipe\River\Flow\EnvironmentClient;
+use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
+use ContinuousPipe\Security\User\User;
 use ContinuousPipe\Watcher\Watcher;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -26,7 +27,7 @@ use ContinuousPipe\Watcher\WatcherException;
 class FlowEnvironmentController
 {
     /**
-     * @var EnvironmentClient
+     * @var DeployedEnvironmentRepository 
      */
     private $environmentClient;
 
@@ -41,11 +42,11 @@ class FlowEnvironmentController
     private $watcher;
 
     /**
-     * @param EnvironmentClient $environmentClient
-     * @param BucketRepository  $bucketRepository
-     * @param Watcher           $watcher
+     * @param DeployedEnvironmentRepository $environmentClient
+     * @param BucketRepository              $bucketRepository
+     * @param Watcher                       $watcher
      */
-    public function __construct(EnvironmentClient $environmentClient, BucketRepository $bucketRepository, Watcher $watcher)
+    public function __construct(DeployedEnvironmentRepository $environmentClient, BucketRepository $bucketRepository, Watcher $watcher)
     {
         $this->environmentClient = $environmentClient;
         $this->watcher = $watcher;
@@ -76,14 +77,15 @@ class FlowEnvironmentController
 
     /**
      * @Route("/flows/{uuid}/environments/{name}", methods={"DELETE"})
+     * @ParamConverter("user", converter="user")
      * @Security("is_granted('DELETE', flow)")
      * @View
      */
-    public function deleteAction(FlatFlow $flow, Request $request, $name)
+    public function deleteAction(FlatFlow $flow, Request $request, User $user, $name)
     {
         $environment = new DeployedEnvironment($name, $request->query->get('cluster'));
 
-        $this->environmentClient->delete($flow, $environment);
+        $this->environmentClient->delete($flow->getTeam(), $user, $environment);
     }
 
     /**
