@@ -697,8 +697,8 @@ class DeployContext implements Context
     private function sendDeployTaskNotification(DeployTask $task, $status, array $publicEndpoints = [])
     {
         $events = $this->tideTasksContext->getTaskEvents($task);
-        $deploymentStartedEvents = array_values(array_filter($events->getEvents(), function($event) {
-            return $event instanceof DeploymentStarted;
+        $deploymentStartedEvents = array_values(array_filter($events->getEvents(), function($event) use ($task) {
+            return $event instanceof DeploymentStarted && $event->getTaskId() == $task->getIdentifier();
         }));
 
         if (0 === count($deploymentStartedEvents)) {

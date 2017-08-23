@@ -72,3 +72,42 @@ Feature:
     When a tide is started for the branch "master"
     And the deployment succeed
     Then the environment "app-master" should have been deleted from the cluster "foo"
+
+  Scenario: It only deletes the right environment
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    defaults:
+        cluster: foo
+        environment:
+            name: '"app-" ~ code_reference.branch'
+
+    tasks:
+        infrastructure:
+            deploy:
+                services:
+                    foo:
+                        specification:
+                            source:
+                                image: foo
+
+
+        test_infrastructure:
+            deploy:
+                environment:
+                    name: '"app-test-" ~ code_reference.branch'
+                services:
+                    bar:
+                        specification:
+                            source:
+                                image: foo
+
+        cleanup:
+            delete:
+                environment:
+                    name: '"app-test-" ~ code_reference.branch'
+    """
+    When a tide is started for the branch "master"
+    And the deployment succeed
+    And the second deploy succeed
+    Then the environment "app-test-master" should have been deleted from the cluster "foo"
+    And the environment "app-master" should not have been deleted from the cluster "foo"

@@ -754,6 +754,18 @@ EOF;
     }
 
     /**
+     * @Then the environment :name should not have been deleted from the cluster :cluster
+     */
+    public function theEnvironmentShouldNotHaveBeenDeletedFromTheCluster($name, $cluster)
+    {
+        foreach ($this->traceablePipeClient->getDeletions() as $deletion) {
+            if ($deletion->getEnvironmentName() == $name && $deletion->getClusterIdentifier() == $cluster) {
+                throw new \RuntimeException('Found such deletion');
+            }
+        }
+    }
+
+    /**
      * @Then I should see the environment :name
      */
     public function iShouldSeeTheEnvironment($name)
