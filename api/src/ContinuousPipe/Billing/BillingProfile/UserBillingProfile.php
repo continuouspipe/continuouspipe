@@ -131,4 +131,12 @@ class UserBillingProfile
 
         return false;
     }
+
+    /**
+     * @param Collection|User[] $admins
+     */
+    public function setAdmins(Collection $admins)
+    {
+        $this->admins = $admins;
+    }
 }

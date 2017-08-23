@@ -48,10 +48,12 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
      */
     public function save(UserBillingProfile $billingProfile)
     {
+        /** @var UserBillingProfile $merged */
         $merged = $this->entityManager->merge($billingProfile);
+        $merged->setAdmins($billingProfile->getAdmins());
 
         $this->entityManager->persist($merged);
-        $this->entityManager->flush($merged);
+        $this->entityManager->flush();
     }
 
     /**
@@ -80,7 +82,7 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
         $relation = new UserBillingProfileTeamRelation($team, $billingProfile);
 
         $this->entityManager->persist($relation);
-        $this->entityManager->flush($relation);
+        $this->entityManager->flush();
     }
 
     /**
@@ -95,7 +97,7 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
 
         if (null !== $relation) {
             $this->entityManager->remove($relation);
-            $this->entityManager->flush($relation);
+            $this->entityManager->flush();
         }
     }
 
