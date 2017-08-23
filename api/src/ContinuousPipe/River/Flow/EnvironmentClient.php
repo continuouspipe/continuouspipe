@@ -11,6 +11,8 @@ use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
 use ContinuousPipe\Security\Authenticator\UserContext;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise;
 use Psr\Log\LoggerInterface;
@@ -113,15 +115,15 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     /**
      * {@inheritdoc}
      */
-    public function delete(FlatFlow $flow, DeployedEnvironment $environment)
+    public function delete(Team $team, User $user, DeployedEnvironment $environment)
     {
         $this->pipeClient->deleteEnvironment(
             new Client\DeploymentRequest\Target(
                 $environment->getIdentifier(),
                 $environment->getCluster()
             ),
-            $flow->getTeam(),
-            $this->userContext->getCurrent()
+            $team,
+            $user
         );
     }
 

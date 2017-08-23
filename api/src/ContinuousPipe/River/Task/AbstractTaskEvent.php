@@ -1,12 +1,12 @@
 <?php
 
-namespace ContinuousPipe\River\Task\ManualApproval\Event;
+namespace ContinuousPipe\River\Task;
 
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\TaskEvent;
 use Ramsey\Uuid\UuidInterface;
 
-abstract class ManualApprovalEvent implements TideEvent, TaskEvent
+abstract class AbstractTaskEvent implements TideEvent, TaskEvent
 {
     private $tideUuid;
     private $taskIdentifier;

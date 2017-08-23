@@ -98,6 +98,7 @@
         <service id="river.tide.task_runner" class="ContinuousPipe\River\Task\DelegatesToSupportingTaskRunner">
             <argument type="collection">
                 <argument type="service" id="river.task.manual_approval.runner" />
+                <argument type="service" id="river.task.delete.runner" />
                 <argument type="service" id="river.task.build_factory" />
                 <argument type="service" id="river.tide.task_runner.start_method" />
                 <argument type="service" id="river.task.deploy_runner" />

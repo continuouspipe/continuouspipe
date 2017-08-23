@@ -667,6 +667,8 @@ class DeployContext implements Context
             $this->tideContext->getCurrentTideUuid()
         );
 
+        var_dump($events);
+
         /** @var DeploymentStarted[] $deploymentStartedEvents */
         $deploymentStartedEvents = array_filter($events, function (TideEvent $event) {
             return $event instanceof DeploymentStarted;

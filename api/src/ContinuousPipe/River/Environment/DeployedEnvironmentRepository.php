@@ -3,6 +3,8 @@
 namespace ContinuousPipe\River\Environment;
 
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
 
 interface DeployedEnvironmentRepository
 {
@@ -18,10 +20,11 @@ interface DeployedEnvironmentRepository
     /**
      * Delete a deployed environment.
      *
-     * @param FlatFlow            $flow
+     * @param Team $team
+     * @param User $user
      * @param DeployedEnvironment $environment
      */
-    public function delete(FlatFlow $flow, DeployedEnvironment $environment);
+    public function delete(Team $team, User $user, DeployedEnvironment $environment);
 
     /**
      * Delete a Pod.

@@ -9,6 +9,7 @@ use ContinuousPipe\River\Flow\EnvironmentClient;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
+use ContinuousPipe\Security\User\User;
 use ContinuousPipe\Watcher\Watcher;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -76,14 +77,15 @@ class FlowEnvironmentController
 
     /**
      * @Route("/flows/{uuid}/environments/{name}", methods={"DELETE"})
+     * @ParamConverter("user", converter="user")
      * @Security("is_granted('DELETE', flow)")
      * @View
      */
-    public function deleteAction(FlatFlow $flow, Request $request, $name)
+    public function deleteAction(FlatFlow $flow, Request $request, User $user, $name)
     {
         $environment = new DeployedEnvironment($name, $request->query->get('cluster'));
 
-        $this->environmentClient->delete($flow, $environment);
+        $this->environmentClient->delete($flow->getTeam(), $user, $environment);
     }
 
     /**
