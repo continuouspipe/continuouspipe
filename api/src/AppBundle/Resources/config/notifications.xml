@@ -25,6 +25,23 @@
             <argument type="service" id="river.notifications.chain_notifier" />
         </service>
 
+        <service id="river.notifications.notifier.asynchronous.notifier.calls_to_commands"
+                 class="ContinuousPipe\River\Notifications\Asynchronous\Notifier\TransformCallsToCommand"
+                 decorates="river.notifications.notifier">
+            <argument type="service" id="command_bus" />
+        </service>
+
+        <service id="river.notifications.notifier.asynchronous.handler.do_notify"
+                 class="ContinuousPipe\River\Notifications\Asynchronous\Handler\DoNotify">
+            <argument type="service" id="river.notifications.notifier.asynchronous.notifier.calls_to_commands.inner" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="log_stream.logger_factory"/>
+            <argument type="service" id="logger" />
+
+            <tag name="asynchronous_command_handler"
+                 handles="ContinuousPipe\River\Notifications\Asynchronous\Command\NotifyCommand" />
+        </service>
+
         <service id="river.notifications.tide_listener" class="ContinuousPipe\River\Notifications\TideStatusListener">
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="river.notifications.status_factory"/>

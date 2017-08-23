@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Tide\Status;
 
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use JMS\Serializer\Annotation as JMS;
 
 final class Status
 {
@@ -13,21 +14,29 @@ final class Status
     const STATE_UNKNOWN = 'unknown';
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $state;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var string
      */
     private $description;
 
     /**
+     * @JMS\Type("string")
+     *
      * @var null|string
      */
     private $url;
 
     /**
+     * @JMS\Type("array<ContinuousPipe\Pipe\Client\PublicEndpoint>")
+     *
      * @var PublicEndpoint[]
      */
     private $publicEndpoints;
