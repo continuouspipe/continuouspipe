@@ -57,15 +57,20 @@ class HttpPipeClient implements Client
      */
     public function start(DeploymentRequest $deploymentRequest, User $user)
     {
-        $response = $this->client->request('post', $this->baseUrl.'/deployments', [
-            'body' => $this->serializer->serialize($deploymentRequest, 'json'),
-            'headers' => $this->getRequestHeaders($user),
-        ]);
+        try {
+            $response = $this->client->request('post', $this->baseUrl . '/deployments', [
+                'body' => $this->serializer->serialize($deploymentRequest, 'json'),
+                'headers' => $this->getRequestHeaders($user),
+            ]);
+        } catch (RequestException $e) {
+            throw new PipeClientException('Something went wrong while starting the deployment: '.$e->getMessage(), $e->getCode(), $e);
+        }
 
-        $contents = $this->getResponseContents($response);
-        $deployment = $this->serializer->deserialize($contents, Deployment::class, 'json');
-
-        return $deployment;
+        try {
+            return $this->serializer->deserialize($this->getResponseContents($response), Deployment::class, 'json');
+        } catch (\InvalidArgumentException $e) {
+            throw new PipeClientException('Response from pipe is not understandable: '.$e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -80,9 +85,13 @@ class HttpPipeClient implements Client
             $target->getEnvironmentName()
         );
 
-        $this->client->request('delete', $url, [
-            'headers' => $this->getRequestHeaders($authenticatedUser),
-        ]);
+        try {
+            $this->client->request('delete', $url, [
+                'headers' => $this->getRequestHeaders($authenticatedUser),
+            ]);
+        } catch (RequestException $e) {
+            throw new PipeClientException('Something went wrong while deleting environment: '.$e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -102,8 +111,14 @@ class HttpPipeClient implements Client
             $this->client->request('delete', $url, [
                 'headers' => $this->getRequestHeaders($authenticatedUser),
             ]);
-        } catch (ClientException $e) {
-            throw new PodNotFound(sprintf('Pod %s not found', $podName));
+        } catch (RequestException $e) {
+            if (null !== ($response = $e->getResponse())) {
+                if ($response->getStatusCode() == 404) {
+                    throw new PodNotFound(sprintf('Pod %s not found', $podName));
+                }
+            }
+
+            throw new PipeClientException('Something went wrong while deleting the pod: '.$e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -171,6 +186,7 @@ class HttpPipeClient implements Client
      * @param string $url
      *
      * @throws ClusterNotFound
+     * @throws PipeClientException
      *
      * @return PromiseInterface Array of Environment objects.
      */
@@ -194,7 +210,7 @@ class HttpPipeClient implements Client
                     }
                 }
 
-                throw $e;
+                throw new PipeClientException($e->getMessage(), $e->getCode(), $e);
             }
         );
 

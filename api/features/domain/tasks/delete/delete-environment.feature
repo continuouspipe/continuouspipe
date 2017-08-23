@@ -111,3 +111,28 @@ Feature:
     And the second deploy succeed
     Then the environment "app-test-master" should have been deleted from the cluster "foo"
     And the environment "app-master" should not have been deleted from the cluster "foo"
+
+  Scenario: When something goes wrong, it displays it...
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    defaults:
+        cluster: foo
+        environment:
+            name: '"app-" ~ code_reference.branch'
+    tasks:
+        infrastructure:
+            deploy:
+                services:
+                    foo:
+                        specification:
+                            source:
+                                image: foo
+
+        cleanup:
+            delete: ~
+    """
+    And the environment deletion will fail with the message "Environment is not found"
+    When a tide is started for the branch "master"
+    And the deployment succeed
+    Then the task "cleanup" should be "failed"
+    And a log containing "Environment is not found" should be created

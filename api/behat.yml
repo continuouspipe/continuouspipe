@@ -68,6 +68,7 @@ default:
                     - @river.task.deploy.naming.environment_strategy
                     - @kernel
                     - @jms_serializer
+                    - @river.flow.environment_client.callback
                 - Task\RunContext:
                     - @kernel
                     - @river.pipe_client
@@ -218,6 +219,7 @@ default:
                     - @river.task.deploy.naming.environment_strategy
                     - @kernel
                     - @jms_serializer
+                    - @river.flow.environment_client.callback
                 - Task\RunContext:
                     - @kernel
                     - @river.pipe_client
@@ -328,6 +330,7 @@ default:
                     - @river.task.deploy.naming.environment_strategy
                     - @kernel
                     - @jms_serializer
+                    - @river.flow.environment_client.callback
                 - Task\RunContext:
                     - @kernel
                     - @river.pipe_client

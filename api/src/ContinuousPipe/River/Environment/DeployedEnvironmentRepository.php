@@ -13,6 +13,8 @@ interface DeployedEnvironmentRepository
      *
      * @param FlatFlow $flow
      *
+     * @throws DeployedEnvironmentException
+     *
      * @return DeployedEnvironment[]
      */
     public function findByFlow(FlatFlow $flow);
@@ -23,6 +25,8 @@ interface DeployedEnvironmentRepository
      * @param Team $team
      * @param User $user
      * @param DeployedEnvironment $environment
+     *
+     * @throws DeployedEnvironmentException
      */
     public function delete(Team $team, User $user, DeployedEnvironment $environment);
 
@@ -33,6 +37,8 @@ interface DeployedEnvironmentRepository
      * @param string $clusterIdentifier
      * @param string $namespace
      * @param string $podName
+     *
+     * @throws DeployedEnvironmentException
      */
     public function deletePod(FlatFlow $flow, string $clusterIdentifier, string $namespace, string $podName);
 }

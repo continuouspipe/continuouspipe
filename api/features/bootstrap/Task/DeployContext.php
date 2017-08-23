@@ -13,6 +13,8 @@ use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\Pipe\Client\PublicEndpointPort;
+use ContinuousPipe\River\Environment\CallbackEnvironmentRepository;
+use ContinuousPipe\River\Environment\DeployedEnvironmentException;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
@@ -76,23 +78,27 @@ class DeployContext implements Context
      * @var Serializer
      */
     private $serializer;
-
     /**
-     * @param EventStore $eventStore
-     * @param MessageBus $eventBus
-     * @param TraceableClient $traceablePipeClient
-     * @param EnvironmentNamingStrategy $environmentNamingStrategy
-     * @param Kernel $kernel
-     * @param Serializer $serializer
+     * @var CallbackEnvironmentRepository
      */
-    public function __construct(EventStore $eventStore, MessageBus $eventBus, TraceableClient $traceablePipeClient, EnvironmentNamingStrategy $environmentNamingStrategy, Kernel $kernel, Serializer $serializer)
-    {
+    private $callbackEnvironmentRepository;
+
+    public function __construct(
+        EventStore $eventStore,
+        MessageBus $eventBus,
+        TraceableClient $traceablePipeClient,
+        EnvironmentNamingStrategy $environmentNamingStrategy,
+        Kernel $kernel,
+        Serializer $serializer,
+        CallbackEnvironmentRepository $callbackEnvironmentRepository
+    ) {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
         $this->traceablePipeClient = $traceablePipeClient;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
         $this->kernel = $kernel;
         $this->serializer = $serializer;
+        $this->callbackEnvironmentRepository = $callbackEnvironmentRepository;
     }
 
     /**
@@ -103,6 +109,16 @@ class DeployContext implements Context
         $this->tideContext = $scope->getEnvironment()->getContext('TideContext');
         $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
         $this->tideTasksContext = $scope->getEnvironment()->getContext('Tide\TasksContext');
+    }
+
+    /**
+     * @Given the environment deletion will fail with the message :message
+     */
+    public function theEnvironmentDeletionWillFailWithTheMessage($message)
+    {
+        $this->callbackEnvironmentRepository->setDeleteEnvironmentCallback(function() use ($message) {
+            throw new DeployedEnvironmentException($message);
+        });
     }
 
     /**

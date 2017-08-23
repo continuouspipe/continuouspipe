@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Delete;
 
 use ContinuousPipe\River\Environment\DeployedEnvironment;
+use ContinuousPipe\River\Environment\DeployedEnvironmentException;
 use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBased\ApplyEventCapability;
@@ -57,24 +58,48 @@ class DeleteTask implements Task
         $label = 'Deleting environment';
         $logger = $loggerFactory->from($tide->getLog())->child(new Text($label))->updateStatus(Log::RUNNING);
 
-        $deployedEnvironmentRepository->delete(
-            $tide->getTeam(),
-            $tide->getUser(),
-            new DeployedEnvironment(
-                $environmentNamingStrategy->getName(
-                    $tide,
-                    $this->configuration['environment']['name']
-                ),
-                $this->configuration['cluster']
-            )
+        $deployedEnvironment = new DeployedEnvironment(
+            $environmentNamingStrategy->getName(
+                $tide,
+                $this->configuration['environment']['name']
+            ),
+            $this->configuration['cluster']
         );
 
-        $this->eventCollection->raiseAndApply(new EnvironmentDeleted(
-            $this->tideUuid,
-            $this->identifier,
-            $logger->getLog()->getId(),
-            $label
-        ));
+        $childLogger = $logger->child(new Text(sprintf(
+            'Deleting environment <code>%s</code>',
+            $deployedEnvironment->getIdentifier()
+        )));
+
+        try {
+            $deployedEnvironmentRepository->delete(
+                $tide->getTeam(),
+                $tide->getUser(),
+                $deployedEnvironment
+            );
+
+            $this->eventCollection->raiseAndApply(new EnvironmentDeleted(
+                $this->tideUuid,
+                $this->identifier,
+                $logger->getLog()->getId(),
+                $label
+            ));
+
+            $childLogger->updateStatus(Log::SUCCESS);
+            $logger->updateStatus(Log::SUCCESS);
+        } catch (DeployedEnvironmentException $e) {
+            $this->eventCollection->raiseAndApply(new EnvironmentDeletionFailed(
+                $this->tideUuid,
+                $this->identifier,
+                $logger->getLog()->getId(),
+                $label,
+                $e->getMessage()
+            ));
+
+            $childLogger->child(new Text($e->getMessage()));
+            $childLogger->updateStatus(Log::FAILURE);
+            $logger->updateStatus(Log::FAILURE);
+        }
     }
 
     public function applyTaskCreated(TaskCreated $event)
