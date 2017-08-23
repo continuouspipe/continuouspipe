@@ -22,6 +22,10 @@
                 <md-tooltip md-direction="top">Remote shell</md-tooltip>
                 <md-icon class="material-icons">keyboard</md-icon>
             </md-button>
+            <md-button class="md-icon-button md-warn" ng-click="deleteContainers(environment, component)">
+                <md-tooltip md-direction="top">Delete containers</md-tooltip>
+                <md-icon class="material-icons">delete</md-icon>
+            </md-button>
             <md-button class="md-icon-button" ng-repeat="address in component.status.public_endpoints" ng-click="openEndpoint({name: component.name, address: address})">
                 <md-tooltip md-direction="top">{{ address }}</md-tooltip>
                 <md-icon class="material-icons">open_in_new</md-icon>
