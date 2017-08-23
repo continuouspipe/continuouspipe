@@ -12,7 +12,7 @@ Feature:
             deploy:
                 cluster: foo
                 environment:
-                    name: '"bar"'
+                    name: '"app-" ~ code_reference.branch'
                 services:
                     foo:
                         specification:
@@ -23,8 +23,8 @@ Feature:
             delete:
                 cluster: foo
                 environment:
-                    name: 'bar'
+                    name: '"app-" ~ code_reference.branch'
     """
     When a tide is started for the branch "master"
     And the deployment succeed
-    Then the environment "bar" should have been deleted from the cluster "foo"
+    Then the environment "app-master" should have been deleted from the cluster "foo"

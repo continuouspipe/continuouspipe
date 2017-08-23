@@ -11,6 +11,7 @@ use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Task\Delete\Event\EnvironmentDeleted;
 use ContinuousPipe\River\Task\Delete\Event\EnvironmentDeletionFailed;
 use ContinuousPipe\River\Task\Delete\Event\StartedEnvironmentDeletion;
+use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskCreated;
 use ContinuousPipe\River\Task\TaskEvent;
@@ -47,7 +48,7 @@ class DeleteTask implements Task
         }
     }
 
-    public function start(Tide $tide, LoggerFactory $loggerFactory, DeployedEnvironmentRepository $deployedEnvironmentRepository)
+    public function start(Tide $tide, LoggerFactory $loggerFactory, DeployedEnvironmentRepository $deployedEnvironmentRepository, EnvironmentNamingStrategy $environmentNamingStrategy)
     {
         if ($this->status == Task::STATUS_RUNNING) {
             throw new \RuntimeException('The task is already running');
@@ -60,7 +61,10 @@ class DeleteTask implements Task
             $tide->getTeam(),
             $tide->getUser(),
             new DeployedEnvironment(
-                $this->configuration['environment']['name'],
+                $environmentNamingStrategy->getName(
+                    $tide,
+                    $this->configuration['environment']['name']
+                ),
                 $this->configuration['cluster']
             )
         );
