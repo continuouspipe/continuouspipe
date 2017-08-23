@@ -3,10 +3,11 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Request\WatchRequest;
-use ContinuousPipe\River\ClusterPolicies\Resources\ResourceCalculator;
+use ContinuousPipe\River\Managed\Resources\Calculation\ResourceCalculator;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
 use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Managed\Resources\ResourceUsageResolver;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\User\User;
@@ -42,15 +43,25 @@ class FlowEnvironmentController
     private $watcher;
 
     /**
+     * @var ResourceUsageResolver
+     */
+    private $resourceUsageResolver;
+
+    /**
      * @param DeployedEnvironmentRepository $environmentClient
      * @param BucketRepository              $bucketRepository
      * @param Watcher                       $watcher
      */
-    public function __construct(DeployedEnvironmentRepository $environmentClient, BucketRepository $bucketRepository, Watcher $watcher)
-    {
+    public function __construct(
+        DeployedEnvironmentRepository $environmentClient,
+        BucketRepository $bucketRepository,
+        Watcher $watcher,
+        ResourceUsageResolver $resourceUsageResolver
+    ) {
         $this->environmentClient = $environmentClient;
         $this->watcher = $watcher;
         $this->bucketRepository = $bucketRepository;
+        $this->resourceUsageResolver = $resourceUsageResolver;
     }
 
     /**
@@ -70,9 +81,7 @@ class FlowEnvironmentController
      */
     public function usageAction(FlatFlow $flow)
     {
-        $environments = $this->environmentClient->findByFlow($flow);
-
-        return ResourceCalculator::sumEnvironmentResources($environments);
+        return $this->resourceUsageResolver->forFlow($flow);
     }
 
     /**

@@ -32,5 +32,10 @@
         <service id="river.pipe.deployment_request_enhancer" alias="river.pipe.deployment_request_enhancer.replace_deployed_endpoints" />
 
         <service id="river.pipe.public_endpoint_writer" class="ContinuousPipe\River\Pipe\PublicEndpoint\PublicEndpointWriter" />
+
+        <!-- Resources -->
+        <service id="river.managed.resources.usage_resolver" class="ContinuousPipe\River\Managed\Resources\CurrentResourcesFromEnvironments">
+            <argument type="service" id="river.flow.environment_client" />
+        </service>
     </services>
 </container>

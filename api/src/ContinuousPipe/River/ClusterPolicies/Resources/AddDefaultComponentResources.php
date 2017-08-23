@@ -6,6 +6,7 @@ use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\Pipe\ClusterNotFound;
 use ContinuousPipe\River\ClusterPolicies\ClusterResolution\ClusterPolicyResolver;
+use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
 use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\DeploymentRequestEnhancer;
 use ContinuousPipe\River\Tide;
