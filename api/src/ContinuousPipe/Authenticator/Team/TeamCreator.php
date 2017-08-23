@@ -16,6 +16,7 @@ use ContinuousPipe\Security\User\User;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class TeamCreator
 {
@@ -39,19 +40,25 @@ class TeamCreator
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
 
     public function __construct(
         TeamRepository $teamRepository,
         TeamMembershipRepository $membershipRepository,
         UserBillingProfileRepository $userBillingProfileRepository,
         EventDispatcherInterface $eventDispatcher,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        AuthorizationCheckerInterface $authorizationChecker
     ) {
         $this->teamRepository = $teamRepository;
         $this->membershipRepository = $membershipRepository;
         $this->eventDispatcher = $eventDispatcher;
         $this->userBillingProfileRepository = $userBillingProfileRepository;
         $this->logger = $logger;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     /**
@@ -75,16 +82,15 @@ class TeamCreator
 
         if (null !== ($billingProfile = $creationRequest->getBillingProfile())) {
             $billingProfile = $this->userBillingProfileRepository->find($billingProfile->getUuid());
-            if ($billingProfile->getUser()->getUsername() != $owner->getUsername()) {
+
+            if (!$this->authorizationChecker->isGranted('READ', $billingProfile)) {
                 throw new TeamCreationException('You are not authorized to use this billing profile');
             }
         } else {
-            try {
-                $billingProfile = $this->userBillingProfileRepository->findByUser($owner);
-            } catch (UserBillingProfileNotFound $e) {
-                $this->logger->warning('Created a team without billing profile', [
-                    'team' => $team->getSlug(),
-                ]);
+            $billingProfiles = $this->userBillingProfileRepository->findByUser($owner);
+
+            if (count($billingProfiles) == 1) {
+                $billingProfile = current($billingProfiles);
             }
         }
 
@@ -118,7 +124,7 @@ class TeamCreator
 
         if (null !== ($billingProfile = $updateRequest->getBillingProfile())) {
             $billingProfile = $this->userBillingProfileRepository->find($billingProfile->getUuid());
-            if ($billingProfile->getUser()->getUsername() != $updater->getUsername()) {
+            if (!$this->authorizationChecker->isGranted('READ', $billingProfile)) {
                 throw new TeamCreationException('You are not authorized to use this billing profile');
             }
 

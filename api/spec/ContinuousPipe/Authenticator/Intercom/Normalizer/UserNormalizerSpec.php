@@ -41,9 +41,9 @@ class UserNormalizerSpec extends ObjectBehavior
 
         $this->tomorrow = new \DateTimeImmutable('tomorrow');
 
-        $userBillingProfile = new UserBillingProfile(Uuid::uuid4(), $this->user, 'Test', new \DateTimeImmutable('2 weeks ago'), true);
+        $userBillingProfile = new UserBillingProfile(Uuid::uuid4(), 'Test', new \DateTimeImmutable('2 weeks ago'), [$this->user], true);
 
-        $userBillingProfileRepository->findByUser($this->user)->willReturn($userBillingProfile);
+        $userBillingProfileRepository->findByUser($this->user)->willReturn([$userBillingProfile]);
 
         $trialResolver->getTrialPeriodExpirationDate($userBillingProfile)->willReturn($this->tomorrow);
 
@@ -77,9 +77,9 @@ class UserNormalizerSpec extends ObjectBehavior
         TrialResolver $trialResolver,
         UserBillingProfileRepository $userBillingProfileRepository
     ) {
-        $userBillingProfile = new UserBillingProfile(Uuid::uuid4(), $this->user, 'Expired', new \DateTimeImmutable('2 weeks ago'), false);
+        $userBillingProfile = new UserBillingProfile(Uuid::uuid4(), 'Expired', new \DateTimeImmutable('2 weeks ago'), [$this->user], false);
 
-        $userBillingProfileRepository->findByUser($this->user)->willReturn($userBillingProfile);
+        $userBillingProfileRepository->findByUser($this->user)->willReturn([$userBillingProfile]);
 
         $yesterday = new \DateTimeImmutable('yesterday');
         $trialResolver->getTrialPeriodExpirationDate($userBillingProfile)->willReturn($yesterday);

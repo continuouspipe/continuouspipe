@@ -87,16 +87,30 @@ class AccountsContext implements Context
     /**
      * @Given there is a billing profile :uuid for the user :username
      * @Given there is a billing profile :uuid for the user :username named :name
+     * @Given there is a billing profile :uuid
      */
-    public function thereIsABillingProfileForTheUser($uuid, $username, $name = null)
+    public function thereIsABillingProfileForTheUser($uuid, $username = null, $name = null)
     {
         $this->userBillingProfileRepository->save(new UserBillingProfile(
             Uuid::fromString($uuid),
-            $this->securityContext->thereIsAUser($username)->getUser(),
             $name ?: 'NAME',
             new \DateTime(),
+            $username !== null ? [
+                $this->securityContext->thereIsAUser($username)->getUser(),
+            ] : [],
             false
         ));
+    }
+
+    /**
+     * @Given the user :username is administrator of the billing profile :uuid
+     */
+    public function theUserIsOfTheBillingProfile($username, $uuid)
+    {
+        $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
+        $billingProfile->getAdmins()->add($this->securityContext->thereIsAUser($username)->getUser());
+
+        $this->userBillingProfileRepository->save($billingProfile);
     }
 
     /**
@@ -106,9 +120,11 @@ class AccountsContext implements Context
     {
         $this->userBillingProfileRepository->save(new UserBillingProfile(
             Uuid::fromString($uuid),
-            $this->securityContext->thereIsAUser($username)->getUser(),
             'NAME',
             new \DateTime(),
+            [
+                $this->securityContext->thereIsAUser($username)->getUser(),
+            ],
             false,
             $tidesPerHour
         ));
@@ -122,9 +138,9 @@ class AccountsContext implements Context
         $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
         $this->userBillingProfileRepository->save(new UserBillingProfile(
             $billingProfile->getUuid(),
-            $billingProfile->getUser(),
             $billingProfile->getName(),
             new \DateTime('-'.$createdDaysAgo.' days 2 hours'),
+            $billingProfile->getAdmins(),
             true
         ));
     }
@@ -134,9 +150,13 @@ class AccountsContext implements Context
      */
     public function theUserShouldHaveABillingAccount($username)
     {
-        $this->userBillingProfileRepository->findByUser(
+        $billingProfiles = $this->userBillingProfileRepository->findByUser(
             $this->securityContext->thereIsAUser($username)->getUser()
         );
+
+        if (count($billingProfiles) === 0) {
+            throw new \RuntimeException('No billing profile found');
+        }
     }
 
     /**
@@ -201,13 +221,52 @@ class AccountsContext implements Context
         $this->assertResponseCode(200);
 
         $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
-
         if (count($json) != 1) {
             throw new \RuntimeException('There should be exactly one billing profile');
         }
 
         if ($json[0]['uuid'] != $uuid) {
             throw new \RuntimeException(sprintf('Found UUID %s while expecting %s', $json[0]['uuid'], $uuid));
+        }
+
+        return $json[0];
+    }
+
+    /**
+     * @Then I should see :username as admin of the billing profile :uuid
+     */
+    public function iShouldSeeAsAdminOfTheBillingProfile($username, $uuid)
+    {
+        $billingProfileAsJson = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if ($billingProfileAsJson['uuid'] != $uuid) {
+            throw new \RuntimeException('Did not find this billing profile');
+        }
+
+        foreach ($billingProfileAsJson['admins'] as $adminAsJson) {
+            if ($adminAsJson['username'] == $username) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('Admin was not found');
+    }
+
+    /**
+     * @Then I should not see :username as admin of the billing profile :uuid
+     */
+    public function iShouldNotSeeAsAdminOfTheBillingProfile($username, $uuid)
+    {
+        $billingProfileAsJson = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if ($billingProfileAsJson['uuid'] != $uuid) {
+            throw new \RuntimeException('Did not find this billing profile');
+        }
+
+        foreach ($billingProfileAsJson['admins'] as $adminAsJson) {
+            if ($adminAsJson['username'] == $username) {
+                throw new \RuntimeException('Found user in admins!');
+            }
         }
     }
 
@@ -231,7 +290,6 @@ class AccountsContext implements Context
         }
 
     }
-
 
     /**
      * @Then I should see the billing profile to be not found
@@ -515,13 +573,35 @@ class AccountsContext implements Context
     }
 
     /**
+     * @When I add :username as an administrator of the billing profile :uuid
+     */
+    public function iAddAsAnAdministratorOfTheBillingProfile($username, $uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/billing-profile/'.$uuid.'/admins/'.$username,
+            'POST'
+        ));
+    }
+
+    /**
+     * @When I remove :username as an administrator of the billing profile :uuid
+     */
+    public function iRemoveAsAnAdministratorOfTheBillingProfile($username, $uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/billing-profile/'.$uuid.'/admins/'.$username,
+            'DELETE'
+        ));
+    }
+
+    /**
      * @Then the billing profile :name for :username should have been created
      */
     public function theBillingProfileForShouldHaveBeenCreated($name, $username)
     {
         $this->assertResponseCode(201);
 
-        $profiles = $this->userBillingProfileRepository->findAllByUser(
+        $profiles = $this->userBillingProfileRepository->findByUser(
             $this->securityContext->thereIsAUser($username)->getUser()
         );
 

@@ -11,9 +11,16 @@
         <field name="hasTrial" type="boolean" nullable="true" />
         <field name="tidesPerHour" type="integer" nullable="true" />
 
-        <many-to-one field="user" target-entity="ContinuousPipe\Security\User\User">
-            <join-column name="user_username" referenced-column-name="username" />
-        </many-to-one>
+        <many-to-many field="admins" target-entity="ContinuousPipe\Security\User\User">
+            <join-table name="user_billing_profiles">
+                <join-columns>
+                    <join-column name="billing_profile_uuid" referenced-column-name="uuid" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="user_username" referenced-column-name="username" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
     </entity>
 
 </doctrine-mapping>

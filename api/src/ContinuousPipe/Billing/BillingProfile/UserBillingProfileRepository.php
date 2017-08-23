@@ -22,22 +22,11 @@ interface UserBillingProfileRepository
      *
      * @param User $user
      *
-     * @throws UserBillingProfileNotFound
-     *
-     * @return UserBillingProfile
-     */
-    public function findByUser(User $user) : UserBillingProfile;
-
-    /**
-     * Find all the billing profiles of the user.
-     *
-     * @param User $user
-     *
-     * @throws UserBillingProfileNotFound
+     * @throws UserBillingProfileException
      *
      * @return UserBillingProfile[]
      */
-    public function findAllByUser(User $user): array;
+    public function findByUser(User $user) : array;
 
     /**
      * Find the billing profile for the given team.

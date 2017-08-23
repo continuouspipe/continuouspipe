@@ -32,21 +32,15 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
     /**
      * {@inheritdoc}
      */
-    public function findByUser(User $user): UserBillingProfile
+    public function findByUser(User $user): array
     {
-        if (null === ($billingProfile = $this->getUserBillingProfileRepository()->findOneBy(['user' => $user]))) {
-            throw new UserBillingProfileNotFound(sprintf('No billing profile found for user "%s"', $user->getUsername()));
-        }
-
-        return $billingProfile;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findAllByUser(User $user): array
-    {
-        return $this->getUserBillingProfileRepository()->findBy(['user' => $user]);
+        return $this->getUserBillingProfileRepository()->createQueryBuilder('bp')
+            ->join('bp.admins', 'admins')
+            ->where('admins.username = :username')
+            ->setParameter('username', $user->getUsername())
+            ->getQuery()
+            ->getResult()
+        ;
     }
 
     /**
@@ -54,10 +48,12 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
      */
     public function save(UserBillingProfile $billingProfile)
     {
+        /** @var UserBillingProfile $merged */
         $merged = $this->entityManager->merge($billingProfile);
+        $merged->setAdmins($billingProfile->getAdmins());
 
         $this->entityManager->persist($merged);
-        $this->entityManager->flush($merged);
+        $this->entityManager->flush();
     }
 
     /**
@@ -86,7 +82,7 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
         $relation = new UserBillingProfileTeamRelation($team, $billingProfile);
 
         $this->entityManager->persist($relation);
-        $this->entityManager->flush($relation);
+        $this->entityManager->flush();
     }
 
     /**
@@ -101,7 +97,7 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
 
         if (null !== $relation) {
             $this->entityManager->remove($relation);
-            $this->entityManager->flush($relation);
+            $this->entityManager->flush();
         }
     }
 

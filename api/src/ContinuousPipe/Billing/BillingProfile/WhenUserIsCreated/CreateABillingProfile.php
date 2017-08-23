@@ -23,9 +23,9 @@ class CreateABillingProfile
     {
         $this->userBillingProfileRepository->save(new UserBillingProfile(
             Uuid::uuid4(),
-            $event->getUser(),
             $event->getUser()->getUsername(),
             new \DateTime(),
+            [$event->getUser()],
             true
         ));
     }

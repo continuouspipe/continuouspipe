@@ -24,9 +24,9 @@ class UserBillingProfileCreator
     ): UserBillingProfile {
         $billingProfile = new UserBillingProfile(
             Uuid::uuid4(),
-            $user,
             $userBillingProfileCreationRequest->name,
             new \DateTime(),
+            [$user],
             true
         );
 

@@ -6,6 +6,7 @@ use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
+use ContinuousPipe\Security\User\SecurityUser;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -45,13 +46,17 @@ class UserBillingProfileVoter extends Voter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
+        /** @var UserBillingProfile $billingProfile */
+        $billingProfile = $subject;
+
+        /** @var SecurityUser $user */
         $user = $token->getUser();
 
-        if ($subject->getUser()->getUsername() == $user->getUsername()) {
+        if ($user instanceof SecurityUser && $billingProfile->isAdmin($user->getUser())) {
             return true;
         }
 
-        $teams = $this->userBillingProfileRepository->findRelations($subject->getUuid());
+        $teams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
         $teamsUserIsAdmin = array_filter($teams, function (Team $team) use ($user) {
             $adminUserMemberships = $team->getMemberships()->filter(function (TeamMembership $membership) use ($user) {
                 return $membership->getUser()->getUsername() == $user->getUsername();
