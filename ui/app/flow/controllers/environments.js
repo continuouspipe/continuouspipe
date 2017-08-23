@@ -84,6 +84,26 @@ angular.module('continuousPipeRiver')
         $scope.liveStreamComponent = function(environment, component) {
             $componentLogDialog.open($scope, flow, environment, component);
         };
+
+        $scope.deleteContainers = function(environment, component) {
+            swal({
+                title: "Are you sure?",
+                text: "The containers of the component "+component.identifier+" will be deleted. You may lose the state contained in them. If they are backed by deployments, they may be re-created automatically by the cluster.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, remove them!",
+                closeOnConfirm: false
+            }, function() {
+                EnvironmentRepository.deleteContainers(flow, environment, component).then(function (containers) {
+                    swal("Deleted!", containers.length+" containers successfully deleted.", "success");
+
+                    loadEnvironments();
+                }, function (error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the containers", "error");
+                });
+            });
+        };
     })
     .controller('EnvironmentPreviewController', function($rootScope, $scope, $componentLogDialog, EndpointOpener, environment, flow, $sce) {
         $scope.environment = environment;
