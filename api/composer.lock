@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c55b7a8d0a61a9f6213df80bcb8cd88b",
+    "content-hash": "e2b35d58b9e99d2a1be1a149e7379025",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -350,16 +350,16 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "2.4.4",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
-                "reference": "759ce0c109c160544eda2d3768b34c31609de3a1"
+                "reference": "7cb3ccf72684ea5fc591ab7991fb41643857de14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/759ce0c109c160544eda2d3768b34c31609de3a1",
-                "reference": "759ce0c109c160544eda2d3768b34c31609de3a1",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/7cb3ccf72684ea5fc591ab7991fb41643857de14",
+                "reference": "7cb3ccf72684ea5fc591ab7991fb41643857de14",
                 "shasum": ""
             },
             "require-dev": {
@@ -373,10 +373,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/model/tree/2.4.4",
+                "source": "https://github.com/continuouspipe/model/tree/master",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2017-08-10T10:13:54+00:00"
+            "time": "2017-08-23 07:35:47"
         },
         {
             "name": "continuous-pipe/platform-bundle",
@@ -8666,6 +8666,7 @@
     "stability-flags": {
         "csa/guzzle-bundle": 20,
         "tolerance/tolerance": 20,
+        "continuous-pipe/model": 20,
         "continuous-pipe/worker-bundle": 20,
         "sroze/kubernetes-client": 20,
         "continuous-pipe/message": 20,
