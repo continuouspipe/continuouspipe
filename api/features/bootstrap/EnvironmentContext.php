@@ -13,6 +13,7 @@ use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use Kubernetes\Client\Exception\ServerError;
 use Kubernetes\Client\Model\Status;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,14 +73,10 @@ class EnvironmentContext implements Context
     private $hookableNamespaceRepository;
 
     /**
-     * @param Kernel $kernel
-     * @param EventStore $eventStore
-     * @param DeploymentRepository $deploymentRepository
-     * @param MessageBus $eventBus
-     * @param FakeEnvironmentClient $fakeEnvironmentClient
-     * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
-     * @param HookableNamespaceRepository $hookableNamespaceRepository
+     * @var JWTManagerInterface
      */
+    private $jwtManager;
+
     public function __construct(
         Kernel $kernel,
         EventStore $eventStore,
@@ -87,7 +84,8 @@ class EnvironmentContext implements Context
         MessageBus $eventBus,
         FakeEnvironmentClient $fakeEnvironmentClient,
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
-        HookableNamespaceRepository $hookableNamespaceRepository
+        HookableNamespaceRepository $hookableNamespaceRepository,
+        JWTManagerInterface $jwtManager
     ) {
         $this->kernel = $kernel;
         $this->eventStore = $eventStore;
@@ -96,6 +94,7 @@ class EnvironmentContext implements Context
         $this->fakeEnvironmentClient = $fakeEnvironmentClient;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->hookableNamespaceRepository = $hookableNamespaceRepository;
+        $this->jwtManager = $jwtManager;
     }
 
     /**
@@ -124,6 +123,28 @@ class EnvironmentContext implements Context
         $this->response = $this->kernel->handle(Request::create(
             sprintf('/teams/%s/clusters/%s/environments', $team, $cluster).'?'.http_build_query($labelsFilters),
             'GET'
+        ));
+    }
+
+    /**
+     * @When I request the environment list of the cluster :cluster of the team :team that have the labels :labels with a JWT token for the user :username
+     */
+    public function iRequestTheEnvironmentListOfTheClusterOfTheTeamThatHaveTheLabelsWithAJwtTokenForTheUser($cluster, $team, $labels, $username)
+    {
+        $labelsFilters = ['labels' => []];
+        foreach (explode(',', $labels) as $label) {
+            list($key, $value) = explode('=', $label);
+
+            $labelsFilters['labels'][$key] = $value;
+        }
+
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/teams/%s/clusters/%s/environments', $team, $cluster).'?'.http_build_query($labelsFilters),
+            'GET',
+            [], [], [],
+            [
+                'HTTP_AUTHORIZATION' => 'Bearer '.$this->jwtManager->create(new \Symfony\Component\Security\Core\User\User($username, null)),
+            ]
         ));
     }
 
@@ -220,6 +241,21 @@ class EnvironmentContext implements Context
             echo $this->response->getContent();
             throw new \RuntimeException(sprintf(
                 'Expected the response to be 400, but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+    }
+
+    /**
+     * @Then I should be told that I am forbidden to see these environments
+     */
+    public function iShouldBeToldThatIAmForbiddenToSeeTheseEnvironments()
+    {
+        if (!in_array($this->response->getStatusCode(), [403, 401])) {
+            echo $this->response->getContent();
+
+            throw new \RuntimeException(sprintf(
+                'Expected the response to be 403/401, but got %d',
                 $this->response->getStatusCode()
             ));
         }
