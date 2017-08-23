@@ -23,6 +23,6 @@ class RepositoryAddressDescriptor
             }
         }
 
-        throw new InvalidRepositoryAddress('"%s" is an invalid repository address');
+        throw new InvalidRepositoryAddress(sprintf('"%s" is an invalid repository address', $address));
     }
 }
