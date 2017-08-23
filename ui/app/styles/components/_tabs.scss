@@ -1,6 +1,10 @@
 .tabs-toolbar {
     background: $header-background !important;
 
+    &.mobile-tabs-toolbar {
+        display: none;
+    }
+
     @include smallScreen {
         max-height: 0;
         overflow: hidden;
@@ -8,6 +12,7 @@
 
         &.open {
             max-height: 300px;
+            display: block;
         }
     }
 
