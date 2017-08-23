@@ -1381,8 +1381,7 @@ EOF;
 
         $environmentPromise = $this->traceablePipeClient->getEnvironments(
             $cluster,
-            new Team('fake', 'fake'),
-            new User('fake', Uuid::uuid1())
+            new Team('fake', 'fake')
         );
 
         /** @var Environment[] $environments */

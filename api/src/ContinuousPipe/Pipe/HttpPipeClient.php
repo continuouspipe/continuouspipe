@@ -15,6 +15,7 @@ use GuzzleHttp\Promise\PromiseInterface;
 use JMS\Serializer\Serializer;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class HttpPipeClient implements Client
 {
@@ -60,7 +61,7 @@ class HttpPipeClient implements Client
         try {
             $response = $this->client->request('post', $this->baseUrl . '/deployments', [
                 'body' => $this->serializer->serialize($deploymentRequest, 'json'),
-                'headers' => $this->getRequestHeaders($user),
+                'headers' => $this->getRequestHeadersForUser($user),
             ]);
         } catch (RequestException $e) {
             throw new PipeClientException('Something went wrong while starting the deployment: '.$e->getMessage(), $e->getCode(), $e);
@@ -87,7 +88,7 @@ class HttpPipeClient implements Client
 
         try {
             $this->client->request('delete', $url, [
-                'headers' => $this->getRequestHeaders($authenticatedUser),
+                'headers' => $this->getRequestHeadersForUser($authenticatedUser),
             ]);
         } catch (RequestException $e) {
             throw new PipeClientException('Something went wrong while deleting environment: '.$e->getMessage(), $e->getCode(), $e);
@@ -109,7 +110,7 @@ class HttpPipeClient implements Client
 
         try {
             $this->client->request('delete', $url, [
-                'headers' => $this->getRequestHeaders($authenticatedUser),
+                'headers' => $this->getRequestHeadersForUser($authenticatedUser),
             ]);
         } catch (RequestException $e) {
             if (null !== ($response = $e->getResponse())) {
@@ -125,7 +126,7 @@ class HttpPipeClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
+    public function getEnvironments($clusterIdentifier, Team $team)
     {
         $url = sprintf(
             $this->baseUrl.'/teams/%s/clusters/%s/environments',
@@ -133,13 +134,13 @@ class HttpPipeClient implements Client
             $clusterIdentifier
         );
 
-        return $this->requestEnvironmentList($authenticatedUser, $url);
+        return $this->requestEnvironmentList($url);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels)
+    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, array $labels)
     {
         $queryFilters = [
             'labels' => $labels,
@@ -148,21 +149,27 @@ class HttpPipeClient implements Client
         $url = sprintf($this->baseUrl.'/teams/%s/clusters/%s/environments', $team->getSlug(), $clusterIdentifier);
         $url .= '?'.http_build_query($queryFilters);
 
-        return $this->requestEnvironmentList($authenticatedUser, $url);
+        return $this->requestEnvironmentList($url);
     }
 
     /**
-     * @param User $user
+     * @param User|UserInterface $user
      *
      * @return array
      */
-    private function getRequestHeaders(User $user)
+    private function getRequestHeadersForUser($user)
     {
-        $token = $this->jwtManager->create(new SecurityUser($user));
+        if ($user instanceof User) {
+            $user = new SecurityUser($user);
+        }
+
+        if (!$user instanceof UserInterface) {
+            throw new \InvalidArgumentException('Expected to have a user object');
+        }
 
         return [
             'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer '.$this->jwtManager->create($user),
         ];
     }
 
@@ -190,10 +197,10 @@ class HttpPipeClient implements Client
      *
      * @return PromiseInterface Array of Environment objects.
      */
-    private function requestEnvironmentList(User $user, $url)
+    private function requestEnvironmentList($url)
     {
         $httpPromise = $this->client->requestAsync('get', $url, [
-            'headers' => $this->getRequestHeaders($user),
+            'headers' => $this->getRequestHeadersForUser(new \Symfony\Component\Security\Core\User\User('system:river', null)),
         ]);
 
         $environmentPromise = $httpPromise->then(

@@ -27,7 +27,7 @@ use ContinuousPipe\Watcher\WatcherException;
 class FlowEnvironmentController
 {
     /**
-     * @var DeployedEnvironmentRepository 
+     * @var DeployedEnvironmentRepository
      */
     private $environmentClient;
 
