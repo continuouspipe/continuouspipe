@@ -37,11 +37,6 @@ class TideController
     private $paginator;
 
     /**
-     * @var ResourceUsageResolver
-     */
-    private $resourceUsageResolver;
-
-    /**
      * @var string
      */
     private $uiUrl;
@@ -56,13 +51,11 @@ class TideController
         TideRepository $tideRepository,
         EventStore $eventStore,
         PaginatorInterface $paginator,
-        ResourceUsageResolver $resourceUsageResolver,
         string $uiUrl
     ) {
         $this->tideRepository = $tideRepository;
         $this->eventStore = $eventStore;
         $this->paginator = $paginator;
-        $this->resourceUsageResolver = $resourceUsageResolver;
         $this->uiUrl = $uiUrl;
     }
 
@@ -77,7 +70,6 @@ class TideController
         return [
             'team' => $team,
             'flow' => $flow,
-            'usage' => $this->resourceUsageResolver->forFlow($flow),
             'pagination' => $this->paginator->paginate(
                 $this->tideRepository->findByFlowUuid($flow->getUuid()),
                 $request->query->getInt('page', 1),

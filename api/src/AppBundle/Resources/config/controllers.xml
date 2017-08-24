@@ -71,7 +71,6 @@
             <argument type="service" id="river.flow.environment_client" />
             <argument type="service" id="authenticator.bucket_repository" />
             <argument type="service" id="river.k8s_watcher" />
-            <argument type="service" id="river.managed.resources.usage_resolver"/>
         </service>
         <service id="app.controller.account" class="AppBundle\Controller\AccountController">
             <argument type="service" id="river.code_repository.explorer" />

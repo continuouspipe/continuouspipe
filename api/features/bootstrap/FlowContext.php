@@ -1379,16 +1379,6 @@ EOF;
     }
 
     /**
-     * @When I request the usage of the flow :uuid
-     */
-    public function iRequestTheUsageOfTheFlow($uuid)
-    {
-        $this->response = $this->kernel->handle(Request::create(
-            '/flows/'.$uuid.'/usage'
-        ));
-    }
-
-    /**
      * @Given the environment :environmentName on the cluster :cluster has component :component with specification:
      */
     public function theEnvironmentOnTheClusterHasComponentWithSpecification($environmentName, $cluster, $component, PyStringNode $specification)

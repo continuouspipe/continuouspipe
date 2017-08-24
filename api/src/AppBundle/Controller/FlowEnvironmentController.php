@@ -43,11 +43,6 @@ class FlowEnvironmentController
     private $watcher;
 
     /**
-     * @var ResourceUsageResolver
-     */
-    private $resourceUsageResolver;
-
-    /**
      * @param DeployedEnvironmentRepository $environmentClient
      * @param BucketRepository              $bucketRepository
      * @param Watcher                       $watcher
@@ -55,13 +50,11 @@ class FlowEnvironmentController
     public function __construct(
         DeployedEnvironmentRepository $environmentClient,
         BucketRepository $bucketRepository,
-        Watcher $watcher,
-        ResourceUsageResolver $resourceUsageResolver
+        Watcher $watcher
     ) {
         $this->environmentClient = $environmentClient;
         $this->watcher = $watcher;
         $this->bucketRepository = $bucketRepository;
-        $this->resourceUsageResolver = $resourceUsageResolver;
     }
 
     /**
@@ -72,16 +65,6 @@ class FlowEnvironmentController
     public function listAction(FlatFlow $flow)
     {
         return $this->environmentClient->findByFlow($flow);
-    }
-
-    /**
-     * @Route("/flows/{uuid}/usage", methods={"GET"})
-     * @Security("is_granted('READ', flow)")
-     * @View
-     */
-    public function usageAction(FlatFlow $flow)
-    {
-        return $this->resourceUsageResolver->forFlow($flow);
     }
 
     /**
