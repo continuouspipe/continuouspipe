@@ -46,7 +46,7 @@ func GetResourcesStore() (watcher.NamespaceResourceStore, error) {
 
     httpEndpoint := os.Getenv("HTTP_ENDPOINT")
     if "" != httpEndpoint {
-        stores = append(stores, watcher.NewHttpResourceStore(httpEndpoint))
+        stores = append(stores, watcher.NewHttpResourceStore(httpEndpoint, os.Getenv("HTTP_ENDPOINT_BEARER_TOKEN")))
     }
 
     return watcher.NewCollectionNamespaceResourceStore(stores), nil

@@ -6,8 +6,15 @@ resource usage per namespace.
 ## Usage
 
 ```
-CLUSTER_ADDRESS=https://[...] \
-    CLUSTER_USERNAME=admin \
-    CLUSTER_PASSWORD=[...] \
-     go run main.go
+go run main.go
 ```
+
+### Environment variables
+
+Variable | Description | Required | Example
+--- | --- | --- | ----
+CLUSTER_ADDRESS | The address of the Kubernetes cluster | Yes | https://api.k8s.my-domain.com
+CLUSTER_USERNAME | Username to connect to the Kubernetes cluter | Yes | admin
+CLUSTER_PASSWORD | The password to use to connect to the Kubernetes cluster | Yes | ø
+HTTP_ENDPOINT | HTTP endpoint to which post the resource usages | No | https://api.my-domain.com/usage
+HTTP_ENDPOINT_BEARER_TOKEN | The Bearer token to use in the Authorization header | No | ey123.[...]

@@ -40,9 +40,10 @@ func (me *ScreenResourceStore) Store(usage NamespaceResourceUsage) error {
     return nil
 }
 
-func NewHttpResourceStore(endpointUrl string) *HttpResourceStore {
+func NewHttpResourceStore(endpointUrl string, bearerToken string) *HttpResourceStore {
     return &HttpResourceStore{
         endpoint: endpointUrl,
+        bearerToken: bearerToken,
         httpClient: &http.Client{
             Timeout: time.Second * 10,
         },
@@ -51,6 +52,7 @@ func NewHttpResourceStore(endpointUrl string) *HttpResourceStore {
 
 type HttpResourceStore struct {
     endpoint string
+    bearerToken string
     httpClient *http.Client
 }
 
@@ -65,7 +67,18 @@ func (me *HttpResourceStore) Store(usage NamespaceResourceUsage) error {
         return err
     }
 
-    _, err = me.httpClient.Post(me.endpoint, "application/json", bytes.NewReader(body))
+    req, err := http.NewRequest("POST", me.endpoint, bytes.NewReader(body))
+    if err != nil {
+        return err
+    }
+
+    req.Header.Set("Content-Type", "application/json")
+
+    if me.bearerToken != "" {
+        req.Header.Set("Authorization", "Bearer "+me.bearerToken)
+    }
+
+    _, err = me.httpClient.Do(req)
 
     return err
 }
