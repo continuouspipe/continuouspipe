@@ -23,12 +23,20 @@ class ResourceCalculator
             $components = $environment->getComponents();
 
             foreach ($components as $component) {
-                $specification = $component->getSpecification();
-                $resources = $specification->getResources();
+                if (null === ($specification = $component->getSpecification())) {
+                    continue;
+                }
 
-                if ($resources !== null) {
-                    $requests->add($resources->getRequests());
-                    $limits->add($resources->getLimits());
+                if (null === ($resources = $specification->getResources())) {
+                    continue;
+                }
+            
+                if (null !== ($componentRequests = $resources->getRequests())) {
+                    $requests->add($componentRequests);
+                }
+
+                if (null !== ($componentLimits = $resources->getLimits())) {
+                    $limits->add($componentLimits);
                 }
             }
         }
